@@ -5,9 +5,7 @@ lazy_static! {
 }
 
 #[derive(Debug)]
-pub struct Config {
-
-}
+pub struct Config {}
 
 impl Config {
     pub fn read() -> Self {

@@ -1,4 +1,4 @@
-use pxp_parser::parser::ast::{Statement, Expression};
+use pxp_parser::parser::ast::{Expression, Statement};
 
 pub mod short_match;
 

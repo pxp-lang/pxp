@@ -38,15 +38,13 @@ fn main() {
 
     match arguments.command {
         Command::Build { file, stdout } => {
-            let options = BuildOptions {
-                stdout,
-            };
+            let options = BuildOptions { stdout };
 
             if let Some(file) = file {
-                cmd::build_single_file(file, options);    
+                cmd::build_single_file(file, options);
             } else {
                 cmd::build(options);
             }
-        },
+        }
     };
 }
