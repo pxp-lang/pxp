@@ -1202,20 +1202,23 @@ fn transpile_expression(transpiler: &mut Box<dyn Transpiler>, expression: &mut E
 }
 
 fn transpile_argument(transpiler: &mut Box<dyn Transpiler>, argument: &mut Argument) {
-    // FIXME: Transpile argument values.
     match argument {
         Argument::Positional {
             comments,
             ellipsis,
             value,
-        } => todo!(),
+        } => {
+            transpile_expression(transpiler, value);
+        },
         Argument::Named {
             comments,
             name,
             colon,
             ellipsis,
             value,
-        } => todo!(),
+        } => {
+            transpile_expression(transpiler, value);
+        },
     }
 }
 
