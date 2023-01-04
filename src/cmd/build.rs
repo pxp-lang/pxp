@@ -8,7 +8,7 @@ use pxp_parser::{
     parser::ast::{
         arguments::{Argument, ArgumentList},
         classes::{AnonymousClass, AnonymousClassBody, AnonymousClassMember, Class, ClassMember},
-        constant::{ClassishConstant, Constant},
+        constant::{ClassishConstant, Constant, ConstantEntry},
         control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock},
         functions::{
             AbstractConstructor, AbstractMethod, ArrowFunction, ArrowFunctionBody, Closure,
@@ -24,7 +24,7 @@ use pxp_parser::{
             ArithmeticOperation, AssignmentOperation, BitwiseOperation, ComparisonOperation,
             LogicalOperation, RangeOperation,
         },
-        properties::{Property, VariableProperty},
+        properties::{Property, VariableProperty, PropertyEntry},
         traits::{Trait, TraitMember, TraitUsage},
         try_block::{CatchBlock, FinallyBlock, TryBlock},
         ArrayItem, Case, Expression, MatchArm, MatchArmBody, Statement, StaticVar, StringPart,
@@ -1304,38 +1304,58 @@ fn transpile_classish_constant(
     transpiler: &mut Box<dyn Transpiler>,
     constant: &mut ClassishConstant,
 ) {
-    // FIXME: Transpile constant values.
+    for ConstantEntry { name, equals, value } in constant.entries.iter_mut() {
+        transpile_expression(transpiler, value);
+    }
 }
 
 fn transpile_property(transpiler: &mut Box<dyn Transpiler>, property: &mut Property) {
-    // FIXME: Transpile property values.
+    for entry in property.entries.iter_mut() {
+        match entry {
+            PropertyEntry::Initialized { variable, equals, value } => {
+                transpile_expression(transpiler, value);
+            },
+            _ => continue,
+        }
+    }
 }
 
 fn transpile_variable_property(
     transpiler: &mut Box<dyn Transpiler>,
     property: &mut VariableProperty,
 ) {
-    // FIXME: Transpile property values.
+    for entry in property.entries.iter_mut() {
+        match entry {
+            PropertyEntry::Initialized { variable, equals, value } => {
+                transpile_expression(transpiler, value);
+            },
+            _ => continue,
+        }
+    }
 }
 
 fn transpile_abstract_method(transpiler: &mut Box<dyn Transpiler>, method: &mut AbstractMethod) {
-    // FIXME: Transpile default parameter values.
+    //
 }
 
 fn transpile_abstract_constructor(
     transpiler: &mut Box<dyn Transpiler>,
     constructor: &mut AbstractConstructor,
 ) {
-    // FIXME: Transpile default parameter values.
+    //
 }
 
 fn transpile_concrete_method(transpiler: &mut Box<dyn Transpiler>, method: &mut ConcreteMethod) {
-    // FIXME: Transpile method body.
+    for statement in method.body.statements.iter_mut() {
+        transpile_statement(transpiler, statement);
+    }
 }
 
 fn transpile_concrete_constructor(
     transpiler: &mut Box<dyn Transpiler>,
     constructor: &mut ConcreteConstructor,
 ) {
-    // FIXME: Transpile method body.
+    for statement in constructor.body.statements.iter_mut() {
+        transpile_statement(transpiler, statement);
+    }
 }
