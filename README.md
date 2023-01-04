@@ -80,3 +80,15 @@ function wrap(callable $callable, mixed ...$arguments) {
 > Multi-line short closures will auto-capture the surrounding environment **by value**, as specified in the [original RFC](https://wiki.php.net/rfc/auto-capture-closure).
 
 **More coming soon...**
+
+## License
+
+Licensed under:
+
+ * Apache License, Version 2.0
+   ([LICENSE](LICENSE) or http://www.apache.org/licenses/LICENSE-2.0)
+
+## Credits
+
+* [Ryan Chandler](https://github.com/ryangjchandler)
+* [All contributors](https://github.com/ryangjchandler/php-parser-rs/graphs/contributors)
