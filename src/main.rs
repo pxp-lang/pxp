@@ -1,5 +1,12 @@
+use std::path::PathBuf;
+
 use clap::{Parser, Subcommand};
 use clap_verbosity_flag::Verbosity;
+use cmd::BuildOptions;
+
+mod cmd;
+mod config;
+mod transpile;
 
 #[derive(Debug, Parser)]
 struct Arguments {
@@ -14,8 +21,11 @@ struct Arguments {
 enum Command {
     #[clap(name = "build")]
     Build {
+        #[clap(help = "Path to file to build.")]
+        file: Option<PathBuf>,
+
         #[clap(short, long, help = "Print generated PHP code to stdout.")]
-        stdout: bool,  
+        stdout: bool,
     },
 }
 
@@ -27,9 +37,16 @@ fn main() {
         .init();
 
     match arguments.command {
-        Command::Build { stdout } => {
-            log::trace!("Starting build command...");
-            log::info!("Build command set to print to stdout: {}", stdout);
+        Command::Build { file, stdout } => {
+            let options = BuildOptions {
+                stdout,
+            };
+
+            if let Some(file) = file {
+                cmd::build_single_file(file, options);    
+            } else {
+                cmd::build(options);
+            }
         },
     };
 }
