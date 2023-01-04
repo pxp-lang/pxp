@@ -24,7 +24,7 @@ use pxp_parser::{
             ArithmeticOperation, AssignmentOperation, BitwiseOperation, ComparisonOperation,
             LogicalOperation, RangeOperation,
         },
-        properties::{Property, VariableProperty, PropertyEntry},
+        properties::{Property, PropertyEntry, VariableProperty},
         traits::{Trait, TraitMember, TraitUsage},
         try_block::{CatchBlock, FinallyBlock, TryBlock},
         ArrayItem, Case, Expression, MatchArm, MatchArmBody, Statement, StaticVar, StringPart,
@@ -1209,7 +1209,7 @@ fn transpile_argument(transpiler: &mut Box<dyn Transpiler>, argument: &mut Argum
             value,
         } => {
             transpile_expression(transpiler, value);
-        },
+        }
         Argument::Named {
             comments,
             name,
@@ -1218,7 +1218,7 @@ fn transpile_argument(transpiler: &mut Box<dyn Transpiler>, argument: &mut Argum
             value,
         } => {
             transpile_expression(transpiler, value);
-        },
+        }
     }
 }
 
@@ -1304,7 +1304,12 @@ fn transpile_classish_constant(
     transpiler: &mut Box<dyn Transpiler>,
     constant: &mut ClassishConstant,
 ) {
-    for ConstantEntry { name, equals, value } in constant.entries.iter_mut() {
+    for ConstantEntry {
+        name,
+        equals,
+        value,
+    } in constant.entries.iter_mut()
+    {
         transpile_expression(transpiler, value);
     }
 }
@@ -1312,9 +1317,13 @@ fn transpile_classish_constant(
 fn transpile_property(transpiler: &mut Box<dyn Transpiler>, property: &mut Property) {
     for entry in property.entries.iter_mut() {
         match entry {
-            PropertyEntry::Initialized { variable, equals, value } => {
+            PropertyEntry::Initialized {
+                variable,
+                equals,
+                value,
+            } => {
                 transpile_expression(transpiler, value);
-            },
+            }
             _ => continue,
         }
     }
@@ -1326,9 +1335,13 @@ fn transpile_variable_property(
 ) {
     for entry in property.entries.iter_mut() {
         match entry {
-            PropertyEntry::Initialized { variable, equals, value } => {
+            PropertyEntry::Initialized {
+                variable,
+                equals,
+                value,
+            } => {
                 transpile_expression(transpiler, value);
-            },
+            }
             _ => continue,
         }
     }
