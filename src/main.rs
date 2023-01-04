@@ -6,6 +6,7 @@ use cmd::BuildOptions;
 
 mod cmd;
 mod config;
+mod printer;
 mod transpile;
 
 #[derive(Debug, Parser)]
