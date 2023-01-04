@@ -1,6 +1,6 @@
 # PXP
 
-PXP is a superset of the PHP programming language that provides an extended set of syntax rules to improve developer experience.
+PXP is a superset of the PHP programming language that provides an extended set of syntax rules and language features to improve developer experience.
 
 ## Roadmap
 
