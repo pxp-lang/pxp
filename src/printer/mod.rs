@@ -778,7 +778,11 @@ fn print_type(state: &mut PrinterState, r#type: &Type) {
 
 fn print_expression(state: &mut PrinterState, expression: &Expression) {
     match expression {
-        Expression::Eval { eval, argument } => todo!(),
+        Expression::Eval { eval, argument } => {
+            state.write("eval(");
+            print_argument(state, &argument.argument);
+            state.write(")");
+        },
         Expression::Empty { empty, argument } => todo!(),
         Expression::Die { die, argument } => todo!(),
         Expression::Exit { exit, argument } => todo!(),
@@ -883,22 +887,26 @@ fn print_argument_list(state: &mut PrinterState, arguments: &ArgumentList) {
             state.write(", ");
         }
 
-        match argument {
-            Argument::Positional { comments, ellipsis, value } => {
-                if ellipsis.is_some() {
-                    state.write("...");
-                }
-                print_expression(state, value);
-            },
-            Argument::Named { comments, name, colon, ellipsis, value } => {
-                print_simple_identifier(state, name);
-                if ellipsis.is_some() {
-                    state.write("...");
-                }
-                state.write(": ");
-                print_expression(state, value);
-            },
-        }
+        print_argument(state, argument);
+    }
+}
+
+fn print_argument(state: &mut PrinterState, argument: &Argument) {
+    match argument {
+        Argument::Positional { comments, ellipsis, value } => {
+            if ellipsis.is_some() {
+                state.write("...");
+            }
+            print_expression(state, value);
+        },
+        Argument::Named { comments, name, colon, ellipsis, value } => {
+            print_simple_identifier(state, name);
+            if ellipsis.is_some() {
+                state.write("...");
+            }
+            state.write(": ");
+            print_expression(state, value);
+        },
     }
 }
 
