@@ -1,4 +1,4 @@
-use pxp_parser::parser::ast::{Statement, Expression, Ending, namespaces::{Namespace, UnbracedNamespace, BracedNamespace, BracedNamespaceBody}, identifiers::{SimpleIdentifier, Identifier}, MatchArm, DefaultMatchArm, MatchArmBody, literals::{Literal, LiteralString, LiteralInteger}, functions::{Function, FunctionParameterList, ReturnType, FunctionBody}, data_type::Type, variables::{SimpleVariable, Variable}, comments::{Comment, CommentFormat}, operators::ArithmeticOperation, arguments::{ArgumentList, Argument}};
+use pxp_parser::parser::ast::{Statement, Expression, Ending, namespaces::{Namespace, UnbracedNamespace, BracedNamespace, BracedNamespaceBody}, identifiers::{SimpleIdentifier, Identifier}, MatchArm, DefaultMatchArm, MatchArmBody, literals::{Literal, LiteralString, LiteralInteger}, functions::{Function, FunctionParameterList, ReturnType, FunctionBody}, data_type::Type, variables::{SimpleVariable, Variable}, comments::{Comment, CommentFormat}, operators::ArithmeticOperation, arguments::{ArgumentList, Argument}, goto::{GotoLabel, GotoStatement}, StaticVar, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, constant::{Constant, ConstantEntry}, classes::Class};
 
 struct PrinterState {
     output: String,
@@ -55,23 +55,176 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
             state.write("<?php");
             state.new_line();
         },
-        Statement::ShortOpeningTag(_) => todo!(),
-        Statement::EchoOpeningTag(_) => todo!(),
-        Statement::ClosingTag(_) => todo!(),
-        Statement::InlineHtml(_) => todo!(),
-        Statement::GotoLabel(_) => todo!(),
-        Statement::Goto(_) => todo!(),
-        Statement::HaltCompiler { content } => todo!(),
-        Statement::Static { vars } => todo!(),
-        Statement::DoWhile(_) => todo!(),
-        Statement::While(_) => todo!(),
-        Statement::For(_) => todo!(),
-        Statement::Foreach(_) => todo!(),
-        Statement::Break(_) => todo!(),
-        Statement::Continue(_) => todo!(),
-        Statement::Constant(_) => todo!(),
+        Statement::ShortOpeningTag(_) => {
+            state.write("<?");
+            state.new_line();
+        },
+        Statement::EchoOpeningTag(_) => {
+            state.write("<?= ");
+        },
+        Statement::ClosingTag(_) => {
+            state.write("?>");
+            state.new_line();
+        },
+        Statement::InlineHtml(html) => {
+            state.write(html.to_string());
+        },
+        Statement::GotoLabel(GotoLabel { comments, label, colon }) => {
+            state.write(label.to_string());
+            state.write(":");
+        },
+        Statement::Goto(GotoStatement { comments, keyword, label, semicolon }) => {
+            state.write("goto ");
+            state.write(label.to_string());
+            state.write(";");
+        },
+        Statement::HaltCompiler { content } => {
+            state.write("__halt_compiler();");
+            if let Some(content) = content {
+                state.write(content.to_string());
+            }
+        },
+        Statement::Static { vars } => {
+            state.write("static ");
+            for (i, StaticVar { var, default }) in vars.iter().enumerate() {
+                if i > 0 {
+                    state.write(", ");
+                }
+                print_variable(state, var);
+                if let Some(default) = default {
+                    state.write(" = ");
+                    print_expression(state, default);
+                }
+            }
+            state.write(";");
+        },
+        Statement::DoWhile(DoWhileStatement { body, condition, .. }) => {
+            state.write("do ");
+            print_statement(state, body);
+            state.write(" while (");
+            print_expression(state, condition);
+            state.write(");");
+        },
+        Statement::While(WhileStatement { r#while, left_parenthesis, condition, right_parenthesis, body }) => {
+            state.write("while (");
+            print_expression(state, condition);
+            state.write(") ");
+            match body {
+                WhileStatementBody::Statement(statement) => {
+                    print_statement(state, statement);
+                },
+                WhileStatementBody::Block { colon, statements, endwhile, ending } => {
+                    state.write(":");
+                    state.indent();
+                    state.new_line();
+                    print_statements(state, statements);
+                    state.dedent();
+                    state.new_line();
+                    state.write("endwhile");
+                    print_ending(state, ending);
+                },
+            }
+        },
+        Statement::For(ForStatement { r#for, left_parenthesis, iterator, right_parenthesis, body }) => {
+            state.write("for (");
+            for (i, initialization) in iterator.initializations.inner.iter().enumerate() {
+                if i > 0 {
+                    state.write(", ");
+                }
+
+                print_expression(state, initialization);
+            }
+            state.write("; ");
+            for (i, condition) in iterator.conditions.inner.iter().enumerate() {
+                if i > 0 {
+                    state.write(", ");
+                }
+
+                print_expression(state, condition);
+            }
+            state.write("; ");
+            for (i, r#loop) in iterator.r#loop.inner.iter().enumerate() {
+                if i > 0 {
+                    state.write(", ");
+                }
+
+                print_expression(state, r#loop);
+            }
+            state.write(") ");
+            match body {
+                ForStatementBody::Statement(statement) => {
+                    print_statement(state, statement);
+                },
+                ForStatementBody::Block { colon, statements, endfor, ending } => {
+                    state.write(":");
+                    state.indent();
+                    state.new_line();
+                    print_statements(state, statements);
+                    state.dedent();
+                    state.new_line();
+                    state.write("endfor");
+                    print_ending(state, ending);
+                },
+            }
+        },
+        Statement::Foreach(ForeachStatement { foreach, left_parenthesis, iterator, right_parenthesis, body }) => {
+            state.write("foreach (");
+            match iterator {
+                ForeachStatementIterator::Value { expression, r#as, ampersand, value } => {
+                    print_expression(state, expression);
+                    state.write(" as ");
+                    if let Some(ampersand) = ampersand {
+                        state.write("&");
+                    }
+                    print_expression(state, value);
+                },
+                ForeachStatementIterator::KeyAndValue { expression, r#as, ampersand, key, double_arrow, value } => {
+                    print_expression(state, expression);
+                    state.write(" as ");
+                    if let Some(ampersand) = ampersand {
+                        state.write("&");
+                    }
+                    print_expression(state, key);
+                    state.write(" => ");
+                    print_expression(state, value);
+                },
+            }
+            state.write(") ");
+            match body {
+                ForeachStatementBody::Statement(statement) => {
+                    print_statement(state, statement);
+                },
+                ForeachStatementBody::Block { colon, statements, endforeach, ending } => {
+                    state.write(":");
+                    state.indent();
+                    state.new_line();
+                    print_statements(state, statements);
+                    state.dedent();
+                    state.new_line();
+                    state.write("endforeach");
+                    print_ending(state, ending);
+                },
+            }
+        },
+        Statement::Break(BreakStatement { r#break, level, ending }) => {
+            state.write("break");
+            if let Some(level) = level {
+                state.write(" ");
+                print_level(state, level);
+            }
+            print_ending(state, ending);
+        },
+        Statement::Continue(ContinueStatement { r#continue, level, ending }) => {
+            state.write("continue");
+            if let Some(level) = level {
+                state.write(" ");
+                print_level(state, level);
+            }
+            print_ending(state, ending);
+        },
+        Statement::Constant(constant) => print_constant(state, constant),
         Statement::Function(function) => print_function(state, function),
-        Statement::Class(_) => todo!(),
+        Statement::Class(class) => print_class(state, class),
         Statement::Trait(_) => todo!(),
         Statement::Interface(_) => todo!(),
         Statement::If(_) => todo!(),
@@ -150,6 +303,36 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
     }
 
     state.new_line();
+}
+
+fn print_class(state: &mut PrinterState, class: &Class) {
+    todo!()
+}
+
+fn print_constant(state: &mut PrinterState, constant: &Constant) {
+    state.write("const ");
+    for (i, ConstantEntry { name, equals, value }) in constant.entries.iter().enumerate() {
+        if i > 0 {
+            state.write(", ");
+        }
+        print_simple_identifier(state, name);
+        state.write(" = ");
+        print_expression(state, value);
+    }
+    state.write(";");
+}
+
+fn print_level(state: &mut PrinterState, level: &Level) {
+    match level {
+        Level::Literal(LiteralInteger { value, span }) => {
+            state.write(value.to_string())
+        },
+        Level::Parenthesized { left_parenthesis, level, right_parenthesis } => {
+            state.write("(");
+            print_level(state, level);
+            state.write(")");
+        },
+    }
 }
 
 fn print_function(state: &mut PrinterState, function: &Function) {
