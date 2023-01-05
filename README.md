@@ -53,7 +53,11 @@ function add(number $a, number $b): number {
 }
 ```
 
-> Type aliases will only work inside of the file where they are defined. There are plans to introduce "use"-able type aliases in the future.
+At this moment in time, type aliases are only resolved inside of the file where they are defined. A future version of PXP will allow you to use type aliases defined in other files, scope them to particular classes and more.
+
+Below is a list of limitations that exist with the current type alias system:
+* They cannot be used in unions or intersection types. They must be used on their own as a single type identifier, as shown in the example above. There will be cases in the future where this is valid and PXP will warn when an invalid usage occurs.
+* There are no collision checks at the moment. Ensure all type aliases have a unique name and do not collide with classes, interfaces or enumerations also present in the current file, including imported ones. A future version of PXP will give you a warning about this during transpilation.
 
 **Range expressions**
 
@@ -85,7 +89,7 @@ function wrap(callable $callable, mixed ...$arguments) {
 
 Licensed under:
 
- * Apache License, Version 2.0
+* Apache License, Version 2.0
    ([LICENSE](LICENSE) or http://www.apache.org/licenses/LICENSE-2.0)
 
 ## Credits

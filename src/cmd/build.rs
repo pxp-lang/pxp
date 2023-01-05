@@ -31,7 +31,7 @@ use pxp_parser::{
     },
 };
 
-use crate::transpile::{short_match::ShortMatchTranspiler, Transpiler};
+use crate::transpile::{short_match::ShortMatchTranspiler, Transpiler, type_alias::TypeAliasTranspiler};
 
 #[derive(Debug)]
 pub struct BuildOptions {
@@ -71,7 +71,10 @@ pub fn build_single_file(path: PathBuf, options: BuildOptions) {
 }
 
 fn transpile_program(program: &mut Vec<Statement>) {
-    let mut transpilers: Vec<Box<dyn Transpiler>> = vec![Box::new(ShortMatchTranspiler)];
+    let mut transpilers: Vec<Box<dyn Transpiler>> = vec![
+        Box::new(ShortMatchTranspiler),
+        Box::new(TypeAliasTranspiler::new()),
+    ];
 
     for transpiler in transpilers.iter_mut() {
         for statement in program.iter_mut() {
@@ -1229,6 +1232,8 @@ fn transpile_argument_list(transpiler: &mut Box<dyn Transpiler>, argument_list: 
 }
 
 fn transpile_class_member(transpiler: &mut Box<dyn Transpiler>, member: &mut ClassMember) {
+    transpiler.transpile_class_member(member);
+
     match member {
         ClassMember::Constant(constant) => transpile_classish_constant(transpiler, constant),
         ClassMember::TraitUsage(TraitUsage {
@@ -1252,6 +1257,8 @@ fn transpile_class_member(transpiler: &mut Box<dyn Transpiler>, member: &mut Cla
 }
 
 fn transpile_trait_member(transpiler: &mut Box<dyn Transpiler>, member: &mut TraitMember) {
+    transpiler.transpile_trait_member(member);
+
     match member {
         TraitMember::Constant(constant) => transpile_classish_constant(transpiler, constant),
         TraitMember::TraitUsage(TraitUsage {
@@ -1278,6 +1285,8 @@ fn transpile_anonymous_class_member(
     transpiler: &mut Box<dyn Transpiler>,
     member: &mut AnonymousClassMember,
 ) {
+    transpiler.transpile_anonymous_class_member(member);
+
     match member {
         AnonymousClassMember::Constant(constant) => {
             transpile_classish_constant(transpiler, constant)
@@ -1315,6 +1324,8 @@ fn transpile_classish_constant(
 }
 
 fn transpile_property(transpiler: &mut Box<dyn Transpiler>, property: &mut Property) {
+    transpiler.transpile_property(property);
+
     for entry in property.entries.iter_mut() {
         match entry {
             PropertyEntry::Initialized {
@@ -1333,6 +1344,8 @@ fn transpile_variable_property(
     transpiler: &mut Box<dyn Transpiler>,
     property: &mut VariableProperty,
 ) {
+    transpiler.transpile_variable_property(property);
+    
     for entry in property.entries.iter_mut() {
         match entry {
             PropertyEntry::Initialized {
