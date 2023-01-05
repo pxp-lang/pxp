@@ -31,7 +31,7 @@ use pxp_parser::{
     },
 };
 
-use crate::transpile::{short_match::ShortMatchTranspiler, Transpiler, type_alias::TypeAliasTranspiler};
+use crate::{transpile::{short_match::ShortMatchTranspiler, Transpiler, type_alias::TypeAliasTranspiler}, printer::print};
 
 #[derive(Debug)]
 pub struct BuildOptions {
@@ -67,7 +67,11 @@ pub fn build_single_file(path: PathBuf, options: BuildOptions) {
 
     transpile_program(&mut program);
 
-    dbg!(program);
+    let output = print(&program);
+
+    if options.stdout {
+        print!("{}", output);
+    }
 }
 
 fn transpile_program(program: &mut Vec<Statement>) {

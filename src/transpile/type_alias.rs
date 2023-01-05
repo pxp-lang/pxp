@@ -42,7 +42,7 @@ impl Transpiler for TypeAliasTranspiler {
                 self.aliases.push((name.value.clone(), r#type.clone()));
 
                 // Replace the statement with a noop.
-                *statement = Statement::Noop(type_keyword.clone());
+                *statement = Statement::Comment(Comment { span: Span::default(), format: CommentFormat::SingleLine, content: format!("Type alias `{} = {}` removed", name.value, r#type.to_string()).into() })
             },
             Statement::Function(Function { parameters, return_type, .. }) => {
                 for FunctionParameter { data_type, .. } in parameters.parameters.inner.iter_mut() {
