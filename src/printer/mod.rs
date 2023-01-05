@@ -1,4 +1,4 @@
-use pxp_parser::parser::ast::{Statement, Expression, Ending, namespaces::{Namespace, UnbracedNamespace, BracedNamespace, BracedNamespaceBody}, identifiers::{SimpleIdentifier, Identifier}, MatchArm, DefaultMatchArm, MatchArmBody, literals::{Literal, LiteralString, LiteralInteger}, functions::{Function, FunctionParameterList, ReturnType, FunctionBody, AbstractMethod, AbstractConstructor, ConcreteMethod, ConcreteConstructor, ConstructorParameterList, ConstructorParameter}, data_type::Type, variables::{SimpleVariable, Variable}, comments::{Comment, CommentFormat}, operators::ArithmeticOperation, arguments::{ArgumentList, Argument}, goto::{GotoLabel, GotoStatement}, StaticVar, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, constant::{Constant, ConstantEntry, ClassishConstant}, classes::{Class, ClassExtends, ClassImplements, ClassMember}, traits::{TraitUsage, TraitUsageAdaptation}, modifiers::{VisibilityModifier, PropertyModifierGroup, PropertyModifier, ClassModifierGroup, ClassModifier, MethodModifierGroup, MethodModifier, PromotedPropertyModifierGroup, PromotedPropertyModifier}, properties::{Property, PropertyEntry, VariableProperty}};
+use pxp_parser::parser::ast::{Statement, Expression, Ending, namespaces::{Namespace, UnbracedNamespace, BracedNamespace, BracedNamespaceBody}, identifiers::{SimpleIdentifier, Identifier}, MatchArm, DefaultMatchArm, MatchArmBody, literals::{Literal, LiteralString, LiteralInteger}, functions::{Function, FunctionParameterList, ReturnType, FunctionBody, AbstractMethod, AbstractConstructor, ConcreteMethod, ConcreteConstructor, ConstructorParameterList, ConstructorParameter}, data_type::Type, variables::{SimpleVariable, Variable}, comments::{Comment, CommentFormat}, operators::{ArithmeticOperation, AssignmentOperation, BitwiseOperation, ComparisonOperation, LogicalOperation, RangeOperation}, arguments::{ArgumentList, Argument}, goto::{GotoLabel, GotoStatement}, StaticVar, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, constant::{Constant, ConstantEntry, ClassishConstant}, classes::{Class, ClassExtends, ClassImplements, ClassMember}, traits::{TraitUsage, TraitUsageAdaptation}, modifiers::{VisibilityModifier, PropertyModifierGroup, PropertyModifier, ClassModifierGroup, ClassModifier, MethodModifierGroup, MethodModifier, PromotedPropertyModifierGroup, PromotedPropertyModifier}, properties::{Property, PropertyEntry, VariableProperty}, ArrayItem, utils::CommaSeparated, ListEntry};
 
 struct PrinterState {
     output: String,
@@ -827,46 +827,168 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         },  
         Expression::Literal(literal) => print_literal(state, literal),
         Expression::ArithmeticOperation(operation) => print_arithmetic_operation(state, operation),
-        Expression::AssignmentOperation(_) => todo!(),
-        Expression::BitwiseOperation(_) => todo!(),
-        Expression::ComparisonOperation(_) => todo!(),
-        Expression::LogicalOperation(_) => todo!(),
-        Expression::RangeOperation(_) => todo!(),
-        Expression::Concat { left, dot, right } => todo!(),
-        Expression::Instanceof { left, instanceof, right } => todo!(),
-        Expression::Reference { ampersand, right } => todo!(),
-        Expression::Parenthesized { start, expr, end } => todo!(),
-        Expression::ErrorSuppress { at, expr } => todo!(),
+        Expression::AssignmentOperation(operation) => print_assignment_operation(state, operation),
+        Expression::BitwiseOperation(operation) => print_bitwise_operation(state, operation),
+        Expression::ComparisonOperation(operation) => print_comparison_operation(state, operation),
+        Expression::LogicalOperation(operation) => print_logical_operation(state, operation),
+        Expression::RangeOperation(operation) => print_range_operation(state, operation),
+        Expression::Concat { left, dot, right } => {
+            print_expression(state, left);
+            state.write(" . ");
+            print_expression(state, right);
+        },
+        Expression::Instanceof { left, instanceof, right } => {
+            print_expression(state, left);
+            state.write(" instanceof ");
+            print_expression(state, right);
+        },
+        Expression::Reference { ampersand, right } => {
+            state.write("&");
+            print_expression(state, right);
+        },
+        Expression::Parenthesized { start, expr, end } => {
+            state.write("(");
+            print_expression(state, expr);
+            state.write(")");
+        },
+        Expression::ErrorSuppress { at, expr } => {
+            state.write("@");
+            print_expression(state, expr);
+        },
         Expression::Identifier(identifier) => print_identifier(state, identifier),
         Expression::Variable(variable) => print_variable(state, variable),
-        Expression::Include { include, path } => todo!(),
-        Expression::IncludeOnce { include_once, path } => todo!(),
-        Expression::Require { require, path } => todo!(),
-        Expression::RequireOnce { require_once, path } => todo!(),
+        Expression::Include { include, path } => {
+            state.write("include ");
+            print_expression(state, path);
+        },
+        Expression::IncludeOnce { include_once, path } => {
+            state.write("include_once ");
+            print_expression(state, path);
+        }
+        Expression::Require { require, path } => {
+            state.write("require ");
+            print_expression(state, path);
+        }
+        Expression::RequireOnce { require_once, path } => {
+            state.write("require_once ");
+            print_expression(state, path);
+        }
         Expression::FunctionCall { target, arguments } => {
             print_expression(state, target);
             state.write("(");
             print_argument_list(state, arguments);
             state.write(")");
         },
-        Expression::FunctionClosureCreation { target, placeholder } => todo!(),
-        Expression::MethodCall { target, arrow, method, arguments } => todo!(),
-        Expression::MethodClosureCreation { target, arrow, method, placeholder } => todo!(),
-        Expression::NullsafeMethodCall { target, question_arrow, method, arguments } => todo!(),
-        Expression::StaticMethodCall { target, double_colon, method, arguments } => todo!(),
-        Expression::StaticVariableMethodCall { target, double_colon, method, arguments } => todo!(),
-        Expression::StaticMethodClosureCreation { target, double_colon, method, placeholder } => todo!(),
-        Expression::StaticVariableMethodClosureCreation { target, double_colon, method, placeholder } => todo!(),
-        Expression::PropertyFetch { target, arrow, property } => todo!(),
-        Expression::NullsafePropertyFetch { target, question_arrow, property } => todo!(),
-        Expression::StaticPropertyFetch { target, double_colon, property } => todo!(),
-        Expression::ConstantFetch { target, double_colon, constant } => todo!(),
-        Expression::Static => todo!(),
-        Expression::Self_ => todo!(),
-        Expression::Parent => todo!(),
-        Expression::ShortArray { start, items, end } => todo!(),
-        Expression::Array { array, start, items, end } => todo!(),
-        Expression::List { list, start, items, end } => todo!(),
+        Expression::FunctionClosureCreation { target, placeholder } => {
+            print_expression(state, target);
+            state.write("(...)");
+        },
+        Expression::MethodCall { target, arrow, method, arguments } => {
+            print_expression(state, target);
+            state.write("->");
+            print_expression(state, method);
+            state.write("(");
+            print_argument_list(state, arguments);
+            state.write(")");
+        },
+        Expression::MethodClosureCreation { target, arrow, method, placeholder } => {
+            print_expression(state, target);
+            state.write("->");
+            print_expression(state, method);
+            state.write("(...)");
+        },
+        Expression::NullsafeMethodCall { target, question_arrow, method, arguments } => {
+            print_expression(state, target);
+            state.write("?->");
+            print_expression(state, method);
+            state.write("(");
+            print_argument_list(state, arguments);
+            state.write(")");
+        },
+        Expression::StaticMethodCall { target, double_colon, method, arguments } => {
+            print_expression(state, target);
+            state.write("::");
+            print_identifier(state, method);
+            state.write("(");
+            print_argument_list(state, arguments);
+            state.write(")");
+        },
+        Expression::StaticVariableMethodCall { target, double_colon, method, arguments } => {
+            print_expression(state, target);
+            state.write("::");
+            print_variable(state, method);
+            state.write("(");
+            print_argument_list(state, arguments);
+            state.write(")");
+        },
+        Expression::StaticMethodClosureCreation { target, double_colon, method, placeholder } => {
+            print_expression(state, target);
+            state.write("::");
+            print_identifier(state, method);
+            state.write("(...)");
+        },
+        Expression::StaticVariableMethodClosureCreation { target, double_colon, method, placeholder } => {
+            print_expression(state, target);
+            state.write("::");
+            print_variable(state, method);
+            state.write("(...)");
+        },
+        Expression::PropertyFetch { target, arrow, property } => {
+            print_expression(state, target);
+            state.write("->");
+            print_expression(state, property);
+        },
+        Expression::NullsafePropertyFetch { target, question_arrow, property } => {
+            print_expression(state, target);
+            state.write("?->");
+            print_expression(state, property);
+        },
+        Expression::StaticPropertyFetch { target, double_colon, property } => {
+            print_expression(state, target);
+            state.write("::");
+            print_variable(state, property);
+        },
+        Expression::ConstantFetch { target, double_colon, constant } => {
+            print_expression(state, target);
+            state.write("::");
+            print_identifier(state, constant);
+        },
+        Expression::Static => {
+            state.write("static");
+        },
+        Expression::Self_ => {
+            state.write("self");
+        },
+        Expression::Parent => {
+            state.write("parent");
+        },
+        Expression::ShortArray { start, items, end } => {
+            state.write("[");
+            state.indent();
+            state.new_line();
+            print_array_items(state, items);
+            state.dedent();
+            state.new_line();
+            state.write("]");
+        },
+        Expression::Array { array, start, items, end } => {
+            state.write("array(");
+            state.indent();
+            state.new_line();
+            print_array_items(state, items);
+            state.dedent();
+            state.new_line();
+            state.write(")");
+        },
+        Expression::List { list, start, items, end } => {
+            state.write("list(");
+            state.indent();
+            state.new_line();
+            print_list_items(state, items);
+            state.dedent();
+            state.new_line();
+            state.write(")");
+        },
         Expression::Closure(_) => todo!(),
         Expression::ArrowFunction(_) => todo!(),
         Expression::New { new, target, arguments } => todo!(),
@@ -907,6 +1029,280 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         Expression::YieldFrom { value } => todo!(),
         Expression::Cast { cast, kind, value } => todo!(),
         Expression::Noop => todo!(),
+    }
+}
+
+fn print_list_items(state: &mut PrinterState, items: &[ListEntry]) {
+    for (i, item) in items.iter().enumerate() {
+        if i > 0 {
+            state.write(", ");
+        }
+
+        match item {
+            ListEntry::Skipped => {},
+            ListEntry::Value { value } => {
+                print_expression(state, value);
+            },
+            ListEntry::KeyValue { key, double_arrow, value } => {
+                print_expression(state, key);
+                state.write(" => ");
+                print_expression(state, value);
+            },
+        }
+    }
+}
+
+fn print_array_items(state: &mut PrinterState, items: &CommaSeparated<ArrayItem>) {
+    for (i, item) in items.inner.iter().enumerate() {
+        if i > 0 {
+            state.write(", ");
+        }
+
+        print_array_item(state, item);
+    }
+}
+
+fn print_array_item(state: &mut PrinterState, item: &ArrayItem) {
+    match item {
+        ArrayItem::Skipped => {},
+        ArrayItem::Value { value } => {
+            print_expression(state, value);
+        },
+        ArrayItem::ReferencedValue { ampersand, value } => {
+            state.write("&");
+            print_expression(state, value);
+        },
+        ArrayItem::SpreadValue { ellipsis, value } => {
+            state.write("...");
+            print_expression(state, value);
+        },
+        ArrayItem::KeyValue { key, double_arrow, value } => {
+            print_expression(state, key);
+            state.write(" => ");
+            print_expression(state, value);
+        },
+        ArrayItem::ReferencedKeyValue { key, double_arrow, ampersand, value } => {
+            print_expression(state, key);
+            state.write(" => &");
+            print_expression(state, value);
+        },
+    }
+}
+
+fn print_range_operation(state: &mut PrinterState, operation: &RangeOperation) {
+    match operation {
+        RangeOperation::Exclusive { lower_bound, double_dot, upper_bound } => {
+            print_expression(state, lower_bound);
+            state.write("..");
+            print_expression(state, upper_bound);
+        },
+        RangeOperation::Inclusive { lower_bound, double_dot_equals, upper_bound } => {
+            print_expression(state, lower_bound);
+            state.write("..=");
+            print_expression(state, upper_bound);
+        },
+        RangeOperation::Endless { lower_bound, double_dot } => {
+            print_expression(state, lower_bound);
+            state.write("..");
+        },
+    }
+}
+
+fn print_logical_operation(state: &mut PrinterState, operation: &LogicalOperation) {
+    match operation {
+        LogicalOperation::And { left, double_ampersand, right } => {
+            print_expression(state, left);
+            state.write(" && ");
+            print_expression(state, right);
+        },
+        LogicalOperation::Or { left, double_pipe, right } => {
+            print_expression(state, left);
+            state.write(" || ");
+            print_expression(state, right);
+        },
+        LogicalOperation::Not { bang, right } => {
+            state.write("!");
+            print_expression(state, right);
+        },
+        LogicalOperation::LogicalAnd { left, and, right } => {
+            print_expression(state, left);
+            state.write(" and ");
+            print_expression(state, right);
+        },
+        LogicalOperation::LogicalOr { left, or, right } => {
+            print_expression(state, left);
+            state.write(" or ");
+            print_expression(state, right);
+        },
+        LogicalOperation::LogicalXor { left, xor, right } => {
+            print_expression(state, left);
+            state.write(" xor ");
+            print_expression(state, right);
+        },
+    }
+}
+
+fn print_comparison_operation(state: &mut PrinterState, operation: &ComparisonOperation) {
+    match operation {
+        ComparisonOperation::Equal { left, double_equals, right } => {
+            print_expression(state, left);
+            state.write(" == ");
+            print_expression(state, right);
+        },
+        ComparisonOperation::Identical { left, triple_equals, right } => {
+            print_expression(state, left);
+            state.write(" === ");
+            print_expression(state, right);
+        }
+        ComparisonOperation::NotEqual { left, bang_equals, right } => {
+            print_expression(state, left);
+            state.write(" != ");
+            print_expression(state, right);
+        }
+        ComparisonOperation::AngledNotEqual { left, angled_left_right, right } => {
+            print_expression(state, left);
+            state.write(" <> ");
+            print_expression(state, right);
+        }
+        ComparisonOperation::NotIdentical { left, bang_double_equals, right } => {
+            print_expression(state, left);
+            state.write(" !== ");
+            print_expression(state, right);
+        }
+        ComparisonOperation::LessThan { left, less_than, right } => {
+            print_expression(state, left);
+            state.write(" < ");
+            print_expression(state, right);
+        }
+        ComparisonOperation::GreaterThan { left, greater_than, right } => {
+            print_expression(state, left);
+            state.write(" > ");
+            print_expression(state, right);
+        }
+        ComparisonOperation::LessThanOrEqual { left, less_than_equals, right } => {
+            print_expression(state, left);
+            state.write(" <= ");
+            print_expression(state, right);
+        }
+        ComparisonOperation::GreaterThanOrEqual { left, greater_than_equals, right } => {
+            print_expression(state, left);
+            state.write(" >= ");
+            print_expression(state, right);
+        }
+        ComparisonOperation::Spaceship { left, spaceship, right } => {
+            print_expression(state, left);
+            state.write(" <=> ");
+            print_expression(state, right);
+        }
+    }
+}
+
+fn print_bitwise_operation(state: &mut PrinterState, operation: &BitwiseOperation) {
+    match operation {
+        BitwiseOperation::And { left, and, right } => {
+            print_expression(state, left);
+            state.write(" & ");
+            print_expression(state, right);
+        },
+        BitwiseOperation::Or { left, or, right } => {
+            print_expression(state, left);
+            state.write(" | ");
+            print_expression(state, right);
+        },
+        BitwiseOperation::Xor { left, xor, right } => {
+            print_expression(state, left);
+            state.write(" ^ ");
+            print_expression(state, right);
+        },
+        BitwiseOperation::LeftShift { left, left_shift, right } => {
+            print_expression(state, left);
+            state.write(" << ");
+            print_expression(state, right);
+        },
+        BitwiseOperation::RightShift { left, right_shift, right } => {
+            print_expression(state, left);
+            state.write(" >> ");
+            print_expression(state, right);
+        },
+        BitwiseOperation::Not { not, right } => {
+            state.write("~");
+            print_expression(state, right);
+        },
+    }
+}
+
+fn print_assignment_operation(state: &mut PrinterState, operation: &AssignmentOperation) {
+    match operation {
+        AssignmentOperation::Assign { left, equals, right } => {
+            print_expression(state, left);
+            state.write(" = ");
+            print_expression(state, right);
+        },
+        AssignmentOperation::Addition { left, plus_equals, right } => {
+            print_expression(state, left);
+            state.write(" += ");
+            print_expression(state, right);
+        },
+        AssignmentOperation::Subtraction { left, minus_equals, right } => {
+            print_expression(state, left);
+            state.write(" -= ");
+            print_expression(state, right);
+        },
+        AssignmentOperation::Multiplication { left, asterisk_equals, right } => {
+            print_expression(state, left);
+            state.write(" *= ");
+            print_expression(state, right);
+        },
+        AssignmentOperation::Division { left, slash_equals, right } => {
+            print_expression(state, left);
+            state.write(" /= ");
+            print_expression(state, right);
+        }
+        AssignmentOperation::Modulo { left, percent_equals, right } => {
+            print_expression(state, left);
+            state.write(" %= ");
+            print_expression(state, right);
+        },
+        AssignmentOperation::Exponentiation { left, pow_equals, right } => {
+            print_expression(state, left);
+            state.write(" **= ");
+            print_expression(state, right);
+        },
+        AssignmentOperation::Concat { left, dot_equals, right } => {
+            print_expression(state, left);
+            state.write(" .= ");
+            print_expression(state, right);
+        },
+        AssignmentOperation::BitwiseAnd { left, ampersand_equals, right } => {
+            print_expression(state, left);
+            state.write(" &= ");
+            print_expression(state, right);
+        },
+        AssignmentOperation::BitwiseOr { left, pipe_equals, right } => {
+            print_expression(state, left);
+            state.write(" |= ");
+            print_expression(state, right);
+        },
+        AssignmentOperation::BitwiseXor { left, caret_equals, right } => {
+            print_expression(state, left);
+            state.write(" ^= ");
+            print_expression(state, right);
+        },
+        AssignmentOperation::LeftShift { left, left_shift_equals, right } => {
+            print_expression(state, left);
+            state.write(" <<= ");
+            print_expression(state, right); 
+        },
+        AssignmentOperation::RightShift { left, right_shift_equals, right } => {
+            print_expression(state, left);
+            state.write(" >>= ");
+            print_expression(state, right);
+        },
+        AssignmentOperation::Coalesce { left, coalesce_equals, right } => {
+            print_expression(state, left);
+            state.write(" ??= ");
+            print_expression(state, right);
+        },
     }
 }
 
