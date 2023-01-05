@@ -1,4 +1,4 @@
-use pxp_parser::parser::ast::{Statement, Expression, Ending, namespaces::{Namespace, UnbracedNamespace, BracedNamespace, BracedNamespaceBody}, identifiers::{SimpleIdentifier, Identifier}, MatchArm, DefaultMatchArm, MatchArmBody, literals::{Literal, LiteralString, LiteralInteger}, functions::{Function, FunctionParameterList, ReturnType, FunctionBody}, data_type::Type, variables::{SimpleVariable, Variable}, comments::{Comment, CommentFormat}, operators::ArithmeticOperation, arguments::{ArgumentList, Argument}, goto::{GotoLabel, GotoStatement}, StaticVar, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, constant::{Constant, ConstantEntry}, classes::Class};
+use pxp_parser::parser::ast::{Statement, Expression, Ending, namespaces::{Namespace, UnbracedNamespace, BracedNamespace, BracedNamespaceBody}, identifiers::{SimpleIdentifier, Identifier}, MatchArm, DefaultMatchArm, MatchArmBody, literals::{Literal, LiteralString, LiteralInteger}, functions::{Function, FunctionParameterList, ReturnType, FunctionBody}, data_type::Type, variables::{SimpleVariable, Variable}, comments::{Comment, CommentFormat}, operators::ArithmeticOperation, arguments::{ArgumentList, Argument}, goto::{GotoLabel, GotoStatement}, StaticVar, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, constant::{Constant, ConstantEntry, ClassishConstant}, classes::{Class, ClassExtends, ClassImplements, ClassMember}, traits::{TraitUsage, TraitUsageAdaptation}, modifiers::{VisibilityModifier, PropertyModifierGroup, PropertyModifier, ClassModifierGroup, ClassModifier}, properties::{Property, PropertyEntry, VariableProperty}};
 
 struct PrinterState {
     output: String,
@@ -306,20 +306,238 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
 }
 
 fn print_class(state: &mut PrinterState, class: &Class) {
-    todo!()
+    print_class_modifier_group(state, &class.modifiers);
+
+    state.write("class ");
+    print_simple_identifier(state, &class.name);
+    
+    if let Some(ClassExtends { extends, parent }) = &class.extends {
+        state.write(" extends ");
+        print_simple_identifier(state, parent);
+    }
+
+    if let Some(ClassImplements { implements, interfaces }) = &class.implements {
+        state.write(" implements ");
+        for (i, interface) in interfaces.inner.iter().enumerate() {
+            if i > 0 {
+                state.write(", ");
+            }
+            print_simple_identifier(state, interface);
+        }
+    }
+
+    state.write(" {");
+    state.indent();
+    state.new_line();
+
+    for member in class.body.members.iter() {
+        print_class_member(state, member);
+    }
+
+    state.dedent();
+    state.new_line();
+    state.write("}");
 }
 
-fn print_constant(state: &mut PrinterState, constant: &Constant) {
-    state.write("const ");
-    for (i, ConstantEntry { name, equals, value }) in constant.entries.iter().enumerate() {
+fn print_class_modifier_group(state: &mut PrinterState, modifiers: &ClassModifierGroup) {
+    for (i, modifier) in modifiers.modifiers.iter().enumerate() {
+        if i > 0 {
+            state.write(" ");
+        }
+        print_class_modifier(state, modifier);
+    }
+}
+
+fn print_class_modifier(state: &mut PrinterState, modifier: &ClassModifier) {
+    match modifier {
+        ClassModifier::Final(_) => state.write("final"),
+        ClassModifier::Abstract(_) => state.write("abstract"),
+        ClassModifier::Readonly(_) => state.write("readonly"),
+    }
+}
+
+fn print_class_member(state: &mut PrinterState, member: &ClassMember) {
+    match member {
+        ClassMember::Constant(constant) => {
+            print_classish_constant(state, constant);
+        },
+        ClassMember::TraitUsage(trait_usage) => print_trait_usage(state, trait_usage),
+        ClassMember::Property(property) => print_property(state, property),
+        ClassMember::VariableProperty(property) => print_variable_property(state, property),
+        ClassMember::AbstractMethod(_) => todo!(),
+        ClassMember::AbstractConstructor(_) => todo!(),
+        ClassMember::ConcreteMethod(_) => todo!(),
+        ClassMember::ConcreteConstructor(_) => todo!(),
+    }
+}
+
+fn print_variable_property(state: &mut PrinterState, property: &VariableProperty) {
+    state.write("var ");
+    if let Some(data_type) = &property.r#type {
+        print_type(state, data_type);
+        state.write(" ");
+    }
+    for (i, property) in property.entries.iter().enumerate() {
+        if i > 0 {
+            state.write(", ");
+        }
+        print_property_entry(state, property);
+    }
+    state.write(";");
+}
+
+fn print_property(state: &mut PrinterState, property: &Property) {
+    print_modifier_group(state, &property.modifiers);
+    state.write(" ");
+    if let Some(data_type) = &property.r#type {
+        print_type(state, data_type);
+        state.write(" ");
+    }
+    for (i, property) in property.entries.iter().enumerate() {
+        if i > 0 {
+            state.write(", ");
+        }
+        print_property_entry(state, property);
+    }
+    state.write(";");
+}
+
+fn print_property_entry(state: &mut PrinterState, property: &PropertyEntry) {
+    match property {
+        PropertyEntry::Uninitialized { variable } => {
+            print_simple_variable(state, variable);
+        },
+        PropertyEntry::Initialized { variable, equals, value } => {
+            print_simple_variable(state, variable);
+            state.write(" = ");
+            print_expression(state, value);
+        },
+    }
+}
+
+fn print_modifier_group(state: &mut PrinterState, modifiers: &PropertyModifierGroup) {
+    for (i, modifier) in modifiers.modifiers.iter().enumerate() {
+        if i > 0 {
+            state.write(" ");
+        }
+        
+        print_property_modifier(state, modifier);
+    }
+}
+
+fn print_property_modifier(state: &mut PrinterState, modifier: &PropertyModifier) {
+    match modifier {
+        PropertyModifier::Public(_) => state.write("public"),
+        PropertyModifier::Protected(_) => state.write("protected"),
+        PropertyModifier::Private(_) => state.write("private"),
+        PropertyModifier::Static(_) => state.write("static"),
+        PropertyModifier::Readonly(_) => state.write("readonly"),
+    }
+}
+
+fn print_trait_usage(state: &mut PrinterState, trait_usage: &TraitUsage) {
+    state.write("use ");
+    for (i, name) in trait_usage.traits.iter().enumerate() {
         if i > 0 {
             state.write(", ");
         }
         print_simple_identifier(state, name);
-        state.write(" = ");
-        print_expression(state, value);
+    }
+
+    if !trait_usage.adaptations.is_empty() {
+        state.write("{");
+        state.indent();
+        state.new_line();
+
+        for adaptation in trait_usage.adaptations.iter() {
+            print_trait_adaptation(state, adaptation);
+        }
+
+        state.dedent();
+        state.new_line();
+        state.write("}");
+    } else {
+        state.write(";");
+        state.new_line();
+    }
+}
+
+fn print_trait_adaptation(state: &mut PrinterState, adaptation: &TraitUsageAdaptation) {
+    match adaptation {
+        TraitUsageAdaptation::Alias { r#trait, method, alias, visibility } => {
+            if let Some(r#trait) = r#trait {
+                print_simple_identifier(state, r#trait);
+                state.write("::");
+            }
+            print_simple_identifier(state, method);
+            state.write(" as ");
+            if let Some(visibility) = visibility {
+                print_visibility_modifier(state, visibility);
+                state.write(" ");
+            }
+            print_simple_identifier(state, alias);
+        },
+        TraitUsageAdaptation::Visibility { r#trait, method, visibility } => {
+            if let Some(r#trait) = r#trait {
+                print_simple_identifier(state, r#trait);
+                state.write("::");
+            }
+            print_simple_identifier(state, method);
+            state.write(" as ");
+            print_visibility_modifier(state, visibility);
+        },
+        TraitUsageAdaptation::Precedence { r#trait, method, insteadof } => {
+            if let Some(r#trait) = r#trait {
+                print_simple_identifier(state, r#trait);
+                state.write("::");
+            }
+            print_simple_identifier(state, method);
+            state.write(" insteadof ");
+            for (i, name) in insteadof.iter().enumerate() {
+                if i > 0 {
+                    state.write(", ");
+                }
+                print_simple_identifier(state, name);
+            }
+        },
     }
     state.write(";");
+}
+
+fn print_visibility_modifier(state: &mut PrinterState, modifier: &VisibilityModifier) {
+    match modifier {
+        VisibilityModifier::Public(_) => state.write("public"),
+        VisibilityModifier::Protected(_) => state.write("protected"),
+        VisibilityModifier::Private(_) => state.write("private"),
+    }
+}
+
+fn print_classish_constant(state: &mut PrinterState, constant: &ClassishConstant) {
+    state.write("const ");
+    print_constant_entries(state, &constant.entries);
+    state.write(";");
+}
+
+fn print_constant(state: &mut PrinterState, constant: &Constant) {
+    state.write("const ");
+    print_constant_entries(state, &constant.entries);
+    state.write(";");
+}
+
+fn print_constant_entries(state: &mut PrinterState, entries: &[ConstantEntry]) {
+    for (i, entry) in entries.iter().enumerate() {
+        if i > 0 {
+            state.write(", ");
+        }
+
+        print_constant_entry(state, entry);
+    }
+}
+
+fn print_constant_entry(state: &mut PrinterState, entry: &ConstantEntry) {
+    print_simple_identifier(state, &entry.name);
+    state.write(" = ");
+    print_expression(state, &entry.value);
 }
 
 fn print_level(state: &mut PrinterState, level: &Level) {
