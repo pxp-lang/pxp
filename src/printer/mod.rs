@@ -1,4 +1,4 @@
-use pxp_parser::parser::ast::{Statement, Expression, Ending, namespaces::{Namespace, UnbracedNamespace, BracedNamespace, BracedNamespaceBody}, identifiers::{SimpleIdentifier, Identifier}, MatchArm, DefaultMatchArm, MatchArmBody, literals::{Literal, LiteralString, LiteralInteger}, functions::{Function, FunctionParameterList, ReturnType, FunctionBody}, data_type::Type, variables::{SimpleVariable, Variable}, comments::{Comment, CommentFormat}, operators::ArithmeticOperation, arguments::{ArgumentList, Argument}, goto::{GotoLabel, GotoStatement}, StaticVar, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, constant::{Constant, ConstantEntry, ClassishConstant}, classes::{Class, ClassExtends, ClassImplements, ClassMember}, traits::{TraitUsage, TraitUsageAdaptation}, modifiers::{VisibilityModifier, PropertyModifierGroup, PropertyModifier, ClassModifierGroup, ClassModifier}, properties::{Property, PropertyEntry, VariableProperty}};
+use pxp_parser::parser::ast::{Statement, Expression, Ending, namespaces::{Namespace, UnbracedNamespace, BracedNamespace, BracedNamespaceBody}, identifiers::{SimpleIdentifier, Identifier}, MatchArm, DefaultMatchArm, MatchArmBody, literals::{Literal, LiteralString, LiteralInteger}, functions::{Function, FunctionParameterList, ReturnType, FunctionBody, AbstractMethod, AbstractConstructor, ConcreteMethod, ConcreteConstructor, ConstructorParameterList, ConstructorParameter}, data_type::Type, variables::{SimpleVariable, Variable}, comments::{Comment, CommentFormat}, operators::ArithmeticOperation, arguments::{ArgumentList, Argument}, goto::{GotoLabel, GotoStatement}, StaticVar, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, constant::{Constant, ConstantEntry, ClassishConstant}, classes::{Class, ClassExtends, ClassImplements, ClassMember}, traits::{TraitUsage, TraitUsageAdaptation}, modifiers::{VisibilityModifier, PropertyModifierGroup, PropertyModifier, ClassModifierGroup, ClassModifier, MethodModifierGroup, MethodModifier, PromotedPropertyModifierGroup, PromotedPropertyModifier}, properties::{Property, PropertyEntry, VariableProperty}};
 
 struct PrinterState {
     output: String,
@@ -326,12 +326,18 @@ fn print_class(state: &mut PrinterState, class: &Class) {
         }
     }
 
-    state.write(" {");
+    state.new_line();
+    state.write("{");
     state.indent();
     state.new_line();
 
-    for member in class.body.members.iter() {
+    for (i, member) in class.body.members.iter().enumerate() {
         print_class_member(state, member);
+
+        if i < class.body.members.len() - 1 {
+            state.new_line();
+            state.new_line();
+        }
     }
 
     state.dedent();
@@ -364,10 +370,169 @@ fn print_class_member(state: &mut PrinterState, member: &ClassMember) {
         ClassMember::TraitUsage(trait_usage) => print_trait_usage(state, trait_usage),
         ClassMember::Property(property) => print_property(state, property),
         ClassMember::VariableProperty(property) => print_variable_property(state, property),
-        ClassMember::AbstractMethod(_) => todo!(),
-        ClassMember::AbstractConstructor(_) => todo!(),
-        ClassMember::ConcreteMethod(_) => todo!(),
-        ClassMember::ConcreteConstructor(_) => todo!(),
+        ClassMember::AbstractMethod(method) => print_abstract_method(state, method),
+        ClassMember::AbstractConstructor(method) => print_abstract_constructor(state, method),
+        ClassMember::ConcreteMethod(method) => print_concrete_method(state, method),
+        ClassMember::ConcreteConstructor(method) => print_concrete_constructor(state, method),
+    }
+}
+
+fn print_concrete_constructor(state: &mut PrinterState, method: &ConcreteConstructor) {
+    if !method.modifiers.is_empty() {
+        print_method_modifier_group(state, &method.modifiers);
+        state.write(" ");
+    }   
+
+    state.write("function ");
+    if method.ampersand.is_some() {
+        state.write("&");
+    }
+    state.write("__construct(");
+    print_constructor_parameter_list(state, &method.parameters);
+    state.write(") {");
+    state.indent();
+    state.new_line();
+    print_statements(state, &method.body.statements);
+    state.dedent();
+    state.write("}");
+}
+
+fn print_constructor_parameter_list(state: &mut PrinterState, parameters: &ConstructorParameterList) {
+    for (i, parameter) in parameters.parameters.inner.iter().enumerate() {
+        if i > 0 {
+            state.write(", ");
+        }
+        
+        print_constructor_parameter(state, parameter);
+    }
+}
+
+fn print_constructor_parameter(state: &mut PrinterState, parameter: &ConstructorParameter) {
+    print_promoted_property_modifier_group(state, &parameter.modifiers);
+    state.write(" ");
+
+    if let Some(data_type) = &parameter.data_type {
+        print_type(state, data_type);
+        state.write(" ");
+    }
+
+    if parameter.ellipsis.is_some() {
+        state.write("...");
+    }
+
+    if parameter.ampersand.is_some() {
+        state.write("&");
+    }
+
+    print_simple_variable(state, &parameter.name);
+
+    if let Some(default) = &parameter.default {
+        state.write(" = ");
+        print_expression(state, default);
+    }
+}
+
+fn print_promoted_property_modifier_group(state: &mut PrinterState, modifiers: &PromotedPropertyModifierGroup) {
+    for (i, modifier) in modifiers.modifiers.iter().enumerate() {
+        if i > 0 {
+            state.write(" ");
+        }
+        print_promoted_property_modifier(state, modifier);
+    }
+}
+
+fn print_promoted_property_modifier(state: &mut PrinterState, modifier: &PromotedPropertyModifier) {
+    match modifier {
+        PromotedPropertyModifier::Public(_) => state.write("public"),
+        PromotedPropertyModifier::Protected(_) => state.write("protected"),
+        PromotedPropertyModifier::Private(_) => state.write("private"),
+        PromotedPropertyModifier::Readonly(_) => state.write("readonly"),
+    }
+}
+
+fn print_concrete_method(state: &mut PrinterState, method: &ConcreteMethod) {
+    if !method.modifiers.is_empty() {
+        print_method_modifier_group(state, &method.modifiers);
+        state.write(" ");
+    }   
+
+    state.write("function ");
+    if method.ampersand.is_some() {
+        state.write("&");
+    }
+    print_simple_identifier(state, &method.name);
+    state.write("(");
+    print_function_parameter_list(state, &method.parameters);
+    state.write(") ");
+    if let Some(ReturnType { data_type, .. }) = &method.return_type {
+        state.write(": ");
+        print_type(state, data_type);
+    }
+    state.write(" {");
+    state.indent();
+    state.new_line();
+    print_statements(state, &method.body.statements);
+    state.dedent();
+    state.new_line();
+    state.write("}");
+}
+
+fn print_abstract_constructor(state: &mut PrinterState, method: &AbstractConstructor) {
+    if !method.modifiers.is_empty() {
+        print_method_modifier_group(state, &method.modifiers);
+        state.write(" ");
+    }
+
+    state.write("function ");
+    if method.ampersand.is_some() {
+        state.write("&");
+    }
+    state.write("__construct");
+    state.write("(");
+    print_function_parameter_list(state, &method.parameters);
+    state.write(");");
+    state.new_line();
+}
+
+fn print_abstract_method(state: &mut PrinterState, method: &AbstractMethod) {
+    if !method.modifiers.is_empty() {
+        print_method_modifier_group(state, &method.modifiers);
+        state.write(" ");
+    }
+
+    state.write("function ");
+    if method.ampersand.is_some() {
+        state.write("&");
+    }
+    print_simple_identifier(state, &method.name);
+    state.write("(");
+    print_function_parameter_list(state, &method.parameters);
+    state.write(")");
+    if let Some(ReturnType { data_type, .. }) = &method.return_type {
+        state.write(": ");
+        print_type(state, data_type);
+    }
+    state.write(";");
+}
+
+fn print_method_modifier_group(state: &mut PrinterState, modifiers: &MethodModifierGroup) {
+    for (i, modifier) in modifiers.modifiers.iter().enumerate() {
+        if i > 0 {
+            state.write(" ");
+        }
+        
+        print_method_modifier(state, modifier);
+    }
+}
+
+fn print_method_modifier(state: &mut PrinterState, modifier: &MethodModifier) {
+    match modifier {
+        MethodModifier::Final(_) => state.write("final"),
+        MethodModifier::Static(_) => state.write("static"),
+        MethodModifier::Abstract(_) => state.write("abstract"),
+        MethodModifier::Public(_) => state.write("public"),
+        MethodModifier::Protected(_) => state.write("protected"),
+        MethodModifier::Private(_) => state.write("private"),
     }
 }
 
@@ -445,11 +610,15 @@ fn print_trait_usage(state: &mut PrinterState, trait_usage: &TraitUsage) {
     }
 
     if !trait_usage.adaptations.is_empty() {
-        state.write("{");
+        state.write(" {");
         state.indent();
         state.new_line();
 
-        for adaptation in trait_usage.adaptations.iter() {
+        for (i, adaptation) in trait_usage.adaptations.iter().enumerate() {
+            if i > 0 {
+                state.new_line();
+            }
+
             print_trait_adaptation(state, adaptation);
         }
 
@@ -458,7 +627,6 @@ fn print_trait_usage(state: &mut PrinterState, trait_usage: &TraitUsage) {
         state.write("}");
     } else {
         state.write(";");
-        state.new_line();
     }
 }
 
