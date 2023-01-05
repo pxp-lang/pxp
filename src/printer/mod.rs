@@ -783,12 +783,48 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             print_argument(state, &argument.argument);
             state.write(")");
         },
-        Expression::Empty { empty, argument } => todo!(),
-        Expression::Die { die, argument } => todo!(),
-        Expression::Exit { exit, argument } => todo!(),
-        Expression::Isset { isset, arguments } => todo!(),
-        Expression::Unset { unset, arguments } => todo!(),
-        Expression::Print { print, value, argument } => todo!(),
+        Expression::Empty { empty, argument } => {
+            state.write("empty(");
+            print_argument(state, &argument.argument);
+            state.write(")");
+        },
+        Expression::Die { die, argument } => {
+            state.write("die");
+            if let Some(argument) = argument.as_ref() {
+                state.write("(");
+                print_argument(state, &argument.argument);
+                state.write(")");
+            }
+        },
+        Expression::Exit { exit, argument } => {
+            state.write("exit");
+            if let Some(argument) = argument.as_ref() {
+                state.write("(");
+                print_argument(state, &argument.argument);
+                state.write(")");
+            }
+        },
+        Expression::Isset { isset, arguments } => {
+            state.write("isset(");
+            print_argument_list(state, arguments);
+            state.write(")");
+        },
+        Expression::Unset { unset, arguments } => {
+            state.write("unset(");
+            print_argument_list(state, arguments);
+            state.write(")");
+        },
+        Expression::Print { print, value, argument } => {
+            state.write("print");
+            if let Some(value) = value {
+                state.write(" ");
+                print_expression(state, value);
+            } else if let Some(argument) = argument.as_ref() {
+                state.write("(");
+                print_argument(state, &argument.argument);
+                state.write(")");
+            }
+        },  
         Expression::Literal(literal) => print_literal(state, literal),
         Expression::ArithmeticOperation(operation) => print_arithmetic_operation(state, operation),
         Expression::AssignmentOperation(_) => todo!(),
