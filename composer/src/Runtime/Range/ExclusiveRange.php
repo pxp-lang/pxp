@@ -9,7 +9,7 @@ final class ExclusiveRange implements Range
 {
     private array $range;
 
-    private function __construct(
+    public function __construct(
         private int|float|string $lowerBound,
         private int|float|string $upperBound,
         private int|float $step = 1,

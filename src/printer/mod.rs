@@ -293,7 +293,15 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         Statement::Try(_) => todo!(),
         Statement::UnitEnum(_) => todo!(),
         Statement::BackedEnum(_) => todo!(),
-        Statement::Block(BlockStatement { left_brace, statements, right_brace }) => todo!(),
+        Statement::Block(BlockStatement { left_brace, statements, right_brace }) => {
+            state.write("{");
+            state.indent();
+            state.new_line();
+            print_statements(state, statements);
+            state.dedent();
+            state.new_line();
+            state.write("}");
+        },
         Statement::Global(GlobalStatement { global, variables }) => todo!(),
         Statement::Declare(_) => todo!(),
         Statement::Noop(_) => {
@@ -991,7 +999,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         },
         Expression::Closure(closure) => print_closure(state, closure),
         Expression::ArrowFunction(_) => todo!(),
-        Expression::New { new, target, arguments } => todo!(),
+        Expression::New { new, target, arguments } => print_new(state, target, arguments.as_ref()),
         Expression::InterpolatedString { parts } => todo!(),
         Expression::Heredoc { parts } => todo!(),
         Expression::Nowdoc { value } => todo!(),
@@ -1002,7 +1010,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         },
         Expression::ArrayIndex { array, left_bracket, index, right_bracket } => todo!(),
         Expression::Null => todo!(),
-        Expression::MagicConstant(_) => todo!(),
+        Expression::MagicConstant(constant) => print_magic_constant(state, constant),
         Expression::ShortTernary { condition, question_colon, r#else } => todo!(),
         Expression::Ternary { condition, question, then, colon, r#else } => todo!(),
         Expression::Coalesce { lhs, double_question, rhs } => todo!(),
@@ -1029,6 +1037,30 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         Expression::YieldFrom { value } => todo!(),
         Expression::Cast { cast, kind, value } => todo!(),
         Expression::Noop => todo!(),
+    }
+}
+
+fn print_new(state: &mut PrinterState, target: &Expression, arguments: Option<&ArgumentList>) {
+    state.write("new ");
+    print_expression(state, target);
+    state.write("(");
+    if let Some(arguments) = arguments {
+        print_argument_list(state, arguments);
+    }
+    state.write(")");
+}
+
+fn print_magic_constant(state: &mut PrinterState, constant: &pxp_parser::parser::ast::MagicConstant) {
+    match constant {
+        pxp_parser::parser::ast::MagicConstant::Directory(_) => state.write("__DIR__"),
+        pxp_parser::parser::ast::MagicConstant::File(_) => state.write("__FILE__"),
+        pxp_parser::parser::ast::MagicConstant::Line(_) => state.write("__LINE__"),
+        pxp_parser::parser::ast::MagicConstant::Class(_) => state.write("__CLASS__"),
+        pxp_parser::parser::ast::MagicConstant::Function(_) => state.write("__FUNCTION__"),
+        pxp_parser::parser::ast::MagicConstant::Method(_) => state.write("__METHOD__"),
+        pxp_parser::parser::ast::MagicConstant::Namespace(_) => state.write("__NAMESPACE__"),
+        pxp_parser::parser::ast::MagicConstant::Trait(_) => state.write("__TRAIT__"),
+        pxp_parser::parser::ast::MagicConstant::CompilerHaltOffset(_) => state.write("__COMPILER_HALT_OFFSET__"),
     }
 }
 

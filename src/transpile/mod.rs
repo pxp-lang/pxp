@@ -3,6 +3,7 @@ use pxp_parser::parser::ast::{Expression, Statement, classes::{ClassMember, Anon
 pub mod short_match;
 pub mod type_alias;
 pub mod multi_line_closures;
+pub mod range;
 
 pub trait Transpiler {
     fn transpile_statement(&mut self, statement: &mut Statement) {}

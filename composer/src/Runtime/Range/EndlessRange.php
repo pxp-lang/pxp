@@ -7,7 +7,7 @@ use Traversable;
 
 final class EndlessRange implements Range
 {
-    private function __construct(
+    public function __construct(
         private int|float $lowerBound,
         private int|float $step = 1,
     ) {}
