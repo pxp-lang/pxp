@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use pxp_parser::{parser::ast::{Statement, data_type::Type, comments::{Comment, CommentFormat}, functions::{Function, FunctionParameter, ReturnType, Closure, ArrowFunction, AbstractConstructor, ConcreteConstructor, ConstructorParameter, AbstractMethod, ConcreteMethod}, Expression, classes::{ClassMember, AnonymousClassMember}, traits::TraitMember, properties::{Property, VariableProperty}}, lexer::{byte_string::ByteString, token::Span}};
+use pxp_parser::{parser::ast::{Statement, data_type::Type, comments::{Comment, CommentFormat}, functions::{FunctionStatement, FunctionParameter, ReturnType, Closure, ArrowFunction, AbstractConstructor, ConcreteConstructor, ConstructorParameter, AbstractMethod, ConcreteMethod}, Expression, classes::{ClassMember, AnonymousClassMember}, traits::TraitMember, properties::{Property, VariableProperty}}, lexer::{byte_string::ByteString, token::Span}};
 
 use super::Transpiler;
 
@@ -44,7 +44,7 @@ impl Transpiler for TypeAliasTranspiler {
                 // Replace the statement with a noop.
                 *statement = Statement::Comment(Comment { span: Span::default(), format: CommentFormat::SingleLine, content: format!("Type alias `{} = {}` removed", name.value, r#type.to_string()).into() })
             },
-            Statement::Function(Function { parameters, return_type, .. }) => {
+            Statement::Function(FunctionStatement { parameters, return_type, .. }) => {
                 for FunctionParameter { data_type, .. } in parameters.parameters.inner.iter_mut() {
                     if let Some(data_type) = data_type {
                         self.maybe_change_data_type(data_type);

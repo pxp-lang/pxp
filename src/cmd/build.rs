@@ -7,27 +7,27 @@ use pxp_parser::{
     parse,
     parser::ast::{
         arguments::{Argument, ArgumentList},
-        classes::{AnonymousClass, AnonymousClassBody, AnonymousClassMember, Class, ClassMember},
-        constant::{ClassishConstant, Constant, ConstantEntry},
+        classes::{AnonymousClass, AnonymousClassBody, AnonymousClassMember, ClassStatement, ClassMember},
+        constant::{ClassishConstant, ConstantStatement, ConstantEntry},
         control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock},
         functions::{
             AbstractConstructor, AbstractMethod, ArrowFunction, ArrowFunctionBody, Closure,
-            ConcreteConstructor, ConcreteMethod, Function, FunctionBody,
+            ConcreteConstructor, ConcreteMethod, FunctionStatement, FunctionBody,
         },
-        interfaces::Interface,
+        interfaces::InterfaceStatement,
         loops::{
             DoWhileStatement, ForStatement, ForStatementBody, ForStatementIterator,
             ForeachStatement, ForeachStatementIterator, WhileStatement, WhileStatementBody,
         },
-        namespaces::{BracedNamespace, Namespace, UnbracedNamespace},
+        namespaces::{BracedNamespace, NamespaceStatement, UnbracedNamespace},
         operators::{
             ArithmeticOperation, AssignmentOperation, BitwiseOperation, ComparisonOperation,
             LogicalOperation, RangeOperation,
         },
         properties::{Property, PropertyEntry, VariableProperty},
-        traits::{Trait, TraitMember, TraitUsage},
-        try_block::{CatchBlock, FinallyBlock, TryBlock},
-        ArrayItem, Case, Expression, MatchArm, MatchArmBody, Statement, StaticVar, StringPart,
+        traits::{TraitStatement, TraitMember, TraitUsage},
+        try_block::{CatchBlock, FinallyBlock, TryStatement},
+        ArrayItem, Case, Expression, MatchArm, MatchArmBody, Statement, StaticVar, StringPart, StaticStatement, SwitchStatement, EchoStatement, ExpressionStatement, ReturnStatement, BlockStatement,
     },
 };
 
@@ -91,7 +91,7 @@ fn transpile_statement(transpiler: &mut Box<dyn Transpiler>, statement: &mut Sta
     transpiler.transpile_statement(statement);
 
     match statement {
-        Statement::Static { vars } => {
+        Statement::Static(StaticStatement { vars, .. }) => {
             for StaticVar { default, .. } in vars {
                 if let Some(default) = default {
                     transpile_expression(transpiler, default);
@@ -191,7 +191,7 @@ fn transpile_statement(transpiler: &mut Box<dyn Transpiler>, statement: &mut Sta
                 transpile_expression(transpiler, value);
             }
         },
-        Statement::Constant(Constant {
+        Statement::Constant(ConstantStatement {
             comments,
             r#const,
             entries,
@@ -201,7 +201,7 @@ fn transpile_statement(transpiler: &mut Box<dyn Transpiler>, statement: &mut Sta
                 transpile_expression(transpiler, &mut entry.value);
             }
         }
-        Statement::Function(Function {
+        Statement::Function(FunctionStatement {
             comments,
             attributes,
             function,
@@ -227,7 +227,7 @@ fn transpile_statement(transpiler: &mut Box<dyn Transpiler>, statement: &mut Sta
                 transpile_statement(transpiler, statement);
             }
         }
-        Statement::Class(Class {
+        Statement::Class(ClassStatement {
             attributes,
             modifiers,
             class,
@@ -240,7 +240,7 @@ fn transpile_statement(transpiler: &mut Box<dyn Transpiler>, statement: &mut Sta
                 transpile_class_member(transpiler, member);
             }
         }
-        Statement::Trait(Trait {
+        Statement::Trait(TraitStatement {
             r#trait,
             name,
             attributes,
@@ -250,7 +250,7 @@ fn transpile_statement(transpiler: &mut Box<dyn Transpiler>, statement: &mut Sta
                 transpile_trait_member(transpiler, member);
             }
         }
-        Statement::Interface(Interface {
+        Statement::Interface(InterfaceStatement {
             attributes,
             interface,
             name,
@@ -326,13 +326,13 @@ fn transpile_statement(transpiler: &mut Box<dyn Transpiler>, statement: &mut Sta
                 }
             }
         }
-        Statement::Switch {
+        Statement::Switch(SwitchStatement {
             switch,
             left_parenthesis,
             condition,
             right_parenthesis,
             cases,
-        } => {
+        }) => {
             transpile_expression(transpiler, condition);
 
             for Case { condition, body } in cases {
@@ -345,26 +345,26 @@ fn transpile_statement(transpiler: &mut Box<dyn Transpiler>, statement: &mut Sta
                 }
             }
         }
-        Statement::Echo { values, .. } => {
+        Statement::Echo(EchoStatement { values, .. }) => {
             for value in values {
                 transpile_expression(transpiler, value);
             }
         }
-        Statement::Expression { expression, ending } => {
+        Statement::Expression(ExpressionStatement { expression, ending }) => {
             transpile_expression(transpiler, expression);
         }
-        Statement::Return {
+        Statement::Return(ReturnStatement {
             r#return,
             value,
             ending,
-        } => {
+        }) => {
             if let Some(value) = value {
                 transpile_expression(transpiler, value);
             }
         }
         Statement::Namespace(namespace) => {
             match namespace {
-                Namespace::Unbraced(UnbracedNamespace {
+                NamespaceStatement::Unbraced(UnbracedNamespace {
                     start,
                     name,
                     end,
@@ -374,7 +374,7 @@ fn transpile_statement(transpiler: &mut Box<dyn Transpiler>, statement: &mut Sta
                         transpile_statement(transpiler, statement);
                     }
                 }
-                Namespace::Braced(BracedNamespace {
+                NamespaceStatement::Braced(BracedNamespace {
                     namespace,
                     name,
                     body,
@@ -385,7 +385,7 @@ fn transpile_statement(transpiler: &mut Box<dyn Transpiler>, statement: &mut Sta
                 }
             };
         }
-        Statement::Try(TryBlock {
+        Statement::Try(TryStatement {
             start,
             end,
             body,
@@ -419,11 +419,11 @@ fn transpile_statement(transpiler: &mut Box<dyn Transpiler>, statement: &mut Sta
         Statement::UnitEnum(_) => {}
         // FIXME: Transpile backed enum members.
         Statement::BackedEnum(_) => {}
-        Statement::Block {
+        Statement::Block(BlockStatement {
             left_brace,
             statements,
             right_brace,
-        } => {
+        }) => {
             for statement in statements.iter_mut() {
                 transpile_statement(transpiler, statement);
             }
@@ -1163,6 +1163,8 @@ fn transpile_expression(transpiler: &mut Box<dyn Transpiler>, expression: &mut E
             right_parenthesis,
             default,
             arms,
+            left_brace,
+            right_brace,
         } => {
             transpile_expression(transpiler, condition);
 

@@ -1,4 +1,4 @@
-use pxp_parser::parser::ast::{Statement, Expression, Ending, namespaces::{Namespace, UnbracedNamespace, BracedNamespace, BracedNamespaceBody}, identifiers::{SimpleIdentifier, Identifier}, MatchArm, DefaultMatchArm, MatchArmBody, literals::{Literal, LiteralString, LiteralInteger}, functions::{Function, FunctionParameterList, ReturnType, FunctionBody, AbstractMethod, AbstractConstructor, ConcreteMethod, ConcreteConstructor, ConstructorParameterList, ConstructorParameter}, data_type::Type, variables::{SimpleVariable, Variable}, comments::{Comment, CommentFormat}, operators::{ArithmeticOperation, AssignmentOperation, BitwiseOperation, ComparisonOperation, LogicalOperation, RangeOperation}, arguments::{ArgumentList, Argument}, goto::{GotoLabel, GotoStatement}, StaticVar, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, constant::{Constant, ConstantEntry, ClassishConstant}, classes::{Class, ClassExtends, ClassImplements, ClassMember}, traits::{TraitUsage, TraitUsageAdaptation}, modifiers::{VisibilityModifier, PropertyModifierGroup, PropertyModifier, ClassModifierGroup, ClassModifier, MethodModifierGroup, MethodModifier, PromotedPropertyModifierGroup, PromotedPropertyModifier}, properties::{Property, PropertyEntry, VariableProperty}, ArrayItem, utils::CommaSeparated, ListEntry};
+use pxp_parser::parser::ast::{Statement, Expression, Ending, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace, BracedNamespaceBody}, identifiers::{SimpleIdentifier, Identifier}, MatchArm, DefaultMatchArm, MatchArmBody, literals::{Literal, LiteralString, LiteralInteger}, functions::{FunctionStatement, FunctionParameterList, ReturnType, FunctionBody, AbstractMethod, AbstractConstructor, ConcreteMethod, ConcreteConstructor, ConstructorParameterList, ConstructorParameter}, data_type::Type, variables::{SimpleVariable, Variable}, comments::{Comment, CommentFormat}, operators::{ArithmeticOperation, AssignmentOperation, BitwiseOperation, ComparisonOperation, LogicalOperation, RangeOperation}, arguments::{ArgumentList, Argument}, goto::{LabelStatement, GotoStatement}, StaticVar, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassMember}, traits::{TraitUsage, TraitUsageAdaptation}, modifiers::{VisibilityModifier, PropertyModifierGroup, PropertyModifier, ClassModifierGroup, ClassModifier, MethodModifierGroup, MethodModifier, PromotedPropertyModifierGroup, PromotedPropertyModifier}, properties::{Property, PropertyEntry, VariableProperty}, ArrayItem, utils::CommaSeparated, ListEntry, HaltCompiler, StaticStatement, SwitchStatement, EchoStatement, ExpressionStatement, ReturnStatement, UseStatement, GroupUseStatement, BlockStatement, GlobalStatement};
 
 struct PrinterState {
     output: String,
@@ -69,7 +69,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         Statement::InlineHtml(html) => {
             state.write(html.to_string());
         },
-        Statement::GotoLabel(GotoLabel { comments, label, colon }) => {
+        Statement::Label(LabelStatement { comments, label, colon }) => {
             state.write(label.to_string());
             state.write(":");
         },
@@ -78,13 +78,13 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
             state.write(label.to_string());
             state.write(";");
         },
-        Statement::HaltCompiler { content } => {
+        Statement::HaltCompiler(HaltCompiler { content }) => {
             state.write("__halt_compiler();");
             if let Some(content) = content {
                 state.write(content.to_string());
             }
         },
-        Statement::Static { vars } => {
+        Statement::Static(StaticStatement { vars }) => {
             state.write("static ");
             for (i, StaticVar { var, default }) in vars.iter().enumerate() {
                 if i > 0 {
@@ -228,8 +228,8 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         Statement::Trait(_) => todo!(),
         Statement::Interface(_) => todo!(),
         Statement::If(_) => todo!(),
-        Statement::Switch { switch, left_parenthesis, condition, right_parenthesis, cases } => todo!(),
-        Statement::Echo { echo, values, ending } => {
+        Statement::Switch(SwitchStatement { switch, left_parenthesis, condition, right_parenthesis, cases }) => todo!(),
+        Statement::Echo(EchoStatement { echo, values, ending }) => {
             state.write("echo ");
             for (i, value) in values.iter().enumerate() {
                 if i > 0 {
@@ -240,11 +240,11 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
             }
             print_ending(state, ending);
         },
-        Statement::Expression { expression, ending } => {
+        Statement::Expression(ExpressionStatement { expression, ending }) => {
             print_expression(state, expression);
             print_ending(state, ending);
         },
-        Statement::Return { r#return, value, ending } => {
+        Statement::Return(ReturnStatement { r#return, value, ending }) => {
             state.write("return ");
             if let Some(value) = value {
                 print_expression(state, value);
@@ -253,7 +253,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         },
         Statement::Namespace(namespace) => {
             match namespace {
-                Namespace::Unbraced(UnbracedNamespace { start, name, end, statements }) => {
+                NamespaceStatement::Unbraced(UnbracedNamespace { start, name, end, statements }) => {
                     state.write("namespace ");
                     print_simple_identifier(state, name);
                     state.write(";");
@@ -261,7 +261,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
                     state.new_line();
                     print_statements(state, statements);
                 },
-                Namespace::Braced(BracedNamespace { namespace, name, body: BracedNamespaceBody { start, end, statements } }) => {
+                NamespaceStatement::Braced(BracedNamespace { namespace, name, body: BracedNamespaceBody { start, end, statements } }) => {
                     state.write("namespace ");
                     if let Some(name) = name {
                         print_simple_identifier(state, name);
@@ -277,8 +277,8 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
                 },
             }
         },
-        Statement::Use { uses, kind } => todo!(),
-        Statement::GroupUse { prefix, kind, uses } => todo!(),
+        Statement::Use(UseStatement { uses, kind }) => todo!(),
+        Statement::GroupUse(GroupUseStatement { prefix, kind, uses }) => todo!(),
         Statement::Comment(Comment { format, content, .. }) => {
             match format {
                 CommentFormat::SingleLine => {
@@ -293,8 +293,8 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         Statement::Try(_) => todo!(),
         Statement::UnitEnum(_) => todo!(),
         Statement::BackedEnum(_) => todo!(),
-        Statement::Block { left_brace, statements, right_brace } => todo!(),
-        Statement::Global { global, variables } => todo!(),
+        Statement::Block(BlockStatement { left_brace, statements, right_brace }) => todo!(),
+        Statement::Global(GlobalStatement { global, variables }) => todo!(),
         Statement::Declare(_) => todo!(),
         Statement::Noop(_) => {
             state.write(";");
@@ -305,7 +305,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
     state.new_line();
 }
 
-fn print_class(state: &mut PrinterState, class: &Class) {
+fn print_class(state: &mut PrinterState, class: &ClassStatement) {
     print_class_modifier_group(state, &class.modifiers);
 
     state.write("class ");
@@ -686,7 +686,7 @@ fn print_classish_constant(state: &mut PrinterState, constant: &ClassishConstant
     state.write(";");
 }
 
-fn print_constant(state: &mut PrinterState, constant: &Constant) {
+fn print_constant(state: &mut PrinterState, constant: &ConstantStatement) {
     state.write("const ");
     print_constant_entries(state, &constant.entries);
     state.write(";");
@@ -721,7 +721,7 @@ fn print_level(state: &mut PrinterState, level: &Level) {
     }
 }
 
-fn print_function(state: &mut PrinterState, function: &Function) {
+fn print_function(state: &mut PrinterState, function: &FunctionStatement) {
     state.write("function ");
     if function.ampersand.is_some() {
         state.write("&");
@@ -1007,7 +1007,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         Expression::Ternary { condition, question, then, colon, r#else } => todo!(),
         Expression::Coalesce { lhs, double_question, rhs } => todo!(),
         Expression::Clone { target } => todo!(),
-        Expression::Match { keyword, left_parenthesis, condition, right_parenthesis, default, arms } => {
+        Expression::Match { keyword, condition, default, arms, .. } => {
             state.write("match (");
             print_expression(state, condition);
             state.write(") {");

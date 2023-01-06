@@ -19,6 +19,8 @@ impl Transpiler for ShortMatchTranspiler {
                     right_parenthesis: Span::default(),
                     default: default.clone(),
                     arms: arms.clone(),
+                    left_brace: Span::default(),
+                    right_brace: Span::default(),
                 };
             }
             _ => return,
