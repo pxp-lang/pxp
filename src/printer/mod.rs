@@ -1,4 +1,4 @@
-use pxp_parser::parser::ast::{Statement, Expression, Ending, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace, BracedNamespaceBody}, identifiers::{SimpleIdentifier, Identifier}, MatchArm, DefaultMatchArm, MatchArmBody, literals::{Literal, LiteralString, LiteralInteger}, functions::{FunctionStatement, FunctionParameterList, ReturnType, FunctionBody, AbstractMethod, AbstractConstructor, ConcreteMethod, ConcreteConstructor, ConstructorParameterList, ConstructorParameter, Closure}, data_type::Type, variables::{SimpleVariable, Variable}, comments::{Comment, CommentFormat}, operators::{ArithmeticOperation, AssignmentOperation, BitwiseOperation, ComparisonOperation, LogicalOperation, RangeOperation}, arguments::{ArgumentList, Argument}, goto::{LabelStatement, GotoStatement}, StaticVar, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassMember}, traits::{TraitUsage, TraitUsageAdaptation}, modifiers::{VisibilityModifier, PropertyModifierGroup, PropertyModifier, ClassModifierGroup, ClassModifier, MethodModifierGroup, MethodModifier, PromotedPropertyModifierGroup, PromotedPropertyModifier}, properties::{Property, PropertyEntry, VariableProperty}, ArrayItem, utils::CommaSeparated, ListEntry, HaltCompiler, StaticStatement, SwitchStatement, EchoStatement, ExpressionStatement, ReturnStatement, UseStatement, GroupUseStatement, BlockStatement, GlobalStatement};
+use pxp_parser::parser::ast::{Statement, Expression, Ending, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace, BracedNamespaceBody}, identifiers::{SimpleIdentifier, Identifier}, MatchArm, DefaultMatchArm, MatchArmBody, literals::{Literal, LiteralString, LiteralInteger}, functions::{FunctionStatement, FunctionParameterList, ReturnType, FunctionBody, AbstractMethod, AbstractConstructor, ConcreteMethod, ConcreteConstructor, ConstructorParameterList, ConstructorParameter, Closure}, data_type::Type, variables::{SimpleVariable, Variable}, comments::{Comment, CommentFormat}, operators::{ArithmeticOperation, AssignmentOperation, BitwiseOperation, ComparisonOperation, LogicalOperation, RangeOperation}, arguments::{ArgumentList, Argument}, goto::{LabelStatement, GotoStatement}, StaticVar, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassMember}, traits::{TraitUsage, TraitUsageAdaptation}, modifiers::{VisibilityModifier, PropertyModifierGroup, PropertyModifier, ClassModifierGroup, ClassModifier, MethodModifierGroup, MethodModifier, PromotedPropertyModifierGroup, PromotedPropertyModifier}, properties::{Property, PropertyEntry, VariableProperty}, ArrayItem, utils::CommaSeparated, ListEntry, HaltCompiler, StaticStatement, SwitchStatement, EchoStatement, ExpressionStatement, ReturnStatement, UseStatement, GroupUseStatement, BlockStatement, GlobalStatement, enums::{UnitEnumStatement, UnitEnumBody, UnitEnumMember, UnitEnumCase}};
 
 struct PrinterState {
     output: String,
@@ -291,7 +291,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
             }
         },
         Statement::Try(_) => todo!(),
-        Statement::UnitEnum(_) => todo!(),
+        Statement::UnitEnum(unit) => print_unit_enum(state, unit),
         Statement::BackedEnum(_) => todo!(),
         Statement::Block(BlockStatement { left_brace, statements, right_brace }) => {
             state.write("{");
@@ -311,6 +311,53 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
     }
 
     state.new_line();
+}
+
+fn print_unit_enum(state: &mut PrinterState, unit: &UnitEnumStatement) {
+    state.write("enum ");
+    print_simple_identifier(state, &unit.name);
+    
+    for (i, identifier) in unit.implements.iter().enumerate() {
+        if i == 0 {
+            state.write(" implements ");
+        } else {
+            state.write(", ");
+        }
+        print_simple_identifier(state, identifier);
+    }
+
+    state.write(" {");
+    state.indent();
+    state.new_line();
+    print_enum_body(state, &unit.body);
+    state.dedent();
+    state.new_line();
+    state.write("}");
+}
+
+fn print_enum_body(state: &mut PrinterState, body: &UnitEnumBody) {
+    for (i, member) in body.members.iter().enumerate() {
+        print_enum_member(state, member);
+
+        if i < body.members.len() - 1 {
+            state.new_line();
+            state.new_line();
+        }
+    }
+}
+
+fn print_enum_member(state: &mut PrinterState, member: &UnitEnumMember) {
+    match member {
+        UnitEnumMember::Case(case) => print_unit_enum_case(state, case),
+        UnitEnumMember::Method(method) => print_concrete_method(state, method),
+        UnitEnumMember::Constant(constant) => print_classish_constant(state, constant),
+    }
+}
+
+fn print_unit_enum_case(state: &mut PrinterState, member: &UnitEnumCase) {
+    state.write("case ");
+    print_simple_identifier(state, &member.name);
+    state.write(";");
 }
 
 fn print_class(state: &mut PrinterState, class: &ClassStatement) {
@@ -1506,16 +1553,18 @@ fn print_match_arm(state: &mut PrinterState, arm: &MatchArm) {
     state.write(" => ");
     print_match_arm_body(state, &arm.body);
     state.write(",");
+    state.new_line();
 }
 
 fn print_match_arm_body(state: &mut PrinterState, body: &MatchArmBody) {
     match body {
         MatchArmBody::Block { statements, .. } => {
             state.write("{");
-            state.new_line();
             state.indent();
+            state.new_line();
             print_statements(state, statements);
             state.dedent();
+            state.new_line();
             state.write("}");
         },
         MatchArmBody::Expression(expression) => {

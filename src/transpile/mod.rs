@@ -4,6 +4,7 @@ pub mod short_match;
 pub mod type_alias;
 pub mod multi_line_closures;
 pub mod range;
+pub mod multi_line_match;
 
 pub trait Transpiler {
     fn transpile_statement(&mut self, statement: &mut Statement) {}
