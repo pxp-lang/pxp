@@ -277,7 +277,7 @@ dependencies = [
 [[package]]
 name = "pxp-parser"
 version = "0.0.0-b3"
-source = "git+https://github.com/php-rust-tools/pxp-parser?branch=main#c74a8a08f63d70f52bee164d57d7d2aa53f645ae"
+source = "git+https://github.com/pxp-lang/parser?branch=main#e645258c52cae926ec6aa39edc72a52c5dfdabab"
 dependencies = [
  "ariadne",
  "clap",

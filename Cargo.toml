@@ -12,4 +12,4 @@ discoverer = "0.1.0"
 env_logger = { version = "0.10.0", features = ["color"] }
 lazy_static = "1.4.0"
 log = "0.4.17"
-pxp-parser = { git = "https://github.com/php-rust-tools/pxp-parser", branch = "main" }
+pxp-parser = { git = "https://github.com/pxp-lang/parser", branch = "main" }
