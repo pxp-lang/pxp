@@ -31,7 +31,7 @@ use pxp_parser::{
     },
 };
 
-use crate::{transpile::{short_match::ShortMatchTranspiler, Transpiler, type_alias::TypeAliasTranspiler}, printer::print};
+use crate::{transpile::{short_match::ShortMatchTranspiler, Transpiler, type_alias::TypeAliasTranspiler, multi_line_closures::MultiLineClosuresTranspiler}, printer::print};
 
 #[derive(Debug)]
 pub struct BuildOptions {
@@ -78,6 +78,7 @@ fn transpile_program(program: &mut Vec<Statement>) {
     let mut transpilers: Vec<Box<dyn Transpiler>> = vec![
         Box::new(ShortMatchTranspiler),
         Box::new(TypeAliasTranspiler::new()),
+        Box::new(MultiLineClosuresTranspiler::new()),
     ];
 
     for transpiler in transpilers.iter_mut() {

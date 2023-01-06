@@ -8,6 +8,7 @@ mod cmd;
 mod config;
 mod printer;
 mod transpile;
+mod visitors;
 
 #[derive(Debug, Parser)]
 struct Arguments {

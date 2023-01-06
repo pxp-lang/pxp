@@ -1,4 +1,4 @@
-use pxp_parser::parser::ast::{Statement, Expression, Ending, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace, BracedNamespaceBody}, identifiers::{SimpleIdentifier, Identifier}, MatchArm, DefaultMatchArm, MatchArmBody, literals::{Literal, LiteralString, LiteralInteger}, functions::{FunctionStatement, FunctionParameterList, ReturnType, FunctionBody, AbstractMethod, AbstractConstructor, ConcreteMethod, ConcreteConstructor, ConstructorParameterList, ConstructorParameter}, data_type::Type, variables::{SimpleVariable, Variable}, comments::{Comment, CommentFormat}, operators::{ArithmeticOperation, AssignmentOperation, BitwiseOperation, ComparisonOperation, LogicalOperation, RangeOperation}, arguments::{ArgumentList, Argument}, goto::{LabelStatement, GotoStatement}, StaticVar, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassMember}, traits::{TraitUsage, TraitUsageAdaptation}, modifiers::{VisibilityModifier, PropertyModifierGroup, PropertyModifier, ClassModifierGroup, ClassModifier, MethodModifierGroup, MethodModifier, PromotedPropertyModifierGroup, PromotedPropertyModifier}, properties::{Property, PropertyEntry, VariableProperty}, ArrayItem, utils::CommaSeparated, ListEntry, HaltCompiler, StaticStatement, SwitchStatement, EchoStatement, ExpressionStatement, ReturnStatement, UseStatement, GroupUseStatement, BlockStatement, GlobalStatement};
+use pxp_parser::parser::ast::{Statement, Expression, Ending, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace, BracedNamespaceBody}, identifiers::{SimpleIdentifier, Identifier}, MatchArm, DefaultMatchArm, MatchArmBody, literals::{Literal, LiteralString, LiteralInteger}, functions::{FunctionStatement, FunctionParameterList, ReturnType, FunctionBody, AbstractMethod, AbstractConstructor, ConcreteMethod, ConcreteConstructor, ConstructorParameterList, ConstructorParameter, Closure}, data_type::Type, variables::{SimpleVariable, Variable}, comments::{Comment, CommentFormat}, operators::{ArithmeticOperation, AssignmentOperation, BitwiseOperation, ComparisonOperation, LogicalOperation, RangeOperation}, arguments::{ArgumentList, Argument}, goto::{LabelStatement, GotoStatement}, StaticVar, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassMember}, traits::{TraitUsage, TraitUsageAdaptation}, modifiers::{VisibilityModifier, PropertyModifierGroup, PropertyModifier, ClassModifierGroup, ClassModifier, MethodModifierGroup, MethodModifier, PromotedPropertyModifierGroup, PromotedPropertyModifier}, properties::{Property, PropertyEntry, VariableProperty}, ArrayItem, utils::CommaSeparated, ListEntry, HaltCompiler, StaticStatement, SwitchStatement, EchoStatement, ExpressionStatement, ReturnStatement, UseStatement, GroupUseStatement, BlockStatement, GlobalStatement};
 
 struct PrinterState {
     output: String,
@@ -989,7 +989,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             state.new_line();
             state.write(")");
         },
-        Expression::Closure(_) => todo!(),
+        Expression::Closure(closure) => print_closure(state, closure),
         Expression::ArrowFunction(_) => todo!(),
         Expression::New { new, target, arguments } => todo!(),
         Expression::InterpolatedString { parts } => todo!(),
@@ -1030,6 +1030,43 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         Expression::Cast { cast, kind, value } => todo!(),
         Expression::Noop => todo!(),
     }
+}
+
+fn print_closure(state: &mut PrinterState, closure: &Closure) {
+    state.write("function ");
+    if closure.ampersand.is_some() {
+        state.write("&");
+    }
+    state.write("(");
+    print_function_parameter_list(state, &closure.parameters);
+    state.write(")");
+
+    if let Some(uses) = &closure.uses {
+        state.write(" use (");
+        for r#use in uses.variables.inner.iter() {
+            if r#use.ampersand.is_some() {
+                state.write("&");
+            }
+
+            print_simple_variable(state, &r#use.variable);
+        }
+        state.write(")");
+    }
+
+    if let Some(ReturnType { data_type, .. }) = &closure.return_type {
+        state.write(": ");
+        print_type(state, data_type);
+    }
+
+    state.write(" {");
+    state.indent();
+    state.new_line();
+    
+    print_statements(state, &closure.body.statements);
+
+    state.dedent();
+    state.new_line();
+    state.write("}");
 }
 
 fn print_list_items(state: &mut PrinterState, items: &[ListEntry]) {
