@@ -1,6 +1,20 @@
 use std::collections::HashMap;
 
-use pxp_parser::{parser::ast::{Statement, data_type::Type, comments::{Comment, CommentFormat}, functions::{FunctionStatement, FunctionParameter, ReturnType, Closure, ArrowFunction, AbstractConstructor, ConcreteConstructor, ConstructorParameter, AbstractMethod, ConcreteMethod}, Expression, classes::{ClassMember, AnonymousClassMember}, traits::TraitMember, properties::{Property, VariableProperty}}, lexer::{byte_string::ByteString, token::Span}};
+use pxp_parser::{
+    lexer::{byte_string::ByteString, token::Span},
+    parser::ast::{
+        classes::{AnonymousClassMember, ClassMember},
+        comments::{Comment, CommentFormat},
+        data_type::Type,
+        functions::{
+            AbstractConstructor, AbstractMethod, ArrowFunction, Closure, ConcreteConstructor,
+            ConcreteMethod, ConstructorParameter, FunctionParameter, FunctionStatement, ReturnType,
+        },
+        properties::{Property, VariableProperty},
+        traits::TraitMember,
+        Expression, Statement,
+    },
+};
 
 use super::Transpiler;
 
@@ -20,7 +34,10 @@ impl TypeAliasTranspiler {
     }
 
     fn get_alias(&self, name: &ByteString) -> Option<&Type> {
-        self.aliases.iter().find(|(alias, _)| alias == name).map(|(_, r#type)| r#type)
+        self.aliases
+            .iter()
+            .find(|(alias, _)| alias == name)
+            .map(|(_, r#type)| r#type)
     }
 
     fn maybe_change_data_type(&self, data_type: &mut Type) {
@@ -29,8 +46,8 @@ impl TypeAliasTranspiler {
                 if self.has_alias(name) {
                     *data_type = self.get_alias(name).unwrap().clone();
                 }
-            },
-            _ => {},
+            }
+            _ => {}
         }
     }
 }
@@ -38,13 +55,31 @@ impl TypeAliasTranspiler {
 impl Transpiler for TypeAliasTranspiler {
     fn transpile_statement(&mut self, statement: &mut Statement) {
         match statement {
-            Statement::TypeAlias { type_keyword, name, r#type, .. } => {
+            Statement::TypeAlias {
+                type_keyword,
+                name,
+                r#type,
+                ..
+            } => {
                 self.aliases.push((name.value.clone(), r#type.clone()));
 
                 // Replace the statement with a noop.
-                *statement = Statement::Comment(Comment { span: Span::default(), format: CommentFormat::SingleLine, content: format!("Type alias `{} = {}` removed", name.value, r#type.to_string()).into() })
-            },
-            Statement::Function(FunctionStatement { parameters, return_type, .. }) => {
+                *statement = Statement::Comment(Comment {
+                    span: Span::default(),
+                    format: CommentFormat::SingleLine,
+                    content: format!(
+                        "Type alias `{} = {}` removed",
+                        name.value,
+                        r#type.to_string()
+                    )
+                    .into(),
+                })
+            }
+            Statement::Function(FunctionStatement {
+                parameters,
+                return_type,
+                ..
+            }) => {
                 for FunctionParameter { data_type, .. } in parameters.parameters.inner.iter_mut() {
                     if let Some(data_type) = data_type {
                         self.maybe_change_data_type(data_type);
@@ -54,14 +89,23 @@ impl Transpiler for TypeAliasTranspiler {
                 if let Some(ReturnType { data_type, .. }) = return_type {
                     self.maybe_change_data_type(data_type);
                 }
-            },
-            _ => return
+            }
+            _ => return,
         }
     }
 
     fn transpile_expression(&mut self, expression: &mut Expression) {
         match expression {
-            Expression::Closure(Closure { parameters, return_type, .. }) | Expression::ArrowFunction(ArrowFunction { parameters, return_type, .. }) => {
+            Expression::Closure(Closure {
+                parameters,
+                return_type,
+                ..
+            })
+            | Expression::ArrowFunction(ArrowFunction {
+                parameters,
+                return_type,
+                ..
+            }) => {
                 for FunctionParameter { data_type, .. } in parameters.parameters.inner.iter_mut() {
                     if let Some(data_type) = data_type {
                         self.maybe_change_data_type(data_type);
@@ -71,8 +115,8 @@ impl Transpiler for TypeAliasTranspiler {
                 if let Some(ReturnType { data_type, .. }) = return_type {
                     self.maybe_change_data_type(data_type);
                 }
-            },
-            _ => {},
+            }
+            _ => {}
         }
     }
 
@@ -84,15 +128,25 @@ impl Transpiler for TypeAliasTranspiler {
                         self.maybe_change_data_type(data_type);
                     }
                 }
-            },
+            }
             ClassMember::ConcreteConstructor(ConcreteConstructor { parameters, .. }) => {
-                for ConstructorParameter { data_type, .. } in parameters.parameters.inner.iter_mut() {
+                for ConstructorParameter { data_type, .. } in parameters.parameters.inner.iter_mut()
+                {
                     if let Some(data_type) = data_type {
                         self.maybe_change_data_type(data_type);
                     }
                 }
-            },
-            ClassMember::AbstractMethod(AbstractMethod { parameters, return_type, .. }) | ClassMember::ConcreteMethod(ConcreteMethod { parameters, return_type, .. }) => {
+            }
+            ClassMember::AbstractMethod(AbstractMethod {
+                parameters,
+                return_type,
+                ..
+            })
+            | ClassMember::ConcreteMethod(ConcreteMethod {
+                parameters,
+                return_type,
+                ..
+            }) => {
                 for FunctionParameter { data_type, .. } in parameters.parameters.inner.iter_mut() {
                     if let Some(data_type) = data_type {
                         self.maybe_change_data_type(data_type);
@@ -102,21 +156,28 @@ impl Transpiler for TypeAliasTranspiler {
                 if let Some(ReturnType { data_type, .. }) = return_type {
                     self.maybe_change_data_type(data_type);
                 }
-            },
-            _ => {},
+            }
+            _ => {}
         }
     }
 
     fn transpile_anonymous_class_member(&mut self, member: &mut AnonymousClassMember) {
         match member {
-            AnonymousClassMember::ConcreteConstructor(ConcreteConstructor { parameters, .. }) => {
-                for ConstructorParameter { data_type, .. } in parameters.parameters.inner.iter_mut() {
+            AnonymousClassMember::ConcreteConstructor(ConcreteConstructor {
+                parameters, ..
+            }) => {
+                for ConstructorParameter { data_type, .. } in parameters.parameters.inner.iter_mut()
+                {
                     if let Some(data_type) = data_type {
                         self.maybe_change_data_type(data_type);
                     }
                 }
-            },
-            AnonymousClassMember::ConcreteMethod(ConcreteMethod { parameters, return_type, .. }) => {
+            }
+            AnonymousClassMember::ConcreteMethod(ConcreteMethod {
+                parameters,
+                return_type,
+                ..
+            }) => {
                 for FunctionParameter { data_type, .. } in parameters.parameters.inner.iter_mut() {
                     if let Some(data_type) = data_type {
                         self.maybe_change_data_type(data_type);
@@ -126,8 +187,8 @@ impl Transpiler for TypeAliasTranspiler {
                 if let Some(ReturnType { data_type, .. }) = return_type {
                     self.maybe_change_data_type(data_type);
                 }
-            },
-            _ => {},
+            }
+            _ => {}
         }
     }
 
@@ -139,15 +200,25 @@ impl Transpiler for TypeAliasTranspiler {
                         self.maybe_change_data_type(data_type);
                     }
                 }
-            },
+            }
             TraitMember::ConcreteConstructor(ConcreteConstructor { parameters, .. }) => {
-                for ConstructorParameter { data_type, .. } in parameters.parameters.inner.iter_mut() {
+                for ConstructorParameter { data_type, .. } in parameters.parameters.inner.iter_mut()
+                {
                     if let Some(data_type) = data_type {
                         self.maybe_change_data_type(data_type);
                     }
                 }
-            },
-            TraitMember::AbstractMethod(AbstractMethod { parameters, return_type, .. }) | TraitMember::ConcreteMethod(ConcreteMethod { parameters, return_type, .. }) => {
+            }
+            TraitMember::AbstractMethod(AbstractMethod {
+                parameters,
+                return_type,
+                ..
+            })
+            | TraitMember::ConcreteMethod(ConcreteMethod {
+                parameters,
+                return_type,
+                ..
+            }) => {
                 for FunctionParameter { data_type, .. } in parameters.parameters.inner.iter_mut() {
                     if let Some(data_type) = data_type {
                         self.maybe_change_data_type(data_type);
@@ -157,8 +228,8 @@ impl Transpiler for TypeAliasTranspiler {
                 if let Some(ReturnType { data_type, .. }) = return_type {
                     self.maybe_change_data_type(data_type);
                 }
-            },
-            _ => {},
+            }
+            _ => {}
         }
     }
 

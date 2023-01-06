@@ -1,4 +1,14 @@
-use pxp_parser::{parser::ast::{Expression, MatchArmBody, DefaultMatchArm, functions::{Closure, FunctionParameterList, ClosureUse, ClosureUseVariable, FunctionBody}, comments::CommentGroup, utils::CommaSeparated, arguments::ArgumentList}, traverser::Visitor, lexer::token::Span};
+use pxp_parser::{
+    lexer::token::Span,
+    parser::ast::{
+        arguments::ArgumentList,
+        comments::CommentGroup,
+        functions::{Closure, ClosureUse, ClosureUseVariable, FunctionBody, FunctionParameterList},
+        utils::CommaSeparated,
+        DefaultMatchArm, Expression, MatchArmBody,
+    },
+    traverser::Visitor,
+};
 
 use crate::visitors::VariableFinderVisitor;
 
@@ -9,7 +19,11 @@ pub struct MultiLineMatchTranspiler;
 impl MultiLineMatchTranspiler {
     fn maybe_transpile_match_arm_body(&self, body: &mut MatchArmBody) {
         match body {
-            MatchArmBody::Block { left_brace, ref statements, right_brace } => {
+            MatchArmBody::Block {
+                left_brace,
+                ref statements,
+                right_brace,
+            } => {
                 let mut variable_finder = VariableFinderVisitor::default();
                 variable_finder.visit_node(body).unwrap();
                 let mut variables = Vec::new();
@@ -25,7 +39,10 @@ impl MultiLineMatchTranspiler {
                     parameters: FunctionParameterList {
                         comments: CommentGroup { comments: vec![] },
                         left_parenthesis: Span::default(),
-                        parameters: CommaSeparated { inner: vec![], commas: vec![] },
+                        parameters: CommaSeparated {
+                            inner: vec![],
+                            commas: vec![],
+                        },
                         right_parenthesis: Span::default(),
                     },
                     uses: if variables.is_empty() {
@@ -35,11 +52,17 @@ impl MultiLineMatchTranspiler {
                             comments: CommentGroup { comments: vec![] },
                             r#use: Span::default(),
                             left_parenthesis: Span::default(),
-                            variables: CommaSeparated { inner: variables.into_iter().map(|v| ClosureUseVariable {
-                                comments: CommentGroup { comments: vec![] },
-                                ampersand: Some(Span::default()),
-                                variable: v,
-                            }).collect(), commas: vec![] },
+                            variables: CommaSeparated {
+                                inner: variables
+                                    .into_iter()
+                                    .map(|v| ClosureUseVariable {
+                                        comments: CommentGroup { comments: vec![] },
+                                        ampersand: Some(Span::default()),
+                                        variable: v,
+                                    })
+                                    .collect(),
+                                commas: vec![],
+                            },
                             right_parenthesis: Span::default(),
                         })
                     },
@@ -58,16 +81,14 @@ impl MultiLineMatchTranspiler {
                         end: Span::default(),
                     }),
                     arguments: ArgumentList {
-                        comments: CommentGroup {
-                            comments: vec![]
-                        },
+                        comments: CommentGroup { comments: vec![] },
                         left_parenthesis: Span::default(),
                         arguments: vec![],
-                        right_parenthesis: Span::default()
-                    }
+                        right_parenthesis: Span::default(),
+                    },
                 })
-            },
-            _ => {},
+            }
+            _ => {}
         }
     }
 }
@@ -75,7 +96,8 @@ impl MultiLineMatchTranspiler {
 impl Transpiler for MultiLineMatchTranspiler {
     fn transpile_expression(&mut self, expression: &mut Expression) {
         match expression {
-            Expression::Match { default, arms, .. } | Expression::ShortMatch { default, arms, .. } => {
+            Expression::Match { default, arms, .. }
+            | Expression::ShortMatch { default, arms, .. } => {
                 if let Some(default) = default {
                     self.maybe_transpile_match_arm_body(&mut default.body);
                 }
@@ -83,7 +105,7 @@ impl Transpiler for MultiLineMatchTranspiler {
                 for arm in arms {
                     self.maybe_transpile_match_arm_body(&mut arm.body);
                 }
-            },
+            }
             _ => return,
         }
     }

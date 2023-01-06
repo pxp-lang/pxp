@@ -1,10 +1,16 @@
-use pxp_parser::parser::ast::{Expression, Statement, classes::{ClassMember, AnonymousClassMember}, traits::TraitMember, interfaces::InterfaceMember, properties::{Property, VariableProperty}};
+use pxp_parser::parser::ast::{
+    classes::{AnonymousClassMember, ClassMember},
+    interfaces::InterfaceMember,
+    properties::{Property, VariableProperty},
+    traits::TraitMember,
+    Expression, Statement,
+};
 
+pub mod multi_line_closures;
+pub mod multi_line_match;
+pub mod range;
 pub mod short_match;
 pub mod type_alias;
-pub mod multi_line_closures;
-pub mod range;
-pub mod multi_line_match;
 
 pub trait Transpiler {
     fn transpile_statement(&mut self, statement: &mut Statement) {}

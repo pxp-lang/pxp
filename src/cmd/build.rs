@@ -7,12 +7,14 @@ use pxp_parser::{
     parse,
     parser::ast::{
         arguments::{Argument, ArgumentList},
-        classes::{AnonymousClass, AnonymousClassBody, AnonymousClassMember, ClassStatement, ClassMember},
-        constant::{ClassishConstant, ConstantStatement, ConstantEntry},
+        classes::{
+            AnonymousClass, AnonymousClassBody, AnonymousClassMember, ClassMember, ClassStatement,
+        },
+        constant::{ClassishConstant, ConstantEntry, ConstantStatement},
         control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock},
         functions::{
             AbstractConstructor, AbstractMethod, ArrowFunction, ArrowFunctionBody, Closure,
-            ConcreteConstructor, ConcreteMethod, FunctionStatement, FunctionBody,
+            ConcreteConstructor, ConcreteMethod, FunctionBody, FunctionStatement,
         },
         interfaces::InterfaceStatement,
         loops::{
@@ -25,13 +27,22 @@ use pxp_parser::{
             LogicalOperation, RangeOperation,
         },
         properties::{Property, PropertyEntry, VariableProperty},
-        traits::{TraitStatement, TraitMember, TraitUsage},
+        traits::{TraitMember, TraitStatement, TraitUsage},
         try_block::{CatchBlock, FinallyBlock, TryStatement},
-        ArrayItem, Case, Expression, MatchArm, MatchArmBody, Statement, StaticVar, StringPart, StaticStatement, SwitchStatement, EchoStatement, ExpressionStatement, ReturnStatement, BlockStatement,
+        ArrayItem, BlockStatement, Case, EchoStatement, Expression, ExpressionStatement, MatchArm,
+        MatchArmBody, ReturnStatement, Statement, StaticStatement, StaticVar, StringPart,
+        SwitchStatement,
     },
 };
 
-use crate::{transpile::{short_match::ShortMatchTranspiler, Transpiler, type_alias::TypeAliasTranspiler, multi_line_closures::MultiLineClosuresTranspiler, range::RangeTranspiler, multi_line_match::MultiLineMatchTranspiler}, printer::print};
+use crate::{
+    printer::print,
+    transpile::{
+        multi_line_closures::MultiLineClosuresTranspiler,
+        multi_line_match::MultiLineMatchTranspiler, range::RangeTranspiler,
+        short_match::ShortMatchTranspiler, type_alias::TypeAliasTranspiler, Transpiler,
+    },
+};
 
 #[derive(Debug)]
 pub struct BuildOptions {
@@ -1354,7 +1365,7 @@ fn transpile_variable_property(
     property: &mut VariableProperty,
 ) {
     transpiler.transpile_variable_property(property);
-    
+
     for entry in property.entries.iter_mut() {
         match entry {
             PropertyEntry::Initialized {

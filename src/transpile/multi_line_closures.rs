@@ -1,4 +1,17 @@
-use pxp_parser::{parser::ast::{Expression, functions::{ArrowFunction, ArrowFunctionBody, FunctionParameterList, Closure, FunctionBody, ClosureUse, ClosureUseVariable}, variables::SimpleVariable, comments::CommentGroup, utils::CommaSeparated}, traverser::Visitor, lexer::token::Span};
+use pxp_parser::{
+    lexer::token::Span,
+    parser::ast::{
+        comments::CommentGroup,
+        functions::{
+            ArrowFunction, ArrowFunctionBody, Closure, ClosureUse, ClosureUseVariable,
+            FunctionBody, FunctionParameterList,
+        },
+        utils::CommaSeparated,
+        variables::SimpleVariable,
+        Expression,
+    },
+    traverser::Visitor,
+};
 
 use crate::visitors::VariableFinderVisitor;
 
@@ -11,15 +24,32 @@ impl MultiLineClosuresTranspiler {
         Self
     }
 
-    fn variable_is_parameter(&self, variable: &SimpleVariable, parameters: &FunctionParameterList) -> bool {
-        parameters.parameters.inner.iter().any(|parameter| parameter.name.name == variable.name)
+    fn variable_is_parameter(
+        &self,
+        variable: &SimpleVariable,
+        parameters: &FunctionParameterList,
+    ) -> bool {
+        parameters
+            .parameters
+            .inner
+            .iter()
+            .any(|parameter| parameter.name.name == variable.name)
     }
 }
 
 impl Transpiler for MultiLineClosuresTranspiler {
     fn transpile_expression(&mut self, expression: &mut Expression) {
         match expression {
-            Expression::ArrowFunction(ArrowFunction { comments, r#static, ampersand, r#fn, attributes, parameters, return_type, body }) => match body {
+            Expression::ArrowFunction(ArrowFunction {
+                comments,
+                r#static,
+                ampersand,
+                r#fn,
+                attributes,
+                parameters,
+                return_type,
+                body,
+            }) => match body {
                 ArrowFunctionBody::Block { ref statements, .. } => {
                     let mut variable_finder = VariableFinderVisitor::default();
                     variable_finder.visit_node(body).unwrap();
@@ -44,7 +74,10 @@ impl Transpiler for MultiLineClosuresTranspiler {
                             comments: CommentGroup { comments: vec![] },
                             r#use: Span::default(),
                             left_parenthesis: Span::default(),
-                            variables: CommaSeparated { inner: variables, commas: vec![] },
+                            variables: CommaSeparated {
+                                inner: variables,
+                                commas: vec![],
+                            },
                             right_parenthesis: Span::default(),
                         })
                     };
@@ -65,10 +98,10 @@ impl Transpiler for MultiLineClosuresTranspiler {
                             right_brace: Span::default(),
                         },
                     })
-                },
+                }
                 _ => return,
             },
-            _ => return
+            _ => return,
         }
     }
 }
