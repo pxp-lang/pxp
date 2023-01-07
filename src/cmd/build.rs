@@ -1,6 +1,6 @@
 use std::{
     fs::{read, read_to_string},
-    path::PathBuf,
+    path::PathBuf, process::exit,
 };
 
 use pxp_parser::{
@@ -41,16 +41,29 @@ use crate::{
         multi_line_closures::MultiLineClosuresTranspiler,
         multi_line_match::MultiLineMatchTranspiler, range::RangeTranspiler,
         short_match::ShortMatchTranspiler, type_alias::TypeAliasTranspiler, Transpiler,
-    },
+    }, config::CONFIG,
 };
 
-#[derive(Debug)]
+use super::io::error;
+
+#[derive(Debug, Clone)]
 pub struct BuildOptions {
     pub stdout: bool,
 }
 
 pub fn build(options: BuildOptions) {
-    todo!()
+    let paths = CONFIG.build.paths.iter().map(String::as_str).collect::<Vec<&str>>();
+    let files = match discoverer::discover(&["pxp"], paths.as_slice()) {
+        Ok(files) => files,
+        Err(e) => {
+            error(&format!("Failed to discover files: {}", e));
+            exit(1);
+        }
+    };
+
+    for file in files {
+        build_single_file(file, options.clone());
+    }
 }
 
 pub fn build_single_file(path: PathBuf, options: BuildOptions) {
@@ -82,6 +95,14 @@ pub fn build_single_file(path: PathBuf, options: BuildOptions) {
 
     if options.stdout {
         print!("{}", output);
+    } else {
+        let output_path = path.with_extension("php");
+        match std::fs::write(output_path, output) {
+            Ok(_) => {}
+            Err(e) => {
+                error(&format!("Failed to write file: {}", e));
+            }
+        }
     }
 }
 
