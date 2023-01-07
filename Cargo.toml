@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.0.32", features = ["derive", "color"] }
 clap-verbosity-flag = "2.0.0"
+colored = "2.0.0"
 discoverer = "0.1.0"
 env_logger = { version = "0.10.0", features = ["color"] }
 lazy_static = "1.4.0"

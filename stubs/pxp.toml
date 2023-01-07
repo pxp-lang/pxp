@@ -1,0 +1,10 @@
+[build]
+paths = [
+    "./"
+]
+
+[lint]
+variables = "camel"
+functions = "snake"
+methods = "camel"
+identifiers = "pascal"

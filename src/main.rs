@@ -29,6 +29,12 @@ enum Command {
         #[clap(short, long, help = "Print generated PHP code to stdout.")]
         stdout: bool,
     },
+
+    #[clap(name = "init")]
+    Init {
+        #[clap(short, long, help = "Overwrite an existing pxp.toml file.")]
+        force: bool,
+    },
 }
 
 fn main() {
@@ -47,6 +53,9 @@ fn main() {
             } else {
                 cmd::build(options);
             }
-        }
+        },
+        Command::Init { force } => {
+            cmd::init(force);
+        },
     };
 }
