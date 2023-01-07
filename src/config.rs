@@ -17,7 +17,7 @@ impl Config {
     pub fn read() -> Self {
         let path = PathBuf::from("./pxp.toml");
         // FIXME: don't panic, output nice error instead.
-        if ! path.exists() {
+        if !path.exists() {
             panic!("pxp.toml not found");
         }
         let contents = std::fs::read_to_string(path).unwrap();
@@ -27,7 +27,7 @@ impl Config {
 
 #[derive(Debug, Deserialize)]
 pub struct Build {
-    pub paths: Vec<String>
+    pub paths: Vec<String>,
 }
 
 #[derive(Debug, Deserialize)]

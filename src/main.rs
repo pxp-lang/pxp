@@ -6,10 +6,10 @@ use cmd::BuildOptions;
 
 mod cmd;
 mod config;
+mod lint;
 mod printer;
 mod transpile;
 mod visitors;
-mod lint;
 
 #[derive(Debug, Parser)]
 struct Arguments {
@@ -38,9 +38,7 @@ enum Command {
     },
 
     #[clap(name = "lint")]
-    Lint {
-
-    }
+    Lint {},
 }
 
 fn main() {
@@ -59,11 +57,11 @@ fn main() {
             } else {
                 cmd::build(options);
             }
-        },
+        }
         Command::Init { force } => {
             cmd::init(force);
-        },
-        Command::Lint {  } => {
+        }
+        Command::Lint {} => {
             cmd::lint();
         }
     };
