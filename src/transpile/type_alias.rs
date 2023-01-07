@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use pxp_parser::{
     lexer::{byte_string::ByteString, token::Span},
     parser::ast::{
@@ -41,13 +39,10 @@ impl TypeAliasTranspiler {
     }
 
     fn maybe_change_data_type(&self, data_type: &mut Type) {
-        match data_type {
-            Type::Named(_, name) => {
-                if self.has_alias(name) {
-                    *data_type = self.get_alias(name).unwrap().clone();
-                }
+        if let Type::Named(_, name) = data_type {
+            if self.has_alias(name) {
+                *data_type = self.get_alias(name).unwrap().clone();
             }
-            _ => {}
         }
     }
 }
@@ -56,7 +51,6 @@ impl Transpiler for TypeAliasTranspiler {
     fn transpile_statement(&mut self, statement: &mut Statement) {
         match statement {
             Statement::TypeAlias {
-                type_keyword,
                 name,
                 r#type,
                 ..
@@ -70,7 +64,7 @@ impl Transpiler for TypeAliasTranspiler {
                     content: format!(
                         "Type alias `{} = {}` removed",
                         name.value,
-                        r#type.to_string()
+                        r#type
                     )
                     .into(),
                 })
@@ -90,7 +84,7 @@ impl Transpiler for TypeAliasTranspiler {
                     self.maybe_change_data_type(data_type);
                 }
             }
-            _ => return,
+            _ => {},
         }
     }
 

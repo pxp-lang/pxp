@@ -12,6 +12,7 @@ pub mod range;
 pub mod short_match;
 pub mod type_alias;
 
+#[allow(unused_variables)]
 pub trait Transpiler {
     fn transpile_statement(&mut self, statement: &mut Statement) {}
     fn transpile_expression(&mut self, expression: &mut Expression) {}

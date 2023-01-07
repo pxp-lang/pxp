@@ -11,7 +11,7 @@ pub struct VariableFinderVisitor {
 
 impl VariableFinderVisitor {
     pub fn variables(&self) -> &[SimpleVariable] {
-        &self.variables.as_slice()
+        self.variables.as_slice()
     }
 }
 

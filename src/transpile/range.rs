@@ -19,8 +19,8 @@ impl Transpiler for RangeTranspiler {
             *expression = match operation {
                 RangeOperation::Exclusive {
                     lower_bound,
-                    double_dot,
                     upper_bound,
+                    ..
                 } => Expression::New {
                     new: Span::default(),
                     target: Box::new(Expression::Identifier(Identifier::SimpleIdentifier(
@@ -49,8 +49,8 @@ impl Transpiler for RangeTranspiler {
                 },
                 RangeOperation::Inclusive {
                     lower_bound,
-                    double_dot_equals,
                     upper_bound,
+                    ..
                 } => Expression::New {
                     new: Span::default(),
                     target: Box::new(Expression::Identifier(Identifier::SimpleIdentifier(
@@ -79,7 +79,7 @@ impl Transpiler for RangeTranspiler {
                 },
                 RangeOperation::Endless {
                     lower_bound,
-                    double_dot,
+                    ..
                 } => Expression::New {
                     new: Span::default(),
                     target: Box::new(Expression::Identifier(Identifier::SimpleIdentifier(
@@ -100,8 +100,6 @@ impl Transpiler for RangeTranspiler {
                     }),
                 },
             };
-        } else {
-            return;
         }
     }
 }

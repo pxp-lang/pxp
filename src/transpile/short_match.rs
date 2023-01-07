@@ -6,24 +6,17 @@ pub struct ShortMatchTranspiler;
 
 impl Transpiler for ShortMatchTranspiler {
     fn transpile_expression(&mut self, expression: &mut Expression) {
-        match expression {
-            Expression::ShortMatch {
-                keyword,
-                default,
-                arms,
-            } => {
-                *expression = Expression::Match {
-                    keyword: keyword.clone(),
-                    left_parenthesis: Span::default(),
-                    condition: Box::new(Expression::Bool { value: true }),
-                    right_parenthesis: Span::default(),
-                    default: default.clone(),
-                    arms: arms.clone(),
-                    left_brace: Span::default(),
-                    right_brace: Span::default(),
-                };
-            }
-            _ => return,
-        }
+        if let Expression::ShortMatch {keyword, default,arms,} = expression {
+            *expression = Expression::Match {
+                keyword: *keyword,
+                left_parenthesis: Span::default(),
+                condition: Box::new(Expression::Bool { value: true }),
+                right_parenthesis: Span::default(),
+                default: default.clone(),
+                arms: arms.clone(),
+                left_brace: Span::default(),
+                right_brace: Span::default(),
+            };
+        }   
     }
 }

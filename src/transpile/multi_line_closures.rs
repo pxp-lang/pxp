@@ -44,11 +44,11 @@ impl Transpiler for MultiLineClosuresTranspiler {
                 comments,
                 r#static,
                 ampersand,
-                r#fn,
                 attributes,
                 parameters,
                 return_type,
                 body,
+                ..
             }) => match body {
                 ArrowFunctionBody::Block { ref statements, .. } => {
                     let mut variable_finder = VariableFinderVisitor::default();

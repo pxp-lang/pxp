@@ -5,7 +5,7 @@ use pxp_parser::{
         comments::CommentGroup,
         functions::{Closure, ClosureUse, ClosureUseVariable, FunctionBody, FunctionParameterList},
         utils::CommaSeparated,
-        DefaultMatchArm, Expression, MatchArmBody,
+        Expression, MatchArmBody,
     },
     traverser::Visitor,
 };
@@ -20,9 +20,8 @@ impl MultiLineMatchTranspiler {
     fn maybe_transpile_match_arm_body(&self, body: &mut MatchArmBody) {
         match body {
             MatchArmBody::Block {
-                left_brace,
                 ref statements,
-                right_brace,
+                ..
             } => {
                 let mut variable_finder = VariableFinderVisitor::default();
                 variable_finder.visit_node(body).unwrap();
@@ -106,7 +105,7 @@ impl Transpiler for MultiLineMatchTranspiler {
                     self.maybe_transpile_match_arm_body(&mut arm.body);
                 }
             }
-            _ => return,
+            _ => {},
         }
     }
 }
