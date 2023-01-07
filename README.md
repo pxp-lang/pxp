@@ -14,7 +14,7 @@ The list below is a brief overview of what has been done and still needs to be d
 * [x] Basic command-line interface for `pxp` binary.
 * [x] Transpiler trait.
 * [x] AST traverser (needs improvement).
-* [ ] Transpilers for initially supported features.
+* [x] Transpilers for initially supported features.
 * [ ] AST printer (formatting doesn't matter, for now at least).
 * [ ] PHPStan plugin (and other appropriate analysis tools).
 
