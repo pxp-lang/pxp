@@ -9,6 +9,7 @@ mod config;
 mod printer;
 mod transpile;
 mod visitors;
+mod lint;
 
 #[derive(Debug, Parser)]
 struct Arguments {
@@ -35,6 +36,11 @@ enum Command {
         #[clap(short, long, help = "Overwrite an existing pxp.toml file.")]
         force: bool,
     },
+
+    #[clap(name = "lint")]
+    Lint {
+
+    }
 }
 
 fn main() {
@@ -57,5 +63,8 @@ fn main() {
         Command::Init { force } => {
             cmd::init(force);
         },
+        Command::Lint {  } => {
+            cmd::lint();
+        }
     };
 }
