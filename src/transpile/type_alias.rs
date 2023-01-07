@@ -50,23 +50,14 @@ impl TypeAliasTranspiler {
 impl Transpiler for TypeAliasTranspiler {
     fn transpile_statement(&mut self, statement: &mut Statement) {
         match statement {
-            Statement::TypeAlias {
-                name,
-                r#type,
-                ..
-            } => {
+            Statement::TypeAlias { name, r#type, .. } => {
                 self.aliases.push((name.value.clone(), r#type.clone()));
 
                 // Replace the statement with a noop.
                 *statement = Statement::Comment(Comment {
                     span: Span::default(),
                     format: CommentFormat::SingleLine,
-                    content: format!(
-                        "Type alias `{} = {}` removed",
-                        name.value,
-                        r#type
-                    )
-                    .into(),
+                    content: format!("Type alias `{} = {}` removed", name.value, r#type).into(),
                 })
             }
             Statement::Function(FunctionStatement {
@@ -84,7 +75,7 @@ impl Transpiler for TypeAliasTranspiler {
                     self.maybe_change_data_type(data_type);
                 }
             }
-            _ => {},
+            _ => {}
         }
     }
 

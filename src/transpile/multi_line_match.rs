@@ -19,10 +19,7 @@ pub struct MultiLineMatchTranspiler;
 impl MultiLineMatchTranspiler {
     fn maybe_transpile_match_arm_body(&self, body: &mut MatchArmBody) {
         match body {
-            MatchArmBody::Block {
-                ref statements,
-                ..
-            } => {
+            MatchArmBody::Block { ref statements, .. } => {
                 let mut variable_finder = VariableFinderVisitor::default();
                 variable_finder.visit_node(body).unwrap();
                 let mut variables = Vec::new();
@@ -105,7 +102,7 @@ impl Transpiler for MultiLineMatchTranspiler {
                     self.maybe_transpile_match_arm_body(&mut arm.body);
                 }
             }
-            _ => {},
+            _ => {}
         }
     }
 }

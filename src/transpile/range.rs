@@ -77,10 +77,7 @@ impl Transpiler for RangeTranspiler {
                         right_parenthesis: Span::default(),
                     }),
                 },
-                RangeOperation::Endless {
-                    lower_bound,
-                    ..
-                } => Expression::New {
+                RangeOperation::Endless { lower_bound, .. } => Expression::New {
                     new: Span::default(),
                     target: Box::new(Expression::Identifier(Identifier::SimpleIdentifier(
                         SimpleIdentifier {

@@ -7,8 +7,8 @@ use pxp_parser::parser::ast::{
     enums::{UnitEnumBody, UnitEnumCase, UnitEnumMember, UnitEnumStatement},
     functions::{
         AbstractConstructor, AbstractMethod, Closure, ConcreteConstructor, ConcreteMethod,
-        ConstructorParameter, ConstructorParameterList, FunctionParameterList,
-        FunctionStatement, ReturnType,
+        ConstructorParameter, ConstructorParameterList, FunctionParameterList, FunctionStatement,
+        ReturnType,
     },
     goto::{GotoStatement, LabelStatement},
     identifiers::{Identifier, SimpleIdentifier},
