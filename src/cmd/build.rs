@@ -41,7 +41,7 @@ use crate::{
         multi_line_closures::MultiLineClosuresTranspiler,
         multi_line_match::MultiLineMatchTranspiler, range::RangeTranspiler,
         short_match::ShortMatchTranspiler, type_alias::TypeAliasTranspiler, Transpiler,
-    }, config::CONFIG,
+    }, config::Config
 };
 
 use super::io::error;
@@ -49,10 +49,12 @@ use super::io::error;
 #[derive(Debug, Clone)]
 pub struct BuildOptions {
     pub stdout: bool,
+    pub dry: bool,
 }
 
 pub fn build(options: BuildOptions) {
-    let paths = CONFIG.build.paths.iter().map(String::as_str).collect::<Vec<&str>>();
+    let config = Config::read();
+    let paths = config.build.paths.iter().map(String::as_str).collect::<Vec<&str>>();
     let files = match discoverer::discover(&["pxp"], paths.as_slice()) {
         Ok(files) => files,
         Err(e) => {
@@ -90,6 +92,10 @@ pub fn build_single_file(path: PathBuf, options: BuildOptions) {
     };
 
     transpile_program(&mut program);
+
+    if options.dry {
+        return;
+    }
 
     let output = print(&program);
 

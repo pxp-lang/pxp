@@ -2,13 +2,3 @@
 paths = [
     "./"
 ]
-
-[lint]
-variables = "camel"
-functions = "snake"
-methods = "camel"
-identifiers = "pascal"
-property-types = true
-parameter-types = true
-return-types = true
-include-php = true

@@ -6,7 +6,6 @@ use cmd::BuildOptions;
 
 mod cmd;
 mod config;
-mod lint;
 mod printer;
 mod transpile;
 mod visitors;
@@ -29,6 +28,9 @@ enum Command {
 
         #[clap(short, long, help = "Print generated PHP code to stdout.")]
         stdout: bool,
+
+        #[clap(short, long, help = "Dry run, don't write any files.")]
+        dry: bool,
     },
 
     #[clap(name = "init")]
@@ -36,9 +38,6 @@ enum Command {
         #[clap(short, long, help = "Overwrite an existing pxp.toml file.")]
         force: bool,
     },
-
-    #[clap(name = "lint")]
-    Lint {},
 }
 
 fn main() {
@@ -49,20 +48,17 @@ fn main() {
         .init();
 
     match arguments.command {
-        Command::Build { file, stdout } => {
-            let options = BuildOptions { stdout };
+        Command::Build { file, stdout, dry } => {
+            let options = BuildOptions { stdout, dry };
 
             if let Some(file) = file {
                 cmd::build_single_file(file, options);
             } else {
                 cmd::build(options);
             }
-        }
+        },
         Command::Init { force } => {
             cmd::init(force);
-        }
-        Command::Lint {} => {
-            cmd::lint();
         }
     };
 }
