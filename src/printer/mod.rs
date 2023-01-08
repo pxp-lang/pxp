@@ -29,7 +29,7 @@ use pxp_parser::parser::ast::{
         LogicalOperation, RangeOperation,
     },
     properties::{Property, PropertyEntry, VariableProperty},
-    traits::{TraitUsage, TraitUsageAdaptation},
+    traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody, TraitMember},
     utils::CommaSeparated,
     variables::{SimpleVariable, Variable},
     ArrayItem, BlockStatement, DefaultMatchArm, EchoStatement, Ending, Expression,
@@ -327,7 +327,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         Statement::Constant(constant) => print_constant(state, constant),
         Statement::Function(function) => print_function(state, function),
         Statement::Class(class) => print_class(state, class),
-        Statement::Trait(_) => todo!(),
+        Statement::Trait(trait_) => print_trait(state, trait_),
         Statement::Interface(_) => todo!(),
         Statement::If(_) => todo!(),
         Statement::Switch(SwitchStatement {
@@ -449,6 +449,40 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
     }
 
     state.new_line();
+}
+
+fn print_trait(state: &mut PrinterState, r#trait: &TraitStatement) {
+    state.write("trait ");
+    print_simple_identifier(state, &r#trait.name);
+    state.write(" {");
+    state.indent();
+    state.new_line();
+    print_trait_body(state, &r#trait.body);
+    state.dedent();
+    state.new_line();
+    state.write("}");
+}
+
+fn print_trait_body(state: &mut PrinterState, body: &TraitBody) {
+    for (i, member) in body.members.iter().enumerate() {
+        if i > 0 {
+            state.new_line();
+        }
+        print_trait_member(state, member);
+    }
+}
+
+fn print_trait_member(state: &mut PrinterState, member: &TraitMember) {
+    match member {
+        TraitMember::Constant(constant) => print_classish_constant(state, constant),
+        TraitMember::TraitUsage(usage) => print_trait_usage(state, usage),
+        TraitMember::Property(property) => print_property(state, property),
+        TraitMember::VariableProperty(property) => print_variable_property(state, property),
+        TraitMember::AbstractMethod(method) => print_abstract_method(state, method),
+        TraitMember::AbstractConstructor(method) => print_abstract_constructor(state, method),
+        TraitMember::ConcreteMethod(method) => print_concrete_method(state, method),
+        TraitMember::ConcreteConstructor(method) => print_concrete_constructor(state, method),
+    }
 }
 
 fn print_unit_enum(state: &mut PrinterState, unit: &UnitEnumStatement) {
