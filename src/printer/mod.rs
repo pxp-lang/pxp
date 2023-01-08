@@ -35,7 +35,7 @@ use pxp_parser::parser::ast::{
     ArrayItem, BlockStatement, DefaultMatchArm, EchoStatement, Ending, Expression,
     ExpressionStatement, GlobalStatement, GroupUseStatement, HaltCompiler, ListEntry, MatchArm,
     MatchArmBody, ReturnStatement, Statement, StaticStatement, StaticVar, SwitchStatement,
-    UseStatement,
+    UseStatement, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody, InterfaceMember},
 };
 
 struct PrinterState {
@@ -328,7 +328,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         Statement::Function(function) => print_function(state, function),
         Statement::Class(class) => print_class(state, class),
         Statement::Trait(trait_) => print_trait(state, trait_),
-        Statement::Interface(_) => todo!(),
+        Statement::Interface(interface) => print_interface(state, interface),
         Statement::If(_) => todo!(),
         Statement::Switch(SwitchStatement {
             switch,
@@ -449,6 +449,44 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
     }
 
     state.new_line();
+}
+
+fn print_interface(state: &mut PrinterState, interface: &InterfaceStatement) {
+    state.write("interface ");
+    print_simple_identifier(state, &interface.name);
+    if let Some(InterfaceExtends { extends, parents }) = &interface.extends {
+        state.write(" extends ");
+        for (i, parent) in parents.inner.iter().enumerate() {
+            if i > 0 {
+                state.write(", ");
+            }
+            print_simple_identifier(state, parent);
+        }
+    }
+    state.write(" {");
+    state.indent();
+    state.new_line();
+    print_interface_body(state, &interface.body);
+    state.dedent();
+    state.new_line();
+    state.write("}");
+}
+
+fn print_interface_body(state: &mut PrinterState, body: &InterfaceBody) {
+    for (i, member) in body.members.iter().enumerate() {
+        if i > 0 {
+            state.new_line();
+        }
+        print_interface_member(state, member);
+    }
+}
+
+fn print_interface_member(state: &mut PrinterState, member: &InterfaceMember) {
+    match member {
+        InterfaceMember::Constant(constant) => print_classish_constant(state, constant),
+        InterfaceMember::Constructor(method) => print_abstract_constructor(state, method),
+        InterfaceMember::Method(method) => print_abstract_method(state, method),
+    }
 }
 
 fn print_trait(state: &mut PrinterState, r#trait: &TraitStatement) {
