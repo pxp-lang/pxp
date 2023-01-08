@@ -35,7 +35,7 @@ use pxp_parser::parser::ast::{
     ArrayItem, BlockStatement, DefaultMatchArm, EchoStatement, Ending, Expression,
     ExpressionStatement, GlobalStatement, GroupUseStatement, HaltCompiler, ListEntry, MatchArm,
     MatchArmBody, ReturnStatement, Statement, StaticStatement, StaticVar, SwitchStatement,
-    UseStatement, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody, InterfaceMember},
+    UseStatement, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody, InterfaceMember}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElse},
 };
 
 struct PrinterState {
@@ -329,7 +329,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         Statement::Class(class) => print_class(state, class),
         Statement::Trait(trait_) => print_trait(state, trait_),
         Statement::Interface(interface) => print_interface(state, interface),
-        Statement::If(_) => todo!(),
+        Statement::If(statement) => print_if(state, statement),
         Statement::Switch(SwitchStatement {
             switch,
             left_parenthesis,
@@ -449,6 +449,41 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
     }
 
     state.new_line();
+}
+
+fn print_if(state: &mut PrinterState, statement: &IfStatement) {
+    state.write("if (");
+    print_expression(state, &statement.condition);
+    state.write(")");
+    print_if_statement_body(state, &statement.body);
+}
+
+fn print_if_statement_body(state: &mut PrinterState, body: &IfStatementBody) {
+    match body {
+        IfStatementBody::Statement { statement, elseifs, r#else } => {
+            state.write(" ");
+            print_statement(state, statement);
+            for elseif in elseifs {
+                state.write(" ");
+                print_elseif(state, elseif);
+            }
+            if let Some(r#else) = r#else {
+                state.write(" ");
+                print_else(state, r#else);
+            }
+        },
+        IfStatementBody::Block { colon, statements, elseifs, r#else, endif, ending } => {
+            todo!()
+        },
+    }
+}
+
+fn print_else(state: &mut PrinterState, r#else: &IfStatementElse) {
+    todo!()
+}
+
+fn print_elseif(state: &mut PrinterState, elseif: &IfStatementElseIf) {
+    todo!()
 }
 
 fn print_interface(state: &mut PrinterState, interface: &InterfaceStatement) {
