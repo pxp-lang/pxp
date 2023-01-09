@@ -11,6 +11,7 @@ mod transpile;
 mod visitors;
 
 #[derive(Debug, Parser)]
+#[command(version, about = "A superset of PHP with extended syntax and runtime capabilities.", long_about = None)]
 struct Arguments {
     #[clap(subcommand)]
     command: Command,

@@ -1,6 +1,9 @@
 [package]
 name = "pxp"
-version = "0.1.0"
+authors = [
+    "Ryan Chandler <support@ryangjchandler.co.uk>"
+]
+version = "0.0.0-b1"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
