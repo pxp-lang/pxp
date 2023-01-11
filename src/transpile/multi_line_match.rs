@@ -20,10 +20,9 @@ impl MultiLineMatchTranspiler {
     fn maybe_transpile_match_arm_body(&self, body: &mut MatchArmBody) {
         match body {
             MatchArmBody::Block { ref statements, .. } => {
-                let mut variable_finder = VariableFinderVisitor::default();
-                variable_finder.visit_node(body).unwrap();
+                let found_variables = VariableFinderVisitor::find(body, false);
                 let mut variables = Vec::new();
-                for variable in variable_finder.variables() {
+                for variable in found_variables.iter() {
                     variables.push(variable.clone());
                 }
                 let closure = Closure {

@@ -57,7 +57,7 @@ fn main() {
             } else {
                 cmd::build(options);
             }
-        },
+        }
         Command::Init { force } => {
             cmd::init(force);
         }

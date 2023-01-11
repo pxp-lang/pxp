@@ -51,11 +51,9 @@ impl Transpiler for MultiLineClosuresTranspiler {
                 ..
             }) => match body {
                 ArrowFunctionBody::Block { ref statements, .. } => {
-                    let mut variable_finder = VariableFinderVisitor::default();
-                    variable_finder.visit_node(body).unwrap();
-
+                    let found_variables = VariableFinderVisitor::find(body, false);
                     let mut variables = Vec::new();
-                    for variable in variable_finder.variables() {
+                    for variable in found_variables.iter() {
                         if self.variable_is_parameter(variable, parameters) {
                             continue;
                         }

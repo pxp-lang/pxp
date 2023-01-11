@@ -3,6 +3,7 @@ use pxp_parser::parser::ast::{
     classes::{ClassExtends, ClassImplements, ClassMember, ClassStatement},
     comments::{Comment, CommentFormat},
     constant::{ClassishConstant, ConstantEntry, ConstantStatement},
+    control_flow::{IfStatement, IfStatementBody, IfStatementElse, IfStatementElseIf},
     data_type::Type,
     enums::{UnitEnumBody, UnitEnumCase, UnitEnumMember, UnitEnumStatement},
     functions::{
@@ -12,6 +13,7 @@ use pxp_parser::parser::ast::{
     },
     goto::{GotoStatement, LabelStatement},
     identifiers::{Identifier, SimpleIdentifier},
+    interfaces::{InterfaceBody, InterfaceExtends, InterfaceMember, InterfaceStatement},
     literals::{Literal, LiteralInteger, LiteralString},
     loops::{
         BreakStatement, ContinueStatement, DoWhileStatement, ForStatement, ForStatementBody,
@@ -29,13 +31,13 @@ use pxp_parser::parser::ast::{
         LogicalOperation, RangeOperation,
     },
     properties::{Property, PropertyEntry, VariableProperty},
-    traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody, TraitMember},
+    traits::{TraitBody, TraitMember, TraitStatement, TraitUsage, TraitUsageAdaptation},
     utils::CommaSeparated,
     variables::{SimpleVariable, Variable},
     ArrayItem, BlockStatement, DefaultMatchArm, EchoStatement, Ending, Expression,
     ExpressionStatement, GlobalStatement, GroupUseStatement, HaltCompiler, ListEntry, MatchArm,
     MatchArmBody, ReturnStatement, Statement, StaticStatement, StaticVar, SwitchStatement,
-    UseStatement, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody, InterfaceMember}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElse},
+    UseStatement,
 };
 
 struct PrinterState {
@@ -460,7 +462,11 @@ fn print_if(state: &mut PrinterState, statement: &IfStatement) {
 
 fn print_if_statement_body(state: &mut PrinterState, body: &IfStatementBody) {
     match body {
-        IfStatementBody::Statement { statement, elseifs, r#else } => {
+        IfStatementBody::Statement {
+            statement,
+            elseifs,
+            r#else,
+        } => {
             state.write(" ");
             print_statement(state, statement);
             for elseif in elseifs {
@@ -471,10 +477,17 @@ fn print_if_statement_body(state: &mut PrinterState, body: &IfStatementBody) {
                 state.write(" ");
                 print_else(state, r#else);
             }
-        },
-        IfStatementBody::Block { colon, statements, elseifs, r#else, endif, ending } => {
+        }
+        IfStatementBody::Block {
+            colon,
+            statements,
+            elseifs,
+            r#else,
+            endif,
+            ending,
+        } => {
             todo!()
-        },
+        }
     }
 }
 

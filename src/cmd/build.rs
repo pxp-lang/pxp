@@ -1,6 +1,7 @@
 use std::{
     fs::{read, read_to_string},
-    path::PathBuf, process::exit,
+    path::PathBuf,
+    process::exit,
 };
 
 use pxp_parser::{
@@ -36,12 +37,13 @@ use pxp_parser::{
 };
 
 use crate::{
+    config::Config,
     printer::print,
     transpile::{
         multi_line_closures::MultiLineClosuresTranspiler,
         multi_line_match::MultiLineMatchTranspiler, range::RangeTranspiler,
         short_match::ShortMatchTranspiler, type_alias::TypeAliasTranspiler, Transpiler,
-    }, config::Config
+    },
 };
 
 use super::io::error;
@@ -54,7 +56,12 @@ pub struct BuildOptions {
 
 pub fn build(options: BuildOptions) {
     let config = Config::read();
-    let paths = config.build.paths.iter().map(String::as_str).collect::<Vec<&str>>();
+    let paths = config
+        .build
+        .paths
+        .iter()
+        .map(String::as_str)
+        .collect::<Vec<&str>>();
     let files = match discoverer::discover(&["pxp"], paths.as_slice()) {
         Ok(files) => files,
         Err(e) => {

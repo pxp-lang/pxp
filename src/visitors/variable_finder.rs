@@ -6,24 +6,31 @@ use pxp_parser::{
 
 #[derive(Default, Debug)]
 pub struct VariableFinderVisitor {
-    pub variables: Vec<SimpleVariable>,
+    variables: Vec<SimpleVariable>,
+    include_this: bool,
 }
 
 impl VariableFinderVisitor {
-    pub fn variables(&self) -> &[SimpleVariable] {
-        self.variables.as_slice()
+    pub fn new(include_this: bool) -> Self {
+        Self {
+            variables: Vec::new(),
+            include_this,
+        }
+    }
+
+    pub fn find(node: &dyn Node, include_this: bool) -> Vec<SimpleVariable> {
+        let mut finder = Self::new(include_this);
+        finder.visit_node(node).unwrap();
+        finder.variables.clone()
     }
 }
 
-#[derive(Debug)]
-pub enum VariableFinderVisitorError {}
-
-impl Visitor<VariableFinderVisitorError> for VariableFinderVisitor {
-    fn visit(&mut self, node: &dyn Node) -> Result<(), VariableFinderVisitorError> {
+impl Visitor<()> for VariableFinderVisitor {
+    fn visit(&mut self, node: &dyn Node) -> Result<(), ()> {
         if let Some(variable) = downcast::<Variable>(node) {
             match variable {
                 Variable::SimpleVariable(variable) => match variable.name.as_slice() {
-                    b"$this" => {}
+                    b"$this" if !self.include_this => {}
                     _ => self.variables.push(variable.clone()),
                 },
                 Variable::VariableVariable(_) => {}
