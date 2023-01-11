@@ -37,8 +37,12 @@ final class EndlessRange implements Range
         throw new InvalidRangeOperationException("Cannot call `entries()` on an endless range.");
     }
 
-    public function includes(int|float $needle): bool
+    public function includes(int|float|string $needle): bool
     {
+        if (is_string($needle)) {
+            throw new InvalidRangeOperationException('Cannot call `includes()` with `string` on an endless range.');
+        }
+
         return $needle >= $this->lowerBound;
     }
 
