@@ -1,1 +1,2 @@
-mod printer;
+pub mod printer;
+pub mod visitors;
