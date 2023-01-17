@@ -171,9 +171,17 @@ impl Rule for ValidFunctionCallRule {
 
         match target {
             Expression::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier { value, span })) => {
-                // `Scope::definition(name: ByteString)` will search in the current scope for a definition
-                // with the name provided, i.e. `foo`. If it can't find one in the current scope, it
-                // will try to find the definition inside of the global `DefinitionCollection`.
+                // `Scope::definition(name: ByteString)` will search the global `DefinitionCollection`
+                // for the specified definition and return a reference to it.
+                //
+                // Since the scope keeps track of the current namespace during analysis, it is smart
+                // enough to fully-qualify the provided name for you, e.g.
+                // namespace = App
+                // definition("foo")
+                // - Checks imported symbols (`use ...`) for something that ends with `foo`.
+                // - Checks for `\App\foo` as a definition.
+                // - Checks for `\foo` as a definition.
+                //
                 // If it doesn't find one, it will return `None`.
                 if scope.definition(&value).is_none() {
                     messages.error(
