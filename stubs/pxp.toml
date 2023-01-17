@@ -1,4 +1,13 @@
 [build]
 paths = [
-    "./"
+    "./src"
+]
+
+[analyse]
+paths = [
+    "./src"
+]
+
+stubs = [
+
 ]

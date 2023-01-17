@@ -3,6 +3,7 @@ use clap::{Parser, Subcommand};
 
 mod init;
 mod build;
+mod analyse;
 
 #[derive(Debug, Parser)]
 #[command(version)]
@@ -17,6 +18,8 @@ enum Command {
     Init(InitCommand),
     #[clap(about = "Build a file or set of directories.")]
     Build(BuildCommand),
+    #[clap(about = "Statically analyse a file or set of directories.")]
+    Analyse(AnalyseCommand),
 }
 
 #[derive(Debug, Parser)]
@@ -31,11 +34,18 @@ pub struct BuildCommand {
     file: Option<PathBuf>,
 }
 
+#[derive(Debug, Parser)]
+pub struct AnalyseCommand {
+    #[clap(help = "The path of a single file you would to build.")]
+    file: Option<PathBuf>,
+}
+
 pub fn run() {
     let arguments = Arguments::parse();
 
     match arguments.command {
         Command::Init(command) => init::run(command),
         Command::Build(command) => build::run(command),
+        Command::Analyse(command) => analyse::run(command),
     };
 }
