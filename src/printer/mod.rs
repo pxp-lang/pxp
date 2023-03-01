@@ -5,7 +5,10 @@ use pxp_parser::parser::ast::{
     constant::{ClassishConstant, ConstantEntry, ConstantStatement},
     control_flow::{IfStatement, IfStatementBody, IfStatementElse, IfStatementElseIf},
     data_type::Type,
-    enums::{UnitEnumBody, UnitEnumCase, UnitEnumMember, UnitEnumStatement, BackedEnumStatement, BackedEnumType, BackedEnumBody, BackedEnumMember, BackedEnumCase},
+    enums::{
+        BackedEnumBody, BackedEnumCase, BackedEnumMember, BackedEnumStatement, BackedEnumType,
+        UnitEnumBody, UnitEnumCase, UnitEnumMember, UnitEnumStatement,
+    },
     functions::{
         AbstractConstructor, AbstractMethod, ClosureExpression, ConcreteConstructor,
         ConcreteMethod, ConstructorParameter, ConstructorParameterList, FunctionParameterList,
@@ -14,7 +17,7 @@ use pxp_parser::parser::ast::{
     goto::{GotoStatement, LabelStatement},
     identifiers::{Identifier, SimpleIdentifier},
     interfaces::{InterfaceBody, InterfaceExtends, InterfaceMember, InterfaceStatement},
-    literals::{Literal, LiteralInteger, LiteralString, LiteralFloat},
+    literals::{Literal, LiteralFloat, LiteralInteger, LiteralString},
     loops::{
         BreakStatement, ContinueStatement, DoWhileStatement, ForStatement, ForStatementBody,
         ForeachStatement, ForeachStatementBody, ForeachStatementIterator, Level, WhileStatement,
@@ -33,24 +36,25 @@ use pxp_parser::parser::ast::{
     properties::{Property, PropertyEntry, VariableProperty},
     traits::{TraitBody, TraitMember, TraitStatement, TraitUsage, TraitUsageAdaptation},
     utils::CommaSeparated,
-    variables::{SimpleVariable, Variable, VariableVariable, BracedVariableVariable},
+    variables::{BracedVariableVariable, SimpleVariable, Variable, VariableVariable},
     ArrayExpression, ArrayIndexExpression, ArrayItem, BlockStatement, BoolExpression,
-    CastExpression, CloneExpression, CoalesceExpression, ConcatExpression, ConstantFetchExpression,
-    DefaultMatchArm, DieExpression, EchoStatement, EmptyExpression, Ending,
-    ErrorSuppressExpression, EvalExpression, ExitExpression, Expression, ExpressionStatement,
-    FunctionCallExpression, FunctionClosureCreationExpression, GlobalStatement, GroupUseStatement,
-    HaltCompilerStatement, HeredocExpression, IncludeExpression, IncludeOnceExpression,
-    InlineHtmlStatement, InstanceofExpression, InterpolatedStringExpression, IssetExpression,
-    ListEntry, ListExpression, MagicConstantExpression, MatchArm, MatchArmBody, MatchExpression,
-    MethodCallExpression, MethodClosureCreationExpression, NewExpression, NowdocExpression,
-    NullsafeMethodCallExpression, NullsafePropertyFetchExpression, ParenthesizedExpression,
-    PrintExpression, PropertyFetchExpression, ReferenceExpression, RequireExpression,
-    RequireOnceExpression, ReturnStatement, ShellExecExpression, ShortArrayExpression,
-    ShortMatchExpression, ShortTernaryExpression, Statement, StaticMethodCallExpression,
+    CastExpression, CastKind, CloneExpression, CoalesceExpression, ConcatExpression,
+    ConstantFetchExpression, DefaultMatchArm, DieExpression, EchoStatement, EmptyExpression,
+    Ending, ErrorSuppressExpression, EvalExpression, ExitExpression, Expression,
+    ExpressionStatement, FunctionCallExpression, FunctionClosureCreationExpression,
+    GlobalStatement, GroupUseStatement, HaltCompilerStatement, HeredocExpression,
+    IncludeExpression, IncludeOnceExpression, InlineHtmlStatement, InstanceofExpression,
+    InterpolatedStringExpression, IssetExpression, ListEntry, ListExpression,
+    MagicConstantExpression, MatchArm, MatchArmBody, MatchExpression, MethodCallExpression,
+    MethodClosureCreationExpression, NewExpression, NowdocExpression, NullsafeMethodCallExpression,
+    NullsafePropertyFetchExpression, ParenthesizedExpression, PrintExpression,
+    PropertyFetchExpression, ReferenceExpression, RequireExpression, RequireOnceExpression,
+    ReturnStatement, ShellExecExpression, ShortArrayExpression, ShortMatchExpression,
+    ShortTernaryExpression, Statement, StaticMethodCallExpression,
     StaticMethodClosureCreationExpression, StaticPropertyFetchExpression, StaticStatement,
     StaticVar, StaticVariableMethodCallExpression, StaticVariableMethodClosureCreationExpression,
     SwitchStatement, TernaryExpression, ThrowExpression, TypeAliasStatement, UnsetExpression,
-    UseStatement, YieldExpression, YieldFromExpression, CastKind,
+    UseStatement, YieldExpression, YieldFromExpression,
 };
 
 struct PrinterState {
@@ -422,11 +426,9 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         },
         Statement::Use(UseStatement { uses, kind }) => todo!(),
         Statement::GroupUse(GroupUseStatement { prefix, kind, uses }) => todo!(),
-        Statement::Comment(Comment {
-            content, ..
-        }) => {
+        Statement::Comment(Comment { content, .. }) => {
             state.write(content.to_string());
-        },
+        }
         Statement::Try(_) => todo!(),
         Statement::UnitEnum(unit) => print_unit_enum(state, unit),
         Statement::BackedEnum(backed) => print_backed_enum(state, backed),
@@ -1550,7 +1552,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         Expression::Throw(ThrowExpression { value }) => {
             state.write("throw ");
             print_expression(state, value);
-        },
+        }
         Expression::Yield(YieldExpression { key, value }) => {
             state.write("yield ");
             if let Some(key) = key {
@@ -1560,25 +1562,28 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             if let Some(value) = value {
                 print_expression(state, value);
             }
-        },
+        }
         Expression::YieldFrom(YieldFromExpression { value }) => {
             state.write("yield from ");
             print_expression(state, value);
-        },
+        }
         Expression::Cast(CastExpression { cast, kind, value }) => {
-            state.write(format!("({})", match kind {
-                CastKind::Array => "array",
-                CastKind::Bool => "bool",
-                CastKind::Float => "float",
-                CastKind::Int => "int",
-                CastKind::Object => "object",
-                CastKind::String => "string",
-                CastKind::Unset => "unset",
-            }));
+            state.write(format!(
+                "({})",
+                match kind {
+                    CastKind::Array => "array",
+                    CastKind::Bool => "bool",
+                    CastKind::Float => "float",
+                    CastKind::Int => "int",
+                    CastKind::Object => "object",
+                    CastKind::String => "string",
+                    CastKind::Unset => "unset",
+                }
+            ));
 
             print_expression(state, value);
-        },
-        Expression::Noop => {},
+        }
+        Expression::Noop => {}
     }
 }
 
@@ -2103,7 +2108,9 @@ fn print_variable(state: &mut PrinterState, variable: &Variable) {
     match variable {
         Variable::SimpleVariable(variable) => print_simple_variable(state, variable),
         Variable::VariableVariable(variable) => print_variable_variable(state, variable),
-        Variable::BracedVariableVariable(variable) => print_braced_variable_variable(state, variable),
+        Variable::BracedVariableVariable(variable) => {
+            print_braced_variable_variable(state, variable)
+        }
     }
 }
 
@@ -2184,7 +2191,7 @@ fn print_literal(state: &mut PrinterState, literal: &Literal) {
         }
         Literal::Float(LiteralFloat { value, .. }) => {
             state.write(value.to_string());
-        },
+        }
     }
 }
 
