@@ -15,7 +15,7 @@ use pxp_parser::parser::ast::{
         FunctionStatement, ReturnType,
     },
     goto::{GotoStatement, LabelStatement},
-    identifiers::{Identifier, SimpleIdentifier},
+    identifiers::{Identifier, SimpleIdentifier, DynamicIdentifier},
     interfaces::{InterfaceBody, InterfaceExtends, InterfaceMember, InterfaceStatement},
     literals::{Literal, LiteralFloat, LiteralInteger, LiteralString},
     loops::{
@@ -54,7 +54,7 @@ use pxp_parser::parser::ast::{
     StaticMethodClosureCreationExpression, StaticPropertyFetchExpression, StaticStatement,
     StaticVar, StaticVariableMethodCallExpression, StaticVariableMethodClosureCreationExpression,
     SwitchStatement, TernaryExpression, ThrowExpression, TypeAliasStatement, UnsetExpression,
-    UseStatement, YieldExpression, YieldFromExpression,
+    UseStatement, YieldExpression, YieldFromExpression, try_block::{TryStatement, CatchType}, UseKind, Use, declares::{DeclareStatement, DeclareBody},
 };
 
 struct PrinterState {
@@ -349,13 +349,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         Statement::Trait(trait_) => print_trait(state, trait_),
         Statement::Interface(interface) => print_interface(state, interface),
         Statement::If(statement) => print_if(state, statement),
-        Statement::Switch(SwitchStatement {
-            switch,
-            left_parenthesis,
-            condition,
-            right_parenthesis,
-            cases,
-        }) => todo!(),
+        Statement::Switch(statement) => print_switch(state, statement),
         Statement::Echo(EchoStatement {
             echo,
             values,
@@ -424,12 +418,12 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
                 state.new_line();
             }
         },
-        Statement::Use(UseStatement { uses, kind }) => todo!(),
-        Statement::GroupUse(GroupUseStatement { prefix, kind, uses }) => todo!(),
+        Statement::Use(statement) => print_use(state, statement),
+        Statement::GroupUse(statement) => print_group_use(state, statement),
         Statement::Comment(Comment { content, .. }) => {
             state.write(content.to_string());
         }
-        Statement::Try(_) => todo!(),
+        Statement::Try(statement) => print_try(state, statement),
         Statement::UnitEnum(unit) => print_unit_enum(state, unit),
         Statement::BackedEnum(backed) => print_backed_enum(state, backed),
         Statement::Block(BlockStatement {
@@ -445,8 +439,8 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
             state.new_line();
             state.write("}");
         }
-        Statement::Global(GlobalStatement { global, variables }) => todo!(),
-        Statement::Declare(_) => todo!(),
+        Statement::Global(statement) => print_global(state, statement),
+        Statement::Declare(statement) => print_declare(state, statement),
         Statement::Noop(_) => {
             state.write(";");
         }
@@ -2061,7 +2055,7 @@ fn print_assignment_operation(state: &mut PrinterState, operation: &AssignmentOp
 fn print_identifier(state: &mut PrinterState, identifier: &Identifier) {
     match identifier {
         Identifier::SimpleIdentifier(identifier) => print_simple_identifier(state, identifier),
-        Identifier::DynamicIdentifier(_) => todo!(),
+        Identifier::DynamicIdentifier(identifier) => print_dynamic_identifier(state, identifier),
     }
 }
 
@@ -2246,4 +2240,215 @@ fn print_ending(state: &mut PrinterState, ending: &Ending) {
 
 fn print_simple_identifier(state: &mut PrinterState, identifier: &SimpleIdentifier) {
     state.write(identifier.value.to_string());
+}
+
+fn print_dynamic_identifier(state: &mut PrinterState, identifier: &DynamicIdentifier) {
+    state.write("{");
+    print_expression(state, &identifier.expr);
+    state.write("}");
+}
+
+fn print_switch(state: &mut PrinterState, statement: &SwitchStatement) {
+    state.write("switch (");
+    print_expression(state, &statement.condition);
+    state.write(") {");
+    
+    state.indent();
+    state.new_line();
+
+    for case in statement.cases.iter() {
+        if let Some(condition) = &case.condition {
+            state.write("case ");
+            print_expression(state, condition);
+            state.write(":");
+        } else {
+            state.write("default:");
+        }
+
+        if case.body.is_empty() {
+            continue;
+        }
+
+        state.indent();
+        state.new_line();
+
+        print_statements(state, &case.body);
+
+        state.dedent();
+        state.new_line();
+    }
+
+    state.dedent();
+    state.new_line();
+    state.write("}");
+}
+
+fn print_try(state: &mut PrinterState, statement: &TryStatement) {
+    state.write("try {");
+    state.indent();
+    state.new_line();
+    
+    print_statements(state, &statement.body);
+    
+    state.dedent();
+    state.new_line();
+    state.write("}");
+
+    for catch in statement.catches.iter() {
+        state.write("catch (");
+        match &catch.types {
+            CatchType::Identifier { identifier } => print_simple_identifier(state, identifier),
+            CatchType::Union { identifiers } => {
+                for (i, identifier) in identifiers.iter().enumerate() {
+                    if i > 0 {
+                        state.write(" | ");
+                    }
+                    print_simple_identifier(state, identifier);
+                }
+            },
+        }
+        state.write(" ");
+        if let Some(variable) = &catch.var {
+            print_simple_variable(state, &variable);
+        }
+        state.write(") {");
+        state.indent();
+        state.new_line();
+        print_statements(state, &catch.body);
+        state.dedent();
+        state.new_line();
+        state.write("}");
+    }
+
+    if let Some(finally) = &statement.finally {
+        state.write("finally {");
+        state.indent();
+        state.new_line();
+        print_statements(state, &finally.body);
+        state.dedent();
+        state.new_line();
+        state.write("}");
+    }
+}
+
+fn print_use(state: &mut PrinterState, statement: &UseStatement) {
+    state.write("use");
+    
+    match &statement.kind {
+        UseKind::Normal => {},
+        UseKind::Function => state.write(" function"),
+        UseKind::Const => state.write(" const"),
+    };
+
+    state.write(" ");
+    
+    for (i, use_) in statement.uses.iter().enumerate() {
+        if i > 0 {
+            state.write(", ");
+        }
+
+        print_single_use(state, use_);
+    }
+
+    state.write(";");
+}
+
+fn print_single_use(state: &mut PrinterState, use_: &Use) {
+    match &use_.kind {
+        Some(UseKind::Normal) => {},
+        Some(UseKind::Function) => state.write("function "),
+        Some(UseKind::Const) => state.write("const "),
+        _ => {},
+    };
+
+    print_simple_identifier(state, &use_.name);
+    
+    if let Some(alias) = &use_.alias {
+        state.write(" as ");
+        print_simple_identifier(state, alias);
+    }
+}
+
+fn print_group_use(state: &mut PrinterState, statement: &GroupUseStatement) {
+    state.write("use");
+    
+    match &statement.kind {
+        UseKind::Normal => {},
+        UseKind::Function => state.write(" function"),
+        UseKind::Const => state.write(" const"),
+    };
+
+    state.write(" ");
+
+    print_simple_identifier(state, &statement.prefix);
+    state.write("{");
+    state.indent();
+    state.new_line();
+    
+    for (i, use_) in statement.uses.iter().enumerate() {
+        if i > 0 {
+            state.write(", ");
+        }
+
+        print_single_use(state, use_);
+    }
+
+    state.dedent();
+    state.new_line();
+    state.write("}");
+    state.write(";");
+}
+
+fn print_global(state: &mut PrinterState, statement: &GlobalStatement) {
+    state.write("global ");
+    for (i, variable) in statement.variables.iter().enumerate() {
+        if i > 0 {
+            state.write(", ");
+        }
+        print_variable(state, variable);
+    }
+    state.write(";");
+}
+
+fn print_declare(state: &mut PrinterState, statement: &DeclareStatement) {
+    state.write("declare(");
+    for (i, entry) in statement.entries.entries.iter().enumerate() {
+        if i > 0 {
+            state.write(", ");
+        }
+
+        print_simple_identifier(state, &entry.key);
+        state.write(" = ");
+        print_literal(state, &entry.value);
+    }
+    state.write(")");
+
+    match &statement.body {
+        DeclareBody::Noop { .. } => {
+            state.write(";");
+        },
+        DeclareBody::Braced { statements, .. } => {
+            state.write(" {");
+            state.indent();
+            state.new_line();
+            print_statements(state, statements);
+            state.dedent();
+            state.new_line();
+            state.write("}");
+        },
+        DeclareBody::Expression { expression, .. } => {
+            state.write(" ");
+            print_expression(state, expression);
+            state.write(";");
+        },
+        DeclareBody::Block { statements, .. } => {
+            state.write(":");
+            state.indent();
+            state.new_line();
+            print_statements(state, statements);
+            state.dedent();
+            state.new_line();
+            state.write("enddeclare;");
+        },
+    }
 }
