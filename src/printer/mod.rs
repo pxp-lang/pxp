@@ -5,7 +5,7 @@ use pxp_parser::parser::ast::{
     constant::{ClassishConstant, ConstantEntry, ConstantStatement},
     control_flow::{IfStatement, IfStatementBody, IfStatementElse, IfStatementElseIf},
     data_type::Type,
-    enums::{UnitEnumBody, UnitEnumCase, UnitEnumMember, UnitEnumStatement},
+    enums::{UnitEnumBody, UnitEnumCase, UnitEnumMember, UnitEnumStatement, BackedEnumStatement, BackedEnumType, BackedEnumBody, BackedEnumMember, BackedEnumCase},
     functions::{
         AbstractConstructor, AbstractMethod, ClosureExpression, ConcreteConstructor,
         ConcreteMethod, ConstructorParameter, ConstructorParameterList, FunctionParameterList,
@@ -14,7 +14,7 @@ use pxp_parser::parser::ast::{
     goto::{GotoStatement, LabelStatement},
     identifiers::{Identifier, SimpleIdentifier},
     interfaces::{InterfaceBody, InterfaceExtends, InterfaceMember, InterfaceStatement},
-    literals::{Literal, LiteralInteger, LiteralString},
+    literals::{Literal, LiteralInteger, LiteralString, LiteralFloat},
     loops::{
         BreakStatement, ContinueStatement, DoWhileStatement, ForStatement, ForStatementBody,
         ForeachStatement, ForeachStatementBody, ForeachStatementIterator, Level, WhileStatement,
@@ -33,7 +33,7 @@ use pxp_parser::parser::ast::{
     properties::{Property, PropertyEntry, VariableProperty},
     traits::{TraitBody, TraitMember, TraitStatement, TraitUsage, TraitUsageAdaptation},
     utils::CommaSeparated,
-    variables::{SimpleVariable, Variable},
+    variables::{SimpleVariable, Variable, VariableVariable, BracedVariableVariable},
     ArrayExpression, ArrayIndexExpression, ArrayItem, BlockStatement, BoolExpression,
     CastExpression, CloneExpression, CoalesceExpression, ConcatExpression, ConstantFetchExpression,
     DefaultMatchArm, DieExpression, EchoStatement, EmptyExpression, Ending,
@@ -50,7 +50,7 @@ use pxp_parser::parser::ast::{
     StaticMethodClosureCreationExpression, StaticPropertyFetchExpression, StaticStatement,
     StaticVar, StaticVariableMethodCallExpression, StaticVariableMethodClosureCreationExpression,
     SwitchStatement, TernaryExpression, ThrowExpression, TypeAliasStatement, UnsetExpression,
-    UseStatement, YieldExpression, YieldFromExpression,
+    UseStatement, YieldExpression, YieldFromExpression, CastKind,
 };
 
 struct PrinterState {
@@ -423,19 +423,13 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         Statement::Use(UseStatement { uses, kind }) => todo!(),
         Statement::GroupUse(GroupUseStatement { prefix, kind, uses }) => todo!(),
         Statement::Comment(Comment {
-            format, content, ..
-        }) => match format {
-            CommentFormat::SingleLine => {
-                state.write("// ");
-                state.write(content.to_string());
-            }
-            CommentFormat::MultiLine => todo!(),
-            CommentFormat::HashMark => todo!(),
-            CommentFormat::Document => todo!(),
+            content, ..
+        }) => {
+            state.write(content.to_string());
         },
         Statement::Try(_) => todo!(),
         Statement::UnitEnum(unit) => print_unit_enum(state, unit),
-        Statement::BackedEnum(_) => todo!(),
+        Statement::BackedEnum(backed) => print_backed_enum(state, backed),
         Statement::Block(BlockStatement {
             left_brace,
             statements,
@@ -606,9 +600,47 @@ fn print_unit_enum(state: &mut PrinterState, unit: &UnitEnumStatement) {
     state.write("}");
 }
 
+fn print_backed_enum(state: &mut PrinterState, backed: &BackedEnumStatement) {
+    state.write("enum ");
+    print_simple_identifier(state, &backed.name);
+    state.write(": ");
+    match &backed.backed_type {
+        BackedEnumType::Int(_, _) => state.write("int"),
+        BackedEnumType::String(_, _) => state.write("string"),
+    }
+
+    for (i, identifier) in backed.implements.iter().enumerate() {
+        if i == 0 {
+            state.write(" implements ");
+        } else {
+            state.write(", ");
+        }
+        print_simple_identifier(state, identifier);
+    }
+
+    state.write(" {");
+    state.indent();
+    state.new_line();
+    print_backed_enum_body(state, &backed.body);
+    state.dedent();
+    state.new_line();
+    state.write("}");
+}
+
 fn print_enum_body(state: &mut PrinterState, body: &UnitEnumBody) {
     for (i, member) in body.members.iter().enumerate() {
         print_enum_member(state, member);
+
+        if i < body.members.len() - 1 {
+            state.new_line();
+            state.new_line();
+        }
+    }
+}
+
+fn print_backed_enum_body(state: &mut PrinterState, body: &BackedEnumBody) {
+    for (i, member) in body.members.iter().enumerate() {
+        print_backed_enum_member(state, member);
 
         if i < body.members.len() - 1 {
             state.new_line();
@@ -626,9 +658,26 @@ fn print_enum_member(state: &mut PrinterState, member: &UnitEnumMember) {
     }
 }
 
+fn print_backed_enum_member(state: &mut PrinterState, member: &BackedEnumMember) {
+    match member {
+        BackedEnumMember::Case(case) => print_backed_enum_case(state, case),
+        BackedEnumMember::Method(method) => print_concrete_method(state, method),
+        BackedEnumMember::Constant(constant) => print_classish_constant(state, constant),
+        BackedEnumMember::TraitUsage(usage) => print_trait_usage(state, usage),
+    }
+}
+
 fn print_unit_enum_case(state: &mut PrinterState, member: &UnitEnumCase) {
     state.write("case ");
     print_simple_identifier(state, &member.name);
+    state.write(";");
+}
+
+fn print_backed_enum_case(state: &mut PrinterState, member: &BackedEnumCase) {
+    state.write("case ");
+    print_simple_identifier(state, &member.name);
+    state.write(" = ");
+    print_expression(state, &member.value);
     state.write(";");
 }
 
@@ -1128,6 +1177,17 @@ fn print_simple_variable(state: &mut PrinterState, name: &SimpleVariable) {
     state.write(name.name.to_string());
 }
 
+fn print_variable_variable(state: &mut PrinterState, variable: &VariableVariable) {
+    state.write("$");
+    print_variable(state, &variable.variable);
+}
+
+fn print_braced_variable_variable(state: &mut PrinterState, variable: &BracedVariableVariable) {
+    state.write("${");
+    print_expression(state, &variable.variable);
+    state.write("}");
+}
+
 fn print_type(state: &mut PrinterState, r#type: &Type) {
     state.write(r#type.to_string());
 }
@@ -1487,11 +1547,38 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             default,
             arms,
         }) => todo!(),
-        Expression::Throw(ThrowExpression { value }) => todo!(),
-        Expression::Yield(YieldExpression { key, value }) => todo!(),
-        Expression::YieldFrom(YieldFromExpression { value }) => todo!(),
-        Expression::Cast(CastExpression { cast, kind, value }) => todo!(),
-        Expression::Noop => todo!(),
+        Expression::Throw(ThrowExpression { value }) => {
+            state.write("throw ");
+            print_expression(state, value);
+        },
+        Expression::Yield(YieldExpression { key, value }) => {
+            state.write("yield ");
+            if let Some(key) = key {
+                print_expression(state, key);
+                state.write(" => ");
+            }
+            if let Some(value) = value {
+                print_expression(state, value);
+            }
+        },
+        Expression::YieldFrom(YieldFromExpression { value }) => {
+            state.write("yield from ");
+            print_expression(state, value);
+        },
+        Expression::Cast(CastExpression { cast, kind, value }) => {
+            state.write(format!("({})", match kind {
+                CastKind::Array => "array",
+                CastKind::Bool => "bool",
+                CastKind::Float => "float",
+                CastKind::Int => "int",
+                CastKind::Object => "object",
+                CastKind::String => "string",
+                CastKind::Unset => "unset",
+            }));
+
+            print_expression(state, value);
+        },
+        Expression::Noop => {},
     }
 }
 
@@ -2015,8 +2102,8 @@ fn print_argument(state: &mut PrinterState, argument: &Argument) {
 fn print_variable(state: &mut PrinterState, variable: &Variable) {
     match variable {
         Variable::SimpleVariable(variable) => print_simple_variable(state, variable),
-        Variable::VariableVariable(_) => todo!(),
-        Variable::BracedVariableVariable(_) => todo!(),
+        Variable::VariableVariable(variable) => print_variable_variable(state, variable),
+        Variable::BracedVariableVariable(variable) => print_braced_variable_variable(state, variable),
     }
 }
 
@@ -2089,13 +2176,15 @@ fn print_arithmetic_operation(state: &mut PrinterState, operation: &ArithmeticOp
 
 fn print_literal(state: &mut PrinterState, literal: &Literal) {
     match literal {
-        Literal::String(LiteralString { value, span }) => {
+        Literal::String(LiteralString { value, .. }) => {
             state.write(value.to_string());
         }
         Literal::Integer(LiteralInteger { value, .. }) => {
             state.write(value.to_string());
         }
-        Literal::Float(_) => todo!(),
+        Literal::Float(LiteralFloat { value, .. }) => {
+            state.write(value.to_string());
+        },
     }
 }
 
