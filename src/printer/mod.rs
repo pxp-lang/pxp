@@ -495,11 +495,15 @@ fn print_if_statement_body(state: &mut PrinterState, body: &IfStatementBody) {
 }
 
 fn print_else(state: &mut PrinterState, r#else: &IfStatementElse) {
-    todo!()
+    state.write("else ");
+    print_statement(state, &r#else.statement);
 }
 
 fn print_elseif(state: &mut PrinterState, elseif: &IfStatementElseIf) {
-    todo!()
+    state.write("elseif (");
+    print_expression(state, &elseif.condition);
+    state.write(") ");
+    print_statement(state, &elseif.statement);
 }
 
 fn print_interface(state: &mut PrinterState, interface: &InterfaceStatement) {
