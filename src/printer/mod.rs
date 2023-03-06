@@ -1426,10 +1426,16 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         }
         Expression::ArrayIndex(ArrayIndexExpression {
             array,
-            left_bracket,
             index,
-            right_bracket,
-        }) => todo!(),
+            ..
+        }) => {
+            print_expression(state, array);
+            state.write("[");
+            if let Some(index) = index {
+                print_expression(state, index);
+            }
+            state.write("]");
+        },
         Expression::Null => {
             state.write("null");
         }
