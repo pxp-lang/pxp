@@ -1506,9 +1506,13 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         Expression::MagicConstant(constant) => print_magic_constant(state, constant),
         Expression::ShortTernary(ShortTernaryExpression {
             condition,
-            question_colon,
             r#else,
-        }) => todo!(),
+            ..
+        }) => {
+            print_expression(state, condition);
+            state.write(" ?: ");
+            print_expression(state, r#else);
+        },
         Expression::Ternary(TernaryExpression {
             condition,
             question,
