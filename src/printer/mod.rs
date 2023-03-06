@@ -54,7 +54,7 @@ use pxp_parser::parser::ast::{
     StaticMethodClosureCreationExpression, StaticPropertyFetchExpression, StaticStatement,
     StaticVar, StaticVariableMethodCallExpression, StaticVariableMethodClosureCreationExpression,
     SwitchStatement, TernaryExpression, ThrowExpression, TypeAliasStatement, UnsetExpression,
-    UseStatement, YieldExpression, YieldFromExpression, try_block::{TryStatement, CatchType}, UseKind, Use, declares::{DeclareStatement, DeclareBody},
+    UseStatement, YieldExpression, YieldFromExpression, try_block::{TryStatement, CatchType}, UseKind, Use, declares::{DeclareStatement, DeclareBody}, StringPart, LiteralStringPart, ExpressionStringPart,
 };
 
 struct PrinterState {
@@ -1490,7 +1490,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             target,
             arguments,
         }) => print_new(state, target, arguments.as_ref()),
-        Expression::InterpolatedString(InterpolatedStringExpression { parts }) => todo!(),
+        Expression::InterpolatedString(InterpolatedStringExpression { parts }) => print_interpolated_string(state, parts),
         Expression::Heredoc(HeredocExpression { parts }) => todo!(),
         Expression::Nowdoc(NowdocExpression { value }) => todo!(),
         Expression::ShellExec(ShellExecExpression { parts }) => todo!(),
@@ -2519,6 +2519,27 @@ fn print_arrow_function(state: &mut PrinterState, function: &ArrowFunctionExpres
             print_statements(state, statements);
             state.dedent();
             state.new_line();
+            state.write("}");
+        },
+    }
+}
+
+fn print_interpolated_string(state: &mut PrinterState, parts: &[StringPart]) {
+    state.write("\"");
+    for part in parts.iter() {
+        print_string_part(state, part);
+    }
+    state.write("\"");
+}
+
+fn print_string_part(state: &mut PrinterState, part: &StringPart) {
+    match part {
+        StringPart::Literal(LiteralStringPart { value }) => {
+            state.write(value.to_string());
+        },
+        StringPart::Expression(ExpressionStringPart { expression }) => {
+            state.write("{");
+            print_expression(state, expression);
             state.write("}");
         },
     }
