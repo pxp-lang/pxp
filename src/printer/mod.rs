@@ -1527,9 +1527,13 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         },
         Expression::Coalesce(CoalesceExpression {
             lhs,
-            double_question,
             rhs,
-        }) => todo!(),
+            ..
+        }) => {
+            print_expression(state, lhs);
+            state.write(" ?? ");
+            print_expression(state, rhs);
+        },
         Expression::Clone(CloneExpression { target }) => {
             state.write("clone ");
             print_expression(state, target);
