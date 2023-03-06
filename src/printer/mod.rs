@@ -1,60 +1,69 @@
-use pxp_parser::parser::ast::{
-    arguments::{Argument, ArgumentList, NamedArgument, PositionalArgument},
-    classes::{ClassExtends, ClassImplements, ClassMember, ClassStatement},
-    comments::{Comment, CommentFormat},
-    constant::{ClassishConstant, ConstantEntry, ConstantStatement},
-    control_flow::{IfStatement, IfStatementBody, IfStatementElse, IfStatementElseIf},
-    data_type::Type,
-    enums::{
-        BackedEnumBody, BackedEnumCase, BackedEnumMember, BackedEnumStatement, BackedEnumType,
-        UnitEnumBody, UnitEnumCase, UnitEnumMember, UnitEnumStatement,
+use pxp_parser::{
+    lexer::byte_string::ByteString,
+    parser::ast::{
+        arguments::{Argument, ArgumentList, NamedArgument, PositionalArgument},
+        classes::{ClassExtends, ClassImplements, ClassMember, ClassStatement},
+        comments::Comment,
+        constant::{ClassishConstant, ConstantEntry, ConstantStatement},
+        control_flow::{IfStatement, IfStatementBody, IfStatementElse, IfStatementElseIf},
+        data_type::Type,
+        declares::{DeclareBody, DeclareStatement},
+        enums::{
+            BackedEnumBody, BackedEnumCase, BackedEnumMember, BackedEnumStatement, BackedEnumType,
+            UnitEnumBody, UnitEnumCase, UnitEnumMember, UnitEnumStatement,
+        },
+        functions::{
+            AbstractConstructor, AbstractMethod, ArrowFunctionBlockBody, ArrowFunctionBody,
+            ArrowFunctionExpression, ArrowFunctionExpressionBody, ClosureExpression,
+            ConcreteConstructor, ConcreteMethod, ConstructorParameter, ConstructorParameterList,
+            FunctionParameterList, FunctionStatement, ReturnType,
+        },
+        goto::{GotoStatement, LabelStatement},
+        identifiers::{DynamicIdentifier, Identifier, SimpleIdentifier},
+        interfaces::{InterfaceBody, InterfaceExtends, InterfaceMember, InterfaceStatement},
+        literals::{Literal, LiteralFloat, LiteralInteger, LiteralString},
+        loops::{
+            BreakStatement, ContinueStatement, DoWhileStatement, ForStatement, ForStatementBody,
+            ForeachStatement, ForeachStatementBody, ForeachStatementIterator, Level,
+            WhileStatement, WhileStatementBody,
+        },
+        modifiers::{
+            ClassModifier, ClassModifierGroup, MethodModifier, MethodModifierGroup,
+            PromotedPropertyModifier, PromotedPropertyModifierGroup, PropertyModifier,
+            PropertyModifierGroup, VisibilityModifier,
+        },
+        namespaces::{BracedNamespace, BracedNamespaceBody, NamespaceStatement, UnbracedNamespace},
+        operators::{
+            ArithmeticOperationExpression, AssignmentOperationExpression,
+            BitwiseOperationExpression, ComparisonOperationExpression, LogicalOperationExpression,
+            RangeOperationExpression,
+        },
+        properties::{Property, PropertyEntry, VariableProperty},
+        traits::{TraitBody, TraitMember, TraitStatement, TraitUsage, TraitUsageAdaptation},
+        try_block::{CatchType, TryStatement},
+        utils::CommaSeparated,
+        variables::{BracedVariableVariable, SimpleVariable, Variable, VariableVariable},
+        ArrayExpression, ArrayIndexExpression, ArrayItem, BlockStatement, BoolExpression,
+        CastExpression, CastKind, CloneExpression, CoalesceExpression, ConcatExpression,
+        ConstantFetchExpression, DefaultMatchArm, DieExpression, EchoStatement, EmptyExpression,
+        Ending, ErrorSuppressExpression, EvalExpression, ExitExpression, Expression,
+        ExpressionStatement, ExpressionStringPart, FunctionCallExpression,
+        FunctionClosureCreationExpression, GlobalStatement, GroupUseStatement,
+        HaltCompilerStatement, HeredocExpression, IncludeExpression, IncludeOnceExpression,
+        InlineHtmlStatement, InstanceofExpression, InterpolatedStringExpression, IssetExpression,
+        ListEntry, ListExpression, LiteralStringPart, MagicConstantExpression, MatchArm,
+        MatchArmBody, MatchExpression, MethodCallExpression, MethodClosureCreationExpression,
+        NewExpression, NowdocExpression, NullsafeMethodCallExpression,
+        NullsafePropertyFetchExpression, ParenthesizedExpression, PrintExpression,
+        PropertyFetchExpression, ReferenceExpression, RequireExpression, RequireOnceExpression,
+        ReturnStatement, ShellExecExpression, ShortArrayExpression, ShortMatchExpression,
+        ShortTernaryExpression, Statement, StaticMethodCallExpression,
+        StaticMethodClosureCreationExpression, StaticPropertyFetchExpression, StaticStatement,
+        StaticVar, StaticVariableMethodCallExpression,
+        StaticVariableMethodClosureCreationExpression, StringPart, SwitchStatement,
+        TernaryExpression, ThrowExpression, TypeAliasStatement, UnsetExpression, Use, UseKind,
+        UseStatement, YieldExpression, YieldFromExpression,
     },
-    functions::{
-        AbstractConstructor, AbstractMethod, ClosureExpression, ConcreteConstructor,
-        ConcreteMethod, ConstructorParameter, ConstructorParameterList, FunctionParameterList,
-        FunctionStatement, ReturnType, ArrowFunctionExpression, ArrowFunctionBody, ArrowFunctionExpressionBody, ArrowFunctionBlockBody,
-    },
-    goto::{GotoStatement, LabelStatement},
-    identifiers::{Identifier, SimpleIdentifier, DynamicIdentifier},
-    interfaces::{InterfaceBody, InterfaceExtends, InterfaceMember, InterfaceStatement},
-    literals::{Literal, LiteralFloat, LiteralInteger, LiteralString},
-    loops::{
-        BreakStatement, ContinueStatement, DoWhileStatement, ForStatement, ForStatementBody,
-        ForeachStatement, ForeachStatementBody, ForeachStatementIterator, Level, WhileStatement,
-        WhileStatementBody,
-    },
-    modifiers::{
-        ClassModifier, ClassModifierGroup, MethodModifier, MethodModifierGroup,
-        PromotedPropertyModifier, PromotedPropertyModifierGroup, PropertyModifier,
-        PropertyModifierGroup, VisibilityModifier,
-    },
-    namespaces::{BracedNamespace, BracedNamespaceBody, NamespaceStatement, UnbracedNamespace},
-    operators::{
-        ArithmeticOperationExpression, AssignmentOperationExpression, BitwiseOperationExpression,
-        ComparisonOperationExpression, LogicalOperationExpression, RangeOperationExpression,
-    },
-    properties::{Property, PropertyEntry, VariableProperty},
-    traits::{TraitBody, TraitMember, TraitStatement, TraitUsage, TraitUsageAdaptation},
-    utils::CommaSeparated,
-    variables::{BracedVariableVariable, SimpleVariable, Variable, VariableVariable},
-    ArrayExpression, ArrayIndexExpression, ArrayItem, BlockStatement, BoolExpression,
-    CastExpression, CastKind, CloneExpression, CoalesceExpression, ConcatExpression,
-    ConstantFetchExpression, DefaultMatchArm, DieExpression, EchoStatement, EmptyExpression,
-    Ending, ErrorSuppressExpression, EvalExpression, ExitExpression, Expression,
-    ExpressionStatement, FunctionCallExpression, FunctionClosureCreationExpression,
-    GlobalStatement, GroupUseStatement, HaltCompilerStatement, HeredocExpression,
-    IncludeExpression, IncludeOnceExpression, InlineHtmlStatement, InstanceofExpression,
-    InterpolatedStringExpression, IssetExpression, ListEntry, ListExpression,
-    MagicConstantExpression, MatchArm, MatchArmBody, MatchExpression, MethodCallExpression,
-    MethodClosureCreationExpression, NewExpression, NowdocExpression, NullsafeMethodCallExpression,
-    NullsafePropertyFetchExpression, ParenthesizedExpression, PrintExpression,
-    PropertyFetchExpression, ReferenceExpression, RequireExpression, RequireOnceExpression,
-    ReturnStatement, ShellExecExpression, ShortArrayExpression, ShortMatchExpression,
-    ShortTernaryExpression, Statement, StaticMethodCallExpression,
-    StaticMethodClosureCreationExpression, StaticPropertyFetchExpression, StaticStatement,
-    StaticVar, StaticVariableMethodCallExpression, StaticVariableMethodClosureCreationExpression,
-    SwitchStatement, TernaryExpression, ThrowExpression, TypeAliasStatement, UnsetExpression,
-    UseStatement, YieldExpression, YieldFromExpression, try_block::{TryStatement, CatchType}, UseKind, Use, declares::{DeclareStatement, DeclareBody}, StringPart, LiteralStringPart, ExpressionStringPart,
 };
 
 struct PrinterState {
@@ -126,20 +135,11 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         Statement::InlineHtml(InlineHtmlStatement { html }) => {
             state.write(html.to_string());
         }
-        Statement::Label(LabelStatement {
-            comments,
-            label,
-            colon,
-        }) => {
+        Statement::Label(LabelStatement { label, .. }) => {
             state.write(label.to_string());
             state.write(":");
         }
-        Statement::Goto(GotoStatement {
-            comments,
-            keyword,
-            label,
-            semicolon,
-        }) => {
+        Statement::Goto(GotoStatement { label, .. }) => {
             state.write("goto ");
             state.write(label.to_string());
             state.write(";");
@@ -174,11 +174,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
             state.write(");");
         }
         Statement::While(WhileStatement {
-            r#while,
-            left_parenthesis,
-            condition,
-            right_parenthesis,
-            body,
+            condition, body, ..
         }) => {
             state.write("while (");
             print_expression(state, condition);
@@ -188,10 +184,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
                     print_statement(state, statement);
                 }
                 WhileStatementBody::Block {
-                    colon,
-                    statements,
-                    endwhile,
-                    ending,
+                    statements, ending, ..
                 } => {
                     state.write(":");
                     state.indent();
@@ -204,13 +197,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
                 }
             }
         }
-        Statement::For(ForStatement {
-            r#for,
-            left_parenthesis,
-            iterator,
-            right_parenthesis,
-            body,
-        }) => {
+        Statement::For(ForStatement { iterator, body, .. }) => {
             state.write("for (");
             for (i, initialization) in iterator.initializations.inner.iter().enumerate() {
                 if i > 0 {
@@ -241,10 +228,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
                     print_statement(state, statement);
                 }
                 ForStatementBody::Block {
-                    colon,
-                    statements,
-                    endfor,
-                    ending,
+                    statements, ending, ..
                 } => {
                     state.write(":");
                     state.indent();
@@ -257,39 +241,32 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
                 }
             }
         }
-        Statement::Foreach(ForeachStatement {
-            foreach,
-            left_parenthesis,
-            iterator,
-            right_parenthesis,
-            body,
-        }) => {
+        Statement::Foreach(ForeachStatement { iterator, body, .. }) => {
             state.write("foreach (");
             match iterator {
                 ForeachStatementIterator::Value {
                     expression,
-                    r#as,
                     ampersand,
                     value,
+                    ..
                 } => {
                     print_expression(state, expression);
                     state.write(" as ");
-                    if let Some(ampersand) = ampersand {
+                    if ampersand.is_some() {
                         state.write("&");
                     }
                     print_expression(state, value);
                 }
                 ForeachStatementIterator::KeyAndValue {
                     expression,
-                    r#as,
                     ampersand,
                     key,
-                    double_arrow,
                     value,
+                    ..
                 } => {
                     print_expression(state, expression);
                     state.write(" as ");
-                    if let Some(ampersand) = ampersand {
+                    if ampersand.is_some() {
                         state.write("&");
                     }
                     print_expression(state, key);
@@ -303,10 +280,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
                     print_statement(state, statement);
                 }
                 ForeachStatementBody::Block {
-                    colon,
-                    statements,
-                    endforeach,
-                    ending,
+                    statements, ending, ..
                 } => {
                     state.write(":");
                     state.indent();
@@ -319,11 +293,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
                 }
             }
         }
-        Statement::Break(BreakStatement {
-            r#break,
-            level,
-            ending,
-        }) => {
+        Statement::Break(BreakStatement { level, ending, .. }) => {
             state.write("break");
             if let Some(level) = level {
                 state.write(" ");
@@ -331,11 +301,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
             }
             print_ending(state, ending);
         }
-        Statement::Continue(ContinueStatement {
-            r#continue,
-            level,
-            ending,
-        }) => {
+        Statement::Continue(ContinueStatement { level, ending, .. }) => {
             state.write("continue");
             if let Some(level) = level {
                 state.write(" ");
@@ -350,11 +316,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         Statement::Interface(interface) => print_interface(state, interface),
         Statement::If(statement) => print_if(state, statement),
         Statement::Switch(statement) => print_switch(state, statement),
-        Statement::Echo(EchoStatement {
-            echo,
-            values,
-            ending,
-        }) => {
+        Statement::Echo(EchoStatement { values, ending, .. }) => {
             state.write("echo ");
             for (i, value) in values.iter().enumerate() {
                 if i > 0 {
@@ -369,11 +331,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
             print_expression(state, expression);
             print_ending(state, ending);
         }
-        Statement::Return(ReturnStatement {
-            r#return,
-            value,
-            ending,
-        }) => {
+        Statement::Return(ReturnStatement { value, ending, .. }) => {
             state.write("return ");
             if let Some(value) = value {
                 print_expression(state, value);
@@ -382,10 +340,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         }
         Statement::Namespace(namespace) => match namespace {
             NamespaceStatement::Unbraced(UnbracedNamespace {
-                start,
-                name,
-                end,
-                statements,
+                name, statements, ..
             }) => {
                 state.write("namespace ");
                 print_simple_identifier(state, name);
@@ -395,14 +350,9 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
                 print_statements(state, statements);
             }
             NamespaceStatement::Braced(BracedNamespace {
-                namespace,
                 name,
-                body:
-                    BracedNamespaceBody {
-                        start,
-                        end,
-                        statements,
-                    },
+                body: BracedNamespaceBody { statements, .. },
+                ..
             }) => {
                 state.write("namespace ");
                 if let Some(name) = name {
@@ -426,11 +376,7 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         Statement::Try(statement) => print_try(state, statement),
         Statement::UnitEnum(unit) => print_unit_enum(state, unit),
         Statement::BackedEnum(backed) => print_backed_enum(state, backed),
-        Statement::Block(BlockStatement {
-            left_brace,
-            statements,
-            right_brace,
-        }) => {
+        Statement::Block(BlockStatement { statements, .. }) => {
             state.write("{");
             state.indent();
             state.new_line();
@@ -444,17 +390,13 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
         Statement::Noop(_) => {
             state.write(";");
         }
-        Statement::TypeAlias(TypeAliasStatement {
-            name,
-            r#type,
-            ..
-        }) => {
+        Statement::TypeAlias(TypeAliasStatement { name, r#type, .. }) => {
             state.write("type ");
             print_simple_identifier(state, name);
             state.write(" = ");
             print_type(state, r#type);
             state.write(";");
-        },
+        }
     }
 
     state.new_line();
@@ -513,7 +455,7 @@ fn print_elseif(state: &mut PrinterState, elseif: &IfStatementElseIf) {
 fn print_interface(state: &mut PrinterState, interface: &InterfaceStatement) {
     state.write("interface ");
     print_simple_identifier(state, &interface.name);
-    if let Some(InterfaceExtends { extends, parents }) = &interface.extends {
+    if let Some(InterfaceExtends { parents, .. }) = &interface.extends {
         state.write(" extends ");
         for (i, parent) in parents.inner.iter().enumerate() {
             if i > 0 {
@@ -691,16 +633,12 @@ fn print_class(state: &mut PrinterState, class: &ClassStatement) {
     state.write("class ");
     print_simple_identifier(state, &class.name);
 
-    if let Some(ClassExtends { extends, parent }) = &class.extends {
+    if let Some(ClassExtends { parent, .. }) = &class.extends {
         state.write(" extends ");
         print_simple_identifier(state, parent);
     }
 
-    if let Some(ClassImplements {
-        implements,
-        interfaces,
-    }) = &class.implements
-    {
+    if let Some(ClassImplements { interfaces, .. }) = &class.implements {
         state.write(" implements ");
         for (i, interface) in interfaces.inner.iter().enumerate() {
             if i > 0 {
@@ -963,9 +901,7 @@ fn print_property_entry(state: &mut PrinterState, property: &PropertyEntry) {
             print_simple_variable(state, variable);
         }
         PropertyEntry::Initialized {
-            variable,
-            equals,
-            value,
+            variable, value, ..
         } => {
             print_simple_variable(state, variable);
             state.write(" = ");
@@ -1117,12 +1053,8 @@ fn print_constant_entry(state: &mut PrinterState, entry: &ConstantEntry) {
 
 fn print_level(state: &mut PrinterState, level: &Level) {
     match level {
-        Level::Literal(LiteralInteger { value, span }) => state.write(value.to_string()),
-        Level::Parenthesized {
-            left_parenthesis,
-            level,
-            right_parenthesis,
-        } => {
+        Level::Literal(LiteralInteger { value, .. }) => state.write(value.to_string()),
+        Level::Parenthesized { level, .. } => {
             state.write("(");
             print_level(state, level);
             state.write(")");
@@ -1198,17 +1130,17 @@ fn print_type(state: &mut PrinterState, r#type: &Type) {
 
 fn print_expression(state: &mut PrinterState, expression: &Expression) {
     match expression {
-        Expression::Eval(EvalExpression { eval, argument }) => {
+        Expression::Eval(EvalExpression { argument, .. }) => {
             state.write("eval(");
             print_argument(state, &argument.argument);
             state.write(")");
         }
-        Expression::Empty(EmptyExpression { empty, argument }) => {
+        Expression::Empty(EmptyExpression { argument, .. }) => {
             state.write("empty(");
             print_argument(state, &argument.argument);
             state.write(")");
         }
-        Expression::Die(DieExpression { die, argument }) => {
+        Expression::Die(DieExpression { argument, .. }) => {
             state.write("die");
             if let Some(argument) = argument.as_ref() {
                 state.write("(");
@@ -1216,7 +1148,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
                 state.write(")");
             }
         }
-        Expression::Exit(ExitExpression { exit, argument }) => {
+        Expression::Exit(ExitExpression { argument, .. }) => {
             state.write("exit");
             if let Some(argument) = argument.as_ref() {
                 state.write("(");
@@ -1224,20 +1156,18 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
                 state.write(")");
             }
         }
-        Expression::Isset(IssetExpression { isset, arguments }) => {
+        Expression::Isset(IssetExpression { arguments, .. }) => {
             state.write("isset(");
             print_argument_list(state, arguments);
             state.write(")");
         }
-        Expression::Unset(UnsetExpression { unset, arguments }) => {
+        Expression::Unset(UnsetExpression { arguments, .. }) => {
             state.write("unset(");
             print_argument_list(state, arguments);
             state.write(")");
         }
         Expression::Print(PrintExpression {
-            print,
-            value,
-            argument,
+            value, argument, ..
         }) => {
             state.write("print");
             if let Some(value) = value {
@@ -1256,48 +1186,44 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         Expression::ComparisonOperation(operation) => print_comparison_operation(state, operation),
         Expression::LogicalOperation(operation) => print_logical_operation(state, operation),
         Expression::RangeOperation(operation) => print_range_operation(state, operation),
-        Expression::Concat(ConcatExpression { left, dot, right }) => {
+        Expression::Concat(ConcatExpression { left, right, .. }) => {
             print_expression(state, left);
             state.write(" . ");
             print_expression(state, right);
         }
-        Expression::Instanceof(InstanceofExpression {
-            left,
-            instanceof,
-            right,
-        }) => {
+        Expression::Instanceof(InstanceofExpression { left, right, .. }) => {
             print_expression(state, left);
             state.write(" instanceof ");
             print_expression(state, right);
         }
-        Expression::Reference(ReferenceExpression { ampersand, right }) => {
+        Expression::Reference(ReferenceExpression { right, .. }) => {
             state.write("&");
             print_expression(state, right);
         }
-        Expression::Parenthesized(ParenthesizedExpression { start, expr, end }) => {
+        Expression::Parenthesized(ParenthesizedExpression { expr, .. }) => {
             state.write("(");
             print_expression(state, expr);
             state.write(")");
         }
-        Expression::ErrorSuppress(ErrorSuppressExpression { at, expr }) => {
+        Expression::ErrorSuppress(ErrorSuppressExpression { expr, .. }) => {
             state.write("@");
             print_expression(state, expr);
         }
         Expression::Identifier(identifier) => print_identifier(state, identifier),
         Expression::Variable(variable) => print_variable(state, variable),
-        Expression::Include(IncludeExpression { include, path }) => {
+        Expression::Include(IncludeExpression { path, .. }) => {
             state.write("include ");
             print_expression(state, path);
         }
-        Expression::IncludeOnce(IncludeOnceExpression { include_once, path }) => {
+        Expression::IncludeOnce(IncludeOnceExpression { path, .. }) => {
             state.write("include_once ");
             print_expression(state, path);
         }
-        Expression::Require(RequireExpression { require, path }) => {
+        Expression::Require(RequireExpression { path, .. }) => {
             state.write("require ");
             print_expression(state, path);
         }
-        Expression::RequireOnce(RequireOnceExpression { require_once, path }) => {
+        Expression::RequireOnce(RequireOnceExpression { path, .. }) => {
             state.write("require_once ");
             print_expression(state, path);
         }
@@ -1308,17 +1234,16 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             state.write(")");
         }
         Expression::FunctionClosureCreation(FunctionClosureCreationExpression {
-            target,
-            placeholder,
+            target, ..
         }) => {
             print_expression(state, target);
             state.write("(...)");
         }
         Expression::MethodCall(MethodCallExpression {
             target,
-            arrow,
             method,
             arguments,
+            ..
         }) => {
             print_expression(state, target);
             state.write("->");
@@ -1329,9 +1254,8 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         }
         Expression::MethodClosureCreation(MethodClosureCreationExpression {
             target,
-            arrow,
             method,
-            placeholder,
+            ..
         }) => {
             print_expression(state, target);
             state.write("->");
@@ -1340,9 +1264,9 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         }
         Expression::NullsafeMethodCall(NullsafeMethodCallExpression {
             target,
-            question_arrow,
             method,
             arguments,
+            ..
         }) => {
             print_expression(state, target);
             state.write("?->");
@@ -1353,9 +1277,9 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         }
         Expression::StaticMethodCall(StaticMethodCallExpression {
             target,
-            double_colon,
             method,
             arguments,
+            ..
         }) => {
             print_expression(state, target);
             state.write("::");
@@ -1366,9 +1290,9 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         }
         Expression::StaticVariableMethodCall(StaticVariableMethodCallExpression {
             target,
-            double_colon,
             method,
             arguments,
+            ..
         }) => {
             print_expression(state, target);
             state.write("::");
@@ -1379,9 +1303,8 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         }
         Expression::StaticMethodClosureCreation(StaticMethodClosureCreationExpression {
             target,
-            double_colon,
             method,
-            placeholder,
+            ..
         }) => {
             print_expression(state, target);
             state.write("::");
@@ -1389,12 +1312,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             state.write("(...)");
         }
         Expression::StaticVariableMethodClosureCreation(
-            StaticVariableMethodClosureCreationExpression {
-                target,
-                double_colon,
-                method,
-                placeholder,
-            },
+            StaticVariableMethodClosureCreationExpression { target, method, .. },
         ) => {
             print_expression(state, target);
             state.write("::");
@@ -1402,9 +1320,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             state.write("(...)");
         }
         Expression::PropertyFetch(PropertyFetchExpression {
-            target,
-            arrow,
-            property,
+            target, property, ..
         }) => {
             print_expression(state, target);
             state.write("->");
@@ -1412,26 +1328,22 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         }
         Expression::NullsafePropertyFetch(NullsafePropertyFetchExpression {
             target,
-            question_arrow,
             property,
+            ..
         }) => {
             print_expression(state, target);
             state.write("?->");
             print_expression(state, property);
         }
         Expression::StaticPropertyFetch(StaticPropertyFetchExpression {
-            target,
-            double_colon,
-            property,
+            target, property, ..
         }) => {
             print_expression(state, target);
             state.write("::");
             print_variable(state, property);
         }
         Expression::ConstantFetch(ConstantFetchExpression {
-            target,
-            double_colon,
-            constant,
+            target, constant, ..
         }) => {
             print_expression(state, target);
             state.write("::");
@@ -1446,7 +1358,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         Expression::Parent => {
             state.write("parent");
         }
-        Expression::ShortArray(ShortArrayExpression { start, items, end }) => {
+        Expression::ShortArray(ShortArrayExpression { items, .. }) => {
             state.write("[");
             state.indent();
             state.new_line();
@@ -1455,12 +1367,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             state.new_line();
             state.write("]");
         }
-        Expression::Array(ArrayExpression {
-            array,
-            start,
-            items,
-            end,
-        }) => {
+        Expression::Array(ArrayExpression { items, .. }) => {
             state.write("array(");
             state.indent();
             state.new_line();
@@ -1469,12 +1376,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             state.new_line();
             state.write(")");
         }
-        Expression::List(ListExpression {
-            list,
-            start,
-            items,
-            end,
-        }) => {
+        Expression::List(ListExpression { items, .. }) => {
             state.write("list(");
             state.indent();
             state.new_line();
@@ -1486,14 +1388,38 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         Expression::Closure(closure) => print_closure(state, closure),
         Expression::ArrowFunction(function) => print_arrow_function(state, function),
         Expression::New(NewExpression {
-            new,
-            target,
-            arguments,
+            target, arguments, ..
         }) => print_new(state, target, arguments.as_ref()),
-        Expression::InterpolatedString(InterpolatedStringExpression { parts }) => print_interpolated_string(state, parts),
-        Expression::Heredoc(HeredocExpression { parts }) => todo!(),
-        Expression::Nowdoc(NowdocExpression { value }) => todo!(),
-        Expression::ShellExec(ShellExecExpression { parts }) => todo!(),
+        Expression::InterpolatedString(InterpolatedStringExpression { parts }) => {
+            print_interpolated_string(state, parts)
+        }
+        Expression::Heredoc(HeredocExpression { label, parts }) => {
+            let label: ByteString =
+                ByteString::from(label.iter().skip(3).map(|b| *b).collect::<Vec<_>>());
+            state.write("<<<");
+            state.write(label.to_string());
+            state.write("\n");
+            for part in parts.iter() {
+                print_string_part(state, part);
+            }
+            state.write(label.to_string());
+        }
+        Expression::Nowdoc(NowdocExpression { label, value }) => {
+            let label: ByteString =
+                ByteString::from(label.iter().skip(3).map(|b| *b).collect::<Vec<_>>());
+            state.write("<<<'");
+            state.write(label.to_string());
+            state.write("'\n");
+            state.write(value.to_string());
+            state.write(label.to_string());
+        }
+        Expression::ShellExec(ShellExecExpression { parts }) => {
+            state.write("`");
+            for part in parts.iter() {
+                print_string_part(state, part);
+            }
+            state.write("`");
+        }
         Expression::AnonymousClass(_) => todo!(),
         Expression::Bool(BoolExpression { value }) => {
             state.write(value.to_string());
@@ -1506,17 +1432,15 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         }) => todo!(),
         Expression::Null => {
             state.write("null");
-        },
+        }
         Expression::MagicConstant(constant) => print_magic_constant(state, constant),
         Expression::ShortTernary(ShortTernaryExpression {
-            condition,
-            r#else,
-            ..
+            condition, r#else, ..
         }) => {
             print_expression(state, condition);
             state.write(" ?: ");
             print_expression(state, r#else);
-        },
+        }
         Expression::Ternary(TernaryExpression {
             condition,
             then,
@@ -1528,22 +1452,17 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             print_expression(state, then);
             state.write(" : ");
             print_expression(state, r#else);
-        },
-        Expression::Coalesce(CoalesceExpression {
-            lhs,
-            rhs,
-            ..
-        }) => {
+        }
+        Expression::Coalesce(CoalesceExpression { lhs, rhs, .. }) => {
             print_expression(state, lhs);
             state.write(" ?? ");
             print_expression(state, rhs);
-        },
+        }
         Expression::Clone(CloneExpression { target }) => {
             state.write("clone ");
             print_expression(state, target);
-        },
+        }
         Expression::Match(MatchExpression {
-            keyword,
             condition,
             default,
             arms,
@@ -1564,11 +1483,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             state.new_line();
             state.write("}");
         }
-        Expression::ShortMatch(ShortMatchExpression {
-            default,
-            arms,
-            ..
-        }) => {
+        Expression::ShortMatch(ShortMatchExpression { default, arms, .. }) => {
             state.write("match {");
             state.indent();
             state.new_line();
@@ -1581,7 +1496,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             state.dedent();
             state.new_line();
             state.write("}");
-        },
+        }
         Expression::Throw(ThrowExpression { value }) => {
             state.write("throw ");
             print_expression(state, value);
@@ -1600,7 +1515,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             state.write("yield from ");
             print_expression(state, value);
         }
-        Expression::Cast(CastExpression { cast, kind, value }) => {
+        Expression::Cast(CastExpression { kind, value, .. }) => {
             state.write(format!(
                 "({})",
                 match kind {
@@ -1692,11 +1607,7 @@ fn print_list_items(state: &mut PrinterState, items: &[ListEntry]) {
             ListEntry::Value { value } => {
                 print_expression(state, value);
             }
-            ListEntry::KeyValue {
-                key,
-                double_arrow,
-                value,
-            } => {
+            ListEntry::KeyValue { key, value, .. } => {
                 print_expression(state, key);
                 state.write(" => ");
                 print_expression(state, value);
@@ -1721,29 +1632,20 @@ fn print_array_item(state: &mut PrinterState, item: &ArrayItem) {
         ArrayItem::Value { value } => {
             print_expression(state, value);
         }
-        ArrayItem::ReferencedValue { ampersand, value } => {
+        ArrayItem::ReferencedValue { value, .. } => {
             state.write("&");
             print_expression(state, value);
         }
-        ArrayItem::SpreadValue { ellipsis, value } => {
+        ArrayItem::SpreadValue { value, .. } => {
             state.write("...");
             print_expression(state, value);
         }
-        ArrayItem::KeyValue {
-            key,
-            double_arrow,
-            value,
-        } => {
+        ArrayItem::KeyValue { key, value, .. } => {
             print_expression(state, key);
             state.write(" => ");
             print_expression(state, value);
         }
-        ArrayItem::ReferencedKeyValue {
-            key,
-            double_arrow,
-            ampersand,
-            value,
-        } => {
+        ArrayItem::ReferencedKeyValue { key, value, .. } => {
             print_expression(state, key);
             state.write(" => &");
             print_expression(state, value);
@@ -1755,8 +1657,8 @@ fn print_range_operation(state: &mut PrinterState, operation: &RangeOperationExp
     match operation {
         RangeOperationExpression::Exclusive {
             lower_bound,
-            double_dot,
             upper_bound,
+            ..
         } => {
             print_expression(state, lower_bound);
             state.write("..");
@@ -1764,17 +1666,14 @@ fn print_range_operation(state: &mut PrinterState, operation: &RangeOperationExp
         }
         RangeOperationExpression::Inclusive {
             lower_bound,
-            double_dot_equals,
             upper_bound,
+            ..
         } => {
             print_expression(state, lower_bound);
             state.write("..=");
             print_expression(state, upper_bound);
         }
-        RangeOperationExpression::Endless {
-            lower_bound,
-            double_dot,
-        } => {
+        RangeOperationExpression::Endless { lower_bound, .. } => {
             print_expression(state, lower_bound);
             state.write("..");
         }
@@ -1783,39 +1682,31 @@ fn print_range_operation(state: &mut PrinterState, operation: &RangeOperationExp
 
 fn print_logical_operation(state: &mut PrinterState, operation: &LogicalOperationExpression) {
     match operation {
-        LogicalOperationExpression::And {
-            left,
-            double_ampersand,
-            right,
-        } => {
+        LogicalOperationExpression::And { left, right, .. } => {
             print_expression(state, left);
             state.write(" && ");
             print_expression(state, right);
         }
-        LogicalOperationExpression::Or {
-            left,
-            double_pipe,
-            right,
-        } => {
+        LogicalOperationExpression::Or { left, right, .. } => {
             print_expression(state, left);
             state.write(" || ");
             print_expression(state, right);
         }
-        LogicalOperationExpression::Not { bang, right } => {
+        LogicalOperationExpression::Not { right, .. } => {
             state.write("!");
             print_expression(state, right);
         }
-        LogicalOperationExpression::LogicalAnd { left, and, right } => {
+        LogicalOperationExpression::LogicalAnd { left, right, .. } => {
             print_expression(state, left);
             state.write(" and ");
             print_expression(state, right);
         }
-        LogicalOperationExpression::LogicalOr { left, or, right } => {
+        LogicalOperationExpression::LogicalOr { left, right, .. } => {
             print_expression(state, left);
             state.write(" or ");
             print_expression(state, right);
         }
-        LogicalOperationExpression::LogicalXor { left, xor, right } => {
+        LogicalOperationExpression::LogicalXor { left, right, .. } => {
             print_expression(state, left);
             state.write(" xor ");
             print_expression(state, right);
@@ -1825,92 +1716,52 @@ fn print_logical_operation(state: &mut PrinterState, operation: &LogicalOperatio
 
 fn print_comparison_operation(state: &mut PrinterState, operation: &ComparisonOperationExpression) {
     match operation {
-        ComparisonOperationExpression::Equal {
-            left,
-            double_equals,
-            right,
-        } => {
+        ComparisonOperationExpression::Equal { left, right, .. } => {
             print_expression(state, left);
             state.write(" == ");
             print_expression(state, right);
         }
-        ComparisonOperationExpression::Identical {
-            left,
-            triple_equals,
-            right,
-        } => {
+        ComparisonOperationExpression::Identical { left, right, .. } => {
             print_expression(state, left);
             state.write(" === ");
             print_expression(state, right);
         }
-        ComparisonOperationExpression::NotEqual {
-            left,
-            bang_equals,
-            right,
-        } => {
+        ComparisonOperationExpression::NotEqual { left, right, .. } => {
             print_expression(state, left);
             state.write(" != ");
             print_expression(state, right);
         }
-        ComparisonOperationExpression::AngledNotEqual {
-            left,
-            angled_left_right,
-            right,
-        } => {
+        ComparisonOperationExpression::AngledNotEqual { left, right, .. } => {
             print_expression(state, left);
             state.write(" <> ");
             print_expression(state, right);
         }
-        ComparisonOperationExpression::NotIdentical {
-            left,
-            bang_double_equals,
-            right,
-        } => {
+        ComparisonOperationExpression::NotIdentical { left, right, .. } => {
             print_expression(state, left);
             state.write(" !== ");
             print_expression(state, right);
         }
-        ComparisonOperationExpression::LessThan {
-            left,
-            less_than,
-            right,
-        } => {
+        ComparisonOperationExpression::LessThan { left, right, .. } => {
             print_expression(state, left);
             state.write(" < ");
             print_expression(state, right);
         }
-        ComparisonOperationExpression::GreaterThan {
-            left,
-            greater_than,
-            right,
-        } => {
+        ComparisonOperationExpression::GreaterThan { left, right, .. } => {
             print_expression(state, left);
             state.write(" > ");
             print_expression(state, right);
         }
-        ComparisonOperationExpression::LessThanOrEqual {
-            left,
-            less_than_equals,
-            right,
-        } => {
+        ComparisonOperationExpression::LessThanOrEqual { left, right, .. } => {
             print_expression(state, left);
             state.write(" <= ");
             print_expression(state, right);
         }
-        ComparisonOperationExpression::GreaterThanOrEqual {
-            left,
-            greater_than_equals,
-            right,
-        } => {
+        ComparisonOperationExpression::GreaterThanOrEqual { left, right, .. } => {
             print_expression(state, left);
             state.write(" >= ");
             print_expression(state, right);
         }
-        ComparisonOperationExpression::Spaceship {
-            left,
-            spaceship,
-            right,
-        } => {
+        ComparisonOperationExpression::Spaceship { left, right, .. } => {
             print_expression(state, left);
             state.write(" <=> ");
             print_expression(state, right);
@@ -1920,40 +1771,32 @@ fn print_comparison_operation(state: &mut PrinterState, operation: &ComparisonOp
 
 fn print_bitwise_operation(state: &mut PrinterState, operation: &BitwiseOperationExpression) {
     match operation {
-        BitwiseOperationExpression::And { left, and, right } => {
+        BitwiseOperationExpression::And { left, right, .. } => {
             print_expression(state, left);
             state.write(" & ");
             print_expression(state, right);
         }
-        BitwiseOperationExpression::Or { left, or, right } => {
+        BitwiseOperationExpression::Or { left, right, .. } => {
             print_expression(state, left);
             state.write(" | ");
             print_expression(state, right);
         }
-        BitwiseOperationExpression::Xor { left, xor, right } => {
+        BitwiseOperationExpression::Xor { left, right, .. } => {
             print_expression(state, left);
             state.write(" ^ ");
             print_expression(state, right);
         }
-        BitwiseOperationExpression::LeftShift {
-            left,
-            left_shift,
-            right,
-        } => {
+        BitwiseOperationExpression::LeftShift { left, right, .. } => {
             print_expression(state, left);
             state.write(" << ");
             print_expression(state, right);
         }
-        BitwiseOperationExpression::RightShift {
-            left,
-            right_shift,
-            right,
-        } => {
+        BitwiseOperationExpression::RightShift { left, right, .. } => {
             print_expression(state, left);
             state.write(" >> ");
             print_expression(state, right);
         }
-        BitwiseOperationExpression::Not { not, right } => {
+        BitwiseOperationExpression::Not { right, .. } => {
             state.write("~");
             print_expression(state, right);
         }
@@ -1962,128 +1805,72 @@ fn print_bitwise_operation(state: &mut PrinterState, operation: &BitwiseOperatio
 
 fn print_assignment_operation(state: &mut PrinterState, operation: &AssignmentOperationExpression) {
     match operation {
-        AssignmentOperationExpression::Assign {
-            left,
-            equals,
-            right,
-        } => {
+        AssignmentOperationExpression::Assign { left, right, .. } => {
             print_expression(state, left);
             state.write(" = ");
             print_expression(state, right);
         }
-        AssignmentOperationExpression::Addition {
-            left,
-            plus_equals,
-            right,
-        } => {
+        AssignmentOperationExpression::Addition { left, right, .. } => {
             print_expression(state, left);
             state.write(" += ");
             print_expression(state, right);
         }
-        AssignmentOperationExpression::Subtraction {
-            left,
-            minus_equals,
-            right,
-        } => {
+        AssignmentOperationExpression::Subtraction { left, right, .. } => {
             print_expression(state, left);
             state.write(" -= ");
             print_expression(state, right);
         }
-        AssignmentOperationExpression::Multiplication {
-            left,
-            asterisk_equals,
-            right,
-        } => {
+        AssignmentOperationExpression::Multiplication { left, right, .. } => {
             print_expression(state, left);
             state.write(" *= ");
             print_expression(state, right);
         }
-        AssignmentOperationExpression::Division {
-            left,
-            slash_equals,
-            right,
-        } => {
+        AssignmentOperationExpression::Division { left, right, .. } => {
             print_expression(state, left);
             state.write(" /= ");
             print_expression(state, right);
         }
-        AssignmentOperationExpression::Modulo {
-            left,
-            percent_equals,
-            right,
-        } => {
+        AssignmentOperationExpression::Modulo { left, right, .. } => {
             print_expression(state, left);
             state.write(" %= ");
             print_expression(state, right);
         }
-        AssignmentOperationExpression::Exponentiation {
-            left,
-            pow_equals,
-            right,
-        } => {
+        AssignmentOperationExpression::Exponentiation { left, right, .. } => {
             print_expression(state, left);
             state.write(" **= ");
             print_expression(state, right);
         }
-        AssignmentOperationExpression::Concat {
-            left,
-            dot_equals,
-            right,
-        } => {
+        AssignmentOperationExpression::Concat { left, right, .. } => {
             print_expression(state, left);
             state.write(" .= ");
             print_expression(state, right);
         }
-        AssignmentOperationExpression::BitwiseAnd {
-            left,
-            ampersand_equals,
-            right,
-        } => {
+        AssignmentOperationExpression::BitwiseAnd { left, right, .. } => {
             print_expression(state, left);
             state.write(" &= ");
             print_expression(state, right);
         }
-        AssignmentOperationExpression::BitwiseOr {
-            left,
-            pipe_equals,
-            right,
-        } => {
+        AssignmentOperationExpression::BitwiseOr { left, right, .. } => {
             print_expression(state, left);
             state.write(" |= ");
             print_expression(state, right);
         }
-        AssignmentOperationExpression::BitwiseXor {
-            left,
-            caret_equals,
-            right,
-        } => {
+        AssignmentOperationExpression::BitwiseXor { left, right, .. } => {
             print_expression(state, left);
             state.write(" ^= ");
             print_expression(state, right);
         }
-        AssignmentOperationExpression::LeftShift {
-            left,
-            left_shift_equals,
-            right,
-        } => {
+        AssignmentOperationExpression::LeftShift { left, right, .. } => {
             print_expression(state, left);
             state.write(" <<= ");
             print_expression(state, right);
         }
-        AssignmentOperationExpression::RightShift {
-            left,
-            right_shift_equals,
-            right,
-        } => {
+        AssignmentOperationExpression::RightShift { left, right, .. } => {
             print_expression(state, left);
             state.write(" >>= ");
             print_expression(state, right);
         }
-        AssignmentOperationExpression::Coalesce {
-            left,
-            coalesce_equals,
-            right,
-        } => {
+        AssignmentOperationExpression::Coalesce { left, right, .. } => {
             print_expression(state, left);
             state.write(" ??= ");
             print_expression(state, right);
@@ -2111,9 +1898,7 @@ fn print_argument_list(state: &mut PrinterState, arguments: &ArgumentList) {
 fn print_argument(state: &mut PrinterState, argument: &Argument) {
     match argument {
         Argument::Positional(PositionalArgument {
-            comments,
-            ellipsis,
-            value,
+            ellipsis, value, ..
         }) => {
             if ellipsis.is_some() {
                 state.write("...");
@@ -2121,11 +1906,10 @@ fn print_argument(state: &mut PrinterState, argument: &Argument) {
             print_expression(state, value);
         }
         Argument::Named(NamedArgument {
-            comments,
             name,
-            colon,
             ellipsis,
             value,
+            ..
         }) => {
             print_simple_identifier(state, name);
             if ellipsis.is_some() {
@@ -2149,65 +1933,57 @@ fn print_variable(state: &mut PrinterState, variable: &Variable) {
 
 fn print_arithmetic_operation(state: &mut PrinterState, operation: &ArithmeticOperationExpression) {
     match operation {
-        ArithmeticOperationExpression::Addition { left, plus, right } => {
+        ArithmeticOperationExpression::Addition { left, right, .. } => {
             print_expression(state, left);
             state.write(" + ");
             print_expression(state, right);
         }
-        ArithmeticOperationExpression::Subtraction { left, minus, right } => {
+        ArithmeticOperationExpression::Subtraction { left, right, .. } => {
             print_expression(state, left);
             state.write(" - ");
             print_expression(state, right);
         }
-        ArithmeticOperationExpression::Multiplication {
-            left,
-            asterisk,
-            right,
-        } => {
+        ArithmeticOperationExpression::Multiplication { left, right, .. } => {
             print_expression(state, left);
             state.write(" * ");
             print_expression(state, right);
         }
-        ArithmeticOperationExpression::Division { left, slash, right } => {
+        ArithmeticOperationExpression::Division { left, right, .. } => {
             print_expression(state, left);
             state.write(" / ");
             print_expression(state, right);
         }
-        ArithmeticOperationExpression::Modulo {
-            left,
-            percent,
-            right,
-        } => {
+        ArithmeticOperationExpression::Modulo { left, right, .. } => {
             print_expression(state, left);
             state.write(" % ");
             print_expression(state, right);
         }
-        ArithmeticOperationExpression::Exponentiation { left, pow, right } => {
+        ArithmeticOperationExpression::Exponentiation { left, right, .. } => {
             print_expression(state, left);
             state.write(" ** ");
             print_expression(state, right);
         }
-        ArithmeticOperationExpression::Negative { minus, right } => {
+        ArithmeticOperationExpression::Negative { right, .. } => {
             state.write("-");
             print_expression(state, right);
         }
-        ArithmeticOperationExpression::Positive { plus, right } => {
+        ArithmeticOperationExpression::Positive { right, .. } => {
             state.write("+");
             print_expression(state, right);
         }
-        ArithmeticOperationExpression::PreIncrement { increment, right } => {
+        ArithmeticOperationExpression::PreIncrement { right, .. } => {
             state.write("++");
             print_expression(state, right);
         }
-        ArithmeticOperationExpression::PostIncrement { left, increment } => {
+        ArithmeticOperationExpression::PostIncrement { left, .. } => {
             print_expression(state, left);
             state.write("++");
         }
-        ArithmeticOperationExpression::PreDecrement { decrement, right } => {
+        ArithmeticOperationExpression::PreDecrement { right, .. } => {
             state.write("--");
             print_expression(state, right);
         }
-        ArithmeticOperationExpression::PostDecrement { left, decrement } => {
+        ArithmeticOperationExpression::PostDecrement { left, .. } => {
             print_expression(state, left);
             state.write("--");
         }
@@ -2291,7 +2067,7 @@ fn print_switch(state: &mut PrinterState, statement: &SwitchStatement) {
     state.write("switch (");
     print_expression(state, &statement.condition);
     state.write(") {");
-    
+
     state.indent();
     state.new_line();
 
@@ -2326,9 +2102,9 @@ fn print_try(state: &mut PrinterState, statement: &TryStatement) {
     state.write("try {");
     state.indent();
     state.new_line();
-    
+
     print_statements(state, &statement.body);
-    
+
     state.dedent();
     state.new_line();
     state.write("}");
@@ -2344,7 +2120,7 @@ fn print_try(state: &mut PrinterState, statement: &TryStatement) {
                     }
                     print_simple_identifier(state, identifier);
                 }
-            },
+            }
         }
         state.write(" ");
         if let Some(variable) = &catch.var {
@@ -2372,15 +2148,15 @@ fn print_try(state: &mut PrinterState, statement: &TryStatement) {
 
 fn print_use(state: &mut PrinterState, statement: &UseStatement) {
     state.write("use");
-    
+
     match &statement.kind {
-        UseKind::Normal => {},
+        UseKind::Normal => {}
         UseKind::Function => state.write(" function"),
         UseKind::Const => state.write(" const"),
     };
 
     state.write(" ");
-    
+
     for (i, use_) in statement.uses.iter().enumerate() {
         if i > 0 {
             state.write(", ");
@@ -2394,14 +2170,14 @@ fn print_use(state: &mut PrinterState, statement: &UseStatement) {
 
 fn print_single_use(state: &mut PrinterState, use_: &Use) {
     match &use_.kind {
-        Some(UseKind::Normal) => {},
+        Some(UseKind::Normal) => {}
         Some(UseKind::Function) => state.write("function "),
         Some(UseKind::Const) => state.write("const "),
-        _ => {},
+        _ => {}
     };
 
     print_simple_identifier(state, &use_.name);
-    
+
     if let Some(alias) = &use_.alias {
         state.write(" as ");
         print_simple_identifier(state, alias);
@@ -2410,9 +2186,9 @@ fn print_single_use(state: &mut PrinterState, use_: &Use) {
 
 fn print_group_use(state: &mut PrinterState, statement: &GroupUseStatement) {
     state.write("use");
-    
+
     match &statement.kind {
-        UseKind::Normal => {},
+        UseKind::Normal => {}
         UseKind::Function => state.write(" function"),
         UseKind::Const => state.write(" const"),
     };
@@ -2423,7 +2199,7 @@ fn print_group_use(state: &mut PrinterState, statement: &GroupUseStatement) {
     state.write("{");
     state.indent();
     state.new_line();
-    
+
     for (i, use_) in statement.uses.iter().enumerate() {
         if i > 0 {
             state.write(", ");
@@ -2465,7 +2241,7 @@ fn print_declare(state: &mut PrinterState, statement: &DeclareStatement) {
     match &statement.body {
         DeclareBody::Noop { .. } => {
             state.write(";");
-        },
+        }
         DeclareBody::Braced { statements, .. } => {
             state.write(" {");
             state.indent();
@@ -2474,12 +2250,12 @@ fn print_declare(state: &mut PrinterState, statement: &DeclareStatement) {
             state.dedent();
             state.new_line();
             state.write("}");
-        },
+        }
         DeclareBody::Expression { expression, .. } => {
             state.write(" ");
             print_expression(state, expression);
             state.write(";");
-        },
+        }
         DeclareBody::Block { statements, .. } => {
             state.write(":");
             state.indent();
@@ -2488,7 +2264,7 @@ fn print_declare(state: &mut PrinterState, statement: &DeclareStatement) {
             state.dedent();
             state.new_line();
             state.write("enddeclare;");
-        },
+        }
     }
 }
 
@@ -2497,7 +2273,7 @@ fn print_arrow_function(state: &mut PrinterState, function: &ArrowFunctionExpres
     if function.ampersand.is_some() {
         state.write("&");
     }
-    
+
     state.write("(");
     print_function_parameter_list(state, &function.parameters);
     state.write(")");
@@ -2511,7 +2287,7 @@ fn print_arrow_function(state: &mut PrinterState, function: &ArrowFunctionExpres
         ArrowFunctionBody::Expression(ArrowFunctionExpressionBody { expression, .. }) => {
             state.write(" => ");
             print_expression(state, expression);
-        },
+        }
         ArrowFunctionBody::Block(ArrowFunctionBlockBody { statements, .. }) => {
             state.write("{");
             state.indent();
@@ -2520,7 +2296,7 @@ fn print_arrow_function(state: &mut PrinterState, function: &ArrowFunctionExpres
             state.dedent();
             state.new_line();
             state.write("}");
-        },
+        }
     }
 }
 
@@ -2536,11 +2312,11 @@ fn print_string_part(state: &mut PrinterState, part: &StringPart) {
     match part {
         StringPart::Literal(LiteralStringPart { value }) => {
             state.write(value.to_string());
-        },
+        }
         StringPart::Expression(ExpressionStringPart { expression }) => {
             state.write("{");
             print_expression(state, expression);
             state.write("}");
-        },
+        }
     }
 }
