@@ -12,7 +12,7 @@ use pxp_parser::parser::ast::{
     functions::{
         AbstractConstructor, AbstractMethod, ClosureExpression, ConcreteConstructor,
         ConcreteMethod, ConstructorParameter, ConstructorParameterList, FunctionParameterList,
-        FunctionStatement, ReturnType,
+        FunctionStatement, ReturnType, ArrowFunctionExpression, ArrowFunctionBody, ArrowFunctionExpressionBody, ArrowFunctionBlockBody,
     },
     goto::{GotoStatement, LabelStatement},
     identifiers::{Identifier, SimpleIdentifier, DynamicIdentifier},
@@ -1476,7 +1476,7 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             state.write(")");
         }
         Expression::Closure(closure) => print_closure(state, closure),
-        Expression::ArrowFunction(_) => todo!(),
+        Expression::ArrowFunction(function) => print_arrow_function(state, function),
         Expression::New(NewExpression {
             new,
             target,
@@ -1496,7 +1496,9 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             index,
             right_bracket,
         }) => todo!(),
-        Expression::Null => todo!(),
+        Expression::Null => {
+            state.write("null");
+        },
         Expression::MagicConstant(constant) => print_magic_constant(state, constant),
         Expression::ShortTernary(ShortTernaryExpression {
             condition,
@@ -1515,7 +1517,10 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             double_question,
             rhs,
         }) => todo!(),
-        Expression::Clone(CloneExpression { target }) => todo!(),
+        Expression::Clone(CloneExpression { target }) => {
+            state.write("clone ");
+            print_expression(state, target);
+        },
         Expression::Match(MatchExpression {
             keyword,
             condition,
@@ -1539,10 +1544,23 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
             state.write("}");
         }
         Expression::ShortMatch(ShortMatchExpression {
-            keyword,
             default,
             arms,
-        }) => todo!(),
+            ..
+        }) => {
+            state.write("match {");
+            state.indent();
+            state.new_line();
+            for arm in arms {
+                print_match_arm(state, arm);
+            }
+            if let Some(default) = default {
+                print_default_match_arm(state, default);
+            }
+            state.dedent();
+            state.new_line();
+            state.write("}");
+        },
         Expression::Throw(ThrowExpression { value }) => {
             state.write("throw ");
             print_expression(state, value);
@@ -2449,6 +2467,38 @@ fn print_declare(state: &mut PrinterState, statement: &DeclareStatement) {
             state.dedent();
             state.new_line();
             state.write("enddeclare;");
+        },
+    }
+}
+
+fn print_arrow_function(state: &mut PrinterState, function: &ArrowFunctionExpression) {
+    state.write("fn ");
+    if function.ampersand.is_some() {
+        state.write("&");
+    }
+    
+    state.write("(");
+    print_function_parameter_list(state, &function.parameters);
+    state.write(")");
+
+    if let Some(ReturnType { data_type, .. }) = function.return_type.as_ref() {
+        state.write(": ");
+        print_type(state, data_type);
+    }
+
+    match &function.body {
+        ArrowFunctionBody::Expression(ArrowFunctionExpressionBody { expression, .. }) => {
+            state.write(" => ");
+            print_expression(state, expression);
+        },
+        ArrowFunctionBody::Block(ArrowFunctionBlockBody { statements, .. }) => {
+            state.write("{");
+            state.indent();
+            state.new_line();
+            print_statements(state, statements);
+            state.dedent();
+            state.new_line();
+            state.write("}");
         },
     }
 }
