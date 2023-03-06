@@ -445,12 +445,16 @@ fn print_statement(state: &mut PrinterState, statement: &Statement) {
             state.write(";");
         }
         Statement::TypeAlias(TypeAliasStatement {
-            type_keyword,
             name,
-            equals,
             r#type,
-            semicolon,
-        }) => todo!(),
+            ..
+        }) => {
+            state.write("type ");
+            print_simple_identifier(state, name);
+            state.write(" = ");
+            print_type(state, r#type);
+            state.write(";");
+        },
     }
 
     state.new_line();
