@@ -1515,11 +1515,16 @@ fn print_expression(state: &mut PrinterState, expression: &Expression) {
         },
         Expression::Ternary(TernaryExpression {
             condition,
-            question,
             then,
-            colon,
             r#else,
-        }) => todo!(),
+            ..
+        }) => {
+            print_expression(state, condition);
+            state.write(" ? ");
+            print_expression(state, then);
+            state.write(" : ");
+            print_expression(state, r#else);
+        },
         Expression::Coalesce(CoalesceExpression {
             lhs,
             double_question,
