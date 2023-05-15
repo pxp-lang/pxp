@@ -2,9 +2,9 @@
 
 This repository contains the main PXP command-line application that powers the transpiler, static analyser and language server.
 
-## Installation
+**PXP is not ready for production use, but we do encourage you to try it out and report any bugs or problems you face.**
 
-> **Warning** - PXP is not ready for any form of production use.
+## Installation
 
 You can install PXP in your project using Composer:
 
