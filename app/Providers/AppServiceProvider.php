@@ -22,13 +22,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        if (file_exists(getcwd() . '/pxp.json')) {
-            $this->app->singleton(Configuration::class, function () {
-                return Configuration::fromArray(
-                    json_decode(file_get_contents(getcwd() . '/pxp.json'), associative: true)
-                );
-            });
-        }
+        $this->app->singleton(Configuration::class, function () {
+            return Configuration::fromArray(
+                file_exists(getcwd() . '/pxp.json')
+                    ? json_decode(file_get_contents(getcwd() . '/pxp.json'), associative: true)
+                    : []
+            );
+        });
 
         $this->app->singleton(Parser::class);
         $this->app->singleton(Transpiler::class);
