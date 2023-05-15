@@ -10,6 +10,12 @@ use LaravelZero\Framework\Commands\Command;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Psr\Log\NullLogger;
 use RuntimeException;
+use Symfony\Component\VarDumper\Caster\ReflectionCaster;
+use Symfony\Component\VarDumper\Cloner\Data;
+use Symfony\Component\VarDumper\Cloner\VarCloner;
+use Symfony\Component\VarDumper\Dumper\CliDumper;
+use Symfony\Component\VarDumper\Dumper\ServerDumper;
+use Symfony\Component\VarDumper\VarDumper;
 
 class LanguageServerCommand extends Command
 {

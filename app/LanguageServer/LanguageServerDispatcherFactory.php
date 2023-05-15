@@ -2,6 +2,7 @@
 
 namespace App\LanguageServer;
 
+use App\LanguageServer\Handlers\CompletionHandler;
 use Phpactor\LanguageServer\Adapter\Psr\AggregateEventDispatcher;
 use Phpactor\LanguageServer\Core\Command\CommandDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\ChainArgumentResolver;
@@ -19,7 +20,6 @@ use Phpactor\LanguageServer\Core\Server\Transmitter\MessageTransmitter;
 use Phpactor\LanguageServer\Core\Service\ServiceManager;
 use Phpactor\LanguageServer\Core\Service\ServiceProviders;
 use Phpactor\LanguageServer\Core\Workspace\Workspace;
-use Phpactor\LanguageServer\Example\Service\PingProvider;
 use Phpactor\LanguageServer\Handler\System\ServiceHandler;
 use Phpactor\LanguageServer\Handler\TextDocument\TextDocumentHandler;
 use Phpactor\LanguageServer\Handler\Workspace\CommandHandler;
@@ -46,11 +46,9 @@ final class LanguageServerDispatcherFactory implements DispatcherFactory
         $responseWatcher = new DeferredResponseWatcher();
         $clientApi = new ClientApi(new JsonRpcClient($transmitter, $responseWatcher));
 
-        $serviceProviders = new ServiceProviders(
-            new PingProvider($clientApi)
-        );
-
+        $serviceProviders = new ServiceProviders();
         $serviceManager = new ServiceManager($serviceProviders, $this->logger);
+
         $workspace = new Workspace($this->logger);
 
         $eventDispatcher = new AggregateEventDispatcher(
@@ -61,7 +59,8 @@ final class LanguageServerDispatcherFactory implements DispatcherFactory
         $handlers = new Handlers(
             new TextDocumentHandler($eventDispatcher),
             new ServiceHandler($serviceManager, $clientApi),
-            new CommandHandler(new CommandDispatcher([]))
+            new CommandHandler(new CommandDispatcher([])),
+            new CompletionHandler,
         );
 
         $runner = new HandlerMethodRunner(
