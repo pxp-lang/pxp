@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bf7c3f5f8a469e9a672f93c24a48628b",
+    "content-hash": "0732eb5bcb92ebe641d4a7a3cf8f20c6",
     "packages": [
         {
             "name": "brick/math",
@@ -2391,6 +2391,66 @@
                 "source": "https://github.com/php-fig/simple-cache/tree/3.0.0"
             },
             "time": "2021-10-29T13:26:27+00:00"
+        },
+        {
+            "name": "pxp/parser",
+            "version": "v0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pxp-lang/parser.git",
+                "reference": "71b390f00c1ac482cc872f290331e21f8fce628b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pxp-lang/parser/zipball/71b390f00c1ac482cc872f290331e21f8fce628b",
+                "reference": "71b390f00c1ac482cc872f290331e21f8fce628b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-tokenizer": "*",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "ircmaxell/php-yacc": "^0.0.7",
+                "laravel/pint": "^1.10",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^9.0",
+                "symfony/var-dumper": "^6.2"
+            },
+            "bin": [
+                "bin/php-parse"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.9-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pxp\\Parser\\": "lib/PhpParser"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Ryan Chandler",
+                    "email": "support@ryangjchandler.co.uk"
+                }
+            ],
+            "description": "The parser for PXP, extended from nikic/PHP-Parser.",
+            "keywords": [
+                "parser",
+                "php",
+                "pxp"
+            ],
+            "support": {
+                "source": "https://github.com/pxp-lang/parser/tree/v0.0.1"
+            },
+            "time": "2023-05-14T23:04:55+00:00"
         },
         {
             "name": "ramsey/collection",
