@@ -3,7 +3,6 @@
         "app"
     ],
     "transpiler": {
-        "cache": false,
         "sourceMap": false,
         "strictTypes": false
     }

@@ -15,7 +15,6 @@ final class Configuration
             paths: $config['paths'] ?? [],
             transpiler: new TranspilerOptions(
                 strictTypes: $config['transpiler']['strictTypes'] ?? false,
-                cache: $config['transpiler']['cache'] ?? false,
                 sourceMap: $config['transpiler']['sourceMap'] ?? false,
             )
         );

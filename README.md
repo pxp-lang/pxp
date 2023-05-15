@@ -1,40 +1,67 @@
-<a href="https://supportukrainenow.org/"><img src="https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner-direct.svg" width="100%"></a>
+# PXP
 
-------
+This repository contains the main PXP command-line application that powers the transpiler, static analyser and language server.
 
-<p align="center">
-    <img title="Laravel Zero" height="100" src="https://raw.githubusercontent.com/laravel-zero/docs/master/images/logo/laravel-zero-readme.png" />
-</p>
+## Installation
 
-<p align="center">
-  <a href="https://github.com/laravel-zero/framework/actions"><img src="https://github.com/laravel-zero/laravel-zero/actions/workflows/tests.yml/badge.svg" alt="Build Status"></img></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/dt/laravel-zero/framework.svg" alt="Total Downloads"></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/v/laravel-zero/framework.svg?label=stable" alt="Latest Stable Version"></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/l/laravel-zero/framework.svg" alt="License"></a>
-</p>
+> **Warning** - PXP is not ready for any form of production use.
 
-<h4> <center>This is a <bold>community project</bold> and not an official Laravel one </center></h4>
+You can install PXP in your project using Composer:
 
-Laravel Zero was created by [Nuno Maduro](https://github.com/nunomaduro) and [Owen Voke](https://github.com/owenvoke), and is a micro-framework that provides an elegant starting point for your console application. It is an **unofficial** and customized version of Laravel optimized for building command-line applications.
+```sh
+composer require pxp/pxp
+```
 
-- Built on top of the [Laravel](https://laravel.com) components.
-- Optional installation of Laravel [Eloquent](https://laravel-zero.com/docs/database/), Laravel [Logging](https://laravel-zero.com/docs/logging/) and many others.
-- Supports interactive [menus](https://laravel-zero.com/docs/build-interactive-menus/) and [desktop notifications](https://laravel-zero.com/docs/send-desktop-notifications/) on Linux, Windows & MacOS.
-- Ships with a [Scheduler](https://laravel-zero.com/docs/task-scheduling/) and  a [Standalone Compiler](https://laravel-zero.com/docs/build-a-standalone-application/).
-- Integration with [Collision](https://github.com/nunomaduro/collision) - Beautiful error reporting
+This will expose a `vendor/bin/pxp` binary.
 
-------
+## Usage
 
-## Documentation
+Before using PXP, you must initialise your project.
 
-For full documentation, visit [laravel-zero.com](https://laravel-zero.com/).
+```sh
+vendor/bin/pxp init
+```
 
-## Support the development
-**Do you like this project? Support it by donating**
+This will create a configuration file in the current directory called `pxp.json`. The contents of this file are below.
 
-- PayPal: [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=66BYDWAT92N6L)
-- Patreon: [Donate](https://www.patreon.com/nunomaduro)
+```json
+{
+    "paths": [
+        "app"
+    ],
+    "transpiler": {
+        "sourceMap": false,
+        "strictTypes": false
+    }
+}
+```
 
-## License
+### Configuration
 
-Laravel Zero is an open-source software licensed under the MIT license.
+The `pxp.json` file is used to configure all of PXP's processes. The table below describes each of the configuration options and whether they have been implemented yet.
+
+| Option | Description | Implemented? |
+| --- | --- | --- |
+| `paths` | An array of directories or files that should be transpiled by PXP | ✅ |
+| `transpiler.sourceMap` | Determines whether a source map should be generated when transpiling. This is used by PXP to ensure exceptions are accurate. | ❌ |
+| `transpiler.strictTypes` | Whether a `declare(strict_types=1)` should be automatically added to the generated PHP code. | ❌ |
+
+### Transpiling code
+
+To transpile your PXP code to PHP, use the `pxp build` command.
+
+```
+vendor/bin/pxp build
+```
+
+This will use the `paths` from the configuration file to locate PXP files and generate the necessary PHP code.
+
+The current version of PXP will store the PHP code **next to the PXP code** i.e. `app/User.pxp` will generate an `app/User.php` file.
+
+## Contributing
+
+All pull requests are welcome.
+
+## Credit
+
+* [Ryan Chandler](https://github.com/ryangjchandler)
