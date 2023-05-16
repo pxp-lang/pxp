@@ -7,6 +7,7 @@ use Amp\Promise;
 use Phpactor\LanguageServer\Core\Handler\CanRegisterCapabilities;
 use Phpactor\LanguageServer\Core\Handler\Handler;
 use Phpactor\LanguageServerProtocol\CompletionItem;
+use Phpactor\LanguageServerProtocol\CompletionItemKind;
 use Phpactor\LanguageServerProtocol\CompletionList;
 use Phpactor\LanguageServerProtocol\CompletionOptions;
 use Phpactor\LanguageServerProtocol\CompletionParams;
@@ -28,6 +29,7 @@ class CompletionHandler implements Handler, CanRegisterCapabilities
         return call(function () {
             return new CompletionList(false, [
                 new CompletionItem('Foobar'),
+                new CompletionItem('$foo', kind: CompletionItemKind::VARIABLE)
             ]);
         });
     }

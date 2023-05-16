@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Common\Configuration\Configuration;
+use App\LanguageServer\TolerantParser;
 use App\Transpiler\Parser;
 use App\Transpiler\Transpiler;
 use Illuminate\Support\ServiceProvider;
@@ -31,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(Parser::class);
+        $this->app->singleton(TolerantParser::class);
         $this->app->singleton(Transpiler::class);
     }
 }
