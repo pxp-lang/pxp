@@ -6,16 +6,11 @@ use App\Common\Configuration\Configuration;
 use App\LanguageServer\LanguageServerDispatcherFactory;
 use Exception;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 use LaravelZero\Framework\Commands\Command;
+use LaravelZero\Framework\Components\Database\Migrator;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Psr\Log\NullLogger;
-use RuntimeException;
-use Symfony\Component\VarDumper\Caster\ReflectionCaster;
-use Symfony\Component\VarDumper\Cloner\Data;
-use Symfony\Component\VarDumper\Cloner\VarCloner;
-use Symfony\Component\VarDumper\Dumper\CliDumper;
-use Symfony\Component\VarDumper\Dumper\ServerDumper;
-use Symfony\Component\VarDumper\VarDumper;
 
 class LanguageServerCommand extends Command
 {
@@ -23,8 +18,11 @@ class LanguageServerCommand extends Command
 
     protected $description = 'Start the language server.';
 
-    public function handle(Configuration $configuration)
+    public function handle(MigrationRepositoryInterface $repository, Migrator $migrator, Configuration $configuration)
     {
+        $repository->createRepository();
+        $migrator->setOutput($this->output)->run();
+
         $logger = new NullLogger();
 
         LanguageServerBuilder::create(new LanguageServerDispatcherFactory($logger))
