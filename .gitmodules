@@ -1,0 +1,3 @@
+[submodule "php-8-stubs"]
+	path = php-8-stubs
+	url = git@github.com:phpstan/php-8-stubs.git

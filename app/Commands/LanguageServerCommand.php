@@ -18,11 +18,8 @@ class LanguageServerCommand extends Command
 
     protected $description = 'Start the language server.';
 
-    public function handle(MigrationRepositoryInterface $repository, Migrator $migrator, Configuration $configuration)
+    public function handle(Configuration $configuration)
     {
-        $repository->createRepository();
-        $migrator->setOutput($this->output)->run();
-
         $logger = new NullLogger();
 
         LanguageServerBuilder::create(new LanguageServerDispatcherFactory($logger))

@@ -3,10 +3,18 @@
 namespace App\Providers;
 
 use App\Common\Configuration\Configuration;
+use App\Common\DocblockParser;
+use App\Indexer\CachingParser;
+use App\Indexer\Structures\StructureRepository;
 use App\LanguageServer\TolerantParser;
 use App\Transpiler\Parser;
 use App\Transpiler\Transpiler;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
+use PHPStan\PhpDocParser\Lexer\Lexer;
+use PHPStan\PhpDocParser\Parser\ConstExprParser;
+use PHPStan\PhpDocParser\Parser\PhpDocParser;
+use PHPStan\PhpDocParser\Parser\TypeParser;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Model::unguard();
     }
 
     /**
@@ -31,8 +39,21 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
+        $this->app->singleton(DocblockParser::class, function () {
+            $constExprParser = new ConstExprParser();
+
+            return new DocblockParser(
+                new Lexer,
+                new PhpDocParser(
+                    new TypeParser($constExprParser),
+                    $constExprParser,
+                )
+            );
+        });
+
         $this->app->singleton(Parser::class);
         $this->app->singleton(TolerantParser::class);
+        $this->app->singleton(CachingParser::class);
         $this->app->singleton(Transpiler::class);
     }
 }
