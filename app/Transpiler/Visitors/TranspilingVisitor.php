@@ -14,5 +14,7 @@ class TranspilingVisitor extends NodeVisitorAbstract
         if ($node instanceof ShortClosure) {
             return ShortClosureTransformer::transform($node);
         }
+
+        return null;
     }
 }

@@ -22,6 +22,8 @@ class VariableFindingVisitor extends NodeVisitorAbstract
         if ($node instanceof Variable && is_string($node->name) && ! in_array($node->name, $this->variables) && ! in_array($node->name, $this->assignments)) {
             $this->variables[] = $node->name;
         }
+
+        return null;
     }
 
     public function getVariables(): array

@@ -39,18 +39,6 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        $this->app->singleton(DocblockParser::class, function () {
-            $constExprParser = new ConstExprParser();
-
-            return new DocblockParser(
-                new Lexer,
-                new PhpDocParser(
-                    new TypeParser($constExprParser),
-                    $constExprParser,
-                )
-            );
-        });
-
         $this->app->singleton(Parser::class);
         $this->app->singleton(TolerantParser::class);
         $this->app->singleton(CachingParser::class);

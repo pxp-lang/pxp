@@ -8,12 +8,13 @@ use Pxp\Parser\Parser\Php7;
 use Pxp\Parser\ParserFactory;
 use Pxp\Parser\NodeTraverser;
 use Pxp\Parser\NodeVisitor\NameResolver;
+use Pxp\Parser\Parser as PxpParser;
 
 final class Parser
 {
     private Lexer $lexer;
 
-    private Php7 $parser;
+    private PxpParser $parser;
 
     public function __construct()
     {

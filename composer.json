@@ -21,7 +21,6 @@
         "laravel-zero/framework": "^10.0.2",
         "nunomaduro/termwind": "^1.15.1",
         "phpactor/language-server": "^5.1",
-        "phpstan/phpdoc-parser": "^1.21",
         "pxp/parser": "^0.0.1"
     },
     "require-dev": {

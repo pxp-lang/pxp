@@ -8,13 +8,13 @@ use Pxp\Parser\ParserFactory;
 use Pxp\Parser\Lexer\Emulative;
 use Pxp\Parser\NodeVisitor\NameResolver;
 use Pxp\Parser\Lexer;
-use Pxp\Parser\Parser\Php7;
+use Pxp\Parser\Parser;
 
 final class TolerantParser
 {
     private Lexer $lexer;
 
-    private Php7 $parser;
+    private Parser $parser;
 
     private Collecting $errorHandler;
 
