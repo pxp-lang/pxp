@@ -1,6 +1,6 @@
 <?php
 
-namespace App\LanguageServer\Handlers;
+namespace Pxp\LanguageServer\Handlers;
 
 use Amp\CancellationToken;
 use Amp\Promise;

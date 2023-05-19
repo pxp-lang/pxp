@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Transpiler\Visitors;
+namespace Pxp\Transpiler\Visitors;
 
 use Pxp\Parser\Node;
 use Pxp\Parser\Node\Expr\Assign;

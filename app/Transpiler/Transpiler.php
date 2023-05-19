@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Transpiler;
+namespace Pxp\Transpiler;
 
-use App\Common\Configuration\TranspilerOptions;
-use App\Transpiler\Visitors\TranspilingVisitor;
+use Pxp\Common\Configuration\TranspilerOptions;
+use Pxp\Transpiler\Visitors\TranspilingVisitor;
 use Pxp\Parser\NodeTraverser;
 use Pxp\Parser\PrettyPrinter\Standard;
 

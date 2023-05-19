@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Commands;
+namespace Pxp\Commands;
 
-use App\Common\Configuration\Configuration;
-use App\Transpiler\Transpiler;
+use Pxp\Common\Configuration\Configuration;
+use Pxp\Transpiler\Transpiler;
 use LaravelZero\Framework\Commands\Command;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;

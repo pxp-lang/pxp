@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Pxp\Tests;
 
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Foundation\Application;

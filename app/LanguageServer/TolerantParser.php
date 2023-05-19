@@ -1,6 +1,6 @@
 <?php
 
-namespace App\LanguageServer;
+namespace Pxp\LanguageServer;
 
 use Pxp\Parser\ErrorHandler\Collecting;
 use Pxp\Parser\NodeTraverser;

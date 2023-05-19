@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Commands;
+namespace Pxp\Commands;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\File;

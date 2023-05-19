@@ -1,8 +1,8 @@
 <?php
 
-namespace App\LanguageServer;
+namespace Pxp\LanguageServer;
 
-use App\LanguageServer\Handlers\CompletionHandler;
+use Pxp\LanguageServer\Handlers\CompletionHandler;
 use Phpactor\LanguageServer\Adapter\Psr\AggregateEventDispatcher;
 use Phpactor\LanguageServer\Core\Command\CommandDispatcher;
 use Phpactor\LanguageServer\Core\Dispatcher\ArgumentResolver\ChainArgumentResolver;

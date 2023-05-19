@@ -32,14 +32,14 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/",
+            "Pxp\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Pxp\\Tests\\": "tests/"
         }
     },
     "config": {

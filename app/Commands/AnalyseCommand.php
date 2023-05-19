@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Commands;
+namespace Pxp\Commands;
 
-use App\Common\Configuration\Configuration;
+use Pxp\Common\Configuration\Configuration;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 

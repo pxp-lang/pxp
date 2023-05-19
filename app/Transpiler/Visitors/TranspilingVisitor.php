@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Transpiler\Visitors;
+namespace Pxp\Transpiler\Visitors;
 
-use App\Transpiler\Transformers\ShortClosureTransformer;
+use Pxp\Transpiler\Transformers\ShortClosureTransformer;
 use Pxp\Parser\Node;
 use Pxp\Parser\Node\Expr\ShortClosure;
 use Pxp\Parser\NodeVisitorAbstract;

@@ -1,20 +1,14 @@
 <?php
 
-namespace App\Providers;
+namespace Pxp\Providers;
 
-use App\Common\Configuration\Configuration;
-use App\Common\DocblockParser;
-use App\Indexer\CachingParser;
-use App\Indexer\Structures\StructureRepository;
-use App\LanguageServer\TolerantParser;
-use App\Transpiler\Parser;
-use App\Transpiler\Transpiler;
+use Pxp\Common\Configuration\Configuration;
+use Pxp\Indexer\CachingParser;
+use Pxp\LanguageServer\TolerantParser;
+use Pxp\Transpiler\Parser;
+use Pxp\Transpiler\Transpiler;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
-use PHPStan\PhpDocParser\Lexer\Lexer;
-use PHPStan\PhpDocParser\Parser\ConstExprParser;
-use PHPStan\PhpDocParser\Parser\PhpDocParser;
-use PHPStan\PhpDocParser\Parser\TypeParser;
 
 class AppServiceProvider extends ServiceProvider
 {

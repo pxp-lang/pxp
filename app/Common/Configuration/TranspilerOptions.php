@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Common\Configuration;
+namespace Pxp\Common\Configuration;
 
 final class TranspilerOptions
 {

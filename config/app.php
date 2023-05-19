@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => 'Pxp',
+    'name' => 'PXP',
 
     /*
     |--------------------------------------------------------------------------
@@ -67,7 +67,7 @@ return [
     */
 
     'providers' => [
-        App\Providers\AppServiceProvider::class,
+        Pxp\Providers\AppServiceProvider::class,
     ],
 
 ];

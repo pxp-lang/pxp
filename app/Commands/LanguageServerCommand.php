@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Commands;
+namespace Pxp\Commands;
 
-use App\Common\Configuration\Configuration;
-use App\LanguageServer\LanguageServerDispatcherFactory;
+use Pxp\Common\Configuration\Configuration;
+use Pxp\LanguageServer\LanguageServerDispatcherFactory;
 use Exception;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;

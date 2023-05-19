@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Transpiler\Transformers;
+namespace Pxp\Transpiler\Transformers;
 
-use App\Transpiler\Visitors\VariableFindingVisitor;
+use Pxp\Transpiler\Visitors\VariableFindingVisitor;
 use Pxp\Parser\Node\Expr\ClosureUse;
 use Pxp\Parser\Node\Expr\Closure;
 use Pxp\Parser\Node\Expr\ShortClosure;

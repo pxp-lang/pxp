@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Transpiler;
+namespace Pxp\Transpiler;
 
 use Pxp\Parser\Lexer;
 use Pxp\Parser\Lexer\Emulative;
