@@ -5,7 +5,6 @@
         "bootstrap",
         "config",
         "database",
-        "php-8-stubs",
         "vendor"
     ],
     "files": [
