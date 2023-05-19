@@ -4,7 +4,7 @@ namespace Pxp\Transpiler;
 
 use Pxp\Common\Configuration\TranspilerOptions;
 use Pxp\Transpiler\Visitors\TranspilingVisitor;
-use Pxp\Parser\NodeTraverser;
+use PhpParser\NodeTraverser;
 use Pxp\Parser\PrettyPrinter\Standard;
 
 final class Transpiler

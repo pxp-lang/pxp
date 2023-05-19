@@ -2,10 +2,10 @@
 
 namespace Pxp\Transpiler\Visitors;
 
-use Pxp\Parser\Node;
-use Pxp\Parser\Node\Expr\Assign;
-use Pxp\Parser\Node\Expr\Variable;
-use Pxp\Parser\NodeVisitorAbstract;
+use PhpParser\Node;
+use PhpParser\Node\Expr\Assign;
+use PhpParser\Node\Expr\Variable;
+use PhpParser\NodeVisitorAbstract;
 
 class VariableFindingVisitor extends NodeVisitorAbstract
 {

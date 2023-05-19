@@ -3,11 +3,11 @@
 namespace Pxp\Transpiler\Transformers;
 
 use Pxp\Transpiler\Visitors\VariableFindingVisitor;
-use Pxp\Parser\Node\Expr\ClosureUse;
-use Pxp\Parser\Node\Expr\Closure;
+use PhpParser\Node\Expr\ClosureUse;
+use PhpParser\Node\Expr\Closure;
 use Pxp\Parser\Node\Expr\ShortClosure;
-use Pxp\Parser\Node\Expr\Variable;
-use Pxp\Parser\NodeTraverser;
+use PhpParser\Node\Expr\Variable;
+use PhpParser\NodeTraverser;
 
 class ShortClosureTransformer
 {

@@ -2,19 +2,18 @@
 
 namespace Pxp\Transpiler;
 
-use Pxp\Parser\Lexer;
+use PhpParser\Lexer;
 use Pxp\Parser\Lexer\Emulative;
-use Pxp\Parser\Parser\Php7;
-use Pxp\Parser\ParserFactory;
-use Pxp\Parser\NodeTraverser;
-use Pxp\Parser\NodeVisitor\NameResolver;
-use Pxp\Parser\Parser as PxpParser;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor\NameResolver;
+use PhpParser\Parser as ParserInterface;
+use Pxp\Parser\Parser\Pxp;
 
 final class Parser
 {
     private Lexer $lexer;
 
-    private PxpParser $parser;
+    private ParserInterface $parser;
 
     public function __construct()
     {
@@ -24,7 +23,7 @@ final class Parser
             ],
         ]);
 
-        $this->parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7, $this->lexer);
+        $this->parser = new Pxp($this->lexer);
     }
 
     public function parse(string $code): array
