@@ -4,11 +4,7 @@ namespace Pxp\Commands;
 
 use Pxp\Common\Configuration\Configuration;
 use Pxp\LanguageServer\LanguageServerDispatcherFactory;
-use Exception;
-use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 use LaravelZero\Framework\Commands\Command;
-use LaravelZero\Framework\Components\Database\Migrator;
 use Phpactor\LanguageServer\LanguageServerBuilder;
 use Psr\Log\NullLogger;
 
