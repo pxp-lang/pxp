@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "deb30504715c2ac611b420ccbc0a6fe8",
+    "content-hash": "d0c3d230a0c3bfecac85ab962f21b402",
     "packages": [
         {
             "name": "amphp/amp",
@@ -3613,16 +3613,16 @@
         },
         {
             "name": "pxp/parser",
-            "version": "v0.0.3",
+            "version": "v0.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pxp-lang/parser.git",
-                "reference": "d1eca17b3b9207ee8aafad7915758bee855a34ff"
+                "reference": "826ef8a6892c4c5851bde91ceeb441e94cedcde3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pxp-lang/parser/zipball/d1eca17b3b9207ee8aafad7915758bee855a34ff",
-                "reference": "d1eca17b3b9207ee8aafad7915758bee855a34ff",
+                "url": "https://api.github.com/repos/pxp-lang/parser/zipball/826ef8a6892c4c5851bde91ceeb441e94cedcde3",
+                "reference": "826ef8a6892c4c5851bde91ceeb441e94cedcde3",
                 "shasum": ""
             },
             "require": {
@@ -3661,9 +3661,9 @@
                 "pxp"
             ],
             "support": {
-                "source": "https://github.com/pxp-lang/parser/tree/v0.0.3"
+                "source": "https://github.com/pxp-lang/parser/tree/v0.0.4"
             },
-            "time": "2023-05-19T14:23:02+00:00"
+            "time": "2023-05-19T15:17:42+00:00"
         },
         {
             "name": "ramsey/collection",

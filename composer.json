@@ -21,7 +21,7 @@
         "laravel-zero/framework": "^10.0.2",
         "nunomaduro/termwind": "^1.15.1",
         "phpactor/language-server": "^5.1",
-        "pxp/parser": "v0.0.3"
+        "pxp/parser": "v0.0.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

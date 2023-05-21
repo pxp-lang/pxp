@@ -22,8 +22,8 @@ class ShortClosureTransformer
         $variables = $variableFindingVisitor->getVariables();
         $uses = [];
 
-        foreach ($variables as $variable) {
-            $uses[] = new ClosureUse(new Variable($variable), byRef: false);
+        foreach ($variables as [$variable, $attributes]) {
+            $uses[] = new ClosureUse(new Variable($variable, $attributes), byRef: false);
         }
 
         return new Closure([
