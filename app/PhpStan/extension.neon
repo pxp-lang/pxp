@@ -1,0 +1,22 @@
+parameters:
+    fileExtensions:
+        - pxp
+
+services:
+    @PHPStan\Node\Printer\Printer:
+        class: Pxp\PhpStan\Printer
+
+    -
+        class: Pxp\PhpStan\Visitors\UsesSpecifyingVisitor
+        tags:
+            - phpstan.parser.richParserNodeVisitor
+
+    currentPhpVersionLexer:
+        class: Pxp\PhpStan\Lexer
+        autowired: false
+
+    currentPhpVersionPhpParser:
+        class: Pxp\PhpStan\Parser
+        arguments:
+            lexer: @currentPhpVersionLexer
+        autowired: false
