@@ -3,8 +3,6 @@
 namespace Pxp\Providers;
 
 use Pxp\Common\Configuration\Configuration;
-use Pxp\Indexer\CachingParser;
-use Pxp\LanguageServer\TolerantParser;
 use Pxp\Transpiler\Parser;
 use Pxp\Transpiler\Transpiler;
 use Illuminate\Database\Eloquent\Model;
@@ -34,8 +32,6 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(Parser::class);
-        $this->app->singleton(TolerantParser::class);
-        $this->app->singleton(CachingParser::class);
         $this->app->singleton(Transpiler::class);
     }
 }
