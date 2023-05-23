@@ -58,6 +58,27 @@ This will use the `paths` from the configuration file to locate PXP files and ge
 
 The current version of PXP will store the PHP code **next to the PXP code** i.e. `app/User.pxp` will generate an `app/User.php` file.
 
+## PHPStan
+
+PXP has **very basic** support for analysing your files with PHPStan. The extension comes with the `pxp/pxp` package and will be automatically loaded by PHPStan when using [`phpstan/extension-installer`](https://github.com/phpstan/extension-installer).
+
+If you're not using `phpstan/extension-installer` you can manually load the extension:
+
+```neon
+includes:
+    - ./vendor/pxp/pxp/app/PhpStan/extension.neon
+
+parameters:
+    // ...
+```
+
+**Known issues and potential limitations**
+
+1. Since PHPStan is only designed to analyse regular PHP files, the PXP extension makes a few changes to the internal PHPStan classes, including the parser, lexer and pretty printer. This _could_ cause some instability, but based on some testing, everything seems okay. The classes being replaced are internal to PHPStan and therefore do not fall under any backwards compatibilty promises. If you do encounter a problem, please [report it in an issue](https://github.com/pxp-lang/pxp/issues/new).
+
+2. If you have used the `pxp build` command to transpile and generate PHP code, PHPStan will start to analyse the original PXP code as well as the generated PHP file. We hope to resolve this issue in a future release by dynamically excluding PHP files that are associated with a PXP file.
+
+
 ## Contributing
 
 All pull requests are welcome.
