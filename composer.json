@@ -43,7 +43,7 @@
     "extra": {
         "phpstan": {
             "includes": [
-                "./app/PhpStan/extension.neon"
+                "./config/extension.neon"
             ]
         }
     },
