@@ -24,7 +24,7 @@ final class Transpiler
         $this->traverser->addVisitor(new TranspilingVisitor);
     }
 
-    public function transpile(string $code, TranspilerOptions $options): string
+    public function transpile(string $code): string
     {
         $statements = $this->parser->parse($code);
         $statements = $this->traverser->traverse($statements);

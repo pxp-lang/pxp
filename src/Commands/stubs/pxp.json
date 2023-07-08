@@ -1,9 +1,0 @@
-{
-    "paths": [
-        "app"
-    ],
-    "transpiler": {
-        "sourceMap": false,
-        "strictTypes": false
-    }
-}

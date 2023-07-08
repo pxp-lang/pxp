@@ -25,7 +25,10 @@
     "autoload": {
         "psr-4": {
             "Pxp\\": "src/"
-        }
+        },
+        "files": [
+            "src/autoload.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
