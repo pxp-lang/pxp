@@ -1,6 +1,0 @@
-parameters:
-	ignoreErrors:
-		-
-			message: "#^Extending PHPStan\\\\Node\\\\Printer\\\\Printer is not covered by backward compatibility promise\\. The class might change in a minor PHPStan version\\.$#"
-			count: 1
-			path: app/PhpStan/Printer.php

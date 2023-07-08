@@ -3,7 +3,7 @@
     "description": "The PXP Programming Language",
     "keywords": ["pxp", "php", "transpiler", "superset"],
     "homepage": "https://pxplang.org",
-    "type": "project",
+    "type": "library",
     "license": "MIT",
     "support": {
         "issues": "https://github.com/pxp-lang/pxp/issues",
@@ -16,25 +16,15 @@
         }
     ],
     "require": {
-        "php": "^8.1",
-        "laravel-zero/framework": "^10.0.2",
-        "nunomaduro/termwind": "^1.15.1",
-        "phpactor/language-server": "^5.1",
+        "php": "^8.2",
         "pxp/parser": "v0.0.4"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.9.1",
-        "laravel/pint": "^1.8",
-        "mockery/mockery": "^1.5.1",
-        "pestphp/pest": "^2.5",
-        "phpstan/phpstan": "^1.10",
-        "spatie/laravel-ray": "^1.32"
+        "laravel/pint": "^1.8"
     },
     "autoload": {
         "psr-4": {
-            "Pxp\\": "app/",
-            "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Pxp\\": "src/"
         }
     },
     "autoload-dev": {
@@ -58,6 +48,5 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true,
-    "bin": ["pxp"]
+    "prefer-stable": true
 }
