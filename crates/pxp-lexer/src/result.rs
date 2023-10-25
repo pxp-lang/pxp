@@ -8,4 +8,5 @@ pub enum LexerError {
     InvalidUnicodeEscape(usize),
     InvalidOctalEscape(usize),
     UnexpectedCharacter(u8, usize),
+    UnrecognisedToken(u8, usize),
 }

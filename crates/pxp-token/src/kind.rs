@@ -10,7 +10,6 @@ pub enum TokenKind {
     Abstract,
     As,
     Break,
-    Callable,
     Case,
     Switch,
     Catch,
@@ -90,7 +89,7 @@ pub enum TokenKind {
     StartDocString,
     EndDocString,
 
-    // Sigils & Punctuation:
+    // Sigils, Punctuation & Operators:
     Dollar,
     BitwiseAnd,
     BitwiseAndAssign,

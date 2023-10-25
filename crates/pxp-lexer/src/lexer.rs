@@ -692,6 +692,234 @@ impl Lexer {
         Ok(Token::new(kind, (start_position, state.source_mut().position()).into(), value))
     }
 
+    fn double_quoted_string(&self, state: &mut StateMachine, tokens: &mut Vec<Token>) -> LexerResult<()> {
+        let position = state.source().position();
+        let mut buffer = Vec::new();
+
+        let (kind, value) = loop {
+            match state.source().read_n(3) {
+                [b'$', b'{', ..] => {
+                    state.source_mut().skip_n(2);
+                    state.enter(State::LookingForVarname);
+                    break (TokenKind::DollarLeftBrace, b"${".into());
+                }
+                [b'{', b'$', ..] => {
+                    // Intentionally only consume the left brace.
+                    state.source_mut().next();
+                    state.enter(State::Scripting);
+                    break (TokenKind::LeftBrace, b"{".into());
+                }
+                [b'"', ..] => {
+                    state.source_mut().next();
+                    state.replace(State::Scripting);
+                    break (TokenKind::DoubleQuote, b'"'.into());
+                }
+                &[b'\\', b @ (b'"' | b'\\' | b'$'), ..] => {
+                    state.source_mut().skip_n(2);
+                    buffer.push(b);
+                }
+                &[b'\\', b'n', ..] => {
+                    state.source_mut().skip_n(2);
+                    buffer.push(b'\n');
+                }
+                &[b'\\', b'r', ..] => {
+                    state.source_mut().skip_n(2);
+                    buffer.push(b'\r');
+                }
+                &[b'\\', b't', ..] => {
+                    state.source_mut().skip_n(2);
+                    buffer.push(b'\t');
+                }
+                &[b'\\', b'v', ..] => {
+                    state.source_mut().skip_n(2);
+                    buffer.push(b'\x0b');
+                }
+                &[b'\\', b'e', ..] => {
+                    state.source_mut().skip_n(2);
+                    buffer.push(b'\x1b');
+                }
+                &[b'\\', b'f', ..] => {
+                    state.source_mut().skip_n(2);
+                    buffer.push(b'\x0c');
+                }
+                &[b'\\', b'x', b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')] => {
+                    state.source_mut().skip_n(3);
+
+                    let mut hex = String::from(b as char);
+                    if let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
+                        state.source().current()
+                    {
+                        state.source_mut().next();
+                        hex.push(*b as char);
+                    }
+
+                    let b = u8::from_str_radix(&hex, 16).unwrap();
+                    buffer.push(b);
+                }
+                &[b'\\', b'u', b'{'] => {
+                    state.source_mut().skip_n(3);
+
+                    let mut code_point = String::new();
+                    while let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
+                        state.source().current()
+                    {
+                        state.source_mut().next();
+                        code_point.push(*b as char);
+                    }
+
+                    if code_point.is_empty() || state.source().current() != Some(&b'}') {
+                        return Err(LexerError::InvalidUnicodeEscape(state.source().position()));
+                    }
+                    state.source_mut().next();
+
+                    let c = if let Ok(c) = u32::from_str_radix(&code_point, 16) {
+                        c
+                    } else {
+                        return Err(LexerError::InvalidUnicodeEscape(state.source().position()));
+                    };
+
+                    if let Some(c) = char::from_u32(c) {
+                        let mut tmp = [0; 4];
+                        let bytes = c.encode_utf8(&mut tmp);
+                        buffer.extend(bytes.as_bytes());
+                    } else {
+                        return Err(LexerError::InvalidUnicodeEscape(state.source().position()));
+                    }
+                }
+                &[b'\\', b @ b'0'..=b'7', ..] => {
+                    state.source_mut().skip_n(2);
+
+                    let mut octal = String::from(b as char);
+                    if let Some(b @ b'0'..=b'7') = state.source().current() {
+                        state.source_mut().next();
+                        octal.push(*b as char);
+                    }
+                    if let Some(b @ b'0'..=b'7') = state.source().current() {
+                        state.source_mut().next();
+                        octal.push(*b as char);
+                    }
+
+                    if let Ok(b) = u8::from_str_radix(&octal, 8) {
+                        buffer.push(b);
+                    } else {
+                        return Err(LexerError::InvalidOctalEscape(state.source().position()));
+                    }
+                }
+                [b'$', ident_start!(), ..] => {
+                    let mut var = state.source_mut().read_and_skip_n(1).to_vec();
+                    var.extend(self.consume_identifier(state));
+
+                    match state.source_mut().read_n(4) {
+                        [b'[', ..] => state.enter(State::VarOffset),
+                        [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
+                            state.enter(State::LookingForProperty)
+                        }
+                        _ => {}
+                    }
+
+                    break (TokenKind::Variable, var.into());
+                }
+                &[b, ..] => {
+                    state.source_mut().next();
+                    buffer.push(b);
+                }
+                [] => return Err(LexerError::UnexpectedEndOfFile(state.source().position())),
+            }
+        };
+
+        if !buffer.is_empty() {
+            tokens.push(Token::new(TokenKind::InterpolatedStringPart, (position, position).into(), buffer.into()))
+        }
+
+        tokens.push(Token::new(kind, (position, state.source().position() - 1).into(), value));
+        Ok(())
+    }
+
+    fn looking_for_varname(&self, state: &mut StateMachine) -> LexerResult<Option<Token>> {
+        let position = state.source().position();
+        let identifier = self.peek_identifier(state);
+
+        if let Some(ident) = identifier {
+            if let [b'[' | b'}'] = state.source().peek_range(ident.len(), 1) {
+                let ident = ident.to_vec();
+                let end_position = state.source().position();
+                state.source_mut().skip_n(ident.len());
+                state.replace(State::Scripting);
+                return Ok(Some(Token::new(
+                    TokenKind::Identifier,
+                    (position, end_position).into(),
+                    ident.into(),
+                )));
+            }
+        }
+
+        state.replace(State::Scripting);
+
+        Ok(None)
+    }
+
+fn looking_for_property(&self, state: &mut StateMachine) -> LexerResult<Token> {
+        let position = state.source().position();
+        let (kind, value) = match state.source_mut().read_n(3) {
+            [b'?', b'-', b'>'] => {
+                state.source_mut().skip_n(3);
+                (TokenKind::NullsafeArrow, b"?->".into())
+            }
+            [b'-', b'>', ..] => {
+                state.source_mut().skip_n(2);
+                (TokenKind::Arrow, b"->".into())
+            }
+            &[ident_start!(), ..] => {
+                let buffer = self.consume_identifier(state);
+                state.exit();
+                (TokenKind::Identifier, buffer.into())
+            }
+            // Should be impossible as we already looked ahead this far inside double_quote.
+            _ => unreachable!(),
+        };
+
+        Ok(Token::new(kind, (position, state.source().position()).into(), value))
+    }
+
+    fn var_offset(&self, state: &mut StateMachine) -> LexerResult<Token> {
+        let position = state.source().position();
+
+        let (kind, value) = match state.source_mut().read_n(2) {
+            [b'$', ident_start!()] => self.tokenize_variable(state),
+            [b'0'..=b'9', ..] => {
+                // TODO: all integer literals are allowed, but only decimal integers with no underscores
+                // are actually treated as numbers. Others are treated as strings.
+                // Float literals are not allowed, but that could be handled in the parser.
+                self.tokenize_number(state)?
+            }
+            [b'[', ..] => {
+                state.source_mut().next();
+                (TokenKind::LeftBracket, b"[".into())
+            }
+            [b'-', ..] => {
+                state.source_mut().next();
+                (TokenKind::Subtract, b"-".into())
+            }
+            [b']', ..] => {
+                state.source_mut().next();
+                state.exit();
+                (TokenKind::RightBracket, b"]".into())
+            }
+            &[ident_start!(), ..] => {
+                let label = self.consume_identifier(state);
+                (TokenKind::Identifier, label.into())
+            }
+            &[b, ..] => return Err(LexerError::UnrecognisedToken(b, state.source().position())),
+            [] => return Err(LexerError::UnexpectedEndOfFile(state.source().position())),
+        };
+
+        Ok(Token::new(kind, (position, state.source().position()).into(), value))
+    }
+
+    pub fn tokenise(&self, file: &SourceFile) -> LexerResult<Vec<Token>> {
+        self.tokenize(file)
+    }
+
     pub fn tokenize(&self, file: &SourceFile) -> LexerResult<Vec<Token>> {
         let mut state = StateMachine::new(Source::new(file.source()));
         let mut tokens = Vec::new();
@@ -709,11 +937,23 @@ impl Lexer {
                     tokens.push(self.scripting(&mut state)?);
                 },
                 // State::Halted => self.halted(&mut state, &mut tokens)?,
-                // State::DoubleQuotedString => self.double_quoted_string(&mut state, &mut tokens)?,
+                State::DoubleQuotedString => self.double_quoted_string(&mut state, &mut tokens)?,
                 // State::ShellExec => self.shell_exec(&mut state, &mut tokens)?,
-                // State::LookingForVarname => self.looking_for_varname(&mut state, &mut tokens)?,
-                // State::LookingForProperty => self.looking_for_property(&mut state, &mut tokens)?,
-                // State::VarOffset => self.var_offset(&mut state, &mut tokens)?,
+                State::LookingForVarname => {
+                    if let Some(token) = self.looking_for_varname(&mut state)? {
+                        tokens.push(token);
+                    }
+                },
+                State::LookingForProperty => {
+                    tokens.push(self.looking_for_property(&mut state)?)
+                },
+                State::VarOffset => {
+                    if state.source().is_eof() {
+                        break;
+                    }
+
+                    tokens.push(self.var_offset(&mut state)?);
+                },
                 _ => return Err(LexerError::UnpredictableState(state.source_mut().position())),
             }
         }
