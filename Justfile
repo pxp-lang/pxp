@@ -1,5 +1,5 @@
 test:
     cargo nextest run
 
-tokenise:
+tokenize:
     cargo run --example tokenise

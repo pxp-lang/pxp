@@ -5,4 +5,7 @@ pub enum LexerError {
     UnpredictableState(usize),
     UnexpectedEndOfFile(usize),
     InvalidHaltCompiler(usize),
+    InvalidUnicodeEscape(usize),
+    InvalidOctalEscape(usize),
+    UnexpectedCharacter(u8, usize),
 }

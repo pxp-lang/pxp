@@ -14,6 +14,7 @@ pub(crate) enum State {
     LookingForVarname,
     LookingForProperty,
     VarOffset,
+    DocString,
 }
 
 #[derive(Debug)]
@@ -49,7 +50,11 @@ impl<'a> StateMachine<'a> {
         self.state.pop_back();
     }
 
-    pub fn source(&mut self) -> &mut Source<'a> {
+    pub fn source(&self) -> &Source<'a> {
+        &self.source
+    }
+
+    pub fn source_mut(&mut self) -> &mut Source<'a> {
         &mut self.source
     }
 }

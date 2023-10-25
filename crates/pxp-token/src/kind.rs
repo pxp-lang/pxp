@@ -23,7 +23,7 @@ pub enum TokenKind {
     Do,
     Echo,
     Else,
-    EelseIf,
+    ElseIf,
     Empty,
     EndDeclare,
     EndFor,
