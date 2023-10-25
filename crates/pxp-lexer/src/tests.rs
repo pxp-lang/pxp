@@ -163,7 +163,7 @@ fn it_can_tokenize_operators() {
         TokenKind::Eof,
     ];
 
-    // assert_eq!(tokens.len(), expected.len());
+    assert_eq!(tokens.len(), expected.len());
 
     for (i, token) in tokens.iter().enumerate() {
         assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);
