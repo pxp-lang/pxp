@@ -142,7 +142,7 @@ impl Lexer {
             }
             [b'=', ..] => {
                 state.source_mut().next();
-                (TokenKind::Equals, b"=".into())
+                (TokenKind::Assign, b"=".into())
             }
             // Single quoted string.
             [b'\'', ..] => {
@@ -925,6 +925,8 @@ fn looking_for_property(&self, state: &mut StateMachine) -> LexerResult<Token> {
         let mut tokens = Vec::new();
 
         while !state.source_mut().is_eof() {
+            dbg!(&tokens);
+
             match state.state()? {
                 State::Initial => self.initial(&mut state, &mut tokens)?,
                 State::Scripting => {
