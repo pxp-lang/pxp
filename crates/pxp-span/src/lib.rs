@@ -19,6 +19,12 @@ impl Span {
     }
 }
 
+impl From<(usize, usize)> for Span {
+    fn from((start, end): (usize, usize)) -> Self {
+        Self::new(start, end)
+    }
+}
+
 pub trait HasSpan {
     fn span(&self) -> Span;
 }
@@ -48,5 +54,13 @@ mod tests {
         let text = b"Hello, world!";
 
         assert_eq!(span.text(text), b"Hello");
+    }
+
+    #[test]
+    fn it_can_be_created_from_tuple() {
+        let span = Span::from((0, 5));
+
+        assert_eq!(span.start, 0);
+        assert_eq!(span.end, 5);
     }
 }

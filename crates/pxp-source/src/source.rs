@@ -36,6 +36,30 @@ impl<'a> Source<'a> {
         }
     }
 
+    pub fn read_and_skip_n(&mut self, n: usize) -> &'a [u8] {
+        let from = self.position;
+        let until = if self.position + n > self.length {
+            self.length
+        } else {
+            self.position + n
+        };
+
+        self.skip_n(n);
+
+        &self.input[from..until]
+    }
+
+    pub fn read_n(&mut self, n: usize) -> &'a [u8] {
+        let from = self.position;
+        let until = if self.position + n > self.length {
+            self.length
+        } else {
+            self.position + n
+        };
+
+        &self.input[from..until]
+    }
+
     pub fn skip_n(&mut self, n: usize) {
         for _ in 0..n {
             self.next();
@@ -49,6 +73,22 @@ impl<'a> Source<'a> {
                 _ => break,
             }
         }
+    }
+
+    pub fn matches(&self, needle: u8) -> bool {
+        !self.is_eof() && self.input[self.position] == needle
+    }
+
+    pub fn matches_n(&self, pattern: &[u8], n: usize) -> bool {
+        let from = self.position;
+        let until = if self.position + n > self.length {
+            self.length
+        } else {
+            self.position + n
+        };
+
+        let slice = &self.input[from..until];
+        slice.eq_ignore_ascii_case(pattern)
     }
 
     pub fn peek(&self) -> Option<&'a u8> {

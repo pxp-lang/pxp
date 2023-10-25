@@ -102,6 +102,7 @@ pub enum TokenKind {
     Attribute,
     Not,
     NotEqual,
+    NotIdentical,
     Spaceship,
     Or,
     BitwiseXor,

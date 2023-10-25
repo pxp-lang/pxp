@@ -3,6 +3,7 @@ use pxp_span::{Span, HasSpan};
 
 use crate::TokenKind;
 
+#[derive(Debug, Clone)]
 pub struct Token {
     pub kind: TokenKind,
     pub span: Span,
