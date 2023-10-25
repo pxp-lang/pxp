@@ -170,6 +170,16 @@ fn it_can_tokenize_operators() {
     }
 }
 
+// TODO: Add tests for string literals.
+// TODO: Add tests for interpolated strings.
+// TODO: Add tests for heredocs.
+// TODO: Add tests for comments.
+// TODO: Add tests for nowdocs.
+// TODO: Add tests for literals.
+// TODO: Add tests for execution strings.
+// TODO: Add tests for __halt_compiler();
+// TODO: Add tests for open & close tags.
+
 fn tokenize<'b, B: ?Sized + AsRef<[u8]>>(input: &B, language: Language) -> Vec<Token> {
     let bytes = input.as_ref();
     let source_file = SourceFile::new(None, language, bytes.to_vec());
