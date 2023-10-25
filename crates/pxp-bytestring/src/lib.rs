@@ -83,13 +83,13 @@ impl PartialEq<&[u8]> for &ByteString {
 
 impl PartialEq<String> for ByteString {
     fn eq(&self, other: &String) -> bool {
-        &self.bytes == other.as_bytes()
+        self.bytes == other.as_bytes()
     }
 }
 
 impl PartialEq<&str> for ByteString {
     fn eq(&self, other: &&str) -> bool {
-        &self.bytes == other.as_bytes()
+        self.bytes == other.as_bytes()
     }
 }
 
