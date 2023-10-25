@@ -1,10 +1,12 @@
 use std::collections::VecDeque;
 
+use pxp_bytestring::ByteString;
 use pxp_source::Source;
+use pxp_token::{DocStringIndentationKind, DocStringIndentationAmount, DocStringKind};
 
 use crate::{LexerResult, LexerError};
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Clone, Hash, Copy)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Clone, Hash)]
 pub(crate) enum State {
     Initial,
     Scripting,
@@ -14,7 +16,8 @@ pub(crate) enum State {
     LookingForVarname,
     LookingForProperty,
     VarOffset,
-    DocString,
+    // FIXME: Find a better way of tokenising heredoc / nowdoc strings.
+    DocString(DocStringKind, ByteString, DocStringIndentationKind, DocStringIndentationAmount),
 }
 
 #[derive(Debug)]

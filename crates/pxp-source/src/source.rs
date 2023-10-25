@@ -36,6 +36,13 @@ impl<'a> Source<'a> {
         }
     }
 
+    pub fn read_remaining(&mut self) -> &'a [u8] {
+        let from = self.position;
+        self.position = self.length;
+
+        &self.input[from..]
+    }
+
     pub fn read_and_skip_n(&mut self, n: usize) -> &'a [u8] {
         let from = self.position;
         let until = if self.position + n > self.length {

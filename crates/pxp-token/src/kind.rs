@@ -86,8 +86,8 @@ pub enum TokenKind {
     FullyQualifiedIdentifier,
 
     // Heredoc & Nowdoc:
-    StartDocString,
-    EndDocString,
+    StartDocString(DocStringKind),
+    EndDocString(DocStringIndentationKind, DocStringIndentationAmount),
 
     // Sigils, Punctuation & Operators:
     Dollar,
@@ -196,4 +196,41 @@ pub enum TokenKind {
 
     // Misc:
     Eof,
+}
+
+pub type DocStringIndentationAmount = usize;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum DocStringIndentationKind {
+    Space,
+    Tab,
+    Both,
+    None,    
+}
+
+impl From<u8> for DocStringIndentationKind {
+    fn from(byte: u8) -> Self {
+        match byte {
+            b' ' => Self::Space,
+            b'\t' => Self::Tab,
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl From<DocStringIndentationKind> for u8 {
+    fn from(kind: DocStringIndentationKind) -> Self {
+        match kind {
+            DocStringIndentationKind::Space => b' ',
+            DocStringIndentationKind::Tab => b'\t',
+            _ => unreachable!(),
+        }
+    }
+}
+
+
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash, Copy)]
+pub enum DocStringKind {
+    Heredoc,
+    Nowdoc,
 }

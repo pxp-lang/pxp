@@ -9,4 +9,5 @@ pub enum LexerError {
     InvalidOctalEscape(usize),
     UnexpectedCharacter(u8, usize),
     UnrecognisedToken(u8, usize),
+    InvalidDocIndentation(usize),
 }

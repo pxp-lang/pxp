@@ -1,7 +1,7 @@
 use pxp_bytestring::ByteString;
 use pxp_source::{SourceFile, Source};
 use pxp_span::Span;
-use pxp_token::{Token, TokenKind};
+use pxp_token::{Token, TokenKind, DocStringIndentationKind, DocStringKind};
 
 use crate::{LexerResult, state::{StateMachine, State}, LexerError, ident_start, ident};
 
@@ -295,77 +295,76 @@ impl Lexer {
                 (TokenKind::RightShiftAssign, b">>=".into())
             }
             [b'<', b'<', b'<'] => {
-                todo!();
-                // state.source_mut().skip_n(3);
-                // let mut buffer = b"<<<".to_vec();
-                // buffer.extend(self.read_and_skip_whitespace(state));
+                state.source_mut().skip_n(3);
+                let mut buffer = b"<<<".to_vec();
+                buffer.extend(self.read_and_skip_whitespace(state));
 
-                // let doc_string_kind = match state.source_mut().read_n(1) {
-                //     [b'\''] => {
-                //         buffer.push(b'\'');
-                //         state.source_mut().next();
-                //         DocStringKind::Nowdoc
-                //     }
-                //     [b'"'] => {
-                //         buffer.push(b'"');
-                //         state.source_mut().next();
-                //         DocStringKind::Heredoc
-                //     }
-                //     [_, ..] => DocStringKind::Heredoc,
-                //     [] => {
-                //         return Err(LexerError::UnexpectedEndOfFile(state.source_mut().position()));
-                //     }
-                // };
+                let doc_string_kind = match state.source_mut().read_n(1) {
+                    [b'\''] => {
+                        buffer.push(b'\'');
+                        state.source_mut().next();
+                        DocStringKind::Nowdoc
+                    }
+                    [b'"'] => {
+                        buffer.push(b'"');
+                        state.source_mut().next();
+                        DocStringKind::Heredoc
+                    }
+                    [_, ..] => DocStringKind::Heredoc,
+                    [] => {
+                        return Err(LexerError::UnexpectedEndOfFile(state.source_mut().position()));
+                    }
+                };
 
-                // let label: ByteString = match self.peek_identifier(state) {
-                //     Some(_) => self.consume_identifier(state).into(),
-                //     None => {
-                //         return match state.source_mut().current() {
-                //             Some(c) => {
-                //                 Err(LexerError::UnexpectedCharacter(*c, state.source_mut().position()))
-                //             }
-                //             None => Err(LexerError::UnexpectedEndOfFile(state.source_mut().position())),
-                //         }
-                //     }
-                // };
+                let label: ByteString = match self.peek_identifier(state) {
+                    Some(_) => self.consume_identifier(state).into(),
+                    None => {
+                        return match state.source_mut().current() {
+                            Some(c) => {
+                                Err(LexerError::UnexpectedCharacter(*c, state.source_mut().position()))
+                            }
+                            None => Err(LexerError::UnexpectedEndOfFile(state.source_mut().position())),
+                        }
+                    }
+                };
 
-                // buffer.extend_from_slice(&label);
+                buffer.extend_from_slice(&label);
 
-                // if doc_string_kind == DocStringKind::Nowdoc {
-                //     match state.source_mut().current() {
-                //         Some(b'\'') => {
-                //             buffer.push(b'\'');
-                //             state.source_mut().next();
-                //         }
-                //         _ => {
-                //             // TODO(azjezz) this is most likely a bug, what if current is none?
-                //             return Err(LexerError::UnexpectedCharacter(
-                //                 *state.source_mut().current().unwrap(),
-                //                 state.source_mut().position(),
-                //             ));
-                //         }
-                //     };
-                // } else if let Some(b'"') = state.source_mut().current() {
-                //     buffer.push(b'"');
-                //     state.source_mut().next();
-                // }
+                if doc_string_kind == DocStringKind::Nowdoc {
+                    match state.source_mut().current() {
+                        Some(b'\'') => {
+                            buffer.push(b'\'');
+                            state.source_mut().next();
+                        }
+                        _ => {
+                            // TODO(azjezz) this is most likely a bug, what if current is none?
+                            return Err(LexerError::UnexpectedCharacter(
+                                *state.source_mut().current().unwrap(),
+                                state.source_mut().position(),
+                            ));
+                        }
+                    };
+                } else if let Some(b'"') = state.source_mut().current() {
+                    buffer.push(b'"');
+                    state.source_mut().next();
+                }
 
-                // if !matches!(state.source_mut().current(), Some(b'\n')) {
-                //     return Err(LexerError::UnexpectedCharacter(
-                //         *state.source_mut().current().unwrap(),
-                //         state.source_mut().position(),
-                //     ));
-                // }
+                if !matches!(state.source_mut().current(), Some(b'\n')) {
+                    return Err(LexerError::UnexpectedCharacter(
+                        *state.source_mut().current().unwrap(),
+                        state.source_mut().position(),
+                    ));
+                }
 
-                // state.source_mut().next();
-                // state.replace(StackFrame::DocString(
-                //     doc_string_kind.clone(),
-                //     label.clone(),
-                //     DocStringIndentationKind::None,
-                //     0,
-                // ));
+                state.source_mut().next();
+                state.replace(State::DocString(
+                    doc_string_kind,
+                    label.clone(),
+                    DocStringIndentationKind::None,
+                    0,
+                ));
 
-                // (TokenKind::StartDocString(doc_string_kind), buffer.into())
+                (TokenKind::StartDocString(doc_string_kind), buffer.into())
             }
             [b'*', b'*', ..] => {
                 state.source_mut().skip_n(2);
@@ -692,6 +691,63 @@ impl Lexer {
         Ok(Token::new(kind, (start_position, state.source_mut().position()).into(), value))
     }
 
+    fn shell_exec(&self, state: &mut StateMachine, tokens: &mut Vec<Token>) -> LexerResult<()> {
+        let position = state.source().position();
+        let mut buffer = Vec::new();
+
+        let (kind, value) = loop {
+            match state.source_mut().read_n(2) {
+                [b'$', b'{'] => {
+                    state.source_mut().skip_n(2);
+                    state.enter(State::LookingForVarname);
+                    break (TokenKind::DollarLeftBrace, b"${".into());
+                }
+                [b'{', b'$'] => {
+                    // Intentionally only consume the left brace.
+                    state.source_mut().next();
+                    state.enter(State::Scripting);
+                    break (TokenKind::LeftBrace, b"{".into());
+                }
+                [b'`', ..] => {
+                    state.source_mut().next();
+                    state.replace(State::Scripting);
+                    break (TokenKind::Backtick, b"`".into());
+                }
+                [b'$', ident_start!()] => {
+                    let mut var = state.source_mut().read_and_skip_n(1).to_vec();
+                    var.extend(self.consume_identifier(state));
+
+                    match state.source_mut().read_n(4) {
+                        [b'[', ..] => state.enter(State::VarOffset),
+                        [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
+                            state.enter(State::LookingForProperty)
+                        }
+                        _ => {}
+                    }
+
+                    break (TokenKind::Variable, var.into());
+                }
+                &[b, ..] => {
+                    state.source_mut().next();
+                    buffer.push(b);
+                }
+                [] => return Err(LexerError::UnexpectedEndOfFile(state.source().position())),
+            }
+        };
+
+        if !buffer.is_empty() {
+            tokens.push(Token::new(
+                TokenKind::InterpolatedStringPart,
+                (position, position).into(),
+                buffer.into(),
+            ))
+        }
+
+        tokens.push(Token::new(kind, (position, state.source().position()).into(), value));
+
+        Ok(())
+    }
+
     fn double_quoted_string(&self, state: &mut StateMachine, tokens: &mut Vec<Token>) -> LexerResult<()> {
         let position = state.source().position();
         let mut buffer = Vec::new();
@@ -916,6 +972,369 @@ fn looking_for_property(&self, state: &mut StateMachine) -> LexerResult<Token> {
         Ok(Token::new(kind, (position, state.source().position()).into(), value))
     }
 
+    fn halted(&self, state: &mut StateMachine, tokens: &mut Vec<Token>) -> LexerResult<()> {
+        let position = state.source().position();
+        
+        tokens.push(Token::new(
+            TokenKind::InlineHtml,
+            (position, state.source().position()).into(),
+            state.source_mut().read_remaining().into(),
+        ));
+
+        Ok(())
+    }
+
+    fn heredoc(
+        &self,
+        state: &mut StateMachine,
+        tokens: &mut Vec<Token>,
+        label: ByteString,
+    ) -> LexerResult<()> {
+        let position = state.source().position();
+        let mut buffer: Vec<u8> = Vec::new();
+
+        let (kind, value) = loop {
+            match state.source_mut().read_n(3) {
+                [b'$', b'{', ..] => {
+                    state.source_mut().skip_n(2);
+                    state.enter(State::LookingForVarname);
+                    break (TokenKind::DollarLeftBrace, b"${".into());
+                }
+                [b'{', b'$', ..] => {
+                    // Intentionally only consume the left brace.
+                    state.source_mut().next();
+                    state.enter(State::Scripting);
+                    break (TokenKind::LeftBrace, b"{".into());
+                }
+                &[b'\\', b @ (b'"' | b'\\' | b'$'), ..] => {
+                    state.source_mut().skip_n(2);
+                    buffer.push(b);
+                }
+                &[b'\\', b'n', ..] => {
+                    state.source_mut().skip_n(2);
+                    buffer.push(b'\n');
+                }
+                &[b'\\', b'r', ..] => {
+                    state.source_mut().skip_n(2);
+                    buffer.push(b'\r');
+                }
+                &[b'\\', b't', ..] => {
+                    state.source_mut().skip_n(2);
+                    buffer.push(b'\t');
+                }
+                &[b'\\', b'v', ..] => {
+                    state.source_mut().skip_n(2);
+                    buffer.push(b'\x0b');
+                }
+                &[b'\\', b'e', ..] => {
+                    state.source_mut().skip_n(2);
+                    buffer.push(b'\x1b');
+                }
+                &[b'\\', b'f', ..] => {
+                    state.source_mut().skip_n(2);
+                    buffer.push(b'\x0c');
+                }
+                &[b'\\', b'x', b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')] => {
+                    state.source_mut().skip_n(3);
+
+                    let mut hex = String::from(b as char);
+                    if let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
+                        state.source_mut().current()
+                    {
+                        state.source_mut().next();
+                        hex.push(*b as char);
+                    }
+
+                    let b = u8::from_str_radix(&hex, 16).unwrap();
+                    buffer.push(b);
+                }
+                &[b'\\', b'u', b'{'] => {
+                    state.source_mut().skip_n(3);
+
+                    let mut code_point = String::new();
+                    while let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
+                        state.source_mut().current()
+                    {
+                        state.source_mut().next();
+                        code_point.push(*b as char);
+                    }
+
+                    if code_point.is_empty() || state.source_mut().current() != Some(&b'}') {
+                        return Err(LexerError::InvalidUnicodeEscape(state.source().position()));
+                    }
+                    state.source_mut().next();
+
+                    let c = if let Ok(c) = u32::from_str_radix(&code_point, 16) {
+                        c
+                    } else {
+                        return Err(LexerError::InvalidUnicodeEscape(state.source().position()));
+                    };
+
+                    if let Some(c) = char::from_u32(c) {
+                        let mut tmp = [0; 4];
+                        let bytes = c.encode_utf8(&mut tmp);
+                        buffer.extend(bytes.as_bytes());
+                    } else {
+                        return Err(LexerError::InvalidUnicodeEscape(state.source().position()));
+                    }
+                }
+                &[b'\\', b @ b'0'..=b'7', ..] => {
+                    state.source_mut().skip_n(2);
+
+                    let mut octal = String::from(b as char);
+                    if let Some(b @ b'0'..=b'7') = state.source_mut().current() {
+                        state.source_mut().next();
+                        octal.push(*b as char);
+                    }
+                    if let Some(b @ b'0'..=b'7') = state.source_mut().current() {
+                        state.source_mut().next();
+                        octal.push(*b as char);
+                    }
+
+                    if let Ok(b) = u8::from_str_radix(&octal, 8) {
+                        buffer.push(b);
+                    } else {
+                        return Err(LexerError::InvalidOctalEscape(state.source().position()));
+                    }
+                }
+                [b'$', ident_start!(), ..] => {
+                    let mut var = state.source_mut().read_and_skip_n(1).to_vec();
+                    var.extend(self.consume_identifier(state));
+
+                    match state.source_mut().read_n(4) {
+                        [b'[', ..] => state.enter(State::VarOffset),
+                        [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
+                            state.enter(State::LookingForProperty)
+                        }
+                        _ => {}
+                    }
+
+                    break (TokenKind::Variable, var.into());
+                }
+                // If we find a new-line, we can start to check if we can see the EndHeredoc token.
+                [b'\n', ..] => {
+                    buffer.push(b'\n');
+                    state.source_mut().next();
+
+                    // Check if we can see the closing label right here.
+                    if state.source_mut().matches_n(&label, label.len()) {
+                        state.source_mut().skip_n(label.len());
+                        state.replace(State::Scripting);
+                        break (
+                            TokenKind::EndDocString(DocStringIndentationKind::None, 0),
+                            label,
+                        );
+                    }
+
+                    // Check if there's any whitespace first.
+                    let (whitespace_kind, whitespace_amount) = match state.source_mut().read_n(1) {
+                        [b' '] => {
+                            let mut amount = 0;
+                            while state.source_mut().read_n(1) == [b' '] {
+                                amount += 1;
+                                state.source_mut().next();
+                            }
+                            (DocStringIndentationKind::Space, amount)
+                        }
+                        [b'\t'] => {
+                            let mut amount = 0;
+                            while state.source_mut().read_n(1) == [b'\t'] {
+                                amount += 1;
+                                state.source_mut().next();
+                            }
+                            (DocStringIndentationKind::Tab, amount)
+                        }
+                        _ => (DocStringIndentationKind::None, 0),
+                    };
+
+                    // We've figured out what type of whitespace was being used
+                    // at the start of the line.
+                    // We should now check for any extra whitespace, of any kind.
+                    let mut extra_whitespace_buffer = Vec::new();
+                    while let [b @ b' ' | b @ b'\t'] = state.source_mut().read_n(1) {
+                        extra_whitespace_buffer.push(b);
+                        state.source_mut().next();
+                    }
+
+                    // We've consumed all leading whitespace on this line now,
+                    // so let's try to read the label again.
+                    if state.source_mut().matches_n(&label, label.len()) {
+                        // We've found the label, finally! We need to do 1 last
+                        // check to make sure there wasn't a mixture of indentation types.
+                        if whitespace_kind != DocStringIndentationKind::None
+                            && !extra_whitespace_buffer.is_empty()
+                        {
+                            return Err(LexerError::InvalidDocIndentation(state.source().position()));
+                        }
+
+                        // If we get here, only 1 type of indentation was found. We can move
+                        // the process along by reading over the label and breaking out
+                        // with the EndHeredoc token, storing the kind and amount of whitespace.
+                        state.source_mut().skip_n(label.len());
+                        state.replace(State::Scripting);
+                        break (
+                            TokenKind::EndDocString(whitespace_kind, whitespace_amount),
+                            label,
+                        );
+                    } else {
+                        // We didn't find the label. The buffer still needs to know about
+                        // the whitespace, so let's extend the buffer with the whitespace
+                        // and let the loop run again to handle the rest of the line.
+                        if whitespace_kind != DocStringIndentationKind::None {
+                            let whitespace_char: u8 = whitespace_kind.into();
+                            for _ in 0..whitespace_amount {
+                                buffer.push(whitespace_char);
+                            }
+                        }
+
+                        buffer.extend(extra_whitespace_buffer);
+                    }
+                }
+                &[b, ..] => {
+                    state.source_mut().next();
+                    buffer.push(b);
+                }
+                [] => return Err(LexerError::UnexpectedEndOfFile(state.source().position())),
+            }
+        };
+
+        // Any trailing line breaks should be removed from the final heredoc.
+        if buffer.last() == Some(&b'\n') {
+            buffer.pop();
+        }
+
+        if !buffer.is_empty() {
+            tokens.push(Token::new(
+                TokenKind::InterpolatedStringPart,
+                // FIXME: Actually track the position here correctly.
+                (position, position).into(),
+                buffer.into(),
+            ));
+        }
+
+        // FIXME: Make sure the positions here are correct.
+        tokens.push(Token::new(kind, (position, state.source().position()).into(), value ));
+
+        Ok(())
+    }
+
+    fn nowdoc(
+        &self,
+        state: &mut StateMachine,
+        tokens: &mut Vec<Token>,
+        label: ByteString,
+    ) -> LexerResult<()> {
+        let position = state.source().position();
+        let mut buffer: Vec<u8> = Vec::new();
+
+        let (kind, value) = loop {
+            match state.source_mut().read_n(3) {
+                // If we find a new-line, we can start to check if we can see the EndHeredoc token.
+                [b'\n', ..] => {
+                    buffer.push(b'\n');
+                    state.source_mut().next();
+
+                    // Check if we can see the closing label right here.
+                    if state.source_mut().matches_n(&label, label.len()) {
+                        state.source_mut().skip_n(label.len());
+                        state.replace(State::Scripting);
+                        break (
+                            TokenKind::EndDocString(DocStringIndentationKind::None, 0),
+                            label,
+                        );
+                    }
+
+                    // Check if there's any whitespace first.
+                    let (whitespace_kind, whitespace_amount) = match state.source_mut().read_n(1) {
+                        [b' '] => {
+                            let mut amount = 0;
+                            while state.source_mut().read_n(1) == [b' '] {
+                                amount += 1;
+                                state.source_mut().next();
+                            }
+                            (DocStringIndentationKind::Space, amount)
+                        }
+                        [b'\t'] => {
+                            let mut amount = 0;
+                            while state.source_mut().read_n(1) == [b'\t'] {
+                                amount += 1;
+                                state.source_mut().next();
+                            }
+                            (DocStringIndentationKind::Tab, amount)
+                        }
+                        _ => (DocStringIndentationKind::None, 0),
+                    };
+
+                    // We've figured out what type of whitespace was being used
+                    // at the start of the line.
+                    // We should now check for any extra whitespace, of any kind.
+                    let mut extra_whitespace_buffer = Vec::new();
+                    while let [b @ b' ' | b @ b'\t'] = state.source_mut().read_n(1) {
+                        extra_whitespace_buffer.push(b);
+                        state.source_mut().next();
+                    }
+
+                    // We've consumed all leading whitespace on this line now,
+                    // so let's try to read the label again.
+                    if state.source_mut().matches_n(&label, label.len()) {
+                        // We've found the label, finally! We need to do 1 last
+                        // check to make sure there wasn't a mixture of indentation types.
+                        if whitespace_kind != DocStringIndentationKind::None
+                            && !extra_whitespace_buffer.is_empty()
+                        {
+                            return Err(LexerError::InvalidDocIndentation(state.source().position()));
+                        }
+
+                        // If we get here, only 1 type of indentation was found. We can move
+                        // the process along by reading over the label and breaking out
+                        // with the EndHeredoc token, storing the kind and amount of whitespace.
+                        state.source_mut().skip_n(label.len());
+                        state.replace(State::Scripting);
+                        break (
+                            TokenKind::EndDocString(whitespace_kind, whitespace_amount),
+                            label,
+                        );
+                    } else {
+                        // We didn't find the label. The buffer still needs to know about
+                        // the whitespace, so let's extend the buffer with the whitespace
+                        // and let the loop run again to handle the rest of the line.
+                        if whitespace_kind != DocStringIndentationKind::None {
+                            let whitespace_char: u8 = whitespace_kind.into();
+                            for _ in 0..whitespace_amount {
+                                buffer.push(whitespace_char);
+                            }
+                        }
+
+                        buffer.extend(extra_whitespace_buffer);
+                    }
+                }
+                &[b, ..] => {
+                    state.source_mut().next();
+                    buffer.push(b);
+                }
+                [] => return Err(LexerError::UnexpectedEndOfFile(state.source().position())),
+            }
+        };
+
+        // Any trailing line breaks should be removed from the final heredoc.
+        if buffer.last() == Some(&b'\n') {
+            buffer.pop();
+        }
+
+        if !buffer.is_empty() {
+            tokens.push(Token::new(
+                TokenKind::InterpolatedStringPart,
+                // FIXME: Make sure positions are correct.
+                (position, position).into(),
+                buffer.into(),
+            ));
+        }
+
+        tokens.push(Token::new(kind, (position, state.source().position()).into(), value ));
+
+        Ok(())
+    }
+
     pub fn tokenise(&self, file: &SourceFile) -> LexerResult<Vec<Token>> {
         self.tokenize(file)
     }
@@ -938,9 +1357,9 @@ fn looking_for_property(&self, state: &mut StateMachine) -> LexerResult<Token> {
 
                     tokens.push(self.scripting(&mut state)?);
                 },
-                // State::Halted => self.halted(&mut state, &mut tokens)?,
+                State::Halted => self.halted(&mut state, &mut tokens)?,
                 State::DoubleQuotedString => self.double_quoted_string(&mut state, &mut tokens)?,
-                // State::ShellExec => self.shell_exec(&mut state, &mut tokens)?,
+                State::ShellExec => self.shell_exec(&mut state, &mut tokens)?,
                 State::LookingForVarname => {
                     if let Some(token) = self.looking_for_varname(&mut state)? {
                         tokens.push(token);
@@ -956,7 +1375,14 @@ fn looking_for_property(&self, state: &mut StateMachine) -> LexerResult<Token> {
 
                     tokens.push(self.var_offset(&mut state)?);
                 },
-                _ => return Err(LexerError::UnpredictableState(state.source_mut().position())),
+                State::DocString(kind, label, ..) => {
+                    let label = label.clone();
+
+                    match kind {
+                        DocStringKind::Heredoc => self.heredoc(&mut state, &mut tokens, label)?,
+                        DocStringKind::Nowdoc => self.nowdoc(&mut state, &mut tokens, label)?,
+                    }
+                }
             }
         }
 
