@@ -170,8 +170,169 @@ fn it_can_tokenize_operators() {
     }
 }
 
-// TODO: Add tests for string literals.
-// TODO: Add tests for interpolated strings.
+#[test]
+fn it_can_tokenize_single_quoted_strings() {
+    let tokens = tokenize("<?php 'Hello, world!'", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::SingleQuotedString,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);
+    }
+}
+
+#[test]
+fn it_can_tokenize_double_quoted_strings() {
+    let tokens = tokenize("<?php \"Hello, world!\"", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::DoubleQuotedString,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);
+    }
+}
+
+#[test]
+fn it_can_tokenize_strings_with_naked_interpolation() {
+    let tokens = tokenize("<?php \"Hello, $name!\"", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::InterpolatedStringPart,
+        TokenKind::Variable,
+        TokenKind::InterpolatedStringPart,
+        TokenKind::DoubleQuote,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);
+    }
+}
+
+#[test]
+fn it_can_tokenize_strings_with_braced_interpolation() {
+    let tokens = tokenize("<?php \"Hello, {$name}!\"", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::InterpolatedStringPart,
+        TokenKind::LeftBrace,
+        TokenKind::Variable,
+        TokenKind::RightBrace,
+        TokenKind::InterpolatedStringPart,
+        TokenKind::DoubleQuote,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);
+    }
+}
+
+#[test]
+fn it_can_tokenize_strings_with_varname_interpolation() {
+    let tokens = tokenize("<?php \"Hello, ${name}!\"", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::InterpolatedStringPart,
+        TokenKind::DollarLeftBrace,
+        TokenKind::Identifier,
+        TokenKind::RightBrace,
+        TokenKind::InterpolatedStringPart,
+        TokenKind::DoubleQuote,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);
+    }
+}
+
+#[test]
+fn it_can_tokenize_strings_with_property_access_interpolation() {
+    let tokens = tokenize("<?php \"Hello, {$user->name}!\"", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::InterpolatedStringPart,
+        TokenKind::LeftBrace,
+        TokenKind::Variable,
+        TokenKind::Arrow,
+        TokenKind::Identifier,
+        TokenKind::RightBrace,
+        TokenKind::InterpolatedStringPart,
+        TokenKind::DoubleQuote,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);
+    }
+}
+
+#[test]
+fn it_can_tokenize_strings_with_nullsafe_property_access_interpolation() {
+    let tokens = tokenize("<?php \"Hello, {$user?->name}!\"", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::InterpolatedStringPart,
+        TokenKind::LeftBrace,
+        TokenKind::Variable,
+        TokenKind::NullsafeArrow,
+        TokenKind::Identifier,
+        TokenKind::RightBrace,
+        TokenKind::InterpolatedStringPart,
+        TokenKind::DoubleQuote,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);
+    }
+}
+
+#[test]
+fn it_can_tokenize_strings_with_var_offset_interpolation() {
+    let tokens = tokenize("<?php \"Hello, {$names[0]}!\"", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::InterpolatedStringPart,
+        TokenKind::LeftBrace,
+        TokenKind::Variable,
+        TokenKind::LeftBracket,
+        TokenKind::Integer,
+        TokenKind::RightBracket,
+        TokenKind::RightBrace,
+        TokenKind::InterpolatedStringPart,
+        TokenKind::DoubleQuote,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);
+    }
+}
+
 // TODO: Add tests for heredocs.
 // TODO: Add tests for comments.
 // TODO: Add tests for nowdocs.

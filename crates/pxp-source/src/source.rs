@@ -118,6 +118,16 @@ impl<'a> Source<'a> {
     }
 
     pub fn peek_range(&self, from: usize, until: usize) -> &'a [u8] {
+        let from = self.position + from;
+        if from >= self.length {
+            return &self.input[self.length..self.length];
+        }
+
+        let mut until = from + until;
+        if until >= self.length {
+            until = self.length;
+        }
+
         &self.input[from..until]
     }
 
