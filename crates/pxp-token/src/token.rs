@@ -1,9 +1,11 @@
+use std::fmt::{Display, Debug};
+
 use pxp_bytestring::ByteString;
 use pxp_span::{Span, HasSpan};
 
 use crate::TokenKind;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Token {
     pub kind: TokenKind,
     pub span: Span,
@@ -21,6 +23,18 @@ impl Token {
 
     pub fn literal(&self) -> &ByteString {
         &self.literal
+    }
+}
+
+impl Display for Token {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.literal)
+    }
+}
+
+impl Debug for Token {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?} ({:?})", self.literal, self.kind)
     }
 }
 
