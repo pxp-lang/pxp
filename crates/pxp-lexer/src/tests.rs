@@ -333,13 +333,298 @@ fn it_can_tokenize_strings_with_var_offset_interpolation() {
     }
 }
 
+#[test]
+fn it_can_tokenize_slash_comments() {
+    let tokens = tokenize("<?php // Hello, world!", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::SlashComment,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+    
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);        
+    }
+}
+
+#[test]
+fn it_can_tokenize_hash_comments() {
+    let tokens = tokenize("<?php # Hello, world!", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::HashComment,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+    
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);        
+    }
+}
+
+#[test]
+fn it_can_tokenize_block_comments() {
+    let tokens = tokenize("<?php /* Hello, world! */", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::BlockComment,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+    
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);        
+    }
+}
+
+#[test]
+fn it_can_tokenize_multiline_block_comments() {
+    let tokens = tokenize("<?php /* Hello, \n world! */", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::BlockComment,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);        
+    }
+}
+
+#[test]
+fn it_can_tokenize_doc_block_comments() {
+    let tokens = tokenize("<?php /** Hello, world! */", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::DocBlockComment,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);        
+    }
+}
+
+#[test]
+fn it_can_tokenize_integers() {
+    let tokens = tokenize("<?php 123 0123 0o123 0x1A 0b11111111 1_234_567", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::Integer,
+        TokenKind::Integer,
+        TokenKind::Integer,
+        TokenKind::Integer,
+        TokenKind::Integer,
+        TokenKind::Integer,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+    
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);        
+    }
+}
+
+#[test]
+fn it_can_tokenize_floats() {
+    let tokens = tokenize("<?php 1.234 1.2e3 7E-10 1_234.567", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::Float,
+        TokenKind::Float,
+        TokenKind::Float,
+        TokenKind::Float,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+    
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);        
+    }
+}
+
+#[test]
+fn it_can_tokenize_null() {
+    let tokens = tokenize("<?php null", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::Null,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);        
+    }
+}
+
+#[test]
+fn it_can_tokenize_true_and_false() {
+    let tokens = tokenize("<?php true false", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::True,
+        TokenKind::False,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);        
+    }
+}
+
+#[test]
+fn it_can_tokenise_variables() {
+    let tokens = tokenize("<?php $name $name1 $name_1 $name_1_2 $name_1_2_3 $_name", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::Variable,
+        TokenKind::Variable,
+        TokenKind::Variable,
+        TokenKind::Variable,
+        TokenKind::Variable,
+        TokenKind::Variable,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i], "i: {}, Literal: {}", i, token.literal);        
+    }
+}
+
+#[test]
+fn it_can_tokenize_identifiers() {
+    let tokens = tokenize("<?php name name1 name_1 name_1_2 name_1_2_3 _name", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::Identifier,
+        TokenKind::Identifier,
+        TokenKind::Identifier,
+        TokenKind::Identifier,
+        TokenKind::Identifier,
+        TokenKind::Identifier,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i]);
+    }
+}
+
+#[test]
+fn it_can_tokenize_qualified_identifiers() {
+    let tokens = tokenize("<?php Foo\\Bar Foo\\Bar\\Baz", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::QualifiedIdentifier,
+        TokenKind::QualifiedIdentifier,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i]);
+    }
+}
+
+#[test]
+fn it_can_tokenize_fully_qualified_identifiers() {
+    let tokens = tokenize("<?php \\Foo\\Bar \\Foo\\Bar\\Baz", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::FullyQualifiedIdentifier,
+        TokenKind::FullyQualifiedIdentifier,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+    
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i]);
+    }
+}
+
+#[test]
+fn it_can_tokenize_full_open_tag() {
+    let tokens = tokenize("<?php", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+    
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i]);
+    }
+}
+
+#[test]
+fn it_can_tokenize_short_open_tag() {
+    let tokens = tokenize("<?", Language::Php);
+    let expected = vec![
+        TokenKind::ShortOpenTag,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+    
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i]);
+    }
+}
+
+#[test]
+fn it_can_tokenize_echo_open_tag() {
+    let tokens = tokenize("<?=", Language::Php);
+    let expected = vec![
+        TokenKind::EchoOpenTag,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+    
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i]);
+    }
+}
+
+#[test]
+fn it_can_tokenize_close_tag() {
+    let tokens = tokenize("<?php ?>", Language::Php);
+    let expected = vec![
+        TokenKind::FullOpenTag,
+        TokenKind::CloseTag,
+        TokenKind::Eof,
+    ];
+
+    assert_eq!(tokens.len(), expected.len());
+    
+    for (i, token) in tokens.iter().enumerate() {
+        assert_eq!(token.kind, expected[i]);
+    }
+}
+
 // TODO: Add tests for heredocs.
-// TODO: Add tests for comments.
 // TODO: Add tests for nowdocs.
-// TODO: Add tests for literals.
-// TODO: Add tests for execution strings.
-// TODO: Add tests for __halt_compiler();
-// TODO: Add tests for open & close tags.
 
 fn tokenize<'b, B: ?Sized + AsRef<[u8]>>(input: &B, language: Language) -> Vec<Token> {
     let bytes = input.as_ref();

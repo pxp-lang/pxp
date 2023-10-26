@@ -39,6 +39,48 @@ impl Lexer {
                 ));
 
                 return Ok(())
+            } else if state.source().matches_n(b"<?=", 3) {
+                let tag_position = state.source().position();
+
+                state.source_mut().skip_n(3);
+                state.replace(State::Scripting);
+
+                if !buffer.is_empty() {
+                    tokens.push(Token::new(
+                        TokenKind::InlineHtml,
+                        (start_position, tag_position - 1).into(),
+                        buffer.into(),
+                    ));
+                }
+
+                tokens.push(Token::new(
+                    TokenKind::EchoOpenTag,
+                    (tag_position, tag_position + 2).into(),
+                    b"<?=".into(),
+                ));
+
+                return Ok(());
+            } else if state.source().matches_n(b"<?", 2) {
+                let tag_position = state.source().position();
+
+                state.source_mut().skip_n(2);
+                state.replace(State::Scripting);
+
+                if !buffer.is_empty() {
+                    tokens.push(Token::new(
+                        TokenKind::InlineHtml,
+                        (start_position, tag_position - 1).into(),
+                        buffer.into(),
+                    ));
+                }
+
+                tokens.push(Token::new(
+                    TokenKind::ShortOpenTag,
+                    (tag_position, tag_position + 1).into(),
+                    b"<?".into(),
+                ));
+
+                return Ok(());
             }
 
             state.source_mut().next();
