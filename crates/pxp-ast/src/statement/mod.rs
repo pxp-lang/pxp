@@ -2,8 +2,8 @@ use pxp_span::{Span, HasSpan};
 
 #[derive(Debug, Clone)]
 pub struct Statement {
-    kind: StatementKind,
-    span: Span,
+    pub kind: StatementKind,
+    pub span: Span,
 }
 
 impl HasSpan for Statement {
