@@ -7,7 +7,7 @@ pub struct FunctionStatement {
     // FIXME: Add in attributes here.
     pub name: SimpleIdentifier,
     pub parameters: Vec<FunctionParameter>,
-    // FIXME: Add in return type here.
+    pub return_type: Option<Type>,
     pub body: Block,
 }
 
