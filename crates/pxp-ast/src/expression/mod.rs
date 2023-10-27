@@ -1,6 +1,6 @@
 use pxp_span::{Span, HasSpan};
 
-use crate::{LiteralInteger, LiteralFloat, LiteralString};
+use crate::{LiteralInteger, LiteralFloat, LiteralString, Identifier, Variable};
 
 mod eval;
 mod empty;
@@ -18,7 +18,6 @@ mod prefix;
 mod reference;
 mod parenthesized;
 mod error_suppress;
-mod identifier;
 mod include;
 mod include_once;
 mod require;
@@ -78,7 +77,6 @@ pub use prefix::*;
 pub use reference::*;
 pub use parenthesized::*;
 pub use error_suppress::*;
-pub use identifier::*;
 pub use include::*;
 pub use include_once::*;
 pub use require::*;
@@ -149,13 +147,6 @@ pub enum ExpressionKind {
     Infix(InfixExpression),
     Postfix(PostfixExpression),
     Prefix(PrefixExpression),
-    // ArithmeticOperation(ArithmeticOperationExpression),
-    // AssignmentOperation(AssignmentOperationExpression),
-    // BitwiseOperation(BitwiseOperationExpression),
-    // ComparisonOperation(ComparisonOperationExpression),
-    // LogicalOperation(LogicalOperationExpression),
-    // Concat(ConcatExpression),
-    // Instanceof(InstanceofExpression),
     Reference(ReferenceExpression),
     Parenthesized(ParenthesizedExpression),
     ErrorSuppress(ErrorSuppressExpression),
@@ -193,7 +184,6 @@ pub enum ExpressionKind {
     MagicConstant(MagicConstantExpression),
     ShortTernary(ShortTernaryExpression),
     Ternary(TernaryExpression),
-    Coalesce(CoalesceExpression),
     Clone(CloneExpression),
     Match(MatchExpression),
     Throw(ThrowExpression),

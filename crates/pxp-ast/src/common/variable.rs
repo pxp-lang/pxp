@@ -30,6 +30,6 @@ pub struct VariableVariable {
 
 #[derive(Debug, Clone)]
 pub struct BracedVariable {
-    pub name: Expression,
+    pub name: Box<Expression>,
     pub span: Span
 }
