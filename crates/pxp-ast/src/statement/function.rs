@@ -1,3 +1,5 @@
+use pxp_type::Type;
+
 use crate::{SimpleIdentifier, Block, SimpleVariable, Expression};
 
 #[derive(Debug, Clone)]
@@ -12,7 +14,7 @@ pub struct FunctionStatement {
 #[derive(Debug, Clone)]
 pub struct FunctionParameter {
     pub name: SimpleVariable,
-    // FIXME: Add in parameter type here.
+    pub r#type: Option<Type>,
     pub variadic: bool,
     pub by_reference: bool,
     pub default: Option<Expression>,

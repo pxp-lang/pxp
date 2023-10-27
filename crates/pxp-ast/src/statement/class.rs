@@ -64,7 +64,7 @@ pub struct ClassishMethod {
 pub struct MethodParameter {
     // FIXME: Add attributes here.
     pub name: SimpleIdentifier,
-    // FIXME: Add parameter type here.
+    pub r#type: Option<Type>,
     pub default: Option<Expression>,
     pub variadic: bool,
     pub by_reference: bool,
