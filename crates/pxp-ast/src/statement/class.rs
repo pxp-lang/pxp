@@ -1,7 +1,7 @@
 use pxp_span::Span;
 use pxp_type::Type;
 
-use crate::{SimpleIdentifier, Constant, Expression, AttributeGroup};
+use crate::{SimpleIdentifier, Constant, Expression, AttributeGroup, Visibility};
 
 #[derive(Debug, Clone)]
 pub struct ClassStatement {
@@ -41,7 +41,7 @@ pub struct ClassishUse {
 pub struct ClassishProperty {
     pub attributes: Vec<AttributeGroup>,
     // FIXME: Add modifiers here.
-    // FIXME: Add visibility here.
+    pub visibility: Visibility,
     pub properties: Vec<Property>,
 }
 
@@ -55,6 +55,7 @@ pub struct Property {
 pub struct ClassishMethod {
     // FIXME: Add comments here.
     pub attributes: Vec<AttributeGroup>,
+    pub visibility: Visibility,
     pub name: SimpleIdentifier,
     pub parameters: Vec<MethodParameter>,
     pub return_type: Option<Type>,

@@ -1,3 +1,4 @@
+mod visibility;
 mod attributes;
 mod identifier;
 mod variable;
@@ -17,3 +18,4 @@ pub use literals::*;
 pub use argument::*;
 pub use string_part::*;
 pub use attributes::*;
+pub use visibility::*;
