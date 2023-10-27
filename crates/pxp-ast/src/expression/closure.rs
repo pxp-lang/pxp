@@ -1,3 +1,5 @@
+use pxp_type::Type;
+
 use crate::{FunctionParameter, Block, SimpleVariable};
 
 #[derive(Debug, Clone)]
@@ -8,7 +10,7 @@ pub struct ClosureExpression {
     pub by_reference: bool,
     pub parameters: Vec<FunctionParameter>,
     pub uses: Option<ClosureUse>,
-    // FIXME: Add return type here.
+    pub return_type: Option<Type>,
     pub body: Block,
 }
 

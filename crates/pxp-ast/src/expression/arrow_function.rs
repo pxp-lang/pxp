@@ -1,3 +1,5 @@
+use pxp_type::Type;
+
 use crate::{FunctionParameter, Expression};
 
 #[derive(Debug, Clone)]
@@ -7,6 +9,6 @@ pub struct ArrowFunctionExpression {
     pub by_reference: bool,
     // FIXME: Add attributes here.
     pub parameters: Vec<FunctionParameter>,
-    // FIXME: Add return type here.
+    pub return_type: Option<Type>,
     pub body: Box<Expression>,
 }

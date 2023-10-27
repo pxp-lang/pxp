@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 pxp-span = { path = "../pxp-span" }
 pxp-token = { path = "../pxp-token" }
+pxp-type = { path = "../pxp-type" }

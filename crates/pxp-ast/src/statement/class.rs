@@ -1,4 +1,5 @@
 use pxp_span::Span;
+use pxp_type::Type;
 
 use crate::{SimpleIdentifier, Constant, Expression};
 
@@ -52,10 +53,11 @@ pub struct Property {
 
 #[derive(Debug, Clone)]
 pub struct ClassishMethod {
+    // FIXME: Add comments here.
     // FIXME: Add attributes here.
     pub name: SimpleIdentifier,
     pub parameters: Vec<MethodParameter>,
-    // FIXME: Add return type here.
+    pub return_type: Option<Type>,
 }
 
 #[derive(Debug, Clone)]
