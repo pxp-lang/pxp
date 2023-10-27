@@ -1,10 +1,10 @@
 use pxp_type::Type;
 
-use crate::{SimpleIdentifier, Block, SimpleVariable, Expression};
+use crate::{SimpleIdentifier, Block, SimpleVariable, Expression, AttributeGroup};
 
 #[derive(Debug, Clone)]
 pub struct FunctionStatement {
-    // FIXME: Add in attributes here.
+    pub attributes: Vec<AttributeGroup>,
     pub name: SimpleIdentifier,
     pub parameters: Vec<FunctionParameter>,
     pub return_type: Option<Type>,
