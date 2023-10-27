@@ -36,9 +36,6 @@ pub enum TypeKind {
 
 impl TypeKind {
     pub fn is_resolved(&self) -> bool {
-        match self {
-            TypeKind::Resolved(_) => true,
-            _ => false,
-        }
+        matches!(self, TypeKind::Resolved(_))
     }
 }
