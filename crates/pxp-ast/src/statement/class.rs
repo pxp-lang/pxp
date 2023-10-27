@@ -1,10 +1,11 @@
 use pxp_span::Span;
 use pxp_type::Type;
 
-use crate::{SimpleIdentifier, Constant, Expression, AttributeGroup, Visibility};
+use crate::{SimpleIdentifier, Constant, Expression, AttributeGroup, Visibility, PropertyModifierGroup, MethodModifierGroup, ClassModifierGroup, ConstantModifierGroup};
 
 #[derive(Debug, Clone)]
 pub struct ClassStatement {
+    pub modifiers: ClassModifierGroup,
     pub name: SimpleIdentifier,
     pub extends: Option<SimpleIdentifier>,
     pub implements: Vec<SimpleIdentifier>,
@@ -28,6 +29,7 @@ pub enum ClassMemberKind {
 #[derive(Debug, Clone)]
 pub struct ClassishConstant {
     pub attributes: Vec<AttributeGroup>,
+    pub modifiers: ConstantModifierGroup,
     pub constants: Vec<Constant>,
 }
 
@@ -39,8 +41,7 @@ pub struct ClassishUse {
 
 #[derive(Debug, Clone)]
 pub struct ClassishProperty {
-    pub attributes: Vec<AttributeGroup>,
-    // FIXME: Add modifiers here.
+    pub modifiers: PropertyModifierGroup,
     pub visibility: Visibility,
     pub properties: Vec<Property>,
 }
@@ -55,7 +56,7 @@ pub struct Property {
 pub struct ClassishMethod {
     // FIXME: Add comments here.
     pub attributes: Vec<AttributeGroup>,
-    pub visibility: Visibility,
+    pub modifiers: MethodModifierGroup,
     pub name: SimpleIdentifier,
     pub parameters: Vec<MethodParameter>,
     pub return_type: Option<Type>,
