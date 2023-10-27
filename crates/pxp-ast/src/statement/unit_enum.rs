@@ -1,10 +1,10 @@
 use pxp_span::Span;
 
-use crate::{SimpleIdentifier, ClassishMethod, ClassishConstant, ClassishUse};
+use crate::{SimpleIdentifier, ClassishMethod, ClassishConstant, ClassishUse, AttributeGroup};
 
 #[derive(Debug, Clone)]
 pub struct UnitEnumStatement {
-    // FIXME: Add attributes here.
+    pub attributes: Vec<AttributeGroup>,
     pub name: SimpleIdentifier,
     pub implements: Vec<SimpleIdentifier>,
     pub body: Vec<UnitEnumMember>,
@@ -26,6 +26,6 @@ pub enum UnitEnumMemberKind {
 
 #[derive(Debug, Clone)]
 pub struct UnitEnumCase {
-    // FIXME: Add attributes here.
+    pub attributes: Vec<AttributeGroup>,
     pub name: SimpleIdentifier,
 }

@@ -1,10 +1,10 @@
 use pxp_span::Span;
 
-use crate::{SimpleIdentifier, ClassishConstant, ClassishMethod, ClassishUse, ClassishProperty};
+use crate::{SimpleIdentifier, ClassishConstant, ClassishMethod, ClassishUse, ClassishProperty, AttributeGroup};
 
 #[derive(Debug, Clone)]
 pub struct TraitStatement {
-    // FIXME: Add attributes here.
+    pub attributes: Vec<AttributeGroup>,
     pub name: SimpleIdentifier,
     pub body: Vec<TraitMember>,
 }

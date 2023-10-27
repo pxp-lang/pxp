@@ -1,8 +1,8 @@
-use crate::{SimpleIdentifier, ClassMember};
+use crate::{SimpleIdentifier, ClassMember, AttributeGroup};
 
 #[derive(Debug, Clone)]
 pub struct AnonymousClassExpression {
-    // FIXME: Add attributes here.
+    pub attributes: Vec<AttributeGroup>,
     pub extends: Option<SimpleIdentifier>,
     pub implements: Vec<SimpleIdentifier>,
     pub body: Vec<ClassMember>,

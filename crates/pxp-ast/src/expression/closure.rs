@@ -1,11 +1,11 @@
 use pxp_type::Type;
 
-use crate::{FunctionParameter, Block, SimpleVariable};
+use crate::{FunctionParameter, Block, SimpleVariable, AttributeGroup};
 
 #[derive(Debug, Clone)]
 pub struct ClosureExpression {
     // FIXME: Add comments here.
-    // FIXME: Add attributes hre.
+    pub attributes: Vec<AttributeGroup>,
     pub is_static: bool,
     pub by_reference: bool,
     pub parameters: Vec<FunctionParameter>,
