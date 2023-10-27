@@ -1,7 +1,7 @@
 use pxp_span::Span;
 use pxp_type::Type;
 
-use crate::{SimpleIdentifier, Constant, Expression, AttributeGroup, Visibility, PropertyModifierGroup, MethodModifierGroup, ClassModifierGroup, ConstantModifierGroup};
+use crate::{SimpleIdentifier, Constant, Expression, AttributeGroup, Visibility, PropertyModifierGroup, MethodModifierGroup, ClassModifierGroup, ConstantModifierGroup, VisibilityModifier};
 
 #[derive(Debug, Clone)]
 pub struct ClassStatement {
@@ -36,7 +36,41 @@ pub struct ClassishConstant {
 #[derive(Debug, Clone)]
 pub struct ClassishUse {
     pub traits: Vec<SimpleIdentifier>,
-    // FIXME: Add in trait adaptations here.
+    pub adaptations: Vec<ClassishUseAdaptation>,
+}
+
+#[derive(Debug, Clone)]
+pub enum ClassishUseAdaptation {
+    Alias {
+        r#trait: Option<SimpleIdentifier>,
+        method: SimpleIdentifier,
+        alias: SimpleIdentifier,
+        visibility: Option<VisibilityModifier>,
+    },
+    Visibility {
+        r#trait: Option<SimpleIdentifier>,
+        method: SimpleIdentifier,
+        visibility: VisibilityModifier,
+    },
+    Precedence {
+        r#trait: Option<SimpleIdentifier>,
+        method: SimpleIdentifier,
+        insteadof: Vec<SimpleIdentifier>,
+    },
+}
+
+impl ClassishUseAdaptation {
+    pub fn is_alias(&self) -> bool {
+        matches!(self, Self::Alias { .. })
+    }
+
+    pub fn is_visibility(&self) -> bool {
+        matches!(self, Self::Visibility { .. })
+    }
+
+    pub fn is_precedence(&self) -> bool {
+        matches!(self, Self::Precedence { .. })
+    }
 }
 
 #[derive(Debug, Clone)]
