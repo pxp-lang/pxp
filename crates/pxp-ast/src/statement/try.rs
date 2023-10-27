@@ -1,3 +1,5 @@
+use pxp_type::Type;
+
 use crate::{Block, SimpleVariable};
 
 #[derive(Debug, Clone)]
@@ -9,7 +11,7 @@ pub struct TryStatement {
 
 #[derive(Debug, Clone)]
 pub struct Catch {
-    // FIXME: Add type here.
+    pub r#type: Type,
     pub variable: Option<SimpleVariable>,
     pub body: Block,
 }
