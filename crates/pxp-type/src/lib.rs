@@ -5,6 +5,13 @@ use pxp_span::Span;
 pub struct Type {
     pub kind: TypeKind,
     pub span: Span,
+    pub resolved: bool,
+}
+
+impl Type {
+    pub fn is_resolved(&self) -> bool {
+        self.resolved
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -29,13 +36,4 @@ pub enum TypeKind {
     StaticReference,
     SelfReference,
     ParentReference,
-    /// This is a special type that indicates the underlying type has been resolved,
-    /// resulting in a fully qualified name for union/intersection/named types.
-    Resolved(Box<Type>),
-}
-
-impl TypeKind {
-    pub fn is_resolved(&self) -> bool {
-        matches!(self, TypeKind::Resolved(_))
-    }
 }
