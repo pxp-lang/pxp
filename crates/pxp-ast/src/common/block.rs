@@ -1,6 +1,6 @@
 use crate::Statement;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Block {
     pub statements: Vec<Statement>,
 }
