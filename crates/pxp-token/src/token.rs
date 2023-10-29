@@ -17,11 +17,21 @@ impl Token {
         Self { kind, span, literal }
     }
 
-    pub fn kind(&self) -> &TokenKind {
+    pub fn missing(span: Span) -> Self {
+        Self {
+            kind: TokenKind::Missing,
+            span,
+            literal: ByteString::default(),
+        }
+    }
+
+    #[inline(always)]
+    pub const fn kind(&self) -> &TokenKind {
         &self.kind
     }
 
-    pub fn literal(&self) -> &ByteString {
+    #[inline(always)]
+    pub const fn literal(&self) -> &ByteString {
         &self.literal
     }
 }
