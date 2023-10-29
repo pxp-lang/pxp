@@ -78,6 +78,10 @@ impl HasSpan for Statement {
 
 #[derive(Debug, Clone)]
 pub enum StatementKind {
+    FullOpenTag,
+    ShortOpenTag,
+    EchoOpenTag,
+    CloseTag,
     InlineHtml(InlineHtmlStatement),
     Label(LabelStatement),
     Goto(GotoStatement),
