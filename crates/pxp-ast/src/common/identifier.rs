@@ -18,9 +18,20 @@ pub enum IdentifierKind {
 #[derive(Debug, Clone)]
 pub struct SimpleIdentifier {
     pub value: Token,
+    pub span: Span,
+}
+
+impl SimpleIdentifier {
+    pub fn missing(span: Span) -> Self {
+        Self {
+            value: Token::missing(span),
+            span
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
 pub struct DynamicIdentifier {
     pub expression: Box<Expression>,
+    pub span: Span,
 }
