@@ -70,6 +70,12 @@ pub struct Statement {
     pub span: Span,
 }
 
+impl Statement {
+    pub fn new(kind: StatementKind, span: Span) -> Self {
+        Self { kind, span }
+    }
+}
+
 impl HasSpan for Statement {
     fn span(&self) -> Span {
         self.span
