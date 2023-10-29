@@ -17,6 +17,10 @@ impl Span {
     pub fn text<'a>(&self, text: &'a [u8]) -> &'a [u8] {
         &text[self.start..self.end]
     }
+
+    pub fn with_start_as_end(&self) -> Self {
+        Self::new(self.start, self.start)
+    }
 }
 
 impl From<(usize, usize)> for Span {
