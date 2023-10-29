@@ -8,6 +8,7 @@ mod level;
 mod literals;
 mod argument;
 mod string_part;
+mod comments;
 
 pub use identifier::*;
 pub use variable::*;
@@ -19,3 +20,4 @@ pub use argument::*;
 pub use string_part::*;
 pub use attributes::*;
 pub use visibility::*;
+pub use comments::*;
