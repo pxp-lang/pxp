@@ -5,6 +5,22 @@ pub struct Block {
     pub statements: Vec<Statement>,
 }
 
+impl Block {
+    pub fn new() -> Self {
+        Self {
+            statements: Vec::with_capacity(8),
+        }
+    }
+
+    pub fn push(&mut self, statement: Statement) {
+        self.statements.push(statement);
+    }
+
+    pub fn to_vec(&self) -> Vec<Statement> {
+        self.statements.clone()
+    }
+}
+
 impl From<Vec<Statement>> for Block {
     fn from(statements: Vec<Statement>) -> Self {
         Self { statements }
