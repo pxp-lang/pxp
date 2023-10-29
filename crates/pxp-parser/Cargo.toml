@@ -9,3 +9,7 @@ edition = "2021"
 pxp-token = { path = "../pxp-token" }
 pxp-span = { path = "../pxp-span" }
 pxp-ast = { path = "../pxp-ast" }
+
+[dev-dependencies]
+pxp-lexer = { path = "../pxp-lexer" }
+pxp-source = { path = "../pxp-source" }
