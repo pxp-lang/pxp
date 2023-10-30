@@ -1,3 +1,6 @@
 <?php
 
-namespace 
+use Foo\{
+    Baz,
+    Bar
+};

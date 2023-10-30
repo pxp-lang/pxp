@@ -24,6 +24,11 @@ fn main() {
         },
     };
 
+    if args.contains(&"--only-tokens".to_string()) {
+        dbg!(tokens);
+        exit(0);
+    }
+
     let ast = construct(&tokens);
     dbg!(ast);
 }

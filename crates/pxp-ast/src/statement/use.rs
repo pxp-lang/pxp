@@ -6,7 +6,7 @@ pub struct UseStatement {
     pub uses: Vec<Use>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum UseKind {
     Normal,
     Function,

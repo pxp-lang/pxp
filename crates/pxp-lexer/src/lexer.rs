@@ -691,7 +691,7 @@ impl Lexer {
                         continue;
                     }
 
-                    if *next == b'\\' && !last_was_slash {
+                    if *next == b'\\' && !last_was_slash && matches!(state.source().peek(), Some(ident!())) {
                         qualified = true;
                         last_was_slash = true;
                         buffer.push(*next);
