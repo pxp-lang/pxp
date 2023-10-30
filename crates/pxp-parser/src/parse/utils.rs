@@ -47,6 +47,34 @@ pub fn skip_right_brace(state: &mut ParserState) -> Token {
     skip(state, TokenKind::RightBrace)
 }
 
+pub fn skip_left_parenthesis(state: &mut ParserState) -> Token {
+    skip(state, TokenKind::LeftParen)
+}
+
+pub fn skip_right_parenthesis(state: &mut ParserState) -> Token {
+    skip(state, TokenKind::RightParen)
+}
+
+pub fn skip_left_bracket(state: &mut ParserState) -> Token {
+    skip(state, TokenKind::LeftBracket)
+}
+
+pub fn skip_right_bracket(state: &mut ParserState) -> Token {
+    skip(state, TokenKind::RightBracket)
+}
+
+pub fn skip_colon(state: &mut ParserState) -> Token {
+    skip(state, TokenKind::Colon)
+}
+
+pub fn skip_double_arrow(state: &mut ParserState) -> Token {
+    skip(state, TokenKind::DoubleArrow)
+}
+
+pub fn skip_double_colon(state: &mut ParserState) -> Token {
+    skip(state, TokenKind::DoubleColon)
+}
+
 pub fn full_type_name(state: &mut ParserState) -> SimpleIdentifier {
     let current = state.stream.current();
 
@@ -141,6 +169,45 @@ pub fn type_identifier(state: &mut ParserState) -> SimpleIdentifier {
         }
         _ => {
             unexpected_token(state, &[TokenKind::Identifier]);
+            SimpleIdentifier::missing(current.span.with_start_as_end())
+        },
+    }
+}
+
+pub fn constant_identifier(state: &mut ParserState) -> SimpleIdentifier {
+    let current = state.stream.current();
+    match &current.kind {
+        TokenKind::Identifier => {
+            let span = current.span;
+
+            state.stream.next();
+
+            SimpleIdentifier {
+                span,
+                value: current.clone()
+            }
+        }
+        TokenKind::Enum | TokenKind::From => {
+            let span = current.span;
+            let name = Token::new(TokenKind::Identifier, span, current.literal().clone());
+
+            state.stream.next();
+
+            SimpleIdentifier { span, value: name }
+        }
+        t if is_reserved_identifier(t) => {
+            state.errors.push(ParseError::ReservedKeywordInConstantName { span: current.span, token: current.clone() });
+
+            let span = current.span;
+            let name = Token::new(TokenKind::Identifier, span, current.literal().clone());
+
+            state.stream.next();
+
+            SimpleIdentifier { span, value: name }
+        }
+        _ => {
+            unexpected_token(state, &[TokenKind::Identifier]);
+
             SimpleIdentifier::missing(current.span.with_start_as_end())
         },
     }

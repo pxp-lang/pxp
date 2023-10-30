@@ -1,5 +1,5 @@
 use pxp_span::Span;
-use pxp_token::Token;
+use pxp_token::{Token, TokenKind};
 
 use crate::Expression;
 
@@ -7,6 +7,22 @@ use crate::Expression;
 pub struct Identifier {
     pub kind: IdentifierKind,
     pub span: Span,
+}
+
+impl Identifier {
+    pub fn simple(value: Token, span: Span) -> Self {
+        Self {
+            kind: IdentifierKind::Simple(SimpleIdentifier { value, span }),
+            span
+        }
+    }
+
+    pub fn dynamic(expression: Expression, span: Span) -> Self {
+        Self {
+            kind: IdentifierKind::Dynamic(DynamicIdentifier { expression: Box::new(expression), span }),
+            span
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -27,6 +43,10 @@ impl SimpleIdentifier {
             value: Token::missing(span),
             span
         }
+    }
+
+    pub fn is_missing(&self) -> bool {
+        self.value.kind == TokenKind::Missing
     }
 }
 

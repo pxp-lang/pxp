@@ -15,6 +15,7 @@ pub enum ParseError {
     UnexpectedToken { token: Token, expected: Vec<String> },
     UnbracedNamespaceWithoutName { span: Span },
     ReservedKeywordInTypeName { span: Span, token: Token },
+    ReservedKeywordInConstantName { span: Span, token: Token },
     UnexpectedEndOfFile { span: Span },
 }   
 
@@ -29,6 +30,9 @@ impl Debug for ParseError {
             },
             Self::ReservedKeywordInTypeName { span, token } => {
                 write!(f, "Cannot use reserved keyword {:?} as type name at {:?}", token, span)
+            },
+            Self::ReservedKeywordInConstantName { span, token } => {
+                write!(f, "Cannot use reserved keyword {:?} as constant name at {:?}", token, span)
             },
             Self::UnexpectedEndOfFile { span } => {
                 write!(f, "Unexpected end of file at {:?}", span)

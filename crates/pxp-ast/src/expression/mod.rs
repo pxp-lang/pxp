@@ -126,6 +126,20 @@ pub struct Expression {
     pub span: Span,
 }
 
+impl Expression {
+    pub fn new(kind: ExpressionKind, span: Span) -> Self {
+        Self { kind, span }
+    }
+
+    pub fn missing(span: Span) -> Self {
+        Self::new(ExpressionKind::Missing, span)
+    }
+
+    pub fn noop(span: Span) -> Self {
+        Self::new(ExpressionKind::Noop, span)
+    }
+}
+
 impl HasSpan for Expression {
     fn span(&self) -> Span {
         self.span
@@ -193,5 +207,7 @@ pub enum ExpressionKind {
     True(TrueExpression),
     False(FalseExpression),
     Null(NullExpression),
+    Static(Span),
     Noop,
+    Missing,
 }

@@ -1,4 +1,4 @@
-use pxp_token::Token;
+use pxp_token::{Token, TokenKind};
 
 use crate::Expression;
 
@@ -50,4 +50,51 @@ pub enum InfixOperator {
     And(Token),
     Or(Token),
     Instanceof(Token),
+}
+
+impl From<Token> for InfixOperator {
+    fn from(value: Token) -> Self {
+        match value.kind {
+            TokenKind::Add => Self::Add(value),
+            TokenKind::Subtract => Self::Subtract(value),
+            TokenKind::Multiply => Self::Multiply(value),
+            TokenKind::Divide => Self::Divide(value),
+            TokenKind::Modulo => Self::Modulo(value),
+            TokenKind::Pow => Self::Pow(value),
+            TokenKind::Assign => Self::Assign(value),
+            TokenKind::AddAssign => Self::AddAssign(value),
+            TokenKind::SubtractAssign => Self::SubtractAssign(value),
+            TokenKind::MultiplyAssign => Self::MultiplyAssign(value),
+            TokenKind::DivideAssign => Self::DivideAssign(value),
+            TokenKind::ModuloAssign => Self::ModuloAssign(value),
+            TokenKind::PowAssign => Self::PowAssign(value),
+            TokenKind::BitwiseAndAssign => Self::BitwiseAndAssign(value),
+            TokenKind::BitwiseOrAssign => Self::BitwiseOrAssign(value),
+            TokenKind::BitwiseXorAssign => Self::BitwiseXorAssign(value),
+            TokenKind::LeftShiftAssign => Self::LeftShiftAssign(value),
+            TokenKind::RightShiftAssign => Self::RightShiftAssign(value),
+            TokenKind::NullCoalesceAssign => Self::NullCoalesceAssign(value),
+            TokenKind::NullCoalesce => Self::NullCoalesce(value),
+            TokenKind::Concat => Self::Concat(value),
+            TokenKind::ConcatAssign => Self::ConcatAssign(value),
+            TokenKind::BitwiseAnd => Self::BitwiseAnd(value),
+            TokenKind::BitwiseOr => Self::BitwiseOr(value),
+            TokenKind::BitwiseXor => Self::BitwiseXor(value),
+            TokenKind::LeftShift => Self::LeftShift(value),
+            TokenKind::RightShift => Self::RightShift(value),
+            TokenKind::Equals => Self::Equal(value),
+            TokenKind::Identical => Self::Identical(value),
+            TokenKind::NotEqual => Self::NotEqual(value),
+            TokenKind::NotIdentical => Self::NotIdentical(value),
+            TokenKind::LessThan => Self::LessThan(value),
+            TokenKind::LessThanOrEqual => Self::LessThanOrEqual(value),
+            TokenKind::GreaterThan => Self::GreaterThan(value),
+            TokenKind::GreaterThanOrEqual => Self::GreaterThanOrEqual(value),
+            TokenKind::Spaceship => Self::Spaceship(value),
+            TokenKind::And => Self::And(value),
+            TokenKind::Or => Self::Or(value),
+            TokenKind::Instanceof => Self::Instanceof(value),
+            _ => unreachable!()
+        }
+    }
 }

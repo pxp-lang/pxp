@@ -1,6 +1,3 @@
 <?php
 
-use Foo\{
-    Baz,
-    Bar
-};
+const FOO = 1, ;
