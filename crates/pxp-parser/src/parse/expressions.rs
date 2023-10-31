@@ -1270,7 +1270,7 @@ impl Precedence {
             NullCoalesce => Self::NullCoalesce,
             Question | QuestionColon => Self::Ternary,
             Assign | AddAssign | SubtractAssign | MultiplyAssign | PowAssign | DivideAssign
-            | ConcatAssign | BitwiseAndAssign | NullCoalesceAssign | ModuloAssign | BitwiseAndAssign
+            | ConcatAssign | BitwiseAndAssign | NullCoalesceAssign | ModuloAssign
             | BitwiseOrAssign | BitwiseXorAssign | LeftShiftAssign | RightShiftAssign => Self::Assignment,
             Yield => Self::Yield,
             LogicalAnd => Self::KeyAnd,
