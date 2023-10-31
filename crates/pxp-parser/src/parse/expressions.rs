@@ -1284,7 +1284,7 @@ impl Precedence {
         use TokenKind::*;
 
         match kind {
-            DoubleQuestion => Self::NullCoalesce,
+            NullCoalesce => Self::NullCoalesce,
             Increment | Decrement => Self::IncDec,
             LeftParen | LeftBracket => Self::CallDim,
             Arrow | NullsafeArrow | DoubleColon => Self::ObjectAccess,
