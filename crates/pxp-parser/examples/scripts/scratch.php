@@ -1,3 +1,3 @@
 <?php
 
-const FOO = 1, ;
+const FOO = , BAR = 2;

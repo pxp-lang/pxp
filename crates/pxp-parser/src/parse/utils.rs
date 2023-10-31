@@ -18,8 +18,7 @@ pub fn skip(state: &mut ParserState, kind: TokenKind) -> Token {
         Token::missing(current.span.with_start_as_end())
     }
 }
-
-pub fn unexpected_token(state: &mut ParserState, kinds: &[TokenKind]) {
+pub fn unexpected_token<K: ToString>(state: &mut ParserState, kinds: &[K]) {
     state.errors.push(ParseError::UnexpectedToken {
         token: state.stream.current().clone(),
         expected: kinds.iter().map(|k| k.to_string()).collect::<Vec<String>>(),

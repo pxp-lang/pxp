@@ -14,6 +14,12 @@ pub fn r#const(state: &mut ParserState) -> Statement {
     while !state.stream.is_eof() {
         let name = constant_identifier(state);
         let assign = skip(state, TokenKind::Assign);
+
+        if state.stream.current().kind == TokenKind::SemiColon {
+            unexpected_token(state, &["expression"]);
+            break;
+        }
+
         let value = expressions::create(state);
         
         constants.push(Constant {

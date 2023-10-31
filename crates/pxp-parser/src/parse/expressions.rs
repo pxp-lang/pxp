@@ -52,7 +52,9 @@ fn for_precedence(state: &mut ParserState, precedence: Precedence) -> Expression
             }
 
             if rpred == precedence && matches!(rpred.associativity(), Some(Associativity::Non)) {
-                utils::unexpected_token(state, &[]);
+                utils::unexpected_token(state, &["right-associative expression"]);
+
+                return Expression::missing(state.stream.current().span);
             }
 
             state.stream.next();
@@ -852,7 +854,7 @@ expressions! {
 fn unexpected_token(state: &mut ParserState, _: &Precedence) -> Expression {
     let current = state.stream.current();
 
-    utils::unexpected_token(state, &[]);
+    utils::unexpected_token(state, &["expression"]);
 
     Expression::missing(current.span)
 }
