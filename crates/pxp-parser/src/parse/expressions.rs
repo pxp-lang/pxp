@@ -1183,7 +1183,7 @@ fn is_infix(t: &TokenKind) -> bool {
             | TokenKind::QuestionColon
             | TokenKind::And
             | TokenKind::Or
-            | TokenKind::Equals
+            | TokenKind::Assign
             | TokenKind::AddAssign
             | TokenKind::SubtractAssign
             | TokenKind::ConcatAssign
