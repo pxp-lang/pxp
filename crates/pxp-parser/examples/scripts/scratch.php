@@ -1,3 +1,3 @@
 <?php
 
-const FOO = , BAR = 2;
+__halt_compiler();
