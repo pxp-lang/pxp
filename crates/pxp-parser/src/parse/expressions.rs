@@ -3,7 +3,7 @@ use pxp_token::TokenKind;
 
 use crate::{state::ParserState, result::ParseError};
 
-use super::utils::{skip_colon, skip_left_bracket, skip_right_bracket, skip_double_colon, skip_right_brace, skip, self};
+use super::{utils::{skip_colon, skip_left_bracket, skip_right_bracket, skip_double_colon, skip_right_brace, skip, self}, strings, variables};
 
 pub fn create(state: &mut ParserState) -> Expression {
     for_precedence(state, Precedence::Lowest)
@@ -531,7 +531,7 @@ expressions! {
         )
     })
 
-    #[before(unexpected_token), current(TokenKind::SingleQuotedString | TokenKind::DoubleQuotedString)]
+    #[before(string_part), current(TokenKind::SingleQuotedString | TokenKind::DoubleQuotedString)]
     literal_string({
         let current = state.stream.current();
 
@@ -543,10 +543,10 @@ expressions! {
         )
     })
 
-    // #[before(heredoc), current(TokenKind::StringPart)]
-    // string_part({
-    //     strings::interpolated(state)
-    // })
+    #[before(variable), current(TokenKind::InterpolatedStringPart)]
+    string_part({
+        strings::interpolated(state)
+    })
 
     // #[before(nowdoc), current(TokenKind::StartDocString(DocStringKind::Heredoc))]
     // heredoc({
@@ -845,10 +845,16 @@ expressions! {
     //     Ok(Expression::BitwiseOperation(BitwiseOperationExpression::Not { not: span, right }))
     // })
 
-    // #[before(unexpected_token), current(TokenKind::Dollar | TokenKind::DollarLeftBrace | TokenKind::Variable)]
-    // variable({
-    //     Ok(Expression::Variable(variables::dynamic_variable(state)))
-    // })
+    #[before(unexpected_token), current(TokenKind::Dollar | TokenKind::DollarLeftBrace | TokenKind::Variable)]
+    variable({
+        let variable = variables::dynamic_variable(state);
+        let span = variable.span;
+
+        Expression {
+            kind: ExpressionKind::Variable(variable),
+            span
+        }
+    })
 }
 
 fn unexpected_token(state: &mut ParserState, _: &Precedence) -> Expression {

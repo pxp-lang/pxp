@@ -1,3 +1,4 @@
+mod variables;
 mod top_level_statement;
 mod namespace;
 mod identifiers;
@@ -6,6 +7,7 @@ mod r#use;
 mod statement;
 mod r#const;
 mod expressions;
+mod strings;
 
 pub use top_level_statement::*;
 pub use namespace::*;
@@ -14,3 +16,5 @@ pub use statement::*;
 pub use r#use::*;
 pub use r#const::*;
 pub use expressions::*;
+pub use strings::*;
+pub use variables::*;

@@ -22,6 +22,15 @@ pub struct SimpleVariable {
     pub span: Span
 }
 
+impl SimpleVariable {
+    pub fn missing(span: Span) -> Self {
+        Self {
+            name: Token::missing(span),
+            span
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct VariableVariable {
     pub name: Box<Variable>,

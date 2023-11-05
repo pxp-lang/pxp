@@ -1,3 +1,3 @@
 <?php
 
-__halt_compiler();
+"Hello, {$name}";
