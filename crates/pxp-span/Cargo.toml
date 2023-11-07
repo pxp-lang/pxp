@@ -1,5 +1,0 @@
-[package]
-name = "pxp-span"
-description = "A set of helpers for working with text ranges."
-version = "0.1.0"
-edition = "2021"

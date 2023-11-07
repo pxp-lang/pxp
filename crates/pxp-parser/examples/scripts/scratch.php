@@ -1,3 +1,0 @@
-<?php
-
-"Hello, {$name}";
