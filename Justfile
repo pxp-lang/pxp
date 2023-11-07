@@ -1,5 +1,5 @@
 test:
     cargo nextest run
 
-tokenize:
-    cargo run --example tokenise
+tokenise +args:
+    cargo run --package pxp-lexer --bin tokenise --release -- {{args}}
