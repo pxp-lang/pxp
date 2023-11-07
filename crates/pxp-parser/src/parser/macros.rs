@@ -56,8 +56,8 @@ macro_rules! expect_literal {
             TokenKind::LiteralInteger => {
                 $state.stream.next();
 
-                $crate::parser::ast::literals::Literal::Integer(
-                    $crate::parser::ast::literals::LiteralInteger {
+                pxp_ast::literals::Literal::Integer(
+                    pxp_ast::literals::LiteralInteger {
                         span: current.span,
                         value: current.value.clone(),
                     },
@@ -66,8 +66,8 @@ macro_rules! expect_literal {
             TokenKind::LiteralFloat => {
                 $state.stream.next();
 
-                $crate::parser::ast::literals::Literal::Float(
-                    $crate::parser::ast::literals::LiteralFloat {
+                pxp_ast::literals::Literal::Float(
+                    pxp_ast::literals::LiteralFloat {
                         span: current.span,
                         value: current.value.clone(),
                     },
@@ -76,14 +76,14 @@ macro_rules! expect_literal {
             TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString => {
                 $state.stream.next();
 
-                $crate::parser::ast::literals::Literal::String(
-                    $crate::parser::ast::literals::LiteralString {
+                pxp_ast::literals::Literal::String(
+                    pxp_ast::literals::LiteralString {
                         span: current.span,
                         value: current.value.clone(),
                         kind: if matches!(current.kind, TokenKind::LiteralSingleQuotedString) {
-                            $crate::parser::ast::literals::LiteralStringKind::SingleQuoted
+                            pxp_ast::literals::LiteralStringKind::SingleQuoted
                         } else {
-                            $crate::parser::ast::literals::LiteralStringKind::DoubleQuoted
+                            pxp_ast::literals::LiteralStringKind::DoubleQuoted
                         },
                     },
                 )

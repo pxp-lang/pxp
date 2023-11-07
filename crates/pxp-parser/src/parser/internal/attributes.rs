@@ -1,6 +1,6 @@
 use pxp_token::TokenKind;
-use crate::parser::ast::attributes::Attribute;
-use crate::parser::ast::attributes::AttributeGroup;
+use pxp_ast::attributes::Attribute;
+use pxp_ast::attributes::AttributeGroup;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::identifiers;
 use crate::parser::internal::parameters;

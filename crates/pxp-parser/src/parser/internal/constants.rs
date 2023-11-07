@@ -1,8 +1,8 @@
 use pxp_token::TokenKind;
-use crate::parser::ast::constant::ClassishConstant;
-use crate::parser::ast::constant::ConstantEntry;
-use crate::parser::ast::constant::ConstantStatement;
-use crate::parser::ast::modifiers::ConstantModifierGroup;
+use pxp_ast::constant::ClassishConstant;
+use pxp_ast::constant::ConstantEntry;
+use pxp_ast::constant::ConstantStatement;
+use pxp_ast::modifiers::ConstantModifierGroup;
 use crate::parser::error::ParseResult;
 use crate::parser::expressions;
 use crate::parser::internal::identifiers;

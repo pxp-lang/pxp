@@ -1,9 +1,9 @@
 use pxp_span::Span;
 use crate::node::Node;
-use crate::parser::ast::identifiers::SimpleIdentifier;
-use crate::parser::ast::literals::Literal;
-use crate::parser::ast::Expression;
-use crate::parser::ast::Statement;
+use crate::identifiers::SimpleIdentifier;
+use crate::literals::Literal;
+use crate::Expression;
+use crate::Statement;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

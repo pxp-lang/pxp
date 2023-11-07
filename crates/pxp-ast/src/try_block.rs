@@ -1,7 +1,7 @@
 use pxp_span::Span;
 use crate::node::Node;
-use crate::parser::ast::identifiers::SimpleIdentifier;
-use crate::parser::ast::Block;
+use crate::identifiers::SimpleIdentifier;
+use crate::Block;
 
 use super::variables::SimpleVariable;
 

@@ -1,7 +1,7 @@
 use pxp_span::Span;
 use crate::node::Node;
-use crate::parser::ast::comments::CommentGroup;
-use crate::parser::ast::identifiers::SimpleIdentifier;
+use crate::comments::CommentGroup;
+use crate::identifiers::SimpleIdentifier;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

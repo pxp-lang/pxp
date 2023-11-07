@@ -1,20 +1,20 @@
 use crate::expected_token_err;
 use pxp_token::DocStringKind;
 use pxp_token::TokenKind;
-use crate::parser::ast::arguments::ArgumentPlaceholder;
-use crate::parser::ast::identifiers::DynamicIdentifier;
-use crate::parser::ast::identifiers::Identifier;
-use crate::parser::ast::identifiers::SimpleIdentifier;
-use crate::parser::ast::literals::Literal;
-use crate::parser::ast::literals::LiteralFloat;
-use crate::parser::ast::literals::LiteralInteger;
-use crate::parser::ast::literals::LiteralString;
-use crate::parser::ast::operators::ArithmeticOperationExpression;
-use crate::parser::ast::operators::AssignmentOperationExpression;
-use crate::parser::ast::operators::BitwiseOperationExpression;
-use crate::parser::ast::operators::ComparisonOperationExpression;
-use crate::parser::ast::operators::LogicalOperationExpression;
-use crate::parser::ast::{
+use pxp_ast::arguments::ArgumentPlaceholder;
+use pxp_ast::identifiers::DynamicIdentifier;
+use pxp_ast::identifiers::Identifier;
+use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_ast::literals::Literal;
+use pxp_ast::literals::LiteralFloat;
+use pxp_ast::literals::LiteralInteger;
+use pxp_ast::literals::LiteralString;
+use pxp_ast::operators::ArithmeticOperationExpression;
+use pxp_ast::operators::AssignmentOperationExpression;
+use pxp_ast::operators::BitwiseOperationExpression;
+use pxp_ast::operators::ComparisonOperationExpression;
+use pxp_ast::operators::LogicalOperationExpression;
+use pxp_ast::{
     ArrayIndexExpression, CoalesceExpression, ConcatExpression, ConstantFetchExpression,
     Expression, FunctionCallExpression, FunctionClosureCreationExpression, InstanceofExpression,
     MagicConstantExpression, MethodCallExpression, MethodClosureCreationExpression,
@@ -40,27 +40,27 @@ use crate::parser::internal::utils;
 use crate::parser::internal::variables;
 use crate::parser::state::State;
 
-use super::ast::literals::LiteralStringKind;
-use super::ast::BoolExpression;
-use super::ast::CastExpression;
-use super::ast::CloneExpression;
-use super::ast::DieExpression;
-use super::ast::EmptyExpression;
-use super::ast::ErrorSuppressExpression;
-use super::ast::EvalExpression;
-use super::ast::ExitExpression;
-use super::ast::IncludeExpression;
-use super::ast::IncludeOnceExpression;
-use super::ast::IssetExpression;
-use super::ast::NewExpression;
-use super::ast::ParenthesizedExpression;
-use super::ast::PrintExpression;
-use super::ast::RequireExpression;
-use super::ast::RequireOnceExpression;
-use super::ast::ThrowExpression;
-use super::ast::UnsetExpression;
-use super::ast::YieldExpression;
-use super::ast::YieldFromExpression;
+use pxp_ast::literals::LiteralStringKind;
+use pxp_ast::BoolExpression;
+use pxp_ast::CastExpression;
+use pxp_ast::CloneExpression;
+use pxp_ast::DieExpression;
+use pxp_ast::EmptyExpression;
+use pxp_ast::ErrorSuppressExpression;
+use pxp_ast::EvalExpression;
+use pxp_ast::ExitExpression;
+use pxp_ast::IncludeExpression;
+use pxp_ast::IncludeOnceExpression;
+use pxp_ast::IssetExpression;
+use pxp_ast::NewExpression;
+use pxp_ast::ParenthesizedExpression;
+use pxp_ast::PrintExpression;
+use pxp_ast::RequireExpression;
+use pxp_ast::RequireOnceExpression;
+use pxp_ast::ThrowExpression;
+use pxp_ast::UnsetExpression;
+use pxp_ast::YieldExpression;
+use pxp_ast::YieldFromExpression;
 
 pub fn create(state: &mut State) -> ParseResult<Expression> {
     for_precedence(state, Precedence::Lowest)

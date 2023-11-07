@@ -3,17 +3,17 @@ use crate::expected_token_err;
 use crate::lexer::error::SyntaxError;
 use pxp_token::DocStringIndentationKind;
 use pxp_token::TokenKind;
-use crate::parser::ast::identifiers::Identifier;
-use crate::parser::ast::literals::Literal;
-use crate::parser::ast::literals::LiteralInteger;
-use crate::parser::ast::literals::LiteralString;
-use crate::parser::ast::literals::LiteralStringKind;
-use crate::parser::ast::operators::ArithmeticOperationExpression;
-use crate::parser::ast::variables::Variable;
-use crate::parser::ast::ExpressionStringPart;
-use crate::parser::ast::LiteralStringPart;
-use crate::parser::ast::StringPart;
-use crate::parser::ast::{
+use pxp_ast::identifiers::Identifier;
+use pxp_ast::literals::Literal;
+use pxp_ast::literals::LiteralInteger;
+use pxp_ast::literals::LiteralString;
+use pxp_ast::literals::LiteralStringKind;
+use pxp_ast::operators::ArithmeticOperationExpression;
+use pxp_ast::variables::Variable;
+use pxp_ast::ExpressionStringPart;
+use pxp_ast::LiteralStringPart;
+use pxp_ast::StringPart;
+use pxp_ast::{
     ArrayIndexExpression, Expression, HeredocExpression, InterpolatedStringExpression,
     NowdocExpression, NullsafePropertyFetchExpression, PropertyFetchExpression,
     ShellExecExpression,

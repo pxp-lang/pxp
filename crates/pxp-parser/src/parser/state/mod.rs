@@ -2,8 +2,8 @@ use std::collections::VecDeque;
 use std::fmt::Display;
 
 use crate::lexer::stream::TokenStream;
-use crate::parser::ast::attributes::AttributeGroup;
-use crate::parser::ast::identifiers::SimpleIdentifier;
+use pxp_ast::attributes::AttributeGroup;
+use pxp_ast::identifiers::SimpleIdentifier;
 use crate::parser::error::ParseError;
 
 #[derive(Debug, PartialEq, Eq, Clone)]

@@ -1,11 +1,11 @@
 use pxp_token::TokenKind;
-use crate::parser::ast::arguments::{Argument, SingleArgument};
-use crate::parser::ast::arguments::{ArgumentList, NamedArgument, PositionalArgument};
-use crate::parser::ast::functions::ConstructorParameter;
-use crate::parser::ast::functions::ConstructorParameterList;
-use crate::parser::ast::functions::FunctionParameter;
-use crate::parser::ast::functions::FunctionParameterList;
-use crate::parser::ast::identifiers::SimpleIdentifier;
+use pxp_ast::arguments::{Argument, SingleArgument};
+use pxp_ast::arguments::{ArgumentList, NamedArgument, PositionalArgument};
+use pxp_ast::functions::ConstructorParameter;
+use pxp_ast::functions::ConstructorParameterList;
+use pxp_ast::functions::FunctionParameter;
+use pxp_ast::functions::FunctionParameterList;
+use pxp_ast::identifiers::SimpleIdentifier;
 use crate::parser::error;
 use crate::parser::error::ParseError;
 use crate::parser::error::ParseResult;

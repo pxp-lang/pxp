@@ -1,9 +1,9 @@
 use pxp_token::TokenKind;
-use crate::parser::ast::GroupUseStatement;
-use crate::parser::ast::Statement;
-use crate::parser::ast::Use;
-use crate::parser::ast::UseKind;
-use crate::parser::ast::UseStatement;
+use pxp_ast::GroupUseStatement;
+use pxp_ast::Statement;
+use pxp_ast::Use;
+use pxp_ast::UseKind;
+use pxp_ast::UseStatement;
 use crate::parser::error;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::identifiers;

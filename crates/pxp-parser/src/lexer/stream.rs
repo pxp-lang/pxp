@@ -1,9 +1,9 @@
 use pxp_token::Token;
 use pxp_token::TokenKind;
 
-use crate::parser::ast::comments::Comment;
-use crate::parser::ast::comments::CommentFormat;
-use crate::parser::ast::comments::CommentGroup;
+use pxp_ast::comments::Comment;
+use pxp_ast::comments::CommentFormat;
+use pxp_ast::comments::CommentGroup;
 
 /// Token stream.
 ///

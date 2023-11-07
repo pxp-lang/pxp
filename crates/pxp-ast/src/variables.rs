@@ -3,7 +3,7 @@ use std::fmt::Display;
 use pxp_bytestring::ByteString;
 use pxp_span::Span;
 use crate::node::Node;
-use crate::parser::ast::Expression;
+use crate::Expression;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

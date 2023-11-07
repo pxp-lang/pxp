@@ -3,13 +3,13 @@ use std::fmt::{Display, Formatter};
 use crate::lexer::error::SyntaxError;
 use pxp_span::Span;
 use pxp_token::{Token, TokenKind};
-use crate::parser::ast::attributes::AttributeGroup;
-use crate::parser::ast::data_type::Type;
-use crate::parser::ast::modifiers::PromotedPropertyModifier;
-use crate::parser::ast::Program;
+use pxp_ast::attributes::AttributeGroup;
+use pxp_ast::data_type::Type;
+use pxp_ast::modifiers::PromotedPropertyModifier;
+use pxp_ast::Program;
 
-use super::ast::identifiers::SimpleIdentifier;
-use super::ast::variables::SimpleVariable;
+use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_ast::variables::SimpleVariable;
 use super::state::State;
 
 pub type ParseResult<T> = Result<T, ParseError>;

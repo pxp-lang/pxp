@@ -7,3 +7,4 @@ edition = "2021"
 pxp-span = { path = "../pxp-span" }
 pxp-bytestring = { path = "../pxp-bytestring" }
 pxp-token = { path = "../pxp-token" }
+pxp-ast = { path = "../pxp-ast" }

@@ -1,5 +1,5 @@
 use pxp_token::TokenKind;
-use crate::parser::ast::identifiers::SimpleIdentifier;
+use pxp_ast::identifiers::SimpleIdentifier;
 use crate::parser::error;
 use crate::parser::error::ParseResult;
 use crate::parser::state::State;

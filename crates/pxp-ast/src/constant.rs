@@ -2,11 +2,11 @@ use std::slice::Iter;
 
 use pxp_span::Span;
 use crate::node::Node;
-use crate::parser::ast::attributes::AttributeGroup;
-use crate::parser::ast::comments::CommentGroup;
-use crate::parser::ast::identifiers::SimpleIdentifier;
-use crate::parser::ast::modifiers::ConstantModifierGroup;
-use crate::parser::ast::Expression;
+use crate::attributes::AttributeGroup;
+use crate::comments::CommentGroup;
+use crate::identifiers::SimpleIdentifier;
+use crate::modifiers::ConstantModifierGroup;
+use crate::Expression;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

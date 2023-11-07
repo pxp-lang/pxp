@@ -1,10 +1,10 @@
 use pxp_token::TokenKind;
-use crate::parser::ast::identifiers::SimpleIdentifier;
-use crate::parser::ast::interfaces::InterfaceBody;
-use crate::parser::ast::interfaces::InterfaceExtends;
-use crate::parser::ast::interfaces::InterfaceMember;
-use crate::parser::ast::interfaces::InterfaceStatement;
-use crate::parser::ast::Statement;
+use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_ast::interfaces::InterfaceBody;
+use pxp_ast::interfaces::InterfaceExtends;
+use pxp_ast::interfaces::InterfaceMember;
+use pxp_ast::interfaces::InterfaceStatement;
+use pxp_ast::Statement;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::attributes;
 use crate::parser::internal::constants;

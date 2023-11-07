@@ -1,9 +1,9 @@
 use crate::expected_token_err;
 use pxp_token::TokenKind;
-use crate::parser::ast::variables::BracedVariableVariable;
-use crate::parser::ast::variables::SimpleVariable;
-use crate::parser::ast::variables::Variable;
-use crate::parser::ast::variables::VariableVariable;
+use pxp_ast::variables::BracedVariableVariable;
+use pxp_ast::variables::SimpleVariable;
+use pxp_ast::variables::Variable;
+use pxp_ast::variables::VariableVariable;
 use crate::parser::error::ParseResult;
 use crate::parser::expressions;
 use crate::parser::internal::utils;

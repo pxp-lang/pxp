@@ -1,10 +1,10 @@
 use pxp_span::Span;
 use crate::node::Node;
-use crate::parser::ast::attributes::AttributeGroup;
-use crate::parser::ast::data_type::Type;
-use crate::parser::ast::modifiers::PropertyModifierGroup;
-use crate::parser::ast::variables::SimpleVariable;
-use crate::parser::ast::Expression;
+use crate::attributes::AttributeGroup;
+use crate::data_type::Type;
+use crate::modifiers::PropertyModifierGroup;
+use crate::variables::SimpleVariable;
+use crate::Expression;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

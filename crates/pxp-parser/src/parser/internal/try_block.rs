@@ -1,9 +1,9 @@
 use pxp_token::TokenKind;
-use crate::parser::ast::try_block::CatchBlock;
-use crate::parser::ast::try_block::CatchType;
-use crate::parser::ast::try_block::FinallyBlock;
-use crate::parser::ast::try_block::TryStatement;
-use crate::parser::ast::Statement;
+use pxp_ast::try_block::CatchBlock;
+use pxp_ast::try_block::CatchType;
+use pxp_ast::try_block::FinallyBlock;
+use pxp_ast::try_block::TryStatement;
+use pxp_ast::Statement;
 use crate::parser::error;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::blocks;

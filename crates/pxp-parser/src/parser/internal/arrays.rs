@@ -1,7 +1,7 @@
 use pxp_token::TokenKind;
-use crate::parser::ast::Expression;
-use crate::parser::ast::ListEntry;
-use crate::parser::ast::{ArrayExpression, ArrayItem, ListExpression, ShortArrayExpression};
+use pxp_ast::Expression;
+use pxp_ast::ListEntry;
+use pxp_ast::{ArrayExpression, ArrayItem, ListExpression, ShortArrayExpression};
 use crate::parser::error;
 use crate::parser::error::ParseResult;
 use crate::parser::expressions;

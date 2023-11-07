@@ -1,8 +1,8 @@
 use pxp_token::OpenTagKind;
 use pxp_token::TokenKind;
 use crate::parser;
-use crate::parser::ast::BlockStatement;
-use crate::parser::ast::Statement;
+use pxp_ast::BlockStatement;
+use pxp_ast::Statement;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::utils;
 use crate::parser::state::State;

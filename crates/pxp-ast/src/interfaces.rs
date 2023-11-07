@@ -1,11 +1,11 @@
 use pxp_span::Span;
 use crate::node::Node;
-use crate::parser::ast::attributes::AttributeGroup;
-use crate::parser::ast::constant::ClassishConstant;
-use crate::parser::ast::functions::AbstractConstructor;
-use crate::parser::ast::functions::AbstractMethod;
-use crate::parser::ast::identifiers::SimpleIdentifier;
-use crate::parser::ast::utils::CommaSeparated;
+use crate::attributes::AttributeGroup;
+use crate::constant::ClassishConstant;
+use crate::functions::AbstractConstructor;
+use crate::functions::AbstractMethod;
+use crate::identifiers::SimpleIdentifier;
+use crate::utils::CommaSeparated;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

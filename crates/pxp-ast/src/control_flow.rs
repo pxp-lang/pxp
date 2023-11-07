@@ -1,8 +1,8 @@
 use pxp_span::Span;
 use crate::node::Node;
-use crate::parser::ast::Ending;
-use crate::parser::ast::Expression;
-use crate::parser::ast::Statement;
+use crate::Ending;
+use crate::Expression;
+use crate::Statement;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

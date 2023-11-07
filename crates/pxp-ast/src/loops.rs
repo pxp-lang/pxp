@@ -1,10 +1,10 @@
 use pxp_span::Span;
 use crate::node::Node;
-use crate::parser::ast::literals::LiteralInteger;
-use crate::parser::ast::utils::CommaSeparated;
-use crate::parser::ast::Ending;
-use crate::parser::ast::Expression;
-use crate::parser::ast::Statement;
+use crate::literals::LiteralInteger;
+use crate::utils::CommaSeparated;
+use crate::Ending;
+use crate::Expression;
+use crate::Statement;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

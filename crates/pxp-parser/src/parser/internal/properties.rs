@@ -1,9 +1,9 @@
 use pxp_token::TokenKind;
-use crate::parser::ast::identifiers::SimpleIdentifier;
-use crate::parser::ast::modifiers::PropertyModifierGroup;
-use crate::parser::ast::properties::Property;
-use crate::parser::ast::properties::PropertyEntry;
-use crate::parser::ast::properties::VariableProperty;
+use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_ast::modifiers::PropertyModifierGroup;
+use pxp_ast::properties::Property;
+use pxp_ast::properties::PropertyEntry;
+use pxp_ast::properties::VariableProperty;
 use crate::parser::error;
 use crate::parser::error::ParseResult;
 use crate::parser::expressions;

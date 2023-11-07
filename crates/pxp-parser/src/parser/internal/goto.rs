@@ -1,7 +1,7 @@
 use pxp_token::TokenKind;
-use crate::parser::ast::goto::GotoStatement;
-use crate::parser::ast::goto::LabelStatement;
-use crate::parser::ast::Statement;
+use pxp_ast::goto::GotoStatement;
+use pxp_ast::goto::LabelStatement;
+use pxp_ast::Statement;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::identifiers;
 use crate::parser::internal::utils;

@@ -1,7 +1,7 @@
 use pxp_span::Span;
 use pxp_token::TokenKind;
-use crate::parser::ast::utils::CommaSeparated;
-use crate::parser::ast::Ending;
+use pxp_ast::utils::CommaSeparated;
+use pxp_ast::Ending;
 use crate::parser::error;
 use crate::parser::error::ParseResult;
 use crate::parser::state::State;

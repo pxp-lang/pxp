@@ -2,18 +2,18 @@ use std::slice::Iter;
 
 use pxp_span::Span;
 use crate::node::Node;
-use crate::parser::ast::attributes::AttributeGroup;
-use crate::parser::ast::constant::ClassishConstant;
-use crate::parser::ast::functions::AbstractConstructor;
-use crate::parser::ast::functions::AbstractMethod;
-use crate::parser::ast::functions::ConcreteConstructor;
-use crate::parser::ast::functions::ConcreteMethod;
-use crate::parser::ast::identifiers::SimpleIdentifier;
-use crate::parser::ast::modifiers::ClassModifierGroup;
-use crate::parser::ast::properties::Property;
-use crate::parser::ast::properties::VariableProperty;
-use crate::parser::ast::traits::TraitUsage;
-use crate::parser::ast::utils::CommaSeparated;
+use crate::attributes::AttributeGroup;
+use crate::constant::ClassishConstant;
+use crate::functions::AbstractConstructor;
+use crate::functions::AbstractMethod;
+use crate::functions::ConcreteConstructor;
+use crate::functions::ConcreteMethod;
+use crate::identifiers::SimpleIdentifier;
+use crate::modifiers::ClassModifierGroup;
+use crate::properties::Property;
+use crate::properties::VariableProperty;
+use crate::traits::TraitUsage;
+use crate::utils::CommaSeparated;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

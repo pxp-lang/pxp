@@ -2,9 +2,9 @@ use std::slice::Iter;
 
 use pxp_span::Span;
 use crate::node::Node;
-use crate::parser::ast::comments::CommentGroup;
-use crate::parser::ast::identifiers::SimpleIdentifier;
-use crate::parser::ast::Expression;
+use crate::comments::CommentGroup;
+use crate::identifiers::SimpleIdentifier;
+use crate::Expression;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PositionalArgument {
