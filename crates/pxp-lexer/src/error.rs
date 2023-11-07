@@ -43,60 +43,60 @@ impl Display for SyntaxError {
             Self::UnexpectedEndOfFile(span) => write!(
                 f,
                 "Syntax Error: unexpected end of file on line {} column {}",
-                span.line, span.column
+                span.start.line, span.start.column
             ),
             Self::UnexpectedError(span) => write!(
                 f,
                 "Syntax Error: unexpected error on line {} column {}",
-                span.line, span.column
+                span.start.line, span.start.column
             ),
             Self::UnexpectedCharacter(char, span) => write!(
                 f,
                 "Syntax Error: unexpected character `{:?}` on line {} column {}",
-                *char as char, span.line, span.column
+                *char as char, span.start.line, span.start.column
             ),
             Self::InvalidHaltCompiler(span) => write!(
                 f,
                 "Syntax Error: invalid halt compiler on line {} column {}",
-                span.line, span.column
+                span.start.line, span.start.column
             ),
             Self::InvalidOctalEscape(span) => write!(
                 f,
                 "Syntax Error: invalid octal escape on line {} column {}",
-                span.line, span.column
+                span.start.line, span.start.column
             ),
             Self::InvalidOctalLiteral(span) => write!(
                 f,
                 "Syntax Error: invalid octal literal on line {} column {}",
-                span.line, span.column
+                span.start.line, span.start.column
             ),
             Self::InvalidUnicodeEscape(span) => write!(
                 f,
                 "Syntax Error: invalid unicode escape on line {} column {}",
-                span.line, span.column
+                span.start.line, span.start.column
             ),
             Self::UnpredictableState(span) => write!(
                 f,
                 "Syntax Error: Reached an unpredictable state on line {} column {}",
-                span.line, span.column
+                span.start.line, span.start.column
             ),
             Self::InvalidDocIndentation(span) => write!(
                 f,
                 "Syntax Error: Invalid indentation - cannot use tabs and spaces on line {}",
-                span.line
+                span.start.line
             ),
             Self::InvalidDocBodyIndentationLevel(expected, span) => write!(
                 f,
                 "Syntax Error: Invalid body indentation level - expecting an indentation level of at least {} on line {}",
                 expected,
-                span.line
+                span.start.line
             ),
             Self::UnrecognisedToken(token, span) => write!(
                 f,
                 "Syntax Error: Unrecognised token {} on line {} column {}",
                 token,
-                span.line,
-                span.column
+                span.start.line,
+                span.start.column
             )
         }
     }

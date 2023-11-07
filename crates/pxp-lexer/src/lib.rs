@@ -4,6 +4,7 @@ use crate::state::source::Source;
 use crate::state::StackFrame;
 use crate::state::State;
 use pxp_bytestring::ByteString;
+use pxp_span::Span;
 use pxp_token::DocStringIndentationKind;
 use pxp_token::DocStringKind;
 use pxp_token::OpenTagKind;
@@ -28,6 +29,8 @@ impl Lexer {
         let mut tokens = Vec::new();
 
         while !state.source.eof() {
+            state.source.start_token();
+
             match state.frame()? {
                 // The "Initial" state is used to parse inline HTML. It is essentially a catch-all
                 // state that will build up a single token buffer until it encounters an open tag
@@ -119,13 +122,14 @@ impl Lexer {
     }
 
     fn initial(&self, state: &mut State, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
-        let inline_span = state.source.span();
         let mut buffer = Vec::new();
         while let Some(char) = state.source.current() {
             if state.source.at_case_insensitive(b"<?php", 5) {
-                let tag_span = state.source.span();
+                let inline_span = state.source.span();
 
                 let tag = state.source.read_and_skip(5);
+                let tag_span = state.source.span();
+
                 state.replace(StackFrame::Scripting);
 
                 if !buffer.is_empty() {
@@ -144,9 +148,13 @@ impl Lexer {
 
                 return Ok(());
             } else if state.source.at_case_insensitive(b"<?=", 3) {
+                let inline_span = state.source.span();
+
+                state.source.start_token();
+                state.source.skip(3);
+
                 let tag_span = state.source.span();
 
-                state.source.skip(3);
                 state.replace(StackFrame::Scripting);
 
                 if !buffer.is_empty() {
@@ -165,9 +173,12 @@ impl Lexer {
 
                 return Ok(());
             } else if state.source.at_case_insensitive(b"<?", 2) {
+                let inline_span = state.source.span();
+
+                state.source.start_token();
+                state.source.skip(2);
                 let tag_span = state.source.span();
 
-                state.source.skip(2);
                 state.replace(StackFrame::Scripting);
 
                 if !buffer.is_empty() {
@@ -193,7 +204,7 @@ impl Lexer {
 
         tokens.push(Token {
             kind: TokenKind::InlineHtml,
-            span: inline_span,
+            span: state.source.span(),
             value: buffer.into(),
         });
 
@@ -201,7 +212,6 @@ impl Lexer {
     }
 
     fn scripting(&self, state: &mut State) -> SyntaxResult<Token> {
-        let span = state.source.span();
         let (kind, value): (TokenKind, ByteString) = match state.source.read(3) {
             [b'!', b'=', b'='] => {
                 state.source.skip(3);
@@ -822,37 +832,44 @@ impl Lexer {
             [b, ..] => unimplemented!(
                 "<scripting> char: {}, line: {}, col: {}",
                 *b as char,
-                state.source.span().line,
-                state.source.span().column
+                state.source.span().start.line,
+                state.source.span().start.column
             ),
             // We should never reach this point since we have the empty checks surrounding
             // the call to this function, but it's better to be safe than sorry.
             [] => return Err(SyntaxError::UnexpectedEndOfFile(state.source.span())),
         };
 
-        Ok(Token { kind, span, value })
+        Ok(Token { kind, span: state.source.span(), value })
     }
 
     fn double_quote(&self, state: &mut State, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
-        let span = state.source.span();
         let mut buffer = Vec::new();
-        let (kind, value) = loop {
+        let mut buffer_span = state.source.span();
+        
+        let (kind, value, span) = loop {
             match state.source.read(3) {
                 [b'$', b'{', ..] => {
+                    buffer_span = state.source.span();
+                    state.source.start_token();
                     state.source.skip(2);
                     state.enter(StackFrame::LookingForVarname);
-                    break (TokenKind::DollarLeftBrace, b"${".into());
+                    break (TokenKind::DollarLeftBrace, b"${".into(), state.source.span());
                 }
                 [b'{', b'$', ..] => {
+                    buffer_span = state.source.span();
+                    state.source.start_token();
                     // Intentionally only consume the left brace.
                     state.source.next();
                     state.enter(StackFrame::Scripting);
-                    break (TokenKind::LeftBrace, b"{".into());
+                    break (TokenKind::LeftBrace, b"{".into(), state.source.span());
                 }
                 [b'"', ..] => {
+                    buffer_span = state.source.span();
+                    state.source.start_token();
                     state.source.next();
                     state.replace(StackFrame::Scripting);
-                    break (TokenKind::DoubleQuote, b'"'.into());
+                    break (TokenKind::DoubleQuote, b'"'.into(), state.source.span());
                 }
                 &[b'\\', b @ (b'"' | b'\\' | b'$'), ..] => {
                     state.source.skip(2);
@@ -946,6 +963,8 @@ impl Lexer {
                     }
                 }
                 [b'$', ident_start!(), ..] => {
+                    buffer_span = state.source.span();
+                    state.source.start_token();
                     let mut var = state.source.read_and_skip(1).to_vec();
                     var.extend(self.consume_identifier(state));
 
@@ -957,7 +976,7 @@ impl Lexer {
                         _ => {}
                     }
 
-                    break (TokenKind::Variable, var.into());
+                    break (TokenKind::Variable, var.into(), state.source.span());
                 }
                 &[b, ..] => {
                     state.source.next();
@@ -970,7 +989,7 @@ impl Lexer {
         if !buffer.is_empty() {
             tokens.push(Token {
                 kind: TokenKind::StringPart,
-                span,
+                span: buffer_span,
                 value: buffer.into(),
             })
         }
@@ -1492,6 +1511,7 @@ impl Lexer {
         &self,
         state: &mut State,
     ) -> SyntaxResult<(TokenKind, ByteString)> {
+        state.source.start_token();
         let mut buffer = vec![];
 
         let constant = loop {

@@ -254,7 +254,7 @@ impl Default for Token {
     fn default() -> Self {
         Self {
             kind: TokenKind::Eof,
-            span: Span::new(0, 0, 0),
+            span: Span::default(),
             value: ByteString::default(),
         }
     }

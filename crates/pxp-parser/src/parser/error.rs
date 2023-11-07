@@ -106,7 +106,7 @@ pub fn unexpected_token(expected: Vec<String>, found: &Token) -> ParseError {
         } else {
             ParseError::new("E003", format!("unexpected {}", found_name), found.span).error(
                 "try removing this".to_string(),
-                found.span.position,
+                found.span.start.offset,
                 found.value.len(),
             )
         };
@@ -139,7 +139,7 @@ pub fn unexpected_token(expected: Vec<String>, found: &Token) -> ParseError {
     )
     .error(
         format!("expected {}", expected),
-        found.span.position,
+        found.span.start.offset,
         found.value.len(),
     )
 }
@@ -164,7 +164,7 @@ pub fn unexpected_identifier(expected: Vec<String>, found: String, span: Span) -
     )
     .error(
         format!("try replacing this with `{}`", expected),
-        span.position,
+        span.start.offset,
         found.len(),
     )
 }
@@ -175,8 +175,8 @@ pub fn multiple_modifiers(modifier: String, first: Span, second: Span) -> ParseE
         format!("multiple `{}` modifiers are not allowed", modifier),
         second,
     )
-    .highlight(first.position, modifier.len())
-    .error("try removing this", second.position, modifier.len())
+    .highlight(first.start.offset, modifier.len())
+    .error("try removing this", second.start.offset, modifier.len())
 }
 
 pub fn multiple_visibility_modifiers(first: (String, Span), second: (String, Span)) -> ParseError {
@@ -185,8 +185,8 @@ pub fn multiple_visibility_modifiers(first: (String, Span), second: (String, Spa
         "multiple visibility modifiers are not allowed",
         second.1,
     )
-    .highlight(first.1.position, first.0.len())
-    .error("try removing this", second.1.position, second.0.len())
+    .highlight(first.1.start.offset, first.0.len())
+    .error("try removing this", second.1.start.offset, second.0.len())
 }
 
 pub fn standalone_type_used_as_nullable(ty: &Type, span: Span) -> ParseError {
@@ -198,8 +198,8 @@ pub fn standalone_type_used_as_nullable(ty: &Type, span: Span) -> ParseError {
         format!("standalone type `{}` cannot be nullable", type_string),
         type_span,
     )
-    .error("try removing this", span.position, 1)
-    .highlight(type_span.position, type_string.len())
+    .error("try removing this", span.start.offset, 1)
+    .highlight(type_span.start.offset, type_string.len())
     .note("`never`, `void`, and `mixed` cannot be nullable")
 }
 
@@ -217,10 +217,10 @@ pub fn standalone_type_used_in_union(ty: &Type, span: Span) -> ParseError {
     )
     .error(
         format!("try using a type other than `{}`", type_string),
-        type_span.position,
+        type_span.start.offset,
         type_string.len(),
     )
-    .highlight(span.position, 1)
+    .highlight(span.start.offset, 1)
     .note("`never`, `void`, `mixed`, and nullable types cannot be used in a union")
 }
 
@@ -238,10 +238,10 @@ pub fn standalone_type_used_in_intersection(ty: &Type, span: Span) -> ParseError
     )
     .error(
         format!("try using a type other than `{}`", type_string),
-        type_span.position,
+        type_span.start.offset,
         type_string.len(),
     )
-    .highlight(span.position, 1)
+    .highlight(span.start.offset, 1)
     .note("`never`, `void`, `mixed`, and nullable types cannot be used in an intersection")
 }
 
@@ -252,8 +252,8 @@ pub fn try_without_catch_or_finally(try_span: Span, last_right_brace: Span) -> P
         try_span,
     )
     .highlight(
-        try_span.position,
-        last_right_brace.position - try_span.position + 1,
+        try_span.start.offset,
+        last_right_brace.start.offset - try_span.start.offset + 1,
     )
 }
 
@@ -275,12 +275,12 @@ pub fn variadic_promoted_property(
         ),
         span,
     )
-    .highlight(modifier.span().position, modifier.to_string().len())
-    .highlight(property.span.position, property.name.len())
-    .error("try removing this variadic declaration", span.position, 3);
+    .highlight(modifier.span().start.offset, modifier.to_string().len())
+    .highlight(property.span.start.offset, property.name.len())
+    .error("try removing this variadic declaration", span.start.offset, 3);
 
     if let Some(class) = class {
-        error.highlight(class.span.position, class.value.len())
+        error.highlight(class.span.start.offset, class.value.len())
     } else {
         error
     }
@@ -305,13 +305,13 @@ pub fn missing_type_for_readonly_property(
     )
     .error(
         format!("try adding a type before `{}`", property.name),
-        property.span.position,
+        property.span.start.offset,
         property.name.len(),
     )
-    .highlight(readonly_span.position, 8);
+    .highlight(readonly_span.start.offset, 8);
 
     if let Some(class) = class {
-        error.highlight(class.span.position, class.value.len())
+        error.highlight(class.span.start.offset, class.value.len())
     } else {
         error
     }
@@ -336,11 +336,11 @@ pub fn abstract_method_on_a_non_abstract_class(
     )
     .error(
         "try removing this `abstract` modifier",
-        abstract_span.position,
+        abstract_span.start.offset,
         "abstract".len(),
     )
-    .highlight(class.span.position, class.value.len())
-    .highlight(method.span.position, method.value.len())
+    .highlight(class.span.start.offset, class.value.len())
+    .highlight(method.span.start.offset, method.value.len())
 }
 
 pub fn constructor_in_enum(
@@ -358,10 +358,10 @@ pub fn constructor_in_enum(
     )
     .error(
         "try removing this constructor",
-        constructor.span.position,
+        constructor.span.start.offset,
         constructor.value.len(),
     )
-    .highlight(r#enum.span.position, r#enum.value.len())
+    .highlight(r#enum.span.start.offset, r#enum.value.len())
 }
 
 pub fn magic_method_in_enum(
@@ -380,10 +380,10 @@ pub fn magic_method_in_enum(
     )
     .error(
         "try removing this magic method",
-        method.span.position,
+        method.span.start.offset,
         method.value.len(),
     )
-    .highlight(r#enum.span.position, r#enum.value.len())
+    .highlight(r#enum.span.start.offset, r#enum.value.len())
 }
 
 pub fn missing_case_value_for_backed_enum(
@@ -402,9 +402,9 @@ pub fn missing_case_value_for_backed_enum(
         ),
         semicolon_span,
     )
-    .error("try adding a value", semicolon_span.position, 1)
-    .highlight(case.span.position, case.value.len())
-    .highlight(r#enum.span.position, r#enum.value.len())
+    .error("try adding a value", semicolon_span.start.offset, 1)
+    .highlight(case.span.start.offset, case.value.len())
+    .highlight(r#enum.span.start.offset, r#enum.value.len())
 }
 
 pub fn case_value_for_unit_enum(
@@ -423,9 +423,9 @@ pub fn case_value_for_unit_enum(
         ),
         equals_span,
     )
-    .error("try replacing this with `;`", equals_span.position, 1)
-    .highlight(case.span.position, case.value.len())
-    .highlight(r#enum.span.position, r#enum.value.len())
+    .error("try replacing this with `;`", equals_span.start.offset, 1)
+    .highlight(case.span.start.offset, case.value.len())
+    .highlight(r#enum.span.start.offset, r#enum.value.len())
 }
 
 pub fn modifier_cannot_be_used_for_constant(modifier: String, modifier_span: Span) -> ParseError {
@@ -434,7 +434,7 @@ pub fn modifier_cannot_be_used_for_constant(modifier: String, modifier_span: Spa
         format!("cannot use '{}' as constant modifier", modifier),
         modifier_span,
     )
-    .error("try removing this", modifier_span.position, modifier.len())
+    .error("try removing this", modifier_span.start.offset, modifier.len())
     .note("only `public`, `protected`, `private`, and `final` modifiers can be used on constants")
 }
 
@@ -450,7 +450,7 @@ pub fn modifier_cannot_be_used_for_interface_constant(
         ),
         modifier_span,
     )
-    .error("try removing this", modifier_span.position, modifier.len())
+    .error("try removing this", modifier_span.start.offset, modifier.len())
     .note("only `public`, and `final` modifiers can be used on interface constants")
 }
 
@@ -465,7 +465,7 @@ pub fn modifier_cannot_be_used_for_promoted_property(
     )
     .error(
         "try removing this",
-        modifier_span.position,
+        modifier_span.start.offset,
         modifier.len(),
     )
     .note("only `public`, `protected`, `private`, and `readonly` modifiers can be used on promoted properties")
@@ -479,7 +479,7 @@ pub fn modifier_cannot_be_used_for_property(modifier: String, modifier_span: Spa
     )
     .error(
         "try removing this",
-        modifier_span.position,
+        modifier_span.start.offset,
         modifier.len(),
     )
     .note("only `public`, `protected`, `private`, `static`, and `readonly` modifiers can be used on properties")
@@ -491,7 +491,7 @@ pub fn modifier_cannot_be_used_for_class(modifier: String, modifier_span: Span) 
         format!("cannot use '{}' as a class modifier", modifier),
         modifier_span,
     )
-    .error("try removing this", modifier_span.position, modifier.len())
+    .error("try removing this", modifier_span.start.offset, modifier.len())
     .note("only `final`, `abstract`, and `readonly` modifiers can be used on classes")
 }
 
@@ -506,7 +506,7 @@ pub fn modifier_cannot_be_used_for_class_method(
     )
     .error(
         "try removing this",
-        modifier_span.position,
+        modifier_span.start.offset,
         modifier.len(),
     )
     .note("only `public`, `protected`, `private`, `final`, `static`, and `abstract` modifiers can be used on class methods")
@@ -523,7 +523,7 @@ pub fn modifier_cannot_be_used_for_enum_method(
     )
     .error(
         "try removing this",
-        modifier_span.position,
+        modifier_span.start.offset,
         modifier.len(),
     )
     .note("only `public`, `protected`, `private`, `final`, and `static` modifiers can be used on enum methods")
@@ -538,7 +538,7 @@ pub fn modifier_cannot_be_used_for_interface_method(
         format!("cannot use '{}' as an interface method modifier", modifier),
         modifier_span,
     )
-    .error("try removing this", modifier_span.position, modifier.len())
+    .error("try removing this", modifier_span.start.offset, modifier.len())
     .note("only `public`, and `static` modifiers can be used on interface methods")
 }
 
@@ -551,10 +551,10 @@ pub fn final_and_abstract_modifiers_combined_for_class(
         "cannot declare a `final` class as `abstract`",
         abstract_span,
     )
-    .highlight(final_span.position, "final".len())
+    .highlight(final_span.start.offset, "final".len())
     .error(
         "try removing this",
-        abstract_span.position,
+        abstract_span.start.offset,
         "abstract".len(),
     )
 }
@@ -568,10 +568,10 @@ pub fn final_and_abstract_modifiers_combined_for_class_member(
         "cannot declare a `final` class member as `abstract`",
         abstract_span,
     )
-    .highlight(final_span.position, "final".len())
+    .highlight(final_span.start.offset, "final".len())
     .error(
         "try removing this",
-        abstract_span.position,
+        abstract_span.start.offset,
         "abstract".len(),
     )
 }
@@ -585,15 +585,15 @@ pub fn final_and_private_modifiers_combined_for_constant(
         "cannot declare a `private` constant as `final`",
         final_span,
     )
-    .highlight(private_span.position, "private".len())
-    .error("try removing this", final_span.position, "final".len())
+    .highlight(private_span.start.offset, "private".len())
+    .error("try removing this", final_span.start.offset, "final".len())
     .note("private constants cannot be final as they are not visible to other classes")
 }
 
 pub fn reached_unpredictable_state(span: Span) -> ParseError {
     ParseError::new("E031", "reached unpredictable state", span).error(
         "please report this as a bug",
-        span.position,
+        span.start.offset,
         1,
     )
 }
@@ -616,13 +616,13 @@ pub fn static_property_cannot_be_readonly(
         ),
         static_span,
     )
-    .highlight(property.span.position, property.name.len())
-    .highlight(readonly_span.position, "readonly".len())
-    .error("try removing this", static_span.position, "static".len());
+    .highlight(property.span.start.offset, property.name.len())
+    .highlight(readonly_span.start.offset, "readonly".len())
+    .error("try removing this", static_span.start.offset, "static".len());
 
     // If the class is anonymous, we don't have a span to highlight
     if let Some(class) = class {
-        error.highlight(class.span.position, class.value.len())
+        error.highlight(class.span.start.offset, class.value.len())
     } else {
         error
     }
@@ -646,13 +646,13 @@ pub fn readonly_property_has_default_value(
         ),
         equals_span,
     )
-    .highlight(property.span.position, property.name.len())
-    .highlight(readonly_span.position, "readonly".len())
-    .error("try removing this `=`", equals_span.position, 1);
+    .highlight(property.span.start.offset, property.name.len())
+    .highlight(readonly_span.start.offset, "readonly".len())
+    .error("try removing this `=`", equals_span.start.offset, 1);
 
     // If the class is anonymous, we don't have a span to highlight
     if let Some(class) = class {
-        error.highlight(class.span.position, class.value.len())
+        error.highlight(class.span.start.offset, class.value.len())
     } else {
         error
     }
@@ -664,7 +664,7 @@ pub fn unbraced_namespace_declarations_in_braced_context(span: Span) -> ParseErr
         "cannot mix braced and unbraced namespace declarations",
         span,
     )
-    .error("try replacing this `;` with `{`", span.position, 1)
+    .error("try replacing this `;` with `{`", span.start.offset, 1)
 }
 
 pub fn braced_namespace_declarations_in_unbraced_context(span: Span) -> ParseError {
@@ -673,13 +673,13 @@ pub fn braced_namespace_declarations_in_unbraced_context(span: Span) -> ParseErr
         "cannot mix braced and unbraced namespace declarations",
         span,
     )
-    .error("try replacing this `{` with `;`", span.position, 1)
+    .error("try replacing this `{` with `;`", span.start.offset, 1)
 }
 
 pub fn nested_namespace_declarations(span: Span) -> ParseError {
     ParseError::new("E035", "cannot nest namespace declarations", span).error(
         "try closing previous namespace with `}` before declaring a new one",
-        span.position,
+        span.start.offset,
         1,
     )
 }
@@ -705,17 +705,17 @@ pub fn forbidden_type_used_in_property(
         ),
         type_span,
     )
-    .highlight(property.span.position, property.name.len())
+    .highlight(property.span.start.offset, property.name.len())
     .error(
         "try using a different type",
-        type_span.position,
+        type_span.start.offset,
         type_string.len(),
     )
     .note("`void`, `never`, and `callable` types are not allowed in properties");
 
     // If the class is anonymous, we don't have a span to highlight
     if let Some(class) = class {
-        error.highlight(class.span.position, class.value.len())
+        error.highlight(class.span.start.offset, class.value.len())
     } else {
         error
     }
@@ -727,8 +727,8 @@ pub fn match_expression_has_multiple_default_arms(first: Span, second: Span) -> 
         "match expression cannot have more than one default arm",
         second,
     )
-    .highlight(first.position, "default".len())
-    .error("try removing this arm", second.position, "default".len())
+    .highlight(first.start.offset, "default".len())
+    .error("try removing this arm", second.start.offset, "default".len())
 }
 
 pub fn missing_item_definition_after_attributes(
@@ -741,8 +741,8 @@ pub fn missing_item_definition_after_attributes(
         annotations.push(ParseErrorAnnotation {
             r#type: ParseErrorAnnotationType::Hint,
             message: "".to_string(),
-            position: attribute.start.position,
-            length: attribute.end.position - attribute.start.position,
+            position: attribute.start.start.offset,
+            length: attribute.end.start.offset - attribute.start.start.offset,
         });
     }
 
@@ -750,13 +750,13 @@ pub fn missing_item_definition_after_attributes(
         TokenKind::Eof => ParseErrorAnnotation {
             r#type: ParseErrorAnnotationType::Error,
             message: "reached end of file before an item definition".to_string(),
-            position: current.span.position,
+            position: current.span.start.offset,
             length: current.value.len(),
         },
         _ => ParseErrorAnnotation {
             r#type: ParseErrorAnnotationType::Error,
             message: format!("expected an item definition, found `{}`", current.value),
-            position: current.span.position,
+            position: current.span.start.offset,
             length: current.value.len(),
         },
     });
@@ -776,13 +776,13 @@ pub fn nested_disjunctive_normal_form_types(span: Span) -> ParseError {
         "cannot nest disjunctive normal form types",
         span,
     )
-    .error("try removing this", span.position, 1)
+    .error("try removing this", span.start.offset, 1)
 }
 
 pub fn illegal_spread_operator_usage(span: Span) -> ParseError {
     ParseError::new("E041".to_string(), "illegal spread operator usage", span).error(
         "try removing this",
-        span.position,
+        span.start.offset,
         3,
     )
 }
@@ -793,7 +793,7 @@ pub fn cannot_assign_reference_to_non_referencable_value(span: Span) -> ParseErr
         "cannot assign reference to non-referencable value",
         span,
     )
-    .error("try removing this", span.position, 1)
+    .error("try removing this", span.start.offset, 1)
 }
 
 pub fn mixing_keyed_and_unkeyed_list_entries(span: Span) -> ParseError {
@@ -802,7 +802,7 @@ pub fn mixing_keyed_and_unkeyed_list_entries(span: Span) -> ParseError {
         "cannot mix keyed and un-keyed list entries",
         span,
     )
-    .error("", span.position, 1)
+    .error("", span.start.offset, 1)
 }
 
 pub fn cannot_use_positional_argument_after_named_argument(
@@ -816,8 +816,8 @@ pub fn cannot_use_positional_argument_after_named_argument(
     )
     .error(
         "try adding a name for this argument",
-        span.position,
-        current_span.position - span.position,
+        span.start.offset,
+        current_span.start.offset - span.start.offset,
     )
 }
 
@@ -827,7 +827,7 @@ pub fn cannot_use_reserved_keyword_as_a_type_name(span: Span, keyword: String) -
         format!("cannot use reserved keyword `{}` as a type name", keyword),
         span,
     )
-    .error("try using a different name", span.position, keyword.len())
+    .error("try using a different name", span.start.offset, keyword.len())
 }
 
 pub fn cannot_use_reserved_keyword_as_a_goto_label(span: Span, keyword: String) -> ParseError {
@@ -836,7 +836,7 @@ pub fn cannot_use_reserved_keyword_as_a_goto_label(span: Span, keyword: String) 
         format!("cannot use reserved keyword `{}` as a goto label", keyword),
         span,
     )
-    .error("try using a different name", span.position, keyword.len())
+    .error("try using a different name", span.start.offset, keyword.len())
 }
 
 pub fn cannot_use_reserved_keyword_as_a_constant_name(span: Span, keyword: String) -> ParseError {
@@ -848,7 +848,7 @@ pub fn cannot_use_reserved_keyword_as_a_constant_name(span: Span, keyword: Strin
         ),
         span,
     )
-    .error("try using a different name", span.position, keyword.len())
+    .error("try using a different name", span.start.offset, keyword.len())
 }
 
 pub fn cannot_use_type_in_context(span: Span, ty: String) -> ParseError {
@@ -857,7 +857,7 @@ pub fn cannot_use_type_in_context(span: Span, ty: String) -> ParseError {
         format!("cannot use type `{}` in current context", ty),
         span,
     )
-    .error("try using a different type", span.position, ty.len())
+    .error("try using a different type", span.start.offset, ty.len())
 }
 
 pub fn only_positional_arguments_are_accepted(span: Span, current_span: Span) -> ParseError {
@@ -868,24 +868,24 @@ pub fn only_positional_arguments_are_accepted(span: Span, current_span: Span) ->
     )
     .error(
         "try changing this to a positional argument",
-        span.position,
-        current_span.position - span.position,
+        span.start.offset,
+        current_span.start.offset - span.start.offset,
     )
 }
 
 pub fn only_one_argument_is_accepted(span: Span, current_span: Span) -> ParseError {
     ParseError::new("E050".to_string(), "only one argument are accepted", span).error(
         "try removing this argument",
-        span.position,
-        current_span.position - span.position,
+        span.start.offset,
+        current_span.start.offset - span.start.offset,
     )
 }
 
 pub fn argument_is_required(span: Span, current_span: Span) -> ParseError {
     ParseError::new("E051".to_string(), "argument is required", span).error(
         "try passing an argument",
-        span.position,
-        current_span.position - span.position,
+        span.start.offset,
+        current_span.start.offset - span.start.offset,
     )
 }
 
@@ -906,7 +906,7 @@ impl Display for ParseError {
         write!(
             f,
             "[{}] Error: {} on line {} column {}",
-            self.id, self.message, self.span.line, self.span.column
+            self.id, self.message, self.span.start.line, self.span.start.column
         )?;
 
         if let Some(note) = &self.note {

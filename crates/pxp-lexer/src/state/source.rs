@@ -1,10 +1,11 @@
-use pxp_span::Span;
+use pxp_span::{Span, Position};
 
 #[derive(Debug)]
 pub struct Source<'a> {
     input: &'a [u8],
     length: usize,
-    span: Span,
+    position: Position,
+    current_token_start_position: Position,
 }
 
 impl<'a> Source<'a> {
@@ -15,30 +16,39 @@ impl<'a> Source<'a> {
         Self {
             input,
             length,
-            span: Span::new(1, 1, 0),
+            position: Position::new(0, 1, 0),
+            current_token_start_position: Position::new(0, 1, 0),
         }
     }
 
-    pub const fn span(&self) -> Span {
-        self.span
+    pub fn start_token(&mut self) {
+        self.current_token_start_position = self.position;
+    }
+
+    pub fn span(&self) -> Span {
+        Span::new(self.current_token_start_position, self.position)
+    }
+
+    pub const fn position(&self) -> Position {
+        self.position
     }
 
     pub const fn eof(&self) -> bool {
-        self.span.position >= self.length
+        self.position.offset >= self.length
     }
 
     pub fn next(&mut self) {
         if !self.eof() {
-            match self.input[self.span.position] {
+            match self.input[self.position.offset] {
                 b'\n' => {
-                    self.span.line += 1;
-                    self.span.column = 1;
+                    self.position.line += 1;
+                    self.position.column = 1;
                 }
-                _ => self.span.column += 1,
+                _ => self.position.column += 1,
             }
         }
 
-        self.span.position += 1;
+        self.position.offset += 1;
     }
 
     pub fn skip(&mut self, count: usize) {
@@ -56,10 +66,10 @@ impl<'a> Source<'a> {
     }
 
     pub fn current(&self) -> Option<&'a u8> {
-        if self.span.position >= self.length {
+        if self.position.offset >= self.length {
             None
         } else {
-            Some(&self.input[self.span.position])
+            Some(&self.input[self.position.offset])
         }
     }
 
@@ -71,10 +81,10 @@ impl<'a> Source<'a> {
 
     #[inline(always)]
     pub fn read_remaining(&self) -> &'a [u8] {
-        &self.input[(if self.span.position >= self.length {
+        &self.input[(if self.position.offset >= self.length {
             self.length
         } else {
-            self.span.position
+            self.position.offset
         })..]
     }
 
@@ -91,7 +101,7 @@ impl<'a> Source<'a> {
     }
 
     pub fn peek(&self, i: usize, n: usize) -> &'a [u8] {
-        let from = self.span.position + i;
+        let from = self.position.offset + i;
         if from >= self.length {
             return &self.input[self.length..self.length];
         }
@@ -124,16 +134,16 @@ impl<'a> Source<'a> {
     }
 
     const fn to_bound(&self, n: usize) -> (usize, usize) {
-        if self.span.position >= self.length {
+        if self.position.offset >= self.length {
             return (self.length, self.length);
         }
 
-        let mut until = self.span.position + n;
+        let mut until = self.position.offset + n;
 
         if until >= self.length {
             until = self.length;
         }
 
-        (self.span.position, until)
+        (self.position.offset, until)
     }
 }
