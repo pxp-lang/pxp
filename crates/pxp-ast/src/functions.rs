@@ -1,17 +1,17 @@
 use std::slice::Iter;
 
-use pxp_span::Span;
-use crate::node::Node;
 use crate::attributes::AttributeGroup;
 use crate::comments::CommentGroup;
 use crate::data_type::Type;
 use crate::identifiers::SimpleIdentifier;
 use crate::modifiers::MethodModifierGroup;
 use crate::modifiers::PromotedPropertyModifierGroup;
+use crate::node::Node;
 use crate::utils::CommaSeparated;
 use crate::variables::SimpleVariable;
 use crate::Expression;
 use crate::Statement;
+use pxp_span::Span;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

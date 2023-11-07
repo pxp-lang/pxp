@@ -1,6 +1,19 @@
 use crate::expected_token_err;
-use pxp_token::DocStringKind;
-use pxp_token::TokenKind;
+use crate::parser::error;
+use crate::parser::error::ParseResult;
+use crate::parser::internal::arrays;
+use crate::parser::internal::attributes;
+use crate::parser::internal::classes;
+use crate::parser::internal::control_flow;
+use crate::parser::internal::functions;
+use crate::parser::internal::identifiers;
+use crate::parser::internal::parameters;
+use crate::parser::internal::precedences::Associativity;
+use crate::parser::internal::precedences::Precedence;
+use crate::parser::internal::strings;
+use crate::parser::internal::utils;
+use crate::parser::internal::variables;
+use crate::parser::state::State;
 use pxp_ast::arguments::ArgumentPlaceholder;
 use pxp_ast::identifiers::DynamicIdentifier;
 use pxp_ast::identifiers::Identifier;
@@ -24,21 +37,8 @@ use pxp_ast::{
     StaticVariableMethodCallExpression, StaticVariableMethodClosureCreationExpression,
     TernaryExpression,
 };
-use crate::parser::error;
-use crate::parser::error::ParseResult;
-use crate::parser::internal::arrays;
-use crate::parser::internal::attributes;
-use crate::parser::internal::classes;
-use crate::parser::internal::control_flow;
-use crate::parser::internal::functions;
-use crate::parser::internal::identifiers;
-use crate::parser::internal::parameters;
-use crate::parser::internal::precedences::Associativity;
-use crate::parser::internal::precedences::Precedence;
-use crate::parser::internal::strings;
-use crate::parser::internal::utils;
-use crate::parser::internal::variables;
-use crate::parser::state::State;
+use pxp_token::DocStringKind;
+use pxp_token::TokenKind;
 
 use pxp_ast::literals::LiteralStringKind;
 use pxp_ast::BoolExpression;

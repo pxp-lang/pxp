@@ -1,13 +1,4 @@
-use pxp_span::Span;
-use pxp_token::TokenKind;
 use crate::parser;
-use pxp_ast::identifiers::SimpleIdentifier;
-use pxp_ast::namespaces::BracedNamespace;
-use pxp_ast::namespaces::BracedNamespaceBody;
-use pxp_ast::namespaces::NamespaceStatement;
-use pxp_ast::namespaces::UnbracedNamespace;
-use pxp_ast::Block;
-use pxp_ast::Statement;
 use crate::parser::error;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::identifiers;
@@ -16,6 +7,15 @@ use crate::parser::state::NamespaceType;
 use crate::parser::state::Scope;
 use crate::parser::state::State;
 use crate::scoped;
+use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_ast::namespaces::BracedNamespace;
+use pxp_ast::namespaces::BracedNamespaceBody;
+use pxp_ast::namespaces::NamespaceStatement;
+use pxp_ast::namespaces::UnbracedNamespace;
+use pxp_ast::Block;
+use pxp_ast::Statement;
+use pxp_span::Span;
+use pxp_token::TokenKind;
 
 pub fn namespace(state: &mut State) -> ParseResult<Statement> {
     let start = utils::skip(state, TokenKind::Namespace)?;

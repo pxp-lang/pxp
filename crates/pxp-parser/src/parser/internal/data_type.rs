@@ -1,11 +1,11 @@
 use crate::expected_token;
-use pxp_token::TokenKind;
-use pxp_ast::data_type::Type;
 use crate::parser::error;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::utils;
 use crate::parser::state::State;
 use crate::peek_token;
+use pxp_ast::data_type::Type;
+use pxp_token::TokenKind;
 
 pub fn data_type(state: &mut State) -> ParseResult<Type> {
     if state.stream.current().kind == TokenKind::Question {

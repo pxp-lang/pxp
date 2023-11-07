@@ -1,4 +1,3 @@
-
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Span {
     pub line: usize,

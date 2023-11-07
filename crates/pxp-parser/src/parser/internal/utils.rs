@@ -1,10 +1,10 @@
-use pxp_span::Span;
-use pxp_token::TokenKind;
-use pxp_ast::utils::CommaSeparated;
-use pxp_ast::Ending;
 use crate::parser::error;
 use crate::parser::error::ParseResult;
 use crate::parser::state::State;
+use pxp_ast::utils::CommaSeparated;
+use pxp_ast::Ending;
+use pxp_span::Span;
+use pxp_token::TokenKind;
 
 pub fn skip_ending(state: &mut State) -> ParseResult<Ending> {
     let current = state.stream.current();

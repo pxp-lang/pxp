@@ -1,11 +1,3 @@
-use pxp_token::TokenKind;
-use pxp_ast::arguments::{Argument, SingleArgument};
-use pxp_ast::arguments::{ArgumentList, NamedArgument, PositionalArgument};
-use pxp_ast::functions::ConstructorParameter;
-use pxp_ast::functions::ConstructorParameterList;
-use pxp_ast::functions::FunctionParameter;
-use pxp_ast::functions::FunctionParameterList;
-use pxp_ast::identifiers::SimpleIdentifier;
 use crate::parser::error;
 use crate::parser::error::ParseError;
 use crate::parser::error::ParseResult;
@@ -17,6 +9,14 @@ use crate::parser::internal::modifiers;
 use crate::parser::internal::utils;
 use crate::parser::internal::variables;
 use crate::parser::state::State;
+use pxp_ast::arguments::{Argument, SingleArgument};
+use pxp_ast::arguments::{ArgumentList, NamedArgument, PositionalArgument};
+use pxp_ast::functions::ConstructorParameter;
+use pxp_ast::functions::ConstructorParameterList;
+use pxp_ast::functions::FunctionParameter;
+use pxp_ast::functions::FunctionParameterList;
+use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_token::TokenKind;
 
 pub fn function_parameter_list(state: &mut State) -> Result<FunctionParameterList, ParseError> {
     let comments = state.stream.comments();

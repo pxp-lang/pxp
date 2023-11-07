@@ -1,8 +1,11 @@
 use crate::expect_token;
 use crate::expected_token_err;
-use pxp_lexer::error::SyntaxError;
-use pxp_token::DocStringIndentationKind;
-use pxp_token::TokenKind;
+use crate::parser::error::ParseResult;
+use crate::parser::expressions::create;
+use crate::parser::internal::identifiers;
+use crate::parser::internal::utils;
+use crate::parser::internal::variables;
+use crate::parser::state::State;
 use pxp_ast::identifiers::Identifier;
 use pxp_ast::literals::Literal;
 use pxp_ast::literals::LiteralInteger;
@@ -18,12 +21,9 @@ use pxp_ast::{
     NowdocExpression, NullsafePropertyFetchExpression, PropertyFetchExpression,
     ShellExecExpression,
 };
-use crate::parser::error::ParseResult;
-use crate::parser::expressions::create;
-use crate::parser::internal::identifiers;
-use crate::parser::internal::utils;
-use crate::parser::internal::variables;
-use crate::parser::state::State;
+use pxp_lexer::error::SyntaxError;
+use pxp_token::DocStringIndentationKind;
+use pxp_token::TokenKind;
 
 #[inline(always)]
 pub fn interpolated(state: &mut State) -> ParseResult<Expression> {

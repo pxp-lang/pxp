@@ -1,8 +1,8 @@
-use pxp_token::TokenKind;
-use pxp_ast::identifiers::SimpleIdentifier;
 use crate::parser::error;
 use crate::parser::error::ParseResult;
 use crate::parser::state::State;
+use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_token::TokenKind;
 
 use crate::peek_token;
 

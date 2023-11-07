@@ -1,12 +1,12 @@
-use pxp_token::TokenKind;
-use pxp_ast::Expression;
-use pxp_ast::ListEntry;
-use pxp_ast::{ArrayExpression, ArrayItem, ListExpression, ShortArrayExpression};
 use crate::parser::error;
 use crate::parser::error::ParseResult;
 use crate::parser::expressions;
 use crate::parser::internal::utils;
 use crate::parser::state::State;
+use pxp_ast::Expression;
+use pxp_ast::ListEntry;
+use pxp_ast::{ArrayExpression, ArrayItem, ListExpression, ShortArrayExpression};
+use pxp_token::TokenKind;
 
 pub fn list_expression(state: &mut State) -> ParseResult<Expression> {
     Ok(Expression::List(ListExpression {

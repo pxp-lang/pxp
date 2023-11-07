@@ -56,37 +56,31 @@ macro_rules! expect_literal {
             TokenKind::LiteralInteger => {
                 $state.stream.next();
 
-                pxp_ast::literals::Literal::Integer(
-                    pxp_ast::literals::LiteralInteger {
-                        span: current.span,
-                        value: current.value.clone(),
-                    },
-                )
+                pxp_ast::literals::Literal::Integer(pxp_ast::literals::LiteralInteger {
+                    span: current.span,
+                    value: current.value.clone(),
+                })
             }
             TokenKind::LiteralFloat => {
                 $state.stream.next();
 
-                pxp_ast::literals::Literal::Float(
-                    pxp_ast::literals::LiteralFloat {
-                        span: current.span,
-                        value: current.value.clone(),
-                    },
-                )
+                pxp_ast::literals::Literal::Float(pxp_ast::literals::LiteralFloat {
+                    span: current.span,
+                    value: current.value.clone(),
+                })
             }
             TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString => {
                 $state.stream.next();
 
-                pxp_ast::literals::Literal::String(
-                    pxp_ast::literals::LiteralString {
-                        span: current.span,
-                        value: current.value.clone(),
-                        kind: if matches!(current.kind, TokenKind::LiteralSingleQuotedString) {
-                            pxp_ast::literals::LiteralStringKind::SingleQuoted
-                        } else {
-                            pxp_ast::literals::LiteralStringKind::DoubleQuoted
-                        },
+                pxp_ast::literals::Literal::String(pxp_ast::literals::LiteralString {
+                    span: current.span,
+                    value: current.value.clone(),
+                    kind: if matches!(current.kind, TokenKind::LiteralSingleQuotedString) {
+                        pxp_ast::literals::LiteralStringKind::SingleQuoted
+                    } else {
+                        pxp_ast::literals::LiteralStringKind::DoubleQuoted
                     },
-                )
+                })
             }
             _ => {
                 return $crate::expected_token_err!(["a literal"], $state);

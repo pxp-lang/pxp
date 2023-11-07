@@ -1,15 +1,15 @@
-use pxp_token::TokenKind;
-use pxp_ast::try_block::CatchBlock;
-use pxp_ast::try_block::CatchType;
-use pxp_ast::try_block::FinallyBlock;
-use pxp_ast::try_block::TryStatement;
-use pxp_ast::Statement;
 use crate::parser::error;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::blocks;
 use crate::parser::internal::identifiers;
 use crate::parser::internal::utils;
 use crate::parser::state::State;
+use pxp_ast::try_block::CatchBlock;
+use pxp_ast::try_block::CatchType;
+use pxp_ast::try_block::FinallyBlock;
+use pxp_ast::try_block::TryStatement;
+use pxp_ast::Statement;
+use pxp_token::TokenKind;
 
 use super::variables;
 

@@ -1,9 +1,9 @@
 use std::fmt::Display;
 
-use pxp_bytestring::ByteString;
-use pxp_span::Span;
 use crate::node::Node;
 use crate::Expression;
+use pxp_bytestring::ByteString;
+use pxp_span::Span;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

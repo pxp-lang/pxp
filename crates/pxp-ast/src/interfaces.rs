@@ -1,11 +1,11 @@
-use pxp_span::Span;
-use crate::node::Node;
 use crate::attributes::AttributeGroup;
 use crate::constant::ClassishConstant;
 use crate::functions::AbstractConstructor;
 use crate::functions::AbstractMethod;
 use crate::identifiers::SimpleIdentifier;
+use crate::node::Node;
 use crate::utils::CommaSeparated;
+use pxp_span::Span;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

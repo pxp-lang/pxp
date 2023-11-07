@@ -1,16 +1,3 @@
-use pxp_span::Span;
-use pxp_token::TokenKind;
-use pxp_ast::classes::AnonymousClassBody;
-use pxp_ast::classes::AnonymousClassExpression;
-use pxp_ast::classes::AnonymousClassMember;
-use pxp_ast::classes::ClassBody;
-use pxp_ast::classes::ClassExtends;
-use pxp_ast::classes::ClassImplements;
-use pxp_ast::classes::ClassMember;
-use pxp_ast::classes::ClassStatement;
-use pxp_ast::identifiers::SimpleIdentifier;
-use pxp_ast::Statement;
-use pxp_ast::{Expression, NewExpression};
 use crate::parser::error;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::attributes;
@@ -25,6 +12,19 @@ use crate::parser::internal::properties;
 use crate::parser::internal::traits;
 use crate::parser::internal::utils;
 use crate::parser::state::State;
+use pxp_ast::classes::AnonymousClassBody;
+use pxp_ast::classes::AnonymousClassExpression;
+use pxp_ast::classes::AnonymousClassMember;
+use pxp_ast::classes::ClassBody;
+use pxp_ast::classes::ClassExtends;
+use pxp_ast::classes::ClassImplements;
+use pxp_ast::classes::ClassMember;
+use pxp_ast::classes::ClassStatement;
+use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_ast::Statement;
+use pxp_ast::{Expression, NewExpression};
+use pxp_span::Span;
+use pxp_token::TokenKind;
 
 pub fn parse(state: &mut State) -> ParseResult<Statement> {
     let attributes = state.get_attributes();

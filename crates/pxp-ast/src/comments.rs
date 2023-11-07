@@ -1,8 +1,8 @@
 use std::slice::Iter;
 
+use crate::node::Node;
 use pxp_bytestring::ByteString;
 use pxp_span::Span;
-use crate::node::Node;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

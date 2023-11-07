@@ -1,14 +1,4 @@
 use crate::expect_token;
-use pxp_token::Token;
-use pxp_token::TokenKind;
-use pxp_ast::identifiers::SimpleIdentifier;
-use pxp_ast::modifiers::VisibilityModifier;
-use pxp_ast::traits::TraitBody;
-use pxp_ast::traits::TraitMember;
-use pxp_ast::traits::TraitStatement;
-use pxp_ast::traits::TraitUsage;
-use pxp_ast::traits::TraitUsageAdaptation;
-use pxp_ast::Statement;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::attributes;
 use crate::parser::internal::constants;
@@ -21,6 +11,16 @@ use crate::parser::internal::properties;
 use crate::parser::internal::utils;
 use crate::parser::state::State;
 use crate::peek_token;
+use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_ast::modifiers::VisibilityModifier;
+use pxp_ast::traits::TraitBody;
+use pxp_ast::traits::TraitMember;
+use pxp_ast::traits::TraitStatement;
+use pxp_ast::traits::TraitUsage;
+use pxp_ast::traits::TraitUsageAdaptation;
+use pxp_ast::Statement;
+use pxp_token::Token;
+use pxp_token::TokenKind;
 
 pub fn usage(state: &mut State) -> ParseResult<TraitUsage> {
     let span = utils::skip(state, TokenKind::Use)?;

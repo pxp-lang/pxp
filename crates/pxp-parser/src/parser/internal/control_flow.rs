@@ -1,7 +1,12 @@
 use crate::expected_token_err;
 
-use pxp_token::TokenKind;
 use crate::parser;
+use crate::parser::error;
+use crate::parser::error::ParseResult;
+use crate::parser::expressions;
+use crate::parser::internal::blocks;
+use crate::parser::internal::utils;
+use crate::parser::state::State;
 use pxp_ast::control_flow::IfStatement;
 use pxp_ast::control_flow::IfStatementBody;
 use pxp_ast::control_flow::IfStatementElse;
@@ -15,12 +20,7 @@ use pxp_ast::MatchArm;
 use pxp_ast::Statement;
 use pxp_ast::SwitchStatement;
 use pxp_ast::{Block, MatchExpression};
-use crate::parser::error;
-use crate::parser::error::ParseResult;
-use crate::parser::expressions;
-use crate::parser::internal::blocks;
-use crate::parser::internal::utils;
-use crate::parser::state::State;
+use pxp_token::TokenKind;
 
 pub fn match_expression(state: &mut State) -> ParseResult<Expression> {
     let keyword = utils::skip(state, TokenKind::Match)?;

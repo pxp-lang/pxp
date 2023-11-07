@@ -1,15 +1,4 @@
 use crate::expect_literal;
-use pxp_token::OpenTagKind;
-use pxp_token::Token;
-use pxp_token::TokenKind;
-use pxp_lexer::Lexer;
-use pxp_lexer::stream::TokenStream;
-use pxp_ast::declares::DeclareBody;
-use pxp_ast::declares::DeclareEntry;
-use pxp_ast::declares::DeclareEntryGroup;
-use pxp_ast::declares::DeclareStatement;
-use pxp_ast::variables::Variable;
-use pxp_ast::{Program, Statement, StaticVar};
 use crate::parser::error::ParseErrorStack;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::attributes;
@@ -30,7 +19,19 @@ use crate::parser::internal::uses;
 use crate::parser::internal::utils;
 use crate::parser::internal::variables;
 use crate::parser::state::State;
+use pxp_ast::declares::DeclareBody;
+use pxp_ast::declares::DeclareEntry;
+use pxp_ast::declares::DeclareEntryGroup;
+use pxp_ast::declares::DeclareStatement;
+use pxp_ast::variables::Variable;
+use pxp_ast::{Program, Statement, StaticVar};
+use pxp_lexer::stream::TokenStream;
+use pxp_lexer::Lexer;
+use pxp_token::OpenTagKind;
+use pxp_token::Token;
+use pxp_token::TokenKind;
 
+use self::internal::precedences::Precedence;
 use pxp_ast::ClosingTagStatement;
 use pxp_ast::EchoOpeningTagStatement;
 use pxp_ast::EchoStatement;
@@ -42,7 +43,6 @@ use pxp_ast::InlineHtmlStatement;
 use pxp_ast::ReturnStatement;
 use pxp_ast::ShortOpeningTagStatement;
 use pxp_ast::StaticStatement;
-use self::internal::precedences::Precedence;
 
 pub mod error;
 

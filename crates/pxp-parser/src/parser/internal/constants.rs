@@ -1,13 +1,13 @@
-use pxp_token::TokenKind;
-use pxp_ast::constant::ClassishConstant;
-use pxp_ast::constant::ConstantEntry;
-use pxp_ast::constant::ConstantStatement;
-use pxp_ast::modifiers::ConstantModifierGroup;
 use crate::parser::error::ParseResult;
 use crate::parser::expressions;
 use crate::parser::internal::identifiers;
 use crate::parser::internal::utils;
 use crate::parser::state::State;
+use pxp_ast::constant::ClassishConstant;
+use pxp_ast::constant::ConstantEntry;
+use pxp_ast::constant::ConstantStatement;
+use pxp_ast::modifiers::ConstantModifierGroup;
+use pxp_token::TokenKind;
 
 pub fn parse(state: &mut State) -> ParseResult<ConstantStatement> {
     let comments = state.stream.comments();

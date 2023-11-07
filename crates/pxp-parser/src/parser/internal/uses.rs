@@ -1,14 +1,14 @@
-use pxp_token::TokenKind;
-use pxp_ast::GroupUseStatement;
-use pxp_ast::Statement;
-use pxp_ast::Use;
-use pxp_ast::UseKind;
-use pxp_ast::UseStatement;
 use crate::parser::error;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::identifiers;
 use crate::parser::internal::utils;
 use crate::parser::state::State;
+use pxp_ast::GroupUseStatement;
+use pxp_ast::Statement;
+use pxp_ast::Use;
+use pxp_ast::UseKind;
+use pxp_ast::UseStatement;
+use pxp_token::TokenKind;
 
 pub fn use_statement(state: &mut State) -> ParseResult<Statement> {
     state.stream.next();

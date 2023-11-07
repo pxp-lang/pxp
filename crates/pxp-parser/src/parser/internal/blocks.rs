@@ -1,11 +1,11 @@
-use pxp_token::OpenTagKind;
-use pxp_token::TokenKind;
 use crate::parser;
-use pxp_ast::BlockStatement;
-use pxp_ast::Statement;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::utils;
 use crate::parser::state::State;
+use pxp_ast::BlockStatement;
+use pxp_ast::Statement;
+use pxp_token::OpenTagKind;
+use pxp_token::TokenKind;
 
 pub fn block_statement(state: &mut State) -> ParseResult<Statement> {
     let (left_brace, statements, right_brace) = utils::braced(state, &|state: &mut State| {

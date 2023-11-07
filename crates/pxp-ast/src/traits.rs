@@ -1,5 +1,3 @@
-use pxp_span::Span;
-use crate::node::Node;
 use crate::attributes::AttributeGroup;
 use crate::constant::ClassishConstant;
 use crate::functions::AbstractConstructor;
@@ -8,8 +6,10 @@ use crate::functions::ConcreteConstructor;
 use crate::functions::ConcreteMethod;
 use crate::identifiers::SimpleIdentifier;
 use crate::modifiers::VisibilityModifier;
+use crate::node::Node;
 use crate::properties::Property;
 use crate::properties::VariableProperty;
+use pxp_span::Span;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

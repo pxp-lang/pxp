@@ -1,4 +1,12 @@
-use pxp_token::TokenKind;
+use crate::parser::error::ParseResult;
+use crate::parser::expressions;
+use crate::parser::internal::blocks;
+use crate::parser::internal::data_type;
+use crate::parser::internal::identifiers;
+use crate::parser::internal::parameters;
+use crate::parser::internal::utils;
+use crate::parser::internal::variables;
+use crate::parser::state::State;
 use pxp_ast::functions::AbstractConstructor;
 use pxp_ast::functions::AbstractMethod;
 use pxp_ast::functions::ArrowFunctionExpression;
@@ -15,15 +23,7 @@ use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::modifiers::MethodModifierGroup;
 use pxp_ast::Expression;
 use pxp_ast::Statement;
-use crate::parser::error::ParseResult;
-use crate::parser::expressions;
-use crate::parser::internal::blocks;
-use crate::parser::internal::data_type;
-use crate::parser::internal::identifiers;
-use crate::parser::internal::parameters;
-use crate::parser::internal::utils;
-use crate::parser::internal::variables;
-use crate::parser::state::State;
+use pxp_token::TokenKind;
 
 pub enum MethodType {
     Abstract,

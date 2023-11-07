@@ -1,9 +1,9 @@
 use std::collections::VecDeque;
 
-use pxp_bytestring::ByteString;
 use crate::error::SyntaxError;
 use crate::error::SyntaxResult;
 use crate::state::source::Source;
+use pxp_bytestring::ByteString;
 use pxp_token::DocStringIndentationAmount;
 use pxp_token::DocStringIndentationKind;
 use pxp_token::DocStringKind;

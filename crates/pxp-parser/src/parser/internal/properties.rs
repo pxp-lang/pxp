@@ -1,9 +1,3 @@
-use pxp_token::TokenKind;
-use pxp_ast::identifiers::SimpleIdentifier;
-use pxp_ast::modifiers::PropertyModifierGroup;
-use pxp_ast::properties::Property;
-use pxp_ast::properties::PropertyEntry;
-use pxp_ast::properties::VariableProperty;
 use crate::parser::error;
 use crate::parser::error::ParseResult;
 use crate::parser::expressions;
@@ -11,6 +5,12 @@ use crate::parser::internal::data_type;
 use crate::parser::internal::utils;
 use crate::parser::internal::variables;
 use crate::parser::state::State;
+use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_ast::modifiers::PropertyModifierGroup;
+use pxp_ast::properties::Property;
+use pxp_ast::properties::PropertyEntry;
+use pxp_ast::properties::VariableProperty;
+use pxp_token::TokenKind;
 
 pub fn parse(
     state: &mut State,

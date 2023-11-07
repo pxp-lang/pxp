@@ -1,10 +1,10 @@
-use pxp_span::Span;
-use crate::node::Node;
 use crate::attributes::AttributeGroup;
 use crate::constant::ClassishConstant;
 use crate::functions::ConcreteMethod;
 use crate::identifiers::SimpleIdentifier;
+use crate::node::Node;
 use crate::Expression;
+use pxp_span::Span;
 
 use super::traits::TraitUsage;
 

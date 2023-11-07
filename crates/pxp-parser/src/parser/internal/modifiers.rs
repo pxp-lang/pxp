@@ -1,5 +1,6 @@
-use pxp_span::Span;
-use pxp_token::TokenKind;
+use crate::parser::error;
+use crate::parser::error::ParseResult;
+use crate::parser::state::State;
 use pxp_ast::modifiers::ClassModifier;
 use pxp_ast::modifiers::ClassModifierGroup;
 use pxp_ast::modifiers::ConstantModifier;
@@ -10,9 +11,8 @@ use pxp_ast::modifiers::PromotedPropertyModifier;
 use pxp_ast::modifiers::PromotedPropertyModifierGroup;
 use pxp_ast::modifiers::PropertyModifier;
 use pxp_ast::modifiers::PropertyModifierGroup;
-use crate::parser::error;
-use crate::parser::error::ParseResult;
-use crate::parser::state::State;
+use pxp_span::Span;
+use pxp_token::TokenKind;
 
 #[inline(always)]
 pub fn class_group(input: Vec<(Span, TokenKind)>) -> ParseResult<ClassModifierGroup> {

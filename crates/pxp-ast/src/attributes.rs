@@ -1,8 +1,8 @@
 use std::slice::Iter;
 
-use pxp_span::Span;
 use crate::arguments::ArgumentList;
 use crate::identifiers::SimpleIdentifier;
+use pxp_span::Span;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

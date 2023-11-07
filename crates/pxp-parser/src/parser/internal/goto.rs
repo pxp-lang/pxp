@@ -1,11 +1,11 @@
-use pxp_token::TokenKind;
-use pxp_ast::goto::GotoStatement;
-use pxp_ast::goto::LabelStatement;
-use pxp_ast::Statement;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::identifiers;
 use crate::parser::internal::utils;
 use crate::parser::state::State;
+use pxp_ast::goto::GotoStatement;
+use pxp_ast::goto::LabelStatement;
+use pxp_ast::Statement;
+use pxp_token::TokenKind;
 
 pub fn label_statement(state: &mut State) -> ParseResult<Statement> {
     let comments = state.stream.comments();

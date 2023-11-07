@@ -1,5 +1,14 @@
-use pxp_span::Span;
-use pxp_token::TokenKind;
+use crate::parser::error;
+use crate::parser::error::ParseResult;
+use crate::parser::expressions;
+use crate::parser::internal::attributes;
+use crate::parser::internal::constants;
+use crate::parser::internal::functions;
+use crate::parser::internal::functions::Method;
+use crate::parser::internal::identifiers;
+use crate::parser::internal::modifiers;
+use crate::parser::internal::utils;
+use crate::parser::state::State;
 use pxp_ast::enums::BackedEnumBody;
 use pxp_ast::enums::BackedEnumCase;
 use pxp_ast::enums::BackedEnumMember;
@@ -12,17 +21,8 @@ use pxp_ast::enums::UnitEnumStatement;
 use pxp_ast::functions::ConcreteMethod;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::Statement;
-use crate::parser::error;
-use crate::parser::error::ParseResult;
-use crate::parser::expressions;
-use crate::parser::internal::attributes;
-use crate::parser::internal::constants;
-use crate::parser::internal::functions;
-use crate::parser::internal::functions::Method;
-use crate::parser::internal::identifiers;
-use crate::parser::internal::modifiers;
-use crate::parser::internal::utils;
-use crate::parser::state::State;
+use pxp_span::Span;
+use pxp_token::TokenKind;
 
 use super::traits;
 

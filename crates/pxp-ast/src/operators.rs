@@ -1,6 +1,6 @@
-use pxp_span::Span;
 use crate::node::Node;
 use crate::Expression;
+use pxp_span::Span;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

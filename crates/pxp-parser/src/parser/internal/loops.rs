@@ -1,6 +1,9 @@
-use pxp_token::Token;
-use pxp_token::TokenKind;
 use crate::parser;
+use crate::parser::error::ParseResult;
+use crate::parser::expressions;
+use crate::parser::internal::blocks;
+use crate::parser::internal::utils;
+use crate::parser::state::State;
 use pxp_ast::literals::LiteralInteger;
 use pxp_ast::loops::BreakStatement;
 use pxp_ast::loops::ContinueStatement;
@@ -15,11 +18,8 @@ use pxp_ast::loops::Level;
 use pxp_ast::loops::WhileStatement;
 use pxp_ast::loops::WhileStatementBody;
 use pxp_ast::Statement;
-use crate::parser::error::ParseResult;
-use crate::parser::expressions;
-use crate::parser::internal::blocks;
-use crate::parser::internal::utils;
-use crate::parser::state::State;
+use pxp_token::Token;
+use pxp_token::TokenKind;
 
 pub fn foreach_statement(state: &mut State) -> ParseResult<Statement> {
     let foreach = utils::skip(state, TokenKind::Foreach)?;

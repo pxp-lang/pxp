@@ -1,10 +1,3 @@
-use pxp_token::TokenKind;
-use pxp_ast::identifiers::SimpleIdentifier;
-use pxp_ast::interfaces::InterfaceBody;
-use pxp_ast::interfaces::InterfaceExtends;
-use pxp_ast::interfaces::InterfaceMember;
-use pxp_ast::interfaces::InterfaceStatement;
-use pxp_ast::Statement;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::attributes;
 use crate::parser::internal::constants;
@@ -15,6 +8,13 @@ use crate::parser::internal::identifiers;
 use crate::parser::internal::modifiers;
 use crate::parser::internal::utils;
 use crate::parser::state::State;
+use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_ast::interfaces::InterfaceBody;
+use pxp_ast::interfaces::InterfaceExtends;
+use pxp_ast::interfaces::InterfaceMember;
+use pxp_ast::interfaces::InterfaceStatement;
+use pxp_ast::Statement;
+use pxp_token::TokenKind;
 
 pub fn parse(state: &mut State) -> ParseResult<Statement> {
     let span = utils::skip(state, TokenKind::Interface)?;

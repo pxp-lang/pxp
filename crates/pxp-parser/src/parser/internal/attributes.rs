@@ -1,11 +1,11 @@
-use pxp_token::TokenKind;
-use pxp_ast::attributes::Attribute;
-use pxp_ast::attributes::AttributeGroup;
 use crate::parser::error::ParseResult;
 use crate::parser::internal::identifiers;
 use crate::parser::internal::parameters;
 use crate::parser::internal::utils;
 use crate::parser::state::State;
+use pxp_ast::attributes::Attribute;
+use pxp_ast::attributes::AttributeGroup;
+use pxp_token::TokenKind;
 
 pub fn gather_attributes(state: &mut State) -> ParseResult<bool> {
     if state.stream.current().kind != TokenKind::Attribute {
