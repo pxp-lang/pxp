@@ -6,7 +6,7 @@ fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
 
     if args.is_empty() {
-        eprintln!("Usage: tokenise <file>");
+        eprintln!("Usage: tokenise <file> [--debug, --times <n>]");
         exit(1);
     }
 
@@ -18,17 +18,17 @@ fn main() {
         Some(i) => args[i + 1].parse::<usize>().unwrap(),
         None => 1
     };
-    
-    let with_output = args.contains(&"--output".to_string());
+
+    let debug = args.contains(&"--debug".to_string());
 
     for i in 0..times {
-        if with_output {
+        if debug {
             println!("Tokenising {} (no. {i})...", file);
         }
 
         let tokens = lexer.tokenize(&contents[..]).unwrap();
 
-        if args.contains(&"--dump".to_string()) {
+        if debug {
             dbg!(tokens);
         }
     }
