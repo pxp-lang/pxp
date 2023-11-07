@@ -187,7 +187,7 @@ fn optional_simple_data_type(state: &mut State) -> ParseResult<Option<Type>> {
 }
 
 fn simple_data_type(state: &mut State) -> ParseResult<Type> {
-    // TODO(azjezz): add a better error message here.
+    // FIXME: add a better error message here.
     optional_simple_data_type(state)?.ok_or_else(|| expected_token!(["a type"], state))
 }
 

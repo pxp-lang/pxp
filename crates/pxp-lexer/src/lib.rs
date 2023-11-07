@@ -478,7 +478,7 @@ impl Lexer {
                             state.source.next();
                         }
                         _ => {
-                            // TODO(azjezz) this is most likely a bug, what if current is none?
+                            // FIXME: this is most likely a bug, what if current is none?
                             return Err(SyntaxError::UnexpectedCharacter(
                                 *state.source.current().unwrap(),
                                 state.source.span(),
@@ -1433,7 +1433,7 @@ impl Lexer {
         let (kind, value) = match state.source.read(2) {
             [b'$', ident_start!()] => self.tokenize_variable(state),
             [b'0'..=b'9', ..] => {
-                // TODO: all integer literals are allowed, but only decimal integers with no underscores
+                // FIXME: all integer literals are allowed, but only decimal integers with no underscores
                 // are actually treated as numbers. Others are treated as strings.
                 // Float literals are not allowed, but that could be handled in the parser.
                 self.tokenize_number(state)?

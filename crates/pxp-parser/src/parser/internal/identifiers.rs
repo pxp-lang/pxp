@@ -100,7 +100,7 @@ pub fn label_identifier(state: &mut State) -> ParseResult<SimpleIdentifier> {
             Ok(SimpleIdentifier { span, value: name })
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
-            // TODO(azjezz): re-evaluate whether this is a good idea
+            // FIXME: re-evaluate whether this is a good idea
             state.record(error::cannot_use_reserved_keyword_as_a_goto_label(
                 current.span,
                 current.to_string(),

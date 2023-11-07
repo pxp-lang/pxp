@@ -46,7 +46,7 @@ pub fn dynamic_variable(state: &mut State) -> ParseResult<Variable> {
                 end,
             }))
         }
-        // todo(azjezz): figure out why the lexer does this.
+        // FIXME: figure out why the lexer does this.
         TokenKind::Dollar if state.stream.peek().kind == TokenKind::LeftBrace => {
             let start = current.span;
             state.stream.next();
