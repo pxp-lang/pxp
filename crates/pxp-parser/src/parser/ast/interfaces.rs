@@ -1,8 +1,4 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::token::Span;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::attributes::AttributeGroup;
 use crate::parser::ast::constant::ClassishConstant;
@@ -11,8 +7,8 @@ use crate::parser::ast::functions::AbstractMethod;
 use crate::parser::ast::identifiers::SimpleIdentifier;
 use crate::parser::ast::utils::CommaSeparated;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum InterfaceMember {
     Constant(ClassishConstant),       // `public const FOO = 123;`
     Constructor(AbstractConstructor), // `public function __construct(): void;`
@@ -29,7 +25,7 @@ impl Node for InterfaceMember {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct InterfaceExtends {
     pub extends: Span,                             // `extends`
@@ -42,7 +38,7 @@ impl Node for InterfaceExtends {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct InterfaceBody {
     pub left_brace: Span,              // `{`
@@ -59,7 +55,7 @@ impl Node for InterfaceBody {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct InterfaceStatement {
     pub attributes: Vec<AttributeGroup>,   // `#[Foo]`

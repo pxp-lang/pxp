@@ -1,8 +1,4 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::token::Span;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::attributes::AttributeGroup;
 use crate::parser::ast::data_type::Type;
@@ -10,11 +6,11 @@ use crate::parser::ast::modifiers::PropertyModifierGroup;
 use crate::parser::ast::variables::SimpleVariable;
 use crate::parser::ast::Expression;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct Property {
     pub attributes: Vec<AttributeGroup>,
-    #[serde(flatten)]
+
     pub modifiers: PropertyModifierGroup,
     pub r#type: Option<Type>,
     pub entries: Vec<PropertyEntry>,
@@ -37,7 +33,7 @@ impl Node for Property {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct VariableProperty {
     pub attributes: Vec<AttributeGroup>,
@@ -62,8 +58,8 @@ impl Node for VariableProperty {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum PropertyEntry {
     Uninitialized {
         variable: SimpleVariable,

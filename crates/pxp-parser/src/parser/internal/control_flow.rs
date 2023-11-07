@@ -1,6 +1,6 @@
 use crate::expected_token_err;
 
-use crate::lexer::token::TokenKind;
+use pxp_token::TokenKind;
 use crate::parser;
 use crate::parser::ast::control_flow::IfStatement;
 use crate::parser::ast::control_flow::IfStatementBody;

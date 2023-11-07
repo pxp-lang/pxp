@@ -1,30 +1,9 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
 use std::fmt::Display;
 
-use crate::lexer::byte_string::ByteString;
+use pxp_bytestring::ByteString;
+use pxp_span::Span;
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Deserialize, Serialize, JsonSchema)]
-
-pub struct Span {
-    pub line: usize,
-    pub column: usize,
-    pub position: usize,
-}
-
-impl Span {
-    pub fn new(line: usize, column: usize, position: usize) -> Self {
-        Self {
-            line,
-            column,
-            position,
-        }
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum OpenTagKind {
     Full,  // `<?php`
@@ -32,7 +11,7 @@ pub enum OpenTagKind {
     Echo,  // `<?=`
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum DocStringKind {
     Heredoc,
@@ -41,7 +20,7 @@ pub enum DocStringKind {
 
 pub type DocStringIndentationAmount = usize;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum DocStringIndentationKind {
     Space,
@@ -70,7 +49,7 @@ impl From<DocStringIndentationKind> for u8 {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum TokenKind {
     Die,
@@ -263,7 +242,7 @@ pub enum TokenKind {
     LogicalXor,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct Token {
     pub kind: TokenKind,

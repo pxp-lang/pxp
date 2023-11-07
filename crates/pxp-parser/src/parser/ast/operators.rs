@@ -1,13 +1,9 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::token::Span;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::Expression;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum ArithmeticOperationExpression {
     Addition {
         left: Box<Expression>,
@@ -96,8 +92,8 @@ impl Node for ArithmeticOperationExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum AssignmentOperationExpression {
     Assign {
         left: Box<Expression>,
@@ -289,8 +285,8 @@ impl Node for AssignmentOperationExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum BitwiseOperationExpression {
     And {
         left: Box<Expression>,
@@ -346,8 +342,8 @@ impl Node for BitwiseOperationExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum ComparisonOperationExpression {
     Equal {
         left: Box<Expression>,
@@ -438,8 +434,8 @@ impl Node for ComparisonOperationExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum LogicalOperationExpression {
     And {
         left: Box<Expression>,

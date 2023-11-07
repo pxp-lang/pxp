@@ -1,16 +1,12 @@
 use std::slice::Iter;
 
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::token::Span;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::comments::CommentGroup;
 use crate::parser::ast::identifiers::SimpleIdentifier;
 use crate::parser::ast::Expression;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PositionalArgument {
     pub comments: CommentGroup,
     pub ellipsis: Option<Span>, // `...`
@@ -23,7 +19,7 @@ impl Node for PositionalArgument {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NamedArgument {
     pub comments: CommentGroup,
     pub name: SimpleIdentifier, // `foo`
@@ -38,8 +34,8 @@ impl Node for NamedArgument {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum Argument {
     Positional(PositionalArgument),
     Named(NamedArgument),
@@ -54,7 +50,7 @@ impl Node for Argument {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ArgumentList {
     pub comments: CommentGroup,
@@ -87,7 +83,7 @@ impl Node for ArgumentList {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct SingleArgument {
     pub comments: CommentGroup,
@@ -102,7 +98,7 @@ impl Node for SingleArgument {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ArgumentPlaceholder {
     pub comments: CommentGroup,

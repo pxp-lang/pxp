@@ -1,10 +1,6 @@
 use std::slice::Iter;
 
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::token::Span;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::attributes::AttributeGroup;
 use crate::parser::ast::constant::ClassishConstant;
@@ -19,7 +15,7 @@ use crate::parser::ast::properties::VariableProperty;
 use crate::parser::ast::traits::TraitUsage;
 use crate::parser::ast::utils::CommaSeparated;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ClassBody {
     pub left_brace: Span, // `{`
@@ -51,17 +47,17 @@ impl Node for ClassBody {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ClassStatement {
     pub attributes: Vec<AttributeGroup>, // `#[Qux]`
-    #[serde(flatten)]
-    pub modifiers: ClassModifierGroup, // `abstract`, `final`
-    pub class: Span,                     // `class`
-    pub name: SimpleIdentifier,          // `Foo`
-    pub extends: Option<ClassExtends>,   // `extends Foo`
+
+    pub modifiers: ClassModifierGroup,       // `abstract`, `final`
+    pub class: Span,                         // `class`
+    pub name: SimpleIdentifier,              // `Foo`
+    pub extends: Option<ClassExtends>,       // `extends Foo`
     pub implements: Option<ClassImplements>, // `implements Bar, Baz`
-    pub body: ClassBody,                 // `{ ... }`
+    pub body: ClassBody,                     // `{ ... }`
 }
 
 impl Node for ClassStatement {
@@ -78,7 +74,7 @@ impl Node for ClassStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct AnonymousClassBody {
     pub left_brace: Span, // `{`
@@ -110,7 +106,7 @@ impl Node for AnonymousClassBody {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct AnonymousClassExpression {
     pub attributes: Vec<AttributeGroup>,     // `#[Qux]`
@@ -134,7 +130,7 @@ impl Node for AnonymousClassExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ClassExtends {
     pub extends: Span,            // `extends`
@@ -147,7 +143,7 @@ impl Node for ClassExtends {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ClassImplements {
     pub implements: Span,                             // `implements`
@@ -175,8 +171,8 @@ impl Node for ClassImplements {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum ClassMember {
     Constant(ClassishConstant),
     TraitUsage(TraitUsage),
@@ -203,8 +199,8 @@ impl Node for ClassMember {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum AnonymousClassMember {
     Constant(ClassishConstant),
     TraitUsage(TraitUsage),

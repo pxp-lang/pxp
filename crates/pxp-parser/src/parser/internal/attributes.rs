@@ -1,4 +1,4 @@
-use crate::lexer::token::TokenKind;
+use pxp_token::TokenKind;
 use crate::parser::ast::attributes::Attribute;
 use crate::parser::ast::attributes::AttributeGroup;
 use crate::parser::error::ParseResult;

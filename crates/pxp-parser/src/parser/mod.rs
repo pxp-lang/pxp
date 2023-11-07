@@ -1,7 +1,7 @@
 use crate::expect_literal;
-use crate::lexer::token::OpenTagKind;
-use crate::lexer::token::Token;
-use crate::lexer::token::TokenKind;
+use pxp_token::OpenTagKind;
+use pxp_token::Token;
+use pxp_token::TokenKind;
 use crate::lexer::Lexer;
 use crate::parser::ast::declares::DeclareBody;
 use crate::parser::ast::declares::DeclareEntry;

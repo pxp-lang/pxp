@@ -1,27 +1,23 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
+use pxp_span::Span;
 
-use crate::lexer::token::Span;
+#[derive(Debug, Clone, Eq, PartialEq)]
 
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type")]
 pub enum Visibility {
     Public,
     Protected,
     Private,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum VisibilityModifier {
     Public(Span),
     Protected(Span),
     Private(Span),
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, Clone, Eq, PartialEq)]
+
 pub enum PromotedPropertyModifier {
     Public(Span),
     Protected(Span),
@@ -51,7 +47,7 @@ impl std::fmt::Display for PromotedPropertyModifier {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct PromotedPropertyModifierGroup {
     pub modifiers: Vec<PromotedPropertyModifier>,
@@ -87,8 +83,8 @@ impl PromotedPropertyModifierGroup {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, Clone, Eq, PartialEq)]
+
 pub enum PropertyModifier {
     Public(Span),
     Protected(Span),
@@ -109,7 +105,7 @@ impl PropertyModifier {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct PropertyModifierGroup {
     pub modifiers: Vec<PropertyModifier>,
@@ -157,8 +153,8 @@ impl PropertyModifierGroup {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, Clone, Eq, PartialEq)]
+
 pub enum MethodModifier {
     Final(Span),
     Static(Span),
@@ -181,7 +177,7 @@ impl MethodModifier {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct MethodModifierGroup {
     pub modifiers: Vec<MethodModifier>,
@@ -229,15 +225,15 @@ impl MethodModifierGroup {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, Clone, Eq, PartialEq)]
+
 pub enum ClassModifier {
     Final(Span),
     Abstract(Span),
     Readonly(Span),
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct ClassModifierGroup {
     pub modifiers: Vec<ClassModifier>,
@@ -267,8 +263,8 @@ impl ClassModifierGroup {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, Clone, Eq, PartialEq)]
+
 pub enum ConstantModifier {
     Final(Span),
     Public(Span),
@@ -276,7 +272,7 @@ pub enum ConstantModifier {
     Private(Span),
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 #[repr(transparent)]
 pub struct ConstantModifierGroup {
     pub modifiers: Vec<ConstantModifier>,

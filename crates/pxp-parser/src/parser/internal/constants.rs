@@ -1,4 +1,4 @@
-use crate::lexer::token::TokenKind;
+use pxp_token::TokenKind;
 use crate::parser::ast::constant::ClassishConstant;
 use crate::parser::ast::constant::ConstantEntry;
 use crate::parser::ast::constant::ConstantStatement;

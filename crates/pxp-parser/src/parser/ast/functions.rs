@@ -1,10 +1,6 @@
 use std::slice::Iter;
 
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::token::Span;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::attributes::AttributeGroup;
 use crate::parser::ast::comments::CommentGroup;
@@ -17,7 +13,7 @@ use crate::parser::ast::variables::SimpleVariable;
 use crate::parser::ast::Expression;
 use crate::parser::ast::Statement;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ReturnType {
     pub colon: Span,
@@ -30,7 +26,7 @@ impl Node for ReturnType {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct FunctionParameter {
     pub comments: CommentGroup,
@@ -55,7 +51,7 @@ impl Node for FunctionParameter {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct FunctionParameterList {
     pub comments: CommentGroup,
@@ -85,7 +81,7 @@ impl Node for FunctionParameterList {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct FunctionBody {
     pub comments: CommentGroup,
@@ -103,7 +99,7 @@ impl Node for FunctionBody {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct FunctionStatement {
     pub comments: CommentGroup,
@@ -127,7 +123,7 @@ impl Node for FunctionStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ClosureUseVariable {
     pub comments: CommentGroup,
@@ -141,7 +137,7 @@ impl Node for ClosureUseVariable {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ClosureUse {
     pub comments: CommentGroup,
@@ -157,7 +153,7 @@ impl Node for ClosureUse {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ClosureExpression {
     pub comments: CommentGroup,
@@ -185,7 +181,7 @@ impl Node for ClosureExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ArrowFunctionExpression {
     pub comments: CommentGroup,
@@ -210,7 +206,7 @@ impl Node for ArrowFunctionExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ConstructorParameter {
     pub attributes: Vec<AttributeGroup>,
@@ -220,7 +216,7 @@ pub struct ConstructorParameter {
     pub data_type: Option<Type>,
     pub ellipsis: Option<Span>,
     pub default: Option<Expression>,
-    #[serde(flatten)]
+
     pub modifiers: PromotedPropertyModifierGroup,
 }
 
@@ -237,7 +233,7 @@ impl Node for ConstructorParameter {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ConstructorParameterList {
     pub comments: CommentGroup,
@@ -252,12 +248,12 @@ impl Node for ConstructorParameterList {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct AbstractConstructor {
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
-    #[serde(flatten)]
+
     pub modifiers: MethodModifierGroup,
     pub function: Span,
     // returning by reference from a constructor doesn't make sense
@@ -274,12 +270,12 @@ impl Node for AbstractConstructor {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ConcreteConstructor {
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
-    #[serde(flatten)]
+
     pub modifiers: MethodModifierGroup,
     pub function: Span,
     // returning by reference from a constructor doesn't make sense
@@ -314,12 +310,12 @@ impl ConcreteConstructor {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct AbstractMethod {
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
-    #[serde(flatten)]
+
     pub modifiers: MethodModifierGroup,
     pub function: Span,
     pub ampersand: Option<Span>,
@@ -339,12 +335,12 @@ impl Node for AbstractMethod {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ConcreteMethod {
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
-    #[serde(flatten)]
+
     pub modifiers: MethodModifierGroup,
     pub function: Span,
     pub ampersand: Option<Span>,
@@ -365,7 +361,7 @@ impl Node for ConcreteMethod {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct MethodBody {
     pub comments: CommentGroup,

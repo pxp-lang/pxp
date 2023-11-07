@@ -1,4 +1,4 @@
-use crate::lexer::token::Span;
+use pxp_span::Span;
 
 #[derive(Debug)]
 pub struct Source<'a> {

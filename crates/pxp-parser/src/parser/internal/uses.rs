@@ -1,4 +1,4 @@
-use crate::lexer::token::TokenKind;
+use pxp_token::TokenKind;
 use crate::parser::ast::GroupUseStatement;
 use crate::parser::ast::Statement;
 use crate::parser::ast::Use;

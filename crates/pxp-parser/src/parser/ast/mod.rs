@@ -1,10 +1,6 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::byte_string::ByteString;
-use crate::lexer::token::Span;
-use crate::lexer::token::TokenKind;
+use pxp_bytestring::ByteString;
+use pxp_span::Span;
+use pxp_token::TokenKind;
 use crate::node::Node;
 use crate::parser::ast::arguments::ArgumentPlaceholder;
 use crate::parser::ast::arguments::{ArgumentList, SingleArgument};
@@ -76,15 +72,15 @@ impl Node for Block {
 
 pub type Program = Block;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum UseKind {
     Normal,
     Function,
     Const,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct StaticVar {
     pub var: Variable,
@@ -101,23 +97,23 @@ impl Node for StaticVar {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum Ending {
     Semicolon(Span),
     CloseTag(Span),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub struct HaltCompilerStatement {
     pub content: Option<ByteString>,
 }
 
 impl Node for HaltCompilerStatement {}
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub struct StaticStatement {
     pub vars: Vec<StaticVar>,
 }
@@ -128,8 +124,8 @@ impl Node for StaticStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub struct SwitchStatement {
     pub switch: Span,
     pub left_parenthesis: Span,
@@ -146,8 +142,8 @@ impl Node for SwitchStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub struct EchoStatement {
     pub echo: Span,
     pub values: Vec<Expression>,
@@ -160,8 +156,8 @@ impl Node for EchoStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub struct ReturnStatement {
     pub r#return: Span,
     pub value: Option<Expression>,
@@ -178,8 +174,8 @@ impl Node for ReturnStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub struct UseStatement {
     pub kind: UseKind,
     pub uses: Vec<Use>,
@@ -191,8 +187,8 @@ impl Node for UseStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub struct GroupUseStatement {
     pub prefix: SimpleIdentifier,
     pub kind: UseKind,
@@ -207,8 +203,8 @@ impl Node for GroupUseStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum Statement {
     FullOpeningTag(FullOpeningTagStatement),
     ShortOpeningTag(ShortOpeningTagStatement),
@@ -248,31 +244,31 @@ pub enum Statement {
     Noop(Span),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct InlineHtmlStatement {
     pub html: ByteString,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct FullOpeningTagStatement {
     pub span: Span,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ShortOpeningTagStatement {
     pub span: Span,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct EchoOpeningTagStatement {
     pub span: Span,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ClosingTagStatement {
     pub span: Span,
@@ -316,8 +312,8 @@ impl Node for Statement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub struct ExpressionStatement {
     pub expression: Expression,
     pub ending: Ending,
@@ -329,8 +325,8 @@ impl Node for ExpressionStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub struct GlobalStatement {
     pub global: Span,
     pub variables: Vec<Variable>,
@@ -345,8 +341,8 @@ impl Node for GlobalStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub struct BlockStatement {
     pub left_brace: Span,
     pub statements: Vec<Statement>,
@@ -363,8 +359,8 @@ impl Node for BlockStatement {
 }
 
 // See https://www.php.net/manual/en/language.types.type-juggling.php#language.types.typecasting for more info.
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum CastKind {
     Int,
     Bool,
@@ -396,7 +392,7 @@ impl From<&TokenKind> for CastKind {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct Case {
     pub condition: Option<Expression>,
@@ -419,7 +415,7 @@ impl Node for Case {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct Use {
     pub name: SimpleIdentifier,
@@ -437,49 +433,49 @@ impl Node for Use {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct EvalExpression {
     pub eval: Span,
     // eval
     pub argument: Box<SingleArgument>, // ("$a = 1")
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct EmptyExpression {
     pub empty: Span,
     // empty
     pub argument: Box<SingleArgument>, // ($a)
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DieExpression {
     pub die: Span,
     // die
     pub argument: Option<Box<SingleArgument>>, // (1)
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ExitExpression {
     pub exit: Span,
     // exit
     pub argument: Option<Box<SingleArgument>>, // (1)
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IssetExpression {
     pub isset: Span,
     // isset
     pub arguments: ArgumentList, // `($a, ...)`
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UnsetExpression {
     pub unset: Span,
     // unset
     pub arguments: ArgumentList, // `($a, ...)`
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PrintExpression {
     pub print: Span,
     // print
@@ -488,64 +484,64 @@ pub struct PrintExpression {
     pub argument: Option<Box<SingleArgument>>, // (1)
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConcatExpression {
     pub left: Box<Expression>,
     pub dot: Span,
     pub right: Box<Expression>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InstanceofExpression {
     pub left: Box<Expression>,
     pub instanceof: Span,
     pub right: Box<Expression>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ReferenceExpression {
     pub ampersand: Span,
     pub right: Box<Expression>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ParenthesizedExpression {
     pub start: Span,
     pub expr: Box<Expression>,
     pub end: Span,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ErrorSuppressExpression {
     pub at: Span,
     pub expr: Box<Expression>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IncludeExpression {
     pub include: Span,
     pub path: Box<Expression>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IncludeOnceExpression {
     pub include_once: Span,
     pub path: Box<Expression>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct RequireExpression {
     pub require: Span,
     pub path: Box<Expression>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct RequireOnceExpression {
     pub require_once: Span,
     pub path: Box<Expression>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionCallExpression {
     pub target: Box<Expression>,
     // `foo`
@@ -558,7 +554,7 @@ impl Node for FunctionCallExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionClosureCreationExpression {
     pub target: Box<Expression>,
     // `foo`
@@ -571,7 +567,7 @@ impl Node for FunctionClosureCreationExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MethodCallExpression {
     pub target: Box<Expression>,
     // `$foo`
@@ -592,7 +588,7 @@ impl Node for MethodCallExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MethodClosureCreationExpression {
     pub target: Box<Expression>,
     // `$foo`
@@ -609,7 +605,7 @@ impl Node for MethodClosureCreationExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NullsafeMethodCallExpression {
     pub target: Box<Expression>,
     // `$foo`
@@ -630,7 +626,7 @@ impl Node for NullsafeMethodCallExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticMethodCallExpression {
     pub target: Box<Expression>,
     // `Foo`
@@ -647,7 +643,7 @@ impl Node for StaticMethodCallExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticVariableMethodCallExpression {
     pub target: Box<Expression>,
     // `Foo`
@@ -664,7 +660,7 @@ impl Node for StaticVariableMethodCallExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticMethodClosureCreationExpression {
     pub target: Box<Expression>,
     // `Foo`
@@ -681,7 +677,7 @@ impl Node for StaticMethodClosureCreationExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticVariableMethodClosureCreationExpression {
     pub target: Box<Expression>,
     // `Foo`
@@ -698,7 +694,7 @@ impl Node for StaticVariableMethodClosureCreationExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PropertyFetchExpression {
     pub target: Box<Expression>,
     // `foo()`
@@ -713,7 +709,7 @@ impl Node for PropertyFetchExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NullsafePropertyFetchExpression {
     pub target: Box<Expression>,
     // `foo()`
@@ -728,7 +724,7 @@ impl Node for NullsafePropertyFetchExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticPropertyFetchExpression {
     pub target: Box<Expression>,
     // `foo()`
@@ -743,7 +739,7 @@ impl Node for StaticPropertyFetchExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstantFetchExpression {
     pub target: Box<Expression>,
     // `foo()`
@@ -758,7 +754,7 @@ impl Node for ConstantFetchExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ShortArrayExpression {
     pub start: Span,
     // `[`
@@ -773,7 +769,7 @@ impl Node for ShortArrayExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArrayExpression {
     pub array: Span,
     // `array`
@@ -790,7 +786,7 @@ impl Node for ArrayExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ListExpression {
     pub list: Span,
     // `list`
@@ -807,7 +803,7 @@ impl Node for ListExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NewExpression {
     pub new: Span,
     // `new`
@@ -826,7 +822,7 @@ impl Node for NewExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InterpolatedStringExpression {
     pub parts: Vec<StringPart>,
 }
@@ -840,7 +836,7 @@ impl Node for InterpolatedStringExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct HeredocExpression {
     pub label: ByteString,
     pub parts: Vec<StringPart>,
@@ -855,7 +851,7 @@ impl Node for HeredocExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NowdocExpression {
     pub label: ByteString,
     pub value: ByteString,
@@ -863,7 +859,7 @@ pub struct NowdocExpression {
 
 impl Node for NowdocExpression {}
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ShellExecExpression {
     pub parts: Vec<StringPart>,
 }
@@ -877,14 +873,14 @@ impl Node for ShellExecExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BoolExpression {
     pub value: bool,
 }
 
 impl Node for BoolExpression {}
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArrayIndexExpression {
     pub array: Box<Expression>,
     pub left_bracket: Span,
@@ -902,7 +898,7 @@ impl Node for ArrayIndexExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ShortTernaryExpression {
     pub condition: Box<Expression>,
     // `foo()`
@@ -917,7 +913,7 @@ impl Node for ShortTernaryExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TernaryExpression {
     pub condition: Box<Expression>,
     // `foo()`
@@ -940,7 +936,7 @@ impl Node for TernaryExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CoalesceExpression {
     pub lhs: Box<Expression>,
     pub double_question: Span,
@@ -953,7 +949,7 @@ impl Node for CoalesceExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CloneExpression {
     pub target: Box<Expression>,
 }
@@ -964,7 +960,7 @@ impl Node for CloneExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MatchExpression {
     pub keyword: Span,
     pub left_parenthesis: Span,
@@ -992,7 +988,7 @@ impl Node for MatchExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ThrowExpression {
     pub value: Box<Expression>,
 }
@@ -1003,7 +999,7 @@ impl Node for ThrowExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct YieldExpression {
     pub key: Option<Box<Expression>>,
     pub value: Option<Box<Expression>>,
@@ -1022,7 +1018,7 @@ impl Node for YieldExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct YieldFromExpression {
     pub value: Box<Expression>,
 }
@@ -1033,7 +1029,7 @@ impl Node for YieldFromExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CastExpression {
     pub cast: Span,
     pub kind: CastKind,
@@ -1046,8 +1042,8 @@ impl Node for CastExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum Expression {
     // eval("$a = 1")
     Eval(EvalExpression),
@@ -1357,7 +1353,7 @@ impl Node for Expression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct DefaultMatchArm {
     pub keyword: Span,      // `default`
@@ -1371,7 +1367,7 @@ impl Node for DefaultMatchArm {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct MatchArm {
     pub conditions: Vec<Expression>,
@@ -1391,8 +1387,8 @@ impl Node for MatchArm {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum MagicConstantExpression {
     Directory(Span),
     File(Span),
@@ -1409,14 +1405,14 @@ impl Node for MagicConstantExpression {
     //
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum StringPart {
     Literal(LiteralStringPart),
     Expression(ExpressionStringPart),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct LiteralStringPart {
     pub value: ByteString,
@@ -1426,7 +1422,7 @@ impl Node for LiteralStringPart {
     //
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ExpressionStringPart {
     pub expression: Box<Expression>,
@@ -1447,8 +1443,8 @@ impl Node for StringPart {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum ArrayItem {
     Skipped,
     Value {
@@ -1500,8 +1496,8 @@ impl Node for ArrayItem {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum ListEntry {
     Skipped,
     Value {

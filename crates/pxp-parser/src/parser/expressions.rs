@@ -1,6 +1,6 @@
 use crate::expected_token_err;
-use crate::lexer::token::DocStringKind;
-use crate::lexer::token::TokenKind;
+use pxp_token::DocStringKind;
+use pxp_token::TokenKind;
 use crate::parser::ast::arguments::ArgumentPlaceholder;
 use crate::parser::ast::identifiers::DynamicIdentifier;
 use crate::parser::ast::identifiers::Identifier;

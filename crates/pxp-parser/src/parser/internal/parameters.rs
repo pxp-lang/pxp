@@ -1,4 +1,4 @@
-use crate::lexer::token::TokenKind;
+use pxp_token::TokenKind;
 use crate::parser::ast::arguments::{Argument, SingleArgument};
 use crate::parser::ast::arguments::{ArgumentList, NamedArgument, PositionalArgument};
 use crate::parser::ast::functions::ConstructorParameter;

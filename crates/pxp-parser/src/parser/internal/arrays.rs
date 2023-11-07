@@ -1,4 +1,4 @@
-use crate::lexer::token::TokenKind;
+use pxp_token::TokenKind;
 use crate::parser::ast::Expression;
 use crate::parser::ast::ListEntry;
 use crate::parser::ast::{ArrayExpression, ArrayItem, ListExpression, ShortArrayExpression};

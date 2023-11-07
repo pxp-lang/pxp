@@ -1,16 +1,12 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
 use std::fmt::Display;
 
-use crate::lexer::byte_string::ByteString;
-use crate::lexer::token::Span;
+use pxp_bytestring::ByteString;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::Expression;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum Variable {
     SimpleVariable(SimpleVariable),
     VariableVariable(VariableVariable),
@@ -27,7 +23,7 @@ impl Node for Variable {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct SimpleVariable {
     pub span: Span,
@@ -38,7 +34,7 @@ impl Node for SimpleVariable {
     //
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct VariableVariable {
     pub span: Span,
@@ -51,7 +47,7 @@ impl Node for VariableVariable {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct BracedVariableVariable {
     pub start: Span,

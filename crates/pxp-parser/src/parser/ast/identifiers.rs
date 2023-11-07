@@ -1,16 +1,12 @@
 use std::fmt::Display;
 
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::byte_string::ByteString;
-use crate::lexer::token::Span;
+use pxp_bytestring::ByteString;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::Expression;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum Identifier {
     SimpleIdentifier(SimpleIdentifier),
     DynamicIdentifier(DynamicIdentifier),
@@ -25,7 +21,7 @@ impl Node for Identifier {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct SimpleIdentifier {
     pub span: Span,
@@ -42,7 +38,7 @@ impl Display for SimpleIdentifier {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct DynamicIdentifier {
     pub start: Span,

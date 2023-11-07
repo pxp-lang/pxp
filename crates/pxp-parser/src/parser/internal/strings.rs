@@ -1,8 +1,8 @@
 use crate::expect_token;
 use crate::expected_token_err;
 use crate::lexer::error::SyntaxError;
-use crate::lexer::token::DocStringIndentationKind;
-use crate::lexer::token::TokenKind;
+use pxp_token::DocStringIndentationKind;
+use pxp_token::TokenKind;
 use crate::parser::ast::identifiers::Identifier;
 use crate::parser::ast::literals::Literal;
 use crate::parser::ast::literals::LiteralInteger;

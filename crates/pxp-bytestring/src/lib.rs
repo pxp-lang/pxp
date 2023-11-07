@@ -1,7 +1,3 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
 use std::ops::Deref;
 use std::ops::DerefMut;
 use std::str::from_utf8;
@@ -64,40 +60,6 @@ impl std::fmt::Debug for ByteString {
         }
         write!(f, "\"")?;
         Ok(())
-    }
-}
-
-impl Serialize for ByteString {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(&self.to_string())
-    }
-}
-
-impl<'de> Deserialize<'de> for ByteString {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let s = String::deserialize(deserializer)?;
-        Ok(ByteString::new(s.into_bytes()))
-    }
-}
-
-impl JsonSchema for ByteString {
-    fn schema_name() -> String {
-        "ByteString".to_string()
-    }
-
-    fn json_schema(_: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-        schemars::schema::SchemaObject {
-            instance_type: Some(schemars::schema::InstanceType::String.into()),
-            format: Some("byte-string".to_string()),
-            ..Default::default()
-        }
-        .into()
     }
 }
 

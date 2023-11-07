@@ -1,14 +1,10 @@
 use std::slice::Iter;
 
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::token::Span;
+use pxp_span::Span;
 use crate::parser::ast::arguments::ArgumentList;
 use crate::parser::ast::identifiers::SimpleIdentifier;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct Attribute {
     pub start: Span,
@@ -17,7 +13,7 @@ pub struct Attribute {
     pub arguments: Option<ArgumentList>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct AttributeGroup {
     pub start: Span,

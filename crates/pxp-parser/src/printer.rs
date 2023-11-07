@@ -1,8 +1,8 @@
 use std::cmp;
 use std::collections::HashMap;
 
-use crate::lexer::token::Token;
-use crate::lexer::token::TokenKind;
+use pxp_token::Token;
+use pxp_token::TokenKind;
 
 /// Prints the tokens as a string
 ///

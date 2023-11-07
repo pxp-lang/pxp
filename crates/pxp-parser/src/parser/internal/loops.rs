@@ -1,5 +1,5 @@
-use crate::lexer::token::Token;
-use crate::lexer::token::TokenKind;
+use pxp_token::Token;
+use pxp_token::TokenKind;
 use crate::parser;
 use crate::parser::ast::literals::LiteralInteger;
 use crate::parser::ast::loops::BreakStatement;

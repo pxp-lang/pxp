@@ -1,16 +1,12 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::token::Span;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::identifiers::SimpleIdentifier;
 use crate::parser::ast::Block;
 
 use super::variables::SimpleVariable;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum CatchType {
     Identifier { identifier: SimpleIdentifier },
     Union { identifiers: Vec<SimpleIdentifier> },
@@ -27,7 +23,7 @@ impl Node for CatchType {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct TryStatement {
     pub start: Span,
@@ -50,7 +46,7 @@ impl Node for TryStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct CatchBlock {
     pub start: Span,
@@ -71,7 +67,7 @@ impl Node for CatchBlock {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct FinallyBlock {
     pub start: Span,

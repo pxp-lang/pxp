@@ -1,5 +1,5 @@
-use crate::lexer::token::Span;
-use crate::lexer::token::TokenKind;
+use pxp_span::Span;
+use pxp_token::TokenKind;
 use crate::parser::ast::modifiers::ClassModifier;
 use crate::parser::ast::modifiers::ClassModifierGroup;
 use crate::parser::ast::modifiers::ConstantModifier;

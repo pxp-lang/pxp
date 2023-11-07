@@ -1,4 +1,4 @@
-use crate::lexer::token::TokenKind;
+use pxp_token::TokenKind;
 use crate::parser::ast::functions::AbstractConstructor;
 use crate::parser::ast::functions::AbstractMethod;
 use crate::parser::ast::functions::ArrowFunctionExpression;

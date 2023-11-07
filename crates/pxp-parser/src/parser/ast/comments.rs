@@ -1,15 +1,11 @@
 use std::slice::Iter;
 
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::byte_string::ByteString;
-use crate::lexer::token::Span;
+use pxp_bytestring::ByteString;
+use pxp_span::Span;
 use crate::node::Node;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum CommentFormat {
     SingleLine,
     MultiLine,
@@ -17,7 +13,7 @@ pub enum CommentFormat {
     Document,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct Comment {
     pub span: Span,
@@ -27,7 +23,7 @@ pub struct Comment {
 
 impl Node for Comment {}
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct CommentGroup {
     pub comments: Vec<Comment>,

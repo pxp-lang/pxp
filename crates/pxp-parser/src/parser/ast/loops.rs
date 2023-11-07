@@ -1,8 +1,4 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::token::Span;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::literals::LiteralInteger;
 use crate::parser::ast::utils::CommaSeparated;
@@ -10,7 +6,7 @@ use crate::parser::ast::Ending;
 use crate::parser::ast::Expression;
 use crate::parser::ast::Statement;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ForeachStatement {
     pub foreach: Span,                      // `foreach`
@@ -26,8 +22,8 @@ impl Node for ForeachStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum ForeachStatementIterator {
     // `*expression* as &$var`
     Value {
@@ -65,8 +61,8 @@ impl Node for ForeachStatementIterator {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum ForeachStatementBody {
     Statement {
         statement: Box<Statement>,
@@ -90,7 +86,7 @@ impl Node for ForeachStatementBody {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ForStatement {
     pub r#for: Span,                    // `for`
@@ -106,7 +102,7 @@ impl Node for ForStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ForStatementIterator {
     pub initializations: CommaSeparated<Expression>, // `*expression*;`
@@ -131,8 +127,8 @@ impl Node for ForStatementIterator {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum ForStatementBody {
     Statement {
         statement: Box<Statement>,
@@ -156,7 +152,7 @@ impl Node for ForStatementBody {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct DoWhileStatement {
     pub r#do: Span,              // `do`
@@ -174,7 +170,7 @@ impl Node for DoWhileStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct WhileStatement {
     pub r#while: Span,            // `while`
@@ -190,8 +186,8 @@ impl Node for WhileStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum WhileStatementBody {
     Statement {
         statement: Box<Statement>,
@@ -215,8 +211,8 @@ impl Node for WhileStatementBody {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum Level {
     Literal(LiteralInteger),
     Parenthesized {
@@ -235,7 +231,7 @@ impl Node for Level {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct BreakStatement {
     pub r#break: Span,        // `break`
@@ -252,7 +248,7 @@ impl Node for BreakStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ContinueStatement {
     pub r#continue: Span,     // `continue`

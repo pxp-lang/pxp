@@ -1,13 +1,9 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::token::Span;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::identifiers::SimpleIdentifier;
 use crate::parser::ast::Statement;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct UnbracedNamespace {
     pub start: Span,                // `namespace`
@@ -29,7 +25,7 @@ impl Node for UnbracedNamespace {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct BracedNamespace {
     pub namespace: Span,                // `namespace`
@@ -48,7 +44,7 @@ impl Node for BracedNamespace {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct BracedNamespaceBody {
     pub start: Span,                // `{`
@@ -65,8 +61,8 @@ impl Node for BracedNamespaceBody {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum NamespaceStatement {
     Unbraced(UnbracedNamespace), // `namespace Foo; *statements*`
     Braced(BracedNamespace),     // `namespace Foo { *statements* }`

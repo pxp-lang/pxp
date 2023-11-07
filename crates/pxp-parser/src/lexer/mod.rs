@@ -1,21 +1,19 @@
 use crate::ident;
 use crate::ident_start;
-use crate::lexer::byte_string::ByteString;
+use pxp_bytestring::ByteString;
 use crate::lexer::error::SyntaxError;
 use crate::lexer::error::SyntaxResult;
 use crate::lexer::state::source::Source;
 use crate::lexer::state::StackFrame;
 use crate::lexer::state::State;
-use crate::lexer::token::DocStringIndentationKind;
-use crate::lexer::token::DocStringKind;
-use crate::lexer::token::OpenTagKind;
-use crate::lexer::token::Token;
-use crate::lexer::token::TokenKind;
+use pxp_token::DocStringIndentationKind;
+use pxp_token::DocStringKind;
+use pxp_token::OpenTagKind;
+use pxp_token::Token;
+use pxp_token::TokenKind;
 
-pub mod byte_string;
 pub mod error;
 pub mod stream;
-pub mod token;
 
 mod state;
 

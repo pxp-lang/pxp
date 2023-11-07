@@ -1,12 +1,12 @@
 use std::collections::VecDeque;
 
-use crate::lexer::byte_string::ByteString;
+use pxp_bytestring::ByteString;
 use crate::lexer::error::SyntaxError;
 use crate::lexer::error::SyntaxResult;
 use crate::lexer::state::source::Source;
-use crate::lexer::token::DocStringIndentationAmount;
-use crate::lexer::token::DocStringIndentationKind;
-use crate::lexer::token::DocStringKind;
+use pxp_token::DocStringIndentationAmount;
+use pxp_token::DocStringIndentationKind;
+use pxp_token::DocStringKind;
 
 pub mod source;
 

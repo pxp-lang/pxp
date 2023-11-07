@@ -1,14 +1,10 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::token::Span;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::Ending;
 use crate::parser::ast::Expression;
 use crate::parser::ast::Statement;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct IfStatement {
     pub r#if: Span,              // `if`
@@ -24,8 +20,8 @@ impl Node for IfStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum IfStatementBody {
     Statement {
         statement: Box<Statement>,       // `*statement*`
@@ -84,7 +80,7 @@ impl Node for IfStatementBody {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct IfStatementElseIf {
     pub elseif: Span,              // `elseif`
@@ -100,7 +96,7 @@ impl Node for IfStatementElseIf {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct IfStatementElse {
     pub r#else: Span,              // `else`
@@ -113,7 +109,7 @@ impl Node for IfStatementElse {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct IfStatementElseIfBlock {
     pub elseif: Span,               // `elseif`
@@ -136,7 +132,7 @@ impl Node for IfStatementElseIfBlock {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct IfStatementElseBlock {
     pub r#else: Span,               // `else`

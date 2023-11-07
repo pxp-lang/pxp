@@ -1,5 +1,5 @@
-use crate::lexer::token::OpenTagKind;
-use crate::lexer::token::TokenKind;
+use pxp_token::OpenTagKind;
+use pxp_token::TokenKind;
 use crate::parser;
 use crate::parser::ast::BlockStatement;
 use crate::parser::ast::Statement;

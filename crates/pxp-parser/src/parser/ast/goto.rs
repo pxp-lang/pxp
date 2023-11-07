@@ -1,13 +1,9 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::token::Span;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::comments::CommentGroup;
 use crate::parser::ast::identifiers::SimpleIdentifier;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct LabelStatement {
     pub comments: CommentGroup,
@@ -21,7 +17,7 @@ impl Node for LabelStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct GotoStatement {
     pub comments: CommentGroup,

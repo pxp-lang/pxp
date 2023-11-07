@@ -1,13 +1,9 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::byte_string::ByteString;
-use crate::lexer::token::Span;
+use pxp_bytestring::ByteString;
+use pxp_span::Span;
 use crate::node::Node;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum Literal {
     String(LiteralString),
     Integer(LiteralInteger),
@@ -24,7 +20,7 @@ impl Node for Literal {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct LiteralString {
     pub value: ByteString,
@@ -32,7 +28,7 @@ pub struct LiteralString {
     pub kind: LiteralStringKind,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum LiteralStringKind {
     SingleQuoted,
     DoubleQuoted,
@@ -42,7 +38,7 @@ impl Node for LiteralString {
     //
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct LiteralInteger {
     pub value: ByteString,
@@ -53,7 +49,7 @@ impl Node for LiteralInteger {
     //
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct LiteralFloat {
     pub value: ByteString,

@@ -1,5 +1,5 @@
 use crate::expected_token_err;
-use crate::lexer::token::TokenKind;
+use pxp_token::TokenKind;
 use crate::parser::ast::variables::BracedVariableVariable;
 use crate::parser::ast::variables::SimpleVariable;
 use crate::parser::ast::variables::Variable;

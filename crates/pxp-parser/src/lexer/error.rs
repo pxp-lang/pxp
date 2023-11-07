@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use crate::lexer::token::Span;
+use pxp_span::Span;
 
 pub type SyntaxResult<T> = Result<T, SyntaxError>;
 

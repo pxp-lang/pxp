@@ -1,11 +1,8 @@
 use std::fmt::{Display, Formatter};
 
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
 use crate::lexer::error::SyntaxError;
-use crate::lexer::token::{Span, Token, TokenKind};
+use pxp_span::Span;
+use pxp_token::{Token, TokenKind};
 use crate::parser::ast::attributes::AttributeGroup;
 use crate::parser::ast::data_type::Type;
 use crate::parser::ast::modifiers::PromotedPropertyModifier;
@@ -17,14 +14,14 @@ use super::state::State;
 
 pub type ParseResult<T> = Result<T, ParseError>;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum ParseErrorAnnotationType {
     Hint,
     Error,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ParseErrorAnnotation {
     pub r#type: ParseErrorAnnotationType,
     pub message: String,
@@ -32,7 +29,7 @@ pub struct ParseErrorAnnotation {
     pub length: usize,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ParseError {
     pub id: String,
     pub message: String,
@@ -41,7 +38,7 @@ pub struct ParseError {
     pub note: Option<String>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ParseErrorStack {
     pub partial: Program,
     pub errors: Vec<ParseError>,

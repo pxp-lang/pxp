@@ -1,15 +1,11 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
 use std::fmt::Display;
 
-use crate::lexer::byte_string::ByteString;
-use crate::lexer::token::Span;
+use pxp_bytestring::ByteString;
+use pxp_span::Span;
 use crate::node::Node;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum Type {
     Named(Span, ByteString),
     Nullable(Span, Box<Type>),

@@ -1,15 +1,11 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::token::Span;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::identifiers::SimpleIdentifier;
 use crate::parser::ast::literals::Literal;
 use crate::parser::ast::Expression;
 use crate::parser::ast::Statement;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct DeclareEntry {
     pub key: SimpleIdentifier, // `strict_types`
@@ -23,7 +19,7 @@ impl Node for DeclareEntry {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct DeclareEntryGroup {
     pub left_parenthesis: Span,     // `(`
@@ -40,8 +36,8 @@ impl Node for DeclareEntryGroup {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum DeclareBody {
     // declaration is terminated with `;`
     Noop {
@@ -81,7 +77,7 @@ impl Node for DeclareBody {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct DeclareStatement {
     pub declare: Span,              // `declare`

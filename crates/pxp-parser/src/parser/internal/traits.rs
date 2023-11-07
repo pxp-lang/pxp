@@ -1,6 +1,6 @@
 use crate::expect_token;
-use crate::lexer::token::Token;
-use crate::lexer::token::TokenKind;
+use pxp_token::Token;
+use pxp_token::TokenKind;
 use crate::parser::ast::identifiers::SimpleIdentifier;
 use crate::parser::ast::modifiers::VisibilityModifier;
 use crate::parser::ast::traits::TraitBody;

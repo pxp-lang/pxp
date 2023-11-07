@@ -1,8 +1,4 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::token::Span;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::attributes::AttributeGroup;
 use crate::parser::ast::constant::ClassishConstant;
@@ -15,8 +11,8 @@ use crate::parser::ast::modifiers::VisibilityModifier;
 use crate::parser::ast::properties::Property;
 use crate::parser::ast::properties::VariableProperty;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum TraitMember {
     Constant(ClassishConstant),
     TraitUsage(TraitUsage),
@@ -43,7 +39,7 @@ impl Node for TraitMember {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct TraitBody {
     pub left_brace: Span,
@@ -60,7 +56,7 @@ impl Node for TraitBody {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct TraitStatement {
     pub r#trait: Span,
@@ -75,7 +71,7 @@ impl Node for TraitStatement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct TraitUsage {
     pub r#use: Span,
@@ -89,8 +85,8 @@ impl Node for TraitUsage {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum TraitUsageAdaptation {
     Alias {
         r#trait: Option<SimpleIdentifier>,

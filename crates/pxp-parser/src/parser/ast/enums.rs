@@ -1,8 +1,4 @@
-use schemars::JsonSchema;
-use serde::Deserialize;
-use serde::Serialize;
-
-use crate::lexer::token::Span;
+use pxp_span::Span;
 use crate::node::Node;
 use crate::parser::ast::attributes::AttributeGroup;
 use crate::parser::ast::constant::ClassishConstant;
@@ -12,7 +8,7 @@ use crate::parser::ast::Expression;
 
 use super::traits::TraitUsage;
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct UnitEnumCase {
     pub attributes: Vec<AttributeGroup>, // `#[Foo]`
@@ -27,8 +23,8 @@ impl Node for UnitEnumCase {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum UnitEnumMember {
     Case(UnitEnumCase),         // `case Bar;`
     Method(ConcreteMethod),     // `public function foo(): void { ... }`
@@ -47,7 +43,7 @@ impl Node for UnitEnumMember {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct UnitEnumBody {
     pub left_brace: Span,             // `{`
@@ -64,7 +60,7 @@ impl Node for UnitEnumBody {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct UnitEnumStatement {
     pub attributes: Vec<AttributeGroup>,   // `#[Foo]`
@@ -85,8 +81,8 @@ impl Node for UnitEnumStatement {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, Clone, Eq, PartialEq)]
+
 pub enum BackedEnumType {
     String(Span, Span), // `:` + `string`
     Int(Span, Span),    // `:` + `int`
@@ -96,7 +92,7 @@ impl Node for BackedEnumType {
     //
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct BackedEnumCase {
     pub attributes: Vec<AttributeGroup>, // `#[Foo]`
@@ -113,8 +109,8 @@ impl Node for BackedEnumCase {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
-#[serde(tag = "type", content = "value")]
+#[derive(Debug, PartialEq, Eq, Clone)]
+
 pub enum BackedEnumMember {
     Case(BackedEnumCase),
     Method(ConcreteMethod),
@@ -133,7 +129,7 @@ impl Node for BackedEnumMember {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct BackedEnumBody {
     pub left_brace: Span,               // `{`
@@ -150,7 +146,7 @@ impl Node for BackedEnumBody {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct BackedEnumStatement {
     pub attributes: Vec<AttributeGroup>,   // `#[Foo]`
