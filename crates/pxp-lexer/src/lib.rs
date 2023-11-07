@@ -1,11 +1,9 @@
-use crate::ident;
-use crate::ident_start;
 use pxp_bytestring::ByteString;
-use crate::lexer::error::SyntaxError;
-use crate::lexer::error::SyntaxResult;
-use crate::lexer::state::source::Source;
-use crate::lexer::state::StackFrame;
-use crate::lexer::state::State;
+use crate::error::SyntaxError;
+use crate::error::SyntaxResult;
+use crate::state::source::Source;
+use crate::state::StackFrame;
+use crate::state::State;
 use pxp_token::DocStringIndentationKind;
 use pxp_token::DocStringKind;
 use pxp_token::OpenTagKind;
@@ -14,10 +12,8 @@ use pxp_token::TokenKind;
 
 pub mod error;
 pub mod stream;
-
-mod state;
-
-mod macros;
+pub mod state;
+pub mod macros;
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct Lexer;

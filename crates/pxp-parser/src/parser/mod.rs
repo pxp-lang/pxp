@@ -2,7 +2,8 @@ use crate::expect_literal;
 use pxp_token::OpenTagKind;
 use pxp_token::Token;
 use pxp_token::TokenKind;
-use crate::lexer::Lexer;
+use pxp_lexer::Lexer;
+use pxp_lexer::stream::TokenStream;
 use pxp_ast::declares::DeclareBody;
 use pxp_ast::declares::DeclareEntry;
 use pxp_ast::declares::DeclareEntryGroup;
@@ -29,8 +30,6 @@ use crate::parser::internal::uses;
 use crate::parser::internal::utils;
 use crate::parser::internal::variables;
 use crate::parser::state::State;
-
-pub use crate::lexer::stream::TokenStream;
 
 use pxp_ast::ClosingTagStatement;
 use pxp_ast::EchoOpeningTagStatement;

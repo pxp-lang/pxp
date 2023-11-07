@@ -1,6 +1,6 @@
 use crate::expect_token;
 use crate::expected_token_err;
-use crate::lexer::error::SyntaxError;
+use pxp_lexer::error::SyntaxError;
 use pxp_token::DocStringIndentationKind;
 use pxp_token::TokenKind;
 use pxp_ast::identifiers::Identifier;

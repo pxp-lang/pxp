@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 use std::fmt::Display;
 
-use crate::lexer::stream::TokenStream;
+use pxp_lexer::stream::TokenStream;
 use pxp_ast::attributes::AttributeGroup;
 use pxp_ast::identifiers::SimpleIdentifier;
 use crate::parser::error::ParseError;

@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-use crate::lexer::error::SyntaxError;
+use pxp_lexer::error::SyntaxError;
 use pxp_span::Span;
 use pxp_token::{Token, TokenKind};
 use pxp_ast::attributes::AttributeGroup;
