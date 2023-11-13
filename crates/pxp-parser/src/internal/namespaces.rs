@@ -1,11 +1,10 @@
-use crate::parser;
-use crate::parser::error;
-use crate::parser::error::ParseResult;
-use crate::parser::internal::identifiers;
-use crate::parser::internal::utils;
-use crate::parser::state::NamespaceType;
-use crate::parser::state::Scope;
-use crate::parser::state::State;
+use crate::error;
+use crate::error::ParseResult;
+use crate::internal::identifiers;
+use crate::internal::utils;
+use crate::state::NamespaceType;
+use crate::state::Scope;
+use crate::state::State;
 use crate::scoped;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::namespaces::BracedNamespace;
@@ -59,7 +58,7 @@ fn unbraced_namespace(
         // `namespace` token as a top level statement, this namespace scope ends.
         // otherwise we will end up with nested namespace statements.
         while state.stream.current().kind != TokenKind::Namespace && !state.stream.is_eof() {
-            statements.push(parser::top_level_statement(state)?);
+            statements.push(crate::top_level_statement(state)?);
         }
 
         statements
@@ -85,7 +84,7 @@ fn braced_namespace(
 
         let mut statements = Block::new();
         while state.stream.current().kind != TokenKind::RightBrace && !state.stream.is_eof() {
-            statements.push(parser::top_level_statement(state)?);
+            statements.push(crate::top_level_statement(state)?);
         }
 
         let end = utils::skip_right_brace(state)?;

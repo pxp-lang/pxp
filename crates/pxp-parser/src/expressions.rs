@@ -1,19 +1,19 @@
 use crate::expected_token_err;
-use crate::parser::error;
-use crate::parser::error::ParseResult;
-use crate::parser::internal::arrays;
-use crate::parser::internal::attributes;
-use crate::parser::internal::classes;
-use crate::parser::internal::control_flow;
-use crate::parser::internal::functions;
-use crate::parser::internal::identifiers;
-use crate::parser::internal::parameters;
-use crate::parser::internal::precedences::Associativity;
-use crate::parser::internal::precedences::Precedence;
-use crate::parser::internal::strings;
-use crate::parser::internal::utils;
-use crate::parser::internal::variables;
-use crate::parser::state::State;
+use crate::error;
+use crate::error::ParseResult;
+use crate::internal::arrays;
+use crate::internal::attributes;
+use crate::internal::classes;
+use crate::internal::control_flow;
+use crate::internal::functions;
+use crate::internal::identifiers;
+use crate::internal::parameters;
+use crate::internal::precedences::Associativity;
+use crate::internal::precedences::Precedence;
+use crate::internal::strings;
+use crate::internal::utils;
+use crate::internal::variables;
+use crate::state::State;
 use pxp_ast::arguments::ArgumentPlaceholder;
 use pxp_ast::identifiers::DynamicIdentifier;
 use pxp_ast::identifiers::Identifier;
@@ -555,7 +555,7 @@ macro_rules! expressions {
         )+
     ) => {
         $(
-            pub(in crate::parser) fn $expr($state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
+            pub(in crate) fn $expr($state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
                 $(
                     if &$precedence < precedence {
                         return $else($state, precedence);

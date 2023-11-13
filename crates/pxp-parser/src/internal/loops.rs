@@ -1,9 +1,9 @@
-use crate::parser;
-use crate::parser::error::ParseResult;
-use crate::parser::expressions;
-use crate::parser::internal::blocks;
-use crate::parser::internal::utils;
-use crate::parser::state::State;
+use crate::error::ParseResult;
+use crate::expressions;
+use crate::internal::blocks;
+use crate::internal::utils;
+use crate::state::State;
+use crate::statement;
 use pxp_ast::literals::LiteralInteger;
 use pxp_ast::loops::BreakStatement;
 use pxp_ast::loops::ContinueStatement;
@@ -84,7 +84,7 @@ pub fn foreach_statement(state: &mut State) -> ParseResult<Statement> {
         }
     } else {
         ForeachStatementBody::Statement {
-            statement: parser::statement(state).map(Box::new)?,
+            statement: statement(state).map(Box::new)?,
         }
     };
 
@@ -136,7 +136,7 @@ pub fn for_statement(state: &mut State) -> ParseResult<Statement> {
         }
     } else {
         ForStatementBody::Statement {
-            statement: parser::statement(state).map(Box::new)?,
+            statement: statement(state).map(Box::new)?,
         }
     };
 
@@ -152,7 +152,7 @@ pub fn for_statement(state: &mut State) -> ParseResult<Statement> {
 pub fn do_while_statement(state: &mut State) -> ParseResult<Statement> {
     let r#do = utils::skip(state, TokenKind::Do)?;
 
-    let body = parser::statement(state).map(Box::new)?;
+    let body = statement(state).map(Box::new)?;
 
     let r#while = utils::skip(state, TokenKind::While)?;
 
@@ -187,7 +187,7 @@ pub fn while_statement(state: &mut State) -> ParseResult<Statement> {
         }
     } else {
         WhileStatementBody::Statement {
-            statement: parser::statement(state).map(Box::new)?,
+            statement: statement(state).map(Box::new)?,
         }
     };
 

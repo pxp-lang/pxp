@@ -1,8 +1,8 @@
 use crate::expected_token_err;
-use crate::parser::error::ParseResult;
-use crate::parser::expressions;
-use crate::parser::internal::utils;
-use crate::parser::state::State;
+use crate::error::ParseResult;
+use crate::expressions;
+use crate::internal::utils;
+use crate::state::State;
 use pxp_ast::variables::BracedVariableVariable;
 use pxp_ast::variables::SimpleVariable;
 use pxp_ast::variables::Variable;

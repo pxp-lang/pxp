@@ -1,7 +1,7 @@
-use crate::parser::error::ParseResult;
-use crate::parser::internal::identifiers;
-use crate::parser::internal::utils;
-use crate::parser::state::State;
+use crate::error::ParseResult;
+use crate::internal::identifiers;
+use crate::internal::utils;
+use crate::state::State;
 use pxp_ast::goto::GotoStatement;
 use pxp_ast::goto::LabelStatement;
 use pxp_ast::Statement;

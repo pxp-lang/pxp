@@ -35,7 +35,7 @@ macro_rules! expect_token {
                 },
             )+
             _ => {
-                return Err($crate::parser::error::unexpected_token(
+                return Err($crate::error::unexpected_token(
                     vec![$($message.into(),)+],
                     token,
                 ))
@@ -103,7 +103,7 @@ macro_rules! expected_token_err {
 #[macro_export]
 macro_rules! expected_token {
     ([ $($expected:literal),+ $(,)? ], $state:expr $(,)?) => {{
-        $crate::parser::error::unexpected_token(
+        $crate::error::unexpected_token(
             vec![$($expected.into()),+],
             $state.stream.current(),
         )
@@ -122,7 +122,7 @@ macro_rules! expected_scope {
                 $( $pattern )|+ $( if $guard )? => $out,
             )+
             _ => {
-                return Err($crate::parser::error::reached_unpredictable_state($state.stream.current().span));
+                return Err($crate::error::reached_unpredictable_state($state.stream.current().span));
             }
         }
     }};

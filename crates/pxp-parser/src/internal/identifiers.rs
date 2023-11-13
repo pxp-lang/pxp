@@ -1,6 +1,6 @@
-use crate::parser::error;
-use crate::parser::error::ParseResult;
-use crate::parser::state::State;
+use crate::error;
+use crate::error::ParseResult;
+use crate::state::State;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_token::TokenKind;
 

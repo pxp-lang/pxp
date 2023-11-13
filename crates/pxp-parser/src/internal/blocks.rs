@@ -1,7 +1,7 @@
-use crate::parser;
-use crate::parser::error::ParseResult;
-use crate::parser::internal::utils;
-use crate::parser::state::State;
+use crate::error::ParseResult;
+use crate::internal::utils;
+use crate::state::State;
+use crate::statement;
 use pxp_ast::BlockStatement;
 use pxp_ast::Statement;
 use pxp_token::OpenTagKind;
@@ -34,7 +34,7 @@ pub fn multiple_statements_until(
             continue;
         }
 
-        statements.push(parser::statement(state)?);
+        statements.push(statement(state)?);
         current = state.stream.current();
     }
 
@@ -56,7 +56,7 @@ pub fn multiple_statements_until_any(
             continue;
         }
 
-        statements.push(parser::statement(state)?);
+        statements.push(statement(state)?);
         current = state.stream.current();
     }
 

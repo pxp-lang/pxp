@@ -1,8 +1,8 @@
-use crate::parser::error::ParseResult;
-use crate::parser::expressions;
-use crate::parser::internal::identifiers;
-use crate::parser::internal::utils;
-use crate::parser::state::State;
+use crate::error::ParseResult;
+use crate::expressions;
+use crate::internal::identifiers;
+use crate::internal::utils;
+use crate::state::State;
 use pxp_ast::constant::ClassishConstant;
 use pxp_ast::constant::ConstantEntry;
 use pxp_ast::constant::ConstantStatement;

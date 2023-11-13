@@ -1,9 +1,9 @@
-use crate::parser::error;
-use crate::parser::error::ParseResult;
-use crate::parser::internal::blocks;
-use crate::parser::internal::identifiers;
-use crate::parser::internal::utils;
-use crate::parser::state::State;
+use crate::error;
+use crate::error::ParseResult;
+use crate::internal::blocks;
+use crate::internal::identifiers;
+use crate::internal::utils;
+use crate::state::State;
 use pxp_ast::try_block::CatchBlock;
 use pxp_ast::try_block::CatchType;
 use pxp_ast::try_block::FinallyBlock;

@@ -1,8 +1,8 @@
-use crate::parser::error;
-use crate::parser::error::ParseResult;
-use crate::parser::internal::identifiers;
-use crate::parser::internal::utils;
-use crate::parser::state::State;
+use crate::error;
+use crate::error::ParseResult;
+use crate::internal::identifiers;
+use crate::internal::utils;
+use crate::state::State;
 use pxp_ast::GroupUseStatement;
 use pxp_ast::Statement;
 use pxp_ast::Use;

@@ -1,8 +1,8 @@
-use crate::parser::error;
-use crate::parser::error::ParseResult;
-use crate::parser::expressions;
-use crate::parser::internal::utils;
-use crate::parser::state::State;
+use crate::error;
+use crate::error::ParseResult;
+use crate::expressions;
+use crate::internal::utils;
+use crate::state::State;
 use pxp_ast::Expression;
 use pxp_ast::ListEntry;
 use pxp_ast::{ArrayExpression, ArrayItem, ListExpression, ShortArrayExpression};

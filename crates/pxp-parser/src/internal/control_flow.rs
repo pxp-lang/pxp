@@ -1,12 +1,12 @@
 use crate::expected_token_err;
 
-use crate::parser;
-use crate::parser::error;
-use crate::parser::error::ParseResult;
-use crate::parser::expressions;
-use crate::parser::internal::blocks;
-use crate::parser::internal::utils;
-use crate::parser::state::State;
+use crate::error;
+use crate::error::ParseResult;
+use crate::expressions;
+use crate::internal::blocks;
+use crate::internal::utils;
+use crate::state::State;
+use crate::statement;
 use pxp_ast::control_flow::IfStatement;
 use pxp_ast::control_flow::IfStatementBody;
 use pxp_ast::control_flow::IfStatementElse;
@@ -139,7 +139,7 @@ pub fn switch_statement(state: &mut State) -> ParseResult<Statement> {
                     && state.stream.current().kind != TokenKind::RightBrace
                     && state.stream.current().kind != end_token
                 {
-                    body.push(parser::statement(state)?);
+                    body.push(statement(state)?);
                 }
 
                 cases.push(Case {
@@ -158,7 +158,7 @@ pub fn switch_statement(state: &mut State) -> ParseResult<Statement> {
                     && state.stream.current().kind != TokenKind::Default
                     && state.stream.current().kind != end_token
                 {
-                    body.push(parser::statement(state)?);
+                    body.push(statement(state)?);
                 }
 
                 cases.push(Case {
@@ -208,7 +208,7 @@ pub fn if_statement(state: &mut State) -> ParseResult<Statement> {
 }
 
 fn if_statement_statement_body(state: &mut State) -> ParseResult<IfStatementBody> {
-    let statement = parser::statement(state).map(Box::new)?;
+    let statement = statement(state).map(Box::new)?;
 
     let mut elseifs: Vec<IfStatementElseIf> = vec![];
     let mut current = state.stream.current();
@@ -223,7 +223,7 @@ fn if_statement_statement_body(state: &mut State) -> ParseResult<IfStatementBody
             left_parenthesis,
             condition,
             right_parenthesis,
-            statement: parser::statement(state).map(Box::new)?,
+            statement: crate::statement(state).map(Box::new)?,
         });
 
         current = state.stream.current();
@@ -234,7 +234,7 @@ fn if_statement_statement_body(state: &mut State) -> ParseResult<IfStatementBody
 
         Some(IfStatementElse {
             r#else: current.span,
-            statement: parser::statement(state).map(Box::new)?,
+            statement: crate::statement(state).map(Box::new)?,
         })
     } else {
         None

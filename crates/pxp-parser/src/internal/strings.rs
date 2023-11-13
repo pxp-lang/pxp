@@ -1,11 +1,11 @@
 use crate::expect_token;
 use crate::expected_token_err;
-use crate::parser::error::ParseResult;
-use crate::parser::expressions::create;
-use crate::parser::internal::identifiers;
-use crate::parser::internal::utils;
-use crate::parser::internal::variables;
-use crate::parser::state::State;
+use crate::error::ParseResult;
+use crate::expressions::create;
+use crate::internal::identifiers;
+use crate::internal::utils;
+use crate::internal::variables;
+use crate::state::State;
 use pxp_ast::identifiers::Identifier;
 use pxp_ast::literals::Literal;
 use pxp_ast::literals::LiteralInteger;

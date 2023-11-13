@@ -1,10 +1,10 @@
-use crate::parser::error;
-use crate::parser::error::ParseResult;
-use crate::parser::expressions;
-use crate::parser::internal::data_type;
-use crate::parser::internal::utils;
-use crate::parser::internal::variables;
-use crate::parser::state::State;
+use crate::error;
+use crate::error::ParseResult;
+use crate::expressions;
+use crate::internal::data_type;
+use crate::internal::utils;
+use crate::internal::variables;
+use crate::state::State;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::modifiers::PropertyModifierGroup;
 use pxp_ast::properties::Property;

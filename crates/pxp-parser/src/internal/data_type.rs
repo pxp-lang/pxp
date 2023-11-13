@@ -1,8 +1,8 @@
 use crate::expected_token;
-use crate::parser::error;
-use crate::parser::error::ParseResult;
-use crate::parser::internal::utils;
-use crate::parser::state::State;
+use crate::error;
+use crate::error::ParseResult;
+use crate::internal::utils;
+use crate::state::State;
 use crate::peek_token;
 use pxp_ast::data_type::Type;
 use pxp_token::TokenKind;
