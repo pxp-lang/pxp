@@ -10,19 +10,44 @@ use pxp_ast::comments::CommentGroup;
 /// # Examples
 ///
 /// ```rust
-/// use php_parser_rs::lexer::token::Token;
-/// use php_parser_rs::lexer::token::TokenKind;
-/// use php_parser_rs::lexer::stream::TokenStream;
+/// use pxp_lexer::stream::TokenStream;
+/// use pxp_span::Span;
+/// use pxp_token::Token;
+/// use pxp_token::TokenKind;
 ///
 /// let tokens = vec![
-///     Token { kind: TokenKind::SingleLineComment("// some class".into()), span: (1, 1) },
-///     Token { kind: TokenKind::Readonly, span: (2, 1) },
-///     Token { kind: TokenKind::Class, span: (2, 10) },
-///     Token { kind: TokenKind::Enum, span: (2, 16) },
-///     Token { kind: TokenKind::LeftBrace, span: (2, 21) },
-///     Token { kind: TokenKind::SingleLineComment("// empty body!".into()), span: (3, 1) },
-///     Token { kind: TokenKind::RightBrace, span: (4, 1) },
-///     Token { kind: TokenKind::Eof, span: (0, 0) },
+///     Token {
+///         kind: TokenKind::SingleLineComment,
+///         span: Span { start: 1, end: 1 },
+///     },
+///     Token {
+///         kind: TokenKind::Readonly,
+///         span: Span { start: 2, end: 1 },
+///     },
+///     Token {
+///         kind: TokenKind::Class,
+///         span: Span { start: 2, end: 0 },
+///     },
+///     Token {
+///         kind: TokenKind::Enum,
+///         span: Span { start: 2, end: 6 },
+///     },
+///     Token {
+///         kind: TokenKind::LeftBrace,
+///         span: Span { start: 2, end: 1 },
+///     },
+///     Token {
+///         kind: TokenKind::SingleLineComment,
+///         span: Span { start: 3, end: 1 },
+///     },
+///     Token {
+///         kind: TokenKind::RightBrace,
+///         span: Span { start: 4, end: 1 },
+///     },
+///     Token {
+///         kind: TokenKind::Eof,
+///         span: Span { start: 0, end: 0 },
+///     },
 /// ];
 ///
 /// let mut stream = TokenStream::new(tokens);
@@ -50,10 +75,19 @@ use pxp_ast::comments::CommentGroup;
 /// assert!(matches!(stream.current().kind, TokenKind::Eof));
 /// assert!(stream.is_eof());
 ///
-/// assert_eq!(stream.comments(), vec![
-///     Token { kind: TokenKind::SingleLineComment("// some class".into()), span: (1, 1) },
-///     Token { kind: TokenKind::SingleLineComment("// empty body!".into()), span: (3, 1) },
-/// ]);
+/// assert_eq!(
+///     stream.comments(),
+///     vec![
+///         Token {
+///             kind: TokenKind::SingleLineComment,
+///             span: Span { start: 1, end: 1 }
+///         },
+///         Token {
+///             kind: TokenKind::SingleLineComment,
+///             span: Span { start: 3, end: 1 }
+///         },
+///     ]
+/// );
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TokenStream<'a> {
