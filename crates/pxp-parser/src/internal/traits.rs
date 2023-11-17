@@ -18,7 +18,7 @@ use pxp_ast::traits::TraitMember;
 use pxp_ast::traits::TraitStatement;
 use pxp_ast::traits::TraitUsage;
 use pxp_ast::traits::TraitUsageAdaptation;
-use pxp_ast::Statement;
+use pxp_ast::StatementKind;
 use pxp_token::Token;
 use pxp_token::TokenKind;
 
@@ -159,7 +159,7 @@ pub fn usage(state: &mut State) -> ParseResult<TraitUsage> {
     })
 }
 
-pub fn parse(state: &mut State) -> ParseResult<Statement> {
+pub fn parse(state: &mut State) -> ParseResult<StatementKind> {
     let span = utils::skip(state, TokenKind::Trait)?;
     let name = identifiers::type_identifier(state)?;
     let attributes = state.get_attributes();
@@ -176,7 +176,7 @@ pub fn parse(state: &mut State) -> ParseResult<Statement> {
         right_brace: utils::skip_right_brace(state)?,
     };
 
-    Ok(Statement::Trait(TraitStatement {
+    Ok(StatementKind::Trait(TraitStatement {
         r#trait: span,
         name,
         attributes,

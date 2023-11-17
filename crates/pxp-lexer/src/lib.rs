@@ -4,7 +4,6 @@ use crate::state::source::Source;
 use crate::state::StackFrame;
 use crate::state::State;
 use pxp_bytestring::ByteString;
-use pxp_span::Span;
 use pxp_token::DocStringIndentationKind;
 use pxp_token::DocStringKind;
 use pxp_token::OpenTagKind;
@@ -40,6 +39,10 @@ impl Lexer {
                 // This tells the lexer to start analysing characters at PHP tokens instead of inline HTML.
                 StackFrame::Scripting => {
                     self.skip_whitespace(&mut state);
+
+                    // If we have consumed whitespace, we should restart the token's position tracking
+                    // to ensure we accurately track the span of the token.
+                    state.source.start_token();
 
                     // If we have consumed whitespace and then reached the end of the file, we should break.
                     if state.source.eof() {

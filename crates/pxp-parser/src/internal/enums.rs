@@ -20,13 +20,13 @@ use pxp_ast::enums::UnitEnumMember;
 use pxp_ast::enums::UnitEnumStatement;
 use pxp_ast::functions::ConcreteMethod;
 use pxp_ast::identifiers::SimpleIdentifier;
-use pxp_ast::Statement;
+use pxp_ast::StatementKind;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
 use super::traits;
 
-pub fn parse(state: &mut State) -> ParseResult<Statement> {
+pub fn parse(state: &mut State) -> ParseResult<StatementKind> {
     let span = utils::skip(state, TokenKind::Enum)?;
 
     let name = identifiers::type_identifier(state)?;
@@ -76,7 +76,7 @@ pub fn parse(state: &mut State) -> ParseResult<Statement> {
             right_brace: utils::skip_right_brace(state)?,
         };
 
-        Ok(Statement::BackedEnum(BackedEnumStatement {
+        Ok(StatementKind::BackedEnum(BackedEnumStatement {
             r#enum: span,
             name,
             backed_type,
@@ -99,7 +99,7 @@ pub fn parse(state: &mut State) -> ParseResult<Statement> {
             right_brace: utils::skip_right_brace(state)?,
         };
 
-        Ok(Statement::UnitEnum(UnitEnumStatement {
+        Ok(StatementKind::UnitEnum(UnitEnumStatement {
             r#enum: span,
             name,
             attributes,

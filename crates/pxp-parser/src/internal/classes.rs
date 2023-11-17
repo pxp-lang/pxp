@@ -12,6 +12,7 @@ use crate::internal::properties;
 use crate::internal::traits;
 use crate::internal::utils;
 use crate::state::State;
+use pxp_ast::Expression;
 use pxp_ast::classes::AnonymousClassBody;
 use pxp_ast::classes::AnonymousClassExpression;
 use pxp_ast::classes::AnonymousClassMember;
@@ -20,13 +21,14 @@ use pxp_ast::classes::ClassExtends;
 use pxp_ast::classes::ClassImplements;
 use pxp_ast::classes::ClassMember;
 use pxp_ast::classes::ClassStatement;
+use pxp_ast::comments::CommentGroup;
 use pxp_ast::identifiers::SimpleIdentifier;
-use pxp_ast::Statement;
-use pxp_ast::{Expression, NewExpression};
+use pxp_ast::StatementKind;
+use pxp_ast::{ExpressionKind, NewExpression};
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
-pub fn parse(state: &mut State) -> ParseResult<Statement> {
+pub fn parse(state: &mut State) -> ParseResult<StatementKind> {
     let attributes = state.get_attributes();
 
     let modifiers = modifiers::class_group(modifiers::collect(state)?)?;
@@ -80,7 +82,7 @@ pub fn parse(state: &mut State) -> ParseResult<Statement> {
         right_brace: utils::skip_right_brace(state)?,
     };
 
-    Ok(Statement::Class(ClassStatement {
+    Ok(StatementKind::Class(ClassStatement {
         class,
         name,
         modifiers,
@@ -97,11 +99,14 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> ParseResult<Exp
         None => utils::skip(state, TokenKind::New)?,
     };
 
+    let start_span = new;
+
     attributes::gather_attributes(state)?;
 
     let attributes = state.get_attributes();
 
     let class = utils::skip(state, TokenKind::Class)?;
+    let class_span = class;
 
     let arguments = if state.stream.current().kind == TokenKind::LeftParen {
         Some(parameters::argument_list(state)?)
@@ -151,17 +156,29 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> ParseResult<Exp
         right_brace: utils::skip_right_brace(state)?,
     };
 
-    Ok(Expression::New(NewExpression {
-        target: Box::new(Expression::AnonymousClass(AnonymousClassExpression {
+    let end_span = body.right_brace;
+
+    let anonymous_class = Expression::new(
+        ExpressionKind::AnonymousClass(AnonymousClassExpression {
             class,
             extends,
             implements,
             attributes,
             body,
-        })),
-        new,
-        arguments,
-    }))
+        }),
+        Span::new(class_span.start, end_span.end),
+        CommentGroup::default(),
+    );
+
+    Ok(Expression::new(
+        ExpressionKind::New(NewExpression {
+            target: Box::new(anonymous_class),
+            new,
+            arguments,
+        }),
+        Span::new(start_span.start, state.stream.previous().span.end),
+        CommentGroup::default(),
+    ))
 }
 
 fn member(

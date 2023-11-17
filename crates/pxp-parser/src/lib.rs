@@ -18,14 +18,16 @@ use crate::internal::uses;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
+use pxp_ast::Statement;
 use pxp_ast::declares::DeclareBody;
 use pxp_ast::declares::DeclareEntry;
 use pxp_ast::declares::DeclareEntryGroup;
 use pxp_ast::declares::DeclareStatement;
 use pxp_ast::variables::Variable;
-use pxp_ast::{Program, Statement, StaticVar};
+use pxp_ast::{Program, StatementKind, StaticVar};
 use pxp_lexer::stream::TokenStream;
 use pxp_lexer::Lexer;
+use pxp_span::Span;
 use pxp_token::OpenTagKind;
 use pxp_token::Token;
 use pxp_token::TokenKind;
@@ -100,32 +102,47 @@ pub fn construct(tokens: &[Token]) -> Result<Program, ParseErrorStack> {
 }
 
 fn top_level_statement(state: &mut State) -> ParseResult<Statement> {
-    let statement = match &state.stream.current().kind {
-        TokenKind::Namespace => namespaces::namespace(state)?,
-        TokenKind::Use => uses::use_statement(state)?,
-        TokenKind::Const => Statement::Constant(constants::parse(state)?),
-        TokenKind::HaltCompiler => {
-            state.stream.next();
+    let start_span = state.stream.current().span;
+    let current = state.stream.current();
 
-            let content = if let TokenKind::InlineHtml = state.stream.current().kind.clone() {
-                let content = state.stream.current().value.clone();
-                state.stream.next();
-                Some(content)
-            } else {
-                None
+    match &current.kind {
+        TokenKind::Namespace | TokenKind::Use | TokenKind::Const | TokenKind::HaltCompiler => {
+            let comments = state.stream.comments();
+            let kind = match &state.stream.current().kind {
+                TokenKind::Namespace => namespaces::namespace(state)?,
+                TokenKind::Use => uses::use_statement(state)?,
+                TokenKind::Const => StatementKind::Constant(constants::parse(state)?),
+                TokenKind::HaltCompiler => {
+                    state.stream.next();
+
+                    let content = if let TokenKind::InlineHtml = state.stream.current().kind.clone() {
+                        let content = state.stream.current().value.clone();
+                        state.stream.next();
+                        Some(content)
+                    } else {
+                        None
+                    };
+
+                    StatementKind::HaltCompiler(HaltCompilerStatement { content })
+                },
+                _ => unreachable!()
             };
 
-            Statement::HaltCompiler(HaltCompilerStatement { content })
+            Ok(Statement::new(
+                kind,
+                Span::new(start_span.start, state.stream.previous().span.end),
+                comments
+            ))
         }
-        _ => statement(state)?,
-    };
-
-    Ok(statement)
+        _ => return statement(state),
+    }
 }
 
 fn statement(state: &mut State) -> ParseResult<Statement> {
-    let has_attributes = attributes::gather_attributes(state)?;
+    let start_span = state.stream.current().span;
+    let comments = state.stream.comments();
 
+    let has_attributes = attributes::gather_attributes(state)?;
     let current = state.stream.current();
     let peek = state.stream.peek();
     let statement = if has_attributes {
@@ -152,10 +169,13 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                     if !identifiers::is_identifier_maybe_soft_reserved(
                         &state.stream.lookahead(1).kind,
                     ) {
-                        return Ok(Statement::Expression(ExpressionStatement {
-                            expression: expressions::attributes(state, &Precedence::Lowest)?,
-                            ending: utils::skip_ending(state)?,
-                        }));
+                        let expression = expressions::attributes(state, &Precedence::Lowest)?;
+                        let ending = utils::skip_ending(state)?;
+                        let ending_span = ending.span();
+                        
+                        let kind = StatementKind::Expression(ExpressionStatement { expression, ending });
+
+                        return Ok(Statement::new(kind, Span::new(start_span.start, ending_span.end), comments));
                     }
 
                     functions::function(state)?
@@ -163,7 +183,7 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                     functions::function(state)?
                 }
             }
-            _ => Statement::Expression(ExpressionStatement {
+            _ => StatementKind::Expression(ExpressionStatement {
                 expression: expressions::attributes(state, &Precedence::Lowest)?,
                 ending: utils::skip_ending(state)?,
             }),
@@ -174,25 +194,25 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                 let span = current.span;
                 state.stream.next();
 
-                Statement::EchoOpeningTag(EchoOpeningTagStatement { span })
+                StatementKind::EchoOpeningTag(EchoOpeningTagStatement { span })
             }
             TokenKind::OpenTag(OpenTagKind::Full) => {
                 let span = current.span;
                 state.stream.next();
 
-                Statement::FullOpeningTag(FullOpeningTagStatement { span })
+                StatementKind::FullOpeningTag(FullOpeningTagStatement { span })
             }
             TokenKind::OpenTag(OpenTagKind::Short) => {
                 let span = current.span;
                 state.stream.next();
 
-                Statement::ShortOpeningTag(ShortOpeningTagStatement { span })
+                StatementKind::ShortOpeningTag(ShortOpeningTagStatement { span })
             }
             TokenKind::CloseTag => {
                 let span = current.span;
                 state.stream.next();
 
-                Statement::ClosingTag(ClosingTagStatement { span })
+                StatementKind::ClosingTag(ClosingTagStatement { span })
             }
             TokenKind::Abstract => classes::parse(state)?,
             TokenKind::Readonly if peek.kind != TokenKind::LeftParen => classes::parse(state)?,
@@ -216,10 +236,15 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                     if !identifiers::is_identifier_maybe_soft_reserved(
                         &state.stream.lookahead(1).kind,
                     ) {
-                        return Ok(Statement::Expression(ExpressionStatement {
-                            expression: expressions::attributes(state, &Precedence::Lowest)?,
-                            ending: utils::skip_ending(state)?,
-                        }));
+                        let expression = expressions::attributes(state, &Precedence::Lowest)?;
+                        let ending = utils::skip_ending(state)?;
+                        let ending_span = ending.span();
+                        let kind = StatementKind::Expression(ExpressionStatement {
+                            expression,
+                            ending
+                        });
+
+                        return Ok(Statement::new(kind, Span::new(start_span.start, ending_span.end), comments));
                     }
 
                     functions::function(state)?
@@ -310,7 +335,7 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                     }
                 };
 
-                Statement::Declare(DeclareStatement {
+                StatementKind::Declare(DeclareStatement {
                     declare: span,
                     entries,
                     body,
@@ -333,7 +358,7 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                 }
 
                 utils::skip_semicolon(state)?;
-                Statement::Global(GlobalStatement {
+                StatementKind::Global(GlobalStatement {
                     global: span,
                     variables,
                 })
@@ -368,13 +393,13 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
 
                 utils::skip_semicolon(state)?;
 
-                Statement::Static(StaticStatement { vars })
+                StatementKind::Static(StaticStatement { vars })
             }
             TokenKind::InlineHtml => {
                 let html = state.stream.current().value.clone();
                 state.stream.next();
 
-                Statement::InlineHtml(InlineHtmlStatement { html })
+                StatementKind::InlineHtml(InlineHtmlStatement { html })
             }
             TokenKind::Do => loops::do_while_statement(state)?,
             TokenKind::While => loops::while_statement(state)?,
@@ -391,7 +416,7 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
 
                 state.stream.next();
 
-                Statement::Noop(start)
+                StatementKind::Noop(start)
             }
             TokenKind::Echo => {
                 state.stream.next();
@@ -407,7 +432,7 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                     }
                 }
 
-                Statement::Echo(EchoStatement {
+                StatementKind::Echo(EchoStatement {
                     echo: current.span,
                     values,
                     ending: utils::skip_ending(state)?,
@@ -425,18 +450,18 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                     expressions::create(state).map(Some)?
                 };
 
-                Statement::Return(ReturnStatement {
+                StatementKind::Return(ReturnStatement {
                     r#return: current.span,
                     value,
                     ending: utils::skip_ending(state)?,
                 })
             }
-            _ => Statement::Expression(ExpressionStatement {
+            _ => StatementKind::Expression(ExpressionStatement {
                 expression: expressions::create(state)?,
                 ending: utils::skip_ending(state)?,
             }),
         }
     };
 
-    Ok(statement)
+    Ok(Statement::new(statement, Span::new(start_span.start, state.stream.previous().span.end), comments))
 }

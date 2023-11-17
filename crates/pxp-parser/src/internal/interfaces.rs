@@ -13,10 +13,10 @@ use pxp_ast::interfaces::InterfaceBody;
 use pxp_ast::interfaces::InterfaceExtends;
 use pxp_ast::interfaces::InterfaceMember;
 use pxp_ast::interfaces::InterfaceStatement;
-use pxp_ast::Statement;
+use pxp_ast::StatementKind;
 use pxp_token::TokenKind;
 
-pub fn parse(state: &mut State) -> ParseResult<Statement> {
+pub fn parse(state: &mut State) -> ParseResult<StatementKind> {
     let span = utils::skip(state, TokenKind::Interface)?;
 
     let name = identifiers::type_identifier(state)?;
@@ -55,7 +55,7 @@ pub fn parse(state: &mut State) -> ParseResult<Statement> {
         right_brace: utils::skip_right_brace(state)?,
     };
 
-    Ok(Statement::Interface(InterfaceStatement {
+    Ok(StatementKind::Interface(InterfaceStatement {
         interface: span,
         name,
         attributes,

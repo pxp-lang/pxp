@@ -4,15 +4,16 @@ use crate::state::State;
 use crate::statement;
 use pxp_ast::BlockStatement;
 use pxp_ast::Statement;
+use pxp_ast::StatementKind;
 use pxp_token::OpenTagKind;
 use pxp_token::TokenKind;
 
-pub fn block_statement(state: &mut State) -> ParseResult<Statement> {
+pub fn block_statement(state: &mut State) -> ParseResult<StatementKind> {
     let (left_brace, statements, right_brace) = utils::braced(state, &|state: &mut State| {
         multiple_statements_until(state, &TokenKind::RightBrace)
     })?;
 
-    Ok(Statement::Block(BlockStatement {
+    Ok(StatementKind::Block(BlockStatement {
         left_brace,
         statements,
         right_brace,

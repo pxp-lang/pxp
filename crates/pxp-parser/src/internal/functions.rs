@@ -7,6 +7,8 @@ use crate::internal::parameters;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
+use pxp_ast::Expression;
+use pxp_ast::comments::CommentGroup;
 use pxp_ast::functions::AbstractConstructor;
 use pxp_ast::functions::AbstractMethod;
 use pxp_ast::functions::ArrowFunctionExpression;
@@ -21,8 +23,9 @@ use pxp_ast::functions::MethodBody;
 use pxp_ast::functions::ReturnType;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::modifiers::MethodModifierGroup;
-use pxp_ast::Expression;
-use pxp_ast::Statement;
+use pxp_ast::ExpressionKind;
+use pxp_ast::StatementKind;
+use pxp_span::Span;
 use pxp_token::TokenKind;
 
 pub enum MethodType {
@@ -40,6 +43,7 @@ pub enum Method {
 
 pub fn anonymous_function(state: &mut State) -> ParseResult<Expression> {
     let comments = state.stream.comments();
+    let start_span = state.stream.current().span;
     let attributes = state.get_attributes();
     let current = state.stream.current();
     let r#static = if current.kind == TokenKind::Static {
@@ -116,21 +120,28 @@ pub fn anonymous_function(state: &mut State) -> ParseResult<Expression> {
         right_brace: utils::skip_right_brace(state)?,
     };
 
-    Ok(Expression::Closure(ClosureExpression {
-        comments,
-        function,
-        attributes,
-        parameters,
-        uses,
-        return_type,
-        body,
-        r#static,
-        ampersand,
-    }))
+    let end_span = body.right_brace;
+
+    Ok(Expression::new(
+        ExpressionKind::Closure(ClosureExpression {
+            comments,
+            attributes,
+            r#static,
+            function,
+            ampersand,
+            parameters,
+            uses,
+            return_type,
+            body,
+        }),
+        Span::new(start_span.start, end_span.end),
+        CommentGroup::default(),
+    ))
 }
 
 pub fn arrow_function(state: &mut State) -> ParseResult<Expression> {
     let comments = state.stream.comments();
+    let start_span = state.stream.current().span;
     let current = state.stream.current();
     let r#static = if current.kind == TokenKind::Static {
         state.stream.next();
@@ -165,21 +176,26 @@ pub fn arrow_function(state: &mut State) -> ParseResult<Expression> {
     let double_arrow = utils::skip(state, TokenKind::DoubleArrow)?;
 
     let body = Box::new(expressions::create(state)?);
+    let end_span = body.span;
 
-    Ok(Expression::ArrowFunction(ArrowFunctionExpression {
-        comments,
-        attributes,
-        r#static,
-        r#fn,
-        ampersand,
-        parameters,
-        return_type,
-        double_arrow,
-        body,
-    }))
+    Ok(Expression::new(
+        ExpressionKind::ArrowFunction(ArrowFunctionExpression {
+            comments,
+            attributes,
+            r#static,
+            r#fn,
+            ampersand,
+            parameters,
+            return_type,
+            double_arrow,
+            body,
+        }),
+        Span::new(start_span.start, end_span.end),
+        CommentGroup::default(),
+    ))
 }
 
-pub fn function(state: &mut State) -> ParseResult<Statement> {
+pub fn function(state: &mut State) -> ParseResult<StatementKind> {
     let comments = state.stream.comments();
 
     let function = utils::skip(state, TokenKind::Function)?;
@@ -216,7 +232,7 @@ pub fn function(state: &mut State) -> ParseResult<Statement> {
         right_brace: utils::skip_right_brace(state)?,
     };
 
-    Ok(Statement::Function(FunctionStatement {
+    Ok(StatementKind::Function(FunctionStatement {
         comments,
         function,
         name,

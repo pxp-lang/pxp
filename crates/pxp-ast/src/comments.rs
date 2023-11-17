@@ -23,7 +23,7 @@ pub struct Comment {
 
 impl Node for Comment {}
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Default)]
 
 pub struct CommentGroup {
     pub comments: Vec<Comment>,

@@ -4,13 +4,13 @@ use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
 use pxp_ast::GroupUseStatement;
-use pxp_ast::Statement;
+use pxp_ast::StatementKind;
 use pxp_ast::Use;
 use pxp_ast::UseKind;
 use pxp_ast::UseStatement;
 use pxp_token::TokenKind;
 
-pub fn use_statement(state: &mut State) -> ParseResult<Statement> {
+pub fn use_statement(state: &mut State) -> ParseResult<StatementKind> {
     state.stream.next();
 
     let kind = match state.stream.current().kind {
@@ -78,7 +78,7 @@ pub fn use_statement(state: &mut State) -> ParseResult<Statement> {
         utils::skip_right_brace(state)?;
         utils::skip_semicolon(state)?;
 
-        Ok(Statement::GroupUse(GroupUseStatement {
+        Ok(StatementKind::GroupUse(GroupUseStatement {
             prefix,
             kind,
             uses,
@@ -108,6 +108,6 @@ pub fn use_statement(state: &mut State) -> ParseResult<Statement> {
             break;
         }
 
-        Ok(Statement::Use(UseStatement { uses, kind }))
+        Ok(StatementKind::Use(UseStatement { uses, kind }))
     }
 }

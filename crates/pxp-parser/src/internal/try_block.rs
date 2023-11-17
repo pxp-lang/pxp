@@ -8,12 +8,12 @@ use pxp_ast::try_block::CatchBlock;
 use pxp_ast::try_block::CatchType;
 use pxp_ast::try_block::FinallyBlock;
 use pxp_ast::try_block::TryStatement;
-use pxp_ast::Statement;
+use pxp_ast::StatementKind;
 use pxp_token::TokenKind;
 
 use super::variables;
 
-pub fn try_block(state: &mut State) -> ParseResult<Statement> {
+pub fn try_block(state: &mut State) -> ParseResult<StatementKind> {
     let start = state.stream.current().span;
 
     state.stream.next();
@@ -83,7 +83,7 @@ pub fn try_block(state: &mut State) -> ParseResult<Statement> {
 
     let end = state.stream.current().span;
 
-    Ok(Statement::Try(TryStatement {
+    Ok(StatementKind::Try(TryStatement {
         start,
         end,
         body,

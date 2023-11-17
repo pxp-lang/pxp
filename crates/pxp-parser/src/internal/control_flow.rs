@@ -7,6 +7,8 @@ use crate::internal::blocks;
 use crate::internal::utils;
 use crate::state::State;
 use crate::statement;
+use pxp_ast::Expression;
+use pxp_ast::comments::CommentGroup;
 use pxp_ast::control_flow::IfStatement;
 use pxp_ast::control_flow::IfStatementBody;
 use pxp_ast::control_flow::IfStatementElse;
@@ -15,15 +17,17 @@ use pxp_ast::control_flow::IfStatementElseIf;
 use pxp_ast::control_flow::IfStatementElseIfBlock;
 use pxp_ast::Case;
 use pxp_ast::DefaultMatchArm;
-use pxp_ast::Expression;
+use pxp_ast::ExpressionKind;
 use pxp_ast::MatchArm;
-use pxp_ast::Statement;
+use pxp_ast::StatementKind;
 use pxp_ast::SwitchStatement;
 use pxp_ast::{Block, MatchExpression};
+use pxp_span::Span;
 use pxp_token::TokenKind;
 
 pub fn match_expression(state: &mut State) -> ParseResult<Expression> {
     let keyword = utils::skip(state, TokenKind::Match)?;
+    let start_span = keyword;
 
     let (left_parenthesis, condition, right_parenthesis) =
         utils::parenthesized(state, &|state: &mut State| {
@@ -96,19 +100,23 @@ pub fn match_expression(state: &mut State) -> ParseResult<Expression> {
 
     let right_brace = utils::skip_right_brace(state)?;
 
-    Ok(Expression::Match(MatchExpression {
-        keyword,
-        left_parenthesis,
-        condition,
-        right_parenthesis,
-        left_brace,
-        default,
-        arms,
-        right_brace,
-    }))
+    Ok(Expression::new(
+        ExpressionKind::Match(MatchExpression {
+            keyword,
+            left_parenthesis,
+            condition,
+            right_parenthesis,
+            left_brace,
+            default,
+            arms,
+            right_brace,
+        }),
+        Span::new(start_span.start, right_brace.end),
+        CommentGroup::default()
+    ))
 }
 
-pub fn switch_statement(state: &mut State) -> ParseResult<Statement> {
+pub fn switch_statement(state: &mut State) -> ParseResult<StatementKind> {
     let switch = utils::skip(state, TokenKind::Switch)?;
 
     let (left_parenthesis, condition, right_parenthesis) =
@@ -179,7 +187,7 @@ pub fn switch_statement(state: &mut State) -> ParseResult<Statement> {
         utils::skip_right_brace(state)?;
     }
 
-    Ok(Statement::Switch(SwitchStatement {
+    Ok(StatementKind::Switch(SwitchStatement {
         switch,
         left_parenthesis,
         condition,
@@ -188,13 +196,13 @@ pub fn switch_statement(state: &mut State) -> ParseResult<Statement> {
     }))
 }
 
-pub fn if_statement(state: &mut State) -> ParseResult<Statement> {
+pub fn if_statement(state: &mut State) -> ParseResult<StatementKind> {
     let r#if = utils::skip(state, TokenKind::If)?;
 
     let (left_parenthesis, condition, right_parenthesis) =
         utils::parenthesized(state, &expressions::create)?;
 
-    Ok(Statement::If(IfStatement {
+    Ok(StatementKind::If(IfStatement {
         r#if,
         left_parenthesis,
         condition,

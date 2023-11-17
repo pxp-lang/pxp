@@ -14,7 +14,9 @@ use crate::internal::strings;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
+use pxp_ast::Expression;
 use pxp_ast::arguments::ArgumentPlaceholder;
+use pxp_ast::comments::CommentGroup;
 use pxp_ast::identifiers::DynamicIdentifier;
 use pxp_ast::identifiers::Identifier;
 use pxp_ast::identifiers::SimpleIdentifier;
@@ -29,7 +31,7 @@ use pxp_ast::operators::ComparisonOperationExpression;
 use pxp_ast::operators::LogicalOperationExpression;
 use pxp_ast::{
     ArrayIndexExpression, CoalesceExpression, ConcatExpression, ConstantFetchExpression,
-    Expression, FunctionCallExpression, FunctionClosureCreationExpression, InstanceofExpression,
+    ExpressionKind, FunctionCallExpression, FunctionClosureCreationExpression, InstanceofExpression,
     MagicConstantExpression, MethodCallExpression, MethodClosureCreationExpression,
     NullsafeMethodCallExpression, NullsafePropertyFetchExpression, PropertyFetchExpression,
     ReferenceExpression, ShortTernaryExpression, StaticMethodCallExpression,
@@ -37,6 +39,7 @@ use pxp_ast::{
     StaticVariableMethodCallExpression, StaticVariableMethodClosureCreationExpression,
     TernaryExpression,
 };
+use pxp_span::Span;
 use pxp_token::DocStringKind;
 use pxp_token::TokenKind;
 
@@ -115,8 +118,8 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
             state.stream.next();
 
             let op = state.stream.current();
-
-            left = match kind {
+            let start_span = op.span;
+            let kind = match kind {
                 TokenKind::Question => {
                     // this happens due to a comment, or whitespaces between the ? and the :
                     // we consider `foo() ? : bar()` a ternary expression, with `then` being a noop
@@ -126,10 +129,10 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
 
                         let r#else = create(state)?;
 
-                        Expression::Ternary(TernaryExpression {
+                        ExpressionKind::Ternary(TernaryExpression {
                             condition: Box::new(left),
                             question: span,
-                            then: Box::new(Expression::Noop),
+                            then: Box::new(Expression::noop(start_span)),
                             colon: op.span,
                             r#else: Box::new(r#else),
                         })
@@ -138,7 +141,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                         let colon = utils::skip_colon(state)?;
                         let r#else = create(state)?;
 
-                        Expression::Ternary(TernaryExpression {
+                        ExpressionKind::Ternary(TernaryExpression {
                             condition: Box::new(left),
                             question: span,
                             then: Box::new(then),
@@ -149,7 +152,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                 }
                 TokenKind::QuestionColon => {
                     let r#else = create(state)?;
-                    Expression::ShortTernary(ShortTernaryExpression {
+                    ExpressionKind::ShortTernary(ShortTernaryExpression {
                         condition: Box::new(left),
                         question_colon: span,
                         r#else: Box::new(r#else),
@@ -161,71 +164,96 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                     // FIXME: You should only be allowed to assign a referencable variable,
                     //        here, not any old expression.
                     let right = Box::new(for_precedence(state, rpred)?);
+                    let right_span = right.span;
 
-                    Expression::AssignmentOperation(AssignmentOperationExpression::Assign {
+                    ExpressionKind::AssignmentOperation(AssignmentOperationExpression::Assign {
                         left: Box::new(left),
                         equals: span,
-                        right: Box::new(Expression::Reference(ReferenceExpression {
-                            ampersand: op.span,
-                            right,
-                        })),
+                        right: Box::new(Expression::new(
+                        ExpressionKind::Reference(ReferenceExpression {
+                                ampersand: op.span,
+                                right,
+                            }),
+                            Span::new(start_span.start, right_span.end),
+                            CommentGroup::default()
+                        )),
                     })
                 }
                 TokenKind::Instanceof if op.kind == TokenKind::Self_ => {
                     state.stream.next();
 
-                    Expression::Instanceof(InstanceofExpression {
+                    ExpressionKind::Instanceof(InstanceofExpression {
                         left: Box::new(left),
                         instanceof: span,
-                        right: Box::new(Expression::Self_),
+                        right: Box::new(Expression::new(
+                            ExpressionKind::Self_,
+                            start_span,
+                            CommentGroup::default()
+                        )),
                     })
                 }
                 TokenKind::Instanceof if op.kind == TokenKind::Parent => {
                     state.stream.next();
 
-                    Expression::Instanceof(InstanceofExpression {
+                    ExpressionKind::Instanceof(InstanceofExpression {
                         left: Box::new(left),
                         instanceof: span,
-                        right: Box::new(Expression::Parent),
+                        right: Box::new(Expression::new(
+                            ExpressionKind::Parent,
+                            start_span,
+                            CommentGroup::default()
+                        )),
                     })
                 }
                 TokenKind::Instanceof if op.kind == TokenKind::Static => {
                     state.stream.next();
 
-                    Expression::Instanceof(InstanceofExpression {
+                    ExpressionKind::Instanceof(InstanceofExpression {
                         left: Box::new(left),
                         instanceof: span,
-                        right: Box::new(Expression::Static),
+                        right: Box::new(Expression::new(
+                            ExpressionKind::Static,
+                            start_span,
+                            CommentGroup::default()
+                        )),
                     })
                 }
                 TokenKind::Instanceof if op.kind == TokenKind::Enum => {
                     let enum_span = op.span;
                     state.stream.next();
 
-                    Expression::Instanceof(InstanceofExpression {
+                    ExpressionKind::Instanceof(InstanceofExpression {
                         left: Box::new(left),
                         instanceof: span,
-                        right: Box::new(Expression::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier {
-                                span: enum_span,
-                                value: "enum".into(),
-                            },
-                        ))),
+                        right: Box::new(Expression::new(
+                            ExpressionKind::Identifier(Identifier::SimpleIdentifier(
+                                SimpleIdentifier {
+                                    span: enum_span,
+                                    value: "enum".into(),
+                                },
+                            )),
+                            Span::new(start_span.start, enum_span.end),
+                            CommentGroup::default()
+                        )),
                     })
                 }
                 TokenKind::Instanceof if op.kind == TokenKind::From => {
                     let from_span = op.span;
                     state.stream.next();
 
-                    Expression::Instanceof(InstanceofExpression {
+                    ExpressionKind::Instanceof(InstanceofExpression {
                         left: Box::new(left),
                         instanceof: span,
-                        right: Box::new(Expression::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier {
-                                span: from_span,
-                                value: "from".into(),
-                            },
-                        ))),
+                        right: Box::new(Expression::new(
+                            ExpressionKind::Identifier(Identifier::SimpleIdentifier(
+                                SimpleIdentifier {
+                                    span: from_span,
+                                    value: "from".into(),
+                                },
+                            )),
+                            Span::new(start_span.start, from_span.end),
+                            CommentGroup::default()
+                        )),
                     })
                 }
                 _ => {
@@ -233,28 +261,28 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                     let right = Box::new(for_precedence(state, rpred)?);
 
                     match kind {
-                        TokenKind::Plus => Expression::ArithmeticOperation(
+                        TokenKind::Plus => ExpressionKind::ArithmeticOperation(
                             ArithmeticOperationExpression::Addition {
                                 left,
                                 plus: span,
                                 right,
                             },
                         ),
-                        TokenKind::Minus => Expression::ArithmeticOperation(
+                        TokenKind::Minus => ExpressionKind::ArithmeticOperation(
                             ArithmeticOperationExpression::Subtraction {
                                 left,
                                 minus: span,
                                 right,
                             },
                         ),
-                        TokenKind::Asterisk => Expression::ArithmeticOperation(
+                        TokenKind::Asterisk => ExpressionKind::ArithmeticOperation(
                             ArithmeticOperationExpression::Multiplication {
                                 left,
                                 asterisk: span,
                                 right,
                             },
                         ),
-                        TokenKind::Slash => Expression::ArithmeticOperation(
+                        TokenKind::Slash => ExpressionKind::ArithmeticOperation(
                             ArithmeticOperationExpression::Division {
                                 left,
                                 slash: span,
@@ -262,13 +290,13 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                             },
                         ),
                         TokenKind::Percent => {
-                            Expression::ArithmeticOperation(ArithmeticOperationExpression::Modulo {
+                            ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression::Modulo {
                                 left,
                                 percent: span,
                                 right,
                             })
                         }
-                        TokenKind::Pow => Expression::ArithmeticOperation(
+                        TokenKind::Pow => ExpressionKind::ArithmeticOperation(
                             ArithmeticOperationExpression::Exponentiation {
                                 left,
                                 pow: span,
@@ -276,34 +304,34 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                             },
                         ),
                         TokenKind::Equals => {
-                            Expression::AssignmentOperation(AssignmentOperationExpression::Assign {
+                            ExpressionKind::AssignmentOperation(AssignmentOperationExpression::Assign {
                                 left,
                                 equals: span,
                                 right,
                             })
                         }
-                        TokenKind::PlusEquals => Expression::AssignmentOperation(
+                        TokenKind::PlusEquals => ExpressionKind::AssignmentOperation(
                             AssignmentOperationExpression::Addition {
                                 left,
                                 plus_equals: span,
                                 right,
                             },
                         ),
-                        TokenKind::MinusEquals => Expression::AssignmentOperation(
+                        TokenKind::MinusEquals => ExpressionKind::AssignmentOperation(
                             AssignmentOperationExpression::Subtraction {
                                 left,
                                 minus_equals: span,
                                 right,
                             },
                         ),
-                        TokenKind::AsteriskEquals => Expression::AssignmentOperation(
+                        TokenKind::AsteriskEquals => ExpressionKind::AssignmentOperation(
                             AssignmentOperationExpression::Multiplication {
                                 left,
                                 asterisk_equals: span,
                                 right,
                             },
                         ),
-                        TokenKind::SlashEquals => Expression::AssignmentOperation(
+                        TokenKind::SlashEquals => ExpressionKind::AssignmentOperation(
                             AssignmentOperationExpression::Division {
                                 left,
                                 slash_equals: span,
@@ -311,55 +339,55 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                             },
                         ),
                         TokenKind::PercentEquals => {
-                            Expression::AssignmentOperation(AssignmentOperationExpression::Modulo {
+                            ExpressionKind::AssignmentOperation(AssignmentOperationExpression::Modulo {
                                 left,
                                 percent_equals: span,
                                 right,
                             })
                         }
-                        TokenKind::PowEquals => Expression::AssignmentOperation(
+                        TokenKind::PowEquals => ExpressionKind::AssignmentOperation(
                             AssignmentOperationExpression::Exponentiation {
                                 left,
                                 pow_equals: span,
                                 right,
                             },
                         ),
-                        TokenKind::AmpersandEquals => Expression::AssignmentOperation(
+                        TokenKind::AmpersandEquals => ExpressionKind::AssignmentOperation(
                             AssignmentOperationExpression::BitwiseAnd {
                                 left,
                                 ampersand_equals: span,
                                 right,
                             },
                         ),
-                        TokenKind::PipeEquals => Expression::AssignmentOperation(
+                        TokenKind::PipeEquals => ExpressionKind::AssignmentOperation(
                             AssignmentOperationExpression::BitwiseOr {
                                 left,
                                 pipe_equals: span,
                                 right,
                             },
                         ),
-                        TokenKind::CaretEquals => Expression::AssignmentOperation(
+                        TokenKind::CaretEquals => ExpressionKind::AssignmentOperation(
                             AssignmentOperationExpression::BitwiseXor {
                                 left,
                                 caret_equals: span,
                                 right,
                             },
                         ),
-                        TokenKind::LeftShiftEquals => Expression::AssignmentOperation(
+                        TokenKind::LeftShiftEquals => ExpressionKind::AssignmentOperation(
                             AssignmentOperationExpression::LeftShift {
                                 left,
                                 left_shift_equals: span,
                                 right,
                             },
                         ),
-                        TokenKind::RightShiftEquals => Expression::AssignmentOperation(
+                        TokenKind::RightShiftEquals => ExpressionKind::AssignmentOperation(
                             AssignmentOperationExpression::RightShift {
                                 left,
                                 right_shift_equals: span,
                                 right,
                             },
                         ),
-                        TokenKind::DoubleQuestionEquals => Expression::AssignmentOperation(
+                        TokenKind::DoubleQuestionEquals => ExpressionKind::AssignmentOperation(
                             AssignmentOperationExpression::Coalesce {
                                 left,
                                 coalesce_equals: span,
@@ -367,111 +395,111 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                             },
                         ),
                         TokenKind::DotEquals => {
-                            Expression::AssignmentOperation(AssignmentOperationExpression::Concat {
+                            ExpressionKind::AssignmentOperation(AssignmentOperationExpression::Concat {
                                 left,
                                 dot_equals: span,
                                 right,
                             })
                         }
                         TokenKind::Ampersand => {
-                            Expression::BitwiseOperation(BitwiseOperationExpression::And {
+                            ExpressionKind::BitwiseOperation(BitwiseOperationExpression::And {
                                 left,
                                 and: span,
                                 right,
                             })
                         }
                         TokenKind::Pipe => {
-                            Expression::BitwiseOperation(BitwiseOperationExpression::Or {
+                            ExpressionKind::BitwiseOperation(BitwiseOperationExpression::Or {
                                 left,
                                 or: span,
                                 right,
                             })
                         }
                         TokenKind::Caret => {
-                            Expression::BitwiseOperation(BitwiseOperationExpression::Xor {
+                            ExpressionKind::BitwiseOperation(BitwiseOperationExpression::Xor {
                                 left,
                                 xor: span,
                                 right,
                             })
                         }
                         TokenKind::LeftShift => {
-                            Expression::BitwiseOperation(BitwiseOperationExpression::LeftShift {
+                            ExpressionKind::BitwiseOperation(BitwiseOperationExpression::LeftShift {
                                 left,
                                 left_shift: span,
                                 right,
                             })
                         }
                         TokenKind::RightShift => {
-                            Expression::BitwiseOperation(BitwiseOperationExpression::RightShift {
+                            ExpressionKind::BitwiseOperation(BitwiseOperationExpression::RightShift {
                                 left,
                                 right_shift: span,
                                 right,
                             })
                         }
                         TokenKind::DoubleEquals => {
-                            Expression::ComparisonOperation(ComparisonOperationExpression::Equal {
+                            ExpressionKind::ComparisonOperation(ComparisonOperationExpression::Equal {
                                 left,
                                 double_equals: span,
                                 right,
                             })
                         }
-                        TokenKind::TripleEquals => Expression::ComparisonOperation(
+                        TokenKind::TripleEquals => ExpressionKind::ComparisonOperation(
                             ComparisonOperationExpression::Identical {
                                 left,
                                 triple_equals: span,
                                 right,
                             },
                         ),
-                        TokenKind::BangEquals => Expression::ComparisonOperation(
+                        TokenKind::BangEquals => ExpressionKind::ComparisonOperation(
                             ComparisonOperationExpression::NotEqual {
                                 left,
                                 bang_equals: span,
                                 right,
                             },
                         ),
-                        TokenKind::AngledLeftRight => Expression::ComparisonOperation(
+                        TokenKind::AngledLeftRight => ExpressionKind::ComparisonOperation(
                             ComparisonOperationExpression::AngledNotEqual {
                                 left,
                                 angled_left_right: span,
                                 right,
                             },
                         ),
-                        TokenKind::BangDoubleEquals => Expression::ComparisonOperation(
+                        TokenKind::BangDoubleEquals => ExpressionKind::ComparisonOperation(
                             ComparisonOperationExpression::NotIdentical {
                                 left,
                                 bang_double_equals: span,
                                 right,
                             },
                         ),
-                        TokenKind::LessThan => Expression::ComparisonOperation(
+                        TokenKind::LessThan => ExpressionKind::ComparisonOperation(
                             ComparisonOperationExpression::LessThan {
                                 left,
                                 less_than: span,
                                 right,
                             },
                         ),
-                        TokenKind::GreaterThan => Expression::ComparisonOperation(
+                        TokenKind::GreaterThan => ExpressionKind::ComparisonOperation(
                             ComparisonOperationExpression::GreaterThan {
                                 left,
                                 greater_than: span,
                                 right,
                             },
                         ),
-                        TokenKind::LessThanEquals => Expression::ComparisonOperation(
+                        TokenKind::LessThanEquals => ExpressionKind::ComparisonOperation(
                             ComparisonOperationExpression::LessThanOrEqual {
                                 left,
                                 less_than_equals: span,
                                 right,
                             },
                         ),
-                        TokenKind::GreaterThanEquals => Expression::ComparisonOperation(
+                        TokenKind::GreaterThanEquals => ExpressionKind::ComparisonOperation(
                             ComparisonOperationExpression::GreaterThanOrEqual {
                                 left,
                                 greater_than_equals: span,
                                 right,
                             },
                         ),
-                        TokenKind::Spaceship => Expression::ComparisonOperation(
+                        TokenKind::Spaceship => ExpressionKind::ComparisonOperation(
                             ComparisonOperationExpression::Spaceship {
                                 left,
                                 spaceship: span,
@@ -479,46 +507,46 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                             },
                         ),
                         TokenKind::BooleanAnd => {
-                            Expression::LogicalOperation(LogicalOperationExpression::And {
+                            ExpressionKind::LogicalOperation(LogicalOperationExpression::And {
                                 left,
                                 double_ampersand: span,
                                 right,
                             })
                         }
                         TokenKind::BooleanOr => {
-                            Expression::LogicalOperation(LogicalOperationExpression::Or {
+                            ExpressionKind::LogicalOperation(LogicalOperationExpression::Or {
                                 left,
                                 double_pipe: span,
                                 right,
                             })
                         }
                         TokenKind::LogicalAnd => {
-                            Expression::LogicalOperation(LogicalOperationExpression::LogicalAnd {
+                            ExpressionKind::LogicalOperation(LogicalOperationExpression::LogicalAnd {
                                 left,
                                 and: span,
                                 right,
                             })
                         }
                         TokenKind::LogicalOr => {
-                            Expression::LogicalOperation(LogicalOperationExpression::LogicalOr {
+                            ExpressionKind::LogicalOperation(LogicalOperationExpression::LogicalOr {
                                 left,
                                 or: span,
                                 right,
                             })
                         }
                         TokenKind::LogicalXor => {
-                            Expression::LogicalOperation(LogicalOperationExpression::LogicalXor {
+                            ExpressionKind::LogicalOperation(LogicalOperationExpression::LogicalXor {
                                 left,
                                 xor: span,
                                 right,
                             })
                         }
-                        TokenKind::Dot => Expression::Concat(ConcatExpression {
+                        TokenKind::Dot => ExpressionKind::Concat(ConcatExpression {
                             left,
                             dot: span,
                             right,
                         }),
-                        TokenKind::Instanceof => Expression::Instanceof(InstanceofExpression {
+                        TokenKind::Instanceof => ExpressionKind::Instanceof(InstanceofExpression {
                             left,
                             instanceof: span,
                             right,
@@ -527,6 +555,14 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                     }
                 }
             };
+
+            let end_span = state.stream.previous().span;
+
+            left = Expression::new(
+                kind,
+                Span::new(start_span.start, end_span.end),
+                CommentGroup::default()
+            );
 
             continue;
         }
@@ -620,26 +656,39 @@ expressions! {
 
     #[before(empty), current(TokenKind::Eval), peek(TokenKind::LeftParen)]
     eval({
+        let start_span = state.stream.current().span;
         let eval = state.stream.current().span;
         state.stream.next();
 
         let argument = Box::new(parameters::single_argument(state, true, true).unwrap()?);
+        let end_span = state.stream.previous().span;
 
-        Ok(Expression::Eval(EvalExpression { eval, argument }))
+        Ok(Expression::new(
+            ExpressionKind::Eval(EvalExpression { eval, argument }),
+            Span::new(start_span.start, end_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(die), current(TokenKind::Empty), peek(TokenKind::LeftParen)]
     empty({
+        let start_span = state.stream.current().span;
         let empty = state.stream.current().span;
         state.stream.next();
 
         let argument = Box::new(parameters::single_argument(state, true, true).unwrap()?);
+        let end_span = state.stream.previous().span;
 
-        Ok(Expression::Empty(EmptyExpression { empty, argument }))
+        Ok(Expression::new(
+            ExpressionKind::Empty(EmptyExpression { empty, argument }),
+            Span::new(start_span.start, end_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(exit), current(TokenKind::Die)]
     die({
+        let start_span = state.stream.current().span;
         let die = state.stream.current().span;
         state.stream.next();
 
@@ -648,11 +697,18 @@ expressions! {
             None => None,
         };
 
-        Ok(Expression::Die(DieExpression { die, argument }))
+        let end_span = state.stream.previous().span;
+
+        Ok(Expression::new(
+            ExpressionKind::Die(DieExpression { die, argument }),
+            Span::new(start_span.start, end_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(isset), current(TokenKind::Exit)]
     exit({
+        let start_span = state.stream.current().span;
         let exit = state.stream.current().span;
         state.stream.next();
 
@@ -661,29 +717,48 @@ expressions! {
             None => None,
         };
 
-        Ok(Expression::Exit(ExitExpression { exit, argument }))
+        let end_span = state.stream.previous().span;
+
+        Ok(Expression::new(
+            ExpressionKind::Exit(ExitExpression { exit, argument }),
+            Span::new(start_span.start, end_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(unset), current(TokenKind::Isset), peek(TokenKind::LeftParen)]
     isset({
+        let start_span = state.stream.current().span;
         let isset = state.stream.current().span;
         state.stream.next();
         let arguments = parameters::argument_list(state)?;
+        let end_span = state.stream.previous().span;
 
-        Ok(Expression::Isset(IssetExpression { isset, arguments}))
+        Ok(Expression::new(
+            ExpressionKind::Isset(IssetExpression { isset, arguments }),
+            Span::new(start_span.start, end_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(print), current(TokenKind::Unset), peek(TokenKind::LeftParen)]
     unset({
+        let start_span = state.stream.current().span;
         let unset = state.stream.current().span;
         state.stream.next();
         let arguments = parameters::argument_list(state)?;
+        let end_span = state.stream.previous().span;
 
-        Ok(Expression::Unset(UnsetExpression { unset, arguments}))
+        Ok(Expression::new(
+            ExpressionKind::Unset(UnsetExpression { unset, arguments }),
+            Span::new(start_span.start, end_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(reserved_identifier_function_call), current(TokenKind::Print)]
     print({
+        let start_span = state.stream.current().span;
         let print = state.stream.current().span;
         state.stream.next();
 
@@ -696,7 +771,13 @@ expressions! {
             value = Some(Box::new(create(state)?));
         }
 
-        Ok(Expression::Print(PrintExpression { print, value, argument }))
+        let end_span = state.stream.previous().span;
+
+        Ok(Expression::new(
+            ExpressionKind::Print(PrintExpression { print, value, argument }),
+            Span::new(start_span.start, end_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(reserved_identifier_static_call), precedence(Precedence::CallDim), current(
@@ -705,16 +786,26 @@ expressions! {
         | TokenKind::Enum       | TokenKind::From
     ), peek(TokenKind::LeftParen)]
     reserved_identifier_function_call({
+        let span = state.stream.current().span;
         let ident = identifiers::identifier_maybe_soft_reserved(state)?;
-        let lhs = Expression::Identifier(Identifier::SimpleIdentifier(ident));
+        let lhs = Expression::new(
+            ExpressionKind::Identifier(Identifier::SimpleIdentifier(ident)),
+            span,
+            CommentGroup::default()
+        );
 
         postfix(state, lhs, &TokenKind::LeftParen)
     })
 
     #[before(list), current(TokenKind::Enum | TokenKind::From), peek(TokenKind::DoubleColon)]
     reserved_identifier_static_call({
+        let span = state.stream.current().span;
         let ident = identifiers::type_identifier(state)?;
-        let lhs = Expression::Identifier(Identifier::SimpleIdentifier(ident));
+        let lhs = Expression::new(
+            ExpressionKind::Identifier(Identifier::SimpleIdentifier(ident)),
+            span,
+            CommentGroup::default()
+        );
 
         postfix(state, lhs, &TokenKind::DoubleColon)
     })
@@ -731,21 +822,33 @@ expressions! {
 
     #[before(r#yield), current(TokenKind::Throw)]
     throw({
+        let start_span = state.stream.current().span;
         state.stream.next();
+        let exception = for_precedence(state, Precedence::Lowest)?;
+        let exception_span = exception.span;
 
-        Ok(Expression::Throw(ThrowExpression {
-            value: Box::new(for_precedence(state, Precedence::Lowest)?)
-        }))
+        Ok(Expression::new(
+            ExpressionKind::Throw(ThrowExpression {
+                value: Box::new(exception),
+            }),
+            Span::new(start_span.start, exception_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(clone), current(TokenKind::Yield)]
     r#yield({
+        let start_span = state.stream.current().span;
         state.stream.next();
         if state.stream.current().kind == TokenKind::SemiColon || state.stream.current().kind == TokenKind::RightParen {
-            Ok(Expression::Yield(YieldExpression {
-                key: None,
-                value: None,
-            }))
+            Ok(Expression::new(
+                ExpressionKind::Yield(YieldExpression {
+                    key: None,
+                    value: None,
+                }),
+                start_span,
+                CommentGroup::default()
+            ))
         } else {
             let mut from = false;
 
@@ -770,62 +873,96 @@ expressions! {
                 value = Box::new(for_precedence(state, Precedence::Yield)?);
             }
 
+            let end_span = state.stream.previous().span;
+
             if from {
-                Ok(Expression::YieldFrom(YieldFromExpression { value }))
+                Ok(Expression::new(
+                    ExpressionKind::YieldFrom(YieldFromExpression { value }),
+                    Span::new(start_span.start, end_span.end),
+                    CommentGroup::default()
+                ))
             } else {
-                Ok(Expression::Yield(YieldExpression {
-                    key,
-                    value: Some(value),
-                }))
+                Ok(Expression::new(
+                    ExpressionKind::Yield(YieldExpression { key, value: Some(value) }),
+                    Span::new(start_span.start, end_span.end),
+                    CommentGroup::default()
+                ))
             }
         }
     })
 
     #[before(r#true), current(TokenKind::Clone)]
     clone({
+        let start_span = state.stream.current().span;
         state.stream.next();
 
         let target = for_precedence(state, Precedence::CloneOrNew)?;
 
-        Ok(Expression::Clone(CloneExpression {
-            target: Box::new(target),
-        }))
+        let end_span = state.stream.previous().span;
+
+        Ok(Expression::new(
+            ExpressionKind::Clone(CloneExpression {
+                target: Box::new(target),
+            }),
+            Span::new(start_span.start, end_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(r#false), current(TokenKind::True)]
     r#true({
+        let span = state.stream.current().span;
         state.stream.next();
 
-        Ok(Expression::Bool(BoolExpression { value: true }))
+        Ok(Expression::new(
+            ExpressionKind::Bool(BoolExpression { value: true }),
+            span,
+            CommentGroup::default()
+        ))
     })
 
     #[before(null), current(TokenKind::False)]
     r#false({
+        let span = state.stream.current().span;
         state.stream.next();
 
-        Ok(Expression::Bool(BoolExpression { value: false }))
+        Ok(Expression::new(
+            ExpressionKind::Bool(BoolExpression { value: false }),
+            span,
+            CommentGroup::default()
+        ))
     })
 
     #[before(literal_integer), current(TokenKind::Null)]
     null({
+        let span = state.stream.current().span;
         state.stream.next();
 
-        Ok(Expression::Null)
+        Ok(Expression::new(
+            ExpressionKind::Null,
+            span,
+            CommentGroup::default()
+        ))
     })
 
     #[before(literal_float), current(TokenKind::LiteralInteger)]
     literal_integer({
+        let span = state.stream.current().span;
         let current = state.stream.current();
 
         if let TokenKind::LiteralInteger = &current.kind {
             state.stream.next();
 
-            Ok(Expression::Literal(Literal::Integer(
-                LiteralInteger {
-                    span: current.span,
-                    value: current.value.clone()
-                }
-            )))
+            Ok(Expression::new(
+                ExpressionKind::Literal(Literal::Integer(
+                    LiteralInteger {
+                        span: current.span,
+                        value: current.value.clone()
+                    }
+                )),
+                span,
+                CommentGroup::default()
+            ))
         } else {
             unreachable!("{}:{}", file!(), line!());
         }
@@ -833,16 +970,21 @@ expressions! {
 
     #[before(literal_string), current(TokenKind::LiteralFloat)]
     literal_float({
+        let span = state.stream.current().span;
         let current = state.stream.current();
 
         if let TokenKind::LiteralFloat = &current.kind {
             state.stream.next();
 
-            Ok(Expression::Literal(
-                Literal::Float(LiteralFloat {
-                    span: current.span,
-                    value: current.value.clone()
-                })
+            Ok(Expression::new(
+                ExpressionKind::Literal(Literal::Float(
+                    LiteralFloat {
+                        span: current.span,
+                        value: current.value.clone()
+                    }
+                )),
+                span,
+                CommentGroup::default()
             ))
         } else {
             unreachable!("{}:{}", file!(), line!());
@@ -851,27 +993,36 @@ expressions! {
 
     #[before(string_part), current(TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString)]
     literal_string({
+        let span = state.stream.current().span;
         let current = state.stream.current();
 
         if let TokenKind::LiteralSingleQuotedString = &current.kind {
             state.stream.next();
 
-            Ok(Expression::Literal(
-                Literal::String(LiteralString {
-                    span: current.span,
-                    value: current.value.clone(),
-                    kind: LiteralStringKind::SingleQuoted,
-                })
+            Ok(Expression::new(
+                ExpressionKind::Literal(Literal::String(
+                    LiteralString {
+                        span: current.span,
+                        value: current.value.clone(),
+                        kind: LiteralStringKind::SingleQuoted,
+                    }
+                )),
+                span,
+                CommentGroup::default()
             ))
         } else if let TokenKind::LiteralDoubleQuotedString = &current.kind {
             state.stream.next();
 
-            Ok(Expression::Literal(
-                Literal::String(LiteralString {
-                    span: current.span,
-                    value: current.value.clone(),
-                    kind: LiteralStringKind::DoubleQuoted,
-                })
+            Ok(Expression::new(
+                ExpressionKind::Literal(Literal::String(
+                    LiteralString {
+                        span: current.span,
+                        value: current.value.clone(),
+                        kind: LiteralStringKind::DoubleQuoted,
+                    }
+                )),
+                span,
+                CommentGroup::default()
             ))
         } else {
             unreachable!("{}:{}", file!(), line!());
@@ -900,28 +1051,51 @@ expressions! {
 
     #[before(static_postfix), current(TokenKind::Identifier | TokenKind::QualifiedIdentifier | TokenKind::FullyQualifiedIdentifier)]
     identifier({
-        Ok(Expression::Identifier(Identifier::SimpleIdentifier(identifiers::full_name(state)?)))
+        let identifier = identifiers::full_name(state)?;
+        let identifier_span = identifier.span;
+        
+        Ok(Expression::new(
+            ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier)),
+            identifier_span,
+            CommentGroup::default()
+        ))
     })
 
     #[before(self_identifier), current(TokenKind::Static)]
     static_postfix({
+        let span = state.stream.current().span;
         state.stream.next();
+        let expression = Expression::new(
+            ExpressionKind::Static,
+            span,
+            CommentGroup::default()
+        );
 
-        postfix(state, Expression::Static, &TokenKind::DoubleColon)
+        postfix(state, expression, &TokenKind::DoubleColon)
     })
 
     #[before(parent_identifier), current(TokenKind::Self_)]
     self_identifier({
+        let span = state.stream.current().span;
         state.stream.next();
 
-        Ok(Expression::Self_)
+        Ok(Expression::new(
+            ExpressionKind::Self_,
+            span,
+            CommentGroup::default()
+        ))
     })
 
     #[before(left_parenthesis), current(TokenKind::Parent)]
     parent_identifier({
+        let span = state.stream.current().span;
         state.stream.next();
 
-        Ok(Expression::Parent)
+        Ok(Expression::new(
+            ExpressionKind::Parent,
+            span,
+            CommentGroup::default()
+        ))
     })
 
     #[before(r#match), current(TokenKind::LeftParen)]
@@ -933,7 +1107,11 @@ expressions! {
 
         let end = utils::skip_right_parenthesis(state)?;
 
-        Ok(Expression::Parenthesized(ParenthesizedExpression { start, expr: Box::new(expr), end }))
+        Ok(Expression::new(
+            ExpressionKind::Parenthesized(ParenthesizedExpression { start, expr: Box::new(expr), end }),
+            Span::new(start.start, end.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(array), current(TokenKind::Match)]
@@ -961,35 +1139,56 @@ expressions! {
             return classes::parse_anonymous(state, Some(new));
         };
 
+        let current_span = state.stream.current().span;
         let target = match state.stream.current().kind {
             TokenKind::Self_ => {
                 state.stream.next();
 
-                Expression::Self_
+                Expression::new(
+                    ExpressionKind::Self_,
+                    current_span,
+                    CommentGroup::default()
+                )
             }
             TokenKind::Static => {
                 state.stream.next();
 
-                Expression::Static
+                Expression::new(
+                    ExpressionKind::Static,
+                    current_span,
+                    CommentGroup::default()
+                )
             }
             TokenKind::Parent => {
                 state.stream.next();
 
-                Expression::Parent
+                Expression::new(
+                    ExpressionKind::Parent,
+                    current_span,
+                    CommentGroup::default()
+                )
             }
             TokenKind::Enum => {
                 let span = state.stream.current().span;
 
                 state.stream.next();
 
-                Expression::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier { span, value: "enum".into() }))
+                Expression::new(
+                    ExpressionKind::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier { span, value: "enum".into() })),
+                    span,
+                    CommentGroup::default()
+                )
             }
             TokenKind::From => {
                 let span = state.stream.current().span;
 
                 state.stream.next();
 
-                Expression::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier { span, value: "from".into() }))
+                Expression::new(
+                    ExpressionKind::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier { span, value: "from".into() })),
+                    span,
+                    CommentGroup::default()
+                )
             }
             _ => clone_or_new_precedence(state)?,
         };
@@ -1000,11 +1199,15 @@ expressions! {
             None
         };
 
-        Ok(Expression::New(NewExpression {
-            target: Box::new(target),
-            new,
-            arguments,
-        }))
+        Ok(Expression::new(
+            ExpressionKind::New(NewExpression {
+                target: Box::new(target),
+                new,
+                arguments,
+            }),
+            Span::new(new.start, current_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(file_magic_constant), current(TokenKind::DirConstant)]
@@ -1012,7 +1215,11 @@ expressions! {
         let span = state.stream.current().span;
         state.stream.next();
 
-        Ok(Expression::MagicConstant(MagicConstantExpression::Directory(span)))
+        Ok(Expression::new(
+            ExpressionKind::MagicConstant(MagicConstantExpression::Directory(span)),
+            span,
+            CommentGroup::default()
+        ))
     })
 
     #[before(line_magic_constant), current(TokenKind::FileConstant)]
@@ -1020,7 +1227,11 @@ expressions! {
         let span = state.stream.current().span;
         state.stream.next();
 
-        Ok(Expression::MagicConstant(MagicConstantExpression::File(span)))
+        Ok(Expression::new(
+            ExpressionKind::MagicConstant(MagicConstantExpression::File(span)),
+            span,
+            CommentGroup::default()
+        ))
     })
 
     #[before(function_magic_constant), current(TokenKind::LineConstant)]
@@ -1028,7 +1239,11 @@ expressions! {
         let span = state.stream.current().span;
         state.stream.next();
 
-        Ok(Expression::MagicConstant(MagicConstantExpression::Line(span)))
+        Ok(Expression::new(
+            ExpressionKind::MagicConstant(MagicConstantExpression::Line(span)),
+            span,
+            CommentGroup::default()
+        ))
     })
 
     #[before(class_magic_constant), current(TokenKind::FunctionConstant)]
@@ -1036,7 +1251,11 @@ expressions! {
         let span = state.stream.current().span;
         state.stream.next();
 
-        Ok(Expression::MagicConstant(MagicConstantExpression::Function(span)))
+        Ok(Expression::new(
+            ExpressionKind::MagicConstant(MagicConstantExpression::Function(span)),
+            span,
+            CommentGroup::default()
+        ))
     })
 
     #[before(method_magic_constant), current(TokenKind::ClassConstant)]
@@ -1044,7 +1263,11 @@ expressions! {
         let span = state.stream.current().span;
         state.stream.next();
 
-        Ok(Expression::MagicConstant(MagicConstantExpression::Class(span)))
+        Ok(Expression::new(
+            ExpressionKind::MagicConstant(MagicConstantExpression::Class(span)),
+            span,
+            CommentGroup::default()
+        ))
     })
 
     #[before(namespace_magic_constant), current(TokenKind::MethodConstant)]
@@ -1052,7 +1275,11 @@ expressions! {
         let span = state.stream.current().span;
         state.stream.next();
 
-        Ok(Expression::MagicConstant(MagicConstantExpression::Method(span)))
+        Ok(Expression::new(
+            ExpressionKind::MagicConstant(MagicConstantExpression::Method(span)),
+            span,
+            CommentGroup::default()
+        ))
     })
 
     #[before(trait_magic_constant), current(TokenKind::NamespaceConstant)]
@@ -1060,7 +1287,11 @@ expressions! {
         let span = state.stream.current().span;
         state.stream.next();
 
-        Ok(Expression::MagicConstant(MagicConstantExpression::Namespace(span)))
+        Ok(Expression::new(
+            ExpressionKind::MagicConstant(MagicConstantExpression::Namespace(span)),
+            span,
+            CommentGroup::default()
+        ))
     })
 
     #[before(compiler_halt_offset_magic_constant), current(TokenKind::TraitConstant)]
@@ -1068,7 +1299,11 @@ expressions! {
         let span = state.stream.current().span;
         state.stream.next();
 
-        Ok(Expression::MagicConstant(MagicConstantExpression::Trait(span)))
+        Ok(Expression::new(
+            ExpressionKind::MagicConstant(MagicConstantExpression::Trait(span)),
+            span,
+            CommentGroup::default()
+        ))
     })
 
     #[before(include), current(TokenKind::CompilerHaltOffsetConstant)]
@@ -1076,11 +1311,16 @@ expressions! {
         let span = state.stream.current().span;
         state.stream.next();
 
-        Ok(Expression::MagicConstant(MagicConstantExpression::CompilerHaltOffset(span)))
+        Ok(Expression::new(
+            ExpressionKind::MagicConstant(MagicConstantExpression::CompilerHaltOffset(span)),
+            span,
+            CommentGroup::default()
+        ))
     })
 
     #[before(cast_prefix), current(TokenKind::Include | TokenKind::IncludeOnce | TokenKind::Require | TokenKind::RequireOnce)]
     include({
+        let start_span = state.stream.current().span;
         let current = state.stream.current();
         let span = current.span;
 
@@ -1088,13 +1328,21 @@ expressions! {
 
         let path = Box::new(create(state)?);
 
-        Ok(match current.kind {
-            TokenKind::Include => Expression::Include(IncludeExpression { include: span, path }),
-            TokenKind::IncludeOnce => Expression::IncludeOnce(IncludeOnceExpression { include_once: span, path }),
-            TokenKind::Require => Expression::Require(RequireExpression { require: span, path }),
-            TokenKind::RequireOnce => Expression::RequireOnce(RequireOnceExpression { require_once: span, path }),
+        let kind = match current.kind {
+            TokenKind::Include => ExpressionKind::Include(IncludeExpression { include: span, path }),
+            TokenKind::IncludeOnce => ExpressionKind::IncludeOnce(IncludeOnceExpression { include_once: span, path }),
+            TokenKind::Require => ExpressionKind::Require(RequireExpression { require: span, path }),
+            TokenKind::RequireOnce => ExpressionKind::RequireOnce(RequireOnceExpression { require_once: span, path }),
             _ => unreachable!()
-        })
+        };
+
+        let end_span = state.stream.previous().span;
+
+        Ok(Expression::new(
+            kind,
+            Span::new(start_span.start, end_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(numeric_prefix), current(
@@ -1112,16 +1360,22 @@ expressions! {
         state.stream.next();
 
         let rhs = for_precedence(state, Precedence::Prefix)?;
+        let rhs_span = rhs.span;
 
-        Ok(Expression::Cast(CastExpression {
-            cast: span,
-            kind,
-            value: Box::new(rhs),
-        }))
+        Ok(Expression::new(
+            ExpressionKind::Cast(CastExpression {
+                cast: span,
+                kind,
+                value: Box::new(rhs),
+            }),
+            Span::new(span.start, rhs_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(bang_prefix), current(TokenKind::Decrement | TokenKind::Increment | TokenKind::Minus | TokenKind::Plus)]
     numeric_prefix({
+        let start_span = state.stream.current().span;
         let current = state.stream.current();
 
         let span = current.span;
@@ -1130,29 +1384,37 @@ expressions! {
         state.stream.next();
 
         let right = Box::new(for_precedence(state, Precedence::Prefix)?);
+        let right_span = right.span;
         let expr = match op {
-            TokenKind::Minus => Expression::ArithmeticOperation(ArithmeticOperationExpression::Negative { minus: span, right }),
-            TokenKind::Plus => Expression::ArithmeticOperation(ArithmeticOperationExpression::Positive { plus: span, right }),
-            TokenKind::Decrement => Expression::ArithmeticOperation(ArithmeticOperationExpression::PreDecrement { decrement: span, right }),
-            TokenKind::Increment => Expression::ArithmeticOperation(ArithmeticOperationExpression::PreIncrement { increment: span, right }),
+            TokenKind::Minus => ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression::Negative { minus: span, right }),
+            TokenKind::Plus => ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression::Positive { plus: span, right }),
+            TokenKind::Decrement => ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression::PreDecrement { decrement: span, right }),
+            TokenKind::Increment => ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression::PreIncrement { increment: span, right }),
             _ => unreachable!(),
         };
 
-        Ok(expr)
+        Ok(Expression::new(
+            expr,
+            Span::new(start_span.start, right_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(at_prefix), current(TokenKind::Bang)]
     bang_prefix({
+        let start_span = state.stream.current().span;
         let bang = state.stream.current().span;
 
         state.stream.next();
 
         let rhs = for_precedence(state, Precedence::Bang)?;
+        let end_span = rhs.span;
 
-        Ok(Expression::LogicalOperation(LogicalOperationExpression::Not {
-            bang,
-            right: Box::new(rhs)
-        }))
+        Ok(Expression::new(
+            ExpressionKind::LogicalOperation(LogicalOperationExpression::Not { bang, right: Box::new(rhs) }),
+            Span::new(start_span.start, end_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(bitwise_prefix), current(TokenKind::At)]
@@ -1162,11 +1424,16 @@ expressions! {
         state.stream.next();
 
         let rhs = for_precedence(state, Precedence::Prefix)?;
+        let end_span = rhs.span;
 
-        Ok(Expression::ErrorSuppress(ErrorSuppressExpression {
-            at: span,
-            expr: Box::new(rhs)
-        }))
+        Ok(Expression::new(
+            ExpressionKind::ErrorSuppress(ErrorSuppressExpression {
+                at: span,
+                expr: Box::new(rhs)
+            }),
+            Span::new(span.start, end_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(variable), current(TokenKind::BitwiseNot)]
@@ -1176,13 +1443,24 @@ expressions! {
         state.stream.next();
 
         let right = Box::new(for_precedence(state, Precedence::Prefix)?);
+        let end_span = right.span;
 
-        Ok(Expression::BitwiseOperation(BitwiseOperationExpression::Not { not: span, right }))
+        Ok(Expression::new(
+            ExpressionKind::BitwiseOperation(BitwiseOperationExpression::Not { not: span, right }),
+            Span::new(span.start, end_span.end),
+            CommentGroup::default()
+        ))
     })
 
     #[before(unexpected_token), current(TokenKind::Dollar | TokenKind::DollarLeftBrace | TokenKind::Variable)]
     variable({
-        Ok(Expression::Variable(variables::dynamic_variable(state)?))
+        let span = state.stream.current().span;
+
+        Ok(Expression::new(
+            ExpressionKind::Variable(variables::dynamic_variable(state)?),
+            span,
+            CommentGroup::default()
+        ))
     })
 }
 
@@ -1193,14 +1471,15 @@ fn unexpected_token(state: &mut State, _: &Precedence) -> ParseResult<Expression
 }
 
 fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Expression> {
-    Ok(match op {
+    let start_span = state.stream.current().span;
+    let kind = match op {
         TokenKind::DoubleQuestion => {
             let double_question = state.stream.current().span;
             state.stream.next();
 
             let rhs = null_coalesce_precedence(state)?;
 
-            Expression::Coalesce(CoalesceExpression {
+            ExpressionKind::Coalesce(CoalesceExpression {
                 lhs: Box::new(lhs),
                 double_question,
                 rhs: Box::new(rhs),
@@ -1222,20 +1501,20 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                     right_parenthesis: end,
                 };
 
-                Expression::FunctionClosureCreation(FunctionClosureCreationExpression {
+                ExpressionKind::FunctionClosureCreation(FunctionClosureCreationExpression {
                     target: Box::new(lhs),
                     placeholder,
                 })
             } else {
                 let arguments = parameters::argument_list(state)?;
 
-                Expression::FunctionCall(FunctionCallExpression {
+                ExpressionKind::FunctionCall(FunctionCallExpression {
                     target: Box::new(lhs),
                     arguments,
                 })
             }
         }
-        TokenKind::LeftBracket => Expression::ArrayIndex(ArrayIndexExpression {
+        TokenKind::LeftBracket => ExpressionKind::ArrayIndex(ArrayIndexExpression {
             array: Box::new(lhs),
             left_bracket: utils::skip_left_bracket(state)?,
             index: if state.stream.current().kind == TokenKind::RightBracket {
@@ -1252,17 +1531,17 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
 
             let property = match current.kind {
                 TokenKind::Variable | TokenKind::Dollar | TokenKind::DollarLeftBrace => {
-                    Expression::Variable(variables::dynamic_variable(state)?)
+                    ExpressionKind::Variable(variables::dynamic_variable(state)?)
                 }
                 _ if identifiers::is_identifier_maybe_reserved(&state.stream.current().kind) => {
-                    Expression::Identifier(Identifier::SimpleIdentifier(
+                    ExpressionKind::Identifier(Identifier::SimpleIdentifier(
                         identifiers::identifier_maybe_reserved(state)?,
                     ))
                 }
                 TokenKind::LeftBrace => {
                     state.stream.next();
 
-                    Expression::Identifier(Identifier::DynamicIdentifier(DynamicIdentifier {
+                    ExpressionKind::Identifier(Identifier::DynamicIdentifier(DynamicIdentifier {
                         start: current.span,
                         expr: Box::new(create(state)?),
                         end: utils::skip_right_brace(state)?,
@@ -1271,7 +1550,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                 TokenKind::Class => {
                     state.stream.next();
 
-                    Expression::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier {
+                    ExpressionKind::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier {
                         span: current.span,
                         value: "class".into(),
                     }))
@@ -1299,8 +1578,8 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                     };
 
                     match property {
-                        Expression::Identifier(identifier) => {
-                            Expression::StaticMethodClosureCreation(
+                        ExpressionKind::Identifier(identifier) => {
+                            ExpressionKind::StaticMethodClosureCreation(
                                 StaticMethodClosureCreationExpression {
                                     target: lhs,
                                     double_colon: span,
@@ -1309,8 +1588,8 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                                 },
                             )
                         }
-                        Expression::Variable(variable) => {
-                            Expression::StaticVariableMethodClosureCreation(
+                        ExpressionKind::Variable(variable) => {
+                            ExpressionKind::StaticVariableMethodClosureCreation(
                                 StaticVariableMethodClosureCreationExpression {
                                     target: lhs,
                                     double_colon: span,
@@ -1325,15 +1604,15 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                     let arguments = parameters::argument_list(state)?;
 
                     match property {
-                        Expression::Identifier(identifier) => {
-                            Expression::StaticMethodCall(StaticMethodCallExpression {
+                        ExpressionKind::Identifier(identifier) => {
+                            ExpressionKind::StaticMethodCall(StaticMethodCallExpression {
                                 target: lhs,
                                 double_colon: span,
                                 method: identifier,
                                 arguments,
                             })
                         }
-                        Expression::Variable(variable) => Expression::StaticVariableMethodCall(
+                        ExpressionKind::Variable(variable) => ExpressionKind::StaticVariableMethodCall(
                             StaticVariableMethodCallExpression {
                                 target: lhs,
                                 double_colon: span,
@@ -1346,15 +1625,15 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                 }
             } else {
                 match property {
-                    Expression::Identifier(identifier) => {
-                        Expression::ConstantFetch(ConstantFetchExpression {
+                    ExpressionKind::Identifier(identifier) => {
+                        ExpressionKind::ConstantFetch(ConstantFetchExpression {
                             target: lhs,
                             double_colon: span,
                             constant: identifier,
                         })
                     }
-                    Expression::Variable(variable) => {
-                        Expression::StaticPropertyFetch(StaticPropertyFetchExpression {
+                    ExpressionKind::Variable(variable) => {
+                        ExpressionKind::StaticPropertyFetch(StaticPropertyFetchExpression {
                             target: lhs,
                             double_colon: span,
                             property: variable,
@@ -1370,12 +1649,20 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
 
             let property = match state.stream.current().kind {
                 TokenKind::Variable | TokenKind::Dollar | TokenKind::DollarLeftBrace => {
-                    Expression::Variable(variables::dynamic_variable(state)?)
+                    let start_span = state.stream.current().span;
+                    let kind = ExpressionKind::Variable(variables::dynamic_variable(state)?);
+                    let end_span = state.stream.previous().span;
+
+                    Expression::new(kind, Span::new(start_span.start, end_span.end), CommentGroup::default())
                 }
                 _ if identifiers::is_identifier_maybe_reserved(&state.stream.current().kind) => {
-                    Expression::Identifier(Identifier::SimpleIdentifier(
+                    let start_span = state.stream.current().span;
+                    let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(
                         identifiers::identifier_maybe_reserved(state)?,
-                    ))
+                    ));
+                    let end_span = state.stream.previous().span;
+
+                    Expression::new(kind, Span::new(start_span.start, end_span.end), CommentGroup::default())
                 }
                 TokenKind::LeftBrace => {
                     let start = state.stream.current().span;
@@ -1385,11 +1672,15 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
 
                     let end = utils::skip_right_brace(state)?;
 
-                    Expression::Identifier(Identifier::DynamicIdentifier(DynamicIdentifier {
-                        start,
-                        expr: Box::new(name),
-                        end,
-                    }))
+                    Expression::new(
+                        ExpressionKind::Identifier(Identifier::DynamicIdentifier(DynamicIdentifier {
+                            start,
+                            expr: Box::new(name),
+                            end,
+                        })),
+                        Span::new(start.start, end.end),
+                        CommentGroup::default()
+                    )
                 }
                 _ => {
                     return expected_token_err!(["`{`", "`$`", "an identifier"], state);
@@ -1400,7 +1691,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                 if op == &TokenKind::QuestionArrow {
                     let arguments = parameters::argument_list(state)?;
 
-                    Expression::NullsafeMethodCall(NullsafeMethodCallExpression {
+                    ExpressionKind::NullsafeMethodCall(NullsafeMethodCallExpression {
                         target: Box::new(lhs),
                         method: Box::new(property),
                         question_arrow: span,
@@ -1422,7 +1713,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                             right_parenthesis: end,
                         };
 
-                        Expression::MethodClosureCreation(MethodClosureCreationExpression {
+                        ExpressionKind::MethodClosureCreation(MethodClosureCreationExpression {
                             target: Box::new(lhs),
                             method: Box::new(property),
                             arrow: span,
@@ -1431,7 +1722,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                     } else {
                         let arguments = parameters::argument_list(state)?;
 
-                        Expression::MethodCall(MethodCallExpression {
+                        ExpressionKind::MethodCall(MethodCallExpression {
                             target: Box::new(lhs),
                             method: Box::new(property),
                             arrow: span,
@@ -1440,13 +1731,13 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                     }
                 }
             } else if op == &TokenKind::QuestionArrow {
-                Expression::NullsafePropertyFetch(NullsafePropertyFetchExpression {
+                ExpressionKind::NullsafePropertyFetch(NullsafePropertyFetchExpression {
                     target: Box::new(lhs),
                     question_arrow: span,
                     property: Box::new(property),
                 })
             } else {
-                Expression::PropertyFetch(PropertyFetchExpression {
+                ExpressionKind::PropertyFetch(PropertyFetchExpression {
                     target: Box::new(lhs),
                     arrow: span,
                     property: Box::new(property),
@@ -1457,7 +1748,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
             let span = state.stream.current().span;
             state.stream.next();
 
-            Expression::ArithmeticOperation(ArithmeticOperationExpression::PostIncrement {
+            ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression::PostIncrement {
                 left: Box::new(lhs),
                 increment: span,
             })
@@ -1466,13 +1757,21 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
             let span = state.stream.current().span;
             state.stream.next();
 
-            Expression::ArithmeticOperation(ArithmeticOperationExpression::PostDecrement {
+            ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression::PostDecrement {
                 left: Box::new(lhs),
                 decrement: span,
             })
         }
         _ => todo!("postfix: {:?}", op),
-    })
+    };
+
+    let end_span = state.stream.previous().span;
+
+    Ok(Expression::new(
+        kind,
+        Span::new(start_span.start, end_span.end),
+        CommentGroup::default()
+    ))
 }
 
 fn is_infix(t: &TokenKind) -> bool {

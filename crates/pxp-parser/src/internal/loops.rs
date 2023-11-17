@@ -17,11 +17,11 @@ use pxp_ast::loops::ForeachStatementIterator;
 use pxp_ast::loops::Level;
 use pxp_ast::loops::WhileStatement;
 use pxp_ast::loops::WhileStatementBody;
-use pxp_ast::Statement;
+use pxp_ast::StatementKind;
 use pxp_token::Token;
 use pxp_token::TokenKind;
 
-pub fn foreach_statement(state: &mut State) -> ParseResult<Statement> {
+pub fn foreach_statement(state: &mut State) -> ParseResult<StatementKind> {
     let foreach = utils::skip(state, TokenKind::Foreach)?;
 
     let (left_parenthesis, iterator, right_parenthesis) =
@@ -88,7 +88,7 @@ pub fn foreach_statement(state: &mut State) -> ParseResult<Statement> {
         }
     };
 
-    Ok(Statement::Foreach(ForeachStatement {
+    Ok(StatementKind::Foreach(ForeachStatement {
         foreach,
         left_parenthesis,
         iterator,
@@ -97,7 +97,7 @@ pub fn foreach_statement(state: &mut State) -> ParseResult<Statement> {
     }))
 }
 
-pub fn for_statement(state: &mut State) -> ParseResult<Statement> {
+pub fn for_statement(state: &mut State) -> ParseResult<StatementKind> {
     let r#for = utils::skip(state, TokenKind::For)?;
 
     let (left_parenthesis, iterator, right_parenthesis) = utils::parenthesized(state, &|state| {
@@ -140,7 +140,7 @@ pub fn for_statement(state: &mut State) -> ParseResult<Statement> {
         }
     };
 
-    Ok(Statement::For(ForStatement {
+    Ok(StatementKind::For(ForStatement {
         r#for,
         left_parenthesis,
         iterator,
@@ -149,7 +149,7 @@ pub fn for_statement(state: &mut State) -> ParseResult<Statement> {
     }))
 }
 
-pub fn do_while_statement(state: &mut State) -> ParseResult<Statement> {
+pub fn do_while_statement(state: &mut State) -> ParseResult<StatementKind> {
     let r#do = utils::skip(state, TokenKind::Do)?;
 
     let body = statement(state).map(Box::new)?;
@@ -161,7 +161,7 @@ pub fn do_while_statement(state: &mut State) -> ParseResult<Statement> {
             utils::parenthesized(state, &expressions::create)
         })?;
 
-    Ok(Statement::DoWhile(DoWhileStatement {
+    Ok(StatementKind::DoWhile(DoWhileStatement {
         r#do,
         body,
         r#while,
@@ -172,7 +172,7 @@ pub fn do_while_statement(state: &mut State) -> ParseResult<Statement> {
     }))
 }
 
-pub fn while_statement(state: &mut State) -> ParseResult<Statement> {
+pub fn while_statement(state: &mut State) -> ParseResult<StatementKind> {
     let r#while = utils::skip(state, TokenKind::While)?;
 
     let (left_parenthesis, condition, right_parenthesis) =
@@ -191,7 +191,7 @@ pub fn while_statement(state: &mut State) -> ParseResult<Statement> {
         }
     };
 
-    Ok(Statement::While(WhileStatement {
+    Ok(StatementKind::While(WhileStatement {
         r#while,
         left_parenthesis,
         condition,
@@ -200,16 +200,16 @@ pub fn while_statement(state: &mut State) -> ParseResult<Statement> {
     }))
 }
 
-pub fn continue_statement(state: &mut State) -> ParseResult<Statement> {
-    Ok(Statement::Continue(ContinueStatement {
+pub fn continue_statement(state: &mut State) -> ParseResult<StatementKind> {
+    Ok(StatementKind::Continue(ContinueStatement {
         r#continue: utils::skip(state, TokenKind::Continue)?,
         level: maybe_loop_level(state)?,
         ending: utils::skip_ending(state)?,
     }))
 }
 
-pub fn break_statement(state: &mut State) -> ParseResult<Statement> {
-    Ok(Statement::Break(BreakStatement {
+pub fn break_statement(state: &mut State) -> ParseResult<StatementKind> {
+    Ok(StatementKind::Break(BreakStatement {
         r#break: utils::skip(state, TokenKind::Break)?,
         level: maybe_loop_level(state)?,
         ending: utils::skip_ending(state)?,

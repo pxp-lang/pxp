@@ -6,6 +6,8 @@ use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
+use pxp_ast::Expression;
+use pxp_ast::comments::CommentGroup;
 use pxp_ast::identifiers::Identifier;
 use pxp_ast::literals::Literal;
 use pxp_ast::literals::LiteralInteger;
@@ -17,16 +19,18 @@ use pxp_ast::ExpressionStringPart;
 use pxp_ast::LiteralStringPart;
 use pxp_ast::StringPart;
 use pxp_ast::{
-    ArrayIndexExpression, Expression, HeredocExpression, InterpolatedStringExpression,
+    ArrayIndexExpression, ExpressionKind, HeredocExpression, InterpolatedStringExpression,
     NowdocExpression, NullsafePropertyFetchExpression, PropertyFetchExpression,
     ShellExecExpression,
 };
 use pxp_lexer::error::SyntaxError;
+use pxp_span::Span;
 use pxp_token::DocStringIndentationKind;
 use pxp_token::TokenKind;
 
 #[inline(always)]
 pub fn interpolated(state: &mut State) -> ParseResult<Expression> {
+    let start_span = state.stream.current().span;
     let mut parts = Vec::new();
 
     while state.stream.current().kind != TokenKind::DoubleQuote {
@@ -37,13 +41,18 @@ pub fn interpolated(state: &mut State) -> ParseResult<Expression> {
 
     state.stream.next();
 
-    Ok(Expression::InterpolatedString(
-        InterpolatedStringExpression { parts },
+    let end_span = state.stream.current().span;
+
+    Ok(Expression::new(
+        ExpressionKind::InterpolatedString(InterpolatedStringExpression { parts }),
+        Span::new(start_span.start, end_span.end),
+        CommentGroup::default(),
     ))
 }
 
 #[inline(always)]
 pub fn shell_exec(state: &mut State) -> ParseResult<Expression> {
+    let start_span = state.stream.current().span;
     state.stream.next();
 
     let mut parts = Vec::new();
@@ -56,7 +65,13 @@ pub fn shell_exec(state: &mut State) -> ParseResult<Expression> {
 
     state.stream.next();
 
-    Ok(Expression::ShellExec(ShellExecExpression { parts }))
+    let end_span = state.stream.current().span;
+
+    Ok(Expression::new(
+        ExpressionKind::ShellExec(ShellExecExpression { parts }),
+        Span::new(start_span.start, end_span.end),
+        CommentGroup::default(),
+    ))
 }
 
 #[inline(always)]
@@ -142,7 +157,16 @@ pub fn heredoc(state: &mut State) -> ParseResult<Expression> {
         }
     }
 
-    Ok(Expression::Heredoc(HeredocExpression { label, parts }))
+    let end_span = state.stream.previous().span;
+
+    Ok(Expression::new(
+        ExpressionKind::Heredoc(HeredocExpression {
+            label,
+            parts,
+        }),
+        Span::new(span.start, end_span.end),
+        CommentGroup::default(),
+    ))
 }
 
 #[inline(always)]
@@ -224,10 +248,16 @@ pub fn nowdoc(state: &mut State) -> ParseResult<Expression> {
         string_part = bytes.into();
     }
 
-    Ok(Expression::Nowdoc(NowdocExpression {
-        label,
-        value: string_part,
-    }))
+    let end_span = state.stream.previous().span;
+
+    Ok(Expression::new(
+        ExpressionKind::Nowdoc(NowdocExpression {
+            label,
+            value: string_part,
+        }),
+        Span::new(span.start, end_span.end),
+        CommentGroup::default(),
+    ))
 }
 
 fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
@@ -244,11 +274,15 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
             part
         }
         TokenKind::DollarLeftBrace => {
+            let start_span = state.stream.current().span;
             let variable = variables::dynamic_variable(state)?;
+            let expression = Expression::new(
+                ExpressionKind::Variable(variable),
+                Span::new(start_span.start, state.stream.previous().span.end),
+                CommentGroup::default(),
+            );
 
-            Some(StringPart::Expression(ExpressionStringPart {
-                expression: Box::new(Expression::Variable(variable)),
-            }))
+            Some(StringPart::Expression(ExpressionStringPart { expression: Box::new(expression) }))
         }
         TokenKind::LeftBrace => {
             // "{$expr}"
@@ -261,40 +295,50 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
         }
         TokenKind::Variable => {
             // "$expr", "$expr[0]", "$expr[name]", "$expr->a"
-            let variable = Expression::Variable(variables::dynamic_variable(state)?);
+            let variable_span = state.stream.current().span;
+            let variable = ExpressionKind::Variable(variables::dynamic_variable(state)?);
+            let variable = Expression::new(variable, variable_span, CommentGroup::default());
+
             let current = state.stream.current();
             let e = match &current.kind {
                 TokenKind::LeftBracket => {
                     let left_bracket = utils::skip_left_bracket(state)?;
 
                     let current = state.stream.current();
+                    let index_start_span = current.span;
                     // Full expression syntax is not allowed here,
                     // so we can't call expression.
                     let index = match &current.kind {
                         TokenKind::LiteralInteger => {
                             state.stream.next();
 
-                            Expression::Literal(Literal::Integer(LiteralInteger {
+                            ExpressionKind::Literal(Literal::Integer(LiteralInteger {
                                 span: current.span,
                                 value: current.value.clone(),
                             }))
                         }
                         TokenKind::Minus => {
-                            let span = current.span;
                             state.stream.next();
                             let literal = state.stream.current();
                             if let TokenKind::LiteralInteger = &literal.kind {
+                                let span = state.stream.current().span;
                                 state.stream.next();
+                                let kind = ExpressionKind::Literal(Literal::Integer(
+                                    LiteralInteger {
+                                        span: literal.span,
+                                        value: literal.value.clone(),
+                                    },
+                                ));
+                                let expression = Expression::new(
+                                    kind,
+                                    span,
+                                    CommentGroup::default(),
+                                );
 
-                                Expression::ArithmeticOperation(
+                                ExpressionKind::ArithmeticOperation(
                                     ArithmeticOperationExpression::Negative {
                                         minus: span,
-                                        right: Box::new(Expression::Literal(Literal::Integer(
-                                            LiteralInteger {
-                                                span: literal.span,
-                                                value: literal.value.clone(),
-                                            },
-                                        ))),
+                                        right: Box::new(expression),
                                     },
                                 )
                             } else {
@@ -304,13 +348,13 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
                         TokenKind::Identifier => {
                             state.stream.next();
 
-                            Expression::Literal(Literal::String(LiteralString {
+                            ExpressionKind::Literal(Literal::String(LiteralString {
                                 span: current.span,
                                 value: current.value.clone(),
                                 kind: LiteralStringKind::SingleQuoted,
                             }))
                         }
-                        TokenKind::Variable => Expression::Variable(Variable::SimpleVariable(
+                        TokenKind::Variable => ExpressionKind::Variable(Variable::SimpleVariable(
                             variables::simple_variable(state)?,
                         )),
                         _ => {
@@ -320,10 +364,12 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
                             );
                         }
                     };
+                    let index_end_span = state.stream.previous().span;
+                    let index = Expression::new(index, Span::new(index_start_span.start, index_end_span.end), CommentGroup::default());
 
                     let right_bracket = utils::skip_right_bracket(state)?;
 
-                    Expression::ArrayIndex(ArrayIndexExpression {
+                    ExpressionKind::ArrayIndex(ArrayIndexExpression {
                         array: Box::new(variable),
                         left_bracket,
                         index: Some(Box::new(index)),
@@ -332,30 +378,47 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
                 }
                 TokenKind::Arrow => {
                     let span = current.span;
+                    
                     state.stream.next();
-                    Expression::PropertyFetch(PropertyFetchExpression {
+
+                    let identifier = identifiers::identifier_maybe_reserved(state)?;
+                    let id_span = identifier.span;
+                    let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier));
+                    let identifier_expression = Expression::new(
+                        kind,
+                        id_span,
+                        CommentGroup::default(),
+                    );
+
+                    ExpressionKind::PropertyFetch(PropertyFetchExpression {
                         target: Box::new(variable),
                         arrow: span,
-                        property: Box::new(Expression::Identifier(Identifier::SimpleIdentifier(
-                            identifiers::identifier_maybe_reserved(state)?,
-                        ))),
+                        property: Box::new(identifier_expression),
                     })
                 }
                 TokenKind::QuestionArrow => {
                     let span = current.span;
                     state.stream.next();
-                    Expression::NullsafePropertyFetch(NullsafePropertyFetchExpression {
+                    
+                    let ident = identifiers::identifier_maybe_reserved(state)?;
+                    let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(ident));
+
+                    ExpressionKind::NullsafePropertyFetch(NullsafePropertyFetchExpression {
                         target: Box::new(variable),
                         question_arrow: span,
-                        property: Box::new(Expression::Identifier(Identifier::SimpleIdentifier(
-                            identifiers::identifier_maybe_reserved(state)?,
-                        ))),
+                        property: Box::new(Expression::new(kind, span, CommentGroup::default())),
                     })
                 }
-                _ => variable,
+                // FIXME: This is hacky and bad for performance & memory, but works for now.
+                _ => variable.kind.clone(),
             };
+
             Some(StringPart::Expression(ExpressionStringPart {
-                expression: Box::new(e),
+                expression: Box::new(Expression::new(
+                    e,
+                    Span::new(variable_span.start, state.stream.previous().span.end),
+                    CommentGroup::default(),
+                )),
             }))
         }
         _ => {

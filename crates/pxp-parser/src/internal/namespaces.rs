@@ -12,11 +12,11 @@ use pxp_ast::namespaces::BracedNamespaceBody;
 use pxp_ast::namespaces::NamespaceStatement;
 use pxp_ast::namespaces::UnbracedNamespace;
 use pxp_ast::Block;
-use pxp_ast::Statement;
+use pxp_ast::StatementKind;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
-pub fn namespace(state: &mut State) -> ParseResult<Statement> {
+pub fn namespace(state: &mut State) -> ParseResult<StatementKind> {
     let start = utils::skip(state, TokenKind::Namespace)?;
     let name = identifiers::optional_name(state);
 
@@ -49,7 +49,7 @@ fn unbraced_namespace(
     state: &mut State,
     start: Span,
     name: SimpleIdentifier,
-) -> ParseResult<Statement> {
+) -> ParseResult<StatementKind> {
     let end = utils::skip_semicolon(state)?;
 
     let statements = scoped!(state, Scope::Namespace(name.clone()), {
@@ -64,7 +64,7 @@ fn unbraced_namespace(
         statements
     });
 
-    Ok(Statement::Namespace(NamespaceStatement::Unbraced(
+    Ok(StatementKind::Namespace(NamespaceStatement::Unbraced(
         UnbracedNamespace {
             start,
             end,
@@ -78,7 +78,7 @@ fn braced_namespace(
     state: &mut State,
     span: Span,
     name: Option<SimpleIdentifier>,
-) -> ParseResult<Statement> {
+) -> ParseResult<StatementKind> {
     let body = scoped!(state, Scope::BracedNamespace(name.clone()), {
         let start = utils::skip_left_brace(state)?;
 
@@ -96,7 +96,7 @@ fn braced_namespace(
         }
     });
 
-    Ok(Statement::Namespace(NamespaceStatement::Braced(
+    Ok(StatementKind::Namespace(NamespaceStatement::Braced(
         BracedNamespace {
             namespace: span,
             name,

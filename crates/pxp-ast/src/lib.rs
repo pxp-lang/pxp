@@ -34,6 +34,7 @@ use crate::traits::TraitStatement;
 use crate::try_block::TryStatement;
 use crate::utils::CommaSeparated;
 use crate::variables::Variable;
+use comments::CommentGroup;
 use pxp_bytestring::ByteString;
 use pxp_span::Span;
 use pxp_token::TokenKind;
@@ -105,6 +106,15 @@ impl Node for StaticVar {
 pub enum Ending {
     Semicolon(Span),
     CloseTag(Span),
+}
+
+impl Ending {
+    pub fn span(&self) -> Span {
+        match self {
+            Ending::Semicolon(span) => *span,
+            Ending::CloseTag(span) => *span,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -207,8 +217,31 @@ impl Node for GroupUseStatement {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
+pub struct Statement {
+    pub kind: StatementKind,
+    pub span: Span,
+    pub comments: CommentGroup,
+}
 
-pub enum Statement {
+impl Statement {
+    pub fn new(kind: StatementKind, span: Span, comments: CommentGroup) -> Self {
+        Self {
+            kind,
+            span,
+            comments
+        }
+    }
+}
+
+impl Node for Statement {
+    fn children(&mut self) -> Vec<&mut dyn Node> {
+        vec![&mut self.kind]
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+
+pub enum StatementKind {
     FullOpeningTag(FullOpeningTagStatement),
     ShortOpeningTag(ShortOpeningTagStatement),
     EchoOpeningTag(EchoOpeningTagStatement),
@@ -277,39 +310,39 @@ pub struct ClosingTagStatement {
     pub span: Span,
 }
 
-impl Node for Statement {
+impl Node for StatementKind {
     fn children(&mut self) -> Vec<&mut dyn Node> {
         match self {
-            Statement::Label(statement) => vec![statement],
-            Statement::Goto(statement) => vec![statement],
-            Statement::HaltCompiler(statement) => vec![statement],
-            Statement::Static(statement) => vec![statement],
-            Statement::DoWhile(statement) => vec![statement],
-            Statement::While(statement) => vec![statement],
-            Statement::For(statement) => vec![statement],
-            Statement::Foreach(statement) => vec![statement],
-            Statement::Break(statement) => vec![statement],
-            Statement::Continue(statement) => vec![statement],
-            Statement::Constant(statement) => vec![statement],
-            Statement::Function(statement) => vec![statement],
-            Statement::Class(statement) => vec![statement],
-            Statement::Trait(statement) => vec![statement],
-            Statement::Interface(statement) => vec![statement],
-            Statement::If(statement) => vec![statement],
-            Statement::Switch(statement) => vec![statement],
-            Statement::Echo(statement) => vec![statement],
-            Statement::Expression(statement) => vec![statement],
-            Statement::Return(statement) => vec![statement],
-            Statement::Namespace(statement) => vec![statement],
-            Statement::Use(statement) => vec![statement],
-            Statement::GroupUse(statement) => vec![statement],
-            Statement::Comment(statement) => vec![statement],
-            Statement::Try(statement) => vec![statement],
-            Statement::UnitEnum(statement) => vec![statement],
-            Statement::BackedEnum(statement) => vec![statement],
-            Statement::Block(statement) => vec![statement],
-            Statement::Global(statement) => vec![statement],
-            Statement::Declare(statement) => vec![statement],
+            StatementKind::Label(statement) => vec![statement],
+            StatementKind::Goto(statement) => vec![statement],
+            StatementKind::HaltCompiler(statement) => vec![statement],
+            StatementKind::Static(statement) => vec![statement],
+            StatementKind::DoWhile(statement) => vec![statement],
+            StatementKind::While(statement) => vec![statement],
+            StatementKind::For(statement) => vec![statement],
+            StatementKind::Foreach(statement) => vec![statement],
+            StatementKind::Break(statement) => vec![statement],
+            StatementKind::Continue(statement) => vec![statement],
+            StatementKind::Constant(statement) => vec![statement],
+            StatementKind::Function(statement) => vec![statement],
+            StatementKind::Class(statement) => vec![statement],
+            StatementKind::Trait(statement) => vec![statement],
+            StatementKind::Interface(statement) => vec![statement],
+            StatementKind::If(statement) => vec![statement],
+            StatementKind::Switch(statement) => vec![statement],
+            StatementKind::Echo(statement) => vec![statement],
+            StatementKind::Expression(statement) => vec![statement],
+            StatementKind::Return(statement) => vec![statement],
+            StatementKind::Namespace(statement) => vec![statement],
+            StatementKind::Use(statement) => vec![statement],
+            StatementKind::GroupUse(statement) => vec![statement],
+            StatementKind::Comment(statement) => vec![statement],
+            StatementKind::Try(statement) => vec![statement],
+            StatementKind::UnitEnum(statement) => vec![statement],
+            StatementKind::BackedEnum(statement) => vec![statement],
+            StatementKind::Block(statement) => vec![statement],
+            StatementKind::Global(statement) => vec![statement],
+            StatementKind::Declare(statement) => vec![statement],
             _ => vec![],
         }
     }
@@ -1046,8 +1079,35 @@ impl Node for CastExpression {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
+pub struct Expression {
+    pub kind: ExpressionKind,
+    pub span: Span,
+    pub comments: CommentGroup,
+}
 
-pub enum Expression {
+impl Expression {
+    pub fn new(kind: ExpressionKind, span: Span, comments: CommentGroup) -> Self {
+        Self {
+            kind,
+            span,
+            comments,
+        }
+    }
+
+    pub fn noop(span: Span) -> Self {
+        Self::new(ExpressionKind::Noop, span, CommentGroup::default())
+    }
+}
+
+impl Node for Expression {
+    fn children(&mut self) -> Vec<&mut dyn Node> {
+        vec![&mut self.kind]
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+
+pub enum ExpressionKind {
     // eval("$a = 1")
     Eval(EvalExpression),
     // empty($a)
@@ -1284,74 +1344,74 @@ impl Node for RequireOnceExpression {
     }
 }
 
-impl Node for Expression {
+impl Node for ExpressionKind {
     fn children(&mut self) -> Vec<&mut dyn Node> {
         match self {
-            Expression::Eval(expression) => vec![expression],
-            Expression::Empty(expression) => vec![expression],
-            Expression::Die(expression) => vec![expression],
-            Expression::Exit(expression) => vec![expression],
-            Expression::Isset(expression) => vec![expression],
-            Expression::Unset(expression) => vec![expression],
-            Expression::Print(expression) => vec![expression],
-            Expression::Literal(literal) => vec![literal],
-            Expression::ArithmeticOperation(operation) => vec![operation],
-            Expression::AssignmentOperation(operation) => vec![operation],
-            Expression::BitwiseOperation(operation) => vec![operation],
-            Expression::ComparisonOperation(operation) => vec![operation],
-            Expression::LogicalOperation(operation) => vec![operation],
-            Expression::Concat(expression) => vec![expression],
-            Expression::Instanceof(expression) => vec![expression],
-            Expression::Reference(expression) => vec![expression],
-            Expression::Parenthesized(expression) => vec![expression],
-            Expression::ErrorSuppress(expression) => vec![expression],
-            Expression::Identifier(identifier) => vec![identifier],
-            Expression::Variable(variable) => vec![variable],
-            Expression::Include(expression) => vec![expression],
-            Expression::IncludeOnce(expression) => vec![expression],
-            Expression::Require(expression) => vec![expression],
-            Expression::RequireOnce(expression) => vec![expression],
-            Expression::FunctionCall(expression) => vec![expression],
-            Expression::FunctionClosureCreation(expression) => vec![expression],
-            Expression::MethodCall(expression) => vec![expression],
-            Expression::MethodClosureCreation(expression) => vec![expression],
-            Expression::NullsafeMethodCall(expression) => vec![expression],
-            Expression::StaticMethodCall(expression) => vec![expression],
-            Expression::StaticVariableMethodCall(expression) => vec![expression],
-            Expression::StaticMethodClosureCreation(expression) => vec![expression],
-            Expression::StaticVariableMethodClosureCreation(expression) => vec![expression],
-            Expression::PropertyFetch(expression) => vec![expression],
-            Expression::NullsafePropertyFetch(expression) => vec![expression],
-            Expression::StaticPropertyFetch(expression) => vec![expression],
-            Expression::ConstantFetch(expression) => vec![expression],
-            Expression::Static => vec![],
-            Expression::Self_ => vec![],
-            Expression::Parent => vec![],
-            Expression::ShortArray(expression) => vec![expression],
-            Expression::Array(expression) => vec![expression],
-            Expression::List(expression) => vec![expression],
-            Expression::Closure(expression) => vec![expression],
-            Expression::ArrowFunction(expression) => vec![expression],
-            Expression::New(expression) => vec![expression],
-            Expression::InterpolatedString(expression) => vec![expression],
-            Expression::Heredoc(expression) => vec![expression],
-            Expression::Nowdoc(expression) => vec![expression],
-            Expression::ShellExec(expression) => vec![expression],
-            Expression::AnonymousClass(expression) => vec![expression],
-            Expression::Bool(_) => vec![],
-            Expression::ArrayIndex(expression) => vec![expression],
-            Expression::Null => vec![],
-            Expression::MagicConstant(constant) => vec![constant],
-            Expression::ShortTernary(expression) => vec![expression],
-            Expression::Ternary(expression) => vec![expression],
-            Expression::Coalesce(expression) => vec![expression],
-            Expression::Clone(expression) => vec![expression],
-            Expression::Match(expression) => vec![expression],
-            Expression::Throw(expression) => vec![expression],
-            Expression::Yield(expression) => vec![expression],
-            Expression::YieldFrom(expression) => vec![expression],
-            Expression::Cast(expression) => vec![expression],
-            Expression::Noop => vec![],
+            ExpressionKind::Eval(expression) => vec![expression],
+            ExpressionKind::Empty(expression) => vec![expression],
+            ExpressionKind::Die(expression) => vec![expression],
+            ExpressionKind::Exit(expression) => vec![expression],
+            ExpressionKind::Isset(expression) => vec![expression],
+            ExpressionKind::Unset(expression) => vec![expression],
+            ExpressionKind::Print(expression) => vec![expression],
+            ExpressionKind::Literal(literal) => vec![literal],
+            ExpressionKind::ArithmeticOperation(operation) => vec![operation],
+            ExpressionKind::AssignmentOperation(operation) => vec![operation],
+            ExpressionKind::BitwiseOperation(operation) => vec![operation],
+            ExpressionKind::ComparisonOperation(operation) => vec![operation],
+            ExpressionKind::LogicalOperation(operation) => vec![operation],
+            ExpressionKind::Concat(expression) => vec![expression],
+            ExpressionKind::Instanceof(expression) => vec![expression],
+            ExpressionKind::Reference(expression) => vec![expression],
+            ExpressionKind::Parenthesized(expression) => vec![expression],
+            ExpressionKind::ErrorSuppress(expression) => vec![expression],
+            ExpressionKind::Identifier(identifier) => vec![identifier],
+            ExpressionKind::Variable(variable) => vec![variable],
+            ExpressionKind::Include(expression) => vec![expression],
+            ExpressionKind::IncludeOnce(expression) => vec![expression],
+            ExpressionKind::Require(expression) => vec![expression],
+            ExpressionKind::RequireOnce(expression) => vec![expression],
+            ExpressionKind::FunctionCall(expression) => vec![expression],
+            ExpressionKind::FunctionClosureCreation(expression) => vec![expression],
+            ExpressionKind::MethodCall(expression) => vec![expression],
+            ExpressionKind::MethodClosureCreation(expression) => vec![expression],
+            ExpressionKind::NullsafeMethodCall(expression) => vec![expression],
+            ExpressionKind::StaticMethodCall(expression) => vec![expression],
+            ExpressionKind::StaticVariableMethodCall(expression) => vec![expression],
+            ExpressionKind::StaticMethodClosureCreation(expression) => vec![expression],
+            ExpressionKind::StaticVariableMethodClosureCreation(expression) => vec![expression],
+            ExpressionKind::PropertyFetch(expression) => vec![expression],
+            ExpressionKind::NullsafePropertyFetch(expression) => vec![expression],
+            ExpressionKind::StaticPropertyFetch(expression) => vec![expression],
+            ExpressionKind::ConstantFetch(expression) => vec![expression],
+            ExpressionKind::Static => vec![],
+            ExpressionKind::Self_ => vec![],
+            ExpressionKind::Parent => vec![],
+            ExpressionKind::ShortArray(expression) => vec![expression],
+            ExpressionKind::Array(expression) => vec![expression],
+            ExpressionKind::List(expression) => vec![expression],
+            ExpressionKind::Closure(expression) => vec![expression],
+            ExpressionKind::ArrowFunction(expression) => vec![expression],
+            ExpressionKind::New(expression) => vec![expression],
+            ExpressionKind::InterpolatedString(expression) => vec![expression],
+            ExpressionKind::Heredoc(expression) => vec![expression],
+            ExpressionKind::Nowdoc(expression) => vec![expression],
+            ExpressionKind::ShellExec(expression) => vec![expression],
+            ExpressionKind::AnonymousClass(expression) => vec![expression],
+            ExpressionKind::Bool(_) => vec![],
+            ExpressionKind::ArrayIndex(expression) => vec![expression],
+            ExpressionKind::Null => vec![],
+            ExpressionKind::MagicConstant(constant) => vec![constant],
+            ExpressionKind::ShortTernary(expression) => vec![expression],
+            ExpressionKind::Ternary(expression) => vec![expression],
+            ExpressionKind::Coalesce(expression) => vec![expression],
+            ExpressionKind::Clone(expression) => vec![expression],
+            ExpressionKind::Match(expression) => vec![expression],
+            ExpressionKind::Throw(expression) => vec![expression],
+            ExpressionKind::Yield(expression) => vec![expression],
+            ExpressionKind::YieldFrom(expression) => vec![expression],
+            ExpressionKind::Cast(expression) => vec![expression],
+            ExpressionKind::Noop => vec![],
         }
     }
 }

@@ -4,12 +4,16 @@ use crate::expressions;
 use crate::internal::utils;
 use crate::state::State;
 use pxp_ast::Expression;
+use pxp_ast::ExpressionKind;
 use pxp_ast::ListEntry;
+use pxp_ast::comments::CommentGroup;
 use pxp_ast::{ArrayExpression, ArrayItem, ListExpression, ShortArrayExpression};
+use pxp_span::Span;
 use pxp_token::TokenKind;
 
 pub fn list_expression(state: &mut State) -> ParseResult<Expression> {
-    Ok(Expression::List(ListExpression {
+    let start_span = state.stream.current().span;
+    let kind = ExpressionKind::List(ListExpression {
         list: utils::skip(state, TokenKind::List)?,
         start: utils::skip_left_parenthesis(state)?,
         items: {
@@ -103,11 +107,19 @@ pub fn list_expression(state: &mut State) -> ParseResult<Expression> {
             items
         },
         end: utils::skip_right_parenthesis(state)?,
-    }))
+    });
+    let end_span = state.stream.current().span;
+
+    Ok(Expression::new(
+        kind,
+        Span::new(start_span.start, end_span.end),
+        CommentGroup::default(),
+    ))
 }
 
 pub fn short_array_expression(state: &mut State) -> ParseResult<Expression> {
-    Ok(Expression::ShortArray(ShortArrayExpression {
+    let start_span = state.stream.current().span;
+    let kind = ExpressionKind::ShortArray(ShortArrayExpression {
         start: utils::skip(state, TokenKind::LeftBracket)?,
         items: utils::comma_separated(
             state,
@@ -122,16 +134,31 @@ pub fn short_array_expression(state: &mut State) -> ParseResult<Expression> {
             TokenKind::RightBracket,
         )?,
         end: utils::skip(state, TokenKind::RightBracket)?,
-    }))
+    });
+    let end_span = state.stream.current().span;
+
+    Ok(Expression::new(
+        kind,
+        Span::new(start_span.start, end_span.end),
+        CommentGroup::default(),
+    ))
 }
 
 pub fn array_expression(state: &mut State) -> ParseResult<Expression> {
-    Ok(Expression::Array(ArrayExpression {
+    let start_span = state.stream.current().span;
+    let kind = ExpressionKind::Array(ArrayExpression {
         array: utils::skip(state, TokenKind::Array)?,
         start: utils::skip_left_parenthesis(state)?,
         items: utils::comma_separated(state, &array_pair, TokenKind::RightParen)?,
         end: utils::skip_right_parenthesis(state)?,
-    }))
+    });
+    let end_span = state.stream.current().span;
+
+    Ok(Expression::new(
+        kind,
+        Span::new(start_span.start, end_span.end),
+        CommentGroup::default(),
+    ))
 }
 
 fn array_pair(state: &mut State) -> ParseResult<ArrayItem> {
