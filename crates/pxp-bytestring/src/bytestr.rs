@@ -1,5 +1,7 @@
 use std::ops::Deref;
 
+use crate::ByteString;
+
 #[derive(PartialOrd, PartialEq, Eq, Clone, Hash)]
 pub struct ByteStr<'a> {
     pub bytes: &'a [u8],
@@ -8,6 +10,10 @@ pub struct ByteStr<'a> {
 impl<'a> ByteStr<'a> {
     pub fn new(bytes: &'a [u8]) -> Self {
         ByteStr { bytes }
+    }
+
+    pub fn to_bytestring(&self) -> ByteString {
+        ByteString::from(self)
     }
 }
 
