@@ -2,8 +2,6 @@ use std::{env::args, process::exit, path::Path};
 
 use discoverer::discover;
 use pxp_parser::parse;
-use walkdir::{WalkDir, DirEntry};
-use std::io::Write;
 
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
