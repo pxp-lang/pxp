@@ -2,6 +2,8 @@ use std::ops::Deref;
 use std::ops::DerefMut;
 use std::str::from_utf8;
 
+use crate::ByteStr;
+
 /// A wrapper for Vec<u8> that provides a human-readable Debug impl and
 /// a few other conveniences.
 #[derive(PartialOrd, PartialEq, Eq, Clone, Hash)]
@@ -125,6 +127,18 @@ impl Deref for ByteString {
 impl DerefMut for ByteString {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.bytes
+    }
+}
+
+impl From<ByteStr<'_>> for ByteString {
+    fn from(bytes: ByteStr) -> Self {
+        ByteString::new(bytes.to_vec())
+    }
+}
+
+impl From<&ByteStr<'_>> for ByteString {
+    fn from(bytes: &ByteStr) -> Self {
+        ByteString::new(bytes.to_vec())
     }
 }
 
