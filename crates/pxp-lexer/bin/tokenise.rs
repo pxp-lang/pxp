@@ -1,34 +1,55 @@
-use std::{env::args, process::exit};
+use std::{env::args, process::exit, path::Path};
 
+use discoverer::discover;
 use pxp_lexer::Lexer;
+
+const LEXER: Lexer = Lexer::new();
 
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
 
     if args.is_empty() {
-        eprintln!("Usage: tokenise <file> [--debug, --times <n>]");
+        eprintln!("Usage: tokenise <path> [--debug]");
         exit(1);
     }
 
-    let file = args.first().unwrap();
-    let contents = std::fs::read(file).unwrap();
+    let path = args.first().unwrap();
+    let path = Path::new(path);
 
-    let lexer = Lexer::new();
-    let times = match args.iter().position(|a| a == "--times") {
-        Some(i) => args[i + 1].parse::<usize>().unwrap(),
-        None => 1
-    };
+    if path.is_dir() {
+        let mut errors = Vec::new();
+        let files = discover(&["php"], &[path.to_str().unwrap()]).unwrap();
 
-    let debug = args.contains(&"--debug".to_string());
+        for file in files.iter() {
+            if file.is_dir() {
+                continue;
+            }
 
-    for i in 0..times {
-        if debug {
-            println!("Tokenising {} (no. {i})...", file);
+            let contents = std::fs::read(file).unwrap();
+            match LEXER.tokenize(&contents[..]) {
+                Ok(_) => {
+                    print!(".");
+                },
+                Err(err) => {
+                    errors.push((path.to_str().unwrap().to_string(), err));
+                    print!("x");
+                },
+            }
         }
 
-        let tokens = lexer.tokenize(&contents[..]).unwrap();
+        println!();
 
-        if debug {
+        if errors.is_empty() {
+            println!("Parsed directory with zero errors.");
+        } else {
+            for (path, error) in errors {
+                println!("{}: {:?}", path, error);
+            }
+        }
+    } else {
+        let contents = std::fs::read(&path).unwrap();
+        let tokens = LEXER.tokenize(&contents[..]).unwrap();
+        if args.contains(&"--debug".to_string()) {
             dbg!(tokens);
         }
     }
