@@ -1,4 +1,4 @@
-use std::{env::args, process::exit, path::Path};
+use std::{env::args, path::Path, process::exit};
 
 use discoverer::discover;
 use pxp_parser::parse;
@@ -32,11 +32,11 @@ fn main() {
             match parse(&contents[..]) {
                 Ok(_) => {
                     print!(".");
-                },
+                }
                 Err(stack) => {
                     errors.push((path.to_str().unwrap().to_string(), stack.errors));
                     print!("x");
-                },
+                }
             }
         }
 

@@ -1,9 +1,9 @@
-use crate::expected_token;
 use crate::error;
 use crate::error::ParseResult;
+use crate::expected_token;
 use crate::internal::utils;
-use crate::state::State;
 use crate::peek_token;
+use crate::state::State;
 use pxp_ast::data_type::Type;
 use pxp_token::TokenKind;
 

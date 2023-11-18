@@ -1,5 +1,5 @@
-use crate::expected_token_err;
 use crate::error::ParseResult;
+use crate::expected_token_err;
 use crate::expressions;
 use crate::internal::utils;
 use crate::state::State;

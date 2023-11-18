@@ -277,7 +277,11 @@ pub fn variadic_promoted_property(
     )
     .highlight(modifier.span().start.offset, modifier.to_string().len())
     .highlight(property.span.start.offset, property.name.len())
-    .error("try removing this variadic declaration", span.start.offset, 3);
+    .error(
+        "try removing this variadic declaration",
+        span.start.offset,
+        3,
+    );
 
     if let Some(class) = class {
         error.highlight(class.span.start.offset, class.value.len())
@@ -434,7 +438,11 @@ pub fn modifier_cannot_be_used_for_constant(modifier: String, modifier_span: Spa
         format!("cannot use '{}' as constant modifier", modifier),
         modifier_span,
     )
-    .error("try removing this", modifier_span.start.offset, modifier.len())
+    .error(
+        "try removing this",
+        modifier_span.start.offset,
+        modifier.len(),
+    )
     .note("only `public`, `protected`, `private`, and `final` modifiers can be used on constants")
 }
 
@@ -450,7 +458,11 @@ pub fn modifier_cannot_be_used_for_interface_constant(
         ),
         modifier_span,
     )
-    .error("try removing this", modifier_span.start.offset, modifier.len())
+    .error(
+        "try removing this",
+        modifier_span.start.offset,
+        modifier.len(),
+    )
     .note("only `public`, and `final` modifiers can be used on interface constants")
 }
 
@@ -491,7 +503,11 @@ pub fn modifier_cannot_be_used_for_class(modifier: String, modifier_span: Span) 
         format!("cannot use '{}' as a class modifier", modifier),
         modifier_span,
     )
-    .error("try removing this", modifier_span.start.offset, modifier.len())
+    .error(
+        "try removing this",
+        modifier_span.start.offset,
+        modifier.len(),
+    )
     .note("only `final`, `abstract`, and `readonly` modifiers can be used on classes")
 }
 
@@ -538,7 +554,11 @@ pub fn modifier_cannot_be_used_for_interface_method(
         format!("cannot use '{}' as an interface method modifier", modifier),
         modifier_span,
     )
-    .error("try removing this", modifier_span.start.offset, modifier.len())
+    .error(
+        "try removing this",
+        modifier_span.start.offset,
+        modifier.len(),
+    )
     .note("only `public`, and `static` modifiers can be used on interface methods")
 }
 
@@ -618,7 +638,11 @@ pub fn static_property_cannot_be_readonly(
     )
     .highlight(property.span.start.offset, property.name.len())
     .highlight(readonly_span.start.offset, "readonly".len())
-    .error("try removing this", static_span.start.offset, "static".len());
+    .error(
+        "try removing this",
+        static_span.start.offset,
+        "static".len(),
+    );
 
     // If the class is anonymous, we don't have a span to highlight
     if let Some(class) = class {
@@ -728,7 +752,11 @@ pub fn match_expression_has_multiple_default_arms(first: Span, second: Span) -> 
         second,
     )
     .highlight(first.start.offset, "default".len())
-    .error("try removing this arm", second.start.offset, "default".len())
+    .error(
+        "try removing this arm",
+        second.start.offset,
+        "default".len(),
+    )
 }
 
 pub fn missing_item_definition_after_attributes(
@@ -827,7 +855,11 @@ pub fn cannot_use_reserved_keyword_as_a_type_name(span: Span, keyword: String) -
         format!("cannot use reserved keyword `{}` as a type name", keyword),
         span,
     )
-    .error("try using a different name", span.start.offset, keyword.len())
+    .error(
+        "try using a different name",
+        span.start.offset,
+        keyword.len(),
+    )
 }
 
 pub fn cannot_use_reserved_keyword_as_a_goto_label(span: Span, keyword: String) -> ParseError {
@@ -836,7 +868,11 @@ pub fn cannot_use_reserved_keyword_as_a_goto_label(span: Span, keyword: String) 
         format!("cannot use reserved keyword `{}` as a goto label", keyword),
         span,
     )
-    .error("try using a different name", span.start.offset, keyword.len())
+    .error(
+        "try using a different name",
+        span.start.offset,
+        keyword.len(),
+    )
 }
 
 pub fn cannot_use_reserved_keyword_as_a_constant_name(span: Span, keyword: String) -> ParseError {
@@ -848,7 +884,11 @@ pub fn cannot_use_reserved_keyword_as_a_constant_name(span: Span, keyword: Strin
         ),
         span,
     )
-    .error("try using a different name", span.start.offset, keyword.len())
+    .error(
+        "try using a different name",
+        span.start.offset,
+        keyword.len(),
+    )
 }
 
 pub fn cannot_use_type_in_context(span: Span, ty: String) -> ParseError {

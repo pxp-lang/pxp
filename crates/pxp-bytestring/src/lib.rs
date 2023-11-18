@@ -1,5 +1,5 @@
-mod bytestring;
 mod bytestr;
+mod bytestring;
 
-pub use bytestring::*;
 pub use bytestr::*;
+pub use bytestring::*;

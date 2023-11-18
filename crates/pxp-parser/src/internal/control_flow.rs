@@ -7,7 +7,6 @@ use crate::internal::blocks;
 use crate::internal::utils;
 use crate::state::State;
 use crate::statement;
-use pxp_ast::Expression;
 use pxp_ast::comments::CommentGroup;
 use pxp_ast::control_flow::IfStatement;
 use pxp_ast::control_flow::IfStatementBody;
@@ -17,6 +16,7 @@ use pxp_ast::control_flow::IfStatementElseIf;
 use pxp_ast::control_flow::IfStatementElseIfBlock;
 use pxp_ast::Case;
 use pxp_ast::DefaultMatchArm;
+use pxp_ast::Expression;
 use pxp_ast::ExpressionKind;
 use pxp_ast::MatchArm;
 use pxp_ast::StatementKind;
@@ -112,7 +112,7 @@ pub fn match_expression(state: &mut State) -> ParseResult<Expression> {
             right_brace,
         }),
         Span::new(start_span.start, right_brace.end),
-        CommentGroup::default()
+        CommentGroup::default(),
     ))
 }
 

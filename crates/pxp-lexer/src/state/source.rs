@@ -1,4 +1,4 @@
-use pxp_span::{Span, Position};
+use pxp_span::{Position, Span};
 
 #[derive(Debug)]
 pub struct Source<'a> {

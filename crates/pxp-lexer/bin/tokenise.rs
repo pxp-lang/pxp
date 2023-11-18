@@ -1,4 +1,4 @@
-use std::{env::args, process::exit, path::Path};
+use std::{env::args, path::Path, process::exit};
 
 use discoverer::discover;
 use pxp_lexer::Lexer;
@@ -29,11 +29,11 @@ fn main() {
             match LEXER.tokenize(&contents[..]) {
                 Ok(_) => {
                     print!(".");
-                },
+                }
                 Err(err) => {
                     errors.push((path.to_str().unwrap().to_string(), err));
                     print!("x");
-                },
+                }
             }
         }
 

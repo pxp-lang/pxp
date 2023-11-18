@@ -228,7 +228,7 @@ impl Statement {
         Self {
             kind,
             span,
-            comments
+            comments,
         }
     }
 }

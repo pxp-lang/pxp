@@ -1,12 +1,11 @@
+use crate::error::ParseResult;
 use crate::expect_token;
 use crate::expected_token_err;
-use crate::error::ParseResult;
 use crate::expressions::create;
 use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
-use pxp_ast::Expression;
 use pxp_ast::comments::CommentGroup;
 use pxp_ast::identifiers::Identifier;
 use pxp_ast::literals::Literal;
@@ -15,6 +14,7 @@ use pxp_ast::literals::LiteralString;
 use pxp_ast::literals::LiteralStringKind;
 use pxp_ast::operators::ArithmeticOperationExpression;
 use pxp_ast::variables::Variable;
+use pxp_ast::Expression;
 use pxp_ast::ExpressionStringPart;
 use pxp_ast::LiteralStringPart;
 use pxp_ast::StringPart;
@@ -160,10 +160,7 @@ pub fn heredoc(state: &mut State) -> ParseResult<Expression> {
     let end_span = state.stream.previous().span;
 
     Ok(Expression::new(
-        ExpressionKind::Heredoc(HeredocExpression {
-            label,
-            parts,
-        }),
+        ExpressionKind::Heredoc(HeredocExpression { label, parts }),
         Span::new(span.start, end_span.end),
         CommentGroup::default(),
     ))
@@ -282,7 +279,9 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
                 CommentGroup::default(),
             );
 
-            Some(StringPart::Expression(ExpressionStringPart { expression: Box::new(expression) }))
+            Some(StringPart::Expression(ExpressionStringPart {
+                expression: Box::new(expression),
+            }))
         }
         TokenKind::LeftBrace => {
             // "{$expr}"
@@ -323,17 +322,13 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
                             if let TokenKind::LiteralInteger = &literal.kind {
                                 let span = state.stream.current().span;
                                 state.stream.next();
-                                let kind = ExpressionKind::Literal(Literal::Integer(
-                                    LiteralInteger {
+                                let kind =
+                                    ExpressionKind::Literal(Literal::Integer(LiteralInteger {
                                         span: literal.span,
                                         value: literal.value.clone(),
-                                    },
-                                ));
-                                let expression = Expression::new(
-                                    kind,
-                                    span,
-                                    CommentGroup::default(),
-                                );
+                                    }));
+                                let expression =
+                                    Expression::new(kind, span, CommentGroup::default());
 
                                 ExpressionKind::ArithmeticOperation(
                                     ArithmeticOperationExpression::Negative {
@@ -365,7 +360,11 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
                         }
                     };
                     let index_end_span = state.stream.previous().span;
-                    let index = Expression::new(index, Span::new(index_start_span.start, index_end_span.end), CommentGroup::default());
+                    let index = Expression::new(
+                        index,
+                        Span::new(index_start_span.start, index_end_span.end),
+                        CommentGroup::default(),
+                    );
 
                     let right_bracket = utils::skip_right_bracket(state)?;
 
@@ -378,17 +377,14 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
                 }
                 TokenKind::Arrow => {
                     let span = current.span;
-                    
+
                     state.stream.next();
 
                     let identifier = identifiers::identifier_maybe_reserved(state)?;
                     let id_span = identifier.span;
                     let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier));
-                    let identifier_expression = Expression::new(
-                        kind,
-                        id_span,
-                        CommentGroup::default(),
-                    );
+                    let identifier_expression =
+                        Expression::new(kind, id_span, CommentGroup::default());
 
                     ExpressionKind::PropertyFetch(PropertyFetchExpression {
                         target: Box::new(variable),
@@ -399,7 +395,7 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
                 TokenKind::QuestionArrow => {
                     let span = current.span;
                     state.stream.next();
-                    
+
                     let ident = identifiers::identifier_maybe_reserved(state)?;
                     let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(ident));
 

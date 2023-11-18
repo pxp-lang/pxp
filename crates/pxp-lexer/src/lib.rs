@@ -843,13 +843,17 @@ impl Lexer {
             [] => return Err(SyntaxError::UnexpectedEndOfFile(state.source.span())),
         };
 
-        Ok(Token { kind, span: state.source.span(), value })
+        Ok(Token {
+            kind,
+            span: state.source.span(),
+            value,
+        })
     }
 
     fn double_quote(&self, state: &mut State, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
         let mut buffer = Vec::new();
         let mut buffer_span = state.source.span();
-        
+
         let (kind, value, span) = loop {
             match state.source.read(3) {
                 [b'$', b'{', ..] => {
@@ -857,7 +861,11 @@ impl Lexer {
                     state.source.start_token();
                     state.source.skip(2);
                     state.enter(StackFrame::LookingForVarname);
-                    break (TokenKind::DollarLeftBrace, b"${".into(), state.source.span());
+                    break (
+                        TokenKind::DollarLeftBrace,
+                        b"${".into(),
+                        state.source.span(),
+                    );
                 }
                 [b'{', b'$', ..] => {
                     buffer_span = state.source.span();

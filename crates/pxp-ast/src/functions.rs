@@ -1,7 +1,5 @@
 use std::slice::Iter;
 
-use crate::Expression;
-use crate::Statement;
 use crate::attributes::AttributeGroup;
 use crate::comments::CommentGroup;
 use crate::data_type::Type;
@@ -11,7 +9,8 @@ use crate::modifiers::PromotedPropertyModifierGroup;
 use crate::node::Node;
 use crate::utils::CommaSeparated;
 use crate::variables::SimpleVariable;
-
+use crate::Expression;
+use crate::Statement;
 
 use pxp_span::Span;
 

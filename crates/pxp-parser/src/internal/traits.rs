@@ -1,5 +1,5 @@
-use crate::expect_token;
 use crate::error::ParseResult;
+use crate::expect_token;
 use crate::internal::attributes;
 use crate::internal::constants;
 use crate::internal::functions::method;
@@ -9,8 +9,8 @@ use crate::internal::identifiers;
 use crate::internal::modifiers;
 use crate::internal::properties;
 use crate::internal::utils;
-use crate::state::State;
 use crate::peek_token;
+use crate::state::State;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::modifiers::VisibilityModifier;
 use pxp_ast::traits::TraitBody;

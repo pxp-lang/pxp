@@ -18,12 +18,12 @@ use crate::internal::uses;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
-use pxp_ast::Statement;
 use pxp_ast::declares::DeclareBody;
 use pxp_ast::declares::DeclareEntry;
 use pxp_ast::declares::DeclareEntryGroup;
 use pxp_ast::declares::DeclareStatement;
 use pxp_ast::variables::Variable;
+use pxp_ast::Statement;
 use pxp_ast::{Program, StatementKind, StaticVar};
 use pxp_lexer::stream::TokenStream;
 use pxp_lexer::Lexer;
@@ -115,7 +115,8 @@ fn top_level_statement(state: &mut State) -> ParseResult<Statement> {
                 TokenKind::HaltCompiler => {
                     state.stream.next();
 
-                    let content = if let TokenKind::InlineHtml = state.stream.current().kind.clone() {
+                    let content = if let TokenKind::InlineHtml = state.stream.current().kind.clone()
+                    {
                         let content = state.stream.current().value.clone();
                         state.stream.next();
                         Some(content)
@@ -124,14 +125,14 @@ fn top_level_statement(state: &mut State) -> ParseResult<Statement> {
                     };
 
                     StatementKind::HaltCompiler(HaltCompilerStatement { content })
-                },
-                _ => unreachable!()
+                }
+                _ => unreachable!(),
             };
 
             Ok(Statement::new(
                 kind,
                 Span::new(start_span.start, state.stream.previous().span.end),
-                comments
+                comments,
             ))
         }
         _ => return statement(state),
@@ -172,10 +173,15 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                         let expression = expressions::attributes(state)?;
                         let ending = utils::skip_ending(state)?;
                         let ending_span = ending.span();
-                        
-                        let kind = StatementKind::Expression(ExpressionStatement { expression, ending });
 
-                        return Ok(Statement::new(kind, Span::new(start_span.start, ending_span.end), comments));
+                        let kind =
+                            StatementKind::Expression(ExpressionStatement { expression, ending });
+
+                        return Ok(Statement::new(
+                            kind,
+                            Span::new(start_span.start, ending_span.end),
+                            comments,
+                        ));
                     }
 
                     functions::function(state)?
@@ -239,12 +245,14 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                         let expression = expressions::attributes(state)?;
                         let ending = utils::skip_ending(state)?;
                         let ending_span = ending.span();
-                        let kind = StatementKind::Expression(ExpressionStatement {
-                            expression,
-                            ending
-                        });
+                        let kind =
+                            StatementKind::Expression(ExpressionStatement { expression, ending });
 
-                        return Ok(Statement::new(kind, Span::new(start_span.start, ending_span.end), comments));
+                        return Ok(Statement::new(
+                            kind,
+                            Span::new(start_span.start, ending_span.end),
+                            comments,
+                        ));
                     }
 
                     functions::function(state)?
@@ -463,5 +471,9 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
         }
     };
 
-    Ok(Statement::new(statement, Span::new(start_span.start, state.stream.previous().span.end), comments))
+    Ok(Statement::new(
+        statement,
+        Span::new(start_span.start, state.stream.previous().span.end),
+        comments,
+    ))
 }
