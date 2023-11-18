@@ -169,7 +169,7 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                     if !identifiers::is_identifier_maybe_soft_reserved(
                         &state.stream.lookahead(1).kind,
                     ) {
-                        let expression = expressions::attributes(state, &Precedence::Lowest)?;
+                        let expression = expressions::attributes(state)?;
                         let ending = utils::skip_ending(state)?;
                         let ending_span = ending.span();
                         
@@ -184,7 +184,7 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                 }
             }
             _ => StatementKind::Expression(ExpressionStatement {
-                expression: expressions::attributes(state, &Precedence::Lowest)?,
+                expression: expressions::attributes(state)?,
                 ending: utils::skip_ending(state)?,
             }),
         }
@@ -236,7 +236,7 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                     if !identifiers::is_identifier_maybe_soft_reserved(
                         &state.stream.lookahead(1).kind,
                     ) {
-                        let expression = expressions::attributes(state, &Precedence::Lowest)?;
+                        let expression = expressions::attributes(state)?;
                         let ending = utils::skip_ending(state)?;
                         let ending_span = ending.span();
                         let kind = StatementKind::Expression(ExpressionStatement {
