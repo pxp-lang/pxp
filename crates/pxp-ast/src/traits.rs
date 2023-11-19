@@ -1,49 +1,15 @@
 use crate::attributes::AttributeGroup;
-use crate::constant::ClassishConstant;
-use crate::functions::AbstractConstructor;
-use crate::functions::AbstractMethod;
-use crate::functions::ConcreteConstructor;
-use crate::functions::ConcreteMethod;
+use crate::classes::ClassishMember;
 use crate::identifiers::SimpleIdentifier;
 use crate::modifiers::VisibilityModifier;
 use crate::node::Node;
-use crate::properties::Property;
-use crate::properties::VariableProperty;
 use pxp_span::Span;
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-
-pub enum TraitMember {
-    Constant(ClassishConstant),
-    TraitUsage(TraitUsage),
-    Property(Property),
-    VariableProperty(VariableProperty),
-    AbstractMethod(AbstractMethod),
-    AbstractConstructor(AbstractConstructor),
-    ConcreteMethod(ConcreteMethod),
-    ConcreteConstructor(ConcreteConstructor),
-}
-
-impl Node for TraitMember {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            TraitMember::Constant(constant) => vec![constant],
-            TraitMember::TraitUsage(usage) => vec![usage],
-            TraitMember::Property(property) => vec![property],
-            TraitMember::VariableProperty(property) => vec![property],
-            TraitMember::AbstractMethod(method) => vec![method],
-            TraitMember::AbstractConstructor(constructor) => vec![constructor],
-            TraitMember::ConcreteMethod(method) => vec![method],
-            TraitMember::ConcreteConstructor(constructor) => vec![constructor],
-        }
-    }
-}
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct TraitBody {
     pub left_brace: Span,
-    pub members: Vec<TraitMember>,
+    pub members: Vec<ClassishMember>,
     pub right_brace: Span,
 }
 

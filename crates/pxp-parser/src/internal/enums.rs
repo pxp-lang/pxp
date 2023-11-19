@@ -2,11 +2,7 @@ use crate::error;
 use crate::error::ParseResult;
 use crate::expressions;
 use crate::internal::attributes;
-use crate::internal::constants;
-use crate::internal::functions;
-use crate::internal::functions::Method;
 use crate::internal::identifiers;
-use crate::internal::modifiers;
 use crate::internal::utils;
 use crate::state::State;
 use pxp_ast::enums::BackedEnumBody;
@@ -18,13 +14,11 @@ use pxp_ast::enums::UnitEnumBody;
 use pxp_ast::enums::UnitEnumCase;
 use pxp_ast::enums::UnitEnumMember;
 use pxp_ast::enums::UnitEnumStatement;
-use pxp_ast::functions::ConcreteMethod;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::StatementKind;
-use pxp_span::Span;
 use pxp_token::TokenKind;
 
-use super::traits;
+use super::classes::member;
 
 pub fn parse(state: &mut State) -> ParseResult<StatementKind> {
     let span = utils::skip(state, TokenKind::Enum)?;
@@ -113,13 +107,7 @@ fn unit_member(
     state: &mut State,
     enum_name: &SimpleIdentifier,
 ) -> ParseResult<Option<UnitEnumMember>> {
-    let has_attributes = attributes::gather_attributes(state)?;
-
-    if !has_attributes && state.stream.current().kind == TokenKind::Use {
-        return traits::usage(state)
-            .map(UnitEnumMember::TraitUsage)
-            .map(Some);
-    }
+    let _has_attributes = attributes::gather_attributes(state)?;
 
     let current = state.stream.current();
     if current.kind == TokenKind::Case {
@@ -154,28 +142,14 @@ fn unit_member(
         })));
     }
 
-    let modifiers = modifiers::collect(state)?;
-
-    if state.stream.current().kind == TokenKind::Const {
-        return constants::classish(state, modifiers::constant_group(modifiers)?)
-            .map(UnitEnumMember::Constant)
-            .map(Some);
-    }
-
-    method(state, modifiers, enum_name).map(|method| method.map(UnitEnumMember::Method))
+    Ok(Some(UnitEnumMember::Classish(member(state, false, enum_name)?)))
 }
 
 fn backed_member(
     state: &mut State,
     enum_name: &SimpleIdentifier,
 ) -> ParseResult<Option<BackedEnumMember>> {
-    let has_attributes = attributes::gather_attributes(state)?;
-
-    if !has_attributes && state.stream.current().kind == TokenKind::Use {
-        return traits::usage(state)
-            .map(BackedEnumMember::TraitUsage)
-            .map(Some);
-    }
+    let _has_attributes = attributes::gather_attributes(state)?;
 
     let current = state.stream.current();
     if current.kind == TokenKind::Case {
@@ -215,51 +189,5 @@ fn backed_member(
         })));
     }
 
-    let modifiers = modifiers::collect(state)?;
-
-    if state.stream.current().kind == TokenKind::Const {
-        return constants::classish(state, modifiers::constant_group(modifiers)?)
-            .map(BackedEnumMember::Constant)
-            .map(Some);
-    }
-
-    method(state, modifiers, enum_name).map(|method| method.map(BackedEnumMember::Method))
-}
-
-fn method(
-    state: &mut State,
-    modifiers: Vec<(Span, TokenKind)>,
-    enum_name: &SimpleIdentifier,
-) -> ParseResult<Option<ConcreteMethod>> {
-    let method = functions::method(
-        state,
-        functions::MethodType::Concrete,
-        modifiers::enum_method_group(modifiers)?,
-        Some(enum_name),
-    )?;
-
-    match method {
-        Method::ConcreteConstructor(constructor) => {
-            let error = error::constructor_in_enum(state, enum_name, &constructor.name);
-
-            state.record(error);
-
-            Ok(None)
-        }
-        Method::Concrete(method) => {
-            match method.name.value[..].to_ascii_lowercase().as_slice() {
-                b"__get" | b"__set" | b"__serialize" | b"__unserialize" | b"__destruct"
-                | b"__wakeup" | b"__sleep" | b"__set_state" | b"__unset" | b"__isset"
-                | b"__debuginfo" | b"__clone" | b"__tostring" => {
-                    let error = error::magic_method_in_enum(state, enum_name, &method.name);
-
-                    state.record(error);
-                }
-                _ => {}
-            }
-
-            Ok(Some(method))
-        }
-        Method::Abstract(_) | Method::AbstractConstructor(_) => unreachable!(),
-    }
+    Ok(Some(BackedEnumMember::Classish(member(state, false, enum_name)?)))
 }

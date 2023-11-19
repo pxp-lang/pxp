@@ -19,18 +19,18 @@ use pxp_span::Span;
 
 pub struct ClassBody {
     pub left_brace: Span, // `{`
-    pub members: Vec<ClassMember>,
+    pub members: Vec<ClassishMember>,
     pub right_brace: Span, // `}`
 }
 
 impl ClassBody {
-    pub fn iter(&self) -> Iter<'_, ClassMember> {
+    pub fn iter(&self) -> Iter<'_, ClassishMember> {
         self.members.iter()
     }
 }
 
 impl IntoIterator for ClassBody {
-    type Item = ClassMember;
+    type Item = ClassishMember;
     type IntoIter = std::vec::IntoIter<Self::Item>;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -78,18 +78,18 @@ impl Node for ClassStatement {
 
 pub struct AnonymousClassBody {
     pub left_brace: Span, // `{`
-    pub members: Vec<AnonymousClassMember>,
+    pub members: Vec<ClassishMember>,
     pub right_brace: Span, // `}`
 }
 
 impl AnonymousClassBody {
-    pub fn iter(&self) -> Iter<'_, AnonymousClassMember> {
+    pub fn iter(&self) -> Iter<'_, ClassishMember> {
         self.members.iter()
     }
 }
 
 impl IntoIterator for AnonymousClassBody {
-    type Item = AnonymousClassMember;
+    type Item = ClassishMember;
     type IntoIter = std::vec::IntoIter<Self::Item>;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -173,7 +173,7 @@ impl Node for ClassImplements {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
-pub enum ClassMember {
+pub enum ClassishMember {
     Constant(ClassishConstant),
     TraitUsage(TraitUsage),
     Property(Property),
@@ -184,41 +184,17 @@ pub enum ClassMember {
     ConcreteConstructor(ConcreteConstructor),
 }
 
-impl Node for ClassMember {
+impl Node for ClassishMember {
     fn children(&mut self) -> Vec<&mut dyn Node> {
         match self {
-            ClassMember::Constant(constant) => vec![constant],
-            ClassMember::TraitUsage(usage) => vec![usage],
-            ClassMember::Property(property) => vec![property],
-            ClassMember::VariableProperty(property) => vec![property],
-            ClassMember::AbstractMethod(method) => vec![method],
-            ClassMember::AbstractConstructor(method) => vec![method],
-            ClassMember::ConcreteMethod(method) => vec![method],
-            ClassMember::ConcreteConstructor(method) => vec![method],
-        }
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-
-pub enum AnonymousClassMember {
-    Constant(ClassishConstant),
-    TraitUsage(TraitUsage),
-    Property(Property),
-    VariableProperty(VariableProperty),
-    ConcreteMethod(ConcreteMethod),
-    ConcreteConstructor(ConcreteConstructor),
-}
-
-impl Node for AnonymousClassMember {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            AnonymousClassMember::Constant(constant) => vec![constant],
-            AnonymousClassMember::TraitUsage(usage) => vec![usage],
-            AnonymousClassMember::Property(property) => vec![property],
-            AnonymousClassMember::VariableProperty(property) => vec![property],
-            AnonymousClassMember::ConcreteMethod(method) => vec![method],
-            AnonymousClassMember::ConcreteConstructor(method) => vec![method],
+            ClassishMember::Constant(constant) => vec![constant],
+            ClassishMember::TraitUsage(usage) => vec![usage],
+            ClassishMember::Property(property) => vec![property],
+            ClassishMember::VariableProperty(property) => vec![property],
+            ClassishMember::AbstractMethod(method) => vec![method],
+            ClassishMember::AbstractConstructor(method) => vec![method],
+            ClassishMember::ConcreteMethod(method) => vec![method],
+            ClassishMember::ConcreteConstructor(method) => vec![method],
         }
     }
 }

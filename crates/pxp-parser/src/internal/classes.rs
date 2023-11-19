@@ -14,17 +14,17 @@ use crate::internal::utils;
 use crate::state::State;
 use pxp_ast::classes::AnonymousClassBody;
 use pxp_ast::classes::AnonymousClassExpression;
-use pxp_ast::classes::AnonymousClassMember;
 use pxp_ast::classes::ClassBody;
 use pxp_ast::classes::ClassExtends;
 use pxp_ast::classes::ClassImplements;
-use pxp_ast::classes::ClassMember;
+use pxp_ast::classes::ClassishMember;
 use pxp_ast::classes::ClassStatement;
 use pxp_ast::comments::CommentGroup;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::Expression;
 use pxp_ast::StatementKind;
 use pxp_ast::{ExpressionKind, NewExpression};
+use pxp_span::Position;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
@@ -149,7 +149,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> ParseResult<Exp
         members: {
             let mut members = Vec::new();
             while state.stream.current().kind != TokenKind::RightBrace {
-                members.push(anonymous_member(state)?);
+                members.push(member(state, false, &SimpleIdentifier { span: Span::new(Position::new(usize::MAX, usize::MAX, usize::MAX), Position::new(usize::MAX, usize::MAX, usize::MAX)), value: b"<anonymous>".into() })?);
             }
             members
         },
@@ -181,25 +181,25 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> ParseResult<Exp
     ))
 }
 
-fn member(
+pub fn member(
     state: &mut State,
     has_abstract: bool,
     name: &SimpleIdentifier,
-) -> ParseResult<ClassMember> {
+) -> ParseResult<ClassishMember> {
     let has_attributes = attributes::gather_attributes(state)?;
 
     if !has_attributes && state.stream.current().kind == TokenKind::Use {
-        return traits::usage(state).map(ClassMember::TraitUsage);
+        return traits::usage(state).map(ClassishMember::TraitUsage);
     }
 
     if state.stream.current().kind == TokenKind::Var {
-        return properties::parse_var(state, Some(name)).map(ClassMember::VariableProperty);
+        return properties::parse_var(state, Some(name)).map(ClassishMember::VariableProperty);
     }
 
     let modifiers = modifiers::collect(state)?;
 
     if state.stream.current().kind == TokenKind::Const {
-        return classish(state, modifiers::constant_group(modifiers)?).map(ClassMember::Constant);
+        return classish(state, modifiers::constant_group(modifiers)?).map(ClassishMember::Constant);
     }
 
     if state.stream.current().kind == TokenKind::Function {
@@ -213,7 +213,7 @@ fn member(
         return match method {
             Method::Abstract(method) => {
                 if has_abstract {
-                    Ok(ClassMember::AbstractMethod(method))
+                    Ok(ClassishMember::AbstractMethod(method))
                 } else {
                     Err(error::abstract_method_on_a_non_abstract_class(
                         state,
@@ -224,10 +224,10 @@ fn member(
                     ))
                 }
             }
-            Method::Concrete(method) => Ok(ClassMember::ConcreteMethod(method)),
+            Method::Concrete(method) => Ok(ClassishMember::ConcreteMethod(method)),
             Method::AbstractConstructor(ctor) => {
                 if has_abstract {
-                    Ok(ClassMember::AbstractConstructor(ctor))
+                    Ok(ClassishMember::AbstractConstructor(ctor))
                 } else {
                     Err(error::abstract_method_on_a_non_abstract_class(
                         state,
@@ -238,55 +238,12 @@ fn member(
                     ))
                 }
             }
-            Method::ConcreteConstructor(ctor) => Ok(ClassMember::ConcreteConstructor(ctor)),
+            Method::ConcreteConstructor(ctor) => Ok(ClassishMember::ConcreteConstructor(ctor)),
         };
     }
 
     // e.g: public static
     let modifiers = modifiers::property_group(modifiers)?;
 
-    properties::parse(state, Some(name), modifiers).map(ClassMember::Property)
-}
-
-fn anonymous_member(state: &mut State) -> ParseResult<AnonymousClassMember> {
-    let has_attributes = attributes::gather_attributes(state)?;
-
-    if !has_attributes && state.stream.current().kind == TokenKind::Use {
-        return traits::usage(state).map(AnonymousClassMember::TraitUsage);
-    }
-
-    if state.stream.current().kind == TokenKind::Var {
-        return properties::parse_var(state, None).map(AnonymousClassMember::VariableProperty);
-    }
-
-    let modifiers = modifiers::collect(state)?;
-
-    if state.stream.current().kind == TokenKind::Const {
-        return classish(state, modifiers::constant_group(modifiers)?)
-            .map(AnonymousClassMember::Constant);
-    }
-
-    if state.stream.current().kind == TokenKind::Function {
-        let method = method(
-            state,
-            MethodType::Concrete,
-            modifiers::method_group(modifiers)?,
-            None,
-        )?;
-
-        match method {
-            Method::Concrete(method) => {
-                return Ok(AnonymousClassMember::ConcreteMethod(method));
-            }
-            Method::ConcreteConstructor(ctor) => {
-                return Ok(AnonymousClassMember::ConcreteConstructor(ctor));
-            }
-            Method::Abstract(_) | Method::AbstractConstructor(_) => unreachable!(),
-        }
-    }
-
-    // e.g: public static
-    let modifiers = modifiers::property_group(modifiers)?;
-
-    properties::parse(state, None, modifiers).map(AnonymousClassMember::Property)
+    properties::parse(state, Some(name), modifiers).map(ClassishMember::Property)
 }

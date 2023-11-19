@@ -1,29 +1,9 @@
 use crate::attributes::AttributeGroup;
-use crate::constant::ClassishConstant;
-use crate::functions::AbstractConstructor;
-use crate::functions::AbstractMethod;
+use crate::classes::ClassishMember;
 use crate::identifiers::SimpleIdentifier;
 use crate::node::Node;
 use crate::utils::CommaSeparated;
 use pxp_span::Span;
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-
-pub enum InterfaceMember {
-    Constant(ClassishConstant),       // `public const FOO = 123;`
-    Constructor(AbstractConstructor), // `public function __construct(): void;`
-    Method(AbstractMethod),           // `public function foo(): void;`
-}
-
-impl Node for InterfaceMember {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            InterfaceMember::Constant(constant) => vec![constant],
-            InterfaceMember::Constructor(constructor) => vec![constructor],
-            InterfaceMember::Method(method) => vec![method],
-        }
-    }
-}
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -42,7 +22,7 @@ impl Node for InterfaceExtends {
 
 pub struct InterfaceBody {
     pub left_brace: Span,              // `{`
-    pub members: Vec<InterfaceMember>, // `public const FOO = 123;`, `public function foo(): void;`
+    pub members: Vec<ClassishMember>, // `public const FOO = 123;`, `public function foo(): void;`
     pub right_brace: Span,             // `}`
 }
 

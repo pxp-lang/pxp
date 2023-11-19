@@ -1,26 +1,20 @@
 use crate::error::ParseResult;
 use crate::expect_token;
-use crate::internal::attributes;
-use crate::internal::constants;
-use crate::internal::functions::method;
-use crate::internal::functions::Method;
-use crate::internal::functions::MethodType;
 use crate::internal::identifiers;
-use crate::internal::modifiers;
-use crate::internal::properties;
 use crate::internal::utils;
 use crate::peek_token;
 use crate::state::State;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::modifiers::VisibilityModifier;
 use pxp_ast::traits::TraitBody;
-use pxp_ast::traits::TraitMember;
 use pxp_ast::traits::TraitStatement;
 use pxp_ast::traits::TraitUsage;
 use pxp_ast::traits::TraitUsageAdaptation;
 use pxp_ast::StatementKind;
 use pxp_token::Token;
 use pxp_token::TokenKind;
+
+use super::classes::member;
 
 pub fn usage(state: &mut State) -> ParseResult<TraitUsage> {
     let span = utils::skip(state, TokenKind::Use)?;
@@ -169,7 +163,7 @@ pub fn parse(state: &mut State) -> ParseResult<StatementKind> {
         members: {
             let mut members = Vec::new();
             while state.stream.current().kind != TokenKind::RightBrace && !state.stream.is_eof() {
-                members.push(member(state, &name)?);
+                members.push(member(state, true, &name)?);
             }
             members
         },
@@ -182,46 +176,4 @@ pub fn parse(state: &mut State) -> ParseResult<StatementKind> {
         attributes,
         body,
     }))
-}
-
-fn member(state: &mut State, class_name: &SimpleIdentifier) -> ParseResult<TraitMember> {
-    let has_attributes = attributes::gather_attributes(state)?;
-
-    if !has_attributes && state.stream.current().kind == TokenKind::Use {
-        return usage(state).map(TraitMember::TraitUsage);
-    }
-
-    if state.stream.current().kind == TokenKind::Var {
-        return properties::parse_var(state, Some(class_name)).map(TraitMember::VariableProperty);
-    }
-
-    let modifiers = modifiers::collect(state)?;
-
-    if state.stream.current().kind == TokenKind::Const {
-        return constants::classish(state, modifiers::constant_group(modifiers)?)
-            .map(TraitMember::Constant);
-    }
-
-    if state.stream.current().kind == TokenKind::Function {
-        let method = method(
-            state,
-            MethodType::DependingOnModifiers,
-            modifiers::method_group(modifiers)?,
-            Some(class_name),
-        )?;
-
-        return match method {
-            Method::Abstract(method) => Ok(TraitMember::AbstractMethod(method)),
-            Method::Concrete(method) => Ok(TraitMember::ConcreteMethod(method)),
-            Method::AbstractConstructor(ctor) => Ok(TraitMember::AbstractConstructor(ctor)),
-            Method::ConcreteConstructor(ctor) => Ok(TraitMember::ConcreteConstructor(ctor)),
-        };
-    }
-
-    properties::parse(
-        state,
-        Some(class_name),
-        modifiers::property_group(modifiers)?,
-    )
-    .map(TraitMember::Property)
 }

@@ -32,7 +32,7 @@ use pxp_token::OpenTagKind;
 use pxp_token::Token;
 use pxp_token::TokenKind;
 
-use self::internal::precedences::Precedence;
+
 use pxp_ast::ClosingTagStatement;
 use pxp_ast::EchoOpeningTagStatement;
 use pxp_ast::EchoStatement;

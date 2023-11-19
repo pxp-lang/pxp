@@ -1,12 +1,13 @@
 use crate::attributes::AttributeGroup;
-use crate::constant::ClassishConstant;
-use crate::functions::ConcreteMethod;
+use crate::classes::ClassishMember;
+
+
 use crate::identifiers::SimpleIdentifier;
 use crate::node::Node;
 use crate::Expression;
 use pxp_span::Span;
 
-use super::traits::TraitUsage;
+
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -26,19 +27,15 @@ impl Node for UnitEnumCase {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum UnitEnumMember {
-    Case(UnitEnumCase),         // `case Bar;`
-    Method(ConcreteMethod),     // `public function foo(): void { ... }`
-    Constant(ClassishConstant), // `public const FOO = 123;`
-    TraitUsage(TraitUsage),
+    Case(UnitEnumCase),
+    Classish(ClassishMember),
 }
 
 impl Node for UnitEnumMember {
     fn children(&mut self) -> Vec<&mut dyn Node> {
         match self {
             UnitEnumMember::Case(case) => vec![case],
-            UnitEnumMember::Method(method) => vec![method],
-            UnitEnumMember::Constant(constant) => vec![constant],
-            UnitEnumMember::TraitUsage(trait_usage) => vec![trait_usage],
+            UnitEnumMember::Classish(classish) => vec![classish],
         }
     }
 }
@@ -113,18 +110,14 @@ impl Node for BackedEnumCase {
 
 pub enum BackedEnumMember {
     Case(BackedEnumCase),
-    Method(ConcreteMethod),
-    Constant(ClassishConstant),
-    TraitUsage(TraitUsage),
+    Classish(ClassishMember),
 }
 
 impl Node for BackedEnumMember {
     fn children(&mut self) -> Vec<&mut dyn Node> {
         match self {
             BackedEnumMember::Case(case) => vec![case],
-            BackedEnumMember::Method(method) => vec![method],
-            BackedEnumMember::Constant(constant) => vec![constant],
-            BackedEnumMember::TraitUsage(trait_usage) => vec![trait_usage],
+            BackedEnumMember::Classish(classish) => vec![classish],
         }
     }
 }
