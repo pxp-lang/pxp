@@ -142,7 +142,9 @@ fn unit_member(
         })));
     }
 
-    Ok(Some(UnitEnumMember::Classish(member(state, false, enum_name)?)))
+    Ok(Some(UnitEnumMember::Classish(member(
+        state, false, enum_name,
+    )?)))
 }
 
 fn backed_member(
@@ -189,5 +191,7 @@ fn backed_member(
         })));
     }
 
-    Ok(Some(BackedEnumMember::Classish(member(state, false, enum_name)?)))
+    Ok(Some(BackedEnumMember::Classish(member(
+        state, false, enum_name,
+    )?)))
 }

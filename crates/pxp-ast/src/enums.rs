@@ -1,13 +1,10 @@
 use crate::attributes::AttributeGroup;
 use crate::classes::ClassishMember;
 
-
 use crate::identifiers::SimpleIdentifier;
 
 use crate::Expression;
 use pxp_span::Span;
-
-
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

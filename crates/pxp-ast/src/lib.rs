@@ -166,7 +166,6 @@ impl Statement {
     }
 }
 
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum StatementKind {
@@ -306,7 +305,7 @@ pub struct Use {
     pub name: SimpleIdentifier,
     pub alias: Option<SimpleIdentifier>,
     pub kind: Option<UseKind>,
-} 
+}
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct EvalExpression {

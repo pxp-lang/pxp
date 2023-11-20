@@ -17,8 +17,8 @@ use pxp_ast::classes::AnonymousClassExpression;
 use pxp_ast::classes::ClassBody;
 use pxp_ast::classes::ClassExtends;
 use pxp_ast::classes::ClassImplements;
-use pxp_ast::classes::ClassishMember;
 use pxp_ast::classes::ClassStatement;
+use pxp_ast::classes::ClassishMember;
 use pxp_ast::comments::CommentGroup;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::Expression;
@@ -149,7 +149,17 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> ParseResult<Exp
         members: {
             let mut members = Vec::new();
             while state.stream.current().kind != TokenKind::RightBrace {
-                members.push(member(state, false, &SimpleIdentifier { span: Span::new(Position::new(usize::MAX, usize::MAX, usize::MAX), Position::new(usize::MAX, usize::MAX, usize::MAX)), value: b"<anonymous>".into() })?);
+                members.push(member(
+                    state,
+                    false,
+                    &SimpleIdentifier {
+                        span: Span::new(
+                            Position::new(usize::MAX, usize::MAX, usize::MAX),
+                            Position::new(usize::MAX, usize::MAX, usize::MAX),
+                        ),
+                        value: b"<anonymous>".into(),
+                    },
+                )?);
             }
             members
         },
@@ -199,7 +209,8 @@ pub fn member(
     let modifiers = modifiers::collect(state)?;
 
     if state.stream.current().kind == TokenKind::Const {
-        return classish(state, modifiers::constant_group(modifiers)?).map(ClassishMember::Constant);
+        return classish(state, modifiers::constant_group(modifiers)?)
+            .map(ClassishMember::Constant);
     }
 
     if state.stream.current().kind == TokenKind::Function {

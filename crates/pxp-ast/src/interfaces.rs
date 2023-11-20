@@ -14,9 +14,9 @@ pub struct InterfaceExtends {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct InterfaceBody {
-    pub left_brace: Span,              // `{`
+    pub left_brace: Span,             // `{`
     pub members: Vec<ClassishMember>, // `public const FOO = 123;`, `public function foo(): void;`
-    pub right_brace: Span,             // `}`
+    pub right_brace: Span,            // `}`
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]

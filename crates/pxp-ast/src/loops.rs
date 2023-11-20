@@ -52,7 +52,6 @@ pub enum ForeachStatementBody {
     },
 }
 
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ForStatement {
@@ -62,7 +61,6 @@ pub struct ForStatement {
     pub right_parenthesis: Span,        // `)`
     pub body: ForStatementBody,         // `{ ... }`
 }
-
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -88,7 +86,6 @@ pub enum ForStatementBody {
     },
 }
 
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct DoWhileStatement {
@@ -101,7 +98,6 @@ pub struct DoWhileStatement {
     pub semicolon: Span,         // `;`
 }
 
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct WhileStatement {
@@ -111,7 +107,6 @@ pub struct WhileStatement {
     pub right_parenthesis: Span,  // `)`
     pub body: WhileStatementBody, // `{ ... }`
 }
-
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -126,7 +121,6 @@ pub enum WhileStatementBody {
         ending: Ending,             // `;` or `?>`
     },
 }
-
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

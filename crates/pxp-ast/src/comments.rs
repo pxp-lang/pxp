@@ -1,6 +1,5 @@
 use std::slice::Iter;
 
-
 use pxp_bytestring::ByteString;
 use pxp_span::Span;
 
