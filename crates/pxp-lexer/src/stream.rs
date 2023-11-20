@@ -1,9 +1,8 @@
+use pxp_syntax::comments::Comment;
+use pxp_syntax::comments::CommentFormat;
+use pxp_syntax::comments::CommentGroup;
 use pxp_token::Token;
 use pxp_token::TokenKind;
-
-use pxp_ast::comments::Comment;
-use pxp_ast::comments::CommentFormat;
-use pxp_ast::comments::CommentGroup;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TokenStream<'a> {

@@ -15,7 +15,6 @@ use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
 use pxp_ast::arguments::ArgumentPlaceholder;
-use pxp_ast::comments::CommentGroup;
 use pxp_ast::identifiers::DynamicIdentifier;
 use pxp_ast::identifiers::Identifier;
 use pxp_ast::identifiers::SimpleIdentifier;
@@ -40,6 +39,7 @@ use pxp_ast::{
     StaticVariableMethodClosureCreationExpression, TernaryExpression,
 };
 use pxp_span::Span;
+use pxp_syntax::comments::CommentGroup;
 use pxp_token::DocStringKind;
 use pxp_token::TokenKind;
 

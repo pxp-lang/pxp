@@ -1,7 +1,7 @@
-use crate::comments::CommentGroup;
 use crate::identifiers::SimpleIdentifier;
 
 use pxp_span::Span;
+use pxp_syntax::comments::CommentGroup;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

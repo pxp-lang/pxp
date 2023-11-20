@@ -7,7 +7,6 @@ use crate::internal::parameters;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
-use pxp_ast::comments::CommentGroup;
 use pxp_ast::functions::AbstractConstructor;
 use pxp_ast::functions::AbstractMethod;
 use pxp_ast::functions::ArrowFunctionExpression;
@@ -26,6 +25,7 @@ use pxp_ast::Expression;
 use pxp_ast::ExpressionKind;
 use pxp_ast::StatementKind;
 use pxp_span::Span;
+use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
 pub enum MethodType {

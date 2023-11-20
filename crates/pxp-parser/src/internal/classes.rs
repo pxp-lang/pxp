@@ -19,13 +19,13 @@ use pxp_ast::classes::ClassExtends;
 use pxp_ast::classes::ClassImplements;
 use pxp_ast::classes::ClassStatement;
 use pxp_ast::classes::ClassishMember;
-use pxp_ast::comments::CommentGroup;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::Expression;
 use pxp_ast::StatementKind;
 use pxp_ast::{ExpressionKind, NewExpression};
 use pxp_span::Position;
 use pxp_span::Span;
+use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
 pub fn parse(state: &mut State) -> ParseResult<StatementKind> {

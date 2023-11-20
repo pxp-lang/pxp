@@ -6,7 +6,6 @@ use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
-use pxp_ast::comments::CommentGroup;
 use pxp_ast::identifiers::Identifier;
 use pxp_ast::literals::Literal;
 use pxp_ast::literals::LiteralInteger;
@@ -25,6 +24,7 @@ use pxp_ast::{
 };
 use pxp_lexer::error::SyntaxError;
 use pxp_span::Span;
+use pxp_syntax::comments::CommentGroup;
 use pxp_token::DocStringIndentationKind;
 use pxp_token::TokenKind;
 

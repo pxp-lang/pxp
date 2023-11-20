@@ -3,12 +3,12 @@ use crate::error::ParseResult;
 use crate::expressions;
 use crate::internal::utils;
 use crate::state::State;
-use pxp_ast::comments::CommentGroup;
 use pxp_ast::Expression;
 use pxp_ast::ExpressionKind;
 use pxp_ast::ListEntry;
 use pxp_ast::{ArrayExpression, ArrayItem, ListExpression, ShortArrayExpression};
 use pxp_span::Span;
+use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
 pub fn list_expression(state: &mut State) -> ParseResult<Expression> {

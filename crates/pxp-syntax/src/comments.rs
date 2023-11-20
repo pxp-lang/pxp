@@ -4,7 +4,6 @@ use pxp_bytestring::ByteString;
 use pxp_span::Span;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-
 pub enum CommentFormat {
     SingleLine,
     MultiLine,

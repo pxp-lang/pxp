@@ -1,10 +1,10 @@
 use std::slice::Iter;
 
-use crate::comments::CommentGroup;
 use crate::identifiers::SimpleIdentifier;
 
 use crate::Expression;
 use pxp_span::Span;
+use pxp_syntax::comments::CommentGroup;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PositionalArgument {
