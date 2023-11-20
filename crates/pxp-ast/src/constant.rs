@@ -4,7 +4,7 @@ use crate::attributes::AttributeGroup;
 use crate::comments::CommentGroup;
 use crate::identifiers::SimpleIdentifier;
 use crate::modifiers::ConstantModifierGroup;
-use crate::node::Node;
+
 use crate::Expression;
 use pxp_span::Span;
 
@@ -14,12 +14,6 @@ pub struct ConstantEntry {
     pub name: SimpleIdentifier, // `FOO`
     pub equals: Span,           // `=`
     pub value: Expression,      // `123`
-}
-
-impl Node for ConstantEntry {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![&mut self.name, &mut self.value]
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -43,15 +37,6 @@ impl IntoIterator for ConstantStatement {
 
     fn into_iter(self) -> Self::IntoIter {
         self.entries.into_iter()
-    }
-}
-
-impl Node for ConstantStatement {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        self.entries
-            .iter_mut()
-            .map(|e| e as &mut dyn Node)
-            .collect()
     }
 }
 
@@ -79,14 +64,5 @@ impl IntoIterator for ClassishConstant {
 
     fn into_iter(self) -> Self::IntoIter {
         self.entries.into_iter()
-    }
-}
-
-impl Node for ClassishConstant {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        self.entries
-            .iter_mut()
-            .map(|e| e as &mut dyn Node)
-            .collect()
     }
 }

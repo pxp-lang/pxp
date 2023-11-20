@@ -8,7 +8,7 @@ use crate::functions::ConcreteConstructor;
 use crate::functions::ConcreteMethod;
 use crate::identifiers::SimpleIdentifier;
 use crate::modifiers::ClassModifierGroup;
-use crate::node::Node;
+
 use crate::properties::Property;
 use crate::properties::VariableProperty;
 use crate::traits::TraitUsage;
@@ -38,15 +38,6 @@ impl IntoIterator for ClassBody {
     }
 }
 
-impl Node for ClassBody {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        self.members
-            .iter_mut()
-            .map(|member| member as &mut dyn Node)
-            .collect()
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ClassStatement {
@@ -58,20 +49,6 @@ pub struct ClassStatement {
     pub extends: Option<ClassExtends>,       // `extends Foo`
     pub implements: Option<ClassImplements>, // `implements Bar, Baz`
     pub body: ClassBody,                     // `{ ... }`
-}
-
-impl Node for ClassStatement {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        let mut children: Vec<&mut dyn Node> = vec![&mut self.name];
-        if let Some(extends) = &mut self.extends {
-            children.push(extends);
-        }
-        if let Some(implements) = &mut self.implements {
-            children.push(implements);
-        }
-        children.push(&mut self.body);
-        children
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -97,15 +74,6 @@ impl IntoIterator for AnonymousClassBody {
     }
 }
 
-impl Node for AnonymousClassBody {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        self.members
-            .iter_mut()
-            .map(|member| member as &mut dyn Node)
-            .collect()
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct AnonymousClassExpression {
@@ -116,31 +84,11 @@ pub struct AnonymousClassExpression {
     pub body: AnonymousClassBody,            // `{ ... }`
 }
 
-impl Node for AnonymousClassExpression {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        let mut children: Vec<&mut dyn Node> = vec![];
-        if let Some(extends) = &mut self.extends {
-            children.push(extends);
-        }
-        if let Some(implements) = &mut self.implements {
-            children.push(implements);
-        }
-        children.push(&mut self.body);
-        children
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ClassExtends {
     pub extends: Span,            // `extends`
     pub parent: SimpleIdentifier, // `Foo`
-}
-
-impl Node for ClassExtends {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![&mut self.parent]
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -165,12 +113,6 @@ impl IntoIterator for ClassImplements {
     }
 }
 
-impl Node for ClassImplements {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        self.interfaces.children()
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum ClassishMember {
@@ -182,19 +124,4 @@ pub enum ClassishMember {
     AbstractConstructor(AbstractConstructor),
     ConcreteMethod(ConcreteMethod),
     ConcreteConstructor(ConcreteConstructor),
-}
-
-impl Node for ClassishMember {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            ClassishMember::Constant(constant) => vec![constant],
-            ClassishMember::TraitUsage(usage) => vec![usage],
-            ClassishMember::Property(property) => vec![property],
-            ClassishMember::VariableProperty(property) => vec![property],
-            ClassishMember::AbstractMethod(method) => vec![method],
-            ClassishMember::AbstractConstructor(method) => vec![method],
-            ClassishMember::ConcreteMethod(method) => vec![method],
-            ClassishMember::ConcreteConstructor(method) => vec![method],
-        }
-    }
 }

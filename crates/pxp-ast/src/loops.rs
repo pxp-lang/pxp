@@ -1,5 +1,5 @@
 use crate::literals::LiteralInteger;
-use crate::node::Node;
+
 use crate::utils::CommaSeparated;
 use crate::Ending;
 use crate::Expression;
@@ -15,12 +15,6 @@ pub struct ForeachStatement {
     pub iterator: ForeachStatementIterator, // `( *expression* as & $var => $value )`
     pub right_parenthesis: Span,            // `)`
     pub body: ForeachStatementBody,         // `{ ... }`
-}
-
-impl Node for ForeachStatement {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![&mut self.iterator, &mut self.body]
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -44,24 +38,6 @@ pub enum ForeachStatementIterator {
     },
 }
 
-impl Node for ForeachStatementIterator {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            ForeachStatementIterator::Value {
-                expression, value, ..
-            } => {
-                vec![expression, value]
-            }
-            ForeachStatementIterator::KeyAndValue {
-                expression,
-                key,
-                value,
-                ..
-            } => vec![expression, key, value],
-        }
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum ForeachStatementBody {
@@ -76,16 +52,6 @@ pub enum ForeachStatementBody {
     },
 }
 
-impl Node for ForeachStatementBody {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            ForeachStatementBody::Statement { statement } => vec![statement.as_mut()],
-            ForeachStatementBody::Block { statements, .. } => {
-                statements.iter_mut().map(|s| s as &mut dyn Node).collect()
-            }
-        }
-    }
-}
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -97,11 +63,6 @@ pub struct ForStatement {
     pub body: ForStatementBody,         // `{ ... }`
 }
 
-impl Node for ForStatement {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![&mut self.iterator, &mut self.body]
-    }
-}
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -111,21 +72,6 @@ pub struct ForStatementIterator {
     pub conditions: CommaSeparated<Expression>,      // `*expression*;`
     pub conditions_semicolon: Span,                  // `;`
     pub r#loop: CommaSeparated<Expression>,          // `*expression*`
-}
-
-impl Node for ForStatementIterator {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        let mut children = vec![];
-        children.extend(
-            self.initializations
-                .inner
-                .iter_mut()
-                .map(|x| x as &mut dyn Node),
-        );
-        children.extend(self.conditions.inner.iter_mut().map(|x| x as &mut dyn Node));
-        children.extend(self.r#loop.inner.iter_mut().map(|x| x as &mut dyn Node));
-        children
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -142,16 +88,6 @@ pub enum ForStatementBody {
     },
 }
 
-impl Node for ForStatementBody {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            ForStatementBody::Statement { statement } => vec![statement.as_mut()],
-            ForStatementBody::Block { statements, .. } => {
-                statements.iter_mut().map(|x| x as &mut dyn Node).collect()
-            }
-        }
-    }
-}
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -165,11 +101,6 @@ pub struct DoWhileStatement {
     pub semicolon: Span,         // `;`
 }
 
-impl Node for DoWhileStatement {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![self.body.as_mut(), &mut self.condition]
-    }
-}
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -181,11 +112,6 @@ pub struct WhileStatement {
     pub body: WhileStatementBody, // `{ ... }`
 }
 
-impl Node for WhileStatement {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![&mut self.condition, &mut self.body]
-    }
-}
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -201,16 +127,6 @@ pub enum WhileStatementBody {
     },
 }
 
-impl Node for WhileStatementBody {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            WhileStatementBody::Statement { statement } => vec![statement.as_mut()],
-            WhileStatementBody::Block { statements, .. } => {
-                statements.iter_mut().map(|s| s as &mut dyn Node).collect()
-            }
-        }
-    }
-}
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -223,15 +139,6 @@ pub enum Level {
     },
 }
 
-impl Node for Level {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            Level::Literal(literal) => vec![literal],
-            Level::Parenthesized { level, .. } => level.children(),
-        }
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct BreakStatement {
@@ -239,29 +146,10 @@ pub struct BreakStatement {
     pub level: Option<Level>, // `3`
     pub ending: Ending,       // `;` or `?>`
 }
-
-impl Node for BreakStatement {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match &mut self.level {
-            Some(level) => vec![level],
-            None => vec![],
-        }
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ContinueStatement {
     pub r#continue: Span,     // `continue`
     pub level: Option<Level>, // `2`
     pub ending: Ending,       // `;` or `?>`
-}
-
-impl Node for ContinueStatement {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match &mut self.level {
-            Some(level) => vec![level],
-            None => vec![],
-        }
-    }
 }

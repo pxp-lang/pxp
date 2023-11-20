@@ -1,4 +1,4 @@
-use crate::node::Node;
+
 use crate::Expression;
 use pxp_span::Span;
 
@@ -59,37 +59,6 @@ pub enum ArithmeticOperationExpression {
         left: Box<Expression>,
         decrement: Span,
     },
-}
-
-impl Node for ArithmeticOperationExpression {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            ArithmeticOperationExpression::Addition { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            ArithmeticOperationExpression::Subtraction { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            ArithmeticOperationExpression::Multiplication { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            ArithmeticOperationExpression::Division { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            ArithmeticOperationExpression::Modulo { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            ArithmeticOperationExpression::Exponentiation { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            ArithmeticOperationExpression::Negative { right, .. } => vec![right.as_mut()],
-            ArithmeticOperationExpression::Positive { right, .. } => vec![right.as_mut()],
-            ArithmeticOperationExpression::PreIncrement { right, .. } => vec![right.as_mut()],
-            ArithmeticOperationExpression::PostIncrement { left, .. } => vec![left.as_mut()],
-            ArithmeticOperationExpression::PreDecrement { right, .. } => vec![right.as_mut()],
-            ArithmeticOperationExpression::PostDecrement { left, .. } => vec![left.as_mut()],
-        }
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -236,55 +205,6 @@ impl AssignmentOperationExpression {
     }
 }
 
-impl Node for AssignmentOperationExpression {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            AssignmentOperationExpression::Assign { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            AssignmentOperationExpression::Addition { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            AssignmentOperationExpression::Subtraction { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            AssignmentOperationExpression::Multiplication { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            AssignmentOperationExpression::Division { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            AssignmentOperationExpression::Modulo { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            AssignmentOperationExpression::Exponentiation { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            AssignmentOperationExpression::Concat { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            AssignmentOperationExpression::BitwiseAnd { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            AssignmentOperationExpression::BitwiseOr { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            AssignmentOperationExpression::BitwiseXor { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            AssignmentOperationExpression::LeftShift { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            AssignmentOperationExpression::RightShift { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            AssignmentOperationExpression::Coalesce { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-        }
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum BitwiseOperationExpression {
@@ -317,29 +237,6 @@ pub enum BitwiseOperationExpression {
         not: Span,
         right: Box<Expression>,
     },
-}
-
-impl Node for BitwiseOperationExpression {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            BitwiseOperationExpression::And { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            BitwiseOperationExpression::Or { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            BitwiseOperationExpression::Xor { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            BitwiseOperationExpression::LeftShift { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            BitwiseOperationExpression::RightShift { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            BitwiseOperationExpression::Not { right, .. } => vec![right.as_mut()],
-        }
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -397,43 +294,6 @@ pub enum ComparisonOperationExpression {
     },
 }
 
-impl Node for ComparisonOperationExpression {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            ComparisonOperationExpression::Equal { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            ComparisonOperationExpression::Identical { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            ComparisonOperationExpression::NotEqual { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            ComparisonOperationExpression::AngledNotEqual { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            ComparisonOperationExpression::NotIdentical { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            ComparisonOperationExpression::LessThan { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            ComparisonOperationExpression::GreaterThan { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            ComparisonOperationExpression::LessThanOrEqual { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            ComparisonOperationExpression::GreaterThanOrEqual { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            ComparisonOperationExpression::Spaceship { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-        }
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum LogicalOperationExpression {
@@ -466,27 +326,4 @@ pub enum LogicalOperationExpression {
         xor: Span,
         right: Box<Expression>,
     },
-}
-
-impl Node for LogicalOperationExpression {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            LogicalOperationExpression::And { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            LogicalOperationExpression::Or { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            LogicalOperationExpression::Not { right, .. } => vec![right.as_mut()],
-            LogicalOperationExpression::LogicalAnd { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            LogicalOperationExpression::LogicalOr { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-            LogicalOperationExpression::LogicalXor { left, right, .. } => {
-                vec![left.as_mut(), right.as_mut()]
-            }
-        }
-    }
 }

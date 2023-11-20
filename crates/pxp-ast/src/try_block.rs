@@ -1,5 +1,5 @@
 use crate::identifiers::SimpleIdentifier;
-use crate::node::Node;
+
 use crate::Block;
 use pxp_span::Span;
 
@@ -12,17 +12,6 @@ pub enum CatchType {
     Union { identifiers: Vec<SimpleIdentifier> },
 }
 
-impl Node for CatchType {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            CatchType::Identifier { identifier } => vec![identifier],
-            CatchType::Union { identifiers } => {
-                identifiers.iter_mut().map(|i| i as &mut dyn Node).collect()
-            }
-        }
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct TryStatement {
@@ -31,19 +20,6 @@ pub struct TryStatement {
     pub body: Block,
     pub catches: Vec<CatchBlock>,
     pub finally: Option<FinallyBlock>,
-}
-
-impl Node for TryStatement {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        let mut children: Vec<&mut dyn Node> = vec![&mut self.body];
-        for catch in &mut self.catches {
-            children.push(catch);
-        }
-        if let Some(finally) = &mut self.finally {
-            children.push(finally);
-        }
-        children
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -56,27 +32,10 @@ pub struct CatchBlock {
     pub body: Block,
 }
 
-impl Node for CatchBlock {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        let mut children = vec![&mut self.types as &mut dyn Node];
-        if let Some(var) = &mut self.var {
-            children.push(var as &mut dyn Node);
-        }
-        children.push(&mut self.body as &mut dyn Node);
-        children
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct FinallyBlock {
     pub start: Span,
     pub end: Span,
     pub body: Block,
-}
-
-impl Node for FinallyBlock {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![&mut self.body as &mut dyn Node]
-    }
 }

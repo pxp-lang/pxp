@@ -6,7 +6,7 @@ use crate::data_type::Type;
 use crate::identifiers::SimpleIdentifier;
 use crate::modifiers::MethodModifierGroup;
 use crate::modifiers::PromotedPropertyModifierGroup;
-use crate::node::Node;
+
 use crate::utils::CommaSeparated;
 use crate::variables::SimpleVariable;
 use crate::Expression;
@@ -21,12 +21,6 @@ pub struct ReturnType {
     pub data_type: Type,
 }
 
-impl Node for ReturnType {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![&mut self.data_type]
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct FunctionParameter {
@@ -37,19 +31,6 @@ pub struct FunctionParameter {
     pub ellipsis: Option<Span>,
     pub default: Option<Expression>,
     pub ampersand: Option<Span>,
-}
-
-impl Node for FunctionParameter {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        let mut children: Vec<&mut dyn Node> = vec![&mut self.name];
-        if let Some(data_type) = &mut self.data_type {
-            children.push(data_type);
-        }
-        if let Some(default) = &mut self.default {
-            children.push(default);
-        }
-        children
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -76,12 +57,6 @@ impl IntoIterator for FunctionParameterList {
     }
 }
 
-impl Node for FunctionParameterList {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        self.parameters.children()
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct FunctionBody {
@@ -89,15 +64,6 @@ pub struct FunctionBody {
     pub left_brace: Span,
     pub statements: Vec<Statement>,
     pub right_brace: Span,
-}
-
-impl Node for FunctionBody {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        self.statements
-            .iter_mut()
-            .map(|x| x as &mut dyn Node)
-            .collect()
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -113,29 +79,12 @@ pub struct FunctionStatement {
     pub body: FunctionBody,
 }
 
-impl Node for FunctionStatement {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        let mut children: Vec<&mut dyn Node> =
-            vec![&mut self.name, &mut self.parameters, &mut self.body];
-        if let Some(return_type) = &mut self.return_type {
-            children.push(return_type);
-        }
-        children
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ClosureUseVariable {
     pub comments: CommentGroup,
     pub ampersand: Option<Span>,
     pub variable: SimpleVariable,
-}
-
-impl Node for ClosureUseVariable {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![&mut self.variable]
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -146,12 +95,6 @@ pub struct ClosureUse {
     pub left_parenthesis: Span,
     pub variables: CommaSeparated<ClosureUseVariable>,
     pub right_parenthesis: Span,
-}
-
-impl Node for ClosureUse {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        self.variables.children()
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -168,20 +111,6 @@ pub struct ClosureExpression {
     pub body: FunctionBody,
 }
 
-impl Node for ClosureExpression {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        let mut children: Vec<&mut dyn Node> = vec![&mut self.parameters];
-        if let Some(uses) = &mut self.uses {
-            children.push(uses);
-        }
-        if let Some(return_type) = &mut self.return_type {
-            children.push(return_type);
-        }
-        children.push(&mut self.body);
-        children
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ArrowFunctionExpression {
@@ -194,17 +123,6 @@ pub struct ArrowFunctionExpression {
     pub return_type: Option<ReturnType>,
     pub double_arrow: Span,
     pub body: Box<Expression>,
-}
-
-impl Node for ArrowFunctionExpression {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        let mut children: Vec<&mut dyn Node> = vec![&mut self.parameters];
-        if let Some(return_type) = &mut self.return_type {
-            children.push(return_type);
-        }
-        children.push(self.body.as_mut());
-        children
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -221,19 +139,6 @@ pub struct ConstructorParameter {
     pub modifiers: PromotedPropertyModifierGroup,
 }
 
-impl Node for ConstructorParameter {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        let mut children: Vec<&mut dyn Node> = vec![&mut self.name];
-        if let Some(data_type) = &mut self.data_type {
-            children.push(data_type);
-        }
-        if let Some(default) = &mut self.default {
-            children.push(default);
-        }
-        children
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ConstructorParameterList {
@@ -241,12 +146,6 @@ pub struct ConstructorParameterList {
     pub left_parenthesis: Span,
     pub parameters: CommaSeparated<ConstructorParameter>,
     pub right_parenthesis: Span,
-}
-
-impl Node for ConstructorParameterList {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        self.parameters.children()
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -265,12 +164,6 @@ pub struct AbstractConstructor {
     pub semicolon: Span,
 }
 
-impl Node for AbstractConstructor {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![&mut self.name, &mut self.parameters]
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ConcreteConstructor {
@@ -285,12 +178,6 @@ pub struct ConcreteConstructor {
     pub name: SimpleIdentifier,
     pub parameters: ConstructorParameterList,
     pub body: MethodBody,
-}
-
-impl Node for ConcreteConstructor {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![&mut self.name, &mut self.parameters, &mut self.body]
-    }
 }
 
 impl ConcreteConstructor {
@@ -326,16 +213,6 @@ pub struct AbstractMethod {
     pub semicolon: Span,
 }
 
-impl Node for AbstractMethod {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        let mut children: Vec<&mut dyn Node> = vec![&mut self.name, &mut self.parameters];
-        if let Some(return_type) = &mut self.return_type {
-            children.push(return_type);
-        }
-        children
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ConcreteMethod {
@@ -351,17 +228,6 @@ pub struct ConcreteMethod {
     pub body: MethodBody,
 }
 
-impl Node for ConcreteMethod {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        let mut children: Vec<&mut dyn Node> = vec![&mut self.name, &mut self.parameters];
-        if let Some(return_type) = &mut self.return_type {
-            children.push(return_type);
-        }
-        children.push(&mut self.body);
-        children
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct MethodBody {
@@ -369,13 +235,4 @@ pub struct MethodBody {
     pub left_brace: Span, // `{`
     pub statements: Vec<Statement>,
     pub right_brace: Span, // `}`
-}
-
-impl Node for MethodBody {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        self.statements
-            .iter_mut()
-            .map(|s| s as &mut dyn Node)
-            .collect()
-    }
 }

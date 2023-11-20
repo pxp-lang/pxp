@@ -1,7 +1,7 @@
 use crate::attributes::AttributeGroup;
 use crate::data_type::Type;
 use crate::modifiers::PropertyModifierGroup;
-use crate::node::Node;
+
 use crate::variables::SimpleVariable;
 use crate::Expression;
 use pxp_span::Span;
@@ -17,22 +17,6 @@ pub struct Property {
     pub end: Span,
 }
 
-impl Node for Property {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        let mut children: Vec<&mut dyn Node> = vec![];
-        if let Some(r#type) = &mut self.r#type {
-            children.push(r#type);
-        }
-        children.extend(
-            self.entries
-                .iter_mut()
-                .map(|e| e as &mut dyn Node)
-                .collect::<Vec<&mut dyn Node>>(),
-        );
-        children
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct VariableProperty {
@@ -40,22 +24,6 @@ pub struct VariableProperty {
     pub r#type: Option<Type>,
     pub entries: Vec<PropertyEntry>,
     pub end: Span,
-}
-
-impl Node for VariableProperty {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        let mut children: Vec<&mut dyn Node> = vec![];
-        if let Some(r#type) = &mut self.r#type {
-            children.push(r#type);
-        }
-        children.extend(
-            self.entries
-                .iter_mut()
-                .map(|e| e as &mut dyn Node)
-                .collect::<Vec<&mut dyn Node>>(),
-        );
-        children
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -69,17 +37,6 @@ pub enum PropertyEntry {
         equals: Span,
         value: Expression,
     },
-}
-
-impl Node for PropertyEntry {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            PropertyEntry::Uninitialized { variable } => vec![variable],
-            PropertyEntry::Initialized {
-                variable, value, ..
-            } => vec![variable, value],
-        }
-    }
 }
 
 impl PropertyEntry {

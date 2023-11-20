@@ -1,7 +1,7 @@
 use std::slice::Iter;
 use std::slice::IterMut;
 
-use crate::node::Node;
+
 use pxp_span::Span;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -18,12 +18,6 @@ impl<T> CommaSeparated<T> {
 
     pub fn iter_mut(&mut self) -> IterMut<'_, T> {
         self.inner.iter_mut()
-    }
-}
-
-impl<T: Node> Node for CommaSeparated<T> {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        self.inner.iter_mut().map(|x| x as &mut dyn Node).collect()
     }
 }
 

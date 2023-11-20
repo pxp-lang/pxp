@@ -2,7 +2,7 @@ use std::slice::Iter;
 
 use crate::comments::CommentGroup;
 use crate::identifiers::SimpleIdentifier;
-use crate::node::Node;
+
 use crate::Expression;
 use pxp_span::Span;
 
@@ -11,12 +11,6 @@ pub struct PositionalArgument {
     pub comments: CommentGroup,
     pub ellipsis: Option<Span>, // `...`
     pub value: Expression,      // `$var`
-}
-
-impl Node for PositionalArgument {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![&mut self.value]
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -28,26 +22,11 @@ pub struct NamedArgument {
     pub value: Expression,      // `$var`
 }
 
-impl Node for NamedArgument {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![&mut self.name, &mut self.value]
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum Argument {
     Positional(PositionalArgument),
     Named(NamedArgument),
-}
-
-impl Node for Argument {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            Argument::Positional(argument) => vec![argument],
-            Argument::Named(argument) => vec![argument],
-        }
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -74,15 +53,6 @@ impl IntoIterator for ArgumentList {
     }
 }
 
-impl Node for ArgumentList {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        self.arguments
-            .iter_mut()
-            .map(|a| a as &mut dyn Node)
-            .collect()
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct SingleArgument {
@@ -90,12 +60,6 @@ pub struct SingleArgument {
     pub left_parenthesis: Span,  // `(`
     pub argument: Argument,      // `$var`
     pub right_parenthesis: Span, // `)`
-}
-
-impl Node for SingleArgument {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![&mut self.argument]
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]

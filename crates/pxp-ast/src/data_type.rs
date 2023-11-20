@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use crate::node::Node;
+
 use pxp_bytestring::ByteString;
 use pxp_span::Span;
 
@@ -133,17 +133,6 @@ impl Display for Type {
             Type::StaticReference(_) => write!(f, "static"),
             Type::SelfReference(_) => write!(f, "self"),
             Type::ParentReference(_) => write!(f, "parent"),
-        }
-    }
-}
-
-impl Node for Type {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            Type::Nullable(_, t) => vec![t.as_mut() as &mut dyn Node],
-            Type::Union(ts) => ts.iter_mut().map(|x| x as &mut dyn Node).collect(),
-            Type::Intersection(ts) => ts.iter_mut().map(|x| x as &mut dyn Node).collect(),
-            _ => vec![],
         }
     }
 }

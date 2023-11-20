@@ -1,4 +1,4 @@
-use crate::node::Node;
+
 use crate::Ending;
 use crate::Expression;
 use crate::Statement;
@@ -13,12 +13,6 @@ pub struct IfStatement {
     pub condition: Expression,   // *expression*
     pub right_parenthesis: Span, // `)`
     pub body: IfStatementBody,   // `{ ... }`
-}
-
-impl Node for IfStatement {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![&mut self.condition, &mut self.body]
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -39,48 +33,6 @@ pub enum IfStatementBody {
     },
 }
 
-impl Node for IfStatementBody {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        match self {
-            IfStatementBody::Statement {
-                statement,
-                elseifs,
-                r#else,
-            } => {
-                let mut children: Vec<&mut dyn Node> = vec![statement.as_mut()];
-                children.extend(
-                    elseifs
-                        .iter_mut()
-                        .map(|elseif| elseif as &mut dyn Node)
-                        .collect::<Vec<&mut dyn Node>>(),
-                );
-                if let Some(r#else) = r#else {
-                    children.push(r#else as &mut dyn Node);
-                }
-                children
-            }
-            IfStatementBody::Block {
-                statements,
-                elseifs,
-                r#else,
-                ..
-            } => {
-                let mut children: Vec<&mut dyn Node> = vec![];
-                children.extend(
-                    statements
-                        .iter_mut()
-                        .map(|statement| statement as &mut dyn Node),
-                );
-                children.extend(elseifs.iter_mut().map(|elseif| elseif as &mut dyn Node));
-                if let Some(r#else) = r#else {
-                    children.push(r#else as &mut dyn Node);
-                }
-                children
-            }
-        }
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct IfStatementElseIf {
@@ -91,23 +43,11 @@ pub struct IfStatementElseIf {
     pub statement: Box<Statement>, // `*statement*`
 }
 
-impl Node for IfStatementElseIf {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![&mut self.condition, self.statement.as_mut()]
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct IfStatementElse {
     pub r#else: Span,              // `else`
     pub statement: Box<Statement>, // `*statement*`
-}
-
-impl Node for IfStatementElse {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        vec![self.statement.as_mut()]
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -121,31 +61,10 @@ pub struct IfStatementElseIfBlock {
     pub statements: Vec<Statement>, // `*statements*`
 }
 
-impl Node for IfStatementElseIfBlock {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        let mut children: Vec<&mut dyn Node> = vec![&mut self.condition];
-        children.extend(
-            self.statements
-                .iter_mut()
-                .map(|statement| statement as &mut dyn Node),
-        );
-        children
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct IfStatementElseBlock {
     pub r#else: Span,               // `else`
     pub colon: Span,                // `:`
     pub statements: Vec<Statement>, // `*statements*`
-}
-
-impl Node for IfStatementElseBlock {
-    fn children(&mut self) -> Vec<&mut dyn Node> {
-        self.statements
-            .iter_mut()
-            .map(|statement| statement as &mut dyn Node)
-            .collect()
-    }
 }

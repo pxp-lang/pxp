@@ -1,6 +1,6 @@
 use std::slice::Iter;
 
-use crate::node::Node;
+
 use pxp_bytestring::ByteString;
 use pxp_span::Span;
 
@@ -20,8 +20,6 @@ pub struct Comment {
     pub format: CommentFormat,
     pub content: ByteString,
 }
-
-impl Node for Comment {}
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 
