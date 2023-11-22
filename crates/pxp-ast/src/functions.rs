@@ -160,7 +160,7 @@ pub struct AbstractConstructor {
     // see: https://chat.stackoverflow.com/transcript/message/55718950#55718950
     pub ampersand: Option<Span>,
     pub name: SimpleIdentifier,
-    pub parameters: FunctionParameterList,
+    pub parameters: ConstructorParameterList,
     pub semicolon: Span,
 }
 
@@ -187,7 +187,7 @@ impl ConcreteConstructor {
             .first()
             .map(|c| c.span)
             .unwrap_or_else(|| {
-                self.attributes.first().map(|a| a.start).unwrap_or_else(|| {
+                self.attributes.first().map(|a| a.span).unwrap_or_else(|| {
                     self.modifiers
                         .modifiers
                         .first()

@@ -8,6 +8,14 @@ impl Span {
     pub fn new(start: Position, end: Position) -> Self {
         Self { start, end }
     }
+
+    pub fn len(&self) -> usize {
+        self.end.offset - self.start.offset
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Default)]

@@ -1,5 +1,4 @@
 use crate::error;
-use crate::error::ParseError;
 use crate::error::ParseResult;
 use crate::expressions;
 use crate::internal::attributes;
@@ -18,7 +17,7 @@ use pxp_ast::functions::FunctionParameterList;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_token::TokenKind;
 
-pub fn function_parameter_list(state: &mut State) -> Result<FunctionParameterList, ParseError> {
+pub fn function_parameter_list(state: &mut State) -> ParseResult<FunctionParameterList> {
     let comments = state.stream.comments();
     let left_parenthesis = utils::skip_left_parenthesis(state)?;
     let parameters = utils::comma_separated(
@@ -80,7 +79,7 @@ pub fn function_parameter_list(state: &mut State) -> Result<FunctionParameterLis
 pub fn constructor_parameter_list(
     state: &mut State,
     class: Option<&SimpleIdentifier>,
-) -> Result<ConstructorParameterList, ParseError> {
+) -> ParseResult<ConstructorParameterList> {
     let comments = state.stream.comments();
 
     let left_parenthesis = utils::skip_left_parenthesis(state)?;
@@ -108,13 +107,14 @@ pub fn constructor_parameter_list(
                 state.stream.next();
                 let var = variables::simple_variable(state)?;
                 if !modifiers.is_empty() {
-                    return Err(error::variadic_promoted_property(
-                        state,
-                        class,
-                        &var,
-                        current.span,
-                        modifiers.modifiers.first().unwrap(),
-                    ));
+                    todo!("tolerant mode")
+                    // return Err(error::variadic_promoted_property(
+                    //     state,
+                    //     class,
+                    //     &var,
+                    //     current.span,
+                    //     modifiers.modifiers.first().unwrap(),
+                    // ));
                 }
 
                 (Some(current.span), var)
@@ -128,22 +128,24 @@ pub fn constructor_parameter_list(
                 match &ty {
                     Some(ty) => {
                         if ty.includes_callable() || ty.is_bottom() {
-                            return Err(error::forbidden_type_used_in_property(
-                                state,
-                                class,
-                                &var,
-                                ty.clone(),
-                            ));
+                            todo!("tolerant mode")
+                            // return Err(error::forbidden_type_used_in_property(
+                            //     state,
+                            //     class,
+                            //     &var,
+                            //     ty.clone(),
+                            // ));
                         }
                     }
                     None => {
                         if let Some(modifier) = modifiers.get_readonly() {
-                            return Err(error::missing_type_for_readonly_property(
-                                state,
-                                class,
-                                &var,
-                                modifier.span(),
-                            ));
+                            todo!("tolerant mode")
+                            // return Err(error::missing_type_for_readonly_property(
+                            //     state,
+                            //     class,
+                            //     &var,
+                            //     modifier.span(),
+                            // ));
                         }
                     }
                 }
@@ -192,10 +194,11 @@ pub fn argument_list(state: &mut State) -> ParseResult<ArgumentList> {
         if named {
             has_used_named_arguments = true;
         } else if has_used_named_arguments {
-            return Err(error::cannot_use_positional_argument_after_named_argument(
-                span,
-                state.stream.current().span,
-            ));
+            todo!("tolerant mode")
+            // return Err(error::cannot_use_positional_argument_after_named_argument(
+            //     span,
+            //     state.stream.current().span,
+            // ));
         }
 
         arguments.push(argument);
@@ -231,17 +234,19 @@ pub fn single_argument(
         let span = state.stream.current().span;
         let (named, argument) = argument(state).ok()?;
         if only_positional && named {
-            return Some(Err(error::only_positional_arguments_are_accepted(
-                span,
-                state.stream.current().span,
-            )));
+            todo!("tolerant mode")
+            // return Some(Err(error::only_positional_arguments_are_accepted(
+            //     span,
+            //     state.stream.current().span,
+            // )));
         }
 
         if first_argument.is_some() {
-            return Some(Err(error::only_one_argument_is_accepted(
-                span,
-                state.stream.current().span,
-            )));
+            todo!("tolerant mode")
+            // return Some(Err(error::only_one_argument_is_accepted(
+            //     span,
+            //     state.stream.current().span,
+            // )));
         }
 
         first_argument = Some(argument);
@@ -254,10 +259,11 @@ pub fn single_argument(
     }
 
     if required && first_argument.is_none() {
-        return Some(Err(error::argument_is_required(
-            state.stream.current().span,
-            state.stream.current().span,
-        )));
+        todo!("tolerant mode")
+        // return Some(Err(error::argument_is_required(
+        //     state.stream.current().span,
+        //     state.stream.current().span,
+        // )));
     }
 
     let end = utils::skip_right_parenthesis(state).ok()?;

@@ -5,6 +5,7 @@ use crate::internal::utils;
 use crate::state::State;
 use pxp_ast::attributes::Attribute;
 use pxp_ast::attributes::AttributeGroup;
+use pxp_span::Span;
 use pxp_token::TokenKind;
 
 pub fn gather_attributes(state: &mut State) -> ParseResult<bool> {
@@ -26,12 +27,12 @@ pub fn gather_attributes(state: &mut State) -> ParseResult<bool> {
             None
         };
         let end = state.stream.current().span;
+        let span = Span::new(start.start, end.end);
 
         members.push(Attribute {
-            start,
+            span,
             name,
             arguments,
-            end,
         });
 
         if state.stream.current().kind == TokenKind::Comma {
@@ -48,11 +49,11 @@ pub fn gather_attributes(state: &mut State) -> ParseResult<bool> {
     }
 
     let end = utils::skip_right_bracket(state)?;
+    let span = Span::new(start.start, end.end);
 
     state.attribute(AttributeGroup {
-        start,
+        span,
         members,
-        end,
     });
 
     // recursive, looking for multiple attribute brackets after each other.

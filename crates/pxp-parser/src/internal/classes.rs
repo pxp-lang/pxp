@@ -105,6 +105,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> ParseResult<Exp
 
     let attributes = state.get_attributes();
 
+    let class_token = state.stream.current();
     let class = utils::skip(state, TokenKind::Class)?;
     let class_span = class;
 
@@ -152,13 +153,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> ParseResult<Exp
                 members.push(member(
                     state,
                     false,
-                    &SimpleIdentifier {
-                        span: Span::new(
-                            Position::new(usize::MAX, usize::MAX, usize::MAX),
-                            Position::new(usize::MAX, usize::MAX, usize::MAX),
-                        ),
-                        value: b"<anonymous>".into(),
-                    },
+                    &SimpleIdentifier { token: *class_token },
                 )?);
             }
             members
@@ -216,7 +211,6 @@ pub fn member(
     if state.stream.current().kind == TokenKind::Function {
         let method = method(
             state,
-            MethodType::DependingOnModifiers,
             modifiers::method_group(modifiers)?,
             Some(name),
         )?;
@@ -226,13 +220,14 @@ pub fn member(
                 if has_abstract {
                     Ok(ClassishMember::AbstractMethod(method))
                 } else {
-                    Err(error::abstract_method_on_a_non_abstract_class(
-                        state,
-                        name,
-                        &method.name,
-                        method.modifiers.get_abstract().unwrap().span(),
-                        method.semicolon,
-                    ))
+                    todo!("tolerant mode")
+                    // Err(error::abstract_method_on_a_non_abstract_class(
+                    //     state,
+                    //     name,
+                    //     &method.name,
+                    //     method.modifiers.get_abstract().unwrap().span(),
+                    //     method.semicolon,
+                    // ))
                 }
             }
             Method::Concrete(method) => Ok(ClassishMember::ConcreteMethod(method)),
@@ -240,13 +235,14 @@ pub fn member(
                 if has_abstract {
                     Ok(ClassishMember::AbstractConstructor(ctor))
                 } else {
-                    Err(error::abstract_method_on_a_non_abstract_class(
-                        state,
-                        name,
-                        &ctor.name,
-                        ctor.modifiers.get_abstract().unwrap().span(),
-                        ctor.semicolon,
-                    ))
+                    todo!("tolerant mode")
+                    // Err(error::abstract_method_on_a_non_abstract_class(
+                    //     state,
+                    //     name,
+                    //     &ctor.name,
+                    //     ctor.modifiers.get_abstract().unwrap().span(),
+                    //     ctor.semicolon,
+                    // ))
                 }
             }
             Method::ConcreteConstructor(ctor) => Ok(ClassishMember::ConcreteConstructor(ctor)),
@@ -255,6 +251,7 @@ pub fn member(
 
     // e.g: public static
     let modifiers = modifiers::property_group(modifiers)?;
+    let property = properties::parse(state, Some(name), modifiers).map(ClassishMember::Property);
 
-    properties::parse(state, Some(name), modifiers).map(ClassishMember::Property)
+    property
 }

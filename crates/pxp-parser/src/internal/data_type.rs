@@ -144,14 +144,13 @@ fn optional_simple_data_type(state: &mut State) -> ParseResult<Option<Type>> {
         }
         TokenKind::Enum | TokenKind::From => {
             let span = current.span;
-            let name = current.to_string().into();
 
             state.stream.next();
 
-            Ok(Some(Type::Named(span, name)))
+            Ok(Some(Type::Named(span, current.symbol.unwrap())))
         }
         TokenKind::Identifier => {
-            let id = current.value.clone();
+            let id = state.symbol_table.resolve(current.symbol.unwrap()).unwrap();
             let span = current.span;
             state.stream.next();
 
@@ -172,15 +171,14 @@ fn optional_simple_data_type(state: &mut State) -> ParseResult<Option<Type>> {
                 b"false" => Ok(Some(Type::False(span))),
                 b"array" => Ok(Some(Type::Array(span))),
                 b"callable" => Ok(Some(Type::Callable(span))),
-                _ => Ok(Some(Type::Named(span, name.into()))),
+                _ => Ok(Some(Type::Named(span, current.symbol.unwrap()))),
             }
         }
         TokenKind::QualifiedIdentifier | TokenKind::FullyQualifiedIdentifier => {
-            let name = current.value.clone();
             let span = current.span;
             state.stream.next();
 
-            Ok(Some(Type::Named(span, name)))
+            Ok(Some(Type::Named(span, current.symbol.unwrap())))
         }
         _ => Ok(None),
     }
@@ -199,7 +197,8 @@ fn nullable(state: &mut State) -> ParseResult<Type> {
     let ty = simple_data_type(state)?;
 
     if ty.standalone() {
-        state.record(error::standalone_type_used_as_nullable(&ty, current.span));
+        // state.record(error::standalone_type_used_as_nullable(&ty, current.span));
+        todo!("tolerant mode")
     }
 
     Ok(Type::Nullable(current.span, Box::new(ty)))
@@ -207,10 +206,12 @@ fn nullable(state: &mut State) -> ParseResult<Type> {
 
 fn union(state: &mut State, other: Type, within_dnf: bool) -> ParseResult<Type> {
     if other.standalone() {
-        state.record(error::standalone_type_used_in_union(
-            &other,
-            state.stream.current().span,
-        ));
+        // state.record(error::standalone_type_used_in_union(
+        //     &other,
+        //     state.stream.current().span,
+        // ));
+
+        todo!("tolerant mode")
     }
 
     let mut types = vec![other];
@@ -234,7 +235,8 @@ fn union(state: &mut State, other: Type, within_dnf: bool) -> ParseResult<Type> 
                 //     v-- get_union_type: within_dnf = true
                 //        v-- error
                 // F&(A|B|(D&S))
-                state.record(error::nested_disjunctive_normal_form_types(current.span));
+                // state.record(error::nested_disjunctive_normal_form_types(current.span));
+                todo!("tolerant mode")
             }
 
             state.stream.next();
@@ -248,7 +250,8 @@ fn union(state: &mut State, other: Type, within_dnf: bool) -> ParseResult<Type> 
         } else {
             let ty = simple_data_type(state)?;
             if ty.standalone() {
-                state.record(error::standalone_type_used_in_union(&ty, last_pipe));
+                // state.record(error::standalone_type_used_in_union(&ty, last_pipe));
+                todo!("tolerant mode")
             }
 
             ty
@@ -268,10 +271,11 @@ fn union(state: &mut State, other: Type, within_dnf: bool) -> ParseResult<Type> 
 
 fn intersection(state: &mut State, other: Type, within_dnf: bool) -> ParseResult<Type> {
     if other.standalone() {
-        state.record(error::standalone_type_used_in_intersection(
-            &other,
-            state.stream.current().span,
-        ));
+        // state.record(error::standalone_type_used_in_intersection(
+        //     &other,
+        //     state.stream.current().span,
+        // ));
+        todo!("tolerant mode")
     }
 
     let mut types = vec![other];
@@ -295,7 +299,8 @@ fn intersection(state: &mut State, other: Type, within_dnf: bool) -> ParseResult
                 //     v-- get_intersection_type: within_dnf = true
                 //        v-- error
                 // F|(A&B&(D|S))
-                state.record(error::nested_disjunctive_normal_form_types(current.span));
+                // state.record(error::nested_disjunctive_normal_form_types(current.span));
+                todo!("tolerant mode")
             }
 
             state.stream.next();
@@ -309,10 +314,11 @@ fn intersection(state: &mut State, other: Type, within_dnf: bool) -> ParseResult
         } else {
             let ty = simple_data_type(state)?;
             if ty.standalone() {
-                state.record(error::standalone_type_used_in_intersection(
-                    &ty,
-                    last_ampersand,
-                ));
+                // state.record(error::standalone_type_used_in_intersection(
+                //     &ty,
+                //     last_ampersand,
+                // ));
+                todo!("tolerant mode")
             }
 
             ty

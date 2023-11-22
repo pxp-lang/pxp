@@ -7,8 +7,7 @@ use pxp_span::Span;
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct Attribute {
-    pub start: Span,
-    pub end: Span,
+    pub span: Span,
     pub name: SimpleIdentifier,
     pub arguments: Option<ArgumentList>,
 }
@@ -16,8 +15,7 @@ pub struct Attribute {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct AttributeGroup {
-    pub start: Span,
-    pub end: Span,
+    pub span: Span,
     pub members: Vec<Attribute>,
 }
 

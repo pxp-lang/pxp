@@ -246,7 +246,6 @@ pub fn function(state: &mut State) -> ParseResult<StatementKind> {
 
 pub fn method(
     state: &mut State,
-    r#type: MethodType,
     modifiers: MethodModifierGroup,
     class: Option<&SimpleIdentifier>,
 ) -> ParseResult<Method> {
@@ -264,15 +263,14 @@ pub fn method(
     };
 
     let name = identifiers::identifier_maybe_reserved(state)?;
-    let has_body = match r#type {
-        MethodType::Abstract => false,
-        MethodType::Concrete => true,
-        MethodType::DependingOnModifiers => !modifiers.has_abstract(),
-    };
 
-    if name.to_string().to_lowercase() == "__construct" {
-        return if has_body {
-            let parameters = parameters::constructor_parameter_list(state, class)?;
+    let symbol = state.symbol_table.resolve(name.token.symbol.unwrap());
+    let is_constructor = symbol.is_some() && symbol.unwrap() == b"__construct";
+    
+    if is_constructor {
+        let parameters = parameters::constructor_parameter_list(state, class)?;
+
+        return if state.stream.current().kind == TokenKind::LeftBrace {
             let body = MethodBody {
                 comments: state.stream.comments(),
                 left_brace: utils::skip_left_brace(state)?,
@@ -280,7 +278,7 @@ pub fn method(
                 right_brace: utils::skip_right_brace(state)?,
             };
 
-            Ok(Method::ConcreteConstructor(ConcreteConstructor {
+            return Ok(Method::ConcreteConstructor(ConcreteConstructor {
                 comments,
                 attributes,
                 modifiers,
@@ -291,7 +289,6 @@ pub fn method(
                 body,
             }))
         } else {
-            let parameters = parameters::function_parameter_list(state)?;
             let semicolon = utils::skip_semicolon(state)?;
 
             Ok(Method::AbstractConstructor(AbstractConstructor {
@@ -304,7 +301,7 @@ pub fn method(
                 parameters,
                 semicolon,
             }))
-        };
+        }
     }
 
     let parameters = parameters::function_parameter_list(state)?;
@@ -317,7 +314,7 @@ pub fn method(
         None
     };
 
-    if has_body {
+    if state.stream.current().kind == TokenKind::LeftBrace {
         Ok(Method::Concrete(ConcreteMethod {
             comments,
             attributes,

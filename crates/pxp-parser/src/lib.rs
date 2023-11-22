@@ -1,4 +1,3 @@
-use crate::error::ParseErrorStack;
 use crate::error::ParseResult;
 use crate::internal::attributes;
 use crate::internal::blocks;
@@ -18,6 +17,7 @@ use crate::internal::uses;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
+use internal::literals::expect_literal;
 use pxp_ast::declares::DeclareBody;
 use pxp_ast::declares::DeclareEntry;
 use pxp_ast::declares::DeclareEntryGroup;
@@ -28,6 +28,7 @@ use pxp_ast::{Program, StatementKind, StaticVar};
 use pxp_lexer::stream::TokenStream;
 use pxp_lexer::Lexer;
 use pxp_span::Span;
+use pxp_symbol::SymbolTable;
 use pxp_token::OpenTagKind;
 use pxp_token::Token;
 use pxp_token::TokenKind;
@@ -51,24 +52,21 @@ mod internal;
 mod macros;
 mod state;
 
-pub fn parse<B: ?Sized + AsRef<[u8]>>(input: &B) -> Result<Program, ParseErrorStack> {
-    let lexer = Lexer::new();
-    let tokens = match lexer.tokenize(input) {
+pub fn parse<'a, 'b, B: ?Sized + AsRef<[u8]>>(input: &'b B, symbol_table: &'a mut SymbolTable<'b>) -> Result<Program, ()> {
+    let mut lexer = Lexer::new(input, symbol_table);
+    let tokens = match lexer.tokenize() {
         Ok(tokens) => tokens,
         Err(error) => {
-            return Err(ParseErrorStack {
-                errors: vec![error.into()],
-                partial: Vec::new(),
-            })
+            todo!("tolerant mode")
         }
     };
 
-    construct(&tokens)
+    construct(&tokens, symbol_table)
 }
 
-pub fn construct(tokens: &[Token]) -> Result<Program, ParseErrorStack> {
+pub fn construct<'a>(tokens: &[Token], symbol_table: &'a SymbolTable) -> Result<Program, ()> {
     let mut stream = TokenStream::new(tokens);
-    let mut state = State::new(&mut stream);
+    let mut state = State::new(&mut stream, symbol_table);
 
     let mut program = Program::new();
 
@@ -76,25 +74,11 @@ pub fn construct(tokens: &[Token]) -> Result<Program, ParseErrorStack> {
         let statement = match top_level_statement(&mut state) {
             Ok(statement) => statement,
             Err(error) => {
-                let mut previous = state.errors;
-                previous.push(error);
-
-                return Err(ParseErrorStack {
-                    errors: previous,
-                    partial: program,
-                });
+                todo!("tolerant mode")
             }
         };
 
         program.push(statement);
-    }
-
-    let errors = state.errors;
-    if !errors.is_empty() {
-        return Err(ParseErrorStack {
-            errors,
-            partial: program,
-        });
     }
 
     Ok(program.to_vec())
@@ -116,7 +100,7 @@ fn top_level_statement(state: &mut State) -> ParseResult<Statement> {
 
                     let content = if let TokenKind::InlineHtml = state.stream.current().kind.clone()
                     {
-                        let content = state.stream.current().value.clone();
+                        let content = *state.stream.current();
                         state.stream.next();
                         Some(content)
                     } else {
@@ -275,7 +259,7 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                     loop {
                         let key = identifiers::identifier(state)?;
                         let span = utils::skip(state, TokenKind::Equals)?;
-                        let value = expect_literal!(state);
+                        let value = expect_literal(state);
 
                         entries.push(DeclareEntry {
                             key,
@@ -403,7 +387,7 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                 StatementKind::Static(StaticStatement { vars })
             }
             TokenKind::InlineHtml => {
-                let html = state.stream.current().value.clone();
+                let html = *state.stream.current();
                 state.stream.next();
 
                 StatementKind::InlineHtml(InlineHtmlStatement { html })

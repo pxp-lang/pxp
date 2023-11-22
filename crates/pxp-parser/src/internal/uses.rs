@@ -33,10 +33,11 @@ pub fn use_statement(state: &mut State) -> ParseResult<StatementKind> {
             let use_kind = match state.stream.current().kind {
                 TokenKind::Function => {
                     if kind != UseKind::Normal {
-                        return Err(error::unexpected_token(
-                            vec!["an identifier".to_string()],
-                            state.stream.current(),
-                        ));
+                        todo!("tolerant mode")
+                        // return Err(error::unexpected_token(
+                        //     vec!["an identifier".to_string()],
+                        //     state.stream.current(),
+                        // ));
                     }
 
                     state.stream.next();
@@ -44,10 +45,11 @@ pub fn use_statement(state: &mut State) -> ParseResult<StatementKind> {
                 }
                 TokenKind::Const => {
                     if kind != UseKind::Normal {
-                        return Err(error::unexpected_token(
-                            vec!["an identifier".to_string()],
-                            state.stream.current(),
-                        ));
+                        todo!("tolerant mode")
+                        // return Err(error::unexpected_token(
+                        //     vec!["an identifier".to_string()],
+                        //     state.stream.current(),
+                        // ));
                     }
 
                     state.stream.next();

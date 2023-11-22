@@ -2,8 +2,8 @@ use std::{env::args, path::Path, process::exit};
 
 use discoverer::discover;
 use pxp_lexer::Lexer;
-
-const LEXER: Lexer = Lexer::new();
+use pxp_symbol::SymbolTable;
+use pxp_token::Token;
 
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
@@ -26,7 +26,10 @@ fn main() {
             }
 
             let contents = std::fs::read(file).unwrap();
-            match LEXER.tokenize(&contents[..]) {
+            let mut symbol_table = SymbolTable::new();
+            let mut lexer = Lexer::new(&contents[..], &mut symbol_table);
+
+            match lexer.tokenize() {
                 Ok(_) => {
                     print!(".");
                 }
@@ -48,9 +51,18 @@ fn main() {
         }
     } else {
         let contents = std::fs::read(&path).unwrap();
-        let tokens = LEXER.tokenize(&contents[..]).unwrap();
+        let mut symbol_table = SymbolTable::new();
+        let mut lexer = Lexer::new(&contents[..], &mut symbol_table);
+        let tokens = lexer.tokenize().unwrap();
+
         if args.contains(&"--debug".to_string()) {
-            dbg!(tokens);
+            dbg_tokens(&symbol_table, &tokens);
         }
+    }
+}
+
+fn dbg_tokens(symbol_table: &SymbolTable, tokens: &[Token]) {
+    for token in tokens.iter() {
+        println!("{}", token.dbg(symbol_table));
     }
 }

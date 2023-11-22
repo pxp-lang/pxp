@@ -1,12 +1,12 @@
 use std::fmt::Display;
 
-use pxp_bytestring::ByteString;
 use pxp_span::Span;
+use pxp_symbol::Symbol;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum Type {
-    Named(Span, ByteString),
+    Named(Span, Symbol),
     Nullable(Span, Box<Type>),
     Union(Vec<Type>),
     Intersection(Vec<Type>),

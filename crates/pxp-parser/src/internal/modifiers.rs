@@ -26,10 +26,11 @@ pub fn class_group(input: Vec<(Span, TokenKind)>) -> ParseResult<ClassModifierGr
             TokenKind::Final => {
                 final_span = Some(*span);
                 if let Some(abstract_span) = abstract_span {
-                    Err(error::final_and_abstract_modifiers_combined_for_class(
-                        *span,
-                        abstract_span,
-                    ))
+                    todo!("tolerant mode")
+                    // Err(error::final_and_abstract_modifiers_combined_for_class(
+                    //     *span,
+                    //     abstract_span,
+                    // ))
                 } else {
                     Ok(ClassModifier::Final(*span))
                 }
@@ -37,17 +38,18 @@ pub fn class_group(input: Vec<(Span, TokenKind)>) -> ParseResult<ClassModifierGr
             TokenKind::Abstract => {
                 abstract_span = Some(*span);
                 if let Some(final_span) = final_span {
-                    Err(error::final_and_abstract_modifiers_combined_for_class(
-                        final_span, *span,
-                    ))
+                    todo!("tolerant mode")
+                    // Err(error::final_and_abstract_modifiers_combined_for_class(
+                    //     final_span, *span,
+                    // ))
                 } else {
                     Ok(ClassModifier::Abstract(*span))
                 }
             }
-            _ => Err(error::modifier_cannot_be_used_for_class(
+            _ => todo!("tolerant mode") /*Err(error::modifier_cannot_be_used_for_class(
                 token.to_string(),
                 *span,
-            )),
+            ))*/,
         })
         .collect::<ParseResult<Vec<ClassModifier>>>()?;
 
@@ -65,12 +67,13 @@ pub fn method_group(input: Vec<(Span, TokenKind)>) -> ParseResult<MethodModifier
             TokenKind::Final => {
                 final_span = Some(*span);
                 if let Some(abstract_span) = abstract_span {
-                    Err(
-                        error::final_and_abstract_modifiers_combined_for_class_member(
-                            *span,
-                            abstract_span,
-                        ),
-                    )
+                    // Err(
+                    //     error::final_and_abstract_modifiers_combined_for_class_member(
+                    //         *span,
+                    //         abstract_span,
+                    //     ),
+                    // )
+                    todo!("tolerant mode")
                 } else {
                     Ok(MethodModifier::Final(*span))
                 }
@@ -78,11 +81,12 @@ pub fn method_group(input: Vec<(Span, TokenKind)>) -> ParseResult<MethodModifier
             TokenKind::Abstract => {
                 abstract_span = Some(*span);
                 if let Some(final_span) = final_span {
-                    Err(
-                        error::final_and_abstract_modifiers_combined_for_class_member(
-                            final_span, *span,
-                        ),
-                    )
+                    todo!("tolerant mode")
+                    // Err(
+                    //     error::final_and_abstract_modifiers_combined_for_class_member(
+                    //         final_span, *span,
+                    //     ),
+                    // )
                 } else {
                     Ok(MethodModifier::Abstract(*span))
                 }
@@ -91,10 +95,10 @@ pub fn method_group(input: Vec<(Span, TokenKind)>) -> ParseResult<MethodModifier
             TokenKind::Protected => Ok(MethodModifier::Protected(*span)),
             TokenKind::Public => Ok(MethodModifier::Public(*span)),
             TokenKind::Static => Ok(MethodModifier::Static(*span)),
-            _ => Err(error::modifier_cannot_be_used_for_class_method(
+            _ => todo!("tolerant mode") /*Err(error::modifier_cannot_be_used_for_class_method(
                 token.to_string(),
                 *span,
-            )),
+            ))*/,
         })
         .collect::<ParseResult<Vec<MethodModifier>>>()?;
 
@@ -111,10 +115,10 @@ pub fn property_group(input: Vec<(Span, TokenKind)>) -> ParseResult<PropertyModi
             TokenKind::Public => Ok(PropertyModifier::Public(*span)),
             TokenKind::Protected => Ok(PropertyModifier::Protected(*span)),
             TokenKind::Private => Ok(PropertyModifier::Private(*span)),
-            _ => Err(error::modifier_cannot_be_used_for_property(
+            _ => todo!("tolerant mode") /*Err(error::modifier_cannot_be_used_for_property(
                 token.to_string(),
                 *span,
-            )),
+            ))*/,
         })
         .collect::<ParseResult<Vec<PropertyModifier>>>()?;
 
@@ -132,10 +136,10 @@ pub fn promoted_property_group(
             TokenKind::Private => Ok(PromotedPropertyModifier::Private(*span)),
             TokenKind::Protected => Ok(PromotedPropertyModifier::Protected(*span)),
             TokenKind::Public => Ok(PromotedPropertyModifier::Public(*span)),
-            _ => Err(error::modifier_cannot_be_used_for_promoted_property(
+            _ => todo!("tolerant mode") /*Err(error::modifier_cannot_be_used_for_promoted_property(
                 token.to_string(),
                 *span,
-            )),
+            ))*/,
         })
         .collect::<ParseResult<Vec<PromotedPropertyModifier>>>()?;
 
@@ -154,9 +158,10 @@ pub fn constant_group(input: Vec<(Span, TokenKind)>) -> ParseResult<ConstantModi
             TokenKind::Private => {
                 private_span = Some(*span);
                 if let Some(final_span) = final_span {
-                    Err(error::final_and_private_modifiers_combined_for_constant(
-                        final_span, *span,
-                    ))
+                    todo!("tolerant mode")
+                    // Err(error::final_and_private_modifiers_combined_for_constant(
+                    //     final_span, *span,
+                    // ))
                 } else {
                     Ok(ConstantModifier::Final(*span))
                 }
@@ -164,18 +169,19 @@ pub fn constant_group(input: Vec<(Span, TokenKind)>) -> ParseResult<ConstantModi
             TokenKind::Final => {
                 final_span = Some(*span);
                 if let Some(private_span) = private_span {
-                    Err(error::final_and_private_modifiers_combined_for_constant(
-                        *span,
-                        private_span,
-                    ))
+                    todo!("tolerant mode")
+                    // Err(error::final_and_private_modifiers_combined_for_constant(
+                    //     *span,
+                    //     private_span,
+                    // ))
                 } else {
                     Ok(ConstantModifier::Final(*span))
                 }
             }
-            _ => Err(error::modifier_cannot_be_used_for_constant(
+            _ => todo!("tolerant mode") /* Err(error::modifier_cannot_be_used_for_constant(
                 token.to_string(),
                 *span,
-            )),
+            )) */,
         })
         .collect::<ParseResult<Vec<ConstantModifier>>>()?;
 
@@ -201,11 +207,12 @@ pub fn collect(state: &mut State) -> ParseResult<Vec<(Span, TokenKind)>> {
 
     while collectable_tokens.contains(&current_kind) {
         if let Some((span, _)) = collected.iter().find(|(_, kind)| kind == &current_kind) {
-            return Err(error::multiple_modifiers(
-                current_kind.to_string(),
-                *span,
-                current_span,
-            ));
+            todo!("tolerant mode");
+            // return Err(error::multiple_modifiers(
+            //     current_kind.to_string(),
+            //     *span,
+            //     current_span,
+            // ));
         }
 
         // guard against multiple visibility modifiers, we don't care where these modifiers are used.
@@ -219,10 +226,11 @@ pub fn collect(state: &mut State) -> ParseResult<Vec<(Span, TokenKind)>> {
                     TokenKind::Public | TokenKind::Protected | TokenKind::Private
                 )
             }) {
-                state.record(error::multiple_visibility_modifiers(
-                    (visibility.to_string(), *span),
-                    (current_kind.to_string(), current_span),
-                ));
+                todo!("tolerant mode")
+                // state.record(error::multiple_visibility_modifiers(
+                //     (visibility.to_string(), *span),
+                //     (current_kind.to_string(), current_span),
+                // ));
             }
         }
 

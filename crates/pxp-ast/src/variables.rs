@@ -1,8 +1,6 @@
-use std::fmt::Display;
-
 use crate::Expression;
-use pxp_bytestring::ByteString;
 use pxp_span::Span;
+use pxp_token::Token;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -15,8 +13,7 @@ pub enum Variable {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct SimpleVariable {
-    pub span: Span,
-    pub name: ByteString,
+    pub token: Token,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -32,10 +29,4 @@ pub struct BracedVariableVariable {
     pub start: Span,
     pub variable: Box<Expression>,
     pub end: Span,
-}
-
-impl Display for SimpleVariable {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.name)
-    }
 }

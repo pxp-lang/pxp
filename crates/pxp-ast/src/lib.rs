@@ -32,10 +32,10 @@ use crate::traits::TraitStatement;
 use crate::try_block::TryStatement;
 use crate::utils::CommaSeparated;
 use crate::variables::Variable;
-use pxp_bytestring::ByteString;
 use pxp_span::Span;
+use pxp_symbol::Symbol;
 use pxp_syntax::comments::{Comment, CommentGroup};
-use pxp_token::TokenKind;
+use pxp_token::{TokenKind, Token};
 
 pub mod arguments;
 pub mod attributes;
@@ -98,7 +98,7 @@ impl Ending {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct HaltCompilerStatement {
-    pub content: Option<ByteString>,
+    pub content: Option<Token>,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -208,7 +208,7 @@ pub enum StatementKind {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct InlineHtmlStatement {
-    pub html: ByteString,
+    pub html: Token,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -286,7 +286,7 @@ impl From<TokenKind> for CastKind {
 
 impl From<&TokenKind> for CastKind {
     fn from(kind: &TokenKind) -> Self {
-        kind.clone().into()
+        kind.into()
     }
 }
 
@@ -587,14 +587,14 @@ pub struct InterpolatedStringExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct HeredocExpression {
-    pub label: ByteString,
+    pub label: Symbol,
     pub parts: Vec<StringPart>,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NowdocExpression {
-    pub label: ByteString,
-    pub value: ByteString,
+    pub label: Token,
+    pub value: Token,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -873,7 +873,7 @@ pub enum StringPart {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct LiteralStringPart {
-    pub value: ByteString,
+    pub value: Symbol,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]

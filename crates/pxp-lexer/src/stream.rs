@@ -4,7 +4,7 @@ use pxp_syntax::comments::CommentGroup;
 use pxp_token::Token;
 use pxp_token::TokenKind;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub struct TokenStream<'a> {
     tokens: &'a [Token],
     length: usize,
@@ -14,7 +14,7 @@ pub struct TokenStream<'a> {
 
 /// Token stream.
 impl<'a> TokenStream<'a> {
-    pub fn new(tokens: &'a [Token]) -> TokenStream {
+    pub fn new(tokens: &'a [Token]) -> TokenStream<'a> {
         let length = tokens.len();
 
         let mut stream = TokenStream {
@@ -126,38 +126,38 @@ impl<'a> TokenStream<'a> {
                     Token {
                         kind: TokenKind::SingleLineComment,
                         span,
-                        value,
+                        symbol,
                     } => Comment {
                         span: *span,
                         format: CommentFormat::SingleLine,
-                        content: value.clone(),
+                        content: symbol.unwrap()
                     },
                     Token {
                         kind: TokenKind::MultiLineComment,
                         span,
-                        value,
+                        symbol,
                     } => Comment {
                         span: *span,
                         format: CommentFormat::MultiLine,
-                        content: value.clone(),
+                        content: symbol.unwrap()
                     },
                     Token {
                         kind: TokenKind::HashMarkComment,
                         span,
-                        value,
+                        symbol,
                     } => Comment {
                         span: *span,
                         format: CommentFormat::HashMark,
-                        content: value.clone(),
+                        content: symbol.unwrap()
                     },
                     Token {
                         kind: TokenKind::DocumentComment,
                         span,
-                        value,
+                        symbol,
                     } => Comment {
                         span: *span,
                         format: CommentFormat::Document,
-                        content: value.clone(),
+                        content: symbol.unwrap()
                     },
                     _ => unreachable!(),
                 })
@@ -186,17 +186,5 @@ impl<'a> TokenStream<'a> {
             self.comments.push(current);
             self.cursor += 1;
         }
-    }
-}
-
-impl<'a> Default for TokenStream<'a> {
-    fn default() -> Self {
-        Self::new(&[])
-    }
-}
-
-impl<'a> From<&'a Vec<Token>> for TokenStream<'a> {
-    fn from(tokens: &'a Vec<Token>) -> Self {
-        Self::new(tokens.as_slice())
     }
 }

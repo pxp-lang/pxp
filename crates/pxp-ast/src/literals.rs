@@ -1,38 +1,21 @@
-use pxp_bytestring::ByteString;
-use pxp_span::Span;
+use pxp_token::Token;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
-pub enum Literal {
-    String(LiteralString),
-    Integer(LiteralInteger),
-    Float(LiteralFloat),
+pub struct Literal {
+    pub kind: LiteralKind,
+    pub token: Token,
+}
+
+impl Literal {
+    pub fn new(kind: LiteralKind, token: Token) -> Literal {
+        Literal { kind, token }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-
-pub struct LiteralString {
-    pub value: ByteString,
-    pub span: Span,
-    pub kind: LiteralStringKind,
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub enum LiteralStringKind {
-    SingleQuoted,
-    DoubleQuoted,
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-
-pub struct LiteralInteger {
-    pub value: ByteString,
-    pub span: Span,
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-
-pub struct LiteralFloat {
-    pub value: ByteString,
-    pub span: Span,
+pub enum LiteralKind {
+    Integer,
+    Float,
+    String,
 }

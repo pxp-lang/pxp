@@ -4,7 +4,8 @@ use crate::internal::blocks;
 use crate::internal::utils;
 use crate::state::State;
 use crate::statement;
-use pxp_ast::literals::LiteralInteger;
+use pxp_ast::literals::Literal;
+use pxp_ast::literals::LiteralKind;
 use pxp_ast::loops::BreakStatement;
 use pxp_ast::loops::ContinueStatement;
 use pxp_ast::loops::DoWhileStatement;
@@ -229,18 +230,17 @@ fn maybe_loop_level(state: &mut State) -> ParseResult<Option<Level>> {
 }
 
 fn loop_level(state: &mut State) -> ParseResult<Level> {
+    let current = state.stream.current();
+
     if let Token {
         kind: TokenKind::LiteralInteger,
         span,
-        value,
-    } = state.stream.current()
+        ..
+    } = current
     {
         state.stream.next();
 
-        return Ok(Level::Literal(LiteralInteger {
-            value: value.clone(),
-            span: *span,
-        }));
+        return Ok(Level::Literal(Literal::new(LiteralKind::Integer, *current)));
     }
 
     let (left_parenthesis, level, right_parenthesis) =

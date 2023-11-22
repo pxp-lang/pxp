@@ -42,10 +42,11 @@ pub fn match_expression(state: &mut State) -> ParseResult<Expression> {
         let current = state.stream.current();
         if current.kind == TokenKind::Default {
             if let Some(default_arm) = default {
-                return Err(error::match_expression_has_multiple_default_arms(
-                    default_arm.keyword,
-                    current.span,
-                ));
+                // return Err(error::match_expression_has_multiple_default_arms(
+                //     default_arm.keyword,
+                //     current.span,
+                // ));
+                todo!("tolerant mode")
             }
 
             state.stream.next();

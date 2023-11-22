@@ -1,5 +1,4 @@
-use crate::literals::LiteralInteger;
-
+use crate::literals::Literal;
 use crate::utils::CommaSeparated;
 use crate::Ending;
 use crate::Expression;
@@ -125,7 +124,7 @@ pub enum WhileStatementBody {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum Level {
-    Literal(LiteralInteger),
+    Literal(Literal),
     Parenthesized {
         left_parenthesis: Span, // `(`
         level: Box<Level>,

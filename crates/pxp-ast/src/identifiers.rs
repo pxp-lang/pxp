@@ -1,8 +1,6 @@
-use std::fmt::Display;
-
 use crate::Expression;
-use pxp_bytestring::ByteString;
 use pxp_span::Span;
+use pxp_token::Token;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -14,20 +12,12 @@ pub enum Identifier {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct SimpleIdentifier {
-    pub span: Span,
-    pub value: ByteString,
-}
-
-impl Display for SimpleIdentifier {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.value)
-    }
+    pub token: Token,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct DynamicIdentifier {
-    pub start: Span,
+    pub span: Span,
     pub expr: Box<Expression>,
-    pub end: Span,
 }

@@ -25,9 +25,10 @@ pub fn namespace(state: &mut State) -> ParseResult<StatementKind> {
     if let Some(name) = &name {
         if current.kind != TokenKind::LeftBrace {
             if let Some(NamespaceType::Braced) = state.namespace_type() {
-                return Err(error::unbraced_namespace_declarations_in_braced_context(
-                    current.span,
-                ));
+                todo!("tolerant mode")
+                // return Err(error::unbraced_namespace_declarations_in_braced_context(
+                //     current.span,
+                // ));
             }
 
             return unbraced_namespace(state, start, name.clone());
@@ -35,11 +36,12 @@ pub fn namespace(state: &mut State) -> ParseResult<StatementKind> {
     }
 
     match state.namespace_type() {
-        Some(NamespaceType::Unbraced) => Err(
+        Some(NamespaceType::Unbraced) => todo!("tolerant mode") /*Err(
             error::braced_namespace_declarations_in_unbraced_context(current.span),
-        ),
+        )*/,
         Some(NamespaceType::Braced) if state.namespace().is_some() => {
-            Err(error::nested_namespace_declarations(start))
+            todo!("tolerant mode")
+            // Err(error::nested_namespace_declarations(start))
         }
         _ => braced_namespace(state, start, name),
     }

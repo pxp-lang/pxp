@@ -1,9 +1,9 @@
 use std::fmt::Display;
 
-use pxp_bytestring::ByteString;
 use pxp_span::Span;
+use pxp_symbol::{Symbol, SymbolTable};
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 
 pub enum OpenTagKind {
     Full,  // `<?php`
@@ -11,7 +11,7 @@ pub enum OpenTagKind {
     Echo,  // `<?=`
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 
 pub enum DocStringKind {
     Heredoc,
@@ -20,7 +20,7 @@ pub enum DocStringKind {
 
 pub type DocStringIndentationAmount = usize;
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 
 pub enum DocStringIndentationKind {
     Space,
@@ -49,7 +49,7 @@ impl From<DocStringIndentationKind> for u8 {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 
 pub enum TokenKind {
     Die,
@@ -242,12 +242,12 @@ pub enum TokenKind {
     LogicalXor,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 
 pub struct Token {
     pub kind: TokenKind,
     pub span: Span,
-    pub value: ByteString,
+    pub symbol: Option<Symbol>
 }
 
 impl Default for Token {
@@ -255,14 +255,38 @@ impl Default for Token {
         Self {
             kind: TokenKind::Eof,
             span: Span::default(),
-            value: ByteString::default(),
+            symbol: None,
         }
     }
 }
 
-impl Display for Token {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.value)
+impl Token {
+    pub fn new(kind: TokenKind, span: Span, symbol: Option<Symbol>) -> Self {
+        Self { kind, span, symbol }
+    }
+
+    pub fn new_with_symbol(kind: TokenKind, span: Span, symbol: Symbol) -> Self {
+        Self::new(kind, span, Some(symbol))
+    }
+
+    pub fn new_without_symbol(kind: TokenKind, span: Span) -> Self {
+        Self::new(kind, span, None)
+    }
+
+    pub fn display(&self, symbol_table: &SymbolTable) -> String {
+        if let Some(symbol) = self.symbol {
+            format!("{}", symbol_table.resolve(symbol).unwrap())
+        } else {
+            format!("{}", self.kind)
+        }
+    }
+
+    pub fn dbg(&self, symbol_table: &SymbolTable) -> String {
+        if let Some(symbol) = self.symbol {
+            format!("{} ({:?})", symbol_table.resolve(symbol).unwrap(), self.kind)
+        } else {
+            format!("{} ({:?})", self.kind, self.kind)
+        }
     }
 }
 

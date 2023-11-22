@@ -12,11 +12,9 @@ use pxp_token::TokenKind;
 pub fn simple_variable(state: &mut State) -> ParseResult<SimpleVariable> {
     let current = state.stream.current();
     if let TokenKind::Variable = &current.kind {
-        let span = current.span;
-        let name = current.value.clone();
         state.stream.next();
 
-        return Ok(SimpleVariable { span, name });
+        return Ok(SimpleVariable { token: *current });
     }
 
     expected_token_err!("a variable", state)
@@ -26,11 +24,9 @@ pub fn dynamic_variable(state: &mut State) -> ParseResult<Variable> {
     let current = state.stream.current();
     match &current.kind {
         TokenKind::Variable => {
-            let span = current.span;
-            let name = current.value.clone();
             state.stream.next();
 
-            Ok(Variable::SimpleVariable(SimpleVariable { span, name }))
+            Ok(Variable::SimpleVariable(SimpleVariable { token: *current }))
         }
         TokenKind::DollarLeftBrace => {
             let start = current.span;

@@ -4,6 +4,7 @@ use crate::state::source::Source;
 use crate::state::StackFrame;
 use crate::state::State;
 use pxp_bytestring::ByteString;
+use pxp_symbol::SymbolTable;
 use pxp_token::DocStringIndentationKind;
 use pxp_token::DocStringKind;
 use pxp_token::OpenTagKind;
@@ -15,72 +16,79 @@ pub mod macros;
 pub mod state;
 pub mod stream;
 
-#[derive(Debug, PartialEq, Eq, Clone, Default)]
-pub struct Lexer;
+#[derive(Debug)]
+pub struct Lexer<'a, 'b> {
+    state: State<'a>,
+    symbol_table: &'b mut SymbolTable<'a>,
+}
 
-impl Lexer {
-    pub const fn new() -> Self {
-        Self {}
+impl<'a, 'b> Lexer<'a, 'b> {
+    pub fn new<B: ?Sized + AsRef<[u8]>>(input: &'a B, symbol_table: &'b mut SymbolTable<'a>) -> Self {
+        Self {
+            state: State::new(Source::new(input.as_ref())),
+            symbol_table
+        }
     }
 
-    pub fn tokenize<B: ?Sized + AsRef<[u8]>>(&self, input: &B) -> SyntaxResult<Vec<Token>> {
-        let mut state = State::new(Source::new(input.as_ref()));
+    pub fn tokenize(&'b mut self) -> SyntaxResult<Vec<Token>> {
         let mut tokens = Vec::new();
 
-        while !state.source.eof() {
-            state.source.start_token();
+        while !self.state.source.eof() {
+            self.state.source.start_token();
 
-            match state.frame()? {
+            match self.state.frame()? {
                 // The "Initial" state is used to parse inline HTML. It is essentially a catch-all
                 // state that will build up a single token buffer until it encounters an open tag
                 // of some description.
-                StackFrame::Initial => self.initial(&mut state, &mut tokens)?,
+                StackFrame::Initial => self.initial(&mut tokens)?,
                 // The scripting state is entered when an open tag is encountered in the source code.
                 // This tells the lexer to start analysing characters at PHP tokens instead of inline HTML.
                 StackFrame::Scripting => {
-                    self.skip_whitespace(&mut state);
+                    self.skip_whitespace();
 
                     // If we have consumed whitespace, we should restart the token's position tracking
                     // to ensure we accurately track the span of the token.
-                    state.source.start_token();
+                    self.state.source.start_token();
 
                     // If we have consumed whitespace and then reached the end of the file, we should break.
-                    if state.source.eof() {
+                    if self.state.source.eof() {
                         break;
                     }
 
-                    tokens.push(self.scripting(&mut state)?);
+                    tokens.push(self.scripting()?);
                 }
                 // The "Halted" state is entered when the `__halt_compiler` token is encountered.
                 // In this state, all the text that follows is no longer parsed as PHP as is collected
                 // into a single "InlineHtml" token (kind of cheating, oh well).
                 StackFrame::Halted => {
-                    tokens.push(Token {
-                        kind: TokenKind::InlineHtml,
-                        span: state.source.span(),
-                        value: state.source.read_remaining().into(),
-                    });
+                    let symbol = self.symbol_table.intern(self.state.source.read_remaining());
+
+                    tokens.push(Token::new_with_symbol(
+                        TokenKind::InlineHtml,
+                        self.state.source.span(),
+                        symbol
+                    ));
                     break;
                 }
                 // The double quote state is entered when inside a double-quoted string that
                 // contains variables.
-                StackFrame::DoubleQuote => self.double_quote(&mut state, &mut tokens)?,
+                StackFrame::DoubleQuote => self.double_quote(&mut tokens)?,
                 // The shell exec state is entered when inside of a execution string (`).
-                StackFrame::ShellExec => self.shell_exec(&mut state, &mut tokens)?,
+                StackFrame::ShellExec => self.shell_exec(&mut tokens)?,
                 // The doc string state is entered when tokenizing heredocs and nowdocs.
                 StackFrame::DocString(kind, label, ..) => {
                     let label = label.clone();
 
                     match kind {
-                        DocStringKind::Heredoc => self.heredoc(&mut state, &mut tokens, label)?,
-                        DocStringKind::Nowdoc => self.nowdoc(&mut state, &mut tokens, label)?,
+                        DocStringKind::Heredoc => self.heredoc(&mut tokens, label)?,
+                        DocStringKind::Nowdoc => self.nowdoc(&mut tokens, label)?,
                     }
                 }
                 // LookingForProperty is entered inside double quotes,
                 // backticks, or a heredoc, expecting a variable name.
                 // If one isn't found, it switches to scripting.
                 StackFrame::LookingForVarname => {
-                    if let Some(token) = self.looking_for_varname(&mut state)? {
+                    if let Some(token) = self.looking_for_varname()? {
                         tokens.push(token);
                     }
                 }
@@ -88,396 +96,396 @@ impl Lexer {
                 // backticks, or a heredoc, expecting an arrow followed by a
                 // property name.
                 StackFrame::LookingForProperty => {
-                    tokens.push(self.looking_for_property(&mut state)?);
+                    tokens.push(self.looking_for_property()?);
                 }
                 StackFrame::VarOffset => {
-                    if state.source.eof() {
+                    if self.state.source.eof() {
                         break;
                     }
 
-                    tokens.push(self.var_offset(&mut state)?);
+                    tokens.push(self.var_offset()?);
                 }
             }
         }
 
-        tokens.push(Token {
-            kind: TokenKind::Eof,
-            span: state.source.span(),
-            value: ByteString::default(),
-        });
+        tokens.push(Token::new_without_symbol(TokenKind::Eof, self.state.source.span()));
 
         Ok(tokens)
     }
 
-    fn skip_whitespace(&self, state: &mut State) {
-        while let Some(true) = state.source.current().map(|u: &u8| u.is_ascii_whitespace()) {
-            state.source.next();
+    fn skip_whitespace(&mut self) {
+        while let Some(true) = self.state.source.current().map(|u: &u8| u.is_ascii_whitespace()) {
+            self.state.source.next();
         }
     }
 
-    fn read_and_skip_whitespace(&self, state: &mut State) -> Vec<u8> {
+    fn read_and_skip_whitespace(&mut self) -> Vec<u8> {
         let mut buffer = Vec::new();
-        while let Some(true) = state.source.current().map(|u: &u8| u.is_ascii_whitespace()) {
-            buffer.push(*state.source.current().unwrap());
-            state.source.next();
+        while let Some(true) = self.state.source.current().map(|u: &u8| u.is_ascii_whitespace()) {
+            buffer.push(*self.state.source.current().unwrap());
+            self.state.source.next();
         }
         buffer
     }
 
-    fn initial(&self, state: &mut State, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
-        let mut buffer = Vec::new();
-        while let Some(char) = state.source.current() {
-            if state.source.at_case_insensitive(b"<?php", 5) {
-                let inline_span = state.source.span();
+    fn initial(&mut self, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
+        while let Some(char) = self.state.source.current() {
+            if self.state.source.at_case_insensitive(b"<?php", 5) {
+                let inline_span = self.state.source.span();
 
-                let tag = state.source.read_and_skip(5);
-                let tag_span = state.source.span();
+                let tag = self.state.source.read_and_skip(5);
+                let tag_span = self.state.source.span();
 
-                state.replace(StackFrame::Scripting);
+                self.state.replace(StackFrame::Scripting);
 
-                if !buffer.is_empty() {
-                    tokens.push(Token {
-                        kind: TokenKind::InlineHtml,
-                        span: inline_span,
-                        value: buffer.into(),
-                    });
+                if !inline_span.is_empty() {
+                    tokens.push(Token::new_with_symbol(
+                        TokenKind::InlineHtml,
+                        inline_span,
+                        self.symbol_table.intern(self.state.source.span_range(inline_span)),
+                    ));
                 }
 
-                tokens.push(Token {
-                    kind: TokenKind::OpenTag(OpenTagKind::Full),
-                    span: tag_span,
-                    value: tag.into(),
-                });
+                tokens.push(Token::new_without_symbol(
+                    TokenKind::OpenTag(OpenTagKind::Full),
+                    tag_span,
+                ));
 
                 return Ok(());
-            } else if state.source.at_case_insensitive(b"<?=", 3) {
-                let inline_span = state.source.span();
+            } else if self.state.source.at_case_insensitive(b"<?=", 3) {
+                let inline_span = self.state.source.span();
 
-                state.source.start_token();
-                state.source.skip(3);
+                self.state.source.start_token();
+                self.state.source.skip(3);
 
-                let tag_span = state.source.span();
+                let tag_span = self.state.source.span();
 
-                state.replace(StackFrame::Scripting);
+                self.state.replace(StackFrame::Scripting);
 
-                if !buffer.is_empty() {
-                    tokens.push(Token {
-                        kind: TokenKind::InlineHtml,
-                        span: inline_span,
-                        value: buffer.into(),
-                    });
+                if !inline_span.is_empty() {
+                    tokens.push(Token::new_with_symbol(
+                        TokenKind::InlineHtml,
+                        inline_span,
+                        self.symbol_table.intern(self.state.source.span_range(inline_span)),
+                    ));
                 }
 
-                tokens.push(Token {
-                    kind: TokenKind::OpenTag(OpenTagKind::Echo),
-                    span: tag_span,
-                    value: b"<?=".into(),
-                });
+                tokens.push(Token::new_without_symbol(
+                    TokenKind::OpenTag(OpenTagKind::Echo),
+                    tag_span,
+                ));
 
                 return Ok(());
-            } else if state.source.at_case_insensitive(b"<?", 2) {
-                let inline_span = state.source.span();
+            } else if self.state.source.at_case_insensitive(b"<?", 2) {
+                let inline_span = self.state.source.span();
 
-                state.source.start_token();
-                state.source.skip(2);
-                let tag_span = state.source.span();
+                self.state.source.start_token();
+                self.state.source.skip(2);
+                let tag_span = self.state.source.span();
 
-                state.replace(StackFrame::Scripting);
+                self.state.replace(StackFrame::Scripting);
 
-                if !buffer.is_empty() {
-                    tokens.push(Token {
-                        kind: TokenKind::InlineHtml,
-                        span: inline_span,
-                        value: buffer.into(),
-                    });
+                if !inline_span.is_empty() {
+                    tokens.push(Token::new_with_symbol(
+                        TokenKind::InlineHtml,
+                        inline_span,
+                        self.symbol_table.intern(self.state.source.span_range(inline_span)),
+                    ));
                 }
 
-                tokens.push(Token {
-                    kind: TokenKind::OpenTag(OpenTagKind::Short),
-                    span: tag_span,
-                    value: b"<?".into(),
-                });
+                tokens.push(Token::new_without_symbol(
+                    TokenKind::OpenTag(OpenTagKind::Short),
+                    tag_span,
+                ));
 
                 return Ok(());
             }
 
-            state.source.next();
-            buffer.push(*char);
+            self.state.source.next();
         }
 
-        tokens.push(Token {
-            kind: TokenKind::InlineHtml,
-            span: state.source.span(),
-            value: buffer.into(),
-        });
+        let inline_span = self.state.source.span();
+
+        tokens.push(Token::new_with_symbol(
+            TokenKind::InlineHtml,
+            inline_span,
+            self.symbol_table.intern(self.state.source.span_range(inline_span)),
+        ));
 
         Ok(())
     }
 
-    fn scripting(&self, state: &mut State) -> SyntaxResult<Token> {
-        let (kind, value): (TokenKind, ByteString) = match state.source.read(3) {
+    fn scripting(&mut self) -> SyntaxResult<Token> {
+        let (kind, with_symbol): (TokenKind, bool) = match self.state.source.read(3) {
             [b'!', b'=', b'='] => {
-                state.source.skip(3);
+                self.state.source.skip(3);
 
-                (TokenKind::BangDoubleEquals, b"!==".into())
+                (TokenKind::BangDoubleEquals, false)
             }
             [b'?', b'?', b'='] => {
-                state.source.skip(3);
-                (TokenKind::DoubleQuestionEquals, b"??=".into())
+                self.state.source.skip(3);
+                (TokenKind::DoubleQuestionEquals, false)
             }
             [b'?', b'-', b'>'] => {
-                state.source.skip(3);
-                (TokenKind::QuestionArrow, b"?->".into())
+                self.state.source.skip(3);
+                (TokenKind::QuestionArrow, false)
             }
             [b'=', b'=', b'='] => {
-                state.source.skip(3);
-                (TokenKind::TripleEquals, b"===".into())
+                self.state.source.skip(3);
+                (TokenKind::TripleEquals, false)
             }
             [b'.', b'.', b'.'] => {
-                state.source.skip(3);
-                (TokenKind::Ellipsis, b"...".into())
+                self.state.source.skip(3);
+                (TokenKind::Ellipsis, false)
             }
             [b'`', ..] => {
-                state.source.next();
-                state.replace(StackFrame::ShellExec);
-                (TokenKind::Backtick, b"`".into())
+                self.state.source.next();
+                self.state.replace(StackFrame::ShellExec);
+                (TokenKind::Backtick, false)
             }
             [b'@', ..] => {
-                state.source.next();
-                (TokenKind::At, b"@".into())
+                self.state.source.next();
+                (TokenKind::At, false)
             }
             [b'!', b'=', ..] => {
-                state.source.skip(2);
-                (TokenKind::BangEquals, b"!=".into())
+                self.state.source.skip(2);
+                (TokenKind::BangEquals, false)
             }
             [b'!', ..] => {
-                state.source.next();
-                (TokenKind::Bang, b"!".into())
+                self.state.source.next();
+                (TokenKind::Bang, false)
             }
             [b'&', b'&', ..] => {
-                state.source.skip(2);
-                (TokenKind::BooleanAnd, b"&&".into())
+                self.state.source.skip(2);
+                (TokenKind::BooleanAnd, false)
             }
             [b'&', b'=', ..] => {
-                state.source.skip(2);
-                (TokenKind::AmpersandEquals, b"&=".into())
+                self.state.source.skip(2);
+                (TokenKind::AmpersandEquals, false)
             }
             [b'&', ..] => {
-                state.source.next();
-                (TokenKind::Ampersand, b"&".into())
+                self.state.source.next();
+                (TokenKind::Ampersand, false)
             }
             [b'?', b'>', ..] => {
                 // This is a close tag, we can enter "Initial" mode again.
-                state.source.skip(2);
+                self.state.source.skip(2);
 
-                state.replace(StackFrame::Initial);
+                self.state.replace(StackFrame::Initial);
 
-                (TokenKind::CloseTag, b"?>".into())
+                (TokenKind::CloseTag, false)
             }
             [b'?', b'?', ..] => {
-                state.source.skip(2);
-                (TokenKind::DoubleQuestion, b"??".into())
+                self.state.source.skip(2);
+                (TokenKind::DoubleQuestion, false)
             }
             [b'?', b':', ..] => {
-                state.source.skip(2);
-                (TokenKind::QuestionColon, b"?:".into())
+                self.state.source.skip(2);
+                (TokenKind::QuestionColon, false)
             }
             [b'?', ..] => {
-                state.source.next();
-                (TokenKind::Question, b"?".into())
+                self.state.source.next();
+                (TokenKind::Question, false)
             }
             [b'=', b'>', ..] => {
-                state.source.skip(2);
-                (TokenKind::DoubleArrow, b"=>".into())
+                self.state.source.skip(2);
+                (TokenKind::DoubleArrow, false)
             }
             [b'=', b'=', ..] => {
-                state.source.skip(2);
-                (TokenKind::DoubleEquals, b"==".into())
+                self.state.source.skip(2);
+                (TokenKind::DoubleEquals, false)
             }
             [b'=', ..] => {
-                state.source.next();
-                (TokenKind::Equals, b"=".into())
+                self.state.source.next();
+                (TokenKind::Equals, false)
             }
             // Single quoted string.
             [b'\'', ..] => {
-                state.source.skip(1);
-                self.tokenize_single_quote_string(state)?
+                self.state.source.skip(1);
+                (self.tokenize_single_quote_string()?, true)
             }
             [b'b' | b'B', b'\'', ..] => {
-                state.source.skip(2);
-                self.tokenize_single_quote_string(state)?
+                self.state.source.skip(2);
+                (self.tokenize_single_quote_string()?, true)
             }
             [b'"', ..] => {
-                state.source.skip(1);
-                self.tokenize_double_quote_string(state)?
+                self.state.source.skip(1);
+                (self.tokenize_double_quote_string()?, true)
             }
             [b'b' | b'B', b'"', ..] => {
-                state.source.skip(2);
-                self.tokenize_double_quote_string(state)?
+                self.state.source.skip(2);
+                (self.tokenize_double_quote_string()?, true)
             }
-            [b'$', ident_start!(), ..] => self.tokenize_variable(state),
+            [b'$', ident_start!(), ..] => (self.tokenize_variable(), true),
             [b'$', ..] => {
-                state.source.next();
-                (TokenKind::Dollar, b"$".into())
+                self.state.source.next();
+                (TokenKind::Dollar, false)
             }
             [b'.', b'=', ..] => {
-                state.source.skip(2);
-                (TokenKind::DotEquals, b".=".into())
+                self.state.source.skip(2);
+                (TokenKind::DotEquals, false)
             }
-            [b'0'..=b'9', ..] => self.tokenize_number(state)?,
-            [b'.', b'0'..=b'9', ..] => self.tokenize_number(state)?,
+            [b'0'..=b'9', ..] => (self.tokenize_number()?, true),
+            [b'.', b'0'..=b'9', ..] => (self.tokenize_number()?, true),
             [b'.', ..] => {
-                state.source.next();
-                (TokenKind::Dot, b".".into())
+                self.state.source.next();
+                (TokenKind::Dot, false)
             }
             [b'\\', ident_start!(), ..] => {
-                state.source.next();
+                self.state.source.next();
 
-                match self.scripting(state)? {
+                let mut span = self.state.source.span();
+
+                match self.scripting()? {
                     Token {
                         kind: TokenKind::Identifier | TokenKind::QualifiedIdentifier,
-                        value,
+                        span: ident_span,
                         ..
                     } => {
-                        let mut bytes = value;
-                        bytes.insert(0, b'\\');
+                        span.end = ident_span.end;
 
-                        (TokenKind::FullyQualifiedIdentifier, bytes)
+                        (TokenKind::FullyQualifiedIdentifier, true)
                     }
                     Token {
                         kind: TokenKind::True,
+                        span: ident_span,
                         ..
-                    } => (TokenKind::FullyQualifiedIdentifier, b"\\true".into()),
+                    } => {
+                        span.end = ident_span.end;
+
+                        (TokenKind::FullyQualifiedIdentifier, true)
+                    },
                     Token {
                         kind: TokenKind::False,
+                        span: ident_span,
                         ..
-                    } => (TokenKind::FullyQualifiedIdentifier, b"\\false".into()),
+                    } => {
+                        span.end = ident_span.end;
+
+                        (TokenKind::FullyQualifiedIdentifier, true)
+                    },
                     Token {
                         kind: TokenKind::Null,
+                        span: ident_span,
                         ..
-                    } => (TokenKind::FullyQualifiedIdentifier, b"\\null".into()),
+                    } => {
+                        span.end = ident_span.end;
+
+                        (TokenKind::FullyQualifiedIdentifier, true)
+                    },
                     s => unreachable!("{:?}", s),
                 }
             }
             [b'\\', ..] => {
-                state.source.next();
-                (TokenKind::NamespaceSeparator, b"\\".into())
+                self.state.source.next();
+                (TokenKind::NamespaceSeparator, false)
             }
             [b'/', b'*', ..] => {
-                state.source.next();
-                let mut buffer = vec![b'/'];
+                self.state.source.next();
+
+                let mut kind = TokenKind::MultiLineComment;
 
                 loop {
-                    match state.source.read(2) {
-                        [b'*', b'/'] => {
-                            state.source.skip(2);
-                            buffer.extend_from_slice(b"*/");
+                    match self.state.source.read(3) {
+                        [b'*', b'*', b'\n'] => {
+                            self.state.source.skip(2);
+                            kind = TokenKind::DocumentComment;
+                        },
+                        [b'*', b'/', ..] => {
+                            self.state.source.skip(2);
                             break;
                         }
-                        &[t, ..] => {
-                            state.source.next();
-                            buffer.push(t);
-                        }
-                        _ => {
-                            break;
+                        &[..] => {
+                            self.state.source.next();
                         }
                     }
                 }
 
-                if buffer.starts_with(b"/**") {
-                    (TokenKind::DocumentComment, buffer.into())
-                } else {
-                    (TokenKind::MultiLineComment, buffer.into())
-                }
+                (kind, true)
             }
             [b'#', b'[', ..] => {
-                state.source.skip(2);
-                (TokenKind::Attribute, b"#[".into())
+                self.state.source.skip(2);
+                (TokenKind::Attribute, false)
             }
             [ch @ b'/', b'/', ..] | [ch @ b'#', ..] => {
-                let mut buffer = if *ch == b'/' {
-                    state.source.skip(2);
-                    b"//".to_vec()
+                let kind = if *ch == b'/' {
+                    self.state.source.skip(2);
+                    TokenKind::SingleLineComment
                 } else {
-                    state.source.next();
-                    b"#".to_vec()
+                    self.state.source.next();
+                    TokenKind::HashMarkComment
                 };
 
-                while let Some(c) = state.source.current() {
+                while let Some(c) = self.state.source.current() {
                     if *c == b'\n' {
-                        state.source.next();
+                        self.state.source.next();
                         break;
                     }
 
-                    if state.source.read(2) == [b'?', b'>'] {
+                    if self.state.source.read(2) == [b'?', b'>'] {
                         break;
                     }
 
-                    buffer.push(*c);
-                    state.source.next();
+                    self.state.source.next();
                 }
 
-                if buffer.starts_with(b"#") {
-                    (TokenKind::HashMarkComment, buffer.into())
-                } else {
-                    (TokenKind::SingleLineComment, buffer.into())
-                }
+                (kind, true)
             }
             [b'/', b'=', ..] => {
-                state.source.skip(2);
-                (TokenKind::SlashEquals, b"/=".into())
+                self.state.source.skip(2);
+                (TokenKind::SlashEquals, false)
             }
             [b'/', ..] => {
-                state.source.next();
-                (TokenKind::Slash, b"/".into())
+                self.state.source.next();
+                (TokenKind::Slash, false)
             }
             [b'*', b'*', b'=', ..] => {
-                state.source.skip(3);
-                (TokenKind::PowEquals, b"**=".into())
+                self.state.source.skip(3);
+                (TokenKind::PowEquals, false)
             }
             [b'<', b'<', b'='] => {
-                state.source.skip(3);
+                self.state.source.skip(3);
 
-                (TokenKind::LeftShiftEquals, b"<<=".into())
+                (TokenKind::LeftShiftEquals, false)
             }
             [b'<', b'=', b'>'] => {
-                state.source.skip(3);
-                (TokenKind::Spaceship, b"<=>".into())
+                self.state.source.skip(3);
+                (TokenKind::Spaceship, false)
             }
             [b'>', b'>', b'='] => {
-                state.source.skip(3);
-                (TokenKind::RightShiftEquals, b">>=".into())
+                self.state.source.skip(3);
+                (TokenKind::RightShiftEquals, false)
             }
             [b'<', b'<', b'<'] => {
-                state.source.skip(3);
+                self.state.source.skip(3);
                 let mut buffer = b"<<<".to_vec();
-                buffer.extend(self.read_and_skip_whitespace(state));
+                buffer.extend(self.read_and_skip_whitespace());
 
-                let doc_string_kind = match state.source.read(1) {
+                let doc_string_kind = match self.state.source.read(1) {
                     [b'\''] => {
                         buffer.push(b'\'');
-                        state.source.next();
+                        self.state.source.next();
                         DocStringKind::Nowdoc
                     }
                     [b'"'] => {
                         buffer.push(b'"');
-                        state.source.next();
+                        self.state.source.next();
                         DocStringKind::Heredoc
                     }
                     [_, ..] => DocStringKind::Heredoc,
                     [] => {
-                        return Err(SyntaxError::UnexpectedEndOfFile(state.source.span()));
+                        return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span()));
                     }
                 };
 
-                let label: ByteString = match self.peek_identifier(state) {
-                    Some(_) => self.consume_identifier(state).into(),
+                let label: ByteString = match self.peek_identifier() {
+                    Some(_) => self.consume_identifier().into(),
                     None => {
-                        return match state.source.current() {
+                        return match self.state.source.current() {
                             Some(c) => {
-                                Err(SyntaxError::UnexpectedCharacter(*c, state.source.span()))
+                                Err(SyntaxError::UnexpectedCharacter(*c, self.state.source.span()))
                             }
-                            None => Err(SyntaxError::UnexpectedEndOfFile(state.source.span())),
+                            None => Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
                         }
                     }
                 };
@@ -485,320 +493,318 @@ impl Lexer {
                 buffer.extend_from_slice(&label);
 
                 if doc_string_kind == DocStringKind::Nowdoc {
-                    match state.source.current() {
+                    match self.state.source.current() {
                         Some(b'\'') => {
                             buffer.push(b'\'');
-                            state.source.next();
+                            self.state.source.next();
                         }
                         _ => {
                             // FIXME: this is most likely a bug, what if current is none?
                             return Err(SyntaxError::UnexpectedCharacter(
-                                *state.source.current().unwrap(),
-                                state.source.span(),
+                                *self.state.source.current().unwrap(),
+                                self.state.source.span(),
                             ));
                         }
                     };
-                } else if let Some(b'"') = state.source.current() {
+                } else if let Some(b'"') = self.state.source.current() {
                     buffer.push(b'"');
-                    state.source.next();
+                    self.state.source.next();
                 }
 
-                if !matches!(state.source.current(), Some(b'\n')) {
+                if !matches!(self.state.source.current(), Some(b'\n')) {
                     return Err(SyntaxError::UnexpectedCharacter(
-                        *state.source.current().unwrap(),
-                        state.source.span(),
+                        *self.state.source.current().unwrap(),
+                        self.state.source.span(),
                     ));
                 }
 
-                state.source.next();
-                state.replace(StackFrame::DocString(
+                self.state.source.next();
+                self.state.replace(StackFrame::DocString(
                     doc_string_kind.clone(),
                     label.clone(),
                     DocStringIndentationKind::None,
                     0,
                 ));
 
-                (TokenKind::StartDocString(doc_string_kind), buffer.into())
+                (TokenKind::StartDocString(doc_string_kind), true)
             }
             [b'*', b'*', ..] => {
-                state.source.skip(2);
-                (TokenKind::Pow, b"**".into())
+                self.state.source.skip(2);
+                (TokenKind::Pow, false)
             }
             [b'*', b'=', ..] => {
-                state.source.skip(2);
-                (TokenKind::AsteriskEquals, b"*=".into())
+                self.state.source.skip(2);
+                (TokenKind::AsteriskEquals, false)
             }
             [b'*', ..] => {
-                state.source.next();
-                (TokenKind::Asterisk, b"*".into())
+                self.state.source.next();
+                (TokenKind::Asterisk, false)
             }
             [b'|', b'|', ..] => {
-                state.source.skip(2);
-                (TokenKind::BooleanOr, b"||".into())
+                self.state.source.skip(2);
+                (TokenKind::BooleanOr, false)
             }
             [b'|', b'=', ..] => {
-                state.source.skip(2);
-                (TokenKind::PipeEquals, b"|=".into())
+                self.state.source.skip(2);
+                (TokenKind::PipeEquals, false)
             }
             [b'|', ..] => {
-                state.source.next();
-                (TokenKind::Pipe, b"|".into())
+                self.state.source.next();
+                (TokenKind::Pipe, false)
             }
             [b'^', b'=', ..] => {
-                state.source.skip(2);
-                (TokenKind::CaretEquals, b"^=".into())
+                self.state.source.skip(2);
+                (TokenKind::CaretEquals, false)
             }
             [b'^', ..] => {
-                state.source.next();
-                (TokenKind::Caret, b"^".into())
+                self.state.source.next();
+                (TokenKind::Caret, false)
             }
             [b'{', ..] => {
-                state.source.next();
-                state.enter(StackFrame::Scripting);
-                (TokenKind::LeftBrace, b"{".into())
+                self.state.source.next();
+                self.state.enter(StackFrame::Scripting);
+                (TokenKind::LeftBrace, false)
             }
             [b'}', ..] => {
-                state.source.next();
-                state.exit();
-                (TokenKind::RightBrace, b"}".into())
+                self.state.source.next();
+                self.state.exit();
+                (TokenKind::RightBrace, false)
             }
             [b'(', ..] => {
-                state.source.next();
-                let mut buffer = b"(".to_vec();
+                self.state.source.next();
 
                 // Inlined so we can add whitespace to the buffer.
-                while let Some(true) = state.source.current().map(|u: &u8| u.is_ascii_whitespace())
+                while let Some(true) = self.state.source.current().map(|u: &u8| u.is_ascii_whitespace())
                 {
-                    buffer.push(*state.source.current().unwrap());
-                    state.source.next();
+                    self.state.source.next();
                 }
 
-                if state.source.at_case_insensitive(b"int", 3) {
-                    if state.source.at_case_insensitive(b"integer", 7)
-                        && state.source.peek_ignoring_whitespace(7, 1) == [b')']
+                if self.state.source.at_case_insensitive(b"int", 3) {
+                    if self.state.source.at_case_insensitive(b"integer", 7)
+                        && self.state.source.peek_ignoring_whitespace(7, 1) == [b')']
                     {
-                        buffer.extend(state.source.read_and_skip(7));
-                        buffer.extend(self.read_and_skip_whitespace(state));
-                        buffer.extend(state.source.read_and_skip(1));
+                        self.state.source.read_and_skip(7);
+                        self.read_and_skip_whitespace();
+                        self.state.source.read_and_skip(1);
 
-                        (TokenKind::IntegerCast, buffer.into())
-                    } else if state.source.peek_ignoring_whitespace(3, 1) == [b')'] {
-                        buffer.extend(state.source.read_and_skip(3));
-                        buffer.extend(self.read_and_skip_whitespace(state));
-                        buffer.extend(state.source.read_and_skip(1));
+                        (TokenKind::IntegerCast, true)
+                    } else if self.state.source.peek_ignoring_whitespace(3, 1) == [b')'] {
+                        self.state.source.read_and_skip(3);
+                        self.read_and_skip_whitespace();
+                        self.state.source.read_and_skip(1);
 
-                        (TokenKind::IntCast, buffer.into())
+                        (TokenKind::IntCast, true)
                     } else {
-                        (TokenKind::LeftParen, buffer.into())
+                        (TokenKind::LeftParen, false)
                     }
-                } else if state.source.at_case_insensitive(b"bool", 4) {
-                    if state.source.at_case_insensitive(b"boolean", 7)
-                        && state.source.peek_ignoring_whitespace(7, 1) == [b')']
+                } else if self.state.source.at_case_insensitive(b"bool", 4) {
+                    if self.state.source.at_case_insensitive(b"boolean", 7)
+                        && self.state.source.peek_ignoring_whitespace(7, 1) == [b')']
                     {
-                        buffer.extend(state.source.read_and_skip(7));
-                        buffer.extend(self.read_and_skip_whitespace(state));
-                        buffer.extend(state.source.read_and_skip(1));
+                        self.state.source.read_and_skip(7);
+                        self.read_and_skip_whitespace();
+                        self.state.source.read_and_skip(1);
 
-                        (TokenKind::BooleanCast, buffer.into())
-                    } else if state.source.peek_ignoring_whitespace(4, 1) == [b')'] {
-                        buffer.extend(state.source.read_and_skip(4));
-                        buffer.extend(self.read_and_skip_whitespace(state));
-                        buffer.extend(state.source.read_and_skip(1));
+                        (TokenKind::BooleanCast, true)
+                    } else if self.state.source.peek_ignoring_whitespace(4, 1) == [b')'] {
+                        self.state.source.read_and_skip(4);
+                        self.read_and_skip_whitespace();
+                        self.state.source.read_and_skip(1);
 
-                        (TokenKind::BoolCast, buffer.into())
+                        (TokenKind::BoolCast, true)
                     } else {
-                        (TokenKind::LeftParen, buffer.into())
+                        (TokenKind::LeftParen, true)
                     }
-                } else if state.source.at_case_insensitive(b"float", 5) {
-                    if state.source.peek_ignoring_whitespace(5, 1) == [b')'] {
-                        buffer.extend(state.source.read_and_skip(5));
-                        buffer.extend(self.read_and_skip_whitespace(state));
-                        buffer.extend(state.source.read_and_skip(1));
+                } else if self.state.source.at_case_insensitive(b"float", 5) {
+                    if self.state.source.peek_ignoring_whitespace(5, 1) == [b')'] {
+                        self.state.source.read_and_skip(5);
+                        self.read_and_skip_whitespace();
+                        self.state.source.read_and_skip(1);
 
-                        (TokenKind::FloatCast, buffer.into())
+                        (TokenKind::FloatCast, true)
                     } else {
-                        (TokenKind::LeftParen, buffer.into())
+                        (TokenKind::LeftParen, true)
                     }
-                } else if state.source.at_case_insensitive(b"double", 6) {
-                    if state.source.peek_ignoring_whitespace(6, 1) == [b')'] {
-                        buffer.extend(state.source.read_and_skip(6));
-                        buffer.extend(self.read_and_skip_whitespace(state));
-                        buffer.extend(state.source.read_and_skip(1));
+                } else if self.state.source.at_case_insensitive(b"double", 6) {
+                    if self.state.source.peek_ignoring_whitespace(6, 1) == [b')'] {
+                        self.state.source.read_and_skip(6);
+                        self.read_and_skip_whitespace();
+                        self.state.source.read_and_skip(1);
 
-                        (TokenKind::DoubleCast, buffer.into())
+                        (TokenKind::DoubleCast, true)
                     } else {
-                        (TokenKind::LeftParen, buffer.into())
+                        (TokenKind::LeftParen, true)
                     }
-                } else if state.source.at_case_insensitive(b"real", 4) {
-                    if state.source.peek_ignoring_whitespace(4, 1) == [b')'] {
-                        buffer.extend(state.source.read_and_skip(4));
-                        buffer.extend(self.read_and_skip_whitespace(state));
-                        buffer.extend(state.source.read_and_skip(1));
+                } else if self.state.source.at_case_insensitive(b"real", 4) {
+                    if self.state.source.peek_ignoring_whitespace(4, 1) == [b')'] {
+                        self.state.source.read_and_skip(4);
+                        self.read_and_skip_whitespace();
+                        self.state.source.read_and_skip(1);
 
-                        (TokenKind::RealCast, buffer.into())
+                        (TokenKind::RealCast, true)
                     } else {
-                        (TokenKind::LeftParen, buffer.into())
+                        (TokenKind::LeftParen, true)
                     }
-                } else if state.source.at_case_insensitive(b"string", 6) {
-                    if state.source.peek_ignoring_whitespace(6, 1) == [b')'] {
-                        buffer.extend(state.source.read_and_skip(6));
-                        buffer.extend(self.read_and_skip_whitespace(state));
-                        buffer.extend(state.source.read_and_skip(1));
+                } else if self.state.source.at_case_insensitive(b"string", 6) {
+                    if self.state.source.peek_ignoring_whitespace(6, 1) == [b')'] {
+                        self.state.source.read_and_skip(6);
+                        self.read_and_skip_whitespace();
+                        self.state.source.read_and_skip(1);
 
-                        (TokenKind::StringCast, buffer.into())
+                        (TokenKind::StringCast, true)
                     } else {
-                        (TokenKind::LeftParen, buffer.into())
+                        (TokenKind::LeftParen, true)
                     }
-                } else if state.source.at_case_insensitive(b"binary", 6) {
-                    if state.source.peek_ignoring_whitespace(6, 1) == [b')'] {
-                        buffer.extend(state.source.read_and_skip(6));
-                        buffer.extend(self.read_and_skip_whitespace(state));
-                        buffer.extend(state.source.read_and_skip(1));
+                } else if self.state.source.at_case_insensitive(b"binary", 6) {
+                    if self.state.source.peek_ignoring_whitespace(6, 1) == [b')'] {
+                        self.state.source.read_and_skip(6);
+                        self.read_and_skip_whitespace();
+                        self.state.source.read_and_skip(1);
 
-                        (TokenKind::BinaryCast, buffer.into())
+                        (TokenKind::BinaryCast, true)
                     } else {
-                        (TokenKind::LeftParen, buffer.into())
+                        (TokenKind::LeftParen, true)
                     }
-                } else if state.source.at_case_insensitive(b"array", 5) {
-                    if state.source.peek_ignoring_whitespace(5, 1) == [b')'] {
-                        buffer.extend(state.source.read_and_skip(5));
-                        buffer.extend(self.read_and_skip_whitespace(state));
-                        buffer.extend(state.source.read_and_skip(1));
+                } else if self.state.source.at_case_insensitive(b"array", 5) {
+                    if self.state.source.peek_ignoring_whitespace(5, 1) == [b')'] {
+                        self.state.source.read_and_skip(5);
+                        self.read_and_skip_whitespace();
+                        self.state.source.read_and_skip(1);
 
-                        (TokenKind::ArrayCast, buffer.into())
+                        (TokenKind::ArrayCast, true)
                     } else {
-                        (TokenKind::LeftParen, buffer.into())
+                        (TokenKind::LeftParen, true)
                     }
-                } else if state.source.at_case_insensitive(b"object", 6) {
-                    if state.source.peek_ignoring_whitespace(6, 1) == [b')'] {
-                        buffer.extend(state.source.read_and_skip(6));
-                        buffer.extend(self.read_and_skip_whitespace(state));
-                        buffer.extend(state.source.read_and_skip(1));
+                } else if self.state.source.at_case_insensitive(b"object", 6) {
+                    if self.state.source.peek_ignoring_whitespace(6, 1) == [b')'] {
+                        self.state.source.read_and_skip(6);
+                        self.read_and_skip_whitespace();
+                        self.state.source.read_and_skip(1);
 
-                        (TokenKind::ObjectCast, buffer.into())
+                        (TokenKind::ObjectCast, true)
                     } else {
-                        (TokenKind::LeftParen, buffer.into())
+                        (TokenKind::LeftParen, true)
                     }
-                } else if state.source.at_case_insensitive(b"unset", 5) {
-                    if state.source.peek_ignoring_whitespace(5, 1) == [b')'] {
-                        buffer.extend(state.source.read_and_skip(5));
-                        buffer.extend(self.read_and_skip_whitespace(state));
-                        buffer.extend(state.source.read_and_skip(1));
+                } else if self.state.source.at_case_insensitive(b"unset", 5) {
+                    if self.state.source.peek_ignoring_whitespace(5, 1) == [b')'] {
+                        self.state.source.read_and_skip(5);
+                        self.read_and_skip_whitespace();
+                        self.state.source.read_and_skip(1);
 
-                        (TokenKind::UnsetCast, buffer.into())
+                        (TokenKind::UnsetCast, true)
                     } else {
-                        (TokenKind::LeftParen, buffer.into())
+                        (TokenKind::LeftParen, true)
                     }
                 } else {
-                    (TokenKind::LeftParen, buffer.into())
+                    (TokenKind::LeftParen, false)
                 }
             }
             [b')', ..] => {
-                state.source.next();
-                (TokenKind::RightParen, b")".into())
+                self.state.source.next();
+                (TokenKind::RightParen, false)
             }
             [b';', ..] => {
-                state.source.next();
-                (TokenKind::SemiColon, b";".into())
+                self.state.source.next();
+                (TokenKind::SemiColon, false)
             }
             [b'+', b'+', ..] => {
-                state.source.skip(2);
-                (TokenKind::Increment, b"++".into())
+                self.state.source.skip(2);
+                (TokenKind::Increment, false)
             }
             [b'+', b'=', ..] => {
-                state.source.skip(2);
-                (TokenKind::PlusEquals, b"+=".into())
+                self.state.source.skip(2);
+                (TokenKind::PlusEquals, false)
             }
             [b'+', ..] => {
-                state.source.next();
-                (TokenKind::Plus, b"+".into())
+                self.state.source.next();
+                (TokenKind::Plus, false)
             }
             [b'%', b'=', ..] => {
-                state.source.skip(2);
-                (TokenKind::PercentEquals, b"%=".into())
+                self.state.source.skip(2);
+                (TokenKind::PercentEquals, false)
             }
             [b'%', ..] => {
-                state.source.next();
-                (TokenKind::Percent, b"%".into())
+                self.state.source.next();
+                (TokenKind::Percent, false)
             }
             [b'-', b'-', ..] => {
-                state.source.skip(2);
-                (TokenKind::Decrement, b"--".into())
+                self.state.source.skip(2);
+                (TokenKind::Decrement, false)
             }
             [b'-', b'>', ..] => {
-                state.source.skip(2);
-                (TokenKind::Arrow, b"->".into())
+                self.state.source.skip(2);
+                (TokenKind::Arrow, false)
             }
             [b'-', b'=', ..] => {
-                state.source.skip(2);
-                (TokenKind::MinusEquals, b"-=".into())
+                self.state.source.skip(2);
+                (TokenKind::MinusEquals, false)
             }
             [b'-', ..] => {
-                state.source.next();
-                (TokenKind::Minus, b"-".into())
+                self.state.source.next();
+                (TokenKind::Minus, false)
             }
             [b'<', b'<', ..] => {
-                state.source.skip(2);
-                (TokenKind::LeftShift, b"<<".into())
+                self.state.source.skip(2);
+                (TokenKind::LeftShift, false)
             }
             [b'<', b'=', ..] => {
-                state.source.skip(2);
-                (TokenKind::LessThanEquals, b"<=".into())
+                self.state.source.skip(2);
+                (TokenKind::LessThanEquals, false)
             }
             [b'<', b'>', ..] => {
-                state.source.skip(2);
-                (TokenKind::AngledLeftRight, b"<>".into())
+                self.state.source.skip(2);
+                (TokenKind::AngledLeftRight, false)
             }
             [b'<', ..] => {
-                state.source.next();
-                (TokenKind::LessThan, b"<".into())
+                self.state.source.next();
+                (TokenKind::LessThan, false)
             }
             [b'>', b'>', ..] => {
-                state.source.skip(2);
-                (TokenKind::RightShift, b">>".into())
+                self.state.source.skip(2);
+                (TokenKind::RightShift, false)
             }
             [b'>', b'=', ..] => {
-                state.source.skip(2);
-                (TokenKind::GreaterThanEquals, b">=".into())
+                self.state.source.skip(2);
+                (TokenKind::GreaterThanEquals, false)
             }
             [b'>', ..] => {
-                state.source.next();
-                (TokenKind::GreaterThan, b">".into())
+                self.state.source.next();
+                (TokenKind::GreaterThan, false)
             }
             [b',', ..] => {
-                state.source.next();
-                (TokenKind::Comma, b",".into())
+                self.state.source.next();
+                (TokenKind::Comma, false)
             }
             [b'[', ..] => {
-                state.source.next();
-                (TokenKind::LeftBracket, b"[".into())
+                self.state.source.next();
+                (TokenKind::LeftBracket, false)
             }
             [b']', ..] => {
-                state.source.next();
-                (TokenKind::RightBracket, b"]".into())
+                self.state.source.next();
+                (TokenKind::RightBracket, false)
             }
             [b':', b':', ..] => {
-                state.source.skip(2);
-                (TokenKind::DoubleColon, b"::".into())
+                self.state.source.skip(2);
+                (TokenKind::DoubleColon, false)
             }
             [b':', ..] => {
-                state.source.next();
-                (TokenKind::Colon, b":".into())
+                self.state.source.next();
+                (TokenKind::Colon, false)
             }
             [b'~', ..] => {
-                state.source.next();
-                (TokenKind::BitwiseNot, b"~".into())
+                self.state.source.next();
+                (TokenKind::BitwiseNot, false)
             }
             [b @ ident_start!(), ..] => {
-                state.source.next();
+                self.state.source.next();
                 let mut qualified = false;
                 let mut last_was_slash = false;
 
                 let mut buffer = vec![*b];
-                while let Some(next @ ident!() | next @ b'\\') = state.source.current() {
+                while let Some(next @ ident!() | next @ b'\\') = self.state.source.current() {
                     if matches!(next, ident!()) {
                         buffer.push(*next);
-                        state.source.next();
+                        self.state.source.next();
                         last_was_slash = false;
                         continue;
                     }
@@ -807,7 +813,7 @@ impl Lexer {
                         qualified = true;
                         last_was_slash = true;
                         buffer.push(*next);
-                        state.source.next();
+                        self.state.source.next();
                         continue;
                     }
 
@@ -815,314 +821,323 @@ impl Lexer {
                 }
 
                 if qualified {
-                    (TokenKind::QualifiedIdentifier, buffer.into())
+                    (TokenKind::QualifiedIdentifier, true)
                 } else {
                     let kind = identifier_to_keyword(&buffer).unwrap_or(TokenKind::Identifier);
 
                     if kind == TokenKind::HaltCompiler {
-                        match state.source.read(3) {
+                        match self.state.source.read(3) {
                             [b'(', b')', b';'] => {
-                                state.source.skip(3);
-                                state.replace(StackFrame::Halted);
+                                self.state.source.skip(3);
+                                self.state.replace(StackFrame::Halted);
                             }
-                            _ => return Err(SyntaxError::InvalidHaltCompiler(state.source.span())),
+                            _ => return Err(SyntaxError::InvalidHaltCompiler(self.state.source.span())),
                         }
                     }
 
-                    (kind, buffer.into())
+                    (kind, true)
                 }
             }
             [b, ..] => unimplemented!(
                 "<scripting> char: {}, line: {}, col: {}",
                 *b as char,
-                state.source.span().start.line,
-                state.source.span().start.column
+                self.state.source.span().start.line,
+                self.state.source.span().start.column
             ),
             // We should never reach this point since we have the empty checks surrounding
             // the call to this function, but it's better to be safe than sorry.
-            [] => return Err(SyntaxError::UnexpectedEndOfFile(state.source.span())),
+            [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
         };
 
-        Ok(Token {
-            kind,
-            span: state.source.span(),
-            value,
-        })
+        let span = self.state.source.span();
+
+        Ok(Token::new(kind, span, match with_symbol {
+            true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+            false => None
+        }))
     }
 
-    fn double_quote(&self, state: &mut State, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
-        let mut buffer = Vec::new();
-        let mut buffer_span = state.source.span();
+    fn double_quote(&mut self, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
+        let mut buffer_span = None;
 
-        let (kind, value, span) = loop {
-            match state.source.read(3) {
+        let (kind, with_symbol, span) = loop {
+            match self.state.source.read(3) {
                 [b'$', b'{', ..] => {
-                    buffer_span = state.source.span();
-                    state.source.start_token();
-                    state.source.skip(2);
-                    state.enter(StackFrame::LookingForVarname);
+                    buffer_span = Some(self.state.source.span());
+                    self.state.source.start_token();
+                    self.state.source.skip(2);
+                    self.state.enter(StackFrame::LookingForVarname);
                     break (
                         TokenKind::DollarLeftBrace,
-                        b"${".into(),
-                        state.source.span(),
+                        false,
+                        self.state.source.span(),
                     );
                 }
                 [b'{', b'$', ..] => {
-                    buffer_span = state.source.span();
-                    state.source.start_token();
+                    buffer_span = Some(self.state.source.span());
+                    self.state.source.start_token();
                     // Intentionally only consume the left brace.
-                    state.source.next();
-                    state.enter(StackFrame::Scripting);
-                    break (TokenKind::LeftBrace, b"{".into(), state.source.span());
+                    self.state.source.next();
+                    self.state.enter(StackFrame::Scripting);
+                    break (TokenKind::LeftBrace, false, self.state.source.span());
                 }
                 [b'"', ..] => {
-                    buffer_span = state.source.span();
-                    state.source.start_token();
-                    state.source.next();
-                    state.replace(StackFrame::Scripting);
-                    break (TokenKind::DoubleQuote, b'"'.into(), state.source.span());
+                    buffer_span = Some(self.state.source.span());
+                    self.state.source.start_token();
+                    self.state.source.next();
+                    self.state.replace(StackFrame::Scripting);
+                    break (TokenKind::DoubleQuote, false, self.state.source.span());
                 }
                 &[b'\\', b @ (b'"' | b'\\' | b'$'), ..] => {
-                    state.source.skip(2);
-                    buffer.push(b);
+                    self.state.source.skip(2);
                 }
                 &[b'\\', b'n', ..] => {
-                    state.source.skip(2);
-                    buffer.push(b'\n');
+                    self.state.source.skip(2);
                 }
                 &[b'\\', b'r', ..] => {
-                    state.source.skip(2);
-                    buffer.push(b'\r');
+                    self.state.source.skip(2);
                 }
                 &[b'\\', b't', ..] => {
-                    state.source.skip(2);
-                    buffer.push(b'\t');
+                    self.state.source.skip(2);
                 }
                 &[b'\\', b'v', ..] => {
-                    state.source.skip(2);
-                    buffer.push(b'\x0b');
+                    self.state.source.skip(2);
                 }
                 &[b'\\', b'e', ..] => {
-                    state.source.skip(2);
-                    buffer.push(b'\x1b');
+                    self.state.source.skip(2);
                 }
                 &[b'\\', b'f', ..] => {
-                    state.source.skip(2);
-                    buffer.push(b'\x0c');
+                    self.state.source.skip(2);
                 }
                 &[b'\\', b'x', b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')] => {
-                    state.source.skip(3);
+                    self.state.source.skip(3);
 
                     let mut hex = String::from(b as char);
                     if let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
-                        state.source.current()
+                        self.state.source.current()
                     {
-                        state.source.next();
+                        self.state.source.next();
                         hex.push(*b as char);
                     }
-
-                    let b = u8::from_str_radix(&hex, 16).unwrap();
-                    buffer.push(b);
                 }
                 &[b'\\', b'u', b'{'] => {
-                    state.source.skip(3);
+                    self.state.source.skip(3);
 
                     let mut code_point = String::new();
                     while let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
-                        state.source.current()
+                        self.state.source.current()
                     {
-                        state.source.next();
+                        self.state.source.next();
                         code_point.push(*b as char);
                     }
 
-                    if code_point.is_empty() || state.source.current() != Some(&b'}') {
-                        return Err(SyntaxError::InvalidUnicodeEscape(state.source.span()));
+                    if code_point.is_empty() || self.state.source.current() != Some(&b'}') {
+                        return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
                     }
-                    state.source.next();
+                    self.state.source.next();
 
                     let c = if let Ok(c) = u32::from_str_radix(&code_point, 16) {
                         c
                     } else {
-                        return Err(SyntaxError::InvalidUnicodeEscape(state.source.span()));
+                        return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
                     };
 
-                    if let Some(c) = char::from_u32(c) {
-                        let mut tmp = [0; 4];
-                        let bytes = c.encode_utf8(&mut tmp);
-                        buffer.extend(bytes.as_bytes());
-                    } else {
-                        return Err(SyntaxError::InvalidUnicodeEscape(state.source.span()));
+                    if let None = char::from_u32(c) {
+                        return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
                     }
                 }
                 &[b'\\', b @ b'0'..=b'7', ..] => {
-                    state.source.skip(2);
+                    self.state.source.skip(2);
 
                     let mut octal = String::from(b as char);
-                    if let Some(b @ b'0'..=b'7') = state.source.current() {
-                        state.source.next();
+                    if let Some(b @ b'0'..=b'7') = self.state.source.current() {
+                        self.state.source.next();
                         octal.push(*b as char);
                     }
-                    if let Some(b @ b'0'..=b'7') = state.source.current() {
-                        state.source.next();
+                    if let Some(b @ b'0'..=b'7') = self.state.source.current() {
+                        self.state.source.next();
                         octal.push(*b as char);
                     }
 
-                    if let Ok(b) = u8::from_str_radix(&octal, 8) {
-                        buffer.push(b);
-                    } else {
-                        return Err(SyntaxError::InvalidOctalEscape(state.source.span()));
+                    if let Err(_) = u8::from_str_radix(&octal, 8) {
+                        return Err(SyntaxError::InvalidOctalEscape(self.state.source.span()));
                     }
                 }
                 [b'$', ident_start!(), ..] => {
-                    buffer_span = state.source.span();
-                    state.source.start_token();
-                    let mut var = state.source.read_and_skip(1).to_vec();
-                    var.extend(self.consume_identifier(state));
+                    buffer_span = Some(self.state.source.span());
+                    self.state.source.start_token();
+                    let mut var = self.state.source.read_and_skip(1).to_vec();
+                    var.extend(self.consume_identifier());
 
-                    match state.source.read(4) {
-                        [b'[', ..] => state.enter(StackFrame::VarOffset),
+                    match self.state.source.read(4) {
+                        [b'[', ..] => self.state.enter(StackFrame::VarOffset),
                         [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
-                            state.enter(StackFrame::LookingForProperty)
+                            self.state.enter(StackFrame::LookingForProperty)
                         }
                         _ => {}
                     }
 
-                    break (TokenKind::Variable, var.into(), state.source.span());
+                    break (TokenKind::Variable, true, self.state.source.span());
                 }
                 &[b, ..] => {
-                    state.source.next();
-                    buffer.push(b);
+                    self.state.source.next();
                 }
-                [] => return Err(SyntaxError::UnexpectedEndOfFile(state.source.span())),
+                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
             }
         };
 
-        if !buffer.is_empty() {
-            tokens.push(Token {
-                kind: TokenKind::StringPart,
-                span: buffer_span,
-                value: buffer.into(),
-            })
+        let buffer_span = match buffer_span {
+            Some(span) => span,
+            None => self.state.source.span(),
+        };
+
+        if !buffer_span.is_empty() {
+            tokens.push(Token::new_with_symbol(
+                TokenKind::StringPart,
+                buffer_span,
+                self.symbol_table.intern(self.state.source.span_range(buffer_span)),  
+            ));
         }
 
-        tokens.push(Token { kind, span, value });
+        tokens.push(
+            Token::new(kind, span, match with_symbol {
+                true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+                false => None,
+            })
+        );
+
         Ok(())
     }
 
-    fn shell_exec(&self, state: &mut State, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
-        let span = state.source.span();
-        let mut buffer = Vec::new();
-        let (kind, value) = loop {
-            match state.source.read(2) {
+    fn shell_exec(&mut self, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
+        let mut buffer_span = None;
+        
+        let (kind, with_symbol) = loop {
+            match self.state.source.read(2) {
                 [b'$', b'{'] => {
-                    state.source.skip(2);
-                    state.enter(StackFrame::LookingForVarname);
-                    break (TokenKind::DollarLeftBrace, b"${".into());
+                    buffer_span = Some(self.state.source.span());
+                    self.state.source.start_token();
+                    self.state.source.skip(2);
+                    self.state.enter(StackFrame::LookingForVarname);
+                    break (TokenKind::DollarLeftBrace, false);
                 }
                 [b'{', b'$'] => {
+                    buffer_span = Some(self.state.source.span());
+                    self.state.source.start_token();
                     // Intentionally only consume the left brace.
-                    state.source.next();
-                    state.enter(StackFrame::Scripting);
-                    break (TokenKind::LeftBrace, b"{".into());
+                    self.state.source.next();
+                    self.state.enter(StackFrame::Scripting);
+                    break (TokenKind::LeftBrace, false);
                 }
                 [b'`', ..] => {
-                    state.source.next();
-                    state.replace(StackFrame::Scripting);
-                    break (TokenKind::Backtick, b"`".into());
+                    self.state.source.next();
+                    self.state.replace(StackFrame::Scripting);
+                    break (TokenKind::Backtick, false);
                 }
                 [b'$', ident_start!()] => {
-                    let mut var = state.source.read_and_skip(1).to_vec();
-                    var.extend(self.consume_identifier(state));
+                    let mut var = self.state.source.read_and_skip(1).to_vec();
+                    var.extend(self.consume_identifier());
 
-                    match state.source.read(4) {
-                        [b'[', ..] => state.enter(StackFrame::VarOffset),
+                    match self.state.source.read(4) {
+                        [b'[', ..] => self.state.enter(StackFrame::VarOffset),
                         [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
-                            state.enter(StackFrame::LookingForProperty)
+                            self.state.enter(StackFrame::LookingForProperty)
                         }
                         _ => {}
                     }
 
-                    break (TokenKind::Variable, var.into());
+                    break (TokenKind::Variable, true);
                 }
                 &[b, ..] => {
-                    state.source.next();
-                    buffer.push(b);
+                    self.state.source.next();
                 }
-                [] => return Err(SyntaxError::UnexpectedEndOfFile(state.source.span())),
+                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
             }
         };
 
-        if !buffer.is_empty() {
-            tokens.push(Token {
-                kind: TokenKind::StringPart,
-                span,
-                value: buffer.into(),
-            })
+        let buffer_span = match buffer_span {
+            Some(span) => span,
+            None => self.state.source.span(),
+        };
+
+        if !buffer_span.is_empty() {
+            tokens.push(Token::new_with_symbol(
+                TokenKind::StringPart,
+                buffer_span,
+                self.symbol_table.intern(self.state.source.span_range(buffer_span)),
+            ))
         }
 
-        tokens.push(Token { kind, span, value });
+        let span = self.state.source.span();
+        tokens.push(Token::new(kind, span, match with_symbol {
+            true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+            false => None
+        }));
 
         Ok(())
     }
 
     fn heredoc(
-        &self,
-        state: &mut State,
+        &mut self,
         tokens: &mut Vec<Token>,
         label: ByteString,
     ) -> SyntaxResult<()> {
-        let span = state.source.span();
         let mut buffer: Vec<u8> = Vec::new();
+        let mut buffer_span = None;
 
-        let (kind, value) = loop {
-            match state.source.read(3) {
+        let (kind, with_symbol) = loop {
+            match self.state.source.read(3) {
                 [b'$', b'{', ..] => {
-                    state.source.skip(2);
-                    state.enter(StackFrame::LookingForVarname);
-                    break (TokenKind::DollarLeftBrace, b"${".into());
+                    buffer_span = Some(self.state.source.span());
+                    self.state.source.start_token();
+                    self.state.source.skip(2);
+                    self.state.enter(StackFrame::LookingForVarname);
+                    break (TokenKind::DollarLeftBrace, false);
                 }
                 [b'{', b'$', ..] => {
+                    buffer_span = Some(self.state.source.span());
+                    self.state.source.start_token();
                     // Intentionally only consume the left brace.
-                    state.source.next();
-                    state.enter(StackFrame::Scripting);
-                    break (TokenKind::LeftBrace, b"{".into());
+                    self.state.source.next();
+                    self.state.enter(StackFrame::Scripting);
+                    break (TokenKind::LeftBrace, false);
                 }
                 &[b'\\', b @ (b'"' | b'\\' | b'$'), ..] => {
-                    state.source.skip(2);
+                    self.state.source.skip(2);
                     buffer.push(b);
                 }
                 &[b'\\', b'n', ..] => {
-                    state.source.skip(2);
+                    self.state.source.skip(2);
                     buffer.push(b'\n');
                 }
                 &[b'\\', b'r', ..] => {
-                    state.source.skip(2);
+                    self.state.source.skip(2);
                     buffer.push(b'\r');
                 }
                 &[b'\\', b't', ..] => {
-                    state.source.skip(2);
+                    self.state.source.skip(2);
                     buffer.push(b'\t');
                 }
                 &[b'\\', b'v', ..] => {
-                    state.source.skip(2);
+                    self.state.source.skip(2);
                     buffer.push(b'\x0b');
                 }
                 &[b'\\', b'e', ..] => {
-                    state.source.skip(2);
+                    self.state.source.skip(2);
                     buffer.push(b'\x1b');
                 }
                 &[b'\\', b'f', ..] => {
-                    state.source.skip(2);
+                    self.state.source.skip(2);
                     buffer.push(b'\x0c');
                 }
                 &[b'\\', b'x', b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')] => {
-                    state.source.skip(3);
+                    self.state.source.skip(3);
 
                     let mut hex = String::from(b as char);
                     if let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
-                        state.source.current()
+                        self.state.source.current()
                     {
-                        state.source.next();
+                        self.state.source.next();
                         hex.push(*b as char);
                     }
 
@@ -1130,25 +1145,25 @@ impl Lexer {
                     buffer.push(b);
                 }
                 &[b'\\', b'u', b'{'] => {
-                    state.source.skip(3);
+                    self.state.source.skip(3);
 
                     let mut code_point = String::new();
                     while let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
-                        state.source.current()
+                        self.state.source.current()
                     {
-                        state.source.next();
+                        self.state.source.next();
                         code_point.push(*b as char);
                     }
 
-                    if code_point.is_empty() || state.source.current() != Some(&b'}') {
-                        return Err(SyntaxError::InvalidUnicodeEscape(state.source.span()));
+                    if code_point.is_empty() || self.state.source.current() != Some(&b'}') {
+                        return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
                     }
-                    state.source.next();
+                    self.state.source.next();
 
                     let c = if let Ok(c) = u32::from_str_radix(&code_point, 16) {
                         c
                     } else {
-                        return Err(SyntaxError::InvalidUnicodeEscape(state.source.span()));
+                        return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
                     };
 
                     if let Some(c) = char::from_u32(c) {
@@ -1156,72 +1171,76 @@ impl Lexer {
                         let bytes = c.encode_utf8(&mut tmp);
                         buffer.extend(bytes.as_bytes());
                     } else {
-                        return Err(SyntaxError::InvalidUnicodeEscape(state.source.span()));
+                        return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
                     }
                 }
                 &[b'\\', b @ b'0'..=b'7', ..] => {
-                    state.source.skip(2);
+                    self.state.source.skip(2);
 
                     let mut octal = String::from(b as char);
-                    if let Some(b @ b'0'..=b'7') = state.source.current() {
-                        state.source.next();
+                    if let Some(b @ b'0'..=b'7') = self.state.source.current() {
+                        self.state.source.next();
                         octal.push(*b as char);
                     }
-                    if let Some(b @ b'0'..=b'7') = state.source.current() {
-                        state.source.next();
+                    if let Some(b @ b'0'..=b'7') = self.state.source.current() {
+                        self.state.source.next();
                         octal.push(*b as char);
                     }
 
                     if let Ok(b) = u8::from_str_radix(&octal, 8) {
                         buffer.push(b);
                     } else {
-                        return Err(SyntaxError::InvalidOctalEscape(state.source.span()));
+                        return Err(SyntaxError::InvalidOctalEscape(self.state.source.span()));
                     }
                 }
                 [b'$', ident_start!(), ..] => {
-                    let mut var = state.source.read_and_skip(1).to_vec();
-                    var.extend(self.consume_identifier(state));
+                    buffer_span = Some(self.state.source.span());
+                    self.state.source.start_token();
+                    let mut var = self.state.source.read_and_skip(1).to_vec();
+                    var.extend(self.consume_identifier());
 
-                    match state.source.read(4) {
-                        [b'[', ..] => state.enter(StackFrame::VarOffset),
+                    match self.state.source.read(4) {
+                        [b'[', ..] => self.state.enter(StackFrame::VarOffset),
                         [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
-                            state.enter(StackFrame::LookingForProperty)
+                            self.state.enter(StackFrame::LookingForProperty)
                         }
                         _ => {}
                     }
 
-                    break (TokenKind::Variable, var.into());
+                    break (TokenKind::Variable, true);
                 }
                 // If we find a new-line, we can start to check if we can see the EndHeredoc token.
                 [b'\n', ..] => {
                     buffer.push(b'\n');
-                    state.source.next();
+                    self.state.source.next();
 
                     // Check if we can see the closing label right here.
-                    if state.source.at(&label, label.len()) {
-                        state.source.skip(label.len());
-                        state.replace(StackFrame::Scripting);
+                    if self.state.source.at(&label, label.len()) {
+                        buffer_span = Some(self.state.source.span());
+                        self.state.source.start_token();
+                        self.state.source.skip(label.len());
+                        self.state.replace(StackFrame::Scripting);
                         break (
                             TokenKind::EndDocString(DocStringIndentationKind::None, 0),
-                            label,
+                            true,
                         );
                     }
 
                     // Check if there's any whitespace first.
-                    let (whitespace_kind, whitespace_amount) = match state.source.read(1) {
+                    let (whitespace_kind, whitespace_amount) = match self.state.source.read(1) {
                         [b' '] => {
                             let mut amount = 0;
-                            while state.source.read(1) == [b' '] {
+                            while self.state.source.read(1) == [b' '] {
                                 amount += 1;
-                                state.source.next();
+                                self.state.source.next();
                             }
                             (DocStringIndentationKind::Space, amount)
                         }
                         [b'\t'] => {
                             let mut amount = 0;
-                            while state.source.read(1) == [b'\t'] {
+                            while self.state.source.read(1) == [b'\t'] {
                                 amount += 1;
-                                state.source.next();
+                                self.state.source.next();
                             }
                             (DocStringIndentationKind::Tab, amount)
                         }
@@ -1232,30 +1251,33 @@ impl Lexer {
                     // at the start of the line.
                     // We should now check for any extra whitespace, of any kind.
                     let mut extra_whitespace_buffer = Vec::new();
-                    while let [b @ b' ' | b @ b'\t'] = state.source.read(1) {
+                    while let [b @ b' ' | b @ b'\t'] = self.state.source.read(1) {
                         extra_whitespace_buffer.push(b);
-                        state.source.next();
+                        self.state.source.next();
                     }
 
                     // We've consumed all leading whitespace on this line now,
                     // so let's try to read the label again.
-                    if state.source.at(&label, label.len()) {
+                    if self.state.source.at(&label, label.len()) {
                         // We've found the label, finally! We need to do 1 last
                         // check to make sure there wasn't a mixture of indentation types.
                         if whitespace_kind != DocStringIndentationKind::None
                             && !extra_whitespace_buffer.is_empty()
                         {
-                            return Err(SyntaxError::InvalidDocIndentation(state.source.span()));
+                            return Err(SyntaxError::InvalidDocIndentation(self.state.source.span()));
                         }
+
+                        buffer_span = Some(self.state.source.span());
+                        self.state.source.start_token();
 
                         // If we get here, only 1 type of indentation was found. We can move
                         // the process along by reading over the label and breaking out
                         // with the EndHeredoc token, storing the kind and amount of whitespace.
-                        state.source.skip(label.len());
-                        state.replace(StackFrame::Scripting);
+                        self.state.source.skip(label.len());
+                        self.state.replace(StackFrame::Scripting);
                         break (
                             TokenKind::EndDocString(whitespace_kind, whitespace_amount),
-                            label,
+                            true,
                         );
                     } else {
                         // We didn't find the label. The buffer still needs to know about
@@ -1272,72 +1294,82 @@ impl Lexer {
                     }
                 }
                 &[b, ..] => {
-                    state.source.next();
+                    self.state.source.next();
                     buffer.push(b);
                 }
-                [] => return Err(SyntaxError::UnexpectedEndOfFile(state.source.span())),
+                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
             }
+        };
+
+        let mut buffer_span = match buffer_span {
+            Some(span) => span,
+            None => self.state.source.span(),
         };
 
         // Any trailing line breaks should be removed from the final heredoc.
         if buffer.last() == Some(&b'\n') {
-            buffer.pop();
+            buffer_span.end.offset -= 1;
         }
 
-        if !buffer.is_empty() {
-            tokens.push(Token {
-                kind: TokenKind::StringPart,
-                span,
-                value: buffer.into(),
-            })
+        if !buffer_span.is_empty() {
+            tokens.push(Token::new_with_symbol(
+                TokenKind::StringPart,
+                buffer_span,
+                self.symbol_table.intern(self.state.source.span_range(buffer_span)),
+            ));
         }
 
-        tokens.push(Token { kind, span, value });
+        let span = self.state.source.span();
+        tokens.push(Token::new(kind, span, match with_symbol {
+            true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+            false => None
+        }));
 
         Ok(())
     }
 
     fn nowdoc(
-        &self,
-        state: &mut State,
+        &mut self,
         tokens: &mut Vec<Token>,
         label: ByteString,
     ) -> SyntaxResult<()> {
-        let span = state.source.span();
+        let mut buffer_span = None;
         let mut buffer: Vec<u8> = Vec::new();
 
-        let (kind, value) = loop {
-            match state.source.read(3) {
+        let (kind, with_symbol) = loop {
+            match self.state.source.read(3) {
                 // If we find a new-line, we can start to check if we can see the EndHeredoc token.
                 [b'\n', ..] => {
                     buffer.push(b'\n');
-                    state.source.next();
+                    self.state.source.next();
 
                     // Check if we can see the closing label right here.
-                    if state.source.at(&label, label.len()) {
-                        state.source.skip(label.len());
-                        state.replace(StackFrame::Scripting);
+                    if self.state.source.at(&label, label.len()) {
+                        buffer_span = Some(self.state.source.span());
+                        self.state.source.start_token();
+                        self.state.source.skip(label.len());
+                        self.state.replace(StackFrame::Scripting);
                         break (
                             TokenKind::EndDocString(DocStringIndentationKind::None, 0),
-                            label,
+                            true,
                         );
                     }
 
                     // Check if there's any whitespace first.
-                    let (whitespace_kind, whitespace_amount) = match state.source.read(1) {
+                    let (whitespace_kind, whitespace_amount) = match self.state.source.read(1) {
                         [b' '] => {
                             let mut amount = 0;
-                            while state.source.read(1) == [b' '] {
+                            while self.state.source.read(1) == [b' '] {
                                 amount += 1;
-                                state.source.next();
+                                self.state.source.next();
                             }
                             (DocStringIndentationKind::Space, amount)
                         }
                         [b'\t'] => {
                             let mut amount = 0;
-                            while state.source.read(1) == [b'\t'] {
+                            while self.state.source.read(1) == [b'\t'] {
                                 amount += 1;
-                                state.source.next();
+                                self.state.source.next();
                             }
                             (DocStringIndentationKind::Tab, amount)
                         }
@@ -1348,30 +1380,33 @@ impl Lexer {
                     // at the start of the line.
                     // We should now check for any extra whitespace, of any kind.
                     let mut extra_whitespace_buffer = Vec::new();
-                    while let [b @ b' ' | b @ b'\t'] = state.source.read(1) {
+                    while let [b @ b' ' | b @ b'\t'] = self.state.source.read(1) {
                         extra_whitespace_buffer.push(b);
-                        state.source.next();
+                        self.state.source.next();
                     }
 
                     // We've consumed all leading whitespace on this line now,
                     // so let's try to read the label again.
-                    if state.source.at(&label, label.len()) {
+                    if self.state.source.at(&label, label.len()) {
                         // We've found the label, finally! We need to do 1 last
                         // check to make sure there wasn't a mixture of indentation types.
                         if whitespace_kind != DocStringIndentationKind::None
                             && !extra_whitespace_buffer.is_empty()
                         {
-                            return Err(SyntaxError::InvalidDocIndentation(state.source.span()));
+                            return Err(SyntaxError::InvalidDocIndentation(self.state.source.span()));
                         }
+
+                        buffer_span = Some(self.state.source.span());
+                        self.state.source.start_token();
 
                         // If we get here, only 1 type of indentation was found. We can move
                         // the process along by reading over the label and breaking out
                         // with the EndHeredoc token, storing the kind and amount of whitespace.
-                        state.source.skip(label.len());
-                        state.replace(StackFrame::Scripting);
+                        self.state.source.skip(label.len());
+                        self.state.replace(StackFrame::Scripting);
                         break (
                             TokenKind::EndDocString(whitespace_kind, whitespace_amount),
-                            label,
+                            true,
                         );
                     } else {
                         // We didn't find the label. The buffer still needs to know about
@@ -1388,308 +1423,295 @@ impl Lexer {
                     }
                 }
                 &[b, ..] => {
-                    state.source.next();
+                    self.state.source.next();
                     buffer.push(b);
                 }
-                [] => return Err(SyntaxError::UnexpectedEndOfFile(state.source.span())),
+                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
             }
+        };
+
+        let mut buffer_span = match buffer_span {
+            Some(span) => span,
+            None => self.state.source.span(),
         };
 
         // Any trailing line breaks should be removed from the final heredoc.
         if buffer.last() == Some(&b'\n') {
-            buffer.pop();
+            buffer_span.end.offset -= 1;
         }
 
-        if !buffer.is_empty() {
-            tokens.push(Token {
-                kind: TokenKind::StringPart,
-                span,
-                value: buffer.into(),
-            })
+        if !buffer_span.is_empty() {
+            tokens.push(Token::new_with_symbol(
+                TokenKind::StringPart,
+                buffer_span,
+                self.symbol_table.intern(self.state.source.span_range(buffer_span)),
+            ));
         }
 
-        tokens.push(Token { kind, span, value });
+        let span = self.state.source.span();
+
+        tokens.push(Token::new(kind, span, match with_symbol {
+            true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+            false => None
+        }));
 
         Ok(())
     }
 
-    fn looking_for_varname(&self, state: &mut State) -> SyntaxResult<Option<Token>> {
-        let identifier = self.peek_identifier(state);
+    fn looking_for_varname(&mut self) -> SyntaxResult<Option<Token>> {
+        let identifier = self.peek_identifier();
 
         if let Some(ident) = identifier {
-            if let [b'[' | b'}'] = state.source.peek(ident.len(), 1) {
-                let ident = ident.to_vec();
-                let span = state.source.span();
-                state.source.skip(ident.len());
-                state.replace(StackFrame::Scripting);
-                return Ok(Some(Token {
-                    kind: TokenKind::Identifier,
+            if let [b'[' | b'}'] = self.state.source.peek(ident.len(), 1) {
+                self.state.source.skip(ident.len());
+                let span = self.state.source.span();
+                self.state.replace(StackFrame::Scripting);
+                return Ok(Some(Token::new_with_symbol(
+                    TokenKind::Identifier,
                     span,
-                    value: ident.into(),
-                }));
+                    self.symbol_table.intern(self.state.source.span_range(span)),
+                )));
             }
         }
 
-        state.replace(StackFrame::Scripting);
+        self.state.replace(StackFrame::Scripting);
 
         Ok(None)
     }
 
-    fn looking_for_property(&self, state: &mut State) -> SyntaxResult<Token> {
-        let span = state.source.span();
-        let (kind, value) = match state.source.read(3) {
+    fn looking_for_property(&mut self) -> SyntaxResult<Token> {
+        let (kind, with_symbol) = match self.state.source.read(3) {
             [b'?', b'-', b'>'] => {
-                state.source.skip(3);
-                (TokenKind::QuestionArrow, b"?->".into())
+                self.state.source.skip(3);
+                (TokenKind::QuestionArrow, false)
             }
             [b'-', b'>', ..] => {
-                state.source.skip(2);
-                (TokenKind::Arrow, b"->".into())
+                self.state.source.skip(2);
+                (TokenKind::Arrow, false)
             }
             &[ident_start!(), ..] => {
-                let buffer = self.consume_identifier(state);
-                state.exit();
-                (TokenKind::Identifier, buffer.into())
+                let buffer = self.consume_identifier();
+                self.state.exit();
+                (TokenKind::Identifier, true)
             }
             // Should be impossible as we already looked ahead this far inside double_quote.
             _ => unreachable!(),
         };
 
-        Ok(Token { kind, span, value })
+        let span = self.state.source.span();
+
+        Ok(Token::new(kind, span, match with_symbol {
+            true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+            false => None
+        }))
     }
 
-    fn var_offset(&self, state: &mut State) -> SyntaxResult<Token> {
-        let span = state.source.span();
-        let (kind, value) = match state.source.read(2) {
-            [b'$', ident_start!()] => self.tokenize_variable(state),
+    fn var_offset(&mut self) -> SyntaxResult<Token> {
+        let (kind, with_symbol) = match self.state.source.read(2) {
+            [b'$', ident_start!()] => (self.tokenize_variable(), true),
             [b'0'..=b'9', ..] => {
                 // FIXME: all integer literals are allowed, but only decimal integers with no underscores
                 // are actually treated as numbers. Others are treated as strings.
                 // Float literals are not allowed, but that could be handled in the parser.
-                self.tokenize_number(state)?
+                (self.tokenize_number()?, true)
             }
             [b'[', ..] => {
-                state.source.next();
-                (TokenKind::LeftBracket, b"[".into())
+                self.state.source.next();
+                (TokenKind::LeftBracket, false)
             }
             [b'-', ..] => {
-                state.source.next();
-                (TokenKind::Minus, b"-".into())
+                self.state.source.next();
+                (TokenKind::Minus, false)
             }
             [b']', ..] => {
-                state.source.next();
-                state.exit();
-                (TokenKind::RightBracket, b"]".into())
+                self.state.source.next();
+                self.state.exit();
+                (TokenKind::RightBracket, false)
             }
             &[ident_start!(), ..] => {
-                let label = self.consume_identifier(state);
-                (TokenKind::Identifier, label.into())
+                let label = self.consume_identifier();
+                (TokenKind::Identifier, true)
             }
-            &[b, ..] => return Err(SyntaxError::UnrecognisedToken(b, state.source.span())),
-            [] => return Err(SyntaxError::UnexpectedEndOfFile(state.source.span())),
+            &[b, ..] => return Err(SyntaxError::UnrecognisedToken(b, self.state.source.span())),
+            [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
         };
-        Ok(Token { kind, span, value })
+
+        let span = self.state.source.span();
+
+        Ok(Token::new(kind, span, match with_symbol {
+            true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+            false => None
+        }))
     }
 
     fn tokenize_single_quote_string(
-        &self,
-        state: &mut State,
-    ) -> SyntaxResult<(TokenKind, ByteString)> {
-        let mut buffer = vec![];
-
+        &mut self,
+    ) -> SyntaxResult<TokenKind> {
         loop {
-            match state.source.read(2) {
+            match self.state.source.read(2) {
                 [b'\'', ..] => {
-                    state.source.next();
+                    self.state.source.next();
                     break;
                 }
                 &[b'\\', b @ b'\'' | b @ b'\\'] => {
-                    state.source.skip(2);
-                    buffer.push(b);
+                    self.state.source.skip(2);
                 }
                 &[b, ..] => {
-                    state.source.next();
-                    buffer.push(b);
+                    self.state.source.next();
                 }
-                [] => return Err(SyntaxError::UnexpectedEndOfFile(state.source.span())),
+                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
             }
         }
 
-        Ok((TokenKind::LiteralSingleQuotedString, buffer.into()))
+        Ok(TokenKind::LiteralSingleQuotedString)
     }
 
     fn tokenize_double_quote_string(
-        &self,
-        state: &mut State,
-    ) -> SyntaxResult<(TokenKind, ByteString)> {
-        state.source.start_token();
-        let mut buffer = vec![];
+        &mut self,
+    ) -> SyntaxResult<TokenKind> {
+        self.state.source.start_token();
 
         let constant = loop {
-            match state.source.read(3) {
+            match self.state.source.read(3) {
                 [b'"', ..] => {
-                    state.source.next();
+                    self.state.source.next();
                     break true;
                 }
                 &[b'\\', b @ (b'"' | b'\\' | b'$'), ..] => {
-                    state.source.skip(2);
-                    buffer.push(b);
+                    self.state.source.skip(2);
                 }
                 &[b'\\', b'n', ..] => {
-                    state.source.skip(2);
-                    buffer.push(b'\n');
+                    self.state.source.skip(2);
                 }
                 &[b'\\', b'r', ..] => {
-                    state.source.skip(2);
-                    buffer.push(b'\r');
+                    self.state.source.skip(2);
                 }
                 &[b'\\', b't', ..] => {
-                    state.source.skip(2);
-                    buffer.push(b'\t');
+                    self.state.source.skip(2);
                 }
                 &[b'\\', b'v', ..] => {
-                    state.source.skip(2);
-                    buffer.push(b'\x0b');
+                    self.state.source.skip(2);
                 }
                 &[b'\\', b'e', ..] => {
-                    state.source.skip(2);
-                    buffer.push(b'\x1b');
+                    self.state.source.skip(2);
                 }
                 &[b'\\', b'f', ..] => {
-                    state.source.skip(2);
-                    buffer.push(b'\x0c');
+                    self.state.source.skip(2);
                 }
                 &[b'\\', b'x', b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')] => {
-                    state.source.skip(3);
+                    self.state.source.skip(3);
 
                     let mut hex = String::from(b as char);
                     if let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
-                        state.source.current()
+                        self.state.source.current()
                     {
-                        state.source.next();
+                        self.state.source.next();
                         hex.push(*b as char);
                     }
-
-                    let b = u8::from_str_radix(&hex, 16).unwrap();
-                    buffer.push(b);
                 }
                 &[b'\\', b'u', b'{'] => {
-                    state.source.skip(3);
+                    self.state.source.skip(3);
 
                     let mut code_point = String::new();
                     while let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
-                        state.source.current()
+                        self.state.source.current()
                     {
-                        state.source.next();
+                        self.state.source.next();
                         code_point.push(*b as char);
                     }
 
-                    if code_point.is_empty() || state.source.current() != Some(&b'}') {
-                        return Err(SyntaxError::InvalidUnicodeEscape(state.source.span()));
+                    if code_point.is_empty() || self.state.source.current() != Some(&b'}') {
+                        return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
                     }
-                    state.source.next();
+                    self.state.source.next();
 
                     let c = if let Ok(c) = u32::from_str_radix(&code_point, 16) {
                         c
                     } else {
-                        return Err(SyntaxError::InvalidUnicodeEscape(state.source.span()));
+                        return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
                     };
 
-                    if let Some(c) = char::from_u32(c) {
-                        let mut tmp = [0; 4];
-                        let bytes = c.encode_utf8(&mut tmp);
-                        buffer.extend(bytes.as_bytes());
-                    } else {
-                        return Err(SyntaxError::InvalidUnicodeEscape(state.source.span()));
+                    if let None = char::from_u32(c) {
+                        return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
                     }
                 }
                 &[b'\\', b @ b'0'..=b'7', ..] => {
-                    state.source.skip(2);
+                    self.state.source.skip(2);
 
                     let mut octal = String::from(b as char);
-                    if let Some(b @ b'0'..=b'7') = state.source.current() {
-                        state.source.next();
+                    if let Some(b @ b'0'..=b'7') = self.state.source.current() {
+                        self.state.source.next();
                         octal.push(*b as char);
                     }
 
-                    if let Some(b @ b'0'..=b'7') = state.source.current() {
-                        state.source.next();
+                    if let Some(b @ b'0'..=b'7') = self.state.source.current() {
+                        self.state.source.next();
                         octal.push(*b as char);
                     }
 
-                    if let Ok(b) = u8::from_str_radix(&octal, 8) {
-                        buffer.push(b);
-                    } else {
-                        return Err(SyntaxError::InvalidOctalEscape(state.source.span()));
+                    if let Err(_) = u8::from_str_radix(&octal, 8) {
+                        return Err(SyntaxError::InvalidOctalEscape(self.state.source.span()));
                     }
                 }
                 [b'$', ident_start!(), ..] | [b'{', b'$', ..] | [b'$', b'{', ..] => {
                     break false;
                 }
                 &[b, ..] => {
-                    state.source.next();
-                    buffer.push(b);
+                    self.state.source.next();
                 }
-                [] => return Err(SyntaxError::UnexpectedEndOfFile(state.source.span())),
+                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
             }
         };
 
         Ok(if constant {
-            (TokenKind::LiteralDoubleQuotedString, buffer.into())
+            TokenKind::LiteralDoubleQuotedString
         } else {
-            state.replace(StackFrame::DoubleQuote);
-            (TokenKind::StringPart, buffer.into())
+            self.state.replace(StackFrame::DoubleQuote);
+            TokenKind::StringPart
         })
     }
 
-    fn peek_identifier<'a>(&'a self, state: &'a State) -> Option<&'a [u8]> {
+    fn peek_identifier<'c>(&'c self) -> Option<&'c [u8]> {
         let mut size = 0;
 
-        if let [ident_start!()] = state.source.read(1) {
+        if let [ident_start!()] = self.state.source.read(1) {
             size += 1;
-            while let [ident!()] = state.source.peek(size, 1) {
+            while let [ident!()] = self.state.source.peek(size, 1) {
                 size += 1;
             }
 
-            Some(state.source.read(size))
+            Some(self.state.source.read(size))
         } else {
             None
         }
     }
 
-    fn consume_identifier(&self, state: &mut State) -> Vec<u8> {
-        let ident = self.peek_identifier(state).unwrap().to_vec();
-        state.source.skip(ident.len());
+    fn consume_identifier(&mut self) -> Vec<u8> {
+        let ident = self.peek_identifier().unwrap().to_vec();
+        self.state.source.skip(ident.len());
 
         ident
     }
 
-    fn tokenize_variable(&self, state: &mut State) -> (TokenKind, ByteString) {
-        let mut var = state.source.read_and_skip(1).to_vec();
-        var.extend(self.consume_identifier(state));
-        (TokenKind::Variable, var.into())
+    fn tokenize_variable(&mut self) -> TokenKind {
+        self.state.source.skip(1);
+        self.consume_identifier();
+
+        TokenKind::Variable
     }
 
-    fn tokenize_number(&self, state: &mut State) -> SyntaxResult<(TokenKind, ByteString)> {
-        let mut buffer = Vec::new();
-
-        let (base, kind) = match state.source.read(2) {
+    fn tokenize_number(&mut self) -> SyntaxResult<TokenKind> {
+        let (base, kind) = match self.state.source.read(2) {
             [a @ b'0', b @ b'B' | b @ b'b'] => {
-                buffer.push(*a);
-                buffer.push(*b);
-                state.source.skip(2);
+                self.state.source.skip(2);
                 (2, NumberKind::Int)
             }
             [a @ b'0', b @ b'O' | b @ b'o'] => {
-                buffer.push(*a);
-                buffer.push(*b);
-                state.source.skip(2);
+                self.state.source.skip(2);
                 (8, NumberKind::Int)
             }
             [a @ b'0', b @ b'X' | b @ b'x'] => {
-                buffer.push(*a);
-                buffer.push(*b);
-                state.source.skip(2);
+                self.state.source.skip(2);
                 (16, NumberKind::Int)
             }
             [b'0', ..] => (10, NumberKind::OctalOrFloat),
@@ -1698,75 +1720,69 @@ impl Lexer {
         };
 
         if kind != NumberKind::Float {
-            self.read_digits(state, &mut buffer, base);
+            self.read_digits(base);
             if kind == NumberKind::Int {
-                return parse_int(&buffer);
+                return Ok(TokenKind::LiteralInteger);
             }
         }
 
         // Remaining cases: decimal integer, legacy octal integer, or float.
         let is_float = matches!(
-            state.source.read(3),
+            self.state.source.read(3),
             [b'.', ..] | [b'e' | b'E', b'-' | b'+', b'0'..=b'9'] | [b'e' | b'E', b'0'..=b'9', ..]
         );
 
         if !is_float {
-            return parse_int(&buffer);
+            return Ok(TokenKind::LiteralInteger)
         }
 
-        if let Some(b'.') = state.source.current() {
-            buffer.push(b'.');
-            state.source.next();
-            self.read_digits(state, &mut buffer, 10);
+        if let Some(b'.') = self.state.source.current() {
+            self.state.source.next();
+            self.read_digits(10);
         }
 
-        if let Some(b'e' | b'E') = state.source.current() {
-            buffer.push(b'e');
-            state.source.next();
-            if let Some(b @ (b'-' | b'+')) = state.source.current() {
-                buffer.push(*b);
-                state.source.next();
+        if let Some(b'e' | b'E') = self.state.source.current() {
+            self.state.source.next();
+
+            if let Some(b @ (b'-' | b'+')) = self.state.source.current() {
+                self.state.source.next();
             }
-            self.read_digits(state, &mut buffer, 10);
+
+            self.read_digits(10);
         }
 
-        Ok((TokenKind::LiteralFloat, buffer.into()))
+        Ok(TokenKind::LiteralFloat)
     }
 
-    fn read_digits(&self, state: &mut State, buffer: &mut Vec<u8>, base: usize) {
+    fn read_digits(&mut self, base: usize) {
         if base == 16 {
-            self.read_digits_fn(state, buffer, u8::is_ascii_hexdigit);
+            self.read_digits_fn(u8::is_ascii_hexdigit);
         } else {
             let max = b'0' + base as u8;
-            self.read_digits_fn(state, buffer, |b| (b'0'..max).contains(b));
+            self.read_digits_fn(|b| (b'0'..max).contains(b));
         };
     }
 
     fn read_digits_fn<F: Fn(&u8) -> bool>(
-        &self,
-        state: &mut State,
-        buffer: &mut Vec<u8>,
+        &mut self,
         is_digit: F,
     ) {
-        if let Some(b) = state.source.current() {
+        if let Some(b) = self.state.source.current() {
             if is_digit(b) {
-                state.source.next();
-                buffer.push(*b);
+                self.state.source.next();
             } else {
                 return;
             }
         }
 
         loop {
-            match state.source.read(2) {
+            match self.state.source.read(2) {
                 [b, ..] if is_digit(b) => {
-                    state.source.next();
-                    buffer.push(*b);
+                    self.state.source.next();
                 }
                 [b'_', b] if is_digit(b) => {
-                    state.source.next();
-                    state.source.next();
-                    buffer.push(*b);
+                    self.state.source.next();
+                    self.state.source.next();
                 }
                 _ => {
                     break;

@@ -78,7 +78,8 @@ pub fn try_block(state: &mut State) -> ParseResult<StatementKind> {
     }
 
     if catches.is_empty() && finally.is_none() {
-        return Err(error::try_without_catch_or_finally(start, last_right_brace));
+        todo!("tolerant mode")
+        // return Err(error::try_without_catch_or_finally(start, last_right_brace));
     }
 
     let end = state.stream.current().span;

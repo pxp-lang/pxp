@@ -8,9 +8,7 @@ use crate::internal::variables;
 use crate::state::State;
 use pxp_ast::identifiers::Identifier;
 use pxp_ast::literals::Literal;
-use pxp_ast::literals::LiteralInteger;
-use pxp_ast::literals::LiteralString;
-use pxp_ast::literals::LiteralStringKind;
+use pxp_ast::literals::LiteralKind;
 use pxp_ast::operators::ArithmeticOperationExpression;
 use pxp_ast::variables::Variable;
 use pxp_ast::Expression;
@@ -77,7 +75,7 @@ pub fn shell_exec(state: &mut State) -> ParseResult<Expression> {
 #[inline(always)]
 pub fn heredoc(state: &mut State) -> ParseResult<Expression> {
     let span = state.stream.current().span;
-    let label = state.stream.current().value.clone();
+    let label = state.stream.current().symbol.unwrap();
     state.stream.next();
 
     let mut parts = Vec::new();
@@ -110,22 +108,26 @@ pub fn heredoc(state: &mut State) -> ParseResult<Expression> {
             }
 
             match part {
-                StringPart::Literal(LiteralStringPart { value: bytes }) => {
+                StringPart::Literal(LiteralStringPart { value }) => {
+                    let mut bytes = state.symbol_table.resolve(*value).unwrap();
+
                     // 1. If this line doesn't start with any whitespace,
                     //    we can return an error early because we know
                     //    the label was indented.
                     if !bytes.starts_with(&[b' ']) && !bytes.starts_with(&[b'\t']) {
-                        return Err(SyntaxError::InvalidDocBodyIndentationLevel(
-                            indentation_amount,
-                            span,
-                        )
-                        .into());
+                        todo!("tolerant mode")
+                        // return Err(SyntaxError::InvalidDocBodyIndentationLevel(
+                        //     indentation_amount,
+                        //     span,
+                        // )
+                        // .into());
                     }
 
                     // 2. If this line doesn't start with the correct
                     //    type of whitespace, we can also return an error.
                     if !bytes.starts_with(&[indentation_char]) {
-                        return Err(SyntaxError::InvalidDocIndentation(span).into());
+                        todo!("tolerant mode")
+                        // return Err(SyntaxError::InvalidDocIndentation(span).into());
                     }
 
                     // 3. We now know that the whitespace at the start of
@@ -136,20 +138,24 @@ pub fn heredoc(state: &mut State) -> ParseResult<Expression> {
                     //    minimum and check using `starts_with()`.
                     let expected_whitespace_buffer = vec![indentation_char; indentation_amount];
                     if !bytes.starts_with(&expected_whitespace_buffer) {
-                        return Err(SyntaxError::InvalidDocBodyIndentationLevel(
-                            indentation_amount,
-                            span,
-                        )
-                        .into());
+                        todo!("tolerant mode")
+                        // return Err(SyntaxError::InvalidDocBodyIndentationLevel(
+                        //     indentation_amount,
+                        //     span,
+                        // )
+                        // .into());
                     }
 
                     // 4. All of the above checks have passed, so we know
                     //    there are no more possible errors. Let's now
                     //    strip the leading whitespace accordingly.
-                    *bytes = bytes
-                        .strip_prefix(&expected_whitespace_buffer[..])
-                        .unwrap()
-                        .into();
+                    
+                    // FIXME: Figure out if this is something we can do inside of the lexer instead.
+                    // *bytes = ByteStr::new(bytes
+                    //     .strip_prefix(&expected_whitespace_buffer[..])
+                    //     .unwrap())
+                    //     .into();
+
                     new_line = bytes.ends_with(&[b'\n']);
                 }
                 _ => continue,
@@ -169,11 +175,11 @@ pub fn heredoc(state: &mut State) -> ParseResult<Expression> {
 #[inline(always)]
 pub fn nowdoc(state: &mut State) -> ParseResult<Expression> {
     let span = state.stream.current().span;
-    let label = state.stream.current().value.clone();
+    let label = *state.stream.current();
 
     state.stream.next();
 
-    let mut string_part = state.stream.current().value.clone();
+    let mut string_part = *state.stream.current();
     expect_token!([TokenKind::StringPart => ()], state, "constant string");
 
     let (indentation_type, indentation_amount) = match &state.stream.current().kind {
@@ -185,65 +191,66 @@ pub fn nowdoc(state: &mut State) -> ParseResult<Expression> {
 
     state.stream.next();
 
-    if indentation_type != DocStringIndentationKind::None {
-        let indentation_char: u8 = indentation_type.into();
+    // FIXME: Figure out if this is something we can do inside of the lexer instead.
+    // if indentation_type != DocStringIndentationKind::None {
+    //     let indentation_char: u8 = indentation_type.into();
 
-        let mut lines = string_part
-            .split(|b| *b == b'\n')
-            .map(|s| s.to_vec())
-            .collect::<Vec<Vec<u8>>>();
+    //     let mut lines = string_part
+    //         .split(|b| *b == b'\n')
+    //         .map(|s| s.to_vec())
+    //         .collect::<Vec<Vec<u8>>>();
 
-        for line in lines.iter_mut() {
-            if line.is_empty() {
-                continue;
-            }
+    //     for line in lines.iter_mut() {
+    //         if line.is_empty() {
+    //             continue;
+    //         }
 
-            // 1. If this line doesn't start with any whitespace,
-            //    we can return an error early because we know
-            //    the label was indented.
-            if !line.starts_with(&[b' ']) && !line.starts_with(&[b'\t']) {
-                return Err(
-                    SyntaxError::InvalidDocBodyIndentationLevel(indentation_amount, span).into(),
-                );
-            }
+    //         // 1. If this line doesn't start with any whitespace,
+    //         //    we can return an error early because we know
+    //         //    the label was indented.
+    //         if !line.starts_with(&[b' ']) && !line.starts_with(&[b'\t']) {
+    //             return Err(
+    //                 SyntaxError::InvalidDocBodyIndentationLevel(indentation_amount, span).into(),
+    //             );
+    //         }
 
-            // 2. If this line doesn't start with the correct
-            //    type of whitespace, we can also return an error.
-            if !line.starts_with(&[indentation_char]) {
-                return Err(SyntaxError::InvalidDocIndentation(span).into());
-            }
+    //         // 2. If this line doesn't start with the correct
+    //         //    type of whitespace, we can also return an error.
+    //         if !line.starts_with(&[indentation_char]) {
+    //             return Err(SyntaxError::InvalidDocIndentation(span).into());
+    //         }
 
-            // 3. We now know that the whitespace at the start of
-            //    this line is correct, so we need to check that the
-            //    amount of whitespace is correct too. In this case,
-            //    the amount of whitespace just needs to be at least
-            //    the same, so we can create a vector containing the
-            //    minimum and check using `starts_with()`.
-            let expected_whitespace_buffer = vec![indentation_char; indentation_amount];
-            if !line.starts_with(&expected_whitespace_buffer) {
-                return Err(
-                    SyntaxError::InvalidDocBodyIndentationLevel(indentation_amount, span).into(),
-                );
-            }
+    //         // 3. We now know that the whitespace at the start of
+    //         //    this line is correct, so we need to check that the
+    //         //    amount of whitespace is correct too. In this case,
+    //         //    the amount of whitespace just needs to be at least
+    //         //    the same, so we can create a vector containing the
+    //         //    minimum and check using `starts_with()`.
+    //         let expected_whitespace_buffer = vec![indentation_char; indentation_amount];
+    //         if !line.starts_with(&expected_whitespace_buffer) {
+    //             return Err(
+    //                 SyntaxError::InvalidDocBodyIndentationLevel(indentation_amount, span).into(),
+    //             );
+    //         }
 
-            // 4. All of the above checks have passed, so we know
-            //    there are no more possible errors. Let's now
-            //    strip the leading whitespace accordingly.
-            *line = line
-                .strip_prefix(&expected_whitespace_buffer[..])
-                .unwrap()
-                .into();
-        }
+    //         // 4. All of the above checks have passed, so we know
+    //         //    there are no more possible errors. Let's now
+    //         //    strip the leading whitespace accordingly.
+    //         *line = line
+    //             .strip_prefix(&expected_whitespace_buffer[..])
+    //             .unwrap()
+    //             .into();
+    //     }
 
-        let mut bytes = Vec::new();
-        for (i, line) in lines.iter().enumerate() {
-            bytes.extend(line);
-            if i < lines.len() - 1 {
-                bytes.push(b'\n');
-            }
-        }
-        string_part = bytes.into();
-    }
+    //     let mut bytes = Vec::new();
+    //     for (i, line) in lines.iter().enumerate() {
+    //         bytes.extend(line);
+    //         if i < lines.len() - 1 {
+    //             bytes.push(b'\n');
+    //         }
+    //     }
+    //     string_part = bytes.into();
+    // }
 
     let end_span = state.stream.previous().span;
 
@@ -260,9 +267,9 @@ pub fn nowdoc(state: &mut State) -> ParseResult<Expression> {
 fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
     Ok(match &state.stream.current().kind {
         TokenKind::StringPart => {
-            let s = state.stream.current().value.clone();
-            let part = if s.len() > 0 {
-                Some(StringPart::Literal(LiteralStringPart { value: s }))
+            let s = *state.stream.current();
+            let part = if s.span.len() > 0 {
+                Some(StringPart::Literal(LiteralStringPart { value: s.symbol.unwrap() }))
             } else {
                 None
             };
@@ -311,10 +318,7 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
                         TokenKind::LiteralInteger => {
                             state.stream.next();
 
-                            ExpressionKind::Literal(Literal::Integer(LiteralInteger {
-                                span: current.span,
-                                value: current.value.clone(),
-                            }))
+                            ExpressionKind::Literal(Literal::new(LiteralKind::Integer, *current))
                         }
                         TokenKind::Minus => {
                             state.stream.next();
@@ -323,10 +327,7 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
                                 let span = state.stream.current().span;
                                 state.stream.next();
                                 let kind =
-                                    ExpressionKind::Literal(Literal::Integer(LiteralInteger {
-                                        span: literal.span,
-                                        value: literal.value.clone(),
-                                    }));
+                                    ExpressionKind::Literal(Literal::new(LiteralKind::Integer, *literal));
                                 let expression =
                                     Expression::new(kind, span, CommentGroup::default());
 
@@ -343,11 +344,7 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
                         TokenKind::Identifier => {
                             state.stream.next();
 
-                            ExpressionKind::Literal(Literal::String(LiteralString {
-                                span: current.span,
-                                value: current.value.clone(),
-                                kind: LiteralStringKind::SingleQuoted,
-                            }))
+                            ExpressionKind::Literal(Literal::new(LiteralKind::String, *current))
                         }
                         TokenKind::Variable => ExpressionKind::Variable(Variable::SimpleVariable(
                             variables::simple_variable(state)?,
@@ -381,7 +378,7 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
                     state.stream.next();
 
                     let identifier = identifiers::identifier_maybe_reserved(state)?;
-                    let id_span = identifier.span;
+                    let id_span = identifier.token.span;
                     let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier));
                     let identifier_expression =
                         Expression::new(kind, id_span, CommentGroup::default());

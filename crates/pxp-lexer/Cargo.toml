@@ -11,6 +11,7 @@ pxp-token = { path = "../pxp-token" }
 pxp-span = { path = "../pxp-span" }
 pxp-bytestring = { path = "../pxp-bytestring" }
 pxp-syntax = { path = "../pxp-syntax" }
+pxp-symbol = { path = "../pxp-symbol" }
 discoverer = "0.2.0"
 
 [[bin]]

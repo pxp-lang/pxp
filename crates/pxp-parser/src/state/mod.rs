@@ -1,10 +1,10 @@
 use std::collections::VecDeque;
 use std::fmt::Display;
 
-use crate::error::ParseError;
 use pxp_ast::attributes::AttributeGroup;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_lexer::stream::TokenStream;
+use pxp_symbol::SymbolTable;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum NamespaceType {
@@ -22,19 +22,19 @@ pub enum Scope {
 pub struct State<'a> {
     pub stack: VecDeque<Scope>,
     pub stream: &'a mut TokenStream<'a>,
+    pub symbol_table: &'a SymbolTable<'a>,
     pub attributes: Vec<AttributeGroup>,
     pub namespace_type: Option<NamespaceType>,
-    pub errors: Vec<ParseError>,
 }
 
 impl<'a> State<'a> {
-    pub fn new(tokens: &'a mut TokenStream<'a>) -> Self {
+    pub fn new(tokens: &'a mut TokenStream<'a>, symbol_table: &'a SymbolTable) -> Self {
         Self {
             stack: VecDeque::with_capacity(32),
             stream: tokens,
+            symbol_table,
             namespace_type: None,
             attributes: vec![],
-            errors: vec![],
         }
     }
 
@@ -48,10 +48,6 @@ impl<'a> State<'a> {
         std::mem::swap(&mut self.attributes, &mut attributes);
 
         attributes
-    }
-
-    pub fn record(&mut self, error: ParseError) {
-        self.errors.push(error);
     }
 
     /// Return the namespace type used in the current state
@@ -72,7 +68,8 @@ impl<'a> State<'a> {
     pub fn named<T: Display + ?Sized>(&self, name: &T) -> String {
         match self.namespace() {
             Some(Scope::Namespace(n)) | Some(Scope::BracedNamespace(Some(n))) => {
-                format!("{}\\{}", n, name)
+                unimplemented!()
+                // format!("{}\\{}", n, name)
             }
             _ => name.to_string(),
         }

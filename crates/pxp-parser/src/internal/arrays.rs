@@ -35,22 +35,25 @@ pub fn list_expression(state: &mut State) -> ParseResult<Expression> {
                 if current.kind == TokenKind::Ellipsis {
                     state.stream.next();
 
-                    state.record(error::illegal_spread_operator_usage(current.span));
+                    // state.record(error::illegal_spread_operator_usage(current.span));
+                    todo!("tolerant mode")
                 }
 
                 if current.kind == TokenKind::Ampersand {
                     state.stream.next();
 
-                    state.record(error::cannot_assign_reference_to_non_referencable_value(
-                        current.span,
-                    ));
+                    // state.record(error::cannot_assign_reference_to_non_referencable_value(
+                    //     current.span,
+                    // ));
+                    todo!("tolerant mode")
                 }
 
                 let mut value = expressions::create(state)?;
                 current = state.stream.current();
                 if current.kind == TokenKind::DoubleArrow {
                     if !has_at_least_one_key && !items.is_empty() {
-                        state.record(error::mixing_keyed_and_unkeyed_list_entries(current.span));
+                        // state.record(error::mixing_keyed_and_unkeyed_list_entries(current.span));
+                        todo!("tolerant mode")
                     }
 
                     let double_arrow = current.span;
@@ -61,15 +64,17 @@ pub fn list_expression(state: &mut State) -> ParseResult<Expression> {
                     if current.kind == TokenKind::Ellipsis {
                         state.stream.next();
 
-                        state.record(error::illegal_spread_operator_usage(current.span));
+                        // state.record(error::illegal_spread_operator_usage(current.span));
+                        todo!("tolerant mode")
                     }
 
                     if current.kind == TokenKind::Ampersand {
                         state.stream.next();
 
-                        state.record(error::cannot_assign_reference_to_non_referencable_value(
-                            current.span,
-                        ));
+                        // state.record(error::cannot_assign_reference_to_non_referencable_value(
+                        //     current.span,
+                        // ));
+                        todo!("tolerant mode")
                     }
 
                     let mut key = expressions::create(state)?;
@@ -86,7 +91,8 @@ pub fn list_expression(state: &mut State) -> ParseResult<Expression> {
                     has_at_least_one_key = true;
                 } else {
                     if has_at_least_one_key {
-                        state.record(error::mixing_keyed_and_unkeyed_list_entries(current.span));
+                        // state.record(error::mixing_keyed_and_unkeyed_list_entries(current.span));
+                        todo!("tolerant mode")
                     }
 
                     items.push(ListEntry::Value { value });
@@ -185,9 +191,10 @@ fn array_pair(state: &mut State) -> ParseResult<ArrayItem> {
 
     if let Some(ellipsis) = ellipsis {
         if let Some(ampersand) = ampersand {
-            state.record(error::cannot_assign_reference_to_non_referencable_value(
-                ampersand,
-            ));
+            // state.record(error::cannot_assign_reference_to_non_referencable_value(
+            //     ampersand,
+            // ));
+            todo!("tolerant mode")
         }
 
         return Ok(ArrayItem::SpreadValue { ellipsis, value });
@@ -207,7 +214,8 @@ fn array_pair(state: &mut State) -> ParseResult<ArrayItem> {
         if current.kind == TokenKind::Ellipsis {
             state.stream.next();
 
-            state.record(error::illegal_spread_operator_usage(current.span));
+            // state.record(error::illegal_spread_operator_usage(current.span));
+            todo!("tolerant mode")
         }
 
         ampersand = if current.kind == TokenKind::Ampersand {

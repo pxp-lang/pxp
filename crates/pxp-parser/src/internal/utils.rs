@@ -18,7 +18,8 @@ pub fn skip_ending(state: &mut State) -> ParseResult<Ending> {
 
         Ok(Ending::Semicolon(current.span))
     } else {
-        Err(error::unexpected_token(vec![";".to_string()], current))
+        todo!("tolerant mode")
+        // Err(error::unexpected_token(vec![";".to_string()], current))
     }
 }
 
@@ -30,7 +31,8 @@ pub fn skip_semicolon(state: &mut State) -> ParseResult<Span> {
 
         Ok(current.span)
     } else {
-        Err(error::unexpected_token(vec!["`;`".to_string()], current))
+        todo!("tolerant mode")
+        // Err(error::unexpected_token(vec!["`;`".to_string()], current))
     }
 }
 
@@ -80,7 +82,9 @@ pub fn skip(state: &mut State, kind: TokenKind) -> ParseResult<Span> {
 
         Ok(end)
     } else {
-        Err(error::unexpected_token(vec![kind.to_string()], current))
+        return Err(());
+        todo!("tolerant mode, expected {:?}, found {:?} (at: {:?})", kind, current.dbg(state.symbol_table), current.span)
+        // Err(error::unexpected_token(vec![kind.to_string()], current))
     }
 }
 
@@ -94,10 +98,11 @@ pub fn skip_any_of(state: &mut State, kinds: &[TokenKind]) -> ParseResult<Span> 
 
         Ok(end)
     } else {
-        Err(error::unexpected_token(
-            kinds.iter().map(|kind| kind.to_string()).collect(),
-            current,
-        ))
+        todo!("tolerant mode")
+        // Err(error::unexpected_token(
+        //     kinds.iter().map(|kind| kind.to_string()).collect(),
+        //     current,
+        // ))
     }
 }
 

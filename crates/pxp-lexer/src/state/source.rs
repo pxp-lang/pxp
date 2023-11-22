@@ -146,4 +146,8 @@ impl<'a> Source<'a> {
 
         (self.position.offset, until)
     }
+
+    pub fn span_range(&self, span: Span) -> &'a [u8] {
+        &self.input[span.start.offset..span.end.offset]
+    }
 }

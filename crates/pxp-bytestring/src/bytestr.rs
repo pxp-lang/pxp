@@ -84,7 +84,7 @@ impl<'a, const N: usize> From<&'a [u8; N]> for ByteStr<'a> {
     }
 }
 
-impl<'a> Deref for ByteStr<'_> {
+impl Deref for ByteStr<'_> {
     type Target = [u8];
 
     fn deref(&self) -> &Self::Target {

@@ -19,9 +19,7 @@ use pxp_ast::identifiers::DynamicIdentifier;
 use pxp_ast::identifiers::Identifier;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::literals::Literal;
-use pxp_ast::literals::LiteralFloat;
-use pxp_ast::literals::LiteralInteger;
-use pxp_ast::literals::LiteralString;
+use pxp_ast::literals::LiteralKind;
 use pxp_ast::operators::ArithmeticOperationExpression;
 use pxp_ast::operators::AssignmentOperationExpression;
 use pxp_ast::operators::BitwiseOperationExpression;
@@ -43,7 +41,6 @@ use pxp_syntax::comments::CommentGroup;
 use pxp_token::DocStringKind;
 use pxp_token::TokenKind;
 
-use pxp_ast::literals::LiteralStringKind;
 use pxp_ast::BoolExpression;
 use pxp_ast::CastExpression;
 use pxp_ast::CloneExpression;
@@ -112,7 +109,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
             }
 
             if rpred == precedence && matches!(rpred.associativity(), Some(Associativity::Non)) {
-                return Err(error::unexpected_token(vec![], current));
+                todo!("tolerant mode")
             }
 
             state.stream.next();
@@ -227,10 +224,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                         instanceof: span,
                         right: Box::new(Expression::new(
                             ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                                SimpleIdentifier {
-                                    span: enum_span,
-                                    value: "enum".into(),
-                                },
+                                SimpleIdentifier { token: *op },
                             )),
                             Span::new(start_span.start, enum_span.end),
                             CommentGroup::default(),
@@ -246,10 +240,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                         instanceof: span,
                         right: Box::new(Expression::new(
                             ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                                SimpleIdentifier {
-                                    span: from_span,
-                                    value: "from".into(),
-                                },
+                                SimpleIdentifier { token: *op },
                             )),
                             Span::new(start_span.start, from_span.end),
                             CommentGroup::default(),
@@ -587,16 +578,13 @@ pub fn attributes(state: &mut State) -> ParseResult<Expression> {
         }
         TokenKind::Function => functions::anonymous_function(state),
         TokenKind::Fn => functions::arrow_function(state),
-        _ => Err(error::missing_item_definition_after_attributes(
-            &state.attributes,
-            current,
-        )),
+        _ => todo!("tolerant mode")
     }
 }
 
 fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
     if state.stream.is_eof() {
-        return Err(error::unexpected_token(vec![], state.stream.current()));
+        todo!("tolerant mode")
     }
 
     let current = state.stream.current();
@@ -908,12 +896,9 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
                 state.stream.next();
 
                 Ok(Expression::new(
-                    ExpressionKind::Literal(Literal::Integer(LiteralInteger {
-                        span: current.span,
-                        value: current.value.clone(),
-                    })),
+                    ExpressionKind::Literal(Literal::new(LiteralKind::Integer, *current)),
                     span,
-                    CommentGroup::default(),
+                    CommentGroup::default()
                 ))
             } else {
                 unreachable!("{}:{}", file!(), line!());
@@ -928,10 +913,7 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
                 state.stream.next();
 
                 Ok(Expression::new(
-                    ExpressionKind::Literal(Literal::Float(LiteralFloat {
-                        span: current.span,
-                        value: current.value.clone(),
-                    })),
+                    ExpressionKind::Literal(Literal::new(LiteralKind::Float, *current)),
                     span,
                     CommentGroup::default(),
                 ))
@@ -948,11 +930,7 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
                 state.stream.next();
 
                 Ok(Expression::new(
-                    ExpressionKind::Literal(Literal::String(LiteralString {
-                        span: current.span,
-                        value: current.value.clone(),
-                        kind: LiteralStringKind::SingleQuoted,
-                    })),
+                    ExpressionKind::Literal(Literal::new(LiteralKind::String, *current)),
                     span,
                     CommentGroup::default(),
                 ))
@@ -960,11 +938,7 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
                 state.stream.next();
 
                 Ok(Expression::new(
-                    ExpressionKind::Literal(Literal::String(LiteralString {
-                        span: current.span,
-                        value: current.value.clone(),
-                        kind: LiteralStringKind::DoubleQuoted,
-                    })),
+                    ExpressionKind::Literal(Literal::new(LiteralKind::String, *current)),
                     span,
                     CommentGroup::default(),
                 ))
@@ -988,7 +962,7 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
             _,
         ) => {
             let identifier = identifiers::full_name(state)?;
-            let identifier_span = identifier.span;
+            let identifier_span = identifier.token.span;
 
             Ok(Expression::new(
                 ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier)),
@@ -1089,31 +1063,29 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
                     )
                 }
                 TokenKind::Enum => {
-                    let span = state.stream.current().span;
+                    let token = *state.stream.current();
+                    let span = token.span;
 
                     state.stream.next();
 
                     Expression::new(
                         ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier {
-                                span,
-                                value: "enum".into(),
-                            },
+                            SimpleIdentifier { token },
                         )),
                         span,
                         CommentGroup::default(),
                     )
                 }
                 TokenKind::From => {
-                    let span = state.stream.current().span;
+                    let token = *state.stream.current();
+                    let span = token.span;
 
                     state.stream.next();
 
                     Expression::new(
                         ExpressionKind::Identifier(Identifier::SimpleIdentifier(
                             SimpleIdentifier {
-                                span,
-                                value: "from".into(),
+                                token
                             },
                         )),
                         span,
@@ -1432,7 +1404,7 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
 fn unexpected_token(state: &mut State, _: &Precedence) -> ParseResult<Expression> {
     let current = state.stream.current();
 
-    Err(error::unexpected_token(vec![], current))
+    todo!("tolerant mode")
 }
 
 fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Expression> {
@@ -1504,21 +1476,24 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                     ))
                 }
                 TokenKind::LeftBrace => {
+                    let start = current.span;
+
                     state.stream.next();
 
+                    let expr = Box::new(create(state)?);
+                    let end = utils::skip_right_brace(state)?;
+
+                    let span = Span::new(start.start, end.end);
+
                     ExpressionKind::Identifier(Identifier::DynamicIdentifier(DynamicIdentifier {
-                        start: current.span,
-                        expr: Box::new(create(state)?),
-                        end: utils::skip_right_brace(state)?,
+                        span,
+                        expr,
                     }))
                 }
                 TokenKind::Class => {
                     state.stream.next();
 
-                    ExpressionKind::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier {
-                        span: current.span,
-                        value: "class".into(),
-                    }))
+                    ExpressionKind::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier { token: *current }))
                 }
                 _ => {
                     return expected_token_err!(["`{`", "`$`", "an identifier"], state);
@@ -1646,13 +1621,13 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                     let name = create(state)?;
 
                     let end = utils::skip_right_brace(state)?;
+                    let span = Span::new(start.start, end.end);
 
                     Expression::new(
                         ExpressionKind::Identifier(Identifier::DynamicIdentifier(
                             DynamicIdentifier {
-                                start,
+                                span,
                                 expr: Box::new(name),
-                                end,
                             },
                         )),
                         Span::new(start.start, end.end),

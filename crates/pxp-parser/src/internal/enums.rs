@@ -27,12 +27,13 @@ pub fn parse(state: &mut State) -> ParseResult<StatementKind> {
 
     let backed_type: Option<BackedEnumType> = if state.stream.current().kind == TokenKind::Colon {
         let span = utils::skip_colon(state)?;
+        let identifier = identifiers::identifier(state)?;
+        let symbol = state.symbol_table.resolve(identifier.token.symbol.unwrap()).unwrap();
 
-        let identifier = identifiers::identifier_of(state, &["string", "int"])?;
-        Some(match &identifier.value[..] {
-            b"string" => BackedEnumType::String(span, identifier.span),
-            b"int" => BackedEnumType::Int(span, identifier.span),
-            _ => unreachable!(),
+        Some(match &symbol[..] {
+            b"string" => BackedEnumType::String(span, identifier.token.span),
+            b"int" => BackedEnumType::Int(span, identifier.token.span),
+            _ => todo!("tolerant parsing: report invalid backing type"),
         })
     } else {
         None
@@ -125,9 +126,10 @@ fn unit_member(
             let _ = expressions::create(state)?;
             let _ = utils::skip_semicolon(state)?;
 
-            let error = error::case_value_for_unit_enum(state, enum_name, &name, current.span);
+            // let error = error::case_value_for_unit_enum(state, enum_name, &name, current.span);
+            todo!("tolerant mode");
 
-            state.record(error);
+            // state.record(error);
 
             return Ok(None);
         }
@@ -167,10 +169,11 @@ fn backed_member(
             // parse the semicolon, but don't do anything with it.
             let _ = utils::skip_semicolon(state)?;
 
-            let error =
-                error::missing_case_value_for_backed_enum(state, enum_name, &name, current.span);
+            // let error =
+            //     error::missing_case_value_for_backed_enum(state, enum_name, &name, current.span);
 
-            state.record(error);
+            todo!("tolerant mode");
+            // state.record(error);
 
             return Ok(None);
         }

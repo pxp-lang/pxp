@@ -6,19 +6,13 @@ use pxp_token::TokenKind;
 
 use crate::peek_token;
 
-pub fn identifier_of(state: &mut State, kinds: &[&str]) -> ParseResult<SimpleIdentifier> {
+pub fn identifier_of(state: &mut State, kinds: &[TokenKind]) -> ParseResult<SimpleIdentifier> {
     let ident = identifier(state)?;
 
-    let name = ident.value.to_string();
-
-    if kinds.contains(&name.as_str()) {
+    if kinds.contains(&ident.token.kind) {
         Ok(ident)
     } else {
-        Err(error::unexpected_identifier(
-            kinds.iter().map(|s| s.to_string()).collect(),
-            name,
-            ident.span,
-        ))
+        todo!("tolerant error handling: missing valid identifier")
     }
 }
 
@@ -31,49 +25,39 @@ pub fn type_identifier(state: &mut State) -> ParseResult<SimpleIdentifier> {
 
             state.stream.next();
 
-            Ok(SimpleIdentifier {
-                span,
-                value: current.value.clone(),
-            })
+            Ok(SimpleIdentifier { token: *current })
         }
         TokenKind::Enum | TokenKind::From => {
-            let span = current.span;
-            let name = current.to_string().into();
-
             state.stream.next();
 
-            Ok(SimpleIdentifier { span, value: name })
+            Ok(SimpleIdentifier { token: *current })
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
-            state.record(error::cannot_use_reserved_keyword_as_a_type_name(
-                current.span,
-                current.to_string(),
-            ));
-
-            let span = current.span;
-            let name = current.to_string().into();
+            // TODO: Report invalid keyword as type name
+            // state.record(error::cannot_use_reserved_keyword_as_a_type_name(
+            //     current.span,
+            //     current.to_string(),
+            // ));
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { span, value: name })
+            Ok(SimpleIdentifier { token: *current })
         }
         t if is_reserved_identifier(t) => {
-            state.record(error::cannot_use_reserved_keyword_as_a_type_name(
-                current.span,
-                current.to_string(),
-            ));
-
-            let span = current.span;
-            let name = current.to_string().into();
+            // TODO: Report invalid keyword as type name
+            // state.record(error::cannot_use_reserved_keyword_as_a_type_name(
+            //     current.span,
+            //     current.to_string(),
+            // ));
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { span, value: name })
+            Ok(SimpleIdentifier { token: *current })
         }
-        _ => Err(error::unexpected_token(
+        _ => todo!("tolerant mode") /*Err(error::unexpected_token(
             vec!["an identifier".to_owned()],
             current,
-        )),
+        ))*/,
     }
 }
 
@@ -86,50 +70,39 @@ pub fn label_identifier(state: &mut State) -> ParseResult<SimpleIdentifier> {
 
             state.stream.next();
 
-            Ok(SimpleIdentifier {
-                span,
-                value: current.value.clone(),
-            })
+            Ok(SimpleIdentifier { token: *current })
         }
         TokenKind::Enum | TokenKind::From => {
-            let span = current.span;
-            let name = current.to_string().into();
-
             state.stream.next();
 
-            Ok(SimpleIdentifier { span, value: name })
+            Ok(SimpleIdentifier { token: *current })
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
-            // FIXME: re-evaluate whether this is a good idea
-            state.record(error::cannot_use_reserved_keyword_as_a_goto_label(
-                current.span,
-                current.to_string(),
-            ));
-
-            let span = current.span;
-            let name = current.to_string().into();
+            // TODO: Report invalid keyword as type name
+            // state.record(error::cannot_use_reserved_keyword_as_a_goto_label(
+            //     current.span,
+            //     current.to_string(),
+            // ));
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { span, value: name })
+            Ok(SimpleIdentifier { token: *current })
         }
         t if is_reserved_identifier(t) => {
-            state.record(error::cannot_use_reserved_keyword_as_a_goto_label(
-                current.span,
-                current.to_string(),
-            ));
-
-            let span = current.span;
-            let name = current.to_string().into();
+            // TODO: Report invalid keyword as type name
+            // state.record(error::cannot_use_reserved_keyword_as_a_goto_label(
+            //     current.span,
+            //     current.to_string(),
+            // ));
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { span, value: name })
+            Ok(SimpleIdentifier { token: *current })
         }
-        _ => Err(error::unexpected_token(
+        _ => todo!("tolerant mode") /*Err(error::unexpected_token(
             vec!["an identifier".to_owned()],
             current,
-        )),
+        ))*/,
     }
 }
 
@@ -137,41 +110,28 @@ pub fn label_identifier(state: &mut State) -> ParseResult<SimpleIdentifier> {
 pub fn constant_identifier(state: &mut State) -> ParseResult<SimpleIdentifier> {
     let current = state.stream.current();
     match &current.kind {
-        TokenKind::Identifier => {
+        TokenKind::Identifier | TokenKind::Enum | TokenKind::From | TokenKind::Self_ | TokenKind::Parent => {
             let span = current.span;
 
             state.stream.next();
 
-            Ok(SimpleIdentifier {
-                span,
-                value: current.value.clone(),
-            })
-        }
-        TokenKind::Enum | TokenKind::From | TokenKind::Self_ | TokenKind::Parent => {
-            let span = current.span;
-            let name = current.to_string().into();
-
-            state.stream.next();
-
-            Ok(SimpleIdentifier { span, value: name })
+            Ok(SimpleIdentifier { token: *current })
         }
         t if is_reserved_identifier(t) => {
-            state.record(error::cannot_use_reserved_keyword_as_a_constant_name(
-                current.span,
-                current.to_string(),
-            ));
-
-            let span = current.span;
-            let name = current.to_string().into();
+            // TODO: Report invalid keyword as type name
+            // state.record(error::cannot_use_reserved_keyword_as_a_constant_name(
+            //     current.span,
+            //     current.to_string(),
+            // ));
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { span, value: name })
+            Ok(SimpleIdentifier { token: *current })
         }
-        _ => Err(error::unexpected_token(
+        _ => todo!("tolerant mode") /*Err(error::unexpected_token(
             vec!["an identifier".to_owned()],
             current,
-        )),
+        ))*/,
     }
 }
 
@@ -183,15 +143,13 @@ pub fn identifier(state: &mut State) -> ParseResult<SimpleIdentifier> {
 
         state.stream.next();
 
-        Ok(SimpleIdentifier {
-            span,
-            value: current.value.clone(),
-        })
+        Ok(SimpleIdentifier { token: *current })
     } else {
-        Err(error::unexpected_token(
-            vec!["an identifier".to_owned()],
-            current,
-        ))
+        // Err(error::unexpected_token(
+        //     vec!["an identifier".to_owned()],
+        //     current,
+        // ))
+        todo!("tolerant mode")
     }
 }
 
@@ -199,14 +157,14 @@ pub fn identifier(state: &mut State) -> ParseResult<SimpleIdentifier> {
 pub fn name(state: &mut State) -> ParseResult<SimpleIdentifier> {
     let name = peek_token!([
         TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
-            state.stream.current().value.clone()
+            state.stream.current()
         },
     ], state, "an identifier");
 
     let span = state.stream.current().span;
     state.stream.next();
 
-    Ok(SimpleIdentifier { span, value: name })
+    Ok(SimpleIdentifier { token: *name })
 }
 
 /// Expect an optional unqualified or qualified identifier such as Foo, Bar or Foo\Bar.
@@ -217,18 +175,12 @@ pub fn optional_name(state: &mut State) -> Option<SimpleIdentifier> {
         TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
             state.stream.next();
 
-            Some(SimpleIdentifier {
-                span: current.span,
-                value: current.value.clone(),
-            })
+            Some(SimpleIdentifier { token: *current })
         }
         t if is_reserved_identifier(t) => {
             state.stream.next();
 
-            Some(SimpleIdentifier {
-                span: current.span,
-                value: current.value.clone(),
-            })
+            Some(SimpleIdentifier { token: *current })
         }
         _ => None,
     }
@@ -245,15 +197,12 @@ pub fn full_name(state: &mut State) -> ParseResult<SimpleIdentifier> {
 
             state.stream.next();
 
-            Ok(SimpleIdentifier {
-                span,
-                value: current.value.clone(),
-            })
+            Ok(SimpleIdentifier { token: *current })
         }
-        _ => Err(error::unexpected_token(
+        _ =>todo!("tolerant mode") /*Err(error::unexpected_token(
             vec!["an identifier".to_owned()],
             current,
-        )),
+        ))*/,
     }
 }
 
@@ -268,49 +217,39 @@ pub fn full_type_name(state: &mut State) -> ParseResult<SimpleIdentifier> {
 
             state.stream.next();
 
-            Ok(SimpleIdentifier {
-                span,
-                value: current.value.clone(),
-            })
+            Ok(SimpleIdentifier { token: *current })
         }
         TokenKind::Enum | TokenKind::From => {
-            let span = current.span;
-            let name = current.to_string().into();
-
             state.stream.next();
 
-            Ok(SimpleIdentifier { span, value: name })
+            Ok(SimpleIdentifier { token: *current })
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
-            state.record(error::cannot_use_type_in_context(
-                current.span,
-                current.to_string(),
-            ));
-
-            let span = current.span;
-            let name = current.to_string().into();
+            // TODO: Report invalid keyword as type name
+            // state.record(error::cannot_use_type_in_context(
+            //     current.span,
+            //     current.to_string(),
+            // ));
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { span, value: name })
+            Ok(SimpleIdentifier { token: *current })
         }
         t if is_reserved_identifier(t) => {
-            state.record(error::cannot_use_reserved_keyword_as_a_type_name(
-                current.span,
-                current.to_string(),
-            ));
-
-            let span = current.span;
-            let name = current.to_string().into();
+            // // TODO: Report invalid keyword as type name
+            // state.record(error::cannot_use_reserved_keyword_as_a_type_name(
+            //     current.span,
+            //     current.to_string(),
+            // ));
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { span, value: name })
+            Ok(SimpleIdentifier { token: *current })
         }
-        _ => Err(error::unexpected_token(
+        _ => todo!("tolerant mode") /*Err(error::unexpected_token(
             vec!["an identifier".to_owned()],
             current,
-        )),
+        ))*/,
     }
 }
 
@@ -325,40 +264,32 @@ pub fn full_type_name_including_self(state: &mut State) -> ParseResult<SimpleIde
 
             state.stream.next();
 
-            Ok(SimpleIdentifier {
-                span,
-                value: current.value.clone(),
-            })
+            Ok(SimpleIdentifier { token: *current })
         }
         TokenKind::Enum
         | TokenKind::From
         | TokenKind::Self_
         | TokenKind::Static
         | TokenKind::Parent => {
-            let span = current.span;
-            let name = current.to_string().into();
-
             state.stream.next();
 
-            Ok(SimpleIdentifier { span, value: name })
+            Ok(SimpleIdentifier { token: *current })
         }
         t if is_reserved_identifier(t) => {
-            state.record(error::cannot_use_reserved_keyword_as_a_type_name(
-                current.span,
-                current.to_string(),
-            ));
-
-            let span = current.span;
-            let name = current.to_string().into();
+            // TODO: Report invalid keyword as type name
+            // state.record(error::cannot_use_reserved_keyword_as_a_type_name(
+            //     current.span,
+            //     current.to_string(),
+            // ));
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { span, value: name })
+            Ok(SimpleIdentifier { token: *current })
         }
-        _ => Err(error::unexpected_token(
+        _ => todo!("tolerant mode") /*Err(error::unexpected_token(
             vec!["an identifier".to_owned()],
             current,
-        )),
+        ))*/,
     }
 }
 
@@ -366,11 +297,9 @@ pub fn identifier_maybe_reserved(state: &mut State) -> ParseResult<SimpleIdentif
     let current = state.stream.current();
 
     if is_reserved_identifier(&current.kind) {
-        let name = current.to_string().into();
-        let span = current.span;
         state.stream.next();
 
-        Ok(SimpleIdentifier { span, value: name })
+        Ok(SimpleIdentifier { token: *current })
     } else {
         identifier(state)
     }
@@ -380,11 +309,9 @@ pub fn identifier_maybe_soft_reserved(state: &mut State) -> ParseResult<SimpleId
     let current = state.stream.current();
 
     if is_soft_reserved_identifier(&current.kind) {
-        let name = current.to_string().into();
-        let span = current.span;
         state.stream.next();
 
-        Ok(SimpleIdentifier { span, value: name })
+        Ok(SimpleIdentifier { token: *current })
     } else {
         identifier(state)
     }
