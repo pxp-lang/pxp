@@ -16,6 +16,7 @@ pub enum DiagnosticKind {
     StandaloneTypeUsedInUnionType,
     StandaloneTypeUsedInIntersectionType,
     NestedDisjunctiveNormalFormType,
+    InvalidBackedEnumType,
     UnexpectedEndOfFile,
 }
 
@@ -38,6 +39,7 @@ impl Display for DiagnosticKind {
             DiagnosticKind::StandaloneTypeUsedInUnionType => write!(f, "cannot use standalone type in union type"),
             DiagnosticKind::StandaloneTypeUsedInIntersectionType => write!(f, "cannot use standalone type in intersection type"),
             DiagnosticKind::NestedDisjunctiveNormalFormType => write!(f, "DNF types cannot be nested"),
+            DiagnosticKind::InvalidBackedEnumType => write!(f, "invalid backed enum type, must be `string` or `int`"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }

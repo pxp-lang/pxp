@@ -5,6 +5,7 @@ use crate::identifiers::SimpleIdentifier;
 
 use crate::Expression;
 use pxp_span::Span;
+use pxp_symbol::Symbol;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -45,6 +46,7 @@ pub struct UnitEnumStatement {
 pub enum BackedEnumType {
     String(Span, Span), // `:` + `string`
     Int(Span, Span),    // `:` + `int`
+    Invalid(Span, Symbol),
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]

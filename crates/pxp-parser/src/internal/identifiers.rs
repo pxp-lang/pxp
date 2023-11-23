@@ -141,8 +141,6 @@ pub fn constant_identifier(state: &mut State) -> SimpleIdentifier {
 pub fn identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
     if let TokenKind::Identifier = &current.kind {
-        let span = current.span;
-
         state.stream.next();
 
         SimpleIdentifier { token: *current }

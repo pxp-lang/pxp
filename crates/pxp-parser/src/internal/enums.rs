@@ -14,6 +14,8 @@ use pxp_ast::enums::UnitEnumMember;
 use pxp_ast::enums::UnitEnumStatement;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::StatementKind;
+use pxp_diagnostics::DiagnosticKind;
+use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;
 
 use super::classes::member;
@@ -34,7 +36,15 @@ pub fn parse(state: &mut State) -> StatementKind {
         Some(match &symbol[..] {
             b"string" => BackedEnumType::String(span, identifier.token.span),
             b"int" => BackedEnumType::Int(span, identifier.token.span),
-            _ => todo!("tolerant parsing: report invalid backing type"),
+            _ => {
+                state.diagnostic(
+                    DiagnosticKind::InvalidBackedEnumType,
+                    Severity::Error,
+                    span
+                );
+
+                BackedEnumType::Invalid(span, identifier.token.symbol.unwrap())
+            },
         })
     } else {
         None
