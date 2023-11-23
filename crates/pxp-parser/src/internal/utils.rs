@@ -85,13 +85,9 @@ pub fn skip(state: &mut State, kind: TokenKind) -> Span {
 
         end
     } else {
-        todo!(
-            "tolerant mode, expected {:}, found {:} (at: {:?})",
-            kind,
-            current.dbg(state.symbol_table),
-            current.span
-        )
-        // Err(error::unexpected_token(vec![kind.to_string()], current))
+        state.diagnostic(DiagnosticKind::ExpectedToken { expected: kind, found: *current }, Severity::Error, current.span);
+        
+        current.span
     }
 }
 
