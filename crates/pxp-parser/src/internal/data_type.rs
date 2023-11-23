@@ -263,8 +263,11 @@ fn union(state: &mut State, other: Type, within_dnf: bool) -> Type {
         } else {
             let ty = simple_data_type(state);
             if ty.standalone() {
-                // state.record(error::standalone_type_used_in_union(&ty, last_pipe));
-                todo!("tolerant mode")
+                state.diagnostic(
+                    DiagnosticKind::StandaloneTypeUsedInUnionType,
+                    Severity::Error,
+                    last_pipe,
+                );
             }
 
             ty
@@ -284,11 +287,11 @@ fn union(state: &mut State, other: Type, within_dnf: bool) -> Type {
 
 fn intersection(state: &mut State, other: Type, within_dnf: bool) -> Type {
     if other.standalone() {
-        // state.record(error::standalone_type_used_in_intersection(
-        //     &other,
-        //     state.stream.current().span,
-        // ));
-        todo!("tolerant mode")
+        state.diagnostic(
+            DiagnosticKind::StandaloneTypeUsedInIntersectionType,
+            Severity::Error,
+            state.stream.current().span,
+        );
     }
 
     let mut types = vec![other];
@@ -312,8 +315,12 @@ fn intersection(state: &mut State, other: Type, within_dnf: bool) -> Type {
                 //     v-- get_intersection_type: within_dnf = true
                 //        v-- error
                 // F|(A&B&(D|S))
-                // state.record(error::nested_disjunctive_normal_form_types(current.span));
-                todo!("tolerant mode")
+                
+                state.diagnostic(
+                    DiagnosticKind::NestedDisjunctiveNormalFormType,
+                    Severity::Error,
+                    current.span,
+                );
             }
 
             state.stream.next();
@@ -327,11 +334,11 @@ fn intersection(state: &mut State, other: Type, within_dnf: bool) -> Type {
         } else {
             let ty = simple_data_type(state);
             if ty.standalone() {
-                // state.record(error::standalone_type_used_in_intersection(
-                //     &ty,
-                //     last_ampersand,
-                // ));
-                todo!("tolerant mode")
+                state.diagnostic(
+                    DiagnosticKind::StandaloneTypeUsedInIntersectionType,
+                    Severity::Error,
+                    last_ampersand,
+                );
             }
 
             ty
