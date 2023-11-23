@@ -218,16 +218,14 @@ fn nullable(state: &mut State) -> Type {
 
 fn union(state: &mut State, other: Type, within_dnf: bool) -> Type {
     if other.standalone() {
-        // state.record(error::standalone_type_used_in_union(
-        //     &other,
-        //     state.stream.current().span,
-        // ));
-
-        todo!("tolerant mode")
+        state.diagnostic(
+            DiagnosticKind::StandaloneTypeUsedInUnionType,
+            Severity::Error,
+            state.stream.current().span,
+        );
     }
 
     let mut types = vec![other];
-
     let mut last_pipe = utils::skip(state, TokenKind::Pipe);
 
     loop {

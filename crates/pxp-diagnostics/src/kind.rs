@@ -13,6 +13,7 @@ pub enum DiagnosticKind {
     CannotHaveMultipleDefaultArmsInMatch,
     MissingType,
     StandaloneTypeUsedInNullableType,
+    StandaloneTypeUsedInUnionType,
     UnexpectedEndOfFile,
 }
 
@@ -32,6 +33,7 @@ impl Display for DiagnosticKind {
             DiagnosticKind::CannotHaveMultipleDefaultArmsInMatch => write!(f, "cannot have multiple default arms in match"),
             DiagnosticKind::MissingType => write!(f, "missing type"),
             DiagnosticKind::StandaloneTypeUsedInNullableType => write!(f, "cannot use standalone type in nullable type"),
+            DiagnosticKind::StandaloneTypeUsedInUnionType => write!(f, "cannot use standalone type in union type"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }
