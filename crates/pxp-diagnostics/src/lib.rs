@@ -1,6 +1,8 @@
 mod kind;
 mod severity;
 
+use std::fmt::Display;
+
 pub use kind::*;
 use pxp_span::Span;
 pub use severity::*;
@@ -19,5 +21,11 @@ impl Diagnostic {
             severity,
             span,
         }
+    }
+}
+
+impl Display for Diagnostic {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} {} on line {}\n", self.severity, self.kind, self.span.start.line)
     }
 }
