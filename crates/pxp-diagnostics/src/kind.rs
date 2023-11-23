@@ -11,6 +11,7 @@ pub enum DiagnosticKind {
     CannotMixKeyedAndUnkeyedListEntries,
     AbstractMethodInNonAbstractClass,
     CannotHaveMultipleDefaultArmsInMatch,
+    MissingType,
     UnexpectedEndOfFile,
 }
 
@@ -28,6 +29,7 @@ impl Display for DiagnosticKind {
             DiagnosticKind::CannotMixKeyedAndUnkeyedListEntries => write!(f, "cannot mix keyed and unkeyed list entries"),
             DiagnosticKind::AbstractMethodInNonAbstractClass => write!(f, "cannot declare abstract method in non-abstract class"),
             DiagnosticKind::CannotHaveMultipleDefaultArmsInMatch => write!(f, "cannot have multiple default arms in match"),
+            DiagnosticKind::MissingType => write!(f, "missing type"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }

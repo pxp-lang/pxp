@@ -2,6 +2,7 @@ use crate::expected_token;
 use crate::internal::utils;
 use crate::peek_token;
 use crate::state::State;
+use pxp_diagnostics::{DiagnosticKind, Severity};
 use pxp_token::TokenKind;
 use pxp_type::Type;
 
@@ -183,10 +184,17 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type> {
 }
 
 fn simple_data_type(state: &mut State) -> Type {
-    // FIXME: error tolerance
     match optional_simple_data_type(state) {
         Some(ty) => ty,
-        None => todo!("error tolerance: expected a type"),
+        None => {
+            state.diagnostic(
+                DiagnosticKind::MissingType,
+                Severity::Error,
+                state.stream.current().span,
+            );
+
+            Type::Missing(state.stream.current().span)
+        },
     }
 }
 

@@ -27,6 +27,7 @@ pub enum Type {
     StaticReference(Span),
     SelfReference(Span),
     ParentReference(Span),
+    Missing(Span),
 }
 
 impl Type {
@@ -88,6 +89,7 @@ impl Type {
             Type::StaticReference(span) => *span,
             Type::SelfReference(span) => *span,
             Type::ParentReference(span) => *span,
+            Type::Missing(span) => *span,
         }
     }
 }
@@ -132,6 +134,7 @@ impl Display for Type {
             Type::StaticReference(_) => write!(f, "static"),
             Type::SelfReference(_) => write!(f, "self"),
             Type::ParentReference(_) => write!(f, "parent"),
+            Type::Missing(_) => write!(f, "<missing>"),
         }
     }
 }
