@@ -61,8 +61,6 @@ pub mod variables;
 
 pub type Block = Vec<Statement>;
 
-pub type Program = Block;
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum UseKind {
