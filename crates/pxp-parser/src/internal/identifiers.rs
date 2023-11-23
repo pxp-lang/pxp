@@ -68,31 +68,36 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
             SimpleIdentifier { token: *current }
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
-            // TODO: Report invalid keyword as type name
-            // state.record(error::cannot_use_reserved_keyword_as_a_goto_label(
-            //     current.span,
-            //     current.to_string(),
-            // ));
+            state.diagnostic(
+                DiagnosticKind::CannotUseReservedKeywordAsLabel,
+                Severity::Error,
+                current.span,
+            );
 
             state.stream.next();
 
             SimpleIdentifier { token: *current }
         }
         t if is_reserved_identifier(t) => {
-            // TODO: Report invalid keyword as type name
-            // state.record(error::cannot_use_reserved_keyword_as_a_goto_label(
-            //     current.span,
-            //     current.to_string(),
-            // ));
+            state.diagnostic(
+                DiagnosticKind::CannotUseReservedKeywordAsLabel,
+                Severity::Error,
+                current.span,
+            );
 
             state.stream.next();
 
             SimpleIdentifier { token: *current }
         }
-        _ => todo!("tolerant mode"), /*Err(error::unexpected_token(
-                                         vec!["an identifier".to_owned()],
-                                         current,
-                                     ))*/
+        _ => {
+            state.diagnostic(
+                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Identifier], found: *current },
+                Severity::Error,
+                current.span,
+            );
+
+            SimpleIdentifier::new(Token::missing(current.span))
+        }
     }
 }
 
