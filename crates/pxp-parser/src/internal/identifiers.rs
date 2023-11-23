@@ -1,6 +1,7 @@
 use crate::state::State;
-use pxp_ast::identifiers::SimpleIdentifier;
-use pxp_token::TokenKind;
+use pxp_ast::identifiers::{SimpleIdentifier, Identifier};
+use pxp_diagnostics::{DiagnosticKind, Severity};
+use pxp_token::{TokenKind, Token};
 
 use crate::peek_token;
 
@@ -145,11 +146,13 @@ pub fn identifier(state: &mut State) -> SimpleIdentifier {
 
         SimpleIdentifier { token: *current }
     } else {
-        // Err(error::unexpected_token(
-        //     vec!["an identifier".to_owned()],
-        //     current,
-        // ))
-        todo!("tolerant mode")
+        state.diagnostic(
+            DiagnosticKind::UnexpectedToken { token: *current },
+            Severity::Error,
+            current.span,
+        );
+
+        SimpleIdentifier::new(Token::missing(current.span))
     }
 }
 

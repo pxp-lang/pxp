@@ -46,7 +46,7 @@ pub struct UnitEnumStatement {
 pub enum BackedEnumType {
     String(Span, Span), // `:` + `string`
     Int(Span, Span),    // `:` + `int`
-    Invalid(Span, Symbol),
+    Invalid(Span),
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]

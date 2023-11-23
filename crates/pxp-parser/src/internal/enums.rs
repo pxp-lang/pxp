@@ -27,25 +27,58 @@ pub fn parse(state: &mut State) -> StatementKind {
 
     let backed_type: Option<BackedEnumType> = if state.stream.current().kind == TokenKind::Colon {
         let span = utils::skip_colon(state);
-        let identifier = identifiers::identifier(state);
-        let symbol = state
-            .symbol_table
-            .resolve(identifier.token.symbol.unwrap())
-            .unwrap();
+        let current = state.stream.current();
 
-        Some(match &symbol[..] {
-            b"string" => BackedEnumType::String(span, identifier.token.span),
-            b"int" => BackedEnumType::Int(span, identifier.token.span),
+        match current.kind {
+            TokenKind::Identifier => {
+                let symbol = state
+                    .symbol_table
+                    .resolve(current.symbol.unwrap())
+                    .unwrap();
+
+                Some(match &symbol[..] {
+                    b"string" => {
+                        state.stream.next();
+                        BackedEnumType::String(span, current.span)
+                    },
+                    b"int" => {
+                        state.stream.next();
+                        BackedEnumType::Int(span, current.span)
+                    },
+                    _ => {
+                        state.stream.next();
+
+                        state.diagnostic(
+                            DiagnosticKind::InvalidBackedEnumType,
+                            Severity::Error,
+                            current.span
+                        );
+
+                        BackedEnumType::Invalid(span)
+                    },
+                })
+            },
+            TokenKind::LeftBrace => {
+                state.diagnostic(
+                    DiagnosticKind::UnexpectedToken { token: *current },
+                    Severity::Error,
+                    current.span,
+                );
+
+                Some(BackedEnumType::Invalid(span))
+            },
             _ => {
+                state.stream.next();
+
                 state.diagnostic(
                     DiagnosticKind::InvalidBackedEnumType,
                     Severity::Error,
-                    span
+                    current.span
                 );
 
-                BackedEnumType::Invalid(span, identifier.token.symbol.unwrap())
-            },
-        })
+                Some(BackedEnumType::Invalid(span))
+            }
+        }
     } else {
         None
     };
