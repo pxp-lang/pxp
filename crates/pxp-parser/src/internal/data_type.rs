@@ -206,8 +206,11 @@ fn nullable(state: &mut State) -> Type {
     let ty = simple_data_type(state);
 
     if ty.standalone() {
-        // state.record(error::standalone_type_used_as_nullable(&ty, current.span));
-        todo!("tolerant mode")
+        state.diagnostic(
+            DiagnosticKind::StandaloneTypeUsedInNullableType,
+            Severity::Error,
+            current.span,
+        );
     }
 
     Type::Nullable(current.span, Box::new(ty))

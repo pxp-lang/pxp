@@ -12,6 +12,7 @@ pub enum DiagnosticKind {
     AbstractMethodInNonAbstractClass,
     CannotHaveMultipleDefaultArmsInMatch,
     MissingType,
+    StandaloneTypeUsedInNullableType,
     UnexpectedEndOfFile,
 }
 
@@ -30,6 +31,7 @@ impl Display for DiagnosticKind {
             DiagnosticKind::AbstractMethodInNonAbstractClass => write!(f, "cannot declare abstract method in non-abstract class"),
             DiagnosticKind::CannotHaveMultipleDefaultArmsInMatch => write!(f, "cannot have multiple default arms in match"),
             DiagnosticKind::MissingType => write!(f, "missing type"),
+            DiagnosticKind::StandaloneTypeUsedInNullableType => write!(f, "cannot use standalone type in nullable type"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }
