@@ -10,6 +10,7 @@ pub enum DiagnosticKind {
     InvalidTargetForAttributes,
     CannotMixKeyedAndUnkeyedListEntries,
     AbstractMethodInNonAbstractClass,
+    CannotHaveMultipleDefaultArmsInMatch,
     UnexpectedEndOfFile,
 }
 
@@ -26,6 +27,7 @@ impl Display for DiagnosticKind {
             DiagnosticKind::InvalidTargetForAttributes => write!(f, "invalid target for attributes"),
             DiagnosticKind::CannotMixKeyedAndUnkeyedListEntries => write!(f, "cannot mix keyed and unkeyed list entries"),
             DiagnosticKind::AbstractMethodInNonAbstractClass => write!(f, "cannot declare abstract method in non-abstract class"),
+            DiagnosticKind::CannotHaveMultipleDefaultArmsInMatch => write!(f, "cannot have multiple default arms in match"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }

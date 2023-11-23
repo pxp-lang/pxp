@@ -19,6 +19,8 @@ use pxp_ast::MatchArm;
 use pxp_ast::StatementKind;
 use pxp_ast::SwitchStatement;
 use pxp_ast::{Block, MatchExpression};
+use pxp_diagnostics::DiagnosticKind;
+use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
@@ -39,12 +41,12 @@ pub fn match_expression(state: &mut State) -> Expression {
     while state.stream.current().kind != TokenKind::RightBrace {
         let current = state.stream.current();
         if current.kind == TokenKind::Default {
-            if let Some(default_arm) = default {
-                // return Err(error::match_expression_has_multiple_default_arms(
-                //     default_arm.keyword,
-                //     current.span,
-                // ));
-                todo!("tolerant mode")
+            if default.is_some() {
+                state.diagnostic(
+                    DiagnosticKind::CannotHaveMultipleDefaultArmsInMatch,
+                    Severity::Error,
+                    current.span,
+                );
             }
 
             state.stream.next();
@@ -174,7 +176,14 @@ pub fn switch_statement(state: &mut State) -> StatementKind {
                 });
             }
             _ => {
-                return expected_token_err!(["`case`", "`default`"], state);
+                state.diagnostic(
+                    DiagnosticKind::ExpectedToken {
+                        expected: vec![TokenKind::Case, TokenKind::Default, end_token],
+                        found: *state.stream.current(),
+                    },
+                    Severity::Error,
+                    state.stream.current().span,
+                );
             }
         }
     }

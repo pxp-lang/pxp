@@ -19,6 +19,8 @@ pub fn skip_ending(state: &mut State) -> Ending {
     } else {
         if state.stream.is_eof() {
             state.diagnostic(DiagnosticKind::UnexpectedEndOfFile, Severity::Error, current.span);
+        } else {
+            state.diagnostic(DiagnosticKind::ExpectedToken { expected: vec![TokenKind::CloseTag, TokenKind::SemiColon], found: *current }, Severity::Error, current.span);
         }
 
         Ending::Missing(current.span)
