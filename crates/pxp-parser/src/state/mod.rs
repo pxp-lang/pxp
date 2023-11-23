@@ -3,8 +3,9 @@ use std::fmt::Display;
 
 use pxp_ast::attributes::AttributeGroup;
 use pxp_ast::identifiers::SimpleIdentifier;
-use pxp_diagnostics::Diagnostic;
+use pxp_diagnostics::{Diagnostic, DiagnosticKind, Severity};
 use pxp_lexer::stream::TokenStream;
+use pxp_span::Span;
 use pxp_symbol::SymbolTable;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -66,6 +67,10 @@ impl<'a> State<'a> {
 
     pub fn namespace(&self) -> Option<&Scope> {
         self.stack.iter().next()
+    }
+
+    pub fn diagnostic(&mut self, kind: DiagnosticKind, severity: Severity, span: Span) {
+        self.diagnostics.push(Diagnostic::new(kind, severity, span));
     }
 
     pub fn named<T: Display + ?Sized>(&self, name: &T) -> String {

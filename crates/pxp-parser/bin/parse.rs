@@ -51,9 +51,16 @@ fn main() {
     } else {
         let contents = std::fs::read(path).unwrap();
         let mut symbol_table = SymbolTable::new();
-        let ast = parse(&contents, &mut symbol_table);
+        let result = parse(&contents, &mut symbol_table);
+
         if args.contains(&"--debug".to_string()) {
-            dbg!(ast);
+            dbg!(result.ast);
+        }
+
+        if !result.diagnostics.is_empty() {
+            for diagnostic in result.diagnostics.iter() {
+                print!("{diagnostic}");
+            }
         }
     }
 }
