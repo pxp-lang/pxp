@@ -198,10 +198,15 @@ pub fn full_name(state: &mut State) -> SimpleIdentifier {
 
             SimpleIdentifier { token: *current }
         }
-        _ => todo!("tolerant mode"), /*Err(error::unexpected_token(
-                                         vec!["an identifier".to_owned()],
-                                         current,
-                                     ))*/
+        _ => {
+            state.diagnostic(
+                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Identifier], found: *current },
+                Severity::Error,
+                current.span,
+            );
+
+            SimpleIdentifier::new(Token::missing(current.span))
+        }
     }
 }
 
