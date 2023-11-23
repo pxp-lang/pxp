@@ -23,3 +23,7 @@ To find out more information about a particular crate, click one of the links ab
 ## Contributing
 
 All contributions to the project are welcome. For more information about contribution guidelines, please read the [CONTRIBUTING](CONTRIBUTING.md) document.
+
+## Credits
+
+This project is maintained by [Ryan Chandler](https://twitter.com/ryangjchandler) with the help of [contributors](/graphs/contributors).
