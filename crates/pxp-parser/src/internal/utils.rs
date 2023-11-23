@@ -33,7 +33,7 @@ pub fn skip_semicolon(state: &mut State) -> Span {
 
         current.span
     } else {
-        state.diagnostic(DiagnosticKind::ExpectedToken { expected: TokenKind::SemiColon, found: *current }, Severity::Error, current.span);
+        state.diagnostic(DiagnosticKind::ExpectedToken { expected: vec![TokenKind::SemiColon], found: *current }, Severity::Error, current.span);
 
         current.span
     }
@@ -85,7 +85,7 @@ pub fn skip(state: &mut State, kind: TokenKind) -> Span {
 
         end
     } else {
-        state.diagnostic(DiagnosticKind::ExpectedToken { expected: kind, found: *current }, Severity::Error, current.span);
+        state.diagnostic(DiagnosticKind::ExpectedToken { expected: vec![kind], found: *current }, Severity::Error, current.span);
         
         current.span
     }
@@ -101,11 +101,9 @@ pub fn skip_any_of(state: &mut State, kinds: &[TokenKind]) -> Span {
 
         end
     } else {
-        todo!("tolerant mode")
-        // Err(error::unexpected_token(
-        //     kinds.iter().map(|kind| kind.to_string()).collect(),
-        //     current,
-        // ))
+        state.diagnostic(DiagnosticKind::ExpectedToken { expected: kinds.to_vec(), found: *current }, Severity::Error, current.span);
+
+        current.span
     }
 }
 
