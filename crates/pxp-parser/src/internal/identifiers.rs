@@ -5,16 +5,6 @@ use pxp_token::{TokenKind, Token};
 
 use crate::peek_token;
 
-pub fn identifier_of(state: &mut State, kinds: &[TokenKind]) -> SimpleIdentifier {
-    let ident = identifier(state);
-
-    if kinds.contains(&ident.token.kind) {
-        ident
-    } else {
-        todo!("tolerant error handling: missing valid identifier")
-    }
-}
-
 /// Expect an unqualified identifier such as Foo or Bar for a class, interface, trait, or an enum name.
 pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
