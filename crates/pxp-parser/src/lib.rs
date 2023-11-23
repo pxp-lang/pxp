@@ -52,11 +52,11 @@ mod internal;
 mod macros;
 mod state;
 
-pub fn parse<'a, 'b, B: ?Sized + AsRef<[u8]>>(input: &'b B, symbol_table: &'a mut SymbolTable<'b>) -> Result<Program, ()> {
+pub fn parse<'b, B: ?Sized + AsRef<[u8]>>(input: &'b B, symbol_table: &mut SymbolTable<'b>) -> Program {
     let mut lexer = Lexer::new(input, symbol_table);
     let tokens = match lexer.tokenize() {
         Ok(tokens) => tokens,
-        Err(error) => {
+        Err(_) => {
             todo!("tolerant mode")
         }
     };
@@ -64,7 +64,7 @@ pub fn parse<'a, 'b, B: ?Sized + AsRef<[u8]>>(input: &'b B, symbol_table: &'a mu
     construct(&tokens, symbol_table)
 }
 
-pub fn construct<'a>(tokens: &[Token], symbol_table: &'a SymbolTable) -> Result<Program, ()> {
+pub fn construct(tokens: &[Token], symbol_table: &SymbolTable) -> Program {
     let mut stream = TokenStream::new(tokens);
     let mut state = State::new(&mut stream, symbol_table);
 
@@ -81,7 +81,7 @@ pub fn construct<'a>(tokens: &[Token], symbol_table: &'a SymbolTable) -> Result<
         program.push(statement);
     }
 
-    Ok(program.to_vec())
+    program.to_vec()
 }
 
 fn top_level_statement(state: &mut State) -> ParseResult<Statement> {
@@ -98,7 +98,7 @@ fn top_level_statement(state: &mut State) -> ParseResult<Statement> {
                 TokenKind::HaltCompiler => {
                     state.stream.next();
 
-                    let content = if let TokenKind::InlineHtml = state.stream.current().kind.clone()
+                    let content = if let TokenKind::InlineHtml = state.stream.current().kind
                     {
                         let content = *state.stream.current();
                         state.stream.next();
@@ -118,7 +118,7 @@ fn top_level_statement(state: &mut State) -> ParseResult<Statement> {
                 comments,
             ))
         }
-        _ => return statement(state),
+        _ => statement(state),
     }
 }
 
@@ -282,7 +282,7 @@ fn statement(state: &mut State) -> ParseResult<Statement> {
                     }
                 };
 
-                let body = match state.stream.current().kind.clone() {
+                let body = match state.stream.current().kind {
                     TokenKind::SemiColon => {
                         let span = utils::skip_semicolon(state)?;
 

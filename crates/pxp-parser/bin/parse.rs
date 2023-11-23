@@ -31,15 +31,8 @@ fn main() {
 
             let contents = std::fs::read(file).unwrap();
             let mut symbol_table = SymbolTable::new();
-            match parse(&contents[..], &mut symbol_table) {
-                Ok(_) => {
-                    print!(".");
-                }
-                Err(stack) => {
-                    // errors.push((path.to_str().unwrap().to_string(), stack.errors));
-                    print!("x");
-                }
-            }
+            parse(&contents[..], &mut symbol_table);
+            print!(".");
         }
 
         println!();
@@ -56,9 +49,9 @@ fn main() {
             // }
         // }
     } else {
-        let contents = std::fs::read(&path).unwrap();
+        let contents = std::fs::read(path).unwrap();
         let mut symbol_table = SymbolTable::new();
-        let ast = parse(&contents[..], &mut symbol_table).unwrap();
+        let ast = parse(&contents[..], &mut symbol_table);
         if args.contains(&"--debug".to_string()) {
             dbg!(ast);
         }
