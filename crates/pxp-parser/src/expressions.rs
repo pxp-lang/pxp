@@ -109,7 +109,13 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
             }
 
             if rpred == precedence && matches!(rpred.associativity(), Some(Associativity::Non)) {
-                todo!("tolerant mode")
+                state.diagnostic(
+                    DiagnosticKind::UnexpectedToken {
+                        token: *current,
+                    },
+                    Severity::Error,
+                    current.span,
+                );
             }
 
             state.stream.next();
