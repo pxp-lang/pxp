@@ -205,13 +205,13 @@ fn backed_member(state: &mut State, enum_name: &SimpleIdentifier) -> Option<Back
         let current = state.stream.current();
         if current.kind == TokenKind::SemiColon {
             // parse the semicolon, but don't do anything with it.
-            let _ = utils::skip_semicolon(state);
+            let semi = utils::skip_semicolon(state);
 
-            // let error =
-            //     error::missing_case_value_for_backed_enum(state, enum_name, &name, current.span);
-
-            todo!("tolerant mode");
-            // state.record(error);
+            state.diagnostic(
+                DiagnosticKind::BackedEnumCaseMustHaveValue,
+                Severity::Error,
+                Span::new(case.start, semi.end),
+            );
 
             return None;
         }

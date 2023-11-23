@@ -18,6 +18,7 @@ pub enum DiagnosticKind {
     NestedDisjunctiveNormalFormType,
     InvalidBackedEnumType,
     UnitEnumsCannotHaveCaseValues,
+    BackedEnumCaseMustHaveValue,
     UnexpectedEndOfFile,
 }
 
@@ -42,6 +43,7 @@ impl Display for DiagnosticKind {
             DiagnosticKind::NestedDisjunctiveNormalFormType => write!(f, "DNF types cannot be nested"),
             DiagnosticKind::InvalidBackedEnumType => write!(f, "invalid backed enum type, must be `string` or `int`"),
             DiagnosticKind::UnitEnumsCannotHaveCaseValues => write!(f, "unit enums cannot have case values"),
+            DiagnosticKind::BackedEnumCaseMustHaveValue => write!(f, "backed enum case must have value"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }
