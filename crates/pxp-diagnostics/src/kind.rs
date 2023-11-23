@@ -21,6 +21,7 @@ pub enum DiagnosticKind {
     BackedEnumCaseMustHaveValue,
     CannotUseReservedKeywordAsTypeName,
     CannotUseReservedKeywordAsLabel,
+    CannotUseReservedKeywordAsConstantName,
     UnexpectedEndOfFile,
 }
 
@@ -48,6 +49,7 @@ impl Display for DiagnosticKind {
             DiagnosticKind::BackedEnumCaseMustHaveValue => write!(f, "backed enum case must have value"),
             DiagnosticKind::CannotUseReservedKeywordAsTypeName => write!(f, "cannot use reserved keyword as type name"),
             DiagnosticKind::CannotUseReservedKeywordAsLabel => write!(f, "cannot use reserved keyword as label"),
+            DiagnosticKind::CannotUseReservedKeywordAsConstantName => write!(f, "cannot use reserved keyword as constant name"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }
