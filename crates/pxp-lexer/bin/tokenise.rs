@@ -50,7 +50,7 @@ fn main() {
             }
         }
     } else {
-        let contents = std::fs::read(&path).unwrap();
+        let contents = std::fs::read(path).unwrap();
         let mut symbol_table = SymbolTable::new();
         let mut lexer = Lexer::new(&contents[..], &mut symbol_table);
         let tokens = lexer.tokenize().unwrap();

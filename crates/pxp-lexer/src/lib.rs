@@ -129,11 +129,11 @@ impl<'a, 'b> Lexer<'a, 'b> {
     }
 
     fn initial(&mut self, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
-        while let Some(char) = self.state.source.current() {
+        while self.state.source.current().is_some() {
             if self.state.source.at_case_insensitive(b"<?php", 5) {
                 let inline_span = self.state.source.span();
 
-                let tag = self.state.source.read_and_skip(5);
+                self.state.source.read_and_skip(5);
                 let tag_span = self.state.source.span();
 
                 self.state.replace(StackFrame::Scripting);
@@ -520,7 +520,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
 
                 self.state.source.next();
                 self.state.replace(StackFrame::DocString(
-                    doc_string_kind.clone(),
+                    doc_string_kind,
                     label.clone(),
                     DocStringIndentationKind::None,
                     0,
@@ -858,6 +858,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
     }
 
     fn double_quote(&mut self, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
+        #[allow(unused_assignments)]
         let mut buffer_span = None;
 
         let (kind, with_symbol, span) = loop {
@@ -888,7 +889,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                     self.state.replace(StackFrame::Scripting);
                     break (TokenKind::DoubleQuote, false, self.state.source.span());
                 }
-                &[b'\\', b @ (b'"' | b'\\' | b'$'), ..] => {
+                &[b'\\', b'"' | b'\\' | b'$', ..] => {
                     self.state.source.skip(2);
                 }
                 &[b'\\', b'n', ..] => {
@@ -942,7 +943,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                         return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
                     };
 
-                    if let None = char::from_u32(c) {
+                    if char::from_u32(c).is_none() {
                         return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
                     }
                 }
@@ -959,7 +960,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                         octal.push(*b as char);
                     }
 
-                    if let Err(_) = u8::from_str_radix(&octal, 8) {
+                    if u8::from_str_radix(&octal, 8).is_err() {
                         return Err(SyntaxError::InvalidOctalEscape(self.state.source.span()));
                     }
                 }
@@ -979,7 +980,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
 
                     break (TokenKind::Variable, true, self.state.source.span());
                 }
-                &[b, ..] => {
+                &[_, ..] => {
                     self.state.source.next();
                 }
                 [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
@@ -1048,7 +1049,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
 
                     break (TokenKind::Variable, true);
                 }
-                &[b, ..] => {
+                &[_, ..] => {
                     self.state.source.next();
                 }
                 [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
@@ -1083,6 +1084,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
         label: ByteString,
     ) -> SyntaxResult<()> {
         let mut buffer: Vec<u8> = Vec::new();
+        #[allow(unused_assignments)]
         let mut buffer_span = None;
 
         let (kind, with_symbol) = loop {
@@ -1333,6 +1335,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
         tokens: &mut Vec<Token>,
         label: ByteString,
     ) -> SyntaxResult<()> {
+        #[allow(unused_assignments)]
         let mut buffer_span = None;
         let mut buffer: Vec<u8> = Vec::new();
 
@@ -1490,7 +1493,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                 (TokenKind::Arrow, false)
             }
             &[ident_start!(), ..] => {
-                let buffer = self.consume_identifier();
+                self.consume_identifier();
                 self.state.exit();
                 (TokenKind::Identifier, true)
             }
@@ -1529,7 +1532,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                 (TokenKind::RightBracket, false)
             }
             &[ident_start!(), ..] => {
-                let label = self.consume_identifier();
+                self.consume_identifier();
                 (TokenKind::Identifier, true)
             }
             &[b, ..] => return Err(SyntaxError::UnrecognisedToken(b, self.state.source.span())),
@@ -1553,10 +1556,10 @@ impl<'a, 'b> Lexer<'a, 'b> {
                     self.state.source.next();
                     break;
                 }
-                &[b'\\', b @ b'\'' | b @ b'\\'] => {
+                &[b'\\', b'\'' | b'\\'] => {
                     self.state.source.skip(2);
                 }
-                &[b, ..] => {
+                &[_, ..] => {
                     self.state.source.next();
                 }
                 [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
@@ -1577,7 +1580,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                     self.state.source.next();
                     break true;
                 }
-                &[b'\\', b @ (b'"' | b'\\' | b'$'), ..] => {
+                &[b'\\', b'"' | b'\\' | b'$', ..] => {
                     self.state.source.skip(2);
                 }
                 &[b'\\', b'n', ..] => {
@@ -1631,7 +1634,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                         return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
                     };
 
-                    if let None = char::from_u32(c) {
+                    if char::from_u32(c).is_none() {
                         return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
                     }
                 }
@@ -1649,14 +1652,14 @@ impl<'a, 'b> Lexer<'a, 'b> {
                         octal.push(*b as char);
                     }
 
-                    if let Err(_) = u8::from_str_radix(&octal, 8) {
+                    if u8::from_str_radix(&octal, 8).is_err() {
                         return Err(SyntaxError::InvalidOctalEscape(self.state.source.span()));
                     }
                 }
                 [b'$', ident_start!(), ..] | [b'{', b'$', ..] | [b'$', b'{', ..] => {
                     break false;
                 }
-                &[b, ..] => {
+                &[_, ..] => {
                     self.state.source.next();
                 }
                 [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
@@ -1671,7 +1674,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
         })
     }
 
-    fn peek_identifier<'c>(&'c self) -> Option<&'c [u8]> {
+    fn peek_identifier(&self) -> Option<&[u8]> {
         let mut size = 0;
 
         if let [ident_start!()] = self.state.source.read(1) {
@@ -1702,15 +1705,15 @@ impl<'a, 'b> Lexer<'a, 'b> {
 
     fn tokenize_number(&mut self) -> SyntaxResult<TokenKind> {
         let (base, kind) = match self.state.source.read(2) {
-            [a @ b'0', b @ b'B' | b @ b'b'] => {
+            [b'0', b'B' | b'b'] => {
                 self.state.source.skip(2);
                 (2, NumberKind::Int)
             }
-            [a @ b'0', b @ b'O' | b @ b'o'] => {
+            [b'0', b'O' | b'o'] => {
                 self.state.source.skip(2);
                 (8, NumberKind::Int)
             }
-            [a @ b'0', b @ b'X' | b @ b'x'] => {
+            [b'0', b'X' | b'x'] => {
                 self.state.source.skip(2);
                 (16, NumberKind::Int)
             }
@@ -1744,7 +1747,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
         if let Some(b'e' | b'E') = self.state.source.current() {
             self.state.source.next();
 
-            if let Some(b @ (b'-' | b'+')) = self.state.source.current() {
+            if let Some(b'-' | b'+') = self.state.source.current() {
                 self.state.source.next();
             }
 
@@ -1790,12 +1793,6 @@ impl<'a, 'b> Lexer<'a, 'b> {
             }
         }
     }
-}
-
-// Parses an integer literal in the given base and converts errors to SyntaxError.
-// It returns a float token instead on overflow.
-fn parse_int(buffer: &[u8]) -> SyntaxResult<(TokenKind, ByteString)> {
-    Ok((TokenKind::LiteralInteger, buffer.into()))
 }
 
 #[inline(always)]
@@ -1896,4 +1893,201 @@ enum NumberKind {
     Float,
     IntOrFloat,
     OctalOrFloat,
+}
+
+#[cfg(test)]
+mod tests {
+    use pxp_symbol::SymbolTable;
+    use pxp_token::{Token, TokenKind, OpenTagKind, DocStringKind, DocStringIndentationKind};
+    use super::Lexer;
+
+    #[test]
+    fn it_can_tokenize_keywords() {
+        use TokenKind::*;
+
+        let tokens = tokenise("<?php die self parent from print readonly global abstract as break case catch class clone const continue declare default do echo else elseif empty enddeclare endfor endforeach endif endswitch endwhile enum extends false final finally fn for foreach function goto if implements include include_once instanceof insteadof eval exit unset isset list interface match namespace new null private protected public require require_once return static switch throw trait true try use var yield while and or xor").iter().map(|t| t.kind).collect::<Vec<_>>();
+
+        assert_eq!(&tokens, &[
+            OpenTag(OpenTagKind::Full),
+            Die,
+            Self_,
+            Parent,
+            From,
+            Print,
+            Readonly,
+            Global,
+            Abstract,
+            As, Break, Case, Catch, Class, Clone, Const, Continue, Declare, Default, Do, Echo, Else, ElseIf,
+            Empty, EndDeclare, EndFor, EndForeach, EndIf,
+            EndSwitch, EndWhile, Enum, Extends, False, Final, Finally, Fn, For, Foreach, Function, Goto, If, Implements,
+            Include, IncludeOnce, Instanceof, Insteadof, Eval, Exit, Unset, Isset, List, Interface, Match, Namespace,
+            New, Null, Private, Protected, Public, Require, RequireOnce, Return, Static, Switch, Throw, Trait, True,
+            Try, Use, Var, Yield, While, LogicalAnd, LogicalOr, LogicalXor,
+            Eof,
+        ]);
+    }
+
+    #[test]
+    fn it_can_tokenize_casts() {
+        use TokenKind::*;
+
+        let tokens = tokenise("<?php (int) (integer) (bool) (boolean) (float) (double) (real) (string) (array) (object) (unset)").iter().map(|t| t.kind).collect::<Vec<_>>();
+
+        assert_eq!(&tokens, &[
+            OpenTag(OpenTagKind::Full),
+            IntCast,
+            IntegerCast,
+            BoolCast,
+            BooleanCast,
+            FloatCast,
+            DoubleCast,
+            RealCast,
+            StringCast,
+            ArrayCast,
+            ObjectCast,
+            UnsetCast,
+            Eof,
+        ]);
+    }
+
+    #[test]
+    fn it_can_tokenize_casts_with_excess_whitespace() {
+        use TokenKind::*;
+
+        let tokens = tokenise("<?php (int    ) (integer  ) (bool  ) (boolean) (float ) (double   ) (real    ) (string ) (array   ) (object   ) (  unset  )").iter().map(|t| t.kind).collect::<Vec<_>>();
+
+        assert_eq!(&tokens, &[
+            OpenTag(OpenTagKind::Full),
+            IntCast,
+            IntegerCast,
+            BoolCast,
+            BooleanCast,
+            FloatCast,
+            DoubleCast,
+            RealCast,
+            StringCast,
+            ArrayCast,
+            ObjectCast,
+            UnsetCast,
+            Eof,
+        ]);
+    }
+
+    #[test]
+    fn it_can_tokenize_operators() {
+        use TokenKind::*;
+
+        let tokens = tokenise("<?php + - * / % ** = += -= *= /= .= %= **= &= |= ^= <<= >>= <=> == === != <> !== > < >= <= <=> ?? ! && || ??= and or xor . -> :: ++ -- ?? ! and or xor").iter().map(|t| t.kind).collect::<Vec<_>>();
+
+        assert_eq!(&tokens, &[
+            OpenTag(OpenTagKind::Full),
+            Plus, Minus, Asterisk, Slash, Percent, Pow, Equals, PlusEquals, MinusEquals, AsteriskEquals, SlashEquals,
+            DotEquals, PercentEquals, PowEquals, AmpersandEquals, PipeEquals, CaretEquals, LeftShiftEquals,
+            RightShiftEquals, Spaceship, DoubleEquals, TripleEquals, BangEquals, AngledLeftRight,
+            BangDoubleEquals, GreaterThan, LessThan, GreaterThanEquals, LessThanEquals, Spaceship, DoubleQuestion,
+            Bang, BooleanAnd, BooleanOr, DoubleQuestionEquals, LogicalAnd, LogicalOr, LogicalXor, Dot, Arrow, DoubleColon,
+            Increment, Decrement, DoubleQuestion, Bang, LogicalAnd, LogicalOr, LogicalXor,
+            Eof,
+        ]);
+    }
+
+    #[test]
+    fn it_can_tokenize_single_quoted_strings() {
+        let tokens = tokenise("<?php 'foo' 'foo\\'bar'").iter().map(|t| t.kind).collect::<Vec<_>>();
+
+        assert_eq!(&tokens, &[
+            TokenKind::OpenTag(OpenTagKind::Full),
+            TokenKind::LiteralSingleQuotedString,
+            TokenKind::LiteralSingleQuotedString,
+            TokenKind::Eof,
+        ]);
+    }
+
+    #[test]
+    fn it_can_tokenize_double_quoted_strings() {
+        let tokens = tokenise("<?php \"foo\" \"foo\\\"bar\"").iter().map(|t| t.kind).collect::<Vec<_>>();
+
+        assert_eq!(&tokens, &[
+            TokenKind::OpenTag(OpenTagKind::Full),
+            TokenKind::LiteralDoubleQuotedString,
+            TokenKind::LiteralDoubleQuotedString,
+            TokenKind::Eof,
+        ]);
+    }
+
+    #[test]
+    fn it_can_tokenize_heredocs() {
+        let tokens = tokenise("<?php <<<EOD\n    foo\n    EOD").iter().map(|t| t.kind).collect::<Vec<_>>();
+
+        assert_eq!(&tokens, &[
+            TokenKind::OpenTag(OpenTagKind::Full),
+            TokenKind::StartDocString(DocStringKind::Heredoc),
+            TokenKind::StringPart,
+            TokenKind::EndDocString(DocStringIndentationKind::Space, 4),
+            TokenKind::Eof,
+        ]);
+    }
+
+    #[test]
+    fn it_can_tokenize_nowdocs() {
+        let tokens = tokenise("<?php <<<'EOD'\n    foo\n    EOD").iter().map(|t| t.kind).collect::<Vec<_>>();
+
+        assert_eq!(&tokens, &[
+            TokenKind::OpenTag(OpenTagKind::Full),
+            TokenKind::StartDocString(DocStringKind::Nowdoc),
+            TokenKind::StringPart,
+            TokenKind::EndDocString(DocStringIndentationKind::Space, 4),
+            TokenKind::Eof,
+        ]);
+    }
+
+    #[test]
+    fn it_can_tokenize_integers() {
+        let tokens = tokenise("<?php 100 0123 0o123 0x1A 0b11111111 1_234_567").iter().map(|t| t.kind).collect::<Vec<_>>();
+
+        assert_eq!(&tokens, &[
+            TokenKind::OpenTag(OpenTagKind::Full),
+            TokenKind::LiteralInteger,
+            TokenKind::LiteralInteger,
+            TokenKind::LiteralInteger,
+            TokenKind::LiteralInteger,
+            TokenKind::LiteralInteger,
+            TokenKind::LiteralInteger,
+            TokenKind::Eof,
+        ]);
+    }
+
+    #[test]
+    fn it_can_tokenize_floats() {
+        let tokens = tokenise("<?php 1.234 1.2e3 7E-10 1_234.567").iter().map(|t| t.kind).collect::<Vec<_>>();
+
+        assert_eq!(&tokens, &[
+            TokenKind::OpenTag(OpenTagKind::Full),
+            TokenKind::LiteralFloat,
+            TokenKind::LiteralFloat,
+            TokenKind::LiteralFloat,
+            TokenKind::LiteralFloat,
+            TokenKind::Eof,
+        ]);
+    }
+
+    #[test]
+    fn it_can_tokenize_identifiers() {
+        let tokens = tokenise("<?php hello \\hello hello\\world").iter().map(|t| t.kind).collect::<Vec<_>>();
+
+        assert_eq!(&tokens, &[
+            TokenKind::OpenTag(OpenTagKind::Full),
+            TokenKind::Identifier,
+            TokenKind::FullyQualifiedIdentifier,
+            TokenKind::QualifiedIdentifier,
+            TokenKind::Eof
+        ]);
+    }
+
+    fn tokenise(input: &str) -> Vec<Token> {
+        let mut symbol_table = SymbolTable::new();
+        let mut lexer = Lexer::new(input, &mut symbol_table);
+
+        lexer.tokenize().unwrap()
+    }
 }
