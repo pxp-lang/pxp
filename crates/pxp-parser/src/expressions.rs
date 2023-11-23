@@ -585,7 +585,7 @@ pub fn attributes(state: &mut State) -> Expression {
 fn left(state: &mut State, precedence: &Precedence) -> Expression {
     if state.stream.is_eof() {
         state.diagnostic(DiagnosticKind::UnexpectedEndOfFile, Severity::Error, state.stream.current().span);
-        
+
         return Expression::missing(state.stream.current().span);
     }
 
@@ -1392,7 +1392,13 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
 fn unexpected_token(state: &mut State, _: &Precedence) -> Expression {
     let current = state.stream.current();
 
-    todo!("tolerant mode")
+    state.diagnostic(
+        DiagnosticKind::UnexpectedToken { token: *current },
+        Severity::Error,
+        current.span,
+    );
+
+    Expression::missing(current.span)
 }
 
 fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
