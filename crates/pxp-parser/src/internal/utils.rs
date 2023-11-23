@@ -22,7 +22,6 @@ pub fn skip_ending(state: &mut State) -> Ending {
         }
 
         Ending::Missing(current.span)
-        // Err(error::unexpected_token(vec![";".to_string()], current))
     }
 }
 
@@ -34,8 +33,9 @@ pub fn skip_semicolon(state: &mut State) -> Span {
 
         current.span
     } else {
-        todo!("tolerant mode")
-        // Err(error::unexpected_token(vec!["`;`".to_string()], current))
+        state.diagnostic(DiagnosticKind::ExpectedToken { expected: TokenKind::SemiColon, found: *current }, Severity::Error, current.span);
+
+        current.span
     }
 }
 
