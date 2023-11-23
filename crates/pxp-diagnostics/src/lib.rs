@@ -11,3 +11,13 @@ pub struct Diagnostic {
     pub severity: Severity,
     pub span: Span,
 }
+
+impl Diagnostic {
+    pub fn new(kind: DiagnosticKind, severity: Severity, span: Span) -> Self {
+        Self {
+            kind,
+            severity,
+            span,
+        }
+    }
+}
