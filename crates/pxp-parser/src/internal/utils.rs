@@ -1,6 +1,7 @@
 use crate::state::State;
 use pxp_ast::utils::CommaSeparated;
 use pxp_ast::Ending;
+use pxp_diagnostics::{DiagnosticKind, Severity};
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
@@ -16,7 +17,11 @@ pub fn skip_ending(state: &mut State) -> Ending {
 
         Ending::Semicolon(current.span)
     } else {
-        todo!("tolerant mode")
+        if state.stream.is_eof() {
+            state.diagnostic(DiagnosticKind::UnexpectedEndOfFile, Severity::Error, current.span);
+        }
+
+        Ending::Missing(current.span)
         // Err(error::unexpected_token(vec![";".to_string()], current))
     }
 }

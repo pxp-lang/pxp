@@ -79,6 +79,7 @@ pub struct StaticVar {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum Ending {
+    Missing(Span),
     Semicolon(Span),
     CloseTag(Span),
 }
@@ -88,6 +89,7 @@ impl Ending {
         match self {
             Ending::Semicolon(span) => *span,
             Ending::CloseTag(span) => *span,
+            Ending::Missing(span) => *span,
         }
     }
 }
@@ -697,6 +699,10 @@ impl Expression {
         }
     }
 
+    pub fn missing(span: Span) -> Self {
+        Self::new(ExpressionKind::Missing, span, CommentGroup::default())
+    }
+
     pub fn noop(span: Span) -> Self {
         Self::new(ExpressionKind::Noop, span, CommentGroup::default())
     }
@@ -705,6 +711,7 @@ impl Expression {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum ExpressionKind {
+    Missing,
     // eval("$a = 1")
     Eval(EvalExpression),
     // empty($a)

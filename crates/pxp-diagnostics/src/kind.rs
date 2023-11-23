@@ -7,7 +7,7 @@ use pxp_token::{Token, TokenKind};
 pub enum DiagnosticKind {
     UnexpectedToken { token: Token },
     ExpectedToken { expected: TokenKind, found: Token },
-    UnexpectedEndOfFile { position: Position },
+    UnexpectedEndOfFile,
 }
 
 impl Display for DiagnosticKind {
@@ -15,7 +15,7 @@ impl Display for DiagnosticKind {
         match self {
             DiagnosticKind::UnexpectedToken { token } => write!(f, "unexpected token: {:?}", token),
             DiagnosticKind::ExpectedToken { expected, found } => write!(f, "unexpected token {:?}, expected {:?}", found, expected),
-            DiagnosticKind::UnexpectedEndOfFile { position } => write!(f, "unexpected end of file"),
+            DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }
 }

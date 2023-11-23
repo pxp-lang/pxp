@@ -34,6 +34,8 @@ use pxp_ast::{
     StaticPropertyFetchExpression, StaticVariableMethodCallExpression,
     StaticVariableMethodClosureCreationExpression, TernaryExpression,
 };
+use pxp_diagnostics::DiagnosticKind;
+use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::DocStringKind;
@@ -582,7 +584,9 @@ pub fn attributes(state: &mut State) -> Expression {
 
 fn left(state: &mut State, precedence: &Precedence) -> Expression {
     if state.stream.is_eof() {
-        todo!("tolerant mode")
+        state.diagnostic(DiagnosticKind::UnexpectedEndOfFile, Severity::Error, state.stream.current().span);
+        
+        return Expression::missing(state.stream.current().span);
     }
 
     let current = state.stream.current();
