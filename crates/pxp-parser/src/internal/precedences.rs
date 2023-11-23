@@ -68,7 +68,7 @@ impl Precedence {
             LogicalAnd => Self::KeyAnd,
             LogicalOr => Self::KeyOr,
             LogicalXor => Self::KeyXor,
-            _ => unimplemented!("precedence for op {:?}", kind),
+            _ => unimplemented!("precedence for op {:}", kind),
         }
     }
 
@@ -80,7 +80,7 @@ impl Precedence {
             Increment | Decrement => Self::IncDec,
             LeftParen | LeftBracket => Self::CallDim,
             Arrow | QuestionArrow | DoubleColon => Self::ObjectAccess,
-            _ => unimplemented!("postfix precedence for op {:?}", kind),
+            _ => unimplemented!("postfix precedence for op {:}", kind),
         }
     }
 

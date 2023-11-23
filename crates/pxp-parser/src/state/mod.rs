@@ -3,6 +3,7 @@ use std::fmt::Display;
 
 use pxp_ast::attributes::AttributeGroup;
 use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_diagnostics::Diagnostic;
 use pxp_lexer::stream::TokenStream;
 use pxp_symbol::SymbolTable;
 
@@ -25,6 +26,7 @@ pub struct State<'a> {
     pub symbol_table: &'a SymbolTable<'a>,
     pub attributes: Vec<AttributeGroup>,
     pub namespace_type: Option<NamespaceType>,
+    pub diagnostics: Vec<Diagnostic>,
 }
 
 impl<'a> State<'a> {
@@ -35,6 +37,7 @@ impl<'a> State<'a> {
             symbol_table,
             namespace_type: None,
             attributes: vec![],
+            diagnostics: vec![],
         }
     }
 

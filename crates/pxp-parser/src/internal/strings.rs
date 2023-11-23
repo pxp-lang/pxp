@@ -1,4 +1,3 @@
-use crate::error::ParseResult;
 use crate::expect_token;
 use crate::expected_token_err;
 use crate::expressions::create;
@@ -27,12 +26,12 @@ use pxp_token::DocStringIndentationKind;
 use pxp_token::TokenKind;
 
 #[inline(always)]
-pub fn interpolated(state: &mut State) -> ParseResult<Expression> {
+pub fn interpolated(state: &mut State) -> Expression {
     let start_span = state.stream.current().span;
     let mut parts = Vec::new();
 
     while state.stream.current().kind != TokenKind::DoubleQuote {
-        if let Some(part) = part(state)? {
+        if let Some(part) = part(state) {
             parts.push(part);
         }
     }
@@ -41,22 +40,22 @@ pub fn interpolated(state: &mut State) -> ParseResult<Expression> {
 
     let end_span = state.stream.current().span;
 
-    Ok(Expression::new(
+    Expression::new(
         ExpressionKind::InterpolatedString(InterpolatedStringExpression { parts }),
         Span::new(start_span.start, end_span.end),
         CommentGroup::default(),
-    ))
+    )
 }
 
 #[inline(always)]
-pub fn shell_exec(state: &mut State) -> ParseResult<Expression> {
+pub fn shell_exec(state: &mut State) -> Expression {
     let start_span = state.stream.current().span;
     state.stream.next();
 
     let mut parts = Vec::new();
 
     while state.stream.current().kind != TokenKind::Backtick {
-        if let Some(part) = part(state)? {
+        if let Some(part) = part(state) {
             parts.push(part);
         }
     }
@@ -65,15 +64,15 @@ pub fn shell_exec(state: &mut State) -> ParseResult<Expression> {
 
     let end_span = state.stream.current().span;
 
-    Ok(Expression::new(
+    Expression::new(
         ExpressionKind::ShellExec(ShellExecExpression { parts }),
         Span::new(start_span.start, end_span.end),
         CommentGroup::default(),
-    ))
+    )
 }
 
 #[inline(always)]
-pub fn heredoc(state: &mut State) -> ParseResult<Expression> {
+pub fn heredoc(state: &mut State) -> Expression {
     let span = state.stream.current().span;
     let label = state.stream.current().symbol.unwrap();
     state.stream.next();
@@ -81,7 +80,7 @@ pub fn heredoc(state: &mut State) -> ParseResult<Expression> {
     let mut parts = Vec::new();
 
     while !matches!(state.stream.current().kind, TokenKind::EndDocString(_, _)) {
-        if let Some(part) = part(state)? {
+        if let Some(part) = part(state) {
             parts.push(part);
         }
     }
@@ -165,15 +164,15 @@ pub fn heredoc(state: &mut State) -> ParseResult<Expression> {
 
     let end_span = state.stream.previous().span;
 
-    Ok(Expression::new(
+    Expression::new(
         ExpressionKind::Heredoc(HeredocExpression { label, parts }),
         Span::new(span.start, end_span.end),
         CommentGroup::default(),
-    ))
+    )
 }
 
 #[inline(always)]
-pub fn nowdoc(state: &mut State) -> ParseResult<Expression> {
+pub fn nowdoc(state: &mut State) -> Expression {
     let span = state.stream.current().span;
     let label = *state.stream.current();
 
@@ -254,18 +253,18 @@ pub fn nowdoc(state: &mut State) -> ParseResult<Expression> {
 
     let end_span = state.stream.previous().span;
 
-    Ok(Expression::new(
+    Expression::new(
         ExpressionKind::Nowdoc(NowdocExpression {
             label,
             value: string_part,
         }),
         Span::new(span.start, end_span.end),
         CommentGroup::default(),
-    ))
+    )
 }
 
-fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
-    Ok(match &state.stream.current().kind {
+fn part(state: &mut State) -> Option<StringPart> {
+    match &state.stream.current().kind {
         TokenKind::StringPart => {
             let s = *state.stream.current();
             let part = if s.span.len() > 0 {
@@ -279,7 +278,7 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
         }
         TokenKind::DollarLeftBrace => {
             let start_span = state.stream.current().span;
-            let variable = variables::dynamic_variable(state)?;
+            let variable = variables::dynamic_variable(state);
             let expression = Expression::new(
                 ExpressionKind::Variable(variable),
                 Span::new(start_span.start, state.stream.previous().span.end),
@@ -293,8 +292,8 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
         TokenKind::LeftBrace => {
             // "{$expr}"
             state.stream.next();
-            let e = create(state)?;
-            utils::skip_right_brace(state)?;
+            let e = create(state);
+            utils::skip_right_brace(state);
             Some(StringPart::Expression(ExpressionStringPart {
                 expression: Box::new(e),
             }))
@@ -302,13 +301,13 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
         TokenKind::Variable => {
             // "$expr", "$expr[0]", "$expr[name]", "$expr->a"
             let variable_span = state.stream.current().span;
-            let variable = ExpressionKind::Variable(variables::dynamic_variable(state)?);
+            let variable = ExpressionKind::Variable(variables::dynamic_variable(state));
             let variable = Expression::new(variable, variable_span, CommentGroup::default());
 
             let current = state.stream.current();
             let e = match &current.kind {
                 TokenKind::LeftBracket => {
-                    let left_bracket = utils::skip_left_bracket(state)?;
+                    let left_bracket = utils::skip_left_bracket(state);
 
                     let current = state.stream.current();
                     let index_start_span = current.span;
@@ -347,7 +346,7 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
                             ExpressionKind::Literal(Literal::new(LiteralKind::String, *current))
                         }
                         TokenKind::Variable => ExpressionKind::Variable(Variable::SimpleVariable(
-                            variables::simple_variable(state)?,
+                            variables::simple_variable(state),
                         )),
                         _ => {
                             return expected_token_err!(
@@ -363,7 +362,7 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
                         CommentGroup::default(),
                     );
 
-                    let right_bracket = utils::skip_right_bracket(state)?;
+                    let right_bracket = utils::skip_right_bracket(state);
 
                     ExpressionKind::ArrayIndex(ArrayIndexExpression {
                         array: Box::new(variable),
@@ -377,7 +376,7 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
 
                     state.stream.next();
 
-                    let identifier = identifiers::identifier_maybe_reserved(state)?;
+                    let identifier = identifiers::identifier_maybe_reserved(state);
                     let id_span = identifier.token.span;
                     let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier));
                     let identifier_expression =
@@ -393,7 +392,7 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
                     let span = current.span;
                     state.stream.next();
 
-                    let ident = identifiers::identifier_maybe_reserved(state)?;
+                    let ident = identifiers::identifier_maybe_reserved(state);
                     let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(ident));
 
                     ExpressionKind::NullsafePropertyFetch(NullsafePropertyFetchExpression {
@@ -417,5 +416,5 @@ fn part(state: &mut State) -> ParseResult<Option<StringPart>> {
         _ => {
             return expected_token_err!(["`${`", "`{$", "`\"`", "a variable"], state);
         }
-    })
+    }
 }

@@ -1,5 +1,3 @@
-use crate::error;
-use crate::error::ParseResult;
 use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::scoped;
@@ -16,8 +14,8 @@ use pxp_ast::StatementKind;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
-pub fn namespace(state: &mut State) -> ParseResult<StatementKind> {
-    let start = utils::skip(state, TokenKind::Namespace)?;
+pub fn namespace(state: &mut State) -> StatementKind {
+    let start = utils::skip(state, TokenKind::Namespace);
     let name = identifiers::optional_name(state);
 
     let current = state.stream.current();
@@ -51,8 +49,8 @@ fn unbraced_namespace(
     state: &mut State,
     start: Span,
     name: SimpleIdentifier,
-) -> ParseResult<StatementKind> {
-    let end = utils::skip_semicolon(state)?;
+) -> StatementKind {
+    let end = utils::skip_semicolon(state);
 
     let statements = scoped!(state, Scope::Namespace(name.clone()), {
         let mut statements = Block::new();
@@ -60,36 +58,36 @@ fn unbraced_namespace(
         // `namespace` token as a top level statement, this namespace scope ends.
         // otherwise we will end up with nested namespace statements.
         while state.stream.current().kind != TokenKind::Namespace && !state.stream.is_eof() {
-            statements.push(crate::top_level_statement(state)?);
+            statements.push(crate::top_level_statement(state));
         }
 
         statements
     });
 
-    Ok(StatementKind::Namespace(NamespaceStatement::Unbraced(
+    StatementKind::Namespace(NamespaceStatement::Unbraced(
         UnbracedNamespace {
             start,
             end,
             name,
             statements,
         },
-    )))
+    ))
 }
 
 fn braced_namespace(
     state: &mut State,
     span: Span,
     name: Option<SimpleIdentifier>,
-) -> ParseResult<StatementKind> {
+) -> StatementKind {
     let body = scoped!(state, Scope::BracedNamespace(name.clone()), {
-        let start = utils::skip_left_brace(state)?;
+        let start = utils::skip_left_brace(state);
 
         let mut statements = Block::new();
         while state.stream.current().kind != TokenKind::RightBrace && !state.stream.is_eof() {
-            statements.push(crate::top_level_statement(state)?);
+            statements.push(crate::top_level_statement(state));
         }
 
-        let end = utils::skip_right_brace(state)?;
+        let end = utils::skip_right_brace(state);
 
         BracedNamespaceBody {
             start,
@@ -98,11 +96,11 @@ fn braced_namespace(
         }
     });
 
-    Ok(StatementKind::Namespace(NamespaceStatement::Braced(
+    StatementKind::Namespace(NamespaceStatement::Braced(
         BracedNamespace {
             namespace: span,
             name,
             body,
         },
-    )))
+    ))
 }

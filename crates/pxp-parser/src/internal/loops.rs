@@ -1,4 +1,3 @@
-use crate::error::ParseResult;
 use crate::expressions;
 use crate::internal::blocks;
 use crate::internal::utils;
@@ -22,14 +21,14 @@ use pxp_ast::StatementKind;
 use pxp_token::Token;
 use pxp_token::TokenKind;
 
-pub fn foreach_statement(state: &mut State) -> ParseResult<StatementKind> {
-    let foreach = utils::skip(state, TokenKind::Foreach)?;
+pub fn foreach_statement(state: &mut State) -> StatementKind {
+    let foreach = utils::skip(state, TokenKind::Foreach);
 
     let (left_parenthesis, iterator, right_parenthesis) =
         utils::parenthesized(state, &|state: &mut State| {
-            let expression = expressions::create(state)?;
+            let expression = expressions::create(state);
 
-            let r#as = utils::skip(state, TokenKind::As)?;
+            let r#as = utils::skip(state, TokenKind::As);
 
             let current = state.stream.current();
             let ampersand = if current.kind == TokenKind::Ampersand {
@@ -39,7 +38,7 @@ pub fn foreach_statement(state: &mut State) -> ParseResult<StatementKind> {
                 None
             };
 
-            let mut value = expressions::create(state)?;
+            let mut value = expressions::create(state);
 
             let current = state.stream.current();
             if current.kind == TokenKind::DoubleArrow {
@@ -54,52 +53,52 @@ pub fn foreach_statement(state: &mut State) -> ParseResult<StatementKind> {
                     None
                 };
 
-                let mut key = expressions::create(state)?;
+                let mut key = expressions::create(state);
 
                 std::mem::swap(&mut value, &mut key);
 
-                Ok(ForeachStatementIterator::KeyAndValue {
+                ForeachStatementIterator::KeyAndValue {
                     expression,
                     r#as,
                     key,
                     double_arrow: arrow,
                     ampersand,
                     value,
-                })
+                }
             } else {
-                Ok(ForeachStatementIterator::Value {
+                ForeachStatementIterator::Value {
                     expression,
                     r#as,
                     ampersand,
                     value,
-                })
+                }
             }
-        })?;
+        });
 
     let body = if state.stream.current().kind == TokenKind::Colon {
         ForeachStatementBody::Block {
-            colon: utils::skip_colon(state)?,
-            statements: blocks::multiple_statements_until(state, &TokenKind::EndForeach)?,
-            endforeach: utils::skip(state, TokenKind::EndForeach)?,
-            ending: utils::skip_ending(state)?,
+            colon: utils::skip_colon(state),
+            statements: blocks::multiple_statements_until(state, &TokenKind::EndForeach),
+            endforeach: utils::skip(state, TokenKind::EndForeach),
+            ending: utils::skip_ending(state),
         }
     } else {
         ForeachStatementBody::Statement {
-            statement: statement(state).map(Box::new)?,
+            statement: Box::new(statement(state))
         }
     };
 
-    Ok(StatementKind::Foreach(ForeachStatement {
+    StatementKind::Foreach(ForeachStatement {
         foreach,
         left_parenthesis,
         iterator,
         right_parenthesis,
         body,
-    }))
+    })
 }
 
-pub fn for_statement(state: &mut State) -> ParseResult<StatementKind> {
-    let r#for = utils::skip(state, TokenKind::For)?;
+pub fn for_statement(state: &mut State) -> StatementKind {
+    let r#for = utils::skip(state, TokenKind::For);
 
     let (left_parenthesis, iterator, right_parenthesis) = utils::parenthesized(state, &|state| {
         let (initializations_semicolon, initializations) =
@@ -109,13 +108,13 @@ pub fn for_statement(state: &mut State) -> ParseResult<StatementKind> {
                     &expressions::create,
                     TokenKind::SemiColon,
                 )
-            })?;
+            });
 
         let (conditions_semicolon, conditions) = utils::semicolon_terminated(state, &|state| {
             utils::comma_separated_no_trailing(state, &expressions::create, TokenKind::SemiColon)
-        })?;
+        });
 
-        Ok(ForStatementIterator {
+        ForStatementIterator {
             initializations,
             initializations_semicolon,
             conditions,
@@ -124,45 +123,45 @@ pub fn for_statement(state: &mut State) -> ParseResult<StatementKind> {
                 state,
                 &expressions::create,
                 TokenKind::RightParen,
-            )?,
-        })
-    })?;
+            ),
+        }
+    });
 
     let body = if state.stream.current().kind == TokenKind::Colon {
         ForStatementBody::Block {
-            colon: utils::skip_colon(state)?,
-            statements: blocks::multiple_statements_until(state, &TokenKind::EndFor)?,
-            endfor: utils::skip(state, TokenKind::EndFor)?,
-            ending: utils::skip_ending(state)?,
+            colon: utils::skip_colon(state),
+            statements: blocks::multiple_statements_until(state, &TokenKind::EndFor),
+            endfor: utils::skip(state, TokenKind::EndFor),
+            ending: utils::skip_ending(state),
         }
     } else {
         ForStatementBody::Statement {
-            statement: statement(state).map(Box::new)?,
+            statement: Box::new(statement(state))
         }
     };
 
-    Ok(StatementKind::For(ForStatement {
+    StatementKind::For(ForStatement {
         r#for,
         left_parenthesis,
         iterator,
         right_parenthesis,
         body,
-    }))
+    })
 }
 
-pub fn do_while_statement(state: &mut State) -> ParseResult<StatementKind> {
-    let r#do = utils::skip(state, TokenKind::Do)?;
+pub fn do_while_statement(state: &mut State) -> StatementKind {
+    let r#do = utils::skip(state, TokenKind::Do);
 
-    let body = statement(state).map(Box::new)?;
+    let body = Box::new(statement(state));
 
-    let r#while = utils::skip(state, TokenKind::While)?;
+    let r#while = utils::skip(state, TokenKind::While);
 
     let (semicolon, (left_parenthesis, condition, right_parenthesis)) =
         utils::semicolon_terminated(state, &|state| {
             utils::parenthesized(state, &expressions::create)
-        })?;
+        });
 
-    Ok(StatementKind::DoWhile(DoWhileStatement {
+    StatementKind::DoWhile(DoWhileStatement {
         r#do,
         body,
         r#while,
@@ -170,66 +169,64 @@ pub fn do_while_statement(state: &mut State) -> ParseResult<StatementKind> {
         condition,
         right_parenthesis,
         semicolon,
-    }))
+    })
 }
 
-pub fn while_statement(state: &mut State) -> ParseResult<StatementKind> {
-    let r#while = utils::skip(state, TokenKind::While)?;
+pub fn while_statement(state: &mut State) -> StatementKind {
+    let r#while = utils::skip(state, TokenKind::While);
 
     let (left_parenthesis, condition, right_parenthesis) =
-        utils::parenthesized(state, &expressions::create)?;
+        utils::parenthesized(state, &expressions::create);
 
     let body = if state.stream.current().kind == TokenKind::Colon {
         WhileStatementBody::Block {
-            colon: utils::skip_colon(state)?,
-            statements: blocks::multiple_statements_until(state, &TokenKind::EndWhile)?,
-            endwhile: utils::skip(state, TokenKind::EndWhile)?,
-            ending: utils::skip_ending(state)?,
+            colon: utils::skip_colon(state),
+            statements: blocks::multiple_statements_until(state, &TokenKind::EndWhile),
+            endwhile: utils::skip(state, TokenKind::EndWhile),
+            ending: utils::skip_ending(state),
         }
     } else {
         WhileStatementBody::Statement {
-            statement: statement(state).map(Box::new)?,
+            statement: Box::new(statement(state))
         }
     };
 
-    Ok(StatementKind::While(WhileStatement {
+    StatementKind::While(WhileStatement {
         r#while,
         left_parenthesis,
         condition,
         right_parenthesis,
         body,
-    }))
+    })
 }
 
-pub fn continue_statement(state: &mut State) -> ParseResult<StatementKind> {
-    Ok(StatementKind::Continue(ContinueStatement {
-        r#continue: utils::skip(state, TokenKind::Continue)?,
-        level: maybe_loop_level(state)?,
-        ending: utils::skip_ending(state)?,
-    }))
+pub fn continue_statement(state: &mut State) -> StatementKind {
+    StatementKind::Continue(ContinueStatement {
+        r#continue: utils::skip(state, TokenKind::Continue),
+        level: maybe_loop_level(state),
+        ending: utils::skip_ending(state),
+    })
 }
 
-pub fn break_statement(state: &mut State) -> ParseResult<StatementKind> {
-    Ok(StatementKind::Break(BreakStatement {
-        r#break: utils::skip(state, TokenKind::Break)?,
-        level: maybe_loop_level(state)?,
-        ending: utils::skip_ending(state)?,
-    }))
+pub fn break_statement(state: &mut State) -> StatementKind {
+    StatementKind::Break(BreakStatement {
+        r#break: utils::skip(state, TokenKind::Break),
+        level: maybe_loop_level(state),
+        ending: utils::skip_ending(state),
+    })
 }
 
-fn maybe_loop_level(state: &mut State) -> ParseResult<Option<Level>> {
+fn maybe_loop_level(state: &mut State) -> Option<Level> {
     let current = &state.stream.current().kind;
 
-    Ok(
-        if current == &TokenKind::SemiColon || current == &TokenKind::CloseTag {
-            None
-        } else {
-            Some(loop_level(state)?)
-        },
-    )
+    if current == &TokenKind::SemiColon || current == &TokenKind::CloseTag {
+        None
+    } else {
+        Some(loop_level(state))
+    }
 }
 
-fn loop_level(state: &mut State) -> ParseResult<Level> {
+fn loop_level(state: &mut State) -> Level {
     let current = state.stream.current();
 
     if let Token {
@@ -240,15 +237,15 @@ fn loop_level(state: &mut State) -> ParseResult<Level> {
     {
         state.stream.next();
 
-        return Ok(Level::Literal(Literal::new(LiteralKind::Integer, *current)));
+        return Level::Literal(Literal::new(LiteralKind::Integer, *current));
     }
 
     let (left_parenthesis, level, right_parenthesis) =
-        utils::parenthesized(state, &|state| loop_level(state).map(Box::new))?;
+        utils::parenthesized(state, &|state| Box::new(loop_level(state)));
 
-    Ok(Level::Parenthesized {
+    Level::Parenthesized {
         left_parenthesis,
         level,
         right_parenthesis,
-    })
+    }
 }

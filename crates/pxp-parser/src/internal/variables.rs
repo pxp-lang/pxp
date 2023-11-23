@@ -1,4 +1,3 @@
-use crate::error::ParseResult;
 use crate::expected_token_err;
 use crate::expressions;
 use crate::internal::utils;
@@ -9,38 +8,38 @@ use pxp_ast::variables::Variable;
 use pxp_ast::variables::VariableVariable;
 use pxp_token::TokenKind;
 
-pub fn simple_variable(state: &mut State) -> ParseResult<SimpleVariable> {
+pub fn simple_variable(state: &mut State) -> SimpleVariable {
     let current = state.stream.current();
     if let TokenKind::Variable = &current.kind {
         state.stream.next();
 
-        return Ok(SimpleVariable { token: *current });
+        return SimpleVariable { token: *current };
     }
 
     expected_token_err!("a variable", state)
 }
 
-pub fn dynamic_variable(state: &mut State) -> ParseResult<Variable> {
+pub fn dynamic_variable(state: &mut State) -> Variable {
     let current = state.stream.current();
     match &current.kind {
         TokenKind::Variable => {
             state.stream.next();
 
-            Ok(Variable::SimpleVariable(SimpleVariable { token: *current }))
+            Variable::SimpleVariable(SimpleVariable { token: *current })
         }
         TokenKind::DollarLeftBrace => {
             let start = current.span;
             state.stream.next();
 
-            let expr = expressions::create(state)?;
+            let expr = expressions::create(state);
 
-            let end = utils::skip_right_brace(state)?;
+            let end = utils::skip_right_brace(state);
 
-            Ok(Variable::BracedVariableVariable(BracedVariableVariable {
+            Variable::BracedVariableVariable(BracedVariableVariable {
                 start,
                 variable: Box::new(expr),
                 end,
-            }))
+            })
         }
         // FIXME: figure out why the lexer does this.
         TokenKind::Dollar if state.stream.peek().kind == TokenKind::LeftBrace => {
@@ -48,26 +47,26 @@ pub fn dynamic_variable(state: &mut State) -> ParseResult<Variable> {
             state.stream.next();
             state.stream.next();
 
-            let expr = expressions::create(state)?;
+            let expr = expressions::create(state);
 
-            let end = utils::skip_right_brace(state)?;
+            let end = utils::skip_right_brace(state);
 
-            Ok(Variable::BracedVariableVariable(BracedVariableVariable {
+            Variable::BracedVariableVariable(BracedVariableVariable {
                 start,
                 variable: Box::new(expr),
                 end,
-            }))
+            })
         }
         TokenKind::Dollar => {
             let span = current.span;
             state.stream.next();
 
-            let variable = dynamic_variable(state)?;
+            let variable = dynamic_variable(state);
 
-            Ok(Variable::VariableVariable(VariableVariable {
+            Variable::VariableVariable(VariableVariable {
                 span,
                 variable: Box::new(variable),
-            }))
+            })
         }
         _ => {
             expected_token_err!("a variable", state)

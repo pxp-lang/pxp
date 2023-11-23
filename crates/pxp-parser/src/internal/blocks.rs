@@ -1,4 +1,3 @@
-use crate::error::ParseResult;
 use crate::internal::utils;
 use crate::state::State;
 use crate::statement;
@@ -8,22 +7,22 @@ use pxp_ast::StatementKind;
 use pxp_token::OpenTagKind;
 use pxp_token::TokenKind;
 
-pub fn block_statement(state: &mut State) -> ParseResult<StatementKind> {
+pub fn block_statement(state: &mut State) -> StatementKind {
     let (left_brace, statements, right_brace) = utils::braced(state, &|state: &mut State| {
         multiple_statements_until(state, &TokenKind::RightBrace)
-    })?;
+    });
 
-    Ok(StatementKind::Block(BlockStatement {
+    StatementKind::Block(BlockStatement {
         left_brace,
         statements,
         right_brace,
-    }))
+    })
 }
 
 pub fn multiple_statements_until(
     state: &mut State,
     until: &TokenKind,
-) -> ParseResult<Vec<Statement>> {
+) -> Vec<Statement> {
     let mut statements = Vec::new();
 
     let mut current = state.stream.current();
@@ -35,17 +34,17 @@ pub fn multiple_statements_until(
             continue;
         }
 
-        statements.push(statement(state)?);
+        statements.push(statement(state));
         current = state.stream.current();
     }
 
-    Ok(statements)
+    statements
 }
 
 pub fn multiple_statements_until_any(
     state: &mut State,
     until: &[TokenKind],
-) -> ParseResult<Vec<Statement>> {
+) -> Vec<Statement> {
     let mut statements = Vec::new();
 
     let mut current = state.stream.current();
@@ -57,9 +56,9 @@ pub fn multiple_statements_until_any(
             continue;
         }
 
-        statements.push(statement(state)?);
+        statements.push(statement(state));
         current = state.stream.current();
     }
 
-    Ok(statements)
+    statements
 }

@@ -1,5 +1,3 @@
-use crate::error;
-use crate::error::ParseResult;
 use crate::expressions;
 use crate::internal::data_type;
 use crate::internal::utils;
@@ -16,13 +14,13 @@ pub fn parse(
     state: &mut State,
     class_name: Option<&SimpleIdentifier>,
     modifiers: PropertyModifierGroup,
-) -> ParseResult<Property> {
-    let ty = data_type::optional_data_type(state)?;
+) -> Property {
+    let ty = data_type::optional_data_type(state);
 
     let mut entries = vec![];
     let mut type_checked = false;
     loop {
-        let variable = variables::simple_variable(state)?;
+        let variable = variables::simple_variable(state);
 
         if !type_checked {
             type_checked = true;
@@ -85,7 +83,7 @@ pub fn parse(
             }
 
             state.stream.next();
-            let value = expressions::create(state)?;
+            let value = expressions::create(state);
 
             entries.push(PropertyEntry::Initialized {
                 variable,
@@ -103,29 +101,29 @@ pub fn parse(
         }
     }
 
-    let end = utils::skip_semicolon(state)?;
+    let end = utils::skip_semicolon(state);
 
-    Ok(Property {
+    Property {
         r#type: ty,
         modifiers,
         attributes: state.get_attributes(),
         entries,
         end,
-    })
+    }
 }
 
 pub fn parse_var(
     state: &mut State,
     class_name: Option<&SimpleIdentifier>,
-) -> ParseResult<VariableProperty> {
-    utils::skip(state, TokenKind::Var)?;
+) -> VariableProperty {
+    utils::skip(state, TokenKind::Var);
 
-    let ty = data_type::optional_data_type(state)?;
+    let ty = data_type::optional_data_type(state);
 
     let mut entries = vec![];
     let mut type_checked = false;
     loop {
-        let variable = variables::simple_variable(state)?;
+        let variable = variables::simple_variable(state);
 
         if !type_checked {
             type_checked = true;
@@ -149,7 +147,7 @@ pub fn parse_var(
         if current.kind == TokenKind::Equals {
             let span = current.span;
             state.stream.next();
-            let value = expressions::create(state)?;
+            let value = expressions::create(state);
 
             entries.push(PropertyEntry::Initialized {
                 variable,
@@ -167,12 +165,12 @@ pub fn parse_var(
         }
     }
 
-    let end = utils::skip_semicolon(state)?;
+    let end = utils::skip_semicolon(state);
 
-    Ok(VariableProperty {
+    VariableProperty {
         r#type: ty,
         attributes: state.get_attributes(),
         entries,
         end,
-    })
+    }
 }

@@ -1,5 +1,3 @@
-use crate::error;
-use crate::error::ParseResult;
 use crate::expected_token_err;
 use crate::internal::arrays;
 use crate::internal::attributes;
@@ -62,20 +60,20 @@ use pxp_ast::UnsetExpression;
 use pxp_ast::YieldExpression;
 use pxp_ast::YieldFromExpression;
 
-pub fn create(state: &mut State) -> ParseResult<Expression> {
+pub fn create(state: &mut State) -> Expression {
     for_precedence(state, Precedence::Lowest)
 }
 
-fn null_coalesce_precedence(state: &mut State) -> ParseResult<Expression> {
+fn null_coalesce_precedence(state: &mut State) -> Expression {
     for_precedence(state, Precedence::NullCoalesce)
 }
 
-fn clone_or_new_precedence(state: &mut State) -> ParseResult<Expression> {
+fn clone_or_new_precedence(state: &mut State) -> Expression {
     for_precedence(state, Precedence::CloneOrNew)
 }
 
-fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expression> {
-    let mut left = left(state, &precedence)?;
+fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
+    let mut left = left(state, &precedence);
 
     loop {
         let current = state.stream.current();
@@ -93,7 +91,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                 break;
             }
 
-            left = postfix(state, left, kind)?;
+            left = postfix(state, left, kind);
             continue;
         }
 
@@ -118,13 +116,13 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
             let start_span = op.span;
             let kind = match kind {
                 TokenKind::Question => {
-                    // this happens due to a comment, or whitespaces between the ? and the :
-                    // we consider `foo() ? : bar()` a ternary expression, with `then` being a noop
+                    // this happens due to a comment, or whitespaces between the  and the :
+                    // we consider `foo()  : bar()` a ternary expression, with `then` being a noop
                     // however, this must behave like a short ternary at runtime.
                     if op.kind == TokenKind::Colon {
                         state.stream.next();
 
-                        let r#else = create(state)?;
+                        let r#else = create(state);
 
                         ExpressionKind::Ternary(TernaryExpression {
                             condition: Box::new(left),
@@ -134,9 +132,9 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                             r#else: Box::new(r#else),
                         })
                     } else {
-                        let then = create(state)?;
-                        let colon = utils::skip_colon(state)?;
-                        let r#else = create(state)?;
+                        let then = create(state);
+                        let colon = utils::skip_colon(state);
+                        let r#else = create(state);
 
                         ExpressionKind::Ternary(TernaryExpression {
                             condition: Box::new(left),
@@ -148,7 +146,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                     }
                 }
                 TokenKind::QuestionColon => {
-                    let r#else = create(state)?;
+                    let r#else = create(state);
                     ExpressionKind::ShortTernary(ShortTernaryExpression {
                         condition: Box::new(left),
                         question_colon: span,
@@ -160,7 +158,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
 
                     // FIXME: You should only be allowed to assign a referencable variable,
                     //        here, not any old expression.
-                    let right = Box::new(for_precedence(state, rpred)?);
+                    let right = Box::new(for_precedence(state, rpred));
                     let right_span = right.span;
 
                     ExpressionKind::AssignmentOperation(AssignmentOperationExpression::Assign {
@@ -249,7 +247,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
                 }
                 _ => {
                     let left = Box::new(left);
-                    let right = Box::new(for_precedence(state, rpred)?);
+                    let right = Box::new(for_precedence(state, rpred));
 
                     match kind {
                         TokenKind::Plus => ExpressionKind::ArithmeticOperation(
@@ -561,11 +559,11 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> ParseResult<Expr
         break;
     }
 
-    Ok(left)
+    left
 }
 
-pub fn attributes(state: &mut State) -> ParseResult<Expression> {
-    attributes::gather_attributes(state)?;
+pub fn attributes(state: &mut State) -> Expression {
+    attributes::gather_attributes(state);
 
     let current = state.stream.current();
 
@@ -582,7 +580,7 @@ pub fn attributes(state: &mut State) -> ParseResult<Expression> {
     }
 }
 
-fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
+fn left(state: &mut State, precedence: &Precedence) -> Expression {
     if state.stream.is_eof() {
         todo!("tolerant mode")
     }
@@ -606,14 +604,14 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
             let eval = state.stream.current().span;
             state.stream.next();
 
-            let argument = Box::new(parameters::single_argument(state, true, true).unwrap()?);
+            let argument = Box::new(parameters::single_argument(state, true, true).unwrap());
             let end_span = state.stream.previous().span;
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Eval(EvalExpression { eval, argument }),
                 Span::new(start_span.start, end_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::Empty, TokenKind::LeftParen) => {
@@ -621,14 +619,14 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
             let empty = state.stream.current().span;
             state.stream.next();
 
-            let argument = Box::new(parameters::single_argument(state, true, true).unwrap()?);
+            let argument = Box::new(parameters::single_argument(state, true, true).unwrap());
             let end_span = state.stream.previous().span;
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Empty(EmptyExpression { empty, argument }),
                 Span::new(start_span.start, end_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::Die, _) => {
@@ -637,17 +635,17 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
             state.stream.next();
 
             let argument = match parameters::single_argument(state, false, true) {
-                Some(arg) => Some(Box::new(arg?)),
+                Some(arg) => Some(Box::new(arg)),
                 None => None,
             };
 
             let end_span = state.stream.previous().span;
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Die(DieExpression { die, argument }),
                 Span::new(start_span.start, end_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::Exit, _) => {
@@ -656,45 +654,45 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
             state.stream.next();
 
             let argument = match parameters::single_argument(state, false, true) {
-                Some(arg) => Some(Box::new(arg?)),
+                Some(arg) => Some(Box::new(arg)),
                 None => None,
             };
 
             let end_span = state.stream.previous().span;
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Exit(ExitExpression { exit, argument }),
                 Span::new(start_span.start, end_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::Isset, TokenKind::LeftParen) => {
             let start_span = state.stream.current().span;
             let isset = state.stream.current().span;
             state.stream.next();
-            let arguments = parameters::argument_list(state)?;
+            let arguments = parameters::argument_list(state);
             let end_span = state.stream.previous().span;
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Isset(IssetExpression { isset, arguments }),
                 Span::new(start_span.start, end_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::Unset, TokenKind::LeftParen) => {
             let start_span = state.stream.current().span;
             let unset = state.stream.current().span;
             state.stream.next();
-            let arguments = parameters::argument_list(state)?;
+            let arguments = parameters::argument_list(state);
             let end_span = state.stream.previous().span;
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Unset(UnsetExpression { unset, arguments }),
                 Span::new(start_span.start, end_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::Print, _) => {
@@ -706,14 +704,14 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
             let mut argument = None;
 
             if let Some(arg) = parameters::single_argument(state, false, true) {
-                argument = Some(Box::new(arg?));
+                argument = Some(Box::new(arg));
             } else {
-                value = Some(Box::new(create(state)?));
+                value = Some(Box::new(create(state)));
             }
 
             let end_span = state.stream.previous().span;
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Print(PrintExpression {
                     print,
                     value,
@@ -721,7 +719,7 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
                 }),
                 Span::new(start_span.start, end_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (
@@ -736,7 +734,7 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
             TokenKind::LeftParen,
         ) if precedence >= &Precedence::CallDim => {
             let span = state.stream.current().span;
-            let ident = identifiers::identifier_maybe_soft_reserved(state)?;
+            let ident = identifiers::identifier_maybe_soft_reserved(state);
             let lhs = Expression::new(
                 ExpressionKind::Identifier(Identifier::SimpleIdentifier(ident)),
                 span,
@@ -748,7 +746,7 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
 
         (TokenKind::Enum | TokenKind::From, TokenKind::DoubleColon) => {
             let span = state.stream.current().span;
-            let ident = identifiers::type_identifier(state)?;
+            let ident = identifiers::type_identifier(state);
             let lhs = Expression::new(
                 ExpressionKind::Identifier(Identifier::SimpleIdentifier(ident)),
                 span,
@@ -767,16 +765,16 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
         (TokenKind::Throw, _) => {
             let start_span = state.stream.current().span;
             state.stream.next();
-            let exception = for_precedence(state, Precedence::Lowest)?;
+            let exception = for_precedence(state, Precedence::Lowest);
             let exception_span = exception.span;
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Throw(ThrowExpression {
                     value: Box::new(exception),
                 }),
                 Span::new(start_span.start, exception_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::Yield, _) => {
@@ -785,14 +783,14 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
             if state.stream.current().kind == TokenKind::SemiColon
                 || state.stream.current().kind == TokenKind::RightParen
             {
-                Ok(Expression::new(
+                Expression::new(
                     ExpressionKind::Yield(YieldExpression {
                         key: None,
                         value: None,
                     }),
                     start_span,
                     CommentGroup::default(),
-                ))
+                )
             } else {
                 let mut from = false;
 
@@ -809,31 +807,31 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
                     } else {
                         Precedence::Yield
                     },
-                )?);
+                ));
 
                 if state.stream.current().kind == TokenKind::DoubleArrow && !from {
                     state.stream.next();
                     key = Some(value.clone());
-                    value = Box::new(for_precedence(state, Precedence::Yield)?);
+                    value = Box::new(for_precedence(state, Precedence::Yield));
                 }
 
                 let end_span = state.stream.previous().span;
 
                 if from {
-                    Ok(Expression::new(
+                    Expression::new(
                         ExpressionKind::YieldFrom(YieldFromExpression { value }),
                         Span::new(start_span.start, end_span.end),
                         CommentGroup::default(),
-                    ))
+                    )
                 } else {
-                    Ok(Expression::new(
+                    Expression::new(
                         ExpressionKind::Yield(YieldExpression {
                             key,
                             value: Some(value),
                         }),
                         Span::new(start_span.start, end_span.end),
                         CommentGroup::default(),
-                    ))
+                    )
                 }
             }
         }
@@ -842,50 +840,50 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
             let start_span = state.stream.current().span;
             state.stream.next();
 
-            let target = for_precedence(state, Precedence::CloneOrNew)?;
+            let target = for_precedence(state, Precedence::CloneOrNew);
 
             let end_span = state.stream.previous().span;
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Clone(CloneExpression {
                     target: Box::new(target),
                 }),
                 Span::new(start_span.start, end_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::True, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Bool(BoolExpression { value: true }),
                 span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::False, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Bool(BoolExpression { value: false }),
                 span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::Null, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Null,
                 span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::LiteralInteger, _) => {
@@ -895,11 +893,11 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
             if let TokenKind::LiteralInteger = &current.kind {
                 state.stream.next();
 
-                Ok(Expression::new(
+                Expression::new(
                     ExpressionKind::Literal(Literal::new(LiteralKind::Integer, *current)),
                     span,
                     CommentGroup::default()
-                ))
+                )
             } else {
                 unreachable!("{}:{}", file!(), line!());
             }
@@ -912,11 +910,11 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
             if let TokenKind::LiteralFloat = &current.kind {
                 state.stream.next();
 
-                Ok(Expression::new(
+                Expression::new(
                     ExpressionKind::Literal(Literal::new(LiteralKind::Float, *current)),
                     span,
                     CommentGroup::default(),
-                ))
+                )
             } else {
                 unreachable!("{}:{}", file!(), line!());
             }
@@ -929,19 +927,19 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
             if let TokenKind::LiteralSingleQuotedString = &current.kind {
                 state.stream.next();
 
-                Ok(Expression::new(
+                Expression::new(
                     ExpressionKind::Literal(Literal::new(LiteralKind::String, *current)),
                     span,
                     CommentGroup::default(),
-                ))
+                )
             } else if let TokenKind::LiteralDoubleQuotedString = &current.kind {
                 state.stream.next();
 
-                Ok(Expression::new(
+                Expression::new(
                     ExpressionKind::Literal(Literal::new(LiteralKind::String, *current)),
                     span,
                     CommentGroup::default(),
-                ))
+                )
             } else {
                 unreachable!("{}:{}", file!(), line!());
             }
@@ -961,14 +959,14 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
             | TokenKind::FullyQualifiedIdentifier,
             _,
         ) => {
-            let identifier = identifiers::full_name(state)?;
+            let identifier = identifiers::full_name(state);
             let identifier_span = identifier.token.span;
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier)),
                 identifier_span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::Static, _) => {
@@ -983,33 +981,33 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Self_,
                 span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::Parent, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Parent,
                 span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::LeftParen, _) => {
             let start = state.stream.current().span;
             state.stream.next();
 
-            let expr = create(state)?;
+            let expr = create(state);
 
-            let end = utils::skip_right_parenthesis(state)?;
+            let end = utils::skip_right_parenthesis(state);
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Parenthesized(ParenthesizedExpression {
                     start,
                     expr: Box::new(expr),
@@ -1017,7 +1015,7 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
                 }),
                 Span::new(start.start, end.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::Match, _) => control_flow::match_expression(state),
@@ -1092,16 +1090,16 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
                         CommentGroup::default(),
                     )
                 }
-                _ => clone_or_new_precedence(state)?,
+                _ => clone_or_new_precedence(state),
             };
 
             let arguments = if state.stream.current().kind == TokenKind::LeftParen {
-                Some(parameters::argument_list(state)?)
+                Some(parameters::argument_list(state))
             } else {
                 None
             };
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::New(NewExpression {
                     target: Box::new(target),
                     new,
@@ -1109,106 +1107,106 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
                 }),
                 Span::new(new.start, current_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::DirConstant, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::MagicConstant(MagicConstantExpression::Directory(span)),
                 span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::FileConstant, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::MagicConstant(MagicConstantExpression::File(span)),
                 span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::LineConstant, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::MagicConstant(MagicConstantExpression::Line(span)),
                 span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::FunctionConstant, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::MagicConstant(MagicConstantExpression::Function(span)),
                 span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::ClassConstant, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::MagicConstant(MagicConstantExpression::Class(span)),
                 span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::MethodConstant, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::MagicConstant(MagicConstantExpression::Method(span)),
                 span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::NamespaceConstant, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::MagicConstant(MagicConstantExpression::Namespace(span)),
                 span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::TraitConstant, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::MagicConstant(MagicConstantExpression::Trait(span)),
                 span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::CompilerHaltOffsetConstant, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::MagicConstant(MagicConstantExpression::CompilerHaltOffset(span)),
                 span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (
@@ -1224,7 +1222,7 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
 
             state.stream.next();
 
-            let path = Box::new(create(state)?);
+            let path = Box::new(create(state));
 
             let kind = match current.kind {
                 TokenKind::Include => ExpressionKind::Include(IncludeExpression {
@@ -1248,11 +1246,11 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
 
             let end_span = state.stream.previous().span;
 
-            Ok(Expression::new(
+            Expression::new(
                 kind,
                 Span::new(start_span.start, end_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (
@@ -1277,10 +1275,10 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
 
             state.stream.next();
 
-            let rhs = for_precedence(state, Precedence::Prefix)?;
+            let rhs = for_precedence(state, Precedence::Prefix);
             let rhs_span = rhs.span;
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::Cast(CastExpression {
                     cast: span,
                     kind,
@@ -1288,7 +1286,7 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
                 }),
                 Span::new(span.start, rhs_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::Decrement | TokenKind::Increment | TokenKind::Minus | TokenKind::Plus, _) => {
@@ -1300,7 +1298,7 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
 
             state.stream.next();
 
-            let right = Box::new(for_precedence(state, Precedence::Prefix)?);
+            let right = Box::new(for_precedence(state, Precedence::Prefix));
             let right_span = right.span;
             let expr =
                 match op {
@@ -1325,11 +1323,11 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
                     _ => unreachable!(),
                 };
 
-            Ok(Expression::new(
+            Expression::new(
                 expr,
                 Span::new(start_span.start, right_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::Bang, _) => {
@@ -1338,17 +1336,17 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
 
             state.stream.next();
 
-            let rhs = for_precedence(state, Precedence::Bang)?;
+            let rhs = for_precedence(state, Precedence::Bang);
             let end_span = rhs.span;
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::LogicalOperation(LogicalOperationExpression::Not {
                     bang,
                     right: Box::new(rhs),
                 }),
                 Span::new(start_span.start, end_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::At, _) => {
@@ -1356,17 +1354,17 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
 
             state.stream.next();
 
-            let rhs = for_precedence(state, Precedence::Prefix)?;
+            let rhs = for_precedence(state, Precedence::Prefix);
             let end_span = rhs.span;
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::ErrorSuppress(ErrorSuppressExpression {
                     at: span,
                     expr: Box::new(rhs),
                 }),
                 Span::new(span.start, end_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::BitwiseNot, _) => {
@@ -1374,47 +1372,47 @@ fn left(state: &mut State, precedence: &Precedence) -> ParseResult<Expression> {
 
             state.stream.next();
 
-            let right = Box::new(for_precedence(state, Precedence::Prefix)?);
+            let right = Box::new(for_precedence(state, Precedence::Prefix));
             let end_span = right.span;
 
-            Ok(Expression::new(
+            Expression::new(
                 ExpressionKind::BitwiseOperation(BitwiseOperationExpression::Not {
                     not: span,
                     right,
                 }),
                 Span::new(span.start, end_span.end),
                 CommentGroup::default(),
-            ))
+            )
         }
 
         (TokenKind::Dollar | TokenKind::DollarLeftBrace | TokenKind::Variable, _) => {
             let span = state.stream.current().span;
 
-            Ok(Expression::new(
-                ExpressionKind::Variable(variables::dynamic_variable(state)?),
+            Expression::new(
+                ExpressionKind::Variable(variables::dynamic_variable(state)),
                 span,
                 CommentGroup::default(),
-            ))
+            )
         }
 
         _ => unexpected_token(state, precedence),
     }
 }
 
-fn unexpected_token(state: &mut State, _: &Precedence) -> ParseResult<Expression> {
+fn unexpected_token(state: &mut State, _: &Precedence) -> Expression {
     let current = state.stream.current();
 
     todo!("tolerant mode")
 }
 
-fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Expression> {
+fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
     let start_span = state.stream.current().span;
     let kind = match op {
         TokenKind::DoubleQuestion => {
             let double_question = state.stream.current().span;
             state.stream.next();
 
-            let rhs = null_coalesce_precedence(state)?;
+            let rhs = null_coalesce_precedence(state);
 
             ExpressionKind::Coalesce(CoalesceExpression {
                 lhs: Box::new(lhs),
@@ -1427,9 +1425,9 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
             if state.stream.lookahead(0).kind == TokenKind::Ellipsis
                 && state.stream.lookahead(1).kind == TokenKind::RightParen
             {
-                let start = utils::skip(state, TokenKind::LeftParen)?;
-                let ellipsis = utils::skip(state, TokenKind::Ellipsis)?;
-                let end = utils::skip(state, TokenKind::RightParen)?;
+                let start = utils::skip(state, TokenKind::LeftParen);
+                let ellipsis = utils::skip(state, TokenKind::Ellipsis);
+                let end = utils::skip(state, TokenKind::RightParen);
 
                 let placeholder = ArgumentPlaceholder {
                     comments: state.stream.comments(),
@@ -1443,7 +1441,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                     placeholder,
                 })
             } else {
-                let arguments = parameters::argument_list(state)?;
+                let arguments = parameters::argument_list(state);
 
                 ExpressionKind::FunctionCall(FunctionCallExpression {
                     target: Box::new(lhs),
@@ -1453,26 +1451,26 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
         }
         TokenKind::LeftBracket => ExpressionKind::ArrayIndex(ArrayIndexExpression {
             array: Box::new(lhs),
-            left_bracket: utils::skip_left_bracket(state)?,
+            left_bracket: utils::skip_left_bracket(state),
             index: if state.stream.current().kind == TokenKind::RightBracket {
                 None
             } else {
-                Some(create(state).map(Box::new)?)
+                Some(Box::new(create(state)))
             },
-            right_bracket: utils::skip_right_bracket(state)?,
+            right_bracket: utils::skip_right_bracket(state),
         }),
         TokenKind::DoubleColon => {
-            let span = utils::skip_double_colon(state)?;
+            let span = utils::skip_double_colon(state);
 
             let current = state.stream.current();
 
             let property = match current.kind {
                 TokenKind::Variable | TokenKind::Dollar | TokenKind::DollarLeftBrace => {
-                    ExpressionKind::Variable(variables::dynamic_variable(state)?)
+                    ExpressionKind::Variable(variables::dynamic_variable(state))
                 }
                 _ if identifiers::is_identifier_maybe_reserved(&state.stream.current().kind) => {
                     ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                        identifiers::identifier_maybe_reserved(state)?,
+                        identifiers::identifier_maybe_reserved(state),
                     ))
                 }
                 TokenKind::LeftBrace => {
@@ -1480,8 +1478,8 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
 
                     state.stream.next();
 
-                    let expr = Box::new(create(state)?);
-                    let end = utils::skip_right_brace(state)?;
+                    let expr = Box::new(create(state));
+                    let end = utils::skip_right_brace(state);
 
                     let span = Span::new(start.start, end.end);
 
@@ -1506,9 +1504,9 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                 if state.stream.lookahead(0).kind == TokenKind::Ellipsis
                     && state.stream.lookahead(1).kind == TokenKind::RightParen
                 {
-                    let start = utils::skip(state, TokenKind::LeftParen)?;
-                    let ellipsis = utils::skip(state, TokenKind::Ellipsis)?;
-                    let end = utils::skip(state, TokenKind::RightParen)?;
+                    let start = utils::skip(state, TokenKind::LeftParen);
+                    let ellipsis = utils::skip(state, TokenKind::Ellipsis);
+                    let end = utils::skip(state, TokenKind::RightParen);
 
                     let placeholder = ArgumentPlaceholder {
                         comments: state.stream.comments(),
@@ -1541,7 +1539,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                         _ => unreachable!(),
                     }
                 } else {
-                    let arguments = parameters::argument_list(state)?;
+                    let arguments = parameters::argument_list(state);
 
                     match property {
                         ExpressionKind::Identifier(identifier) => {
@@ -1592,7 +1590,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
             let property = match state.stream.current().kind {
                 TokenKind::Variable | TokenKind::Dollar | TokenKind::DollarLeftBrace => {
                     let start_span = state.stream.current().span;
-                    let kind = ExpressionKind::Variable(variables::dynamic_variable(state)?);
+                    let kind = ExpressionKind::Variable(variables::dynamic_variable(state));
                     let end_span = state.stream.previous().span;
 
                     Expression::new(
@@ -1604,7 +1602,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                 _ if identifiers::is_identifier_maybe_reserved(&state.stream.current().kind) => {
                     let start_span = state.stream.current().span;
                     let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                        identifiers::identifier_maybe_reserved(state)?,
+                        identifiers::identifier_maybe_reserved(state),
                     ));
                     let end_span = state.stream.previous().span;
 
@@ -1618,9 +1616,9 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                     let start = state.stream.current().span;
                     state.stream.next();
 
-                    let name = create(state)?;
+                    let name = create(state);
 
-                    let end = utils::skip_right_brace(state)?;
+                    let end = utils::skip_right_brace(state);
                     let span = Span::new(start.start, end.end);
 
                     Expression::new(
@@ -1641,7 +1639,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
 
             if state.stream.current().kind == TokenKind::LeftParen {
                 if op == &TokenKind::QuestionArrow {
-                    let arguments = parameters::argument_list(state)?;
+                    let arguments = parameters::argument_list(state);
 
                     ExpressionKind::NullsafeMethodCall(NullsafeMethodCallExpression {
                         target: Box::new(lhs),
@@ -1654,9 +1652,9 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                     if state.stream.lookahead(0).kind == TokenKind::Ellipsis
                         && state.stream.lookahead(1).kind == TokenKind::RightParen
                     {
-                        let start = utils::skip(state, TokenKind::LeftParen)?;
-                        let ellipsis = utils::skip(state, TokenKind::Ellipsis)?;
-                        let end = utils::skip(state, TokenKind::RightParen)?;
+                        let start = utils::skip(state, TokenKind::LeftParen);
+                        let ellipsis = utils::skip(state, TokenKind::Ellipsis);
+                        let end = utils::skip(state, TokenKind::RightParen);
 
                         let placeholder = ArgumentPlaceholder {
                             comments: state.stream.comments(),
@@ -1672,7 +1670,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                             placeholder,
                         })
                     } else {
-                        let arguments = parameters::argument_list(state)?;
+                        let arguments = parameters::argument_list(state);
 
                         ExpressionKind::MethodCall(MethodCallExpression {
                             target: Box::new(lhs),
@@ -1714,16 +1712,16 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> ParseResult<Ex
                 decrement: span,
             })
         }
-        _ => todo!("postfix: {:?}", op),
+        _ => todo!("postfix: {:}", op),
     };
 
     let end_span = state.stream.previous().span;
 
-    Ok(Expression::new(
+    Expression::new(
         kind,
         Span::new(start_span.start, end_span.end),
         CommentGroup::default(),
-    ))
+    )
 }
 
 fn is_infix(t: &TokenKind) -> bool {

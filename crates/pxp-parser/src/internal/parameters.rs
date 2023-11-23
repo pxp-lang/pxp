@@ -1,5 +1,3 @@
-use crate::error;
-use crate::error::ParseResult;
 use crate::expressions;
 use crate::internal::attributes;
 use crate::internal::data_type;
@@ -17,15 +15,15 @@ use pxp_ast::functions::FunctionParameterList;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_token::TokenKind;
 
-pub fn function_parameter_list(state: &mut State) -> ParseResult<FunctionParameterList> {
+pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
     let comments = state.stream.comments();
-    let left_parenthesis = utils::skip_left_parenthesis(state)?;
+    let left_parenthesis = utils::skip_left_parenthesis(state);
     let parameters = utils::comma_separated(
         state,
         &|state| {
-            attributes::gather_attributes(state)?;
+            attributes::gather_attributes(state);
 
-            let ty = data_type::optional_data_type(state)?;
+            let ty = data_type::optional_data_type(state);
 
             let mut current = state.stream.current();
             let ampersand = if current.kind == TokenKind::Ampersand {
@@ -45,15 +43,15 @@ pub fn function_parameter_list(state: &mut State) -> ParseResult<FunctionParamet
             };
 
             // 2. Then expect a variable.
-            let var = variables::simple_variable(state)?;
+            let var = variables::simple_variable(state);
 
             let mut default = None;
             if state.stream.current().kind == TokenKind::Equals {
                 state.stream.next();
-                default = Some(expressions::create(state)?);
+                default = Some(expressions::create(state));
             }
 
-            Ok(FunctionParameter {
+            FunctionParameter {
                 comments: state.stream.comments(),
                 name: var,
                 attributes: state.get_attributes(),
@@ -61,36 +59,36 @@ pub fn function_parameter_list(state: &mut State) -> ParseResult<FunctionParamet
                 ellipsis,
                 default,
                 ampersand,
-            })
+            }
         },
         TokenKind::RightParen,
-    )?;
+    );
 
-    let right_parenthesis = utils::skip_right_parenthesis(state)?;
+    let right_parenthesis = utils::skip_right_parenthesis(state);
 
-    Ok(FunctionParameterList {
+    FunctionParameterList {
         comments,
         left_parenthesis,
         parameters,
         right_parenthesis,
-    })
+    }
 }
 
 pub fn constructor_parameter_list(
     state: &mut State,
     class: Option<&SimpleIdentifier>,
-) -> ParseResult<ConstructorParameterList> {
+) -> ConstructorParameterList {
     let comments = state.stream.comments();
 
-    let left_parenthesis = utils::skip_left_parenthesis(state)?;
+    let left_parenthesis = utils::skip_left_parenthesis(state);
     let parameters = utils::comma_separated::<ConstructorParameter>(
         state,
         &|state| {
-            attributes::gather_attributes(state)?;
+            attributes::gather_attributes(state);
 
-            let modifiers = modifiers::promoted_property_group(modifiers::collect(state)?)?;
+            let modifiers = modifiers::promoted_property_group(modifiers::collect(state));
 
-            let ty = data_type::optional_data_type(state)?;
+            let ty = data_type::optional_data_type(state);
 
             let mut current = state.stream.current();
             let ampersand = if matches!(current.kind, TokenKind::Ampersand) {
@@ -105,7 +103,7 @@ pub fn constructor_parameter_list(
 
             let (ellipsis, var) = if matches!(current.kind, TokenKind::Ellipsis) {
                 state.stream.next();
-                let var = variables::simple_variable(state)?;
+                let var = variables::simple_variable(state);
                 if !modifiers.is_empty() {
                     todo!("tolerant mode")
                     // return Err(error::variadic_promoted_property(
@@ -119,7 +117,7 @@ pub fn constructor_parameter_list(
 
                 (Some(current.span), var)
             } else {
-                (None, variables::simple_variable(state)?)
+                (None, variables::simple_variable(state))
             };
 
             // 2. Then expect a variable.
@@ -154,10 +152,10 @@ pub fn constructor_parameter_list(
             let mut default = None;
             if state.stream.current().kind == TokenKind::Equals {
                 state.stream.next();
-                default = Some(expressions::create(state)?);
+                default = Some(expressions::create(state));
             }
 
-            Ok(ConstructorParameter {
+            ConstructorParameter {
                 comments: state.stream.comments(),
                 name: var,
                 attributes: state.get_attributes(),
@@ -166,31 +164,31 @@ pub fn constructor_parameter_list(
                 default,
                 modifiers,
                 ampersand,
-            })
+            }
         },
         TokenKind::RightParen,
-    )?;
+    );
 
-    let right_parenthesis = utils::skip_right_parenthesis(state)?;
+    let right_parenthesis = utils::skip_right_parenthesis(state);
 
-    Ok(ConstructorParameterList {
+    ConstructorParameterList {
         comments,
         left_parenthesis,
         parameters,
         right_parenthesis,
-    })
+    }
 }
 
-pub fn argument_list(state: &mut State) -> ParseResult<ArgumentList> {
+pub fn argument_list(state: &mut State) -> ArgumentList {
     let comments = state.stream.comments();
-    let start = utils::skip_left_parenthesis(state)?;
+    let start = utils::skip_left_parenthesis(state);
 
     let mut arguments = Vec::new();
     let mut has_used_named_arguments = false;
 
     while !state.stream.is_eof() && state.stream.current().kind != TokenKind::RightParen {
         let span = state.stream.current().span;
-        let (named, argument) = argument(state)?;
+        let (named, argument) = argument(state);
         if named {
             has_used_named_arguments = true;
         } else if has_used_named_arguments {
@@ -210,29 +208,29 @@ pub fn argument_list(state: &mut State) -> ParseResult<ArgumentList> {
         }
     }
 
-    let end = utils::skip_right_parenthesis(state)?;
+    let end = utils::skip_right_parenthesis(state);
 
-    Ok(ArgumentList {
+    ArgumentList {
         comments,
         left_parenthesis: start,
         right_parenthesis: end,
         arguments,
-    })
+    }
 }
 
 pub fn single_argument(
     state: &mut State,
     required: bool,
     only_positional: bool,
-) -> Option<ParseResult<SingleArgument>> {
+) -> Option<SingleArgument> {
     let comments = state.stream.comments();
-    let start = utils::skip_left_parenthesis(state).ok()?;
+    let start = utils::skip_left_parenthesis(state);
 
     let mut first_argument = None;
 
     while !state.stream.is_eof() && state.stream.current().kind != TokenKind::RightParen {
         let span = state.stream.current().span;
-        let (named, argument) = argument(state).ok()?;
+        let (named, argument) = argument(state);
         if only_positional && named {
             todo!("tolerant mode")
             // return Some(Err(error::only_positional_arguments_are_accepted(
@@ -266,32 +264,32 @@ pub fn single_argument(
         // )));
     }
 
-    let end = utils::skip_right_parenthesis(state).ok()?;
+    let end = utils::skip_right_parenthesis(state);
 
-    first_argument.as_ref()?;
+    first_argument.as_ref();
 
-    Some(Ok(SingleArgument {
+    Some(SingleArgument {
         comments,
         left_parenthesis: start,
         right_parenthesis: end,
         argument: first_argument.unwrap(),
-    }))
+    })
 }
 
-fn argument(state: &mut State) -> ParseResult<(bool, Argument)> {
+fn argument(state: &mut State) -> (bool, Argument) {
     if identifiers::is_identifier_maybe_reserved(&state.stream.current().kind)
         && state.stream.peek().kind == TokenKind::Colon
     {
-        let name = identifiers::identifier_maybe_reserved(state)?;
-        let colon = utils::skip(state, TokenKind::Colon)?;
+        let name = identifiers::identifier_maybe_reserved(state);
+        let colon = utils::skip(state, TokenKind::Colon);
         let ellipsis = if state.stream.current().kind == TokenKind::Ellipsis {
-            Some(utils::skip(state, TokenKind::Ellipsis)?)
+            Some(utils::skip(state, TokenKind::Ellipsis))
         } else {
             None
         };
-        let value = expressions::create(state)?;
+        let value = expressions::create(state);
 
-        return Ok((
+        return (
             true,
             Argument::Named(NamedArgument {
                 comments: state.stream.comments(),
@@ -300,23 +298,23 @@ fn argument(state: &mut State) -> ParseResult<(bool, Argument)> {
                 ellipsis,
                 value,
             }),
-        ));
+        );
     }
 
     let ellipsis = if state.stream.current().kind == TokenKind::Ellipsis {
-        Some(utils::skip(state, TokenKind::Ellipsis)?)
+        Some(utils::skip(state, TokenKind::Ellipsis))
     } else {
         None
     };
 
-    let value = expressions::create(state)?;
+    let value = expressions::create(state);
 
-    Ok((
+    (
         false,
         Argument::Positional(PositionalArgument {
             comments: state.stream.comments(),
             ellipsis,
             value,
         }),
-    ))
+    )
 }

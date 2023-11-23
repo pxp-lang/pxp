@@ -1,4 +1,3 @@
-use crate::error::ParseResult;
 use crate::expressions;
 use crate::internal::identifiers;
 use crate::internal::utils;
@@ -9,16 +8,16 @@ use pxp_ast::constant::ConstantStatement;
 use pxp_ast::modifiers::ConstantModifierGroup;
 use pxp_token::TokenKind;
 
-pub fn parse(state: &mut State) -> ParseResult<ConstantStatement> {
+pub fn parse(state: &mut State) -> ConstantStatement {
     let comments = state.stream.comments();
-    let start = utils::skip(state, TokenKind::Const)?;
+    let start = utils::skip(state, TokenKind::Const);
 
     let mut entries = vec![];
 
     loop {
-        let name = identifiers::constant_identifier(state)?;
-        let span = utils::skip(state, TokenKind::Equals)?;
-        let value = expressions::create(state)?;
+        let name = identifiers::constant_identifier(state);
+        let span = utils::skip(state, TokenKind::Equals);
+        let value = expressions::create(state);
 
         entries.push(ConstantEntry {
             name,
@@ -33,31 +32,31 @@ pub fn parse(state: &mut State) -> ParseResult<ConstantStatement> {
         }
     }
 
-    let end = utils::skip_semicolon(state)?;
+    let end = utils::skip_semicolon(state);
 
-    Ok(ConstantStatement {
+    ConstantStatement {
         comments,
         r#const: start,
         entries,
         semicolon: end,
-    })
+    }
 }
 
 pub fn classish(
     state: &mut State,
     modifiers: ConstantModifierGroup,
-) -> ParseResult<ClassishConstant> {
+) -> ClassishConstant {
     let attributes = state.get_attributes();
 
     let comments = state.stream.comments();
-    let start = utils::skip(state, TokenKind::Const)?;
+    let start = utils::skip(state, TokenKind::Const);
 
     let mut entries = vec![];
 
     loop {
-        let name = identifiers::identifier_maybe_reserved(state)?;
-        let span = utils::skip(state, TokenKind::Equals)?;
-        let value = expressions::create(state)?;
+        let name = identifiers::identifier_maybe_reserved(state);
+        let span = utils::skip(state, TokenKind::Equals);
+        let value = expressions::create(state);
 
         entries.push(ConstantEntry {
             name,
@@ -72,14 +71,14 @@ pub fn classish(
         }
     }
 
-    let end = utils::skip_semicolon(state)?;
+    let end = utils::skip_semicolon(state);
 
-    Ok(ClassishConstant {
+    ClassishConstant {
         comments,
         attributes,
         modifiers,
         r#const: start,
         entries,
         semicolon: end,
-    })
+    }
 }

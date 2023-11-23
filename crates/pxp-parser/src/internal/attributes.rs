@@ -1,4 +1,3 @@
-use crate::error::ParseResult;
 use crate::internal::identifiers;
 use crate::internal::parameters;
 use crate::internal::utils;
@@ -8,9 +7,9 @@ use pxp_ast::attributes::AttributeGroup;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
-pub fn gather_attributes(state: &mut State) -> ParseResult<bool> {
+pub fn gather_attributes(state: &mut State) -> bool {
     if state.stream.current().kind != TokenKind::Attribute {
-        return Ok(false);
+        return false;
     }
 
     let start = state.stream.current().span;
@@ -20,9 +19,9 @@ pub fn gather_attributes(state: &mut State) -> ParseResult<bool> {
 
     loop {
         let start = state.stream.current().span;
-        let name = identifiers::full_type_name_including_self(state)?;
+        let name = identifiers::full_type_name_including_self(state);
         let arguments = if state.stream.current().kind == TokenKind::LeftParen {
-            Some(parameters::argument_list(state)?)
+            Some(parameters::argument_list(state))
         } else {
             None
         };
@@ -48,7 +47,7 @@ pub fn gather_attributes(state: &mut State) -> ParseResult<bool> {
         break;
     }
 
-    let end = utils::skip_right_bracket(state)?;
+    let end = utils::skip_right_bracket(state);
     let span = Span::new(start.start, end.end);
 
     state.attribute(AttributeGroup {
@@ -57,5 +56,5 @@ pub fn gather_attributes(state: &mut State) -> ParseResult<bool> {
     });
 
     // recursive, looking for multiple attribute brackets after each other.
-    gather_attributes(state).map(|_| true)
+    gather_attributes(state) || true
 }
