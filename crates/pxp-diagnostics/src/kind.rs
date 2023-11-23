@@ -14,9 +14,9 @@ impl Display for DiagnosticKind {
         match self {
             DiagnosticKind::UnexpectedToken { token } => write!(f, "unexpected token: {:?}", token),
             DiagnosticKind::ExpectedToken { expected, found } => if expected.len() == 1 {
-                write!(f, "unexpected token {:?}, expected {:?}", found, expected)
+                write!(f, "unexpected token {:?}, expected {}", found, expected.first().unwrap())
             } else {
-                write!(f, "unexpected token {:?}, expected one of {:?}", found, expected.iter().map(|kind| format!("{:?}", kind)).collect::<Vec<_>>().join(", "))
+                write!(f, "unexpected token {:?}, expected one of {}", found, expected.iter().map(|kind| format!("{}", kind)).collect::<Vec<_>>().join(", "))
             },
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
