@@ -6,6 +6,7 @@ use pxp_token::{Token, TokenKind};
 pub enum DiagnosticKind {
     UnexpectedToken { token: Token },
     ExpectedToken { expected: Vec<TokenKind>, found: Token },
+    InvalidTargetForAttributes,
     UnexpectedEndOfFile,
 }
 
@@ -18,6 +19,7 @@ impl Display for DiagnosticKind {
             } else {
                 write!(f, "unexpected token {:?}, expected one of {}", found, expected.iter().map(|kind| format!("{}", kind)).collect::<Vec<_>>().join(", "))
             },
+            DiagnosticKind::InvalidTargetForAttributes => write!(f, "invalid target for attributes"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }

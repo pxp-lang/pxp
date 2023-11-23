@@ -584,7 +584,15 @@ pub fn attributes(state: &mut State) -> Expression {
         }
         TokenKind::Function => functions::anonymous_function(state),
         TokenKind::Fn => functions::arrow_function(state),
-        _ => todo!("tolerant mode"),
+        _ => {
+            state.diagnostic(
+                DiagnosticKind::InvalidTargetForAttributes,
+                Severity::Error,
+                current.span,
+            );
+
+            Expression::missing(current.span)
+        },
     }
 }
 
