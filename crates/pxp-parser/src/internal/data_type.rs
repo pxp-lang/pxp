@@ -245,8 +245,11 @@ fn union(state: &mut State, other: Type, within_dnf: bool) -> Type {
                 //     v-- get_union_type: within_dnf = true
                 //        v-- error
                 // F&(A|B|(D&S))
-                // state.record(error::nested_disjunctive_normal_form_types(current.span));
-                todo!("tolerant mode")
+                state.diagnostic(
+                    DiagnosticKind::NestedDisjunctiveNormalFormType,
+                    Severity::Error,
+                    current.span,
+                );
             }
 
             state.stream.next();

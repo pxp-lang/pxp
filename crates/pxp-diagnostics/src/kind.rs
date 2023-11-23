@@ -14,6 +14,7 @@ pub enum DiagnosticKind {
     MissingType,
     StandaloneTypeUsedInNullableType,
     StandaloneTypeUsedInUnionType,
+    NestedDisjunctiveNormalFormType,
     UnexpectedEndOfFile,
 }
 
@@ -34,6 +35,7 @@ impl Display for DiagnosticKind {
             DiagnosticKind::MissingType => write!(f, "missing type"),
             DiagnosticKind::StandaloneTypeUsedInNullableType => write!(f, "cannot use standalone type in nullable type"),
             DiagnosticKind::StandaloneTypeUsedInUnionType => write!(f, "cannot use standalone type in union type"),
+            DiagnosticKind::NestedDisjunctiveNormalFormType => write!(f, "DNF types cannot be nested"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }
