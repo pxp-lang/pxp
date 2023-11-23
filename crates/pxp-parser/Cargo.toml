@@ -11,6 +11,7 @@ pxp-ast = { path = "../pxp-ast" }
 pxp-lexer = { path = "../pxp-lexer" }
 pxp-syntax = { path = "../pxp-syntax" }
 pxp-symbol = { path = "../pxp-symbol" }
+pxp-type = { path = "../pxp-type" }
 discoverer = "0.2.0"
 
 [[bin]]

@@ -4,8 +4,8 @@ use crate::expected_token;
 use crate::internal::utils;
 use crate::peek_token;
 use crate::state::State;
-use pxp_ast::data_type::Type;
 use pxp_token::TokenKind;
+use pxp_type::Type;
 
 pub fn data_type(state: &mut State) -> ParseResult<Type> {
     if state.stream.current().kind == TokenKind::Question {

@@ -1,7 +1,6 @@
 use std::slice::Iter;
 
 use crate::attributes::AttributeGroup;
-use crate::data_type::Type;
 use crate::identifiers::SimpleIdentifier;
 use crate::modifiers::MethodModifierGroup;
 use crate::modifiers::PromotedPropertyModifierGroup;
@@ -13,6 +12,7 @@ use crate::Statement;
 
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
+use pxp_type::Type;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

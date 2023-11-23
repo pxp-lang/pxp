@@ -42,7 +42,6 @@ pub mod attributes;
 pub mod classes;
 pub mod constant;
 pub mod control_flow;
-pub mod data_type;
 pub mod declares;
 pub mod enums;
 pub mod functions;
