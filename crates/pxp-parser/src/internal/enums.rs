@@ -16,6 +16,7 @@ use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::StatementKind;
 use pxp_diagnostics::DiagnosticKind;
 use pxp_diagnostics::Severity;
+use pxp_span::Span;
 use pxp_token::TokenKind;
 
 use super::classes::member;
@@ -163,14 +164,15 @@ fn unit_member(state: &mut State, enum_name: &SimpleIdentifier) -> Option<UnitEn
         let current = state.stream.current();
         if current.kind == TokenKind::Equals {
             // parse the value, but don't do anything with it.
-            let _ = utils::skip(state, TokenKind::Equals);
-            let _ = expressions::create(state);
-            let _ = utils::skip_semicolon(state);
+            let equals = utils::skip(state, TokenKind::Equals);
+            let expression = expressions::create(state);
+            utils::skip_semicolon(state);
 
-            // let error = error::case_value_for_unit_enum(state, enum_name, &name, current.span);
-            todo!("tolerant mode");
-
-            // state.record(error);
+            state.diagnostic(
+                DiagnosticKind::UnitEnumsCannotHaveCaseValues,
+                Severity::Error,
+                Span::new(equals.start, expression.span.end),
+            );
 
             return None;
         }
