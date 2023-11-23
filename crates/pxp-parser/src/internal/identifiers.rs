@@ -1,5 +1,5 @@
 use crate::state::State;
-use pxp_ast::identifiers::{SimpleIdentifier, Identifier};
+use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_diagnostics::{DiagnosticKind, Severity};
 use pxp_token::{TokenKind, Token};
 
@@ -10,8 +10,6 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
     match &current.kind {
         TokenKind::Identifier => {
-            let span = current.span;
-
             state.stream.next();
 
             SimpleIdentifier { token: *current }
@@ -55,8 +53,6 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
     match &current.kind {
         TokenKind::Identifier => {
-            let span = current.span;
-
             state.stream.next();
 
             SimpleIdentifier { token: *current }
@@ -104,8 +100,6 @@ pub fn constant_identifier(state: &mut State) -> SimpleIdentifier {
         | TokenKind::From
         | TokenKind::Self_
         | TokenKind::Parent => {
-            let span = current.span;
-
             state.stream.next();
 
             SimpleIdentifier { token: *current }
@@ -154,7 +148,6 @@ pub fn name(state: &mut State) -> SimpleIdentifier {
         },
     ], state, "an identifier");
 
-    let span = state.stream.current().span;
     state.stream.next();
 
     SimpleIdentifier { token: *name }
@@ -186,8 +179,6 @@ pub fn full_name(state: &mut State) -> SimpleIdentifier {
         TokenKind::Identifier
         | TokenKind::QualifiedIdentifier
         | TokenKind::FullyQualifiedIdentifier => {
-            let span = current.span;
-
             state.stream.next();
 
             SimpleIdentifier { token: *current }
@@ -206,8 +197,6 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
         TokenKind::Identifier
         | TokenKind::QualifiedIdentifier
         | TokenKind::FullyQualifiedIdentifier => {
-            let span = current.span;
-
             state.stream.next();
 
             SimpleIdentifier { token: *current }
@@ -253,8 +242,6 @@ pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
         TokenKind::Identifier
         | TokenKind::QualifiedIdentifier
         | TokenKind::FullyQualifiedIdentifier => {
-            let span = current.span;
-
             state.stream.next();
 
             SimpleIdentifier { token: *current }
