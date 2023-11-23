@@ -9,8 +9,8 @@ pub enum Severity {
 impl Severity {
     fn get_ascii_color(&self) -> &'static str {
         match self {
-            Severity::Warning => "\x1b[33m",
-            Severity::Error => "\x1b[31m",
+            Severity::Warning => "\x1b[33;1m",
+            Severity::Error => "\x1b[31;1m",
         }
     }
 
