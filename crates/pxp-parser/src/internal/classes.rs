@@ -20,6 +20,8 @@ use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::Expression;
 use pxp_ast::StatementKind;
 use pxp_ast::{ExpressionKind, NewExpression};
+use pxp_diagnostics::DiagnosticKind;
+use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
@@ -206,33 +208,27 @@ pub fn member(state: &mut State, has_abstract: bool, name: &SimpleIdentifier) ->
 
         return match method {
             Method::Abstract(method) => {
-                if has_abstract {
-                    ClassishMember::AbstractMethod(method)
-                } else {
-                    todo!("tolerant mode")
-                    // Err(error::abstract_method_on_a_non_abstract_class(
-                    //     state,
-                    //     name,
-                    //     &method.name,
-                    //     method.modifiers.get_abstract().unwrap().span(),
-                    //     method.semicolon,
-                    // ))
+                if !has_abstract {
+                    state.diagnostic(
+                        DiagnosticKind::AbstractMethodInNonAbstractClass,
+                        Severity::Error,
+                        method.modifiers.get_abstract().unwrap().span(),
+                    );
                 }
+                
+                ClassishMember::AbstractMethod(method)
             }
             Method::Concrete(method) => ClassishMember::ConcreteMethod(method),
             Method::AbstractConstructor(ctor) => {
-                if has_abstract {
-                    ClassishMember::AbstractConstructor(ctor)
-                } else {
-                    todo!("tolerant mode")
-                    // Err(error::abstract_method_on_a_non_abstract_class(
-                    //     state,
-                    //     name,
-                    //     &ctor.name,
-                    //     ctor.modifiers.get_abstract().unwrap().span(),
-                    //     ctor.semicolon,
-                    // ))
+                if !has_abstract {
+                    state.diagnostic(
+                        DiagnosticKind::AbstractMethodInNonAbstractClass,
+                        Severity::Error,
+                        ctor.modifiers.get_abstract().unwrap().span(),
+                    );
                 }
+
+                ClassishMember::AbstractConstructor(ctor)
             }
             Method::ConcreteConstructor(ctor) => ClassishMember::ConcreteConstructor(ctor),
         };

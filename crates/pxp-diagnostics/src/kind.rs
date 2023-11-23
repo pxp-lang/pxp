@@ -9,6 +9,7 @@ pub enum DiagnosticKind {
     InvalidSpreadOperator,
     InvalidTargetForAttributes,
     CannotMixKeyedAndUnkeyedListEntries,
+    AbstractMethodInNonAbstractClass,
     UnexpectedEndOfFile,
 }
 
@@ -24,6 +25,7 @@ impl Display for DiagnosticKind {
             DiagnosticKind::InvalidSpreadOperator => write!(f, "cannot use spread operator here"),
             DiagnosticKind::InvalidTargetForAttributes => write!(f, "invalid target for attributes"),
             DiagnosticKind::CannotMixKeyedAndUnkeyedListEntries => write!(f, "cannot mix keyed and unkeyed list entries"),
+            DiagnosticKind::AbstractMethodInNonAbstractClass => write!(f, "cannot declare abstract method in non-abstract class"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }
