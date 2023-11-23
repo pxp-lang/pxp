@@ -548,7 +548,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                             instanceof: span,
                             right,
                         }),
-                        _ => todo!(),
+                        _ => unreachable!(),
                     }
                 }
             };
@@ -1723,8 +1723,8 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                 left: Box::new(lhs),
                 decrement: span,
             })
-        }
-        _ => todo!("postfix: {:}", op),
+        },
+        _ => unreachable!(),
     };
 
     let end_span = state.stream.previous().span;

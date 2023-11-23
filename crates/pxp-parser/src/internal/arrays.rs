@@ -5,6 +5,8 @@ use pxp_ast::Expression;
 use pxp_ast::ExpressionKind;
 use pxp_ast::ListEntry;
 use pxp_ast::{ArrayExpression, ArrayItem, ListExpression, ShortArrayExpression};
+use pxp_diagnostics::DiagnosticKind;
+use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
@@ -33,25 +35,22 @@ pub fn list_expression(state: &mut State) -> Expression {
                 if current.kind == TokenKind::Ellipsis {
                     state.stream.next();
 
-                    // state.record(error::illegal_spread_operator_usage(current.span));
-                    todo!("tolerant mode")
-                }
-
-                if current.kind == TokenKind::Ampersand {
-                    state.stream.next();
-
-                    // state.record(error::cannot_assign_reference_to_non_referencable_value(
-                    //     current.span,
-                    // ));
-                    todo!("tolerant mode")
+                    state.diagnostic(
+                        DiagnosticKind::InvalidSpreadOperator,
+                        Severity::Error,
+                        current.span,
+                    );
                 }
 
                 let mut value = expressions::create(state);
                 current = state.stream.current();
                 if current.kind == TokenKind::DoubleArrow {
                     if !has_at_least_one_key && !items.is_empty() {
-                        // state.record(error::mixing_keyed_and_unkeyed_list_entries(current.span));
-                        todo!("tolerant mode")
+                        state.diagnostic(
+                            DiagnosticKind::CannotMixKeyedAndUnkeyedListEntries,
+                            Severity::Error,
+                            current.span,
+                        );
                     }
 
                     let double_arrow = current.span;
@@ -62,17 +61,11 @@ pub fn list_expression(state: &mut State) -> Expression {
                     if current.kind == TokenKind::Ellipsis {
                         state.stream.next();
 
-                        // state.record(error::illegal_spread_operator_usage(current.span));
-                        todo!("tolerant mode")
-                    }
-
-                    if current.kind == TokenKind::Ampersand {
-                        state.stream.next();
-
-                        // state.record(error::cannot_assign_reference_to_non_referencable_value(
-                        //     current.span,
-                        // ));
-                        todo!("tolerant mode")
+                        state.diagnostic(
+                            DiagnosticKind::InvalidSpreadOperator,
+                            Severity::Error,
+                            current.span,
+                        );
                     }
 
                     let mut key = expressions::create(state);
@@ -89,8 +82,11 @@ pub fn list_expression(state: &mut State) -> Expression {
                     has_at_least_one_key = true;
                 } else {
                     if has_at_least_one_key {
-                        // state.record(error::mixing_keyed_and_unkeyed_list_entries(current.span));
-                        todo!("tolerant mode")
+                        state.diagnostic(
+                            DiagnosticKind::CannotMixKeyedAndUnkeyedListEntries,
+                            Severity::Error,
+                            current.span,
+                        );
                     }
 
                     items.push(ListEntry::Value { value });
@@ -180,7 +176,7 @@ fn array_pair(state: &mut State) -> ArrayItem {
     let mut ampersand = if current.kind == TokenKind::Ampersand {
         state.stream.next();
 
-        Some(current.span)
+        Some(current)
     } else {
         None
     };
@@ -189,17 +185,18 @@ fn array_pair(state: &mut State) -> ArrayItem {
 
     if let Some(ellipsis) = ellipsis {
         if let Some(ampersand) = ampersand {
-            // state.record(error::cannot_assign_reference_to_non_referencable_value(
-            //     ampersand,
-            // ));
-            todo!("tolerant mode")
+            state.diagnostic(
+                DiagnosticKind::UnexpectedToken { token: *ampersand },
+                Severity::Error,
+                ampersand.span,
+            );
         }
 
         return ArrayItem::SpreadValue { ellipsis, value };
     }
 
     if let Some(ampersand) = ampersand {
-        return ArrayItem::ReferencedValue { ampersand, value };
+        return ArrayItem::ReferencedValue { ampersand: ampersand.span, value };
     }
 
     let mut current = state.stream.current();
@@ -212,14 +209,17 @@ fn array_pair(state: &mut State) -> ArrayItem {
         if current.kind == TokenKind::Ellipsis {
             state.stream.next();
 
-            // state.record(error::illegal_spread_operator_usage(current.span));
-            todo!("tolerant mode")
+            state.diagnostic(
+                DiagnosticKind::InvalidSpreadOperator,
+                Severity::Error,
+                current.span,
+            );
         }
 
         ampersand = if current.kind == TokenKind::Ampersand {
             state.stream.next();
 
-            Some(current.span)
+            Some(current)
         } else {
             None
         };
@@ -233,7 +233,7 @@ fn array_pair(state: &mut State) -> ArrayItem {
                 key,
                 double_arrow,
                 value,
-                ampersand,
+                ampersand: ampersand.span,
             },
             None => ArrayItem::KeyValue {
                 key,
