@@ -1,0 +1,1 @@
+![](/art/hero.png)
