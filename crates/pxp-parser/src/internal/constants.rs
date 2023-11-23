@@ -42,10 +42,7 @@ pub fn parse(state: &mut State) -> ConstantStatement {
     }
 }
 
-pub fn classish(
-    state: &mut State,
-    modifiers: ConstantModifierGroup,
-) -> ClassishConstant {
+pub fn classish(state: &mut State, modifiers: ConstantModifierGroup) -> ClassishConstant {
     let attributes = state.get_attributes();
 
     let comments = state.stream.comments();

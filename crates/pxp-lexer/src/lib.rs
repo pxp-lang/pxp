@@ -23,10 +23,13 @@ pub struct Lexer<'a, 'b> {
 }
 
 impl<'a, 'b> Lexer<'a, 'b> {
-    pub fn new<B: ?Sized + AsRef<[u8]>>(input: &'a B, symbol_table: &'b mut SymbolTable<'a>) -> Self {
+    pub fn new<B: ?Sized + AsRef<[u8]>>(
+        input: &'a B,
+        symbol_table: &'b mut SymbolTable<'a>,
+    ) -> Self {
         Self {
             state: State::new(Source::new(input.as_ref())),
-            symbol_table
+            symbol_table,
         }
     }
 
@@ -66,7 +69,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                     tokens.push(Token::new_with_symbol(
                         TokenKind::InlineHtml,
                         self.state.source.span(),
-                        symbol
+                        symbol,
                     ));
                     break;
                 }
@@ -108,20 +111,33 @@ impl<'a, 'b> Lexer<'a, 'b> {
             }
         }
 
-        tokens.push(Token::new_without_symbol(TokenKind::Eof, self.state.source.span()));
+        tokens.push(Token::new_without_symbol(
+            TokenKind::Eof,
+            self.state.source.span(),
+        ));
 
         Ok(tokens)
     }
 
     fn skip_whitespace(&mut self) {
-        while let Some(true) = self.state.source.current().map(|u: &u8| u.is_ascii_whitespace()) {
+        while let Some(true) = self
+            .state
+            .source
+            .current()
+            .map(|u: &u8| u.is_ascii_whitespace())
+        {
             self.state.source.next();
         }
     }
 
     fn read_and_skip_whitespace(&mut self) -> Vec<u8> {
         let mut buffer = Vec::new();
-        while let Some(true) = self.state.source.current().map(|u: &u8| u.is_ascii_whitespace()) {
+        while let Some(true) = self
+            .state
+            .source
+            .current()
+            .map(|u: &u8| u.is_ascii_whitespace())
+        {
             buffer.push(*self.state.source.current().unwrap());
             self.state.source.next();
         }
@@ -142,7 +158,8 @@ impl<'a, 'b> Lexer<'a, 'b> {
                     tokens.push(Token::new_with_symbol(
                         TokenKind::InlineHtml,
                         inline_span,
-                        self.symbol_table.intern(self.state.source.span_range(inline_span)),
+                        self.symbol_table
+                            .intern(self.state.source.span_range(inline_span)),
                     ));
                 }
 
@@ -166,7 +183,8 @@ impl<'a, 'b> Lexer<'a, 'b> {
                     tokens.push(Token::new_with_symbol(
                         TokenKind::InlineHtml,
                         inline_span,
-                        self.symbol_table.intern(self.state.source.span_range(inline_span)),
+                        self.symbol_table
+                            .intern(self.state.source.span_range(inline_span)),
                     ));
                 }
 
@@ -189,7 +207,8 @@ impl<'a, 'b> Lexer<'a, 'b> {
                     tokens.push(Token::new_with_symbol(
                         TokenKind::InlineHtml,
                         inline_span,
-                        self.symbol_table.intern(self.state.source.span_range(inline_span)),
+                        self.symbol_table
+                            .intern(self.state.source.span_range(inline_span)),
                     ));
                 }
 
@@ -209,7 +228,8 @@ impl<'a, 'b> Lexer<'a, 'b> {
         tokens.push(Token::new_with_symbol(
             TokenKind::InlineHtml,
             inline_span,
-            self.symbol_table.intern(self.state.source.span_range(inline_span)),
+            self.symbol_table
+                .intern(self.state.source.span_range(inline_span)),
         ));
 
         Ok(())
@@ -354,7 +374,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                         span.end = ident_span.end;
 
                         (TokenKind::FullyQualifiedIdentifier, true)
-                    },
+                    }
                     Token {
                         kind: TokenKind::False,
                         span: ident_span,
@@ -363,7 +383,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                         span.end = ident_span.end;
 
                         (TokenKind::FullyQualifiedIdentifier, true)
-                    },
+                    }
                     Token {
                         kind: TokenKind::Null,
                         span: ident_span,
@@ -372,7 +392,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                         span.end = ident_span.end;
 
                         (TokenKind::FullyQualifiedIdentifier, true)
-                    },
+                    }
                     s => unreachable!("{:?}", s),
                 }
             }
@@ -390,7 +410,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                         [b'*', b'*', b'\n'] => {
                             self.state.source.skip(2);
                             kind = TokenKind::DocumentComment;
-                        },
+                        }
                         [b'*', b'/', ..] => {
                             self.state.source.skip(2);
                             break;
@@ -482,9 +502,10 @@ impl<'a, 'b> Lexer<'a, 'b> {
                     Some(_) => self.consume_identifier().into(),
                     None => {
                         return match self.state.source.current() {
-                            Some(c) => {
-                                Err(SyntaxError::UnexpectedCharacter(*c, self.state.source.span()))
-                            }
+                            Some(c) => Err(SyntaxError::UnexpectedCharacter(
+                                *c,
+                                self.state.source.span(),
+                            )),
                             None => Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
                         }
                     }
@@ -574,7 +595,11 @@ impl<'a, 'b> Lexer<'a, 'b> {
                 self.state.source.next();
 
                 // Inlined so we can add whitespace to the buffer.
-                while let Some(true) = self.state.source.current().map(|u: &u8| u.is_ascii_whitespace())
+                while let Some(true) = self
+                    .state
+                    .source
+                    .current()
+                    .map(|u: &u8| u.is_ascii_whitespace())
                 {
                     self.state.source.next();
                 }
@@ -831,7 +856,11 @@ impl<'a, 'b> Lexer<'a, 'b> {
                                 self.state.source.skip(3);
                                 self.state.replace(StackFrame::Halted);
                             }
-                            _ => return Err(SyntaxError::InvalidHaltCompiler(self.state.source.span())),
+                            _ => {
+                                return Err(SyntaxError::InvalidHaltCompiler(
+                                    self.state.source.span(),
+                                ))
+                            }
                         }
                     }
 
@@ -851,10 +880,14 @@ impl<'a, 'b> Lexer<'a, 'b> {
 
         let span = self.state.source.span();
 
-        Ok(Token::new(kind, span, match with_symbol {
-            true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
-            false => None
-        }))
+        Ok(Token::new(
+            kind,
+            span,
+            match with_symbol {
+                true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+                false => None,
+            },
+        ))
     }
 
     fn double_quote(&mut self, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
@@ -868,11 +901,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                     self.state.source.start_token();
                     self.state.source.skip(2);
                     self.state.enter(StackFrame::LookingForVarname);
-                    break (
-                        TokenKind::DollarLeftBrace,
-                        false,
-                        self.state.source.span(),
-                    );
+                    break (TokenKind::DollarLeftBrace, false, self.state.source.span());
                 }
                 [b'{', b'$', ..] => {
                     buffer_span = Some(self.state.source.span());
@@ -996,23 +1025,26 @@ impl<'a, 'b> Lexer<'a, 'b> {
             tokens.push(Token::new_with_symbol(
                 TokenKind::StringPart,
                 buffer_span,
-                self.symbol_table.intern(self.state.source.span_range(buffer_span)),  
+                self.symbol_table
+                    .intern(self.state.source.span_range(buffer_span)),
             ));
         }
 
-        tokens.push(
-            Token::new(kind, span, match with_symbol {
+        tokens.push(Token::new(
+            kind,
+            span,
+            match with_symbol {
                 true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
                 false => None,
-            })
-        );
+            },
+        ));
 
         Ok(())
     }
 
     fn shell_exec(&mut self, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
         let mut buffer_span = None;
-        
+
         let (kind, with_symbol) = loop {
             match self.state.source.read(2) {
                 [b'$', b'{'] => {
@@ -1065,24 +1097,25 @@ impl<'a, 'b> Lexer<'a, 'b> {
             tokens.push(Token::new_with_symbol(
                 TokenKind::StringPart,
                 buffer_span,
-                self.symbol_table.intern(self.state.source.span_range(buffer_span)),
+                self.symbol_table
+                    .intern(self.state.source.span_range(buffer_span)),
             ))
         }
 
         let span = self.state.source.span();
-        tokens.push(Token::new(kind, span, match with_symbol {
-            true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
-            false => None
-        }));
+        tokens.push(Token::new(
+            kind,
+            span,
+            match with_symbol {
+                true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+                false => None,
+            },
+        ));
 
         Ok(())
     }
 
-    fn heredoc(
-        &mut self,
-        tokens: &mut Vec<Token>,
-        label: ByteString,
-    ) -> SyntaxResult<()> {
+    fn heredoc(&mut self, tokens: &mut Vec<Token>, label: ByteString) -> SyntaxResult<()> {
         let mut buffer: Vec<u8> = Vec::new();
         #[allow(unused_assignments)]
         let mut buffer_span = None;
@@ -1266,7 +1299,9 @@ impl<'a, 'b> Lexer<'a, 'b> {
                         if whitespace_kind != DocStringIndentationKind::None
                             && !extra_whitespace_buffer.is_empty()
                         {
-                            return Err(SyntaxError::InvalidDocIndentation(self.state.source.span()));
+                            return Err(SyntaxError::InvalidDocIndentation(
+                                self.state.source.span(),
+                            ));
                         }
 
                         buffer_span = Some(self.state.source.span());
@@ -1317,24 +1352,25 @@ impl<'a, 'b> Lexer<'a, 'b> {
             tokens.push(Token::new_with_symbol(
                 TokenKind::StringPart,
                 buffer_span,
-                self.symbol_table.intern(self.state.source.span_range(buffer_span)),
+                self.symbol_table
+                    .intern(self.state.source.span_range(buffer_span)),
             ));
         }
 
         let span = self.state.source.span();
-        tokens.push(Token::new(kind, span, match with_symbol {
-            true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
-            false => None
-        }));
+        tokens.push(Token::new(
+            kind,
+            span,
+            match with_symbol {
+                true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+                false => None,
+            },
+        ));
 
         Ok(())
     }
 
-    fn nowdoc(
-        &mut self,
-        tokens: &mut Vec<Token>,
-        label: ByteString,
-    ) -> SyntaxResult<()> {
+    fn nowdoc(&mut self, tokens: &mut Vec<Token>, label: ByteString) -> SyntaxResult<()> {
         #[allow(unused_assignments)]
         let mut buffer_span = None;
         let mut buffer: Vec<u8> = Vec::new();
@@ -1396,7 +1432,9 @@ impl<'a, 'b> Lexer<'a, 'b> {
                         if whitespace_kind != DocStringIndentationKind::None
                             && !extra_whitespace_buffer.is_empty()
                         {
-                            return Err(SyntaxError::InvalidDocIndentation(self.state.source.span()));
+                            return Err(SyntaxError::InvalidDocIndentation(
+                                self.state.source.span(),
+                            ));
                         }
 
                         buffer_span = Some(self.state.source.span());
@@ -1447,16 +1485,21 @@ impl<'a, 'b> Lexer<'a, 'b> {
             tokens.push(Token::new_with_symbol(
                 TokenKind::StringPart,
                 buffer_span,
-                self.symbol_table.intern(self.state.source.span_range(buffer_span)),
+                self.symbol_table
+                    .intern(self.state.source.span_range(buffer_span)),
             ));
         }
 
         let span = self.state.source.span();
 
-        tokens.push(Token::new(kind, span, match with_symbol {
-            true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
-            false => None
-        }));
+        tokens.push(Token::new(
+            kind,
+            span,
+            match with_symbol {
+                true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+                false => None,
+            },
+        ));
 
         Ok(())
     }
@@ -1503,10 +1546,14 @@ impl<'a, 'b> Lexer<'a, 'b> {
 
         let span = self.state.source.span();
 
-        Ok(Token::new(kind, span, match with_symbol {
-            true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
-            false => None
-        }))
+        Ok(Token::new(
+            kind,
+            span,
+            match with_symbol {
+                true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+                false => None,
+            },
+        ))
     }
 
     fn var_offset(&mut self) -> SyntaxResult<Token> {
@@ -1541,15 +1588,17 @@ impl<'a, 'b> Lexer<'a, 'b> {
 
         let span = self.state.source.span();
 
-        Ok(Token::new(kind, span, match with_symbol {
-            true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
-            false => None
-        }))
+        Ok(Token::new(
+            kind,
+            span,
+            match with_symbol {
+                true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+                false => None,
+            },
+        ))
     }
 
-    fn tokenize_single_quote_string(
-        &mut self,
-    ) -> SyntaxResult<TokenKind> {
+    fn tokenize_single_quote_string(&mut self) -> SyntaxResult<TokenKind> {
         loop {
             match self.state.source.read(2) {
                 [b'\'', ..] => {
@@ -1569,9 +1618,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
         Ok(TokenKind::LiteralSingleQuotedString)
     }
 
-    fn tokenize_double_quote_string(
-        &mut self,
-    ) -> SyntaxResult<TokenKind> {
+    fn tokenize_double_quote_string(&mut self) -> SyntaxResult<TokenKind> {
         self.state.source.start_token();
 
         let constant = loop {
@@ -1736,7 +1783,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
         );
 
         if !is_float {
-            return Ok(TokenKind::LiteralInteger)
+            return Ok(TokenKind::LiteralInteger);
         }
 
         if let Some(b'.') = self.state.source.current() {
@@ -1766,10 +1813,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
         };
     }
 
-    fn read_digits_fn<F: Fn(&u8) -> bool>(
-        &mut self,
-        is_digit: F,
-    ) {
+    fn read_digits_fn<F: Fn(&u8) -> bool>(&mut self, is_digit: F) {
         if let Some(b) = self.state.source.current() {
             if is_digit(b) {
                 self.state.source.next();
@@ -1897,9 +1941,9 @@ enum NumberKind {
 
 #[cfg(test)]
 mod tests {
-    use pxp_symbol::SymbolTable;
-    use pxp_token::{Token, TokenKind, OpenTagKind, DocStringKind, DocStringIndentationKind};
     use super::Lexer;
+    use pxp_symbol::SymbolTable;
+    use pxp_token::{DocStringIndentationKind, DocStringKind, OpenTagKind, Token, TokenKind};
 
     #[test]
     fn it_can_tokenize_keywords() {
@@ -1907,24 +1951,87 @@ mod tests {
 
         let tokens = tokenise("<?php die self parent from print readonly global abstract as break case catch class clone const continue declare default do echo else elseif empty enddeclare endfor endforeach endif endswitch endwhile enum extends false final finally fn for foreach function goto if implements include include_once instanceof insteadof eval exit unset isset list interface match namespace new null private protected public require require_once return static switch throw trait true try use var yield while and or xor").iter().map(|t| t.kind).collect::<Vec<_>>();
 
-        assert_eq!(&tokens, &[
-            OpenTag(OpenTagKind::Full),
-            Die,
-            Self_,
-            Parent,
-            From,
-            Print,
-            Readonly,
-            Global,
-            Abstract,
-            As, Break, Case, Catch, Class, Clone, Const, Continue, Declare, Default, Do, Echo, Else, ElseIf,
-            Empty, EndDeclare, EndFor, EndForeach, EndIf,
-            EndSwitch, EndWhile, Enum, Extends, False, Final, Finally, Fn, For, Foreach, Function, Goto, If, Implements,
-            Include, IncludeOnce, Instanceof, Insteadof, Eval, Exit, Unset, Isset, List, Interface, Match, Namespace,
-            New, Null, Private, Protected, Public, Require, RequireOnce, Return, Static, Switch, Throw, Trait, True,
-            Try, Use, Var, Yield, While, LogicalAnd, LogicalOr, LogicalXor,
-            Eof,
-        ]);
+        assert_eq!(
+            &tokens,
+            &[
+                OpenTag(OpenTagKind::Full),
+                Die,
+                Self_,
+                Parent,
+                From,
+                Print,
+                Readonly,
+                Global,
+                Abstract,
+                As,
+                Break,
+                Case,
+                Catch,
+                Class,
+                Clone,
+                Const,
+                Continue,
+                Declare,
+                Default,
+                Do,
+                Echo,
+                Else,
+                ElseIf,
+                Empty,
+                EndDeclare,
+                EndFor,
+                EndForeach,
+                EndIf,
+                EndSwitch,
+                EndWhile,
+                Enum,
+                Extends,
+                False,
+                Final,
+                Finally,
+                Fn,
+                For,
+                Foreach,
+                Function,
+                Goto,
+                If,
+                Implements,
+                Include,
+                IncludeOnce,
+                Instanceof,
+                Insteadof,
+                Eval,
+                Exit,
+                Unset,
+                Isset,
+                List,
+                Interface,
+                Match,
+                Namespace,
+                New,
+                Null,
+                Private,
+                Protected,
+                Public,
+                Require,
+                RequireOnce,
+                Return,
+                Static,
+                Switch,
+                Throw,
+                Trait,
+                True,
+                Try,
+                Use,
+                Var,
+                Yield,
+                While,
+                LogicalAnd,
+                LogicalOr,
+                LogicalXor,
+                Eof,
+            ]
+        );
     }
 
     #[test]
@@ -1933,21 +2040,24 @@ mod tests {
 
         let tokens = tokenise("<?php (int) (integer) (bool) (boolean) (float) (double) (real) (string) (array) (object) (unset)").iter().map(|t| t.kind).collect::<Vec<_>>();
 
-        assert_eq!(&tokens, &[
-            OpenTag(OpenTagKind::Full),
-            IntCast,
-            IntegerCast,
-            BoolCast,
-            BooleanCast,
-            FloatCast,
-            DoubleCast,
-            RealCast,
-            StringCast,
-            ArrayCast,
-            ObjectCast,
-            UnsetCast,
-            Eof,
-        ]);
+        assert_eq!(
+            &tokens,
+            &[
+                OpenTag(OpenTagKind::Full),
+                IntCast,
+                IntegerCast,
+                BoolCast,
+                BooleanCast,
+                FloatCast,
+                DoubleCast,
+                RealCast,
+                StringCast,
+                ArrayCast,
+                ObjectCast,
+                UnsetCast,
+                Eof,
+            ]
+        );
     }
 
     #[test]
@@ -1956,21 +2066,24 @@ mod tests {
 
         let tokens = tokenise("<?php (int    ) (integer  ) (bool  ) (boolean) (float ) (double   ) (real    ) (string ) (array   ) (object   ) (  unset  )").iter().map(|t| t.kind).collect::<Vec<_>>();
 
-        assert_eq!(&tokens, &[
-            OpenTag(OpenTagKind::Full),
-            IntCast,
-            IntegerCast,
-            BoolCast,
-            BooleanCast,
-            FloatCast,
-            DoubleCast,
-            RealCast,
-            StringCast,
-            ArrayCast,
-            ObjectCast,
-            UnsetCast,
-            Eof,
-        ]);
+        assert_eq!(
+            &tokens,
+            &[
+                OpenTag(OpenTagKind::Full),
+                IntCast,
+                IntegerCast,
+                BoolCast,
+                BooleanCast,
+                FloatCast,
+                DoubleCast,
+                RealCast,
+                StringCast,
+                ArrayCast,
+                ObjectCast,
+                UnsetCast,
+                Eof,
+            ]
+        );
     }
 
     #[test]
@@ -1979,109 +2092,196 @@ mod tests {
 
         let tokens = tokenise("<?php + - * / % ** = += -= *= /= .= %= **= &= |= ^= <<= >>= <=> == === != <> !== > < >= <= <=> ?? ! && || ??= and or xor . -> :: ++ -- ?? ! and or xor").iter().map(|t| t.kind).collect::<Vec<_>>();
 
-        assert_eq!(&tokens, &[
-            OpenTag(OpenTagKind::Full),
-            Plus, Minus, Asterisk, Slash, Percent, Pow, Equals, PlusEquals, MinusEquals, AsteriskEquals, SlashEquals,
-            DotEquals, PercentEquals, PowEquals, AmpersandEquals, PipeEquals, CaretEquals, LeftShiftEquals,
-            RightShiftEquals, Spaceship, DoubleEquals, TripleEquals, BangEquals, AngledLeftRight,
-            BangDoubleEquals, GreaterThan, LessThan, GreaterThanEquals, LessThanEquals, Spaceship, DoubleQuestion,
-            Bang, BooleanAnd, BooleanOr, DoubleQuestionEquals, LogicalAnd, LogicalOr, LogicalXor, Dot, Arrow, DoubleColon,
-            Increment, Decrement, DoubleQuestion, Bang, LogicalAnd, LogicalOr, LogicalXor,
-            Eof,
-        ]);
+        assert_eq!(
+            &tokens,
+            &[
+                OpenTag(OpenTagKind::Full),
+                Plus,
+                Minus,
+                Asterisk,
+                Slash,
+                Percent,
+                Pow,
+                Equals,
+                PlusEquals,
+                MinusEquals,
+                AsteriskEquals,
+                SlashEquals,
+                DotEquals,
+                PercentEquals,
+                PowEquals,
+                AmpersandEquals,
+                PipeEquals,
+                CaretEquals,
+                LeftShiftEquals,
+                RightShiftEquals,
+                Spaceship,
+                DoubleEquals,
+                TripleEquals,
+                BangEquals,
+                AngledLeftRight,
+                BangDoubleEquals,
+                GreaterThan,
+                LessThan,
+                GreaterThanEquals,
+                LessThanEquals,
+                Spaceship,
+                DoubleQuestion,
+                Bang,
+                BooleanAnd,
+                BooleanOr,
+                DoubleQuestionEquals,
+                LogicalAnd,
+                LogicalOr,
+                LogicalXor,
+                Dot,
+                Arrow,
+                DoubleColon,
+                Increment,
+                Decrement,
+                DoubleQuestion,
+                Bang,
+                LogicalAnd,
+                LogicalOr,
+                LogicalXor,
+                Eof,
+            ]
+        );
     }
 
     #[test]
     fn it_can_tokenize_single_quoted_strings() {
-        let tokens = tokenise("<?php 'foo' 'foo\\'bar'").iter().map(|t| t.kind).collect::<Vec<_>>();
+        let tokens = tokenise("<?php 'foo' 'foo\\'bar'")
+            .iter()
+            .map(|t| t.kind)
+            .collect::<Vec<_>>();
 
-        assert_eq!(&tokens, &[
-            TokenKind::OpenTag(OpenTagKind::Full),
-            TokenKind::LiteralSingleQuotedString,
-            TokenKind::LiteralSingleQuotedString,
-            TokenKind::Eof,
-        ]);
+        assert_eq!(
+            &tokens,
+            &[
+                TokenKind::OpenTag(OpenTagKind::Full),
+                TokenKind::LiteralSingleQuotedString,
+                TokenKind::LiteralSingleQuotedString,
+                TokenKind::Eof,
+            ]
+        );
     }
 
     #[test]
     fn it_can_tokenize_double_quoted_strings() {
-        let tokens = tokenise("<?php \"foo\" \"foo\\\"bar\"").iter().map(|t| t.kind).collect::<Vec<_>>();
+        let tokens = tokenise("<?php \"foo\" \"foo\\\"bar\"")
+            .iter()
+            .map(|t| t.kind)
+            .collect::<Vec<_>>();
 
-        assert_eq!(&tokens, &[
-            TokenKind::OpenTag(OpenTagKind::Full),
-            TokenKind::LiteralDoubleQuotedString,
-            TokenKind::LiteralDoubleQuotedString,
-            TokenKind::Eof,
-        ]);
+        assert_eq!(
+            &tokens,
+            &[
+                TokenKind::OpenTag(OpenTagKind::Full),
+                TokenKind::LiteralDoubleQuotedString,
+                TokenKind::LiteralDoubleQuotedString,
+                TokenKind::Eof,
+            ]
+        );
     }
 
     #[test]
     fn it_can_tokenize_heredocs() {
-        let tokens = tokenise("<?php <<<EOD\n    foo\n    EOD").iter().map(|t| t.kind).collect::<Vec<_>>();
+        let tokens = tokenise("<?php <<<EOD\n    foo\n    EOD")
+            .iter()
+            .map(|t| t.kind)
+            .collect::<Vec<_>>();
 
-        assert_eq!(&tokens, &[
-            TokenKind::OpenTag(OpenTagKind::Full),
-            TokenKind::StartDocString(DocStringKind::Heredoc),
-            TokenKind::StringPart,
-            TokenKind::EndDocString(DocStringIndentationKind::Space, 4),
-            TokenKind::Eof,
-        ]);
+        assert_eq!(
+            &tokens,
+            &[
+                TokenKind::OpenTag(OpenTagKind::Full),
+                TokenKind::StartDocString(DocStringKind::Heredoc),
+                TokenKind::StringPart,
+                TokenKind::EndDocString(DocStringIndentationKind::Space, 4),
+                TokenKind::Eof,
+            ]
+        );
     }
 
     #[test]
     fn it_can_tokenize_nowdocs() {
-        let tokens = tokenise("<?php <<<'EOD'\n    foo\n    EOD").iter().map(|t| t.kind).collect::<Vec<_>>();
+        let tokens = tokenise("<?php <<<'EOD'\n    foo\n    EOD")
+            .iter()
+            .map(|t| t.kind)
+            .collect::<Vec<_>>();
 
-        assert_eq!(&tokens, &[
-            TokenKind::OpenTag(OpenTagKind::Full),
-            TokenKind::StartDocString(DocStringKind::Nowdoc),
-            TokenKind::StringPart,
-            TokenKind::EndDocString(DocStringIndentationKind::Space, 4),
-            TokenKind::Eof,
-        ]);
+        assert_eq!(
+            &tokens,
+            &[
+                TokenKind::OpenTag(OpenTagKind::Full),
+                TokenKind::StartDocString(DocStringKind::Nowdoc),
+                TokenKind::StringPart,
+                TokenKind::EndDocString(DocStringIndentationKind::Space, 4),
+                TokenKind::Eof,
+            ]
+        );
     }
 
     #[test]
     fn it_can_tokenize_integers() {
-        let tokens = tokenise("<?php 100 0123 0o123 0x1A 0b11111111 1_234_567").iter().map(|t| t.kind).collect::<Vec<_>>();
+        let tokens = tokenise("<?php 100 0123 0o123 0x1A 0b11111111 1_234_567")
+            .iter()
+            .map(|t| t.kind)
+            .collect::<Vec<_>>();
 
-        assert_eq!(&tokens, &[
-            TokenKind::OpenTag(OpenTagKind::Full),
-            TokenKind::LiteralInteger,
-            TokenKind::LiteralInteger,
-            TokenKind::LiteralInteger,
-            TokenKind::LiteralInteger,
-            TokenKind::LiteralInteger,
-            TokenKind::LiteralInteger,
-            TokenKind::Eof,
-        ]);
+        assert_eq!(
+            &tokens,
+            &[
+                TokenKind::OpenTag(OpenTagKind::Full),
+                TokenKind::LiteralInteger,
+                TokenKind::LiteralInteger,
+                TokenKind::LiteralInteger,
+                TokenKind::LiteralInteger,
+                TokenKind::LiteralInteger,
+                TokenKind::LiteralInteger,
+                TokenKind::Eof,
+            ]
+        );
     }
 
     #[test]
     fn it_can_tokenize_floats() {
-        let tokens = tokenise("<?php 1.234 1.2e3 7E-10 1_234.567").iter().map(|t| t.kind).collect::<Vec<_>>();
+        let tokens = tokenise("<?php 1.234 1.2e3 7E-10 1_234.567")
+            .iter()
+            .map(|t| t.kind)
+            .collect::<Vec<_>>();
 
-        assert_eq!(&tokens, &[
-            TokenKind::OpenTag(OpenTagKind::Full),
-            TokenKind::LiteralFloat,
-            TokenKind::LiteralFloat,
-            TokenKind::LiteralFloat,
-            TokenKind::LiteralFloat,
-            TokenKind::Eof,
-        ]);
+        assert_eq!(
+            &tokens,
+            &[
+                TokenKind::OpenTag(OpenTagKind::Full),
+                TokenKind::LiteralFloat,
+                TokenKind::LiteralFloat,
+                TokenKind::LiteralFloat,
+                TokenKind::LiteralFloat,
+                TokenKind::Eof,
+            ]
+        );
     }
 
     #[test]
     fn it_can_tokenize_identifiers() {
-        let tokens = tokenise("<?php hello \\hello hello\\world").iter().map(|t| t.kind).collect::<Vec<_>>();
+        let tokens = tokenise("<?php hello \\hello hello\\world")
+            .iter()
+            .map(|t| t.kind)
+            .collect::<Vec<_>>();
 
-        assert_eq!(&tokens, &[
-            TokenKind::OpenTag(OpenTagKind::Full),
-            TokenKind::Identifier,
-            TokenKind::FullyQualifiedIdentifier,
-            TokenKind::QualifiedIdentifier,
-            TokenKind::Eof
-        ]);
+        assert_eq!(
+            &tokens,
+            &[
+                TokenKind::OpenTag(OpenTagKind::Full),
+                TokenKind::Identifier,
+                TokenKind::FullyQualifiedIdentifier,
+                TokenKind::QualifiedIdentifier,
+                TokenKind::Eof
+            ]
+        );
     }
 
     fn tokenise(input: &str) -> Vec<Token> {

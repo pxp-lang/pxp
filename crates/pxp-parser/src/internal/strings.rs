@@ -148,7 +148,7 @@ pub fn heredoc(state: &mut State) -> Expression {
                     // 4. All of the above checks have passed, so we know
                     //    there are no more possible errors. Let's now
                     //    strip the leading whitespace accordingly.
-                    
+
                     // FIXME: Figure out if this is something we can do inside of the lexer instead.
                     // *bytes = ByteStr::new(bytes
                     //     .strip_prefix(&expected_whitespace_buffer[..])
@@ -268,7 +268,9 @@ fn part(state: &mut State) -> Option<StringPart> {
         TokenKind::StringPart => {
             let s = *state.stream.current();
             let part = if s.span.len() > 0 {
-                Some(StringPart::Literal(LiteralStringPart { value: s.symbol.unwrap() }))
+                Some(StringPart::Literal(LiteralStringPart {
+                    value: s.symbol.unwrap(),
+                }))
             } else {
                 None
             };
@@ -325,8 +327,10 @@ fn part(state: &mut State) -> Option<StringPart> {
                             if let TokenKind::LiteralInteger = &literal.kind {
                                 let span = state.stream.current().span;
                                 state.stream.next();
-                                let kind =
-                                    ExpressionKind::Literal(Literal::new(LiteralKind::Integer, *literal));
+                                let kind = ExpressionKind::Literal(Literal::new(
+                                    LiteralKind::Integer,
+                                    *literal,
+                                ));
                                 let expression =
                                     Expression::new(kind, span, CommentGroup::default());
 

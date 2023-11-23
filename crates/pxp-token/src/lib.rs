@@ -247,7 +247,7 @@ pub enum TokenKind {
 pub struct Token {
     pub kind: TokenKind,
     pub span: Span,
-    pub symbol: Option<Symbol>
+    pub symbol: Option<Symbol>,
 }
 
 impl Default for Token {
@@ -283,7 +283,11 @@ impl Token {
 
     pub fn dbg(&self, symbol_table: &SymbolTable) -> String {
         if let Some(symbol) = self.symbol {
-            format!("{} ({:?})", symbol_table.resolve(symbol).unwrap(), self.kind)
+            format!(
+                "{} ({:?})",
+                symbol_table.resolve(symbol).unwrap(),
+                self.kind
+            )
         } else {
             format!("{} ({:?})", self.kind, self.kind)
         }

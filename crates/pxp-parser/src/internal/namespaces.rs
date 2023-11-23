@@ -45,11 +45,7 @@ pub fn namespace(state: &mut State) -> StatementKind {
     }
 }
 
-fn unbraced_namespace(
-    state: &mut State,
-    start: Span,
-    name: SimpleIdentifier,
-) -> StatementKind {
+fn unbraced_namespace(state: &mut State, start: Span, name: SimpleIdentifier) -> StatementKind {
     let end = utils::skip_semicolon(state);
 
     let statements = scoped!(state, Scope::Namespace(name.clone()), {
@@ -64,14 +60,12 @@ fn unbraced_namespace(
         statements
     });
 
-    StatementKind::Namespace(NamespaceStatement::Unbraced(
-        UnbracedNamespace {
-            start,
-            end,
-            name,
-            statements,
-        },
-    ))
+    StatementKind::Namespace(NamespaceStatement::Unbraced(UnbracedNamespace {
+        start,
+        end,
+        name,
+        statements,
+    }))
 }
 
 fn braced_namespace(
@@ -96,11 +90,9 @@ fn braced_namespace(
         }
     });
 
-    StatementKind::Namespace(NamespaceStatement::Braced(
-        BracedNamespace {
-            namespace: span,
-            name,
-            body,
-        },
-    ))
+    StatementKind::Namespace(NamespaceStatement::Braced(BracedNamespace {
+        namespace: span,
+        name,
+        body,
+    }))
 }

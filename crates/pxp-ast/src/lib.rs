@@ -35,7 +35,7 @@ use crate::variables::Variable;
 use pxp_span::Span;
 use pxp_symbol::Symbol;
 use pxp_syntax::comments::{Comment, CommentGroup};
-use pxp_token::{TokenKind, Token};
+use pxp_token::{Token, TokenKind};
 
 pub mod arguments;
 pub mod attributes;

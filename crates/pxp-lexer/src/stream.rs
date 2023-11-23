@@ -130,7 +130,7 @@ impl<'a> TokenStream<'a> {
                     } => Comment {
                         span: *span,
                         format: CommentFormat::SingleLine,
-                        content: symbol.unwrap()
+                        content: symbol.unwrap(),
                     },
                     Token {
                         kind: TokenKind::MultiLineComment,
@@ -139,7 +139,7 @@ impl<'a> TokenStream<'a> {
                     } => Comment {
                         span: *span,
                         format: CommentFormat::MultiLine,
-                        content: symbol.unwrap()
+                        content: symbol.unwrap(),
                     },
                     Token {
                         kind: TokenKind::HashMarkComment,
@@ -148,7 +148,7 @@ impl<'a> TokenStream<'a> {
                     } => Comment {
                         span: *span,
                         format: CommentFormat::HashMark,
-                        content: symbol.unwrap()
+                        content: symbol.unwrap(),
                     },
                     Token {
                         kind: TokenKind::DocumentComment,
@@ -157,7 +157,7 @@ impl<'a> TokenStream<'a> {
                     } => Comment {
                         span: *span,
                         format: CommentFormat::Document,
-                        content: symbol.unwrap()
+                        content: symbol.unwrap(),
                     },
                     _ => unreachable!(),
                 })

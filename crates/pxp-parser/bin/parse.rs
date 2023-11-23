@@ -38,15 +38,15 @@ fn main() {
         println!();
 
         // if errors.is_empty() {
-            println!("Parsed directory with zero errors.");
+        println!("Parsed directory with zero errors.");
         // } else {
-            // println!("\nParsed directory with {} errors.", errors.len());
-            // for (path, errors) in errors {
-            //     println!("{}:", path);
-            //     for error in errors {
-            //         println!("  {}", error);
-            //     }
-            // }
+        // println!("\nParsed directory with {} errors.", errors.len());
+        // for (path, errors) in errors {
+        //     println!("{}:", path);
+        //     for error in errors {
+        //         println!("  {}", error);
+        //     }
+        // }
         // }
     } else {
         let contents = std::fs::read(path).unwrap();

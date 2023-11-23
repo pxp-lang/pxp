@@ -149,7 +149,9 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
                 members.push(member(
                     state,
                     false,
-                    &SimpleIdentifier { token: *class_token },
+                    &SimpleIdentifier {
+                        token: *class_token,
+                    },
                 ));
             }
             members
@@ -182,33 +184,25 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
     )
 }
 
-pub fn member(
-    state: &mut State,
-    has_abstract: bool,
-    name: &SimpleIdentifier,
-) -> ClassishMember {
+pub fn member(state: &mut State, has_abstract: bool, name: &SimpleIdentifier) -> ClassishMember {
     let has_attributes = attributes::gather_attributes(state);
 
     if !has_attributes && state.stream.current().kind == TokenKind::Use {
-        return ClassishMember::TraitUsage(traits::usage(state))
+        return ClassishMember::TraitUsage(traits::usage(state));
     }
 
     if state.stream.current().kind == TokenKind::Var {
-        return ClassishMember::VariableProperty(properties::parse_var(state, Some(name)))
+        return ClassishMember::VariableProperty(properties::parse_var(state, Some(name)));
     }
 
     let modifiers = modifiers::collect(state);
 
     if state.stream.current().kind == TokenKind::Const {
-        return ClassishMember::Constant(classish(state, modifiers::constant_group(modifiers)))
+        return ClassishMember::Constant(classish(state, modifiers::constant_group(modifiers)));
     }
 
     if state.stream.current().kind == TokenKind::Function {
-        let method = method(
-            state,
-            modifiers::method_group(modifiers),
-            Some(name),
-        );
+        let method = method(state, modifiers::method_group(modifiers), Some(name));
 
         return match method {
             Method::Abstract(method) => {

@@ -576,7 +576,7 @@ pub fn attributes(state: &mut State) -> Expression {
         }
         TokenKind::Function => functions::anonymous_function(state),
         TokenKind::Fn => functions::arrow_function(state),
-        _ => todo!("tolerant mode")
+        _ => todo!("tolerant mode"),
     }
 }
 
@@ -879,11 +879,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Expression::new(
-                ExpressionKind::Null,
-                span,
-                CommentGroup::default(),
-            )
+            Expression::new(ExpressionKind::Null, span, CommentGroup::default())
         }
 
         (TokenKind::LiteralInteger, _) => {
@@ -896,7 +892,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                 Expression::new(
                     ExpressionKind::Literal(Literal::new(LiteralKind::Integer, *current)),
                     span,
-                    CommentGroup::default()
+                    CommentGroup::default(),
                 )
             } else {
                 unreachable!("{}:{}", file!(), line!());
@@ -981,22 +977,14 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Expression::new(
-                ExpressionKind::Self_,
-                span,
-                CommentGroup::default(),
-            )
+            Expression::new(ExpressionKind::Self_, span, CommentGroup::default())
         }
 
         (TokenKind::Parent, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Expression::new(
-                ExpressionKind::Parent,
-                span,
-                CommentGroup::default(),
-            )
+            Expression::new(ExpressionKind::Parent, span, CommentGroup::default())
         }
 
         (TokenKind::LeftParen, _) => {
@@ -1082,9 +1070,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
 
                     Expression::new(
                         ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier {
-                                token
-                            },
+                            SimpleIdentifier { token },
                         )),
                         span,
                         CommentGroup::default(),
@@ -1491,7 +1477,9 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                 TokenKind::Class => {
                     state.stream.next();
 
-                    ExpressionKind::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier { token: *current }))
+                    ExpressionKind::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier {
+                        token: *current,
+                    }))
                 }
                 _ => {
                     return expected_token_err!(["`{`", "`$`", "an identifier"], state);

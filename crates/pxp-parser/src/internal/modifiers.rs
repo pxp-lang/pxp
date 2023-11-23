@@ -44,10 +44,10 @@ pub fn class_group(input: Vec<(Span, TokenKind)>) -> ClassModifierGroup {
                     ClassModifier::Abstract(*span)
                 }
             }
-            _ => todo!("tolerant mode") /*Err(error::modifier_cannot_be_used_for_class(
-                token.to_string(),
-                *span,
-            ))*/,
+            _ => todo!("tolerant mode"), /*Err(error::modifier_cannot_be_used_for_class(
+                                             token.to_string(),
+                                             *span,
+                                         ))*/
         })
         .collect::<Vec<ClassModifier>>();
 
@@ -93,10 +93,10 @@ pub fn method_group(input: Vec<(Span, TokenKind)>) -> MethodModifierGroup {
             TokenKind::Protected => MethodModifier::Protected(*span),
             TokenKind::Public => MethodModifier::Public(*span),
             TokenKind::Static => MethodModifier::Static(*span),
-            _ => todo!("tolerant mode") /*Err(error::modifier_cannot_be_used_for_class_method(
-                token.to_string(),
-                *span,
-            ))*/,
+            _ => todo!("tolerant mode"), /*Err(error::modifier_cannot_be_used_for_class_method(
+                                             token.to_string(),
+                                             *span,
+                                         ))*/
         })
         .collect::<Vec<MethodModifier>>();
 
@@ -113,10 +113,10 @@ pub fn property_group(input: Vec<(Span, TokenKind)>) -> PropertyModifierGroup {
             TokenKind::Public => PropertyModifier::Public(*span),
             TokenKind::Protected => PropertyModifier::Protected(*span),
             TokenKind::Private => PropertyModifier::Private(*span),
-            _ => todo!("tolerant mode") /*Err(error::modifier_cannot_be_used_for_property(
-                token.to_string(),
-                *span,
-            ))*/,
+            _ => todo!("tolerant mode"), /*Err(error::modifier_cannot_be_used_for_property(
+                                             token.to_string(),
+                                             *span,
+                                         ))*/
         })
         .collect::<Vec<PropertyModifier>>();
 
@@ -124,9 +124,7 @@ pub fn property_group(input: Vec<(Span, TokenKind)>) -> PropertyModifierGroup {
 }
 
 #[inline(always)]
-pub fn promoted_property_group(
-    input: Vec<(Span, TokenKind)>,
-) -> PromotedPropertyModifierGroup {
+pub fn promoted_property_group(input: Vec<(Span, TokenKind)>) -> PromotedPropertyModifierGroup {
     let modifiers = input
         .iter()
         .map(|(span, token)| match token {
@@ -134,10 +132,10 @@ pub fn promoted_property_group(
             TokenKind::Private => PromotedPropertyModifier::Private(*span),
             TokenKind::Protected => PromotedPropertyModifier::Protected(*span),
             TokenKind::Public => PromotedPropertyModifier::Public(*span),
-            _ => todo!("tolerant mode") /*Err(error::modifier_cannot_be_used_for_promoted_property(
-                token.to_string(),
-                *span,
-            ))*/,
+            _ => todo!("tolerant mode"), /*Err(error::modifier_cannot_be_used_for_promoted_property(
+                                             token.to_string(),
+                                             *span,
+                                         ))*/
         })
         .collect::<Vec<PromotedPropertyModifier>>();
 
@@ -176,10 +174,10 @@ pub fn constant_group(input: Vec<(Span, TokenKind)>) -> ConstantModifierGroup {
                     ConstantModifier::Final(*span)
                 }
             }
-            _ => todo!("tolerant mode") /* Err(error::modifier_cannot_be_used_for_constant(
-                token.to_string(),
-                *span,
-            )) */,
+            _ => todo!("tolerant mode"), /* Err(error::modifier_cannot_be_used_for_constant(
+                                             token.to_string(),
+                                             *span,
+                                         )) */
         })
         .collect::<Vec<ConstantModifier>>();
 

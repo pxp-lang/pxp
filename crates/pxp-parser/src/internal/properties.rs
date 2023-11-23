@@ -112,10 +112,7 @@ pub fn parse(
     }
 }
 
-pub fn parse_var(
-    state: &mut State,
-    class_name: Option<&SimpleIdentifier>,
-) -> VariableProperty {
+pub fn parse_var(state: &mut State, class_name: Option<&SimpleIdentifier>) -> VariableProperty {
     utils::skip(state, TokenKind::Var);
 
     let ty = data_type::optional_data_type(state);

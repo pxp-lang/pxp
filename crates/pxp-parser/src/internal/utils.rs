@@ -80,7 +80,12 @@ pub fn skip(state: &mut State, kind: TokenKind) -> Span {
 
         end
     } else {
-        todo!("tolerant mode, expected {:}, found {:} (at: {:?})", kind, current.dbg(state.symbol_table), current.span)
+        todo!(
+            "tolerant mode, expected {:}, found {:} (at: {:?})",
+            kind,
+            current.dbg(state.symbol_table),
+            current.span
+        )
         // Err(error::unexpected_token(vec![kind.to_string()], current))
     }
 }
@@ -107,10 +112,7 @@ pub fn skip_any_of(state: &mut State, kinds: &[TokenKind]) -> Span {
 ///
 /// This function will skip the left parenthesis, call the given function,
 /// and then skip the right parenthesis.
-pub fn parenthesized<T>(
-    state: &mut State,
-    func: &(dyn Fn(&mut State) -> T),
-) -> (Span, T, Span) {
+pub fn parenthesized<T>(state: &mut State, func: &(dyn Fn(&mut State) -> T)) -> (Span, T, Span) {
     let left_parenthesis = skip_left_parenthesis(state);
     let inner = func(state);
     let right_parenthesis = skip_right_parenthesis(state);
@@ -122,10 +124,7 @@ pub fn parenthesized<T>(
 ///
 /// This function will skip the left brace, call the given function,
 /// and then skip the right brace.
-pub fn braced<T>(
-    state: &mut State,
-    func: &(dyn Fn(&mut State) -> T),
-) -> (Span, T, Span) {
+pub fn braced<T>(state: &mut State, func: &(dyn Fn(&mut State) -> T)) -> (Span, T, Span) {
     let left_brace = skip_left_brace(state);
     let inner = func(state);
     let right_brace = skip_right_brace(state);
@@ -133,10 +132,7 @@ pub fn braced<T>(
     (left_brace, inner, right_brace)
 }
 
-pub fn semicolon_terminated<T>(
-    state: &mut State,
-    func: &(dyn Fn(&mut State) -> T),
-) -> (Span, T) {
+pub fn semicolon_terminated<T>(state: &mut State, func: &(dyn Fn(&mut State) -> T)) -> (Span, T) {
     let inner = func(state);
     let semicolon = skip_semicolon(state);
     (semicolon, inner)

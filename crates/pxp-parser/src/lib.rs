@@ -56,7 +56,10 @@ pub struct ParseResult {
     pub diagnostics: Vec<Diagnostic>,
 }
 
-pub fn parse<'b, B: Sized + AsRef<[u8]>>(input: &'b B, symbol_table: &mut SymbolTable<'b>) -> ParseResult {
+pub fn parse<'b, B: Sized + AsRef<[u8]>>(
+    input: &'b B,
+    symbol_table: &mut SymbolTable<'b>,
+) -> ParseResult {
     let mut lexer = Lexer::new(input, symbol_table);
     let tokens = match lexer.tokenize() {
         Ok(tokens) => tokens,
@@ -97,8 +100,7 @@ fn top_level_statement(state: &mut State) -> Statement {
                 TokenKind::HaltCompiler => {
                     state.stream.next();
 
-                    let content = if let TokenKind::InlineHtml = state.stream.current().kind
-                    {
+                    let content = if let TokenKind::InlineHtml = state.stream.current().kind {
                         let content = *state.stream.current();
                         state.stream.next();
                         Some(content)

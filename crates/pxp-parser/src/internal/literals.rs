@@ -10,7 +10,7 @@ pub fn expect_literal(state: &mut State) -> Literal {
             state.stream.next();
 
             LiteralKind::Integer
-        },
+        }
         TokenKind::LiteralFloat => {
             state.stream.next();
 
@@ -26,5 +26,8 @@ pub fn expect_literal(state: &mut State) -> Literal {
         }
     };
 
-    Literal { kind, token: *token }
+    Literal {
+        kind,
+        token: *token,
+    }
 }

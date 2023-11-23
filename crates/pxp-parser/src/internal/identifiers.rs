@@ -52,10 +52,10 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
 
             SimpleIdentifier { token: *current }
         }
-        _ => todo!("tolerant mode") /*Err(error::unexpected_token(
-            vec!["an identifier".to_owned()],
-            current,
-        ))*/,
+        _ => todo!("tolerant mode"), /*Err(error::unexpected_token(
+                                         vec!["an identifier".to_owned()],
+                                         current,
+                                     ))*/
     }
 }
 
@@ -97,10 +97,10 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
 
             SimpleIdentifier { token: *current }
         }
-        _ => todo!("tolerant mode") /*Err(error::unexpected_token(
-            vec!["an identifier".to_owned()],
-            current,
-        ))*/,
+        _ => todo!("tolerant mode"), /*Err(error::unexpected_token(
+                                         vec!["an identifier".to_owned()],
+                                         current,
+                                     ))*/
     }
 }
 
@@ -108,7 +108,11 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
 pub fn constant_identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
     match &current.kind {
-        TokenKind::Identifier | TokenKind::Enum | TokenKind::From | TokenKind::Self_ | TokenKind::Parent => {
+        TokenKind::Identifier
+        | TokenKind::Enum
+        | TokenKind::From
+        | TokenKind::Self_
+        | TokenKind::Parent => {
             let span = current.span;
 
             state.stream.next();
@@ -126,10 +130,10 @@ pub fn constant_identifier(state: &mut State) -> SimpleIdentifier {
 
             SimpleIdentifier { token: *current }
         }
-        _ => todo!("tolerant mode") /*Err(error::unexpected_token(
-            vec!["an identifier".to_owned()],
-            current,
-        ))*/,
+        _ => todo!("tolerant mode"), /*Err(error::unexpected_token(
+                                         vec!["an identifier".to_owned()],
+                                         current,
+                                     ))*/
     }
 }
 
@@ -197,10 +201,10 @@ pub fn full_name(state: &mut State) -> SimpleIdentifier {
 
             SimpleIdentifier { token: *current }
         }
-        _ =>todo!("tolerant mode") /*Err(error::unexpected_token(
-            vec!["an identifier".to_owned()],
-            current,
-        ))*/,
+        _ => todo!("tolerant mode"), /*Err(error::unexpected_token(
+                                         vec!["an identifier".to_owned()],
+                                         current,
+                                     ))*/
     }
 }
 
@@ -244,10 +248,10 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
 
             SimpleIdentifier { token: *current }
         }
-        _ => todo!("tolerant mode") /*Err(error::unexpected_token(
-            vec!["an identifier".to_owned()],
-            current,
-        ))*/,
+        _ => todo!("tolerant mode"), /*Err(error::unexpected_token(
+                                         vec!["an identifier".to_owned()],
+                                         current,
+                                     ))*/
     }
 }
 
@@ -284,10 +288,10 @@ pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
 
             SimpleIdentifier { token: *current }
         }
-        _ => todo!("tolerant mode") /*Err(error::unexpected_token(
-            vec!["an identifier".to_owned()],
-            current,
-        ))*/,
+        _ => todo!("tolerant mode"), /*Err(error::unexpected_token(
+                                         vec!["an identifier".to_owned()],
+                                         current,
+                                     ))*/
     }
 }
 

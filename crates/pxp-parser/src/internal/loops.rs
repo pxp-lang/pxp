@@ -84,7 +84,7 @@ pub fn foreach_statement(state: &mut State) -> StatementKind {
         }
     } else {
         ForeachStatementBody::Statement {
-            statement: Box::new(statement(state))
+            statement: Box::new(statement(state)),
         }
     };
 
@@ -136,7 +136,7 @@ pub fn for_statement(state: &mut State) -> StatementKind {
         }
     } else {
         ForStatementBody::Statement {
-            statement: Box::new(statement(state))
+            statement: Box::new(statement(state)),
         }
     };
 
@@ -187,7 +187,7 @@ pub fn while_statement(state: &mut State) -> StatementKind {
         }
     } else {
         WhileStatementBody::Statement {
-            statement: Box::new(statement(state))
+            statement: Box::new(statement(state)),
         }
     };
 

@@ -26,7 +26,10 @@ pub fn parse(state: &mut State) -> StatementKind {
     let backed_type: Option<BackedEnumType> = if state.stream.current().kind == TokenKind::Colon {
         let span = utils::skip_colon(state);
         let identifier = identifiers::identifier(state);
-        let symbol = state.symbol_table.resolve(identifier.token.symbol.unwrap()).unwrap();
+        let symbol = state
+            .symbol_table
+            .resolve(identifier.token.symbol.unwrap())
+            .unwrap();
 
         Some(match &symbol[..] {
             b"string" => BackedEnumType::String(span, identifier.token.span),
@@ -102,10 +105,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     }
 }
 
-fn unit_member(
-    state: &mut State,
-    enum_name: &SimpleIdentifier,
-) -> Option<UnitEnumMember> {
+fn unit_member(state: &mut State, enum_name: &SimpleIdentifier) -> Option<UnitEnumMember> {
     let _has_attributes = attributes::gather_attributes(state);
 
     let current = state.stream.current();
@@ -142,15 +142,10 @@ fn unit_member(
         }));
     }
 
-    Some(UnitEnumMember::Classish(member(
-        state, false, enum_name,
-    )))
+    Some(UnitEnumMember::Classish(member(state, false, enum_name)))
 }
 
-fn backed_member(
-    state: &mut State,
-    enum_name: &SimpleIdentifier,
-) -> Option<BackedEnumMember> {
+fn backed_member(state: &mut State, enum_name: &SimpleIdentifier) -> Option<BackedEnumMember> {
     let _has_attributes = attributes::gather_attributes(state);
 
     let current = state.stream.current();
@@ -192,7 +187,5 @@ fn backed_member(
         }));
     }
 
-    Some(BackedEnumMember::Classish(member(
-        state, false, enum_name,
-    )))
+    Some(BackedEnumMember::Classish(member(state, false, enum_name)))
 }

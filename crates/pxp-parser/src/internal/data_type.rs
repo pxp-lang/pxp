@@ -35,12 +35,12 @@ pub fn data_type(state: &mut State) -> Type {
 
 pub fn optional_data_type(state: &mut State) -> Option<Type> {
     if state.stream.current().kind == TokenKind::Question {
-        return Some(nullable(state))
+        return Some(nullable(state));
     }
 
     // (A|B|..)&C.. or (A&B&..)|C..
     if state.stream.current().kind == TokenKind::LeftParen {
-        return Some(dnf(state))
+        return Some(dnf(state));
     }
 
     let ty = optional_simple_data_type(state);
@@ -48,7 +48,7 @@ pub fn optional_data_type(state: &mut State) -> Option<Type> {
     match ty {
         Some(ty) => {
             if state.stream.current().kind == TokenKind::Pipe {
-                return Some(union(state, ty, false))
+                return Some(union(state, ty, false));
             }
 
             if state.stream.current().kind == TokenKind::Ampersand
@@ -57,12 +57,12 @@ pub fn optional_data_type(state: &mut State) -> Option<Type> {
                     TokenKind::Variable | TokenKind::Ellipsis | TokenKind::Ampersand
                 )
             {
-                return Some(intersection(state, ty, false))
+                return Some(intersection(state, ty, false));
             }
 
             Some(ty)
         }
-        None => None
+        None => None,
     }
 }
 
@@ -169,7 +169,7 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type> {
                 b"false" => Some(Type::False(span)),
                 b"array" => Some(Type::Array(span)),
                 b"callable" => Some(Type::Callable(span)),
-                _ => Some(Type::Named(span, current.symbol.unwrap()))
+                _ => Some(Type::Named(span, current.symbol.unwrap())),
             }
         }
         TokenKind::QualifiedIdentifier | TokenKind::FullyQualifiedIdentifier => {
@@ -178,7 +178,7 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type> {
 
             Some(Type::Named(span, current.symbol.unwrap()))
         }
-        _ => None
+        _ => None,
     }
 }
 

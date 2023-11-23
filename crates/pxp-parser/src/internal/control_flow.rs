@@ -230,7 +230,7 @@ fn if_statement_statement_body(state: &mut State) -> IfStatementBody {
             left_parenthesis,
             condition,
             right_parenthesis,
-            statement: Box::new(crate::statement(state))
+            statement: Box::new(crate::statement(state)),
         });
 
         current = state.stream.current();
@@ -241,7 +241,7 @@ fn if_statement_statement_body(state: &mut State) -> IfStatementBody {
 
         Some(IfStatementElse {
             r#else: current.span,
-            statement: Box::new(crate::statement(state))
+            statement: Box::new(crate::statement(state)),
         })
     } else {
         None

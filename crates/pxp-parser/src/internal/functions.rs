@@ -265,7 +265,7 @@ pub fn method(
 
     let symbol = state.symbol_table.resolve(name.token.symbol.unwrap());
     let is_constructor = symbol.is_some() && symbol.unwrap() == b"__construct";
-    
+
     if is_constructor {
         let parameters = parameters::constructor_parameter_list(state, class);
 
@@ -286,7 +286,7 @@ pub fn method(
                 name,
                 parameters,
                 body,
-            })
+            });
         } else {
             let semicolon = utils::skip_semicolon(state);
 
@@ -300,7 +300,7 @@ pub fn method(
                 parameters,
                 semicolon,
             })
-        }
+        };
     }
 
     let parameters = parameters::function_parameter_list(state);

@@ -19,10 +19,7 @@ pub fn block_statement(state: &mut State) -> StatementKind {
     })
 }
 
-pub fn multiple_statements_until(
-    state: &mut State,
-    until: &TokenKind,
-) -> Vec<Statement> {
+pub fn multiple_statements_until(state: &mut State, until: &TokenKind) -> Vec<Statement> {
     let mut statements = Vec::new();
 
     let mut current = state.stream.current();
@@ -41,10 +38,7 @@ pub fn multiple_statements_until(
     statements
 }
 
-pub fn multiple_statements_until_any(
-    state: &mut State,
-    until: &[TokenKind],
-) -> Vec<Statement> {
+pub fn multiple_statements_until_any(state: &mut State, until: &[TokenKind]) -> Vec<Statement> {
     let mut statements = Vec::new();
 
     let mut current = state.stream.current();
