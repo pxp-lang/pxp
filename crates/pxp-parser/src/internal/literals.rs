@@ -1,4 +1,5 @@
 use pxp_ast::literals::{Literal, LiteralKind};
+use pxp_diagnostics::{DiagnosticKind, Severity};
 use pxp_token::TokenKind;
 
 use crate::state::State;
@@ -22,7 +23,13 @@ pub fn expect_literal(state: &mut State) -> Literal {
             LiteralKind::String
         }
         _ => {
-            todo!("tolerant handling of missing literals (return Literal::missing() or something)")
+            state.diagnostic(
+                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::LiteralInteger, TokenKind::LiteralFloat, TokenKind::LiteralSingleQuotedString, TokenKind::LiteralDoubleQuotedString], found: *token },
+                Severity::Error,
+                token.span
+            );
+
+            return Literal::missing(token.span)
         }
     };
 
