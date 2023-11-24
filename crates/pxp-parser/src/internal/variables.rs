@@ -6,17 +6,41 @@ use pxp_ast::variables::BracedVariableVariable;
 use pxp_ast::variables::SimpleVariable;
 use pxp_ast::variables::Variable;
 use pxp_ast::variables::VariableVariable;
+use pxp_diagnostics::DiagnosticKind;
+use pxp_diagnostics::Severity;
+use pxp_token::Token;
 use pxp_token::TokenKind;
 
 pub fn simple_variable(state: &mut State) -> SimpleVariable {
     let current = state.stream.current();
-    if let TokenKind::Variable = &current.kind {
-        state.stream.next();
 
-        return SimpleVariable { token: *current };
+    match &current.kind {
+        TokenKind::Variable => {
+            state.stream.next();
+
+            SimpleVariable { token: *current }
+        }
+        TokenKind::Dollar => {
+            state.stream.next();
+
+            state.diagnostic(
+                DiagnosticKind::DynamicVariableNotAllowed,
+                Severity::Error,
+                current.span,
+            );
+
+            SimpleVariable { token: *current }
+        }
+        _ => {
+            state.diagnostic(
+                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Variable], found: *current },
+                Severity::Error,
+                current.span,
+            );
+
+            SimpleVariable { token: Token::missing(current.span) }
+        }
     }
-
-    expected_token_err!("a variable", state)
 }
 
 pub fn dynamic_variable(state: &mut State) -> Variable {
