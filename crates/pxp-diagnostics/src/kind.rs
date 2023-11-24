@@ -41,6 +41,7 @@ pub enum DiagnosticKind {
     ArgumentRequired,
     StaticPropertyCannotBeReadonly,
     ReadonlyPropertyCannotHaveDefaultValue,
+    TryMustHaveCatchOrFinally,
     UnexpectedEndOfFile,
 }
 
@@ -88,6 +89,7 @@ impl Display for DiagnosticKind {
             DiagnosticKind::ArgumentRequired => write!(f, "argument required"),
             DiagnosticKind::StaticPropertyCannotBeReadonly => write!(f, "static property cannot be readonly"),
             DiagnosticKind::ReadonlyPropertyCannotHaveDefaultValue => write!(f, "readonly property cannot have default value"),
+            DiagnosticKind::TryMustHaveCatchOrFinally => write!(f, "try must have catch or finally"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }
