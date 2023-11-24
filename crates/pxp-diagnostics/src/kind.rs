@@ -39,6 +39,8 @@ pub enum DiagnosticKind {
     PositionalArgumentsOnly,
     OnlyAllowedOneArgument,
     ArgumentRequired,
+    StaticPropertyCannotBeReadonly,
+    ReadonlyPropertyCannotHaveDefaultValue,
     UnexpectedEndOfFile,
 }
 
@@ -84,6 +86,8 @@ impl Display for DiagnosticKind {
             DiagnosticKind::PositionalArgumentsOnly => write!(f, "only positional arguments are allowed"),
             DiagnosticKind::OnlyAllowedOneArgument => write!(f, "only one argument is allowed"),
             DiagnosticKind::ArgumentRequired => write!(f, "argument required"),
+            DiagnosticKind::StaticPropertyCannotBeReadonly => write!(f, "static property cannot be readonly"),
+            DiagnosticKind::ReadonlyPropertyCannotHaveDefaultValue => write!(f, "readonly property cannot have default value"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }

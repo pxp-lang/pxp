@@ -8,6 +8,8 @@ use pxp_ast::modifiers::PropertyModifierGroup;
 use pxp_ast::properties::Property;
 use pxp_ast::properties::PropertyEntry;
 use pxp_ast::properties::VariableProperty;
+use pxp_diagnostics::DiagnosticKind;
+use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;
 
 pub fn parse(
@@ -25,43 +27,30 @@ pub fn parse(
         if !type_checked {
             type_checked = true;
             if modifiers.has_readonly() && modifiers.has_static() {
-                todo!("tolerant mode")
-                // let error = error::static_property_cannot_be_readonly(
-                //     state,
-                //     class_name,
-                //     &variable,
-                //     modifiers.get_static().unwrap().span(),
-                //     modifiers.get_readonly().unwrap().span(),
-                // );
-
-                // state.record(error);
+                state.diagnostic(
+                    DiagnosticKind::StaticPropertyCannotBeReadonly,
+                    Severity::Error,
+                    state.stream.current().span,
+                );
             }
 
             match &ty {
                 Some(ty) => {
                     if ty.includes_callable() || ty.is_bottom() {
-                        todo!("tolerant mode")
-                        // let error = error::forbidden_type_used_in_property(
-                        //     state,
-                        //     class_name,
-                        //     &variable,
-                        //     ty.clone(),
-                        // );
-
-                        // state.record(error);
+                        state.diagnostic(
+                            DiagnosticKind::ForbiddenTypeUsedInProperty,
+                            Severity::Error,
+                            ty.first_span(),
+                        );
                     }
                 }
                 None => {
                     if let Some(modifier) = modifiers.get_readonly() {
-                        todo!("tolerant mode")
-                        // let error = error::missing_type_for_readonly_property(
-                        //     state,
-                        //     class_name,
-                        //     &variable,
-                        //     modifier.span(),
-                        // );
-
-                        // state.record(error);
+                        state.diagnostic(
+                            DiagnosticKind::ReadonlyPropertyMustHaveType,
+                            Severity::Error,
+                            modifier.span(),
+                        );
                     }
                 }
             }
@@ -70,16 +59,11 @@ pub fn parse(
         let current = state.stream.current();
         if current.kind == TokenKind::Equals {
             if let Some(modifier) = modifiers.get_readonly() {
-                todo!("tolerant mode")
-                // let error = error::readonly_property_has_default_value(
-                //     state,
-                //     class_name,
-                //     &variable,
-                //     modifier.span(),
-                //     current.span,
-                // );
-
-                // state.record(error);
+                state.diagnostic(
+                    DiagnosticKind::ReadonlyPropertyCannotHaveDefaultValue,
+                    Severity::Error,
+                    modifier.span(),
+                );
             }
 
             state.stream.next();
@@ -127,15 +111,11 @@ pub fn parse_var(state: &mut State, class_name: Option<&SimpleIdentifier>) -> Va
 
             if let Some(ty) = &ty {
                 if ty.includes_callable() || ty.is_bottom() {
-                    todo!("tolerant mode")
-                    // let error = error::forbidden_type_used_in_property(
-                    //     state,
-                    //     class_name,
-                    //     &variable,
-                    //     ty.clone(),
-                    // );
-
-                    // state.record(error);
+                    state.diagnostic(
+                        DiagnosticKind::ForbiddenTypeUsedInProperty,
+                        Severity::Error,
+                        ty.first_span(),
+                    );
                 }
             }
         }
