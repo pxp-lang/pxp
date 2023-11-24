@@ -1,4 +1,3 @@
-use crate::expected_token;
 use crate::internal::utils;
 use crate::peek_token;
 use crate::state::State;

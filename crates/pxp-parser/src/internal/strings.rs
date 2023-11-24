@@ -108,7 +108,7 @@ pub fn heredoc(state: &mut State) -> Expression {
 
             match part {
                 StringPart::Literal(LiteralStringPart { value }) => {
-                    let mut bytes = state.symbol_table.resolve(*value).unwrap();
+                    let bytes = state.symbol_table.resolve(*value).unwrap();
 
                     // 1. If this line doesn't start with any whitespace,
                     //    we can return an error early because we know
@@ -178,7 +178,7 @@ pub fn nowdoc(state: &mut State) -> Expression {
 
     state.stream.next();
 
-    let mut string_part = *state.stream.current();
+    let string_part = *state.stream.current();
     expect_token!([TokenKind::StringPart => ()], state, "constant string");
 
     let (indentation_type, indentation_amount) = match &state.stream.current().kind {
@@ -191,6 +191,7 @@ pub fn nowdoc(state: &mut State) -> Expression {
     state.stream.next();
 
     // FIXME: Figure out if this is something we can do inside of the lexer instead.
+    //        If not, then we need to emit diagnostics for invalid indentation etc.
     // if indentation_type != DocStringIndentationKind::None {
     //     let indentation_char: u8 = indentation_type.into();
 

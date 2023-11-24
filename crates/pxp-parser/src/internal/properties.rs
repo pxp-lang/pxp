@@ -3,7 +3,6 @@ use crate::internal::data_type;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
-use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::modifiers::PropertyModifierGroup;
 use pxp_ast::properties::Property;
 use pxp_ast::properties::PropertyEntry;
@@ -14,7 +13,6 @@ use pxp_token::TokenKind;
 
 pub fn parse(
     state: &mut State,
-    class_name: Option<&SimpleIdentifier>,
     modifiers: PropertyModifierGroup,
 ) -> Property {
     let ty = data_type::optional_data_type(state);
@@ -96,7 +94,7 @@ pub fn parse(
     }
 }
 
-pub fn parse_var(state: &mut State, class_name: Option<&SimpleIdentifier>) -> VariableProperty {
+pub fn parse_var(state: &mut State) -> VariableProperty {
     utils::skip(state, TokenKind::Var);
 
     let ty = data_type::optional_data_type(state);

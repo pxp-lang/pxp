@@ -12,7 +12,6 @@ use pxp_ast::enums::UnitEnumBody;
 use pxp_ast::enums::UnitEnumCase;
 use pxp_ast::enums::UnitEnumMember;
 use pxp_ast::enums::UnitEnumStatement;
-use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::StatementKind;
 use pxp_diagnostics::DiagnosticKind;
 use pxp_diagnostics::Severity;
@@ -106,7 +105,7 @@ pub fn parse(state: &mut State) -> StatementKind {
             members: {
                 let mut members = Vec::new();
                 while state.stream.current().kind != TokenKind::RightBrace {
-                    if let Some(member) = backed_member(state, &name) {
+                    if let Some(member) = backed_member(state) {
                         members.push(member);
                     }
                 }
@@ -130,7 +129,7 @@ pub fn parse(state: &mut State) -> StatementKind {
             members: {
                 let mut members = Vec::new();
                 while state.stream.current().kind != TokenKind::RightBrace {
-                    if let Some(member) = unit_member(state, &name) {
+                    if let Some(member) = unit_member(state) {
                         members.push(member);
                     }
                 }
@@ -149,7 +148,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     }
 }
 
-fn unit_member(state: &mut State, enum_name: &SimpleIdentifier) -> Option<UnitEnumMember> {
+fn unit_member(state: &mut State) -> Option<UnitEnumMember> {
     let _has_attributes = attributes::gather_attributes(state);
 
     let current = state.stream.current();
@@ -187,10 +186,10 @@ fn unit_member(state: &mut State, enum_name: &SimpleIdentifier) -> Option<UnitEn
         }));
     }
 
-    Some(UnitEnumMember::Classish(member(state, false, enum_name)))
+    Some(UnitEnumMember::Classish(member(state, false)))
 }
 
-fn backed_member(state: &mut State, enum_name: &SimpleIdentifier) -> Option<BackedEnumMember> {
+fn backed_member(state: &mut State) -> Option<BackedEnumMember> {
     let _has_attributes = attributes::gather_attributes(state);
 
     let current = state.stream.current();
@@ -232,5 +231,5 @@ fn backed_member(state: &mut State, enum_name: &SimpleIdentifier) -> Option<Back
         }));
     }
 
-    Some(BackedEnumMember::Classish(member(state, false, enum_name)))
+    Some(BackedEnumMember::Classish(member(state, false)))
 }

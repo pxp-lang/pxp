@@ -73,7 +73,7 @@ pub fn parse(state: &mut State) -> StatementKind {
         members: {
             let mut members = Vec::new();
             while state.stream.current().kind != TokenKind::RightBrace {
-                members.push(member(state, has_abstract, &name));
+                members.push(member(state, has_abstract));
             }
 
             members
@@ -103,8 +103,6 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
     attributes::gather_attributes(state);
 
     let attributes = state.get_attributes();
-
-    let class_token = state.stream.current();
     let class = utils::skip(state, TokenKind::Class);
     let class_span = class;
 
@@ -152,9 +150,6 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
                 members.push(member(
                     state,
                     false,
-                    &SimpleIdentifier {
-                        token: *class_token,
-                    },
                 ));
             }
             members
@@ -187,7 +182,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
     )
 }
 
-pub fn member(state: &mut State, has_abstract: bool, name: &SimpleIdentifier) -> ClassishMember {
+pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
     let has_attributes = attributes::gather_attributes(state);
 
     if !has_attributes && state.stream.current().kind == TokenKind::Use {
@@ -195,7 +190,7 @@ pub fn member(state: &mut State, has_abstract: bool, name: &SimpleIdentifier) ->
     }
 
     if state.stream.current().kind == TokenKind::Var {
-        return ClassishMember::VariableProperty(properties::parse_var(state, Some(name)));
+        return ClassishMember::VariableProperty(properties::parse_var(state));
     }
 
     let modifiers = modifiers::collect(state);
@@ -207,7 +202,7 @@ pub fn member(state: &mut State, has_abstract: bool, name: &SimpleIdentifier) ->
 
     if state.stream.current().kind == TokenKind::Function {
         let modifiers = modifiers::method_group(state, modifiers);
-        let method = method(state, modifiers, Some(name));
+        let method = method(state, modifiers);
 
         return match method {
             Method::Abstract(method) => {
@@ -239,7 +234,7 @@ pub fn member(state: &mut State, has_abstract: bool, name: &SimpleIdentifier) ->
 
     // e.g: public static
     let modifiers = modifiers::property_group(state, modifiers);
-    let property = ClassishMember::Property(properties::parse(state, Some(name), modifiers));
+    let property = ClassishMember::Property(properties::parse(state, modifiers));
 
     property
 }

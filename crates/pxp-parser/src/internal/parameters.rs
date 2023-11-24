@@ -78,7 +78,6 @@ pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
 
 pub fn constructor_parameter_list(
     state: &mut State,
-    class: Option<&SimpleIdentifier>,
 ) -> ConstructorParameterList {
     let comments = state.stream.comments();
 

@@ -18,7 +18,6 @@ use pxp_ast::functions::FunctionBody;
 use pxp_ast::functions::FunctionStatement;
 use pxp_ast::functions::MethodBody;
 use pxp_ast::functions::ReturnType;
-use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::modifiers::MethodModifierGroup;
 use pxp_ast::Expression;
 use pxp_ast::ExpressionKind;
@@ -26,12 +25,6 @@ use pxp_ast::StatementKind;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
-
-pub enum MethodType {
-    Abstract,
-    Concrete,
-    DependingOnModifiers,
-}
 
 pub enum Method {
     Abstract(AbstractMethod),
@@ -246,7 +239,6 @@ pub fn function(state: &mut State) -> StatementKind {
 pub fn method(
     state: &mut State,
     modifiers: MethodModifierGroup,
-    class: Option<&SimpleIdentifier>,
 ) -> Method {
     let comments = state.stream.comments();
     let attributes = state.get_attributes();
@@ -267,7 +259,7 @@ pub fn method(
     let is_constructor = symbol.is_some() && symbol.unwrap() == b"__construct";
 
     if is_constructor {
-        let parameters = parameters::constructor_parameter_list(state, class);
+        let parameters = parameters::constructor_parameter_list(state);
 
         return if state.stream.current().kind == TokenKind::LeftBrace {
             let body = MethodBody {

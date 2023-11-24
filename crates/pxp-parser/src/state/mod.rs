@@ -1,5 +1,4 @@
 use std::collections::VecDeque;
-use std::fmt::Display;
 
 use pxp_ast::attributes::AttributeGroup;
 use pxp_ast::identifiers::SimpleIdentifier;
@@ -75,16 +74,6 @@ impl<'a> State<'a> {
 
     pub fn diagnostic(&mut self, kind: DiagnosticKind, severity: Severity, span: Span) {
         self.diagnostics.push(Diagnostic::new(kind, severity, span));
-    }
-
-    pub fn named<T: Display + ?Sized>(&self, name: &T) -> String {
-        match self.namespace() {
-            Some(Scope::Namespace(n)) | Some(Scope::BracedNamespace(Some(n))) => {
-                unimplemented!()
-                // format!("{}\\{}", n, name)
-            }
-            _ => name.to_string(),
-        }
     }
 
     pub fn enter(&mut self, scope: Scope) {

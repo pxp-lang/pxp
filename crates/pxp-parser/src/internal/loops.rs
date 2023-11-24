@@ -231,7 +231,6 @@ fn loop_level(state: &mut State) -> Level {
 
     if let Token {
         kind: TokenKind::LiteralInteger,
-        span,
         ..
     } = current
     {
