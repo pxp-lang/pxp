@@ -16,10 +16,6 @@ use pxp_token::TokenKind;
 
 #[inline(always)]
 pub fn class_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ClassModifierGroup {
-    let start = input.first().unwrap().0;
-    let end = input.last().unwrap().0;
-    let span = Span::new(start.start, end.end);
-
     let modifiers = input
         .iter()
         .filter_map(|(span, token)| match token {
@@ -38,9 +34,13 @@ pub fn class_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ClassMod
         })
         .collect::<Vec<ClassModifier>>();
 
-    let group = ClassModifierGroup { modifiers, span };
+    let group = ClassModifierGroup { modifiers };
 
     if group.has_abstract() && group.has_final() {
+        let start = input.first().unwrap().0;
+        let end = input.last().unwrap().0;
+        let span = Span::new(start.start, end.end);
+
         state.diagnostic(
             DiagnosticKind::CannotUseFinalWithAbstract,
             Severity::Error,
@@ -52,52 +52,43 @@ pub fn class_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ClassMod
 }
 
 #[inline(always)]
-pub fn method_group(input: Vec<(Span, TokenKind)>) -> MethodModifierGroup {
-    let mut final_span = None;
-    let mut abstract_span = None;
-
+pub fn method_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> MethodModifierGroup {
     let modifiers = input
         .iter()
-        .map(|(span, token)| match token {
-            TokenKind::Final => {
-                final_span = Some(*span);
-                if let Some(abstract_span) = abstract_span {
-                    // Err(
-                    //     error::final_and_abstract_modifiers_combined_for_class_member(
-                    //         *span,
-                    //         abstract_span,
-                    //     ),
-                    // )
-                    todo!("tolerant mode")
-                } else {
-                    MethodModifier::Final(*span)
-                }
+        .filter_map(|(span, token)| match token {
+            TokenKind::Final => Some(MethodModifier::Final(*span)),
+            TokenKind::Abstract => Some(MethodModifier::Abstract(*span)),
+            TokenKind::Private => Some(MethodModifier::Private(*span)),
+            TokenKind::Protected => Some(MethodModifier::Protected(*span)),
+            TokenKind::Public => Some(MethodModifier::Public(*span)),
+            TokenKind::Static => Some(MethodModifier::Static(*span)),
+            _ => {
+                state.diagnostic(
+                    DiagnosticKind::InvalidMethodModifier,
+                    Severity::Error,
+                    *span
+                );
+
+                None
             }
-            TokenKind::Abstract => {
-                abstract_span = Some(*span);
-                if let Some(final_span) = final_span {
-                    todo!("tolerant mode")
-                    // Err(
-                    //     error::final_and_abstract_modifiers_combined_for_class_member(
-                    //         final_span, *span,
-                    //     ),
-                    // )
-                } else {
-                    MethodModifier::Abstract(*span)
-                }
-            }
-            TokenKind::Private => MethodModifier::Private(*span),
-            TokenKind::Protected => MethodModifier::Protected(*span),
-            TokenKind::Public => MethodModifier::Public(*span),
-            TokenKind::Static => MethodModifier::Static(*span),
-            _ => todo!("tolerant mode"), /*Err(error::modifier_cannot_be_used_for_class_method(
-                                             token.to_string(),
-                                             *span,
-                                         ))*/
         })
         .collect::<Vec<MethodModifier>>();
 
-    MethodModifierGroup { modifiers }
+    let group = MethodModifierGroup { modifiers };
+
+    if group.has_abstract() && group.has_final() {
+        let start = input.first().unwrap().0;
+        let end = input.last().unwrap().0;
+        let span = Span::new(start.start, end.end);
+
+        state.diagnostic(
+            DiagnosticKind::CannotUseFinalWithAbstract,
+            Severity::Error,
+            span
+        );
+    }
+
+    group
 }
 
 #[inline(always)]

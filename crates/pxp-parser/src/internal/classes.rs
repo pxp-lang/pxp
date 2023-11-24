@@ -205,7 +205,8 @@ pub fn member(state: &mut State, has_abstract: bool, name: &SimpleIdentifier) ->
     }
 
     if state.stream.current().kind == TokenKind::Function {
-        let method = method(state, modifiers::method_group(modifiers), Some(name));
+        let modifiers = modifiers::method_group(state, modifiers);
+        let method = method(state, modifiers, Some(name));
 
         return match method {
             Method::Abstract(method) => {

@@ -23,6 +23,7 @@ pub enum DiagnosticKind {
     CannotUseReservedKeywordAsLabel,
     CannotUseReservedKeywordAsConstantName,
     InvalidClassModifier,
+    InvalidMethodModifier,
     CannotUseFinalWithAbstract,
     UnexpectedEndOfFile,
 }
@@ -53,7 +54,8 @@ impl Display for DiagnosticKind {
             DiagnosticKind::CannotUseReservedKeywordAsLabel => write!(f, "cannot use reserved keyword as label"),
             DiagnosticKind::CannotUseReservedKeywordAsConstantName => write!(f, "cannot use reserved keyword as constant name"),
             DiagnosticKind::InvalidClassModifier => write!(f, "invalid class modifier"),
-            DiagnosticKind::CannotUseFinalWithAbstract => write!(f, "cannot use final on an abstract class"),
+            DiagnosticKind::InvalidMethodModifier => write!(f, "invalid method modifier"),
+            DiagnosticKind::CannotUseFinalWithAbstract => write!(f, "cannot use final and abstract together"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }
