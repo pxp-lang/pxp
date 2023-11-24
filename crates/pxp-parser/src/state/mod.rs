@@ -69,6 +69,10 @@ impl<'a> State<'a> {
         self.stack.iter().next()
     }
 
+    pub fn previous_scope(&self) -> Option<&Scope> {
+        self.stack.iter().nth(self.stack.len() - 2)
+    }
+
     pub fn diagnostic(&mut self, kind: DiagnosticKind, severity: Severity, span: Span) {
         self.diagnostics.push(Diagnostic::new(kind, severity, span));
     }

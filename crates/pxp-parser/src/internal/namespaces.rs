@@ -11,6 +11,8 @@ use pxp_ast::namespaces::NamespaceStatement;
 use pxp_ast::namespaces::UnbracedNamespace;
 use pxp_ast::Block;
 use pxp_ast::StatementKind;
+use pxp_diagnostics::DiagnosticKind;
+use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
@@ -23,10 +25,11 @@ pub fn namespace(state: &mut State) -> StatementKind {
     if let Some(name) = &name {
         if current.kind != TokenKind::LeftBrace {
             if let Some(NamespaceType::Braced) = state.namespace_type() {
-                todo!("tolerant mode")
-                // return Err(error::unbraced_namespace_declarations_in_braced_context(
-                //     current.span,
-                // ));
+                state.diagnostic(
+                    DiagnosticKind::CannotMixBracketedAndUnbracketedNamespaceDeclarations,
+                    Severity::Error,
+                    current.span,
+                );
             }
 
             return unbraced_namespace(state, start, name.clone());
@@ -34,12 +37,23 @@ pub fn namespace(state: &mut State) -> StatementKind {
     }
 
     match state.namespace_type() {
-        Some(NamespaceType::Unbraced) => todo!("tolerant mode") /*Err(
-            error::braced_namespace_declarations_in_unbraced_context(current.span),
-        )*/,
+        Some(NamespaceType::Unbraced) => {
+            state.diagnostic(
+                DiagnosticKind::CannotMixBracketedAndUnbracketedNamespaceDeclarations,
+                Severity::Error,
+                current.span,
+            );
+
+            braced_namespace(state, start, name)
+        },
         Some(NamespaceType::Braced) if state.namespace().is_some() => {
-            todo!("tolerant mode")
-            // Err(error::nested_namespace_declarations(start))
+            state.diagnostic(
+                DiagnosticKind::NestedNamespace,
+                Severity::Error,
+                current.span,
+            );
+
+            braced_namespace(state, start, name)
         }
         _ => braced_namespace(state, start, name),
     }
@@ -50,10 +64,16 @@ fn unbraced_namespace(state: &mut State, start: Span, name: SimpleIdentifier) ->
 
     let statements = scoped!(state, Scope::Namespace(name.clone()), {
         let mut statements = Block::new();
-        // since this is an unbraced namespace, as soon as we encouter another
-        // `namespace` token as a top level statement, this namespace scope ends.
-        // otherwise we will end up with nested namespace statements.
+
         while state.stream.current().kind != TokenKind::Namespace && !state.stream.is_eof() {
+            // NOTE: If we encounter a right-brace here, it's possible that we're in a nested namespace.
+            // We should check to see if the previous scope is a BracedNamespace and break out of this scope.
+            if state.stream.current().kind == TokenKind::RightBrace {
+                if let Some(Scope::BracedNamespace(_)) = state.previous_scope() {
+                    break;
+                }
+            }
+
             statements.push(crate::top_level_statement(state));
         }
 

@@ -30,6 +30,8 @@ pub enum DiagnosticKind {
     CannotUseFinalWithPrivateOnConstant,
     DuplicateModifier,
     MultipleVisibilityModifiers,
+    CannotMixBracketedAndUnbracketedNamespaceDeclarations,
+    NestedNamespace,
     UnexpectedEndOfFile,
 }
 
@@ -66,6 +68,8 @@ impl Display for DiagnosticKind {
             DiagnosticKind::CannotUseFinalWithPrivateOnConstant => write!(f, "private constant cannot be final as it is not visible to other classes"),
             DiagnosticKind::DuplicateModifier => write!(f, "duplicate modifier"),
             DiagnosticKind::MultipleVisibilityModifiers => write!(f, "cannot have multiple visibility modifiers"),
+            DiagnosticKind::CannotMixBracketedAndUnbracketedNamespaceDeclarations => write!(f, "cannot mix bracketed and unbracketed namespace declarations"),
+            DiagnosticKind::NestedNamespace => write!(f, "cannot nest namespaces"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }
