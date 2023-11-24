@@ -92,19 +92,24 @@ pub fn method_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> MethodM
 }
 
 #[inline(always)]
-pub fn property_group(input: Vec<(Span, TokenKind)>) -> PropertyModifierGroup {
+pub fn property_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> PropertyModifierGroup {
     let modifiers = input
         .iter()
-        .map(|(span, token)| match token {
-            TokenKind::Readonly => PropertyModifier::Readonly(*span),
-            TokenKind::Static => PropertyModifier::Static(*span),
-            TokenKind::Public => PropertyModifier::Public(*span),
-            TokenKind::Protected => PropertyModifier::Protected(*span),
-            TokenKind::Private => PropertyModifier::Private(*span),
-            _ => todo!("tolerant mode"), /*Err(error::modifier_cannot_be_used_for_property(
-                                             token.to_string(),
-                                             *span,
-                                         ))*/
+        .filter_map(|(span, token)| match token {
+            TokenKind::Readonly => Some(PropertyModifier::Readonly(*span)),
+            TokenKind::Static => Some(PropertyModifier::Static(*span)),
+            TokenKind::Public => Some(PropertyModifier::Public(*span)),
+            TokenKind::Protected => Some(PropertyModifier::Protected(*span)),
+            TokenKind::Private => Some(PropertyModifier::Private(*span)),
+            _ => {
+                state.diagnostic(
+                    DiagnosticKind::InvalidPropertyModifier,
+                    Severity::Error,
+                    *span
+                );
+
+                None
+            }
         })
         .collect::<Vec<PropertyModifier>>();
 

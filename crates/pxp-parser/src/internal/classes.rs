@@ -237,7 +237,7 @@ pub fn member(state: &mut State, has_abstract: bool, name: &SimpleIdentifier) ->
     }
 
     // e.g: public static
-    let modifiers = modifiers::property_group(modifiers);
+    let modifiers = modifiers::property_group(state, modifiers);
     let property = ClassishMember::Property(properties::parse(state, Some(name), modifiers));
 
     property
