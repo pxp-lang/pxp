@@ -86,7 +86,8 @@ pub fn constructor_parameter_list(
         &|state| {
             attributes::gather_attributes(state);
 
-            let modifiers = modifiers::promoted_property_group(modifiers::collect(state));
+            let modifiers = modifiers::collect(state);
+            let modifiers = modifiers::promoted_property_group(state, modifiers);
 
             let ty = data_type::optional_data_type(state);
 

@@ -117,64 +117,64 @@ pub fn property_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Prope
 }
 
 #[inline(always)]
-pub fn promoted_property_group(input: Vec<(Span, TokenKind)>) -> PromotedPropertyModifierGroup {
+pub fn promoted_property_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> PromotedPropertyModifierGroup {
     let modifiers = input
         .iter()
-        .map(|(span, token)| match token {
-            TokenKind::Readonly => PromotedPropertyModifier::Readonly(*span),
-            TokenKind::Private => PromotedPropertyModifier::Private(*span),
-            TokenKind::Protected => PromotedPropertyModifier::Protected(*span),
-            TokenKind::Public => PromotedPropertyModifier::Public(*span),
-            _ => todo!("tolerant mode"), /*Err(error::modifier_cannot_be_used_for_promoted_property(
-                                             token.to_string(),
-                                             *span,
-                                         ))*/
+        .filter_map(|(span, token)| match token {
+            TokenKind::Readonly => Some(PromotedPropertyModifier::Readonly(*span)),
+            TokenKind::Private => Some(PromotedPropertyModifier::Private(*span)),
+            TokenKind::Protected => Some(PromotedPropertyModifier::Protected(*span)),
+            TokenKind::Public => Some(PromotedPropertyModifier::Public(*span)),
+            _ => {
+                state.diagnostic(
+                    DiagnosticKind::InvalidPropertyModifier,
+                    Severity::Error,
+                    *span
+                );
+
+                None
+            }
         })
         .collect::<Vec<PromotedPropertyModifier>>();
 
     PromotedPropertyModifierGroup { modifiers }
 }
 
-pub fn constant_group(input: Vec<(Span, TokenKind)>) -> ConstantModifierGroup {
-    let mut final_span = None;
-    let mut private_span = None;
-
+pub fn constant_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ConstantModifierGroup {
     let modifiers = input
         .iter()
-        .map(|(span, token)| match token {
-            TokenKind::Protected => ConstantModifier::Protected(*span),
-            TokenKind::Public => ConstantModifier::Public(*span),
-            TokenKind::Private => {
-                private_span = Some(*span);
-                if let Some(final_span) = final_span {
-                    todo!("tolerant mode")
-                    // Err(error::final_and_private_modifiers_combined_for_constant(
-                    //     final_span, *span,
-                    // ))
-                } else {
-                    ConstantModifier::Final(*span)
-                }
+        .filter_map(|(span, token)| match token {
+            TokenKind::Protected => Some(ConstantModifier::Protected(*span)),
+            TokenKind::Public => Some(ConstantModifier::Public(*span)),
+            TokenKind::Private => Some(ConstantModifier::Private(*span)),
+            TokenKind::Final => Some(ConstantModifier::Final(*span)),
+            _ => {
+                state.diagnostic(
+                    DiagnosticKind::InvalidConstantModifier,
+                    Severity::Error,
+                    *span
+                );
+
+                None
             }
-            TokenKind::Final => {
-                final_span = Some(*span);
-                if let Some(private_span) = private_span {
-                    todo!("tolerant mode")
-                    // Err(error::final_and_private_modifiers_combined_for_constant(
-                    //     *span,
-                    //     private_span,
-                    // ))
-                } else {
-                    ConstantModifier::Final(*span)
-                }
-            }
-            _ => todo!("tolerant mode"), /* Err(error::modifier_cannot_be_used_for_constant(
-                                             token.to_string(),
-                                             *span,
-                                         )) */
         })
         .collect::<Vec<ConstantModifier>>();
 
-    ConstantModifierGroup { modifiers }
+    let group = ConstantModifierGroup { modifiers };
+
+    if group.has_final() && group.has_private() {
+        let start = input.first().unwrap().0;
+        let end = input.last().unwrap().0;
+        let span = Span::new(start.start, end.end);
+
+        state.diagnostic(
+            DiagnosticKind::CannotUseFinalWithPrivateOnConstant,
+            Severity::Error,
+            span
+        );
+    }
+
+    group
 }
 
 pub fn collect(state: &mut State) -> Vec<(Span, TokenKind)> {

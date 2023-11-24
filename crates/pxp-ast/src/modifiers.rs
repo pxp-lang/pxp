@@ -288,6 +288,12 @@ impl ConstantModifierGroup {
             .any(|modifier| matches!(modifier, ConstantModifier::Final { .. }))
     }
 
+    pub fn has_private(&self) -> bool {
+        self.modifiers
+            .iter()
+            .any(|modifier| matches!(modifier, ConstantModifier::Private { .. }))
+    }
+
     pub fn visibility(&self) -> Visibility {
         self.modifiers
             .iter()

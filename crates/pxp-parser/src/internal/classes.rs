@@ -201,7 +201,8 @@ pub fn member(state: &mut State, has_abstract: bool, name: &SimpleIdentifier) ->
     let modifiers = modifiers::collect(state);
 
     if state.stream.current().kind == TokenKind::Const {
-        return ClassishMember::Constant(classish(state, modifiers::constant_group(modifiers)));
+        let modifiers = modifiers::constant_group(state, modifiers);
+        return ClassishMember::Constant(classish(state, modifiers));
     }
 
     if state.stream.current().kind == TokenKind::Function {

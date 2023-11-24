@@ -25,7 +25,9 @@ pub enum DiagnosticKind {
     InvalidClassModifier,
     InvalidMethodModifier,
     InvalidPropertyModifier,
+    InvalidConstantModifier,
     CannotUseFinalWithAbstract,
+    CannotUseFinalWithPrivateOnConstant,
     UnexpectedEndOfFile,
 }
 
@@ -57,7 +59,9 @@ impl Display for DiagnosticKind {
             DiagnosticKind::InvalidClassModifier => write!(f, "invalid class modifier"),
             DiagnosticKind::InvalidMethodModifier => write!(f, "invalid method modifier"),
             DiagnosticKind::InvalidPropertyModifier => write!(f, "invalid property modifier"),
+            DiagnosticKind::InvalidConstantModifier => write!(f, "invalid constant modifier"),
             DiagnosticKind::CannotUseFinalWithAbstract => write!(f, "cannot use final and abstract together"),
+            DiagnosticKind::CannotUseFinalWithPrivateOnConstant => write!(f, "private constant cannot be final as it is not visible to other classes"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }
