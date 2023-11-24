@@ -234,9 +234,9 @@ pub enum ClassModifier {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-#[repr(transparent)]
 pub struct ClassModifierGroup {
     pub modifiers: Vec<ClassModifier>,
+    pub span: Span,
 }
 
 impl ClassModifierGroup {

@@ -29,7 +29,8 @@ use pxp_token::TokenKind;
 pub fn parse(state: &mut State) -> StatementKind {
     let attributes = state.get_attributes();
 
-    let modifiers = modifiers::class_group(modifiers::collect(state));
+    let modifiers = modifiers::collect(state);
+    let modifiers = modifiers::class_group(state, modifiers);
     let class = utils::skip(state, TokenKind::Class);
     let name = identifiers::type_identifier(state);
     let current = state.stream.current();

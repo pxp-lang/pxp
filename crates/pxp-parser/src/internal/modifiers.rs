@@ -9,49 +9,46 @@ use pxp_ast::modifiers::PromotedPropertyModifier;
 use pxp_ast::modifiers::PromotedPropertyModifierGroup;
 use pxp_ast::modifiers::PropertyModifier;
 use pxp_ast::modifiers::PropertyModifierGroup;
+use pxp_diagnostics::DiagnosticKind;
+use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
 #[inline(always)]
-pub fn class_group(input: Vec<(Span, TokenKind)>) -> ClassModifierGroup {
-    let mut final_span = None;
-    let mut abstract_span = None;
+pub fn class_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ClassModifierGroup {
+    let start = input.first().unwrap().0;
+    let end = input.last().unwrap().0;
+    let span = Span::new(start.start, end.end);
 
     let modifiers = input
         .iter()
-        .map(|(span, token)| match token {
-            TokenKind::Readonly => ClassModifier::Readonly(*span),
-            TokenKind::Final => {
-                final_span = Some(*span);
-                if let Some(abstract_span) = abstract_span {
-                    todo!("tolerant mode")
-                    // Err(error::final_and_abstract_modifiers_combined_for_class(
-                    //     *span,
-                    //     abstract_span,
-                    // ))
-                } else {
-                    ClassModifier::Final(*span)
-                }
+        .filter_map(|(span, token)| match token {
+            TokenKind::Readonly => Some(ClassModifier::Readonly(*span)),
+            TokenKind::Final => Some(ClassModifier::Final(*span)),
+            TokenKind::Abstract => Some(ClassModifier::Abstract(*span)),
+            _ => {
+                state.diagnostic(
+                    DiagnosticKind::InvalidClassModifier,
+                    Severity::Error,
+                    *span
+                );
+
+                None
             }
-            TokenKind::Abstract => {
-                abstract_span = Some(*span);
-                if let Some(final_span) = final_span {
-                    todo!("tolerant mode")
-                    // Err(error::final_and_abstract_modifiers_combined_for_class(
-                    //     final_span, *span,
-                    // ))
-                } else {
-                    ClassModifier::Abstract(*span)
-                }
-            }
-            _ => todo!("tolerant mode"), /*Err(error::modifier_cannot_be_used_for_class(
-                                             token.to_string(),
-                                             *span,
-                                         ))*/
         })
         .collect::<Vec<ClassModifier>>();
 
-    ClassModifierGroup { modifiers }
+    let group = ClassModifierGroup { modifiers, span };
+
+    if group.has_abstract() && group.has_final() {
+        state.diagnostic(
+            DiagnosticKind::CannotUseFinalWithAbstract,
+            Severity::Error,
+            span
+        );
+    }
+
+    group
 }
 
 #[inline(always)]
