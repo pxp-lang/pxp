@@ -32,6 +32,13 @@ pub enum DiagnosticKind {
     MultipleVisibilityModifiers,
     CannotMixBracketedAndUnbracketedNamespaceDeclarations,
     NestedNamespace,
+    PromotedPropertyCannotBeVariadic,
+    ForbiddenTypeUsedInProperty,
+    ReadonlyPropertyMustHaveType,
+    CannotUsePositionalArgumentAfterNamedArgument,
+    PositionalArgumentsOnly,
+    OnlyAllowedOneArgument,
+    ArgumentRequired,
     UnexpectedEndOfFile,
 }
 
@@ -70,6 +77,13 @@ impl Display for DiagnosticKind {
             DiagnosticKind::MultipleVisibilityModifiers => write!(f, "cannot have multiple visibility modifiers"),
             DiagnosticKind::CannotMixBracketedAndUnbracketedNamespaceDeclarations => write!(f, "cannot mix bracketed and unbracketed namespace declarations"),
             DiagnosticKind::NestedNamespace => write!(f, "cannot nest namespaces"),
+            DiagnosticKind::PromotedPropertyCannotBeVariadic => write!(f, "promoted property cannot be variadic"),
+            DiagnosticKind::ForbiddenTypeUsedInProperty => write!(f, "forbidden type used in property"),
+            DiagnosticKind::ReadonlyPropertyMustHaveType => write!(f, "readonly property must have type"),
+            DiagnosticKind::CannotUsePositionalArgumentAfterNamedArgument => write!(f, "cannot use positional argument after named argument"),
+            DiagnosticKind::PositionalArgumentsOnly => write!(f, "only positional arguments are allowed"),
+            DiagnosticKind::OnlyAllowedOneArgument => write!(f, "only one argument is allowed"),
+            DiagnosticKind::ArgumentRequired => write!(f, "argument required"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }

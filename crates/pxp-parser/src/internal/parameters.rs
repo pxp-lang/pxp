@@ -13,6 +13,8 @@ use pxp_ast::functions::ConstructorParameterList;
 use pxp_ast::functions::FunctionParameter;
 use pxp_ast::functions::FunctionParameterList;
 use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_diagnostics::DiagnosticKind;
+use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;
 
 pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
@@ -106,14 +108,11 @@ pub fn constructor_parameter_list(
                 state.stream.next();
                 let var = variables::simple_variable(state);
                 if !modifiers.is_empty() {
-                    todo!("tolerant mode")
-                    // return Err(error::variadic_promoted_property(
-                    //     state,
-                    //     class,
-                    //     &var,
-                    //     current.span,
-                    //     modifiers.modifiers.first().unwrap(),
-                    // ));
+                    state.diagnostic(
+                        DiagnosticKind::PromotedPropertyCannotBeVariadic,
+                        Severity::Error,
+                        current.span,
+                    );
                 }
 
                 (Some(current.span), var)
@@ -127,24 +126,20 @@ pub fn constructor_parameter_list(
                 match &ty {
                     Some(ty) => {
                         if ty.includes_callable() || ty.is_bottom() {
-                            todo!("tolerant mode")
-                            // return Err(error::forbidden_type_used_in_property(
-                            //     state,
-                            //     class,
-                            //     &var,
-                            //     ty.clone(),
-                            // ));
+                            state.diagnostic(
+                                DiagnosticKind::ForbiddenTypeUsedInProperty,
+                                Severity::Error,
+                                ty.first_span(),
+                            );
                         }
                     }
                     None => {
                         if let Some(modifier) = modifiers.get_readonly() {
-                            todo!("tolerant mode")
-                            // return Err(error::missing_type_for_readonly_property(
-                            //     state,
-                            //     class,
-                            //     &var,
-                            //     modifier.span(),
-                            // ));
+                            state.diagnostic(
+                                DiagnosticKind::ReadonlyPropertyMustHaveType,
+                                Severity::Error,
+                                modifier.span(),
+                            );
                         }
                     }
                 }
@@ -193,11 +188,11 @@ pub fn argument_list(state: &mut State) -> ArgumentList {
         if named {
             has_used_named_arguments = true;
         } else if has_used_named_arguments {
-            todo!("tolerant mode")
-            // return Err(error::cannot_use_positional_argument_after_named_argument(
-            //     span,
-            //     state.stream.current().span,
-            // ));
+            state.diagnostic(
+                DiagnosticKind::CannotUsePositionalArgumentAfterNamedArgument,
+                Severity::Error,
+                span,
+            );
         }
 
         arguments.push(argument);
@@ -233,19 +228,19 @@ pub fn single_argument(
         let span = state.stream.current().span;
         let (named, argument) = argument(state);
         if only_positional && named {
-            todo!("tolerant mode")
-            // return Some(Err(error::only_positional_arguments_are_accepted(
-            //     span,
-            //     state.stream.current().span,
-            // )));
+            state.diagnostic(
+                DiagnosticKind::PositionalArgumentsOnly,
+                Severity::Error,
+                span,
+            );
         }
 
         if first_argument.is_some() {
-            todo!("tolerant mode")
-            // return Some(Err(error::only_one_argument_is_accepted(
-            //     span,
-            //     state.stream.current().span,
-            // )));
+            state.diagnostic(
+                DiagnosticKind::OnlyAllowedOneArgument,
+                Severity::Error,
+                span,
+            );
         }
 
         first_argument = Some(argument);
@@ -258,11 +253,11 @@ pub fn single_argument(
     }
 
     if required && first_argument.is_none() {
-        todo!("tolerant mode")
-        // return Some(Err(error::argument_is_required(
-        //     state.stream.current().span,
-        //     state.stream.current().span,
-        // )));
+        state.diagnostic(
+            DiagnosticKind::ArgumentRequired,
+            Severity::Error,
+            state.stream.current().span,
+        );
     }
 
     let end = utils::skip_right_parenthesis(state);
