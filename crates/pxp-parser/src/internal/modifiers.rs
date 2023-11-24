@@ -196,12 +196,11 @@ pub fn collect(state: &mut State) -> Vec<(Span, TokenKind)> {
 
     while collectable_tokens.contains(&current_kind) {
         if let Some((span, _)) = collected.iter().find(|(_, kind)| kind == &current_kind) {
-            todo!("tolerant mode");
-            // return Err(error::multiple_modifiers(
-            //     current_kind.to_string(),
-            //     *span,
-            //     current_span,
-            // ));
+            state.diagnostic(
+                DiagnosticKind::DuplicateModifier,
+                Severity::Error,
+                *span
+            );
         }
 
         // guard against multiple visibility modifiers, we don't care where these modifiers are used.
@@ -209,17 +208,17 @@ pub fn collect(state: &mut State) -> Vec<(Span, TokenKind)> {
             current_kind,
             TokenKind::Public | TokenKind::Protected | TokenKind::Private
         ) {
-            if let Some((span, visibility)) = collected.iter().find(|(_, kind)| {
+            if let Some((span, _)) = collected.iter().find(|(_, kind)| {
                 matches!(
                     kind,
                     TokenKind::Public | TokenKind::Protected | TokenKind::Private
-                )
+                ) && kind != &current_kind
             }) {
-                todo!("tolerant mode")
-                // state.record(error::multiple_visibility_modifiers(
-                //     (visibility.to_string(), *span),
-                //     (current_kind.to_string(), current_span),
-                // ));
+                state.diagnostic(
+                    DiagnosticKind::MultipleVisibilityModifiers,
+                    Severity::Error,
+                    *span
+                );
             }
         }
 

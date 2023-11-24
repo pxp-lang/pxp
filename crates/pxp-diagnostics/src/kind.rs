@@ -28,6 +28,8 @@ pub enum DiagnosticKind {
     InvalidConstantModifier,
     CannotUseFinalWithAbstract,
     CannotUseFinalWithPrivateOnConstant,
+    DuplicateModifier,
+    MultipleVisibilityModifiers,
     UnexpectedEndOfFile,
 }
 
@@ -62,6 +64,8 @@ impl Display for DiagnosticKind {
             DiagnosticKind::InvalidConstantModifier => write!(f, "invalid constant modifier"),
             DiagnosticKind::CannotUseFinalWithAbstract => write!(f, "cannot use final and abstract together"),
             DiagnosticKind::CannotUseFinalWithPrivateOnConstant => write!(f, "private constant cannot be final as it is not visible to other classes"),
+            DiagnosticKind::DuplicateModifier => write!(f, "duplicate modifier"),
+            DiagnosticKind::MultipleVisibilityModifiers => write!(f, "cannot have multiple visibility modifiers"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
         }
     }
