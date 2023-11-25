@@ -47,7 +47,7 @@ macro_rules! expect_token {
 #[macro_export]
 macro_rules! expected_token_err {
     ([ $($expected:literal),+ $(,)? ], $state:expr $(,)?) => {{
-        Err($crate::expected_token!([$($expected),+], $state))
+        $crate::expected_token!([$($expected),+], $state)
     }};
 
     ($expected:literal, $state:expr $(,)?) => {

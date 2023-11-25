@@ -1,5 +1,3 @@
-use crate::error;
-use crate::error::ParseResult;
 use crate::state::State;
 use pxp_ast::modifiers::ClassModifier;
 use pxp_ast::modifiers::ClassModifierGroup;
@@ -11,184 +9,175 @@ use pxp_ast::modifiers::PromotedPropertyModifier;
 use pxp_ast::modifiers::PromotedPropertyModifierGroup;
 use pxp_ast::modifiers::PropertyModifier;
 use pxp_ast::modifiers::PropertyModifierGroup;
+use pxp_diagnostics::DiagnosticKind;
+use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
 #[inline(always)]
-pub fn class_group(input: Vec<(Span, TokenKind)>) -> ParseResult<ClassModifierGroup> {
-    let mut final_span = None;
-    let mut abstract_span = None;
-
+pub fn class_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ClassModifierGroup {
     let modifiers = input
         .iter()
-        .map(|(span, token)| match token {
-            TokenKind::Readonly => Ok(ClassModifier::Readonly(*span)),
-            TokenKind::Final => {
-                final_span = Some(*span);
-                if let Some(abstract_span) = abstract_span {
-                    todo!("tolerant mode")
-                    // Err(error::final_and_abstract_modifiers_combined_for_class(
-                    //     *span,
-                    //     abstract_span,
-                    // ))
-                } else {
-                    Ok(ClassModifier::Final(*span))
-                }
-            }
-            TokenKind::Abstract => {
-                abstract_span = Some(*span);
-                if let Some(final_span) = final_span {
-                    todo!("tolerant mode")
-                    // Err(error::final_and_abstract_modifiers_combined_for_class(
-                    //     final_span, *span,
-                    // ))
-                } else {
-                    Ok(ClassModifier::Abstract(*span))
-                }
-            }
-            _ => todo!("tolerant mode") /*Err(error::modifier_cannot_be_used_for_class(
-                token.to_string(),
-                *span,
-            ))*/,
-        })
-        .collect::<ParseResult<Vec<ClassModifier>>>()?;
+        .filter_map(|(span, token)| match token {
+            TokenKind::Readonly => Some(ClassModifier::Readonly(*span)),
+            TokenKind::Final => Some(ClassModifier::Final(*span)),
+            TokenKind::Abstract => Some(ClassModifier::Abstract(*span)),
+            _ => {
+                state.diagnostic(
+                    DiagnosticKind::InvalidClassModifier,
+                    Severity::Error,
+                    *span
+                );
 
-    Ok(ClassModifierGroup { modifiers })
+                None
+            }
+        })
+        .collect::<Vec<ClassModifier>>();
+
+    let group = ClassModifierGroup { modifiers };
+
+    if group.has_abstract() && group.has_final() {
+        let start = input.first().unwrap().0;
+        let end = input.last().unwrap().0;
+        let span = Span::new(start.start, end.end);
+
+        state.diagnostic(
+            DiagnosticKind::CannotUseFinalWithAbstract,
+            Severity::Error,
+            span
+        );
+    }
+
+    group
 }
 
 #[inline(always)]
-pub fn method_group(input: Vec<(Span, TokenKind)>) -> ParseResult<MethodModifierGroup> {
-    let mut final_span = None;
-    let mut abstract_span = None;
-
+pub fn method_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> MethodModifierGroup {
     let modifiers = input
         .iter()
-        .map(|(span, token)| match token {
-            TokenKind::Final => {
-                final_span = Some(*span);
-                if let Some(abstract_span) = abstract_span {
-                    // Err(
-                    //     error::final_and_abstract_modifiers_combined_for_class_member(
-                    //         *span,
-                    //         abstract_span,
-                    //     ),
-                    // )
-                    todo!("tolerant mode")
-                } else {
-                    Ok(MethodModifier::Final(*span))
-                }
-            }
-            TokenKind::Abstract => {
-                abstract_span = Some(*span);
-                if let Some(final_span) = final_span {
-                    todo!("tolerant mode")
-                    // Err(
-                    //     error::final_and_abstract_modifiers_combined_for_class_member(
-                    //         final_span, *span,
-                    //     ),
-                    // )
-                } else {
-                    Ok(MethodModifier::Abstract(*span))
-                }
-            }
-            TokenKind::Private => Ok(MethodModifier::Private(*span)),
-            TokenKind::Protected => Ok(MethodModifier::Protected(*span)),
-            TokenKind::Public => Ok(MethodModifier::Public(*span)),
-            TokenKind::Static => Ok(MethodModifier::Static(*span)),
-            _ => todo!("tolerant mode") /*Err(error::modifier_cannot_be_used_for_class_method(
-                token.to_string(),
-                *span,
-            ))*/,
-        })
-        .collect::<ParseResult<Vec<MethodModifier>>>()?;
+        .filter_map(|(span, token)| match token {
+            TokenKind::Final => Some(MethodModifier::Final(*span)),
+            TokenKind::Abstract => Some(MethodModifier::Abstract(*span)),
+            TokenKind::Private => Some(MethodModifier::Private(*span)),
+            TokenKind::Protected => Some(MethodModifier::Protected(*span)),
+            TokenKind::Public => Some(MethodModifier::Public(*span)),
+            TokenKind::Static => Some(MethodModifier::Static(*span)),
+            _ => {
+                state.diagnostic(
+                    DiagnosticKind::InvalidMethodModifier,
+                    Severity::Error,
+                    *span
+                );
 
-    Ok(MethodModifierGroup { modifiers })
+                None
+            }
+        })
+        .collect::<Vec<MethodModifier>>();
+
+    let group = MethodModifierGroup { modifiers };
+
+    if group.has_abstract() && group.has_final() {
+        let start = input.first().unwrap().0;
+        let end = input.last().unwrap().0;
+        let span = Span::new(start.start, end.end);
+
+        state.diagnostic(
+            DiagnosticKind::CannotUseFinalWithAbstract,
+            Severity::Error,
+            span
+        );
+    }
+
+    group
 }
 
 #[inline(always)]
-pub fn property_group(input: Vec<(Span, TokenKind)>) -> ParseResult<PropertyModifierGroup> {
+pub fn property_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> PropertyModifierGroup {
     let modifiers = input
         .iter()
-        .map(|(span, token)| match token {
-            TokenKind::Readonly => Ok(PropertyModifier::Readonly(*span)),
-            TokenKind::Static => Ok(PropertyModifier::Static(*span)),
-            TokenKind::Public => Ok(PropertyModifier::Public(*span)),
-            TokenKind::Protected => Ok(PropertyModifier::Protected(*span)),
-            TokenKind::Private => Ok(PropertyModifier::Private(*span)),
-            _ => todo!("tolerant mode") /*Err(error::modifier_cannot_be_used_for_property(
-                token.to_string(),
-                *span,
-            ))*/,
-        })
-        .collect::<ParseResult<Vec<PropertyModifier>>>()?;
+        .filter_map(|(span, token)| match token {
+            TokenKind::Readonly => Some(PropertyModifier::Readonly(*span)),
+            TokenKind::Static => Some(PropertyModifier::Static(*span)),
+            TokenKind::Public => Some(PropertyModifier::Public(*span)),
+            TokenKind::Protected => Some(PropertyModifier::Protected(*span)),
+            TokenKind::Private => Some(PropertyModifier::Private(*span)),
+            _ => {
+                state.diagnostic(
+                    DiagnosticKind::InvalidPropertyModifier,
+                    Severity::Error,
+                    *span
+                );
 
-    Ok(PropertyModifierGroup { modifiers })
+                None
+            }
+        })
+        .collect::<Vec<PropertyModifier>>();
+
+    PropertyModifierGroup { modifiers }
 }
 
 #[inline(always)]
-pub fn promoted_property_group(
-    input: Vec<(Span, TokenKind)>,
-) -> ParseResult<PromotedPropertyModifierGroup> {
+pub fn promoted_property_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> PromotedPropertyModifierGroup {
     let modifiers = input
         .iter()
-        .map(|(span, token)| match token {
-            TokenKind::Readonly => Ok(PromotedPropertyModifier::Readonly(*span)),
-            TokenKind::Private => Ok(PromotedPropertyModifier::Private(*span)),
-            TokenKind::Protected => Ok(PromotedPropertyModifier::Protected(*span)),
-            TokenKind::Public => Ok(PromotedPropertyModifier::Public(*span)),
-            _ => todo!("tolerant mode") /*Err(error::modifier_cannot_be_used_for_promoted_property(
-                token.to_string(),
-                *span,
-            ))*/,
-        })
-        .collect::<ParseResult<Vec<PromotedPropertyModifier>>>()?;
+        .filter_map(|(span, token)| match token {
+            TokenKind::Readonly => Some(PromotedPropertyModifier::Readonly(*span)),
+            TokenKind::Private => Some(PromotedPropertyModifier::Private(*span)),
+            TokenKind::Protected => Some(PromotedPropertyModifier::Protected(*span)),
+            TokenKind::Public => Some(PromotedPropertyModifier::Public(*span)),
+            _ => {
+                state.diagnostic(
+                    DiagnosticKind::InvalidPropertyModifier,
+                    Severity::Error,
+                    *span
+                );
 
-    Ok(PromotedPropertyModifierGroup { modifiers })
+                None
+            }
+        })
+        .collect::<Vec<PromotedPropertyModifier>>();
+
+    PromotedPropertyModifierGroup { modifiers }
 }
 
-pub fn constant_group(input: Vec<(Span, TokenKind)>) -> ParseResult<ConstantModifierGroup> {
-    let mut final_span = None;
-    let mut private_span = None;
-
+pub fn constant_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ConstantModifierGroup {
     let modifiers = input
         .iter()
-        .map(|(span, token)| match token {
-            TokenKind::Protected => Ok(ConstantModifier::Protected(*span)),
-            TokenKind::Public => Ok(ConstantModifier::Public(*span)),
-            TokenKind::Private => {
-                private_span = Some(*span);
-                if let Some(final_span) = final_span {
-                    todo!("tolerant mode")
-                    // Err(error::final_and_private_modifiers_combined_for_constant(
-                    //     final_span, *span,
-                    // ))
-                } else {
-                    Ok(ConstantModifier::Final(*span))
-                }
-            }
-            TokenKind::Final => {
-                final_span = Some(*span);
-                if let Some(private_span) = private_span {
-                    todo!("tolerant mode")
-                    // Err(error::final_and_private_modifiers_combined_for_constant(
-                    //     *span,
-                    //     private_span,
-                    // ))
-                } else {
-                    Ok(ConstantModifier::Final(*span))
-                }
-            }
-            _ => todo!("tolerant mode") /* Err(error::modifier_cannot_be_used_for_constant(
-                token.to_string(),
-                *span,
-            )) */,
-        })
-        .collect::<ParseResult<Vec<ConstantModifier>>>()?;
+        .filter_map(|(span, token)| match token {
+            TokenKind::Protected => Some(ConstantModifier::Protected(*span)),
+            TokenKind::Public => Some(ConstantModifier::Public(*span)),
+            TokenKind::Private => Some(ConstantModifier::Private(*span)),
+            TokenKind::Final => Some(ConstantModifier::Final(*span)),
+            _ => {
+                state.diagnostic(
+                    DiagnosticKind::InvalidConstantModifier,
+                    Severity::Error,
+                    *span
+                );
 
-    Ok(ConstantModifierGroup { modifiers })
+                None
+            }
+        })
+        .collect::<Vec<ConstantModifier>>();
+
+    let group = ConstantModifierGroup { modifiers };
+
+    if group.has_final() && group.has_private() {
+        let start = input.first().unwrap().0;
+        let end = input.last().unwrap().0;
+        let span = Span::new(start.start, end.end);
+
+        state.diagnostic(
+            DiagnosticKind::CannotUseFinalWithPrivateOnConstant,
+            Severity::Error,
+            span
+        );
+    }
+
+    group
 }
 
-pub fn collect(state: &mut State) -> ParseResult<Vec<(Span, TokenKind)>> {
+pub fn collect(state: &mut State) -> Vec<(Span, TokenKind)> {
     let mut collected: Vec<(Span, TokenKind)> = vec![];
 
     let collectable_tokens = vec![
@@ -207,12 +196,11 @@ pub fn collect(state: &mut State) -> ParseResult<Vec<(Span, TokenKind)>> {
 
     while collectable_tokens.contains(&current_kind) {
         if let Some((span, _)) = collected.iter().find(|(_, kind)| kind == &current_kind) {
-            todo!("tolerant mode");
-            // return Err(error::multiple_modifiers(
-            //     current_kind.to_string(),
-            //     *span,
-            //     current_span,
-            // ));
+            state.diagnostic(
+                DiagnosticKind::DuplicateModifier,
+                Severity::Error,
+                *span
+            );
         }
 
         // guard against multiple visibility modifiers, we don't care where these modifiers are used.
@@ -220,17 +208,17 @@ pub fn collect(state: &mut State) -> ParseResult<Vec<(Span, TokenKind)>> {
             current_kind,
             TokenKind::Public | TokenKind::Protected | TokenKind::Private
         ) {
-            if let Some((span, visibility)) = collected.iter().find(|(_, kind)| {
+            if let Some((span, _)) = collected.iter().find(|(_, kind)| {
                 matches!(
                     kind,
                     TokenKind::Public | TokenKind::Protected | TokenKind::Private
-                )
+                ) && kind != &current_kind
             }) {
-                todo!("tolerant mode")
-                // state.record(error::multiple_visibility_modifiers(
-                //     (visibility.to_string(), *span),
-                //     (current_kind.to_string(), current_span),
-                // ));
+                state.diagnostic(
+                    DiagnosticKind::MultipleVisibilityModifiers,
+                    Severity::Error,
+                    *span
+                );
             }
         }
 
@@ -243,5 +231,5 @@ pub fn collect(state: &mut State) -> ParseResult<Vec<(Span, TokenKind)>> {
         current_span = current.span;
     }
 
-    Ok(collected)
+    collected
 }

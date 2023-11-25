@@ -1,170 +1,171 @@
-use crate::error;
-use crate::error::ParseResult;
 use crate::state::State;
 use pxp_ast::identifiers::SimpleIdentifier;
-use pxp_token::TokenKind;
+use pxp_diagnostics::{DiagnosticKind, Severity};
+use pxp_token::{TokenKind, Token};
 
 use crate::peek_token;
 
-pub fn identifier_of(state: &mut State, kinds: &[TokenKind]) -> ParseResult<SimpleIdentifier> {
-    let ident = identifier(state)?;
-
-    if kinds.contains(&ident.token.kind) {
-        Ok(ident)
-    } else {
-        todo!("tolerant error handling: missing valid identifier")
-    }
-}
-
 /// Expect an unqualified identifier such as Foo or Bar for a class, interface, trait, or an enum name.
-pub fn type_identifier(state: &mut State) -> ParseResult<SimpleIdentifier> {
+pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
     match &current.kind {
         TokenKind::Identifier => {
-            let span = current.span;
-
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
         TokenKind::Enum | TokenKind::From => {
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
-            // TODO: Report invalid keyword as type name
-            // state.record(error::cannot_use_reserved_keyword_as_a_type_name(
-            //     current.span,
-            //     current.to_string(),
-            // ));
+            state.diagnostic(
+                DiagnosticKind::CannotUseReservedKeywordAsTypeName,
+                Severity::Error,
+                current.span,
+            );
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
         t if is_reserved_identifier(t) => {
-            // TODO: Report invalid keyword as type name
-            // state.record(error::cannot_use_reserved_keyword_as_a_type_name(
-            //     current.span,
-            //     current.to_string(),
-            // ));
+            state.diagnostic(
+                DiagnosticKind::CannotUseReservedKeywordAsTypeName,
+                Severity::Error,
+                current.span,
+            );
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
-        _ => todo!("tolerant mode") /*Err(error::unexpected_token(
-            vec!["an identifier".to_owned()],
-            current,
-        ))*/,
+        _ => {
+            state.diagnostic(
+                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Identifier], found: *current },
+                Severity::Error,
+                current.span,
+            );
+
+            SimpleIdentifier::new(Token::missing(current.span))
+        }
     }
 }
 
 /// Expect an unqualified identifier such as foo or bar for a goto label name.
-pub fn label_identifier(state: &mut State) -> ParseResult<SimpleIdentifier> {
+pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
     match &current.kind {
         TokenKind::Identifier => {
-            let span = current.span;
-
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
         TokenKind::Enum | TokenKind::From => {
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
-            // TODO: Report invalid keyword as type name
-            // state.record(error::cannot_use_reserved_keyword_as_a_goto_label(
-            //     current.span,
-            //     current.to_string(),
-            // ));
+            state.diagnostic(
+                DiagnosticKind::CannotUseReservedKeywordAsLabel,
+                Severity::Error,
+                current.span,
+            );
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
         t if is_reserved_identifier(t) => {
-            // TODO: Report invalid keyword as type name
-            // state.record(error::cannot_use_reserved_keyword_as_a_goto_label(
-            //     current.span,
-            //     current.to_string(),
-            // ));
+            state.diagnostic(
+                DiagnosticKind::CannotUseReservedKeywordAsLabel,
+                Severity::Error,
+                current.span,
+            );
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
-        _ => todo!("tolerant mode") /*Err(error::unexpected_token(
-            vec!["an identifier".to_owned()],
-            current,
-        ))*/,
+        _ => {
+            state.diagnostic(
+                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Identifier], found: *current },
+                Severity::Error,
+                current.span,
+            );
+
+            SimpleIdentifier::new(Token::missing(current.span))
+        }
     }
 }
 
 /// Expect an unqualified identifier such as FOO or BAR for a constant name.
-pub fn constant_identifier(state: &mut State) -> ParseResult<SimpleIdentifier> {
+pub fn constant_identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
     match &current.kind {
-        TokenKind::Identifier | TokenKind::Enum | TokenKind::From | TokenKind::Self_ | TokenKind::Parent => {
-            let span = current.span;
-
+        TokenKind::Identifier
+        | TokenKind::Enum
+        | TokenKind::From
+        | TokenKind::Self_
+        | TokenKind::Parent => {
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
         t if is_reserved_identifier(t) => {
-            // TODO: Report invalid keyword as type name
-            // state.record(error::cannot_use_reserved_keyword_as_a_constant_name(
-            //     current.span,
-            //     current.to_string(),
-            // ));
+            state.diagnostic(
+                DiagnosticKind::CannotUseReservedKeywordAsConstantName,
+                Severity::Error,
+                current.span,
+            );
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
-        _ => todo!("tolerant mode") /*Err(error::unexpected_token(
-            vec!["an identifier".to_owned()],
-            current,
-        ))*/,
+        _ => {
+            state.diagnostic(
+                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Identifier], found: *current },
+                Severity::Error,
+                current.span,
+            );
+
+            SimpleIdentifier::new(Token::missing(current.span))
+        }
     }
 }
 
 /// Expect an unqualified identifier such as Foo or Bar.
-pub fn identifier(state: &mut State) -> ParseResult<SimpleIdentifier> {
+pub fn identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
     if let TokenKind::Identifier = &current.kind {
-        let span = current.span;
-
         state.stream.next();
 
-        Ok(SimpleIdentifier { token: *current })
+        SimpleIdentifier { token: *current }
     } else {
-        // Err(error::unexpected_token(
-        //     vec!["an identifier".to_owned()],
-        //     current,
-        // ))
-        todo!("tolerant mode")
+        state.diagnostic(
+            DiagnosticKind::UnexpectedToken { token: *current },
+            Severity::Error,
+            current.span,
+        );
+
+        SimpleIdentifier::new(Token::missing(current.span))
     }
 }
 
 /// Expect an unqualified or qualified identifier such as Foo, Bar or Foo\Bar.
-pub fn name(state: &mut State) -> ParseResult<SimpleIdentifier> {
+pub fn name(state: &mut State) -> SimpleIdentifier {
     let name = peek_token!([
         TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
             state.stream.current()
         },
     ], state, "an identifier");
 
-    let span = state.stream.current().span;
     state.stream.next();
 
-    Ok(SimpleIdentifier { token: *name })
+    SimpleIdentifier { token: *name }
 }
 
 /// Expect an optional unqualified or qualified identifier such as Foo, Bar or Foo\Bar.
@@ -187,84 +188,88 @@ pub fn optional_name(state: &mut State) -> Option<SimpleIdentifier> {
 }
 
 /// Expect an unqualified, qualified or fully qualified identifier such as Foo, Foo\Bar or \Foo\Bar.
-pub fn full_name(state: &mut State) -> ParseResult<SimpleIdentifier> {
+pub fn full_name(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
     match &current.kind {
         TokenKind::Identifier
         | TokenKind::QualifiedIdentifier
         | TokenKind::FullyQualifiedIdentifier => {
-            let span = current.span;
-
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
-        _ =>todo!("tolerant mode") /*Err(error::unexpected_token(
-            vec!["an identifier".to_owned()],
-            current,
-        ))*/,
+        _ => {
+            state.diagnostic(
+                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Identifier], found: *current },
+                Severity::Error,
+                current.span,
+            );
+
+            SimpleIdentifier::new(Token::missing(current.span))
+        }
     }
 }
 
 /// Expect an unqualified, qualified or fully qualified identifier such as Foo, Foo\Bar or \Foo\Bar.
-pub fn full_type_name(state: &mut State) -> ParseResult<SimpleIdentifier> {
+pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
     match &current.kind {
         TokenKind::Identifier
         | TokenKind::QualifiedIdentifier
         | TokenKind::FullyQualifiedIdentifier => {
-            let span = current.span;
-
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
         TokenKind::Enum | TokenKind::From => {
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
-            // TODO: Report invalid keyword as type name
-            // state.record(error::cannot_use_type_in_context(
-            //     current.span,
-            //     current.to_string(),
-            // ));
+            state.diagnostic(
+                DiagnosticKind::CannotUseReservedKeywordAsTypeName,
+                Severity::Error,
+                current.span,
+            );
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
         t if is_reserved_identifier(t) => {
-            // // TODO: Report invalid keyword as type name
-            // state.record(error::cannot_use_reserved_keyword_as_a_type_name(
-            //     current.span,
-            //     current.to_string(),
-            // ));
+            state.diagnostic(
+                DiagnosticKind::CannotUseReservedKeywordAsTypeName,
+                Severity::Error,
+                current.span,
+            );
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
-        _ => todo!("tolerant mode") /*Err(error::unexpected_token(
-            vec!["an identifier".to_owned()],
-            current,
-        ))*/,
+        _ => {
+            state.diagnostic(
+                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Identifier], found: *current },
+                Severity::Error,
+                current.span,
+            );
+
+            SimpleIdentifier::new(Token::missing(current.span))
+        }
     }
 }
 
 /// Expect an unqualified, qualified or fully qualified identifier such as Foo, Foo\Bar or \Foo\Bar.
-pub fn full_type_name_including_self(state: &mut State) -> ParseResult<SimpleIdentifier> {
+pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
     match &current.kind {
         TokenKind::Identifier
         | TokenKind::QualifiedIdentifier
         | TokenKind::FullyQualifiedIdentifier => {
-            let span = current.span;
-
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
         TokenKind::Enum
         | TokenKind::From
@@ -273,45 +278,50 @@ pub fn full_type_name_including_self(state: &mut State) -> ParseResult<SimpleIde
         | TokenKind::Parent => {
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
         t if is_reserved_identifier(t) => {
-            // TODO: Report invalid keyword as type name
-            // state.record(error::cannot_use_reserved_keyword_as_a_type_name(
-            //     current.span,
-            //     current.to_string(),
-            // ));
+            state.diagnostic(
+                DiagnosticKind::CannotUseReservedKeywordAsTypeName,
+                Severity::Error,
+                current.span,
+            );
 
             state.stream.next();
 
-            Ok(SimpleIdentifier { token: *current })
+            SimpleIdentifier { token: *current }
         }
-        _ => todo!("tolerant mode") /*Err(error::unexpected_token(
-            vec!["an identifier".to_owned()],
-            current,
-        ))*/,
+        _ => {
+            state.diagnostic(
+                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Identifier], found: *current },
+                Severity::Error,
+                current.span,
+            );
+
+            SimpleIdentifier::new(Token::missing(current.span))
+        }
     }
 }
 
-pub fn identifier_maybe_reserved(state: &mut State) -> ParseResult<SimpleIdentifier> {
+pub fn identifier_maybe_reserved(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
 
     if is_reserved_identifier(&current.kind) {
         state.stream.next();
 
-        Ok(SimpleIdentifier { token: *current })
+        SimpleIdentifier { token: *current }
     } else {
         identifier(state)
     }
 }
 
-pub fn identifier_maybe_soft_reserved(state: &mut State) -> ParseResult<SimpleIdentifier> {
+pub fn identifier_maybe_soft_reserved(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
 
     if is_soft_reserved_identifier(&current.kind) {
         state.stream.next();
 
-        Ok(SimpleIdentifier { token: *current })
+        SimpleIdentifier { token: *current }
     } else {
         identifier(state)
     }

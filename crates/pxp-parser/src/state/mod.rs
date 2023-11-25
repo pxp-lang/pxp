@@ -1,9 +1,10 @@
 use std::collections::VecDeque;
-use std::fmt::Display;
 
 use pxp_ast::attributes::AttributeGroup;
 use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_diagnostics::{Diagnostic, DiagnosticKind, Severity};
 use pxp_lexer::stream::TokenStream;
+use pxp_span::Span;
 use pxp_symbol::SymbolTable;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -25,6 +26,7 @@ pub struct State<'a> {
     pub symbol_table: &'a SymbolTable<'a>,
     pub attributes: Vec<AttributeGroup>,
     pub namespace_type: Option<NamespaceType>,
+    pub diagnostics: Vec<Diagnostic>,
 }
 
 impl<'a> State<'a> {
@@ -35,6 +37,7 @@ impl<'a> State<'a> {
             symbol_table,
             namespace_type: None,
             attributes: vec![],
+            diagnostics: vec![],
         }
     }
 
@@ -65,14 +68,12 @@ impl<'a> State<'a> {
         self.stack.iter().next()
     }
 
-    pub fn named<T: Display + ?Sized>(&self, name: &T) -> String {
-        match self.namespace() {
-            Some(Scope::Namespace(n)) | Some(Scope::BracedNamespace(Some(n))) => {
-                unimplemented!()
-                // format!("{}\\{}", n, name)
-            }
-            _ => name.to_string(),
-        }
+    pub fn previous_scope(&self) -> Option<&Scope> {
+        self.stack.iter().nth(self.stack.len() - 2)
+    }
+
+    pub fn diagnostic(&mut self, kind: DiagnosticKind, severity: Severity, span: Span) {
+        self.diagnostics.push(Diagnostic::new(kind, severity, span));
     }
 
     pub fn enter(&mut self, scope: Scope) {

@@ -1,5 +1,3 @@
-use crate::error;
-use crate::error::ParseResult;
 use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
@@ -10,7 +8,7 @@ use pxp_ast::UseKind;
 use pxp_ast::UseStatement;
 use pxp_token::TokenKind;
 
-pub fn use_statement(state: &mut State) -> ParseResult<StatementKind> {
+pub fn use_statement(state: &mut State) -> StatementKind {
     state.stream.next();
 
     let kind = match state.stream.current().kind {
@@ -26,7 +24,7 @@ pub fn use_statement(state: &mut State) -> ParseResult<StatementKind> {
     };
 
     if state.stream.peek().kind == TokenKind::LeftBrace {
-        let prefix = identifiers::full_name(state)?;
+        let prefix = identifiers::full_name(state);
         state.stream.next();
         let mut uses = Vec::new();
         while state.stream.current().kind != TokenKind::RightBrace {
@@ -58,11 +56,11 @@ pub fn use_statement(state: &mut State) -> ParseResult<StatementKind> {
                 _ => None,
             };
 
-            let name = identifiers::full_type_name(state)?;
+            let name = identifiers::full_type_name(state);
             let mut alias = None;
             if state.stream.current().kind == TokenKind::As {
                 state.stream.next();
-                alias = Some(identifiers::type_identifier(state)?);
+                alias = Some(identifiers::type_identifier(state));
             }
 
             uses.push(Use {
@@ -77,22 +75,18 @@ pub fn use_statement(state: &mut State) -> ParseResult<StatementKind> {
             }
         }
 
-        utils::skip_right_brace(state)?;
-        utils::skip_semicolon(state)?;
+        utils::skip_right_brace(state);
+        utils::skip_semicolon(state);
 
-        Ok(StatementKind::GroupUse(GroupUseStatement {
-            prefix,
-            kind,
-            uses,
-        }))
+        StatementKind::GroupUse(GroupUseStatement { prefix, kind, uses })
     } else {
         let mut uses = Vec::new();
         while !state.stream.is_eof() {
-            let name = identifiers::full_type_name(state)?;
+            let name = identifiers::full_type_name(state);
             let mut alias = None;
             if state.stream.current().kind == TokenKind::As {
                 state.stream.next();
-                alias = Some(identifiers::type_identifier(state)?);
+                alias = Some(identifiers::type_identifier(state));
             }
 
             uses.push(Use {
@@ -106,10 +100,10 @@ pub fn use_statement(state: &mut State) -> ParseResult<StatementKind> {
                 continue;
             }
 
-            utils::skip_semicolon(state)?;
+            utils::skip_semicolon(state);
             break;
         }
 
-        Ok(StatementKind::Use(UseStatement { uses, kind }))
+        StatementKind::Use(UseStatement { uses, kind })
     }
 }

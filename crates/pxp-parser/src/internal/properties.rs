@@ -1,69 +1,54 @@
-use crate::error;
-use crate::error::ParseResult;
 use crate::expressions;
 use crate::internal::data_type;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
-use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::modifiers::PropertyModifierGroup;
 use pxp_ast::properties::Property;
 use pxp_ast::properties::PropertyEntry;
 use pxp_ast::properties::VariableProperty;
+use pxp_diagnostics::DiagnosticKind;
+use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;
 
 pub fn parse(
     state: &mut State,
-    class_name: Option<&SimpleIdentifier>,
     modifiers: PropertyModifierGroup,
-) -> ParseResult<Property> {
-    let ty = data_type::optional_data_type(state)?;
+) -> Property {
+    let ty = data_type::optional_data_type(state);
 
     let mut entries = vec![];
     let mut type_checked = false;
     loop {
-        let variable = variables::simple_variable(state)?;
+        let variable = variables::simple_variable(state);
 
         if !type_checked {
             type_checked = true;
             if modifiers.has_readonly() && modifiers.has_static() {
-                todo!("tolerant mode")
-                // let error = error::static_property_cannot_be_readonly(
-                //     state,
-                //     class_name,
-                //     &variable,
-                //     modifiers.get_static().unwrap().span(),
-                //     modifiers.get_readonly().unwrap().span(),
-                // );
-
-                // state.record(error);
+                state.diagnostic(
+                    DiagnosticKind::StaticPropertyCannotBeReadonly,
+                    Severity::Error,
+                    state.stream.current().span,
+                );
             }
 
             match &ty {
                 Some(ty) => {
                     if ty.includes_callable() || ty.is_bottom() {
-                        todo!("tolerant mode")
-                        // let error = error::forbidden_type_used_in_property(
-                        //     state,
-                        //     class_name,
-                        //     &variable,
-                        //     ty.clone(),
-                        // );
-
-                        // state.record(error);
+                        state.diagnostic(
+                            DiagnosticKind::ForbiddenTypeUsedInProperty,
+                            Severity::Error,
+                            ty.first_span(),
+                        );
                     }
                 }
                 None => {
                     if let Some(modifier) = modifiers.get_readonly() {
-                        todo!("tolerant mode")
-                        // let error = error::missing_type_for_readonly_property(
-                        //     state,
-                        //     class_name,
-                        //     &variable,
-                        //     modifier.span(),
-                        // );
-
-                        // state.record(error);
+                        state.diagnostic(
+                            DiagnosticKind::ReadonlyPropertyMustHaveType,
+                            Severity::Error,
+                            modifier.span(),
+                        );
                     }
                 }
             }
@@ -72,20 +57,15 @@ pub fn parse(
         let current = state.stream.current();
         if current.kind == TokenKind::Equals {
             if let Some(modifier) = modifiers.get_readonly() {
-                todo!("tolerant mode")
-                // let error = error::readonly_property_has_default_value(
-                //     state,
-                //     class_name,
-                //     &variable,
-                //     modifier.span(),
-                //     current.span,
-                // );
-
-                // state.record(error);
+                state.diagnostic(
+                    DiagnosticKind::ReadonlyPropertyCannotHaveDefaultValue,
+                    Severity::Error,
+                    modifier.span(),
+                );
             }
 
             state.stream.next();
-            let value = expressions::create(state)?;
+            let value = expressions::create(state);
 
             entries.push(PropertyEntry::Initialized {
                 variable,
@@ -103,44 +83,37 @@ pub fn parse(
         }
     }
 
-    let end = utils::skip_semicolon(state)?;
+    let end = utils::skip_semicolon(state);
 
-    Ok(Property {
+    Property {
         r#type: ty,
         modifiers,
         attributes: state.get_attributes(),
         entries,
         end,
-    })
+    }
 }
 
-pub fn parse_var(
-    state: &mut State,
-    class_name: Option<&SimpleIdentifier>,
-) -> ParseResult<VariableProperty> {
-    utils::skip(state, TokenKind::Var)?;
+pub fn parse_var(state: &mut State) -> VariableProperty {
+    utils::skip(state, TokenKind::Var);
 
-    let ty = data_type::optional_data_type(state)?;
+    let ty = data_type::optional_data_type(state);
 
     let mut entries = vec![];
     let mut type_checked = false;
     loop {
-        let variable = variables::simple_variable(state)?;
+        let variable = variables::simple_variable(state);
 
         if !type_checked {
             type_checked = true;
 
             if let Some(ty) = &ty {
                 if ty.includes_callable() || ty.is_bottom() {
-                    todo!("tolerant mode")
-                    // let error = error::forbidden_type_used_in_property(
-                    //     state,
-                    //     class_name,
-                    //     &variable,
-                    //     ty.clone(),
-                    // );
-
-                    // state.record(error);
+                    state.diagnostic(
+                        DiagnosticKind::ForbiddenTypeUsedInProperty,
+                        Severity::Error,
+                        ty.first_span(),
+                    );
                 }
             }
         }
@@ -149,7 +122,7 @@ pub fn parse_var(
         if current.kind == TokenKind::Equals {
             let span = current.span;
             state.stream.next();
-            let value = expressions::create(state)?;
+            let value = expressions::create(state);
 
             entries.push(PropertyEntry::Initialized {
                 variable,
@@ -167,12 +140,12 @@ pub fn parse_var(
         }
     }
 
-    let end = utils::skip_semicolon(state)?;
+    let end = utils::skip_semicolon(state);
 
-    Ok(VariableProperty {
+    VariableProperty {
         r#type: ty,
         attributes: state.get_attributes(),
         entries,
         end,
-    })
+    }
 }

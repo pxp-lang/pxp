@@ -31,29 +31,36 @@ fn main() {
 
             let contents = std::fs::read(file).unwrap();
             let mut symbol_table = SymbolTable::new();
-            parse(&contents[..], &mut symbol_table);
+            parse(&contents, &mut symbol_table);
             print!(".");
         }
 
         println!();
 
         // if errors.is_empty() {
-            println!("Parsed directory with zero errors.");
+        println!("Parsed directory with zero errors.");
         // } else {
-            // println!("\nParsed directory with {} errors.", errors.len());
-            // for (path, errors) in errors {
-            //     println!("{}:", path);
-            //     for error in errors {
-            //         println!("  {}", error);
-            //     }
-            // }
+        // println!("\nParsed directory with {} errors.", errors.len());
+        // for (path, errors) in errors {
+        //     println!("{}:", path);
+        //     for error in errors {
+        //         println!("  {}", error);
+        //     }
+        // }
         // }
     } else {
         let contents = std::fs::read(path).unwrap();
         let mut symbol_table = SymbolTable::new();
-        let ast = parse(&contents[..], &mut symbol_table);
+        let result = parse(&contents, &mut symbol_table);
+
         if args.contains(&"--debug".to_string()) {
-            dbg!(ast);
+            dbg!(result.ast);
+        }
+
+        if !result.diagnostics.is_empty() {
+            for diagnostic in result.diagnostics.iter() {
+                print!("{diagnostic}");
+            }
         }
     }
 }

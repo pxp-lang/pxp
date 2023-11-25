@@ -52,6 +52,7 @@ impl From<DocStringIndentationKind> for u8 {
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 
 pub enum TokenKind {
+    Missing,
     Die,
     // Can't use `Self` as a name here, so suffixing with an underscore.
     Self_,
@@ -247,7 +248,7 @@ pub enum TokenKind {
 pub struct Token {
     pub kind: TokenKind,
     pub span: Span,
-    pub symbol: Option<Symbol>
+    pub symbol: Option<Symbol>,
 }
 
 impl Default for Token {
@@ -263,6 +264,14 @@ impl Default for Token {
 impl Token {
     pub fn new(kind: TokenKind, span: Span, symbol: Option<Symbol>) -> Self {
         Self { kind, span, symbol }
+    }
+
+    pub fn missing(span: Span) -> Self {
+        Self::new(TokenKind::Missing, span, None)
+    }
+
+    pub fn is_missing(&self) -> bool {
+        self.kind == TokenKind::Missing
     }
 
     pub fn new_with_symbol(kind: TokenKind, span: Span, symbol: Symbol) -> Self {
@@ -283,7 +292,11 @@ impl Token {
 
     pub fn dbg(&self, symbol_table: &SymbolTable) -> String {
         if let Some(symbol) = self.symbol {
-            format!("{} ({:?})", symbol_table.resolve(symbol).unwrap(), self.kind)
+            format!(
+                "{} ({:?})",
+                symbol_table.resolve(symbol).unwrap(),
+                self.kind
+            )
         } else {
             format!("{} ({:?})", self.kind, self.kind)
         }
@@ -485,7 +498,8 @@ impl Display for TokenKind {
             | Self::HashMarkComment
             | Self::DocumentComment => {
                 return write!(f, "{:?}", self);
-            }
+            },
+            Self::Missing => return write!(f, "<missing>"),
         };
 
         write!(f, "{}", s)

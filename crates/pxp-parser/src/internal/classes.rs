@@ -1,10 +1,7 @@
-use crate::error;
-use crate::error::ParseResult;
 use crate::internal::attributes;
 use crate::internal::constants::classish;
 use crate::internal::functions::method;
 use crate::internal::functions::Method;
-use crate::internal::functions::MethodType;
 use crate::internal::identifiers;
 use crate::internal::modifiers;
 use crate::internal::parameters;
@@ -23,23 +20,25 @@ use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::Expression;
 use pxp_ast::StatementKind;
 use pxp_ast::{ExpressionKind, NewExpression};
-use pxp_span::Position;
+use pxp_diagnostics::DiagnosticKind;
+use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
-pub fn parse(state: &mut State) -> ParseResult<StatementKind> {
+pub fn parse(state: &mut State) -> StatementKind {
     let attributes = state.get_attributes();
 
-    let modifiers = modifiers::class_group(modifiers::collect(state)?)?;
-    let class = utils::skip(state, TokenKind::Class)?;
-    let name = identifiers::type_identifier(state)?;
+    let modifiers = modifiers::collect(state);
+    let modifiers = modifiers::class_group(state, modifiers);
+    let class = utils::skip(state, TokenKind::Class);
+    let name = identifiers::type_identifier(state);
     let current = state.stream.current();
     let extends = if current.kind == TokenKind::Extends {
         let span = current.span;
 
         state.stream.next();
-        let parent = identifiers::full_type_name(state)?;
+        let parent = identifiers::full_type_name(state);
 
         Some(ClassExtends {
             extends: span,
@@ -58,7 +57,7 @@ pub fn parse(state: &mut State) -> ParseResult<StatementKind> {
         let interfaces =
             utils::at_least_one_comma_separated_no_trailing::<SimpleIdentifier>(state, &|state| {
                 identifiers::full_type_name(state)
-            })?;
+            });
 
         Some(ClassImplements {
             implements: span,
@@ -70,19 +69,23 @@ pub fn parse(state: &mut State) -> ParseResult<StatementKind> {
 
     let has_abstract = modifiers.has_abstract();
     let body = ClassBody {
-        left_brace: utils::skip_left_brace(state)?,
+        left_brace: utils::skip_left_brace(state),
         members: {
             let mut members = Vec::new();
             while state.stream.current().kind != TokenKind::RightBrace {
-                members.push(member(state, has_abstract, &name)?);
+                if state.stream.is_eof() {
+                    break;
+                }
+
+                members.push(member(state, has_abstract));
             }
 
             members
         },
-        right_brace: utils::skip_right_brace(state)?,
+        right_brace: utils::skip_right_brace(state),
     };
 
-    Ok(StatementKind::Class(ClassStatement {
+    StatementKind::Class(ClassStatement {
         class,
         name,
         modifiers,
@@ -90,27 +93,25 @@ pub fn parse(state: &mut State) -> ParseResult<StatementKind> {
         implements,
         attributes,
         body,
-    }))
+    })
 }
 
-pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> ParseResult<Expression> {
+pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
     let new = match span {
         Some(span) => span,
-        None => utils::skip(state, TokenKind::New)?,
+        None => utils::skip(state, TokenKind::New),
     };
 
     let start_span = new;
 
-    attributes::gather_attributes(state)?;
+    attributes::gather_attributes(state);
 
     let attributes = state.get_attributes();
-
-    let class_token = state.stream.current();
-    let class = utils::skip(state, TokenKind::Class)?;
+    let class = utils::skip(state, TokenKind::Class);
     let class_span = class;
 
     let arguments = if state.stream.current().kind == TokenKind::LeftParen {
-        Some(parameters::argument_list(state)?)
+        Some(parameters::argument_list(state))
     } else {
         None
     };
@@ -120,7 +121,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> ParseResult<Exp
         state.stream.next();
 
         let extends = current.span;
-        let parent = identifiers::full_name(state)?;
+        let parent = identifiers::full_name(state);
 
         Some(ClassExtends { extends, parent })
     } else {
@@ -135,7 +136,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> ParseResult<Exp
         let interfaces =
             utils::at_least_one_comma_separated_no_trailing::<SimpleIdentifier>(state, &|state| {
                 identifiers::full_name(state)
-            })?;
+            });
 
         Some(ClassImplements {
             implements,
@@ -146,19 +147,18 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> ParseResult<Exp
     };
 
     let body = AnonymousClassBody {
-        left_brace: utils::skip_left_brace(state)?,
+        left_brace: utils::skip_left_brace(state),
         members: {
             let mut members = Vec::new();
             while state.stream.current().kind != TokenKind::RightBrace {
                 members.push(member(
                     state,
                     false,
-                    &SimpleIdentifier { token: *class_token },
-                )?);
+                ));
             }
             members
         },
-        right_brace: utils::skip_right_brace(state)?,
+        right_brace: utils::skip_right_brace(state),
     };
 
     let end_span = body.right_brace;
@@ -175,7 +175,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> ParseResult<Exp
         CommentGroup::default(),
     );
 
-    Ok(Expression::new(
+    Expression::new(
         ExpressionKind::New(NewExpression {
             target: Box::new(anonymous_class),
             new,
@@ -183,75 +183,62 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> ParseResult<Exp
         }),
         Span::new(start_span.start, state.stream.previous().span.end),
         CommentGroup::default(),
-    ))
+    )
 }
 
-pub fn member(
-    state: &mut State,
-    has_abstract: bool,
-    name: &SimpleIdentifier,
-) -> ParseResult<ClassishMember> {
-    let has_attributes = attributes::gather_attributes(state)?;
+pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
+    let has_attributes = attributes::gather_attributes(state);
 
     if !has_attributes && state.stream.current().kind == TokenKind::Use {
-        return traits::usage(state).map(ClassishMember::TraitUsage);
+        return ClassishMember::TraitUsage(traits::usage(state));
     }
 
     if state.stream.current().kind == TokenKind::Var {
-        return properties::parse_var(state, Some(name)).map(ClassishMember::VariableProperty);
+        return ClassishMember::VariableProperty(properties::parse_var(state));
     }
 
-    let modifiers = modifiers::collect(state)?;
+    let modifiers = modifiers::collect(state);
 
     if state.stream.current().kind == TokenKind::Const {
-        return classish(state, modifiers::constant_group(modifiers)?)
-            .map(ClassishMember::Constant);
+        let modifiers = modifiers::constant_group(state, modifiers);
+        return ClassishMember::Constant(classish(state, modifiers));
     }
 
     if state.stream.current().kind == TokenKind::Function {
-        let method = method(
-            state,
-            modifiers::method_group(modifiers)?,
-            Some(name),
-        )?;
+        let modifiers = modifiers::method_group(state, modifiers);
+        let method = method(state, modifiers);
 
         return match method {
             Method::Abstract(method) => {
-                if has_abstract {
-                    Ok(ClassishMember::AbstractMethod(method))
-                } else {
-                    todo!("tolerant mode")
-                    // Err(error::abstract_method_on_a_non_abstract_class(
-                    //     state,
-                    //     name,
-                    //     &method.name,
-                    //     method.modifiers.get_abstract().unwrap().span(),
-                    //     method.semicolon,
-                    // ))
+                if !has_abstract {
+                    state.diagnostic(
+                        DiagnosticKind::AbstractMethodInNonAbstractClass,
+                        Severity::Error,
+                        method.modifiers.get_abstract().unwrap().span(),
+                    );
                 }
+                
+                ClassishMember::AbstractMethod(method)
             }
-            Method::Concrete(method) => Ok(ClassishMember::ConcreteMethod(method)),
+            Method::Concrete(method) => ClassishMember::ConcreteMethod(method),
             Method::AbstractConstructor(ctor) => {
-                if has_abstract {
-                    Ok(ClassishMember::AbstractConstructor(ctor))
-                } else {
-                    todo!("tolerant mode")
-                    // Err(error::abstract_method_on_a_non_abstract_class(
-                    //     state,
-                    //     name,
-                    //     &ctor.name,
-                    //     ctor.modifiers.get_abstract().unwrap().span(),
-                    //     ctor.semicolon,
-                    // ))
+                if !has_abstract {
+                    state.diagnostic(
+                        DiagnosticKind::AbstractMethodInNonAbstractClass,
+                        Severity::Error,
+                        ctor.modifiers.get_abstract().unwrap().span(),
+                    );
                 }
+
+                ClassishMember::AbstractConstructor(ctor)
             }
-            Method::ConcreteConstructor(ctor) => Ok(ClassishMember::ConcreteConstructor(ctor)),
+            Method::ConcreteConstructor(ctor) => ClassishMember::ConcreteConstructor(ctor),
         };
     }
 
     // e.g: public static
-    let modifiers = modifiers::property_group(modifiers)?;
-    let property = properties::parse(state, Some(name), modifiers).map(ClassishMember::Property);
+    let modifiers = modifiers::property_group(state, modifiers);
+    let property = ClassishMember::Property(properties::parse(state, modifiers));
 
     property
 }

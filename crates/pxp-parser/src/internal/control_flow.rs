@@ -1,7 +1,3 @@
-use crate::expected_token_err;
-
-use crate::error;
-use crate::error::ParseResult;
 use crate::expressions;
 use crate::internal::blocks;
 use crate::internal::utils;
@@ -21,32 +17,34 @@ use pxp_ast::MatchArm;
 use pxp_ast::StatementKind;
 use pxp_ast::SwitchStatement;
 use pxp_ast::{Block, MatchExpression};
+use pxp_diagnostics::DiagnosticKind;
+use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
-pub fn match_expression(state: &mut State) -> ParseResult<Expression> {
-    let keyword = utils::skip(state, TokenKind::Match)?;
+pub fn match_expression(state: &mut State) -> Expression {
+    let keyword = utils::skip(state, TokenKind::Match);
     let start_span = keyword;
 
     let (left_parenthesis, condition, right_parenthesis) =
         utils::parenthesized(state, &|state: &mut State| {
-            expressions::create(state).map(Box::new)
-        })?;
+            Box::new(expressions::create(state))
+        });
 
-    let left_brace = utils::skip_left_brace(state)?;
+    let left_brace = utils::skip_left_brace(state);
 
     let mut default: Option<Box<DefaultMatchArm>> = None;
     let mut arms = Vec::new();
     while state.stream.current().kind != TokenKind::RightBrace {
         let current = state.stream.current();
         if current.kind == TokenKind::Default {
-            if let Some(default_arm) = default {
-                // return Err(error::match_expression_has_multiple_default_arms(
-                //     default_arm.keyword,
-                //     current.span,
-                // ));
-                todo!("tolerant mode")
+            if default.is_some() {
+                state.diagnostic(
+                    DiagnosticKind::CannotHaveMultipleDefaultArmsInMatch,
+                    Severity::Error,
+                    current.span,
+                );
             }
 
             state.stream.next();
@@ -56,9 +54,9 @@ pub fn match_expression(state: &mut State) -> ParseResult<Expression> {
                 state.stream.next();
             }
 
-            let arrow = utils::skip_double_arrow(state)?;
+            let arrow = utils::skip_double_arrow(state);
 
-            let body = expressions::create(state)?;
+            let body = expressions::create(state);
 
             default = Some(Box::new(DefaultMatchArm {
                 keyword: current.span,
@@ -67,8 +65,9 @@ pub fn match_expression(state: &mut State) -> ParseResult<Expression> {
             }));
         } else {
             let mut conditions = Vec::new();
+
             while state.stream.current().kind != TokenKind::DoubleArrow {
-                conditions.push(expressions::create(state)?);
+                conditions.push(expressions::create(state));
 
                 if state.stream.current().kind == TokenKind::Comma {
                     state.stream.next();
@@ -81,9 +80,9 @@ pub fn match_expression(state: &mut State) -> ParseResult<Expression> {
                 break;
             }
 
-            let arrow = utils::skip_double_arrow(state)?;
+            let arrow = utils::skip_double_arrow(state);
 
-            let body = expressions::create(state)?;
+            let body = expressions::create(state);
 
             arms.push(MatchArm {
                 conditions,
@@ -99,9 +98,9 @@ pub fn match_expression(state: &mut State) -> ParseResult<Expression> {
         }
     }
 
-    let right_brace = utils::skip_right_brace(state)?;
+    let right_brace = utils::skip_right_brace(state);
 
-    Ok(Expression::new(
+    Expression::new(
         ExpressionKind::Match(MatchExpression {
             keyword,
             left_parenthesis,
@@ -114,20 +113,20 @@ pub fn match_expression(state: &mut State) -> ParseResult<Expression> {
         }),
         Span::new(start_span.start, right_brace.end),
         CommentGroup::default(),
-    ))
+    )
 }
 
-pub fn switch_statement(state: &mut State) -> ParseResult<StatementKind> {
-    let switch = utils::skip(state, TokenKind::Switch)?;
+pub fn switch_statement(state: &mut State) -> StatementKind {
+    let switch = utils::skip(state, TokenKind::Switch);
 
     let (left_parenthesis, condition, right_parenthesis) =
-        utils::parenthesized(state, &expressions::create)?;
+        utils::parenthesized(state, &expressions::create);
 
     let end_token = if state.stream.current().kind == TokenKind::Colon {
-        utils::skip_colon(state)?;
+        utils::skip_colon(state);
         TokenKind::EndSwitch
     } else {
-        utils::skip_left_brace(state)?;
+        utils::skip_left_brace(state);
         TokenKind::RightBrace
     };
 
@@ -137,9 +136,9 @@ pub fn switch_statement(state: &mut State) -> ParseResult<StatementKind> {
             TokenKind::Case => {
                 state.stream.next();
 
-                let condition = expressions::create(state)?;
+                let condition = expressions::create(state);
 
-                utils::skip_any_of(state, &[TokenKind::Colon, TokenKind::SemiColon])?;
+                utils::skip_any_of(state, &[TokenKind::Colon, TokenKind::SemiColon]);
 
                 let mut body = Block::new();
 
@@ -148,7 +147,7 @@ pub fn switch_statement(state: &mut State) -> ParseResult<StatementKind> {
                     && state.stream.current().kind != TokenKind::RightBrace
                     && state.stream.current().kind != end_token
                 {
-                    body.push(statement(state)?);
+                    body.push(statement(state));
                 }
 
                 cases.push(Case {
@@ -159,7 +158,7 @@ pub fn switch_statement(state: &mut State) -> ParseResult<StatementKind> {
             TokenKind::Default => {
                 state.stream.next();
 
-                utils::skip_any_of(state, &[TokenKind::Colon, TokenKind::SemiColon])?;
+                utils::skip_any_of(state, &[TokenKind::Colon, TokenKind::SemiColon]);
 
                 let mut body = Block::new();
 
@@ -167,7 +166,7 @@ pub fn switch_statement(state: &mut State) -> ParseResult<StatementKind> {
                     && state.stream.current().kind != TokenKind::Default
                     && state.stream.current().kind != end_token
                 {
-                    body.push(statement(state)?);
+                    body.push(statement(state));
                 }
 
                 cases.push(Case {
@@ -176,48 +175,55 @@ pub fn switch_statement(state: &mut State) -> ParseResult<StatementKind> {
                 });
             }
             _ => {
-                return expected_token_err!(["`case`", "`default`"], state);
+                state.diagnostic(
+                    DiagnosticKind::ExpectedToken {
+                        expected: vec![TokenKind::Case, TokenKind::Default, end_token],
+                        found: *state.stream.current(),
+                    },
+                    Severity::Error,
+                    state.stream.current().span,
+                );
             }
         }
     }
 
     if end_token == TokenKind::EndSwitch {
-        utils::skip(state, TokenKind::EndSwitch)?;
-        utils::skip_ending(state)?;
+        utils::skip(state, TokenKind::EndSwitch);
+        utils::skip_ending(state);
     } else {
-        utils::skip_right_brace(state)?;
+        utils::skip_right_brace(state);
     }
 
-    Ok(StatementKind::Switch(SwitchStatement {
+    StatementKind::Switch(SwitchStatement {
         switch,
         left_parenthesis,
         condition,
         right_parenthesis,
         cases,
-    }))
+    })
 }
 
-pub fn if_statement(state: &mut State) -> ParseResult<StatementKind> {
-    let r#if = utils::skip(state, TokenKind::If)?;
+pub fn if_statement(state: &mut State) -> StatementKind {
+    let r#if = utils::skip(state, TokenKind::If);
 
     let (left_parenthesis, condition, right_parenthesis) =
-        utils::parenthesized(state, &expressions::create)?;
+        utils::parenthesized(state, &expressions::create);
 
-    Ok(StatementKind::If(IfStatement {
+    StatementKind::If(IfStatement {
         r#if,
         left_parenthesis,
         condition,
         right_parenthesis,
         body: if state.stream.current().kind == TokenKind::Colon {
-            if_statement_block_body(state)?
+            if_statement_block_body(state)
         } else {
-            if_statement_statement_body(state)?
+            if_statement_statement_body(state)
         },
-    }))
+    })
 }
 
-fn if_statement_statement_body(state: &mut State) -> ParseResult<IfStatementBody> {
-    let statement = statement(state).map(Box::new)?;
+fn if_statement_statement_body(state: &mut State) -> IfStatementBody {
+    let statement = Box::new(statement(state));
 
     let mut elseifs: Vec<IfStatementElseIf> = vec![];
     let mut current = state.stream.current();
@@ -225,14 +231,14 @@ fn if_statement_statement_body(state: &mut State) -> ParseResult<IfStatementBody
         state.stream.next();
 
         let (left_parenthesis, condition, right_parenthesis) =
-            utils::parenthesized(state, &expressions::create)?;
+            utils::parenthesized(state, &expressions::create);
 
         elseifs.push(IfStatementElseIf {
             elseif: current.span,
             left_parenthesis,
             condition,
             right_parenthesis,
-            statement: crate::statement(state).map(Box::new)?,
+            statement: Box::new(crate::statement(state)),
         });
 
         current = state.stream.current();
@@ -243,25 +249,25 @@ fn if_statement_statement_body(state: &mut State) -> ParseResult<IfStatementBody
 
         Some(IfStatementElse {
             r#else: current.span,
-            statement: crate::statement(state).map(Box::new)?,
+            statement: Box::new(crate::statement(state)),
         })
     } else {
         None
     };
 
-    Ok(IfStatementBody::Statement {
+    IfStatementBody::Statement {
         statement,
         elseifs,
         r#else,
-    })
+    }
 }
 
-fn if_statement_block_body(state: &mut State) -> ParseResult<IfStatementBody> {
-    let colon = utils::skip(state, TokenKind::Colon)?;
+fn if_statement_block_body(state: &mut State) -> IfStatementBody {
+    let colon = utils::skip(state, TokenKind::Colon);
     let statements = blocks::multiple_statements_until_any(
         state,
         &[TokenKind::Else, TokenKind::ElseIf, TokenKind::EndIf],
-    )?;
+    );
 
     let mut elseifs: Vec<IfStatementElseIfBlock> = vec![];
     let mut current = state.stream.current();
@@ -269,18 +275,18 @@ fn if_statement_block_body(state: &mut State) -> ParseResult<IfStatementBody> {
         state.stream.next();
 
         let (left_parenthesis, condition, right_parenthesis) =
-            utils::parenthesized(state, &expressions::create)?;
+            utils::parenthesized(state, &expressions::create);
 
         elseifs.push(IfStatementElseIfBlock {
             elseif: current.span,
             left_parenthesis,
             condition,
             right_parenthesis,
-            colon: utils::skip(state, TokenKind::Colon)?,
+            colon: utils::skip(state, TokenKind::Colon),
             statements: blocks::multiple_statements_until_any(
                 state,
                 &[TokenKind::Else, TokenKind::ElseIf, TokenKind::EndIf],
-            )?,
+            ),
         });
 
         current = state.stream.current();
@@ -291,19 +297,19 @@ fn if_statement_block_body(state: &mut State) -> ParseResult<IfStatementBody> {
 
         Some(IfStatementElseBlock {
             r#else: current.span,
-            colon: utils::skip(state, TokenKind::Colon)?,
-            statements: blocks::multiple_statements_until(state, &TokenKind::EndIf)?,
+            colon: utils::skip(state, TokenKind::Colon),
+            statements: blocks::multiple_statements_until(state, &TokenKind::EndIf),
         })
     } else {
         None
     };
 
-    Ok(IfStatementBody::Block {
+    IfStatementBody::Block {
         colon,
         statements,
         elseifs,
         r#else,
-        endif: utils::skip(state, TokenKind::EndIf)?,
-        ending: utils::skip_ending(state)?,
-    })
+        endif: utils::skip(state, TokenKind::EndIf),
+        ending: utils::skip_ending(state),
+    }
 }

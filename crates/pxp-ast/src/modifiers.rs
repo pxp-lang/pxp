@@ -234,7 +234,6 @@ pub enum ClassModifier {
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-#[repr(transparent)]
 pub struct ClassModifierGroup {
     pub modifiers: Vec<ClassModifier>,
 }
@@ -287,6 +286,12 @@ impl ConstantModifierGroup {
         self.modifiers
             .iter()
             .any(|modifier| matches!(modifier, ConstantModifier::Final { .. }))
+    }
+
+    pub fn has_private(&self) -> bool {
+        self.modifiers
+            .iter()
+            .any(|modifier| matches!(modifier, ConstantModifier::Private { .. }))
     }
 
     pub fn visibility(&self) -> Visibility {

@@ -17,11 +17,11 @@ impl<'s> SymbolTable<'s> {
 
     pub fn intern(&mut self, contents: &'s [u8]) -> Symbol {
         if let Some(symbol) = self.map.get(contents) {
-            return *symbol
+            return *symbol;
         }
 
         let symbol = self.vec.len();
-        
+
         self.map.insert(contents, symbol);
         self.vec.push(contents);
 
