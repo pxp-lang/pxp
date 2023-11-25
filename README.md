@@ -6,17 +6,15 @@ PXP is not just a superset of PHP but a full suite of high performance tools for
 
 ## Overview
 
-The project is separated into smaller easy to maintain, and easy to consume crates.
+The project is separated into smaller easy to maintain, and easy to consume crates. The more important ones are listed below:
 
 * [AST](/crates/pxp-ast/)
-* [ByteString](/crates/pxp-bytestring/)
 * [Lexer](/crates/pxp-lexer/)
 * [Parser](/crates/pxp-parser/)
-* [Span](/crates/pxp-span/)
-* [Symbol](/crates/pxp-symbol/)
 * [Syntax](/crates/pxp-syntax/)
 * [Token](/crates/pxp-token/)
 * [Type](/crates/pxp-type/)
+* [Visitor](/crates/pxp-visitor/)
 
 To find out more information about a particular crate, click one of the links above and read through the crate's own README.
 
