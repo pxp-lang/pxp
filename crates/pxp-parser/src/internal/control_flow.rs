@@ -65,6 +65,7 @@ pub fn match_expression(state: &mut State) -> Expression {
             }));
         } else {
             let mut conditions = Vec::new();
+
             while state.stream.current().kind != TokenKind::DoubleArrow {
                 conditions.push(expressions::create(state));
 

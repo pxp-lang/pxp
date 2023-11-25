@@ -1412,6 +1412,11 @@ fn unexpected_token(state: &mut State, _: &Precedence) -> Expression {
         current.span,
     );
 
+    // This is a common case where we don't want to consume the right-brace as it might close a structure.
+    if current.kind != TokenKind::RightBrace {
+        state.stream.next();
+    }
+
     Expression::missing(current.span)
 }
 

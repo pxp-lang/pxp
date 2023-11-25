@@ -44,6 +44,7 @@ pub enum DiagnosticKind {
     TryMustHaveCatchOrFinally,
     DynamicVariableNotAllowed,
     UnexpectedEndOfFile,
+    UnexpectedEndOfFileExpected { expected: Vec<TokenKind> },
 }
 
 impl Display for DiagnosticKind {
@@ -93,6 +94,11 @@ impl Display for DiagnosticKind {
             DiagnosticKind::TryMustHaveCatchOrFinally => write!(f, "try must have catch or finally"),
             DiagnosticKind::DynamicVariableNotAllowed => write!(f, "dynamic variable not allowed"),
             DiagnosticKind::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
+            DiagnosticKind::UnexpectedEndOfFileExpected { expected } => if expected.len() == 1 {
+                write!(f, "unexpected end of file, expected {}", expected.first().unwrap())
+            } else {
+                write!(f, "unexpected end of file, expected one of {}", expected.iter().map(|kind| format!("{}", kind)).collect::<Vec<_>>().join(", "))
+            },
         }
     }
 }

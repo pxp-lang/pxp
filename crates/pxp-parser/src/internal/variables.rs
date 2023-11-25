@@ -85,15 +85,35 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
             let span = current.span;
             state.stream.next();
 
-            let variable = dynamic_variable(state);
+            match state.stream.current().kind {
+                TokenKind::Dollar | TokenKind::Variable => {
+                    let variable = dynamic_variable(state);
 
-            Variable::VariableVariable(VariableVariable {
-                span,
-                variable: Box::new(variable),
-            })
+                    Variable::VariableVariable(VariableVariable {
+                        span,
+                        variable: Box::new(variable),
+                    })
+                },
+                // This allows us to handle standalone $ tokens, i.e. incomplete variables.
+                _ => {
+                    state.diagnostic(
+                        DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Variable], found: *current },
+                        Severity::Error,
+                        current.span,
+                    );
+
+                    Variable::SimpleVariable(SimpleVariable { token: Token::missing(current.span) })
+                }
+            }
         }
         _ => {
-            expected_token_err!("a variable", state)
+            state.diagnostic(
+                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Variable], found: *current },
+                Severity::Error,
+                current.span,
+            );
+
+            Variable::SimpleVariable(SimpleVariable { token: Token::missing(current.span) })
         }
     }
 }

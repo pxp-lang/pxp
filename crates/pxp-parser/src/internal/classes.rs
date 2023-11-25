@@ -73,6 +73,10 @@ pub fn parse(state: &mut State) -> StatementKind {
         members: {
             let mut members = Vec::new();
             while state.stream.current().kind != TokenKind::RightBrace {
+                if state.stream.is_eof() {
+                    break;
+                }
+
                 members.push(member(state, has_abstract));
             }
 

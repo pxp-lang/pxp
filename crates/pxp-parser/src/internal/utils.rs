@@ -78,19 +78,28 @@ pub fn skip_colon(state: &mut State) -> Span {
 }
 
 pub fn skip(state: &mut State, kind: TokenKind) -> Span {
-    let current = state.stream.current();
-
-    if current.kind == kind {
-        let end = current.span;
+    while state.stream.current().kind != kind {
+        let current = state.stream.current();
+        
+        if state.stream.is_eof() {
+            state.diagnostic(DiagnosticKind::UnexpectedEndOfFileExpected { expected: vec![kind] }, Severity::Error, current.span);
+            break;
+        }
 
         state.stream.next();
 
-        end
-    } else {
-        state.diagnostic(DiagnosticKind::ExpectedToken { expected: vec![kind], found: *current }, Severity::Error, current.span);
-        
-        current.span
+        state.diagnostic(
+            DiagnosticKind::ExpectedToken { expected: vec![kind], found: *current },
+            Severity::Error,
+            current.span,
+        );
     }
+
+    let end = state.stream.current().span;
+
+    state.stream.next();
+
+    end
 }
 
 pub fn skip_any_of(state: &mut State, kinds: &[TokenKind]) -> Span {
