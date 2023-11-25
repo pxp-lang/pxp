@@ -261,13 +261,11 @@ pub fn single_argument(
 
     let end = utils::skip_right_parenthesis(state);
 
-    first_argument.as_ref();
-
     Some(SingleArgument {
         comments,
         left_parenthesis: start,
         right_parenthesis: end,
-        argument: first_argument.unwrap(),
+        argument: first_argument,
     })
 }
 

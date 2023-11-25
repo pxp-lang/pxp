@@ -58,7 +58,7 @@ impl IntoIterator for ArgumentList {
 pub struct SingleArgument {
     pub comments: CommentGroup,
     pub left_parenthesis: Span,  // `(`
-    pub argument: Argument,      // `$var`
+    pub argument: Option<Argument>,      // `$var`
     pub right_parenthesis: Span, // `)`
 }
 
