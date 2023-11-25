@@ -1,5 +1,5 @@
 mod visitor;
-mod traverser;
+mod walk;
 
 pub use visitor::Visitor;
-pub use traverser::Traverser;
+pub use walk::*;

@@ -8,3 +8,5 @@ license-file.workspace = true
 
 [dependencies]
 pxp-ast = { path = "../pxp-ast" }
+pxp-syntax = { path = "../pxp-syntax" }
+pxp-span = { path = "../pxp-span" }
