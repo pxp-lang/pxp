@@ -219,6 +219,11 @@ pub fn single_argument(
     only_positional: bool,
 ) -> Option<SingleArgument> {
     let comments = state.stream.comments();
+
+    if state.stream.current().kind != TokenKind::LeftParen {
+        return None;
+    }
+
     let start = utils::skip_left_parenthesis(state);
 
     let mut first_argument = None;

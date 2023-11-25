@@ -19,6 +19,7 @@ fn main() {
         // let mut errors = Vec::new();
         let files = discover(&["php"], &[path.to_str().unwrap()]).unwrap();
         let print_filenames = args.contains(&"--print-filenames".to_string());
+        let stop_on_errors = args.contains(&"--stop-on-errors".to_string());
 
         for file in files.iter() {
             // Purposefully skip this file because it has a known syntax error.
@@ -36,14 +37,23 @@ fn main() {
 
             let contents = std::fs::read(file).unwrap();
             let mut symbol_table = SymbolTable::new();
-            parse(&contents, &mut symbol_table);
+            let ast = parse(&contents, &mut symbol_table);
+
+            if !ast.diagnostics.is_empty() && stop_on_errors {
+                ast.diagnostics.iter().for_each(|error| {
+                    print!("{error}");
+                });
+
+                break;
+            }
+
             print!(".");
         }
 
         println!();
 
         // if errors.is_empty() {
-        println!("Parsed directory with zero errors.");
+        // println!("Parsed directory with zero errors.");
         // } else {
         // println!("\nParsed directory with {} errors.", errors.len());
         // for (path, errors) in errors {
