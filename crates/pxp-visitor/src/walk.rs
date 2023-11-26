@@ -1,4 +1,4 @@
-use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember}, traits::{TraitUsage, TraitUsageAdaptation}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}};
+use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember}, traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}};
 
 use crate::Visitor;
 
@@ -594,5 +594,58 @@ walk! {
         for member in node.members.iter_mut() {
             visitor.visit_classish_member(member);
         }
+    }
+
+    walk_trait: TraitStatement => {
+        // FIXME: Walk attributes here.
+
+        visitor.visit_simple_identifier(&mut node.name);
+        visitor.visit_trait_body(&mut node.body);
+    }
+
+    walk_trait_body: TraitBody => {
+        for member in node.members.iter_mut() {
+            visitor.visit_classish_member(member);
+        }
+    }
+
+    walk_echo: EchoStatement => {
+        for value in node.values.iter_mut() {
+            visitor.visit_expression(value);
+        }
+    }
+
+    walk_expression_stmt: ExpressionStatement => {
+        visitor.visit_expression(&mut node.expression);
+    }
+
+    walk_return: ReturnStatement => {
+        if let Some(expression) = &mut node.value {
+            visitor.visit_expression(expression);
+        }
+    }
+
+    walk_namespace: NamespaceStatement => {
+        match node {
+            NamespaceStatement::Unbraced(node) => {
+                visitor.visit_unbraced_namespace(node);
+            },
+            NamespaceStatement::Braced(node) => {
+                visitor.visit_braced_namespace(node);
+            },
+        }
+    }
+
+    walk_unbraced_namespace: UnbracedNamespace => {
+        visitor.visit_simple_identifier(&mut node.name);
+        visitor.visit(&mut node.statements);
+    }
+
+    walk_braced_namespace: BracedNamespace => {
+        if let Some(name) = &mut node.name {
+            visitor.visit_simple_identifier(name);
+        }
+
+        visitor.visit(&mut node.body.statements);
     }
 }
