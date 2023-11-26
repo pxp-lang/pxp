@@ -1,4 +1,4 @@
-use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind};
+use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember}, traits::{TraitUsage, TraitUsageAdaptation}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}};
 
 use crate::Visitor;
 
@@ -117,5 +117,482 @@ pub fn walk_expression<V: Visitor + ?Sized>(visitor: &mut V, expression: &mut Ex
         ExpressionKind::YieldFrom(expr) => visitor.visit_yield_from(expr),
         ExpressionKind::Cast(expr) => visitor.visit_cast(expr),
         ExpressionKind::Noop => visitor.visit_noop_expr(),
+    }
+}
+
+macro_rules! walk {
+    (
+        using($v:ident, $n:ident);
+
+        $($label:ident: $node:ty => $body:block )+
+    ) => {
+        $(
+            pub fn $label<V: Visitor + ?Sized>($v: &mut V, $n: &mut $node) $body
+        )+
+    }
+}
+
+walk! {
+    using(visitor, node);
+
+    walk_label: LabelStatement => {
+        visitor.visit_simple_identifier(&mut node.label)
+    }
+
+    walk_goto: GotoStatement => {
+        visitor.visit_simple_identifier(&mut node.label)
+    }
+
+    walk_static: StaticStatement => {
+        for variable in node.vars.iter_mut() {
+            visitor.visit_static_var(variable)
+        }
+    }
+
+    walk_static_var: StaticVar => {
+        visitor.visit_variable(&mut node.var);
+        
+        if let Some(default) = &mut node.default {
+            visitor.visit_expression(default);
+        }
+    }
+
+    walk_global: GlobalStatement => {
+        for variable in node.variables.iter_mut() {
+            visitor.visit_variable(variable)
+        }
+    }
+
+    walk_do_while: DoWhileStatement => {
+        visitor.visit_statement(&mut node.body);
+        visitor.visit_expression(&mut node.condition);
+    }
+
+    walk_while: WhileStatement => {
+        visitor.visit_expression(&mut node.condition);
+        visitor.visit_while_statement_body(&mut node.body);
+    }
+
+    walk_while_statement_body: WhileStatementBody => {
+        match node {
+            WhileStatementBody::Statement { statement } => {
+                visitor.visit_statement(statement);
+            },
+            WhileStatementBody::Block { statements, .. } => {
+                visitor.visit(statements)
+            }
+        }
+    }
+
+    walk_for: ForStatement => {
+        visitor.visit_for_statement_iterator(&mut node.iterator);
+        visitor.visit_for_statement_body(&mut node.body);
+    }
+
+    walk_for_statement_iterator: ForStatementIterator => {
+        for init in node.initializations.iter_mut() {
+            visitor.visit_expression(init);
+        }
+
+        for condition in node.conditions.iter_mut() {
+            visitor.visit_expression(condition);
+        }
+
+        for r#loop in node.r#loop.iter_mut() {
+            visitor.visit_expression(r#loop);
+        }
+    }
+
+    walk_for_statement_body: ForStatementBody => {
+        match node {
+            ForStatementBody::Statement { statement } => {
+                visitor.visit_statement(statement);
+            },
+            ForStatementBody::Block { statements, .. } => {
+                visitor.visit(statements)
+            }
+        }
+    }
+
+    walk_foreach: ForeachStatement => {
+        visitor.visit_foreach_statement_iterator(&mut node.iterator);
+        visitor.visit_foreach_statement_body(&mut node.body);
+    }
+
+    walk_foreach_statement_iterator: ForeachStatementIterator => {
+        match node {
+            ForeachStatementIterator::Value { expression, value, .. } => {
+                visitor.visit_expression(expression);
+                visitor.visit_expression(value);
+            },
+            ForeachStatementIterator::KeyAndValue { expression, key, value, .. } => {
+                visitor.visit_expression(expression);
+                visitor.visit_expression(key);
+                visitor.visit_expression(value);
+            },
+        }
+    }
+
+    walk_foreach_statement_body: ForeachStatementBody => {
+        match node {
+            ForeachStatementBody::Statement { statement } => {
+                visitor.visit_statement(statement)
+            },
+            ForeachStatementBody::Block { statements, .. } => {
+                visitor.visit(statements)
+            }
+        }
+    }
+
+    walk_if: IfStatement => {
+        visitor.visit_expression(&mut node.condition);
+        visitor.visit_if_statement_body(&mut node.body);
+    }
+
+    walk_if_statement_body: IfStatementBody => {
+        match node {
+            IfStatementBody::Statement { statement, elseifs, r#else } => {
+                visitor.visit_statement(statement);
+                
+                for r#elseif in elseifs.iter_mut() {
+                    visitor.visit_if_statement_elseif(r#elseif);
+                }
+
+                if let Some(r#else) = r#else {
+                    visitor.visit_if_statement_else(r#else);
+                }
+            },
+            IfStatementBody::Block { statements, elseifs, r#else, .. } => {
+                visitor.visit(statements);
+
+                for r#elseif in elseifs.iter_mut() {
+                    visitor.visit_if_statement_elseif_block(r#elseif);
+                }
+
+                if let Some(r#else) = r#else {
+                    visitor.visit_if_statement_else_block(r#else);
+                }
+            },
+        }
+    }
+
+    walk_if_statement_elseif: IfStatementElseIf => {
+        visitor.visit_expression(&mut node.condition);
+        visitor.visit_statement(&mut node.statement);
+    }
+
+    walk_if_statement_elseif_block: IfStatementElseIfBlock => {
+        visitor.visit_expression(&mut node.condition);
+        visitor.visit(&mut node.statements);
+    }
+
+    walk_if_statement_else: IfStatementElse => {
+        visitor.visit_statement(&mut node.statement);
+    }
+
+    walk_if_statement_else_block: IfStatementElseBlock => {
+        visitor.visit(&mut node.statements);
+    }
+
+    walk_switch: SwitchStatement => {
+        visitor.visit_expression(&mut node.condition);
+
+        for case in node.cases.iter_mut() {
+            visitor.visit_switch_case(case);
+        }
+    }
+
+    walk_switch_case: Case => {
+        if let Some(condition) = &mut node.condition {
+            visitor.visit_expression(condition);
+        }
+
+        visitor.visit(&mut node.body);
+    }
+
+    walk_level: Level => {
+        match node {
+            Level::Literal(literal) => visitor.visit_literal(literal),
+            Level::Parenthesized { level, .. } => visitor.visit_level(level),
+        }
+    }
+
+    walk_break: BreakStatement => {
+        if let Some(level) = &mut node.level {
+            visitor.visit_level(level);
+        }
+    }
+    
+    walk_continue: ContinueStatement => {
+        if let Some(level) = &mut node.level {
+            visitor.visit_level(level);
+        }
+    }
+
+    walk_constant: ConstantStatement => {
+        for entry in node.entries.iter_mut() {
+            visitor.visit_constant_entry(entry);
+        }
+    }
+
+    walk_constant_entry: ConstantEntry => {
+        visitor.visit_simple_identifier(&mut node.name);
+        visitor.visit_expression(&mut node.value);
+    }
+
+    walk_function: FunctionStatement => {
+        // FIXME: Walk attributes here.
+        visitor.visit_simple_identifier(&mut node.name);
+        visitor.visit_function_parameter_list(&mut node.parameters);
+        visitor.visit_function_body(&mut node.body);
+    }
+
+    walk_function_parameter_list: FunctionParameterList => {
+        for parameter in node.parameters.iter_mut() {
+            visitor.visit_function_parameter(parameter);
+        }
+    }
+
+    walk_function_parameter: FunctionParameter => {
+        visitor.visit_simple_variable(&mut node.name);
+        // FIXME: Walk attributes here.
+
+        if let Some(default) = &mut node.default {
+            visitor.visit_expression(default);
+        }
+    }
+
+    walk_function_body: FunctionBody => {
+        visitor.visit(&mut node.statements);
+    }
+
+    walk_class: ClassStatement => {
+        // FIXME: Walk attributes here.
+        // FIXME: Walk modifiers here.
+        visitor.visit_simple_identifier(&mut node.name);
+
+        if let Some(extends) = &mut node.extends {
+            visitor.visit_class_extends(extends);
+        }
+
+        if let Some(implements) = &mut node.implements {
+            visitor.visit_class_implements(implements);
+        }
+
+        visitor.visit_class_body(&mut node.body);
+    }
+
+    walk_class_extends: ClassExtends => {
+        visitor.visit_simple_identifier(&mut node.parent);
+    }
+
+    walk_class_implements: ClassImplements => {
+        for interface in node.interfaces.iter_mut() {
+            visitor.visit_simple_identifier(interface);
+        }
+    }
+
+    walk_class_body: ClassBody => {
+        for member in node.members.iter_mut() {
+            visitor.visit_classish_member(member);
+        }
+    }
+
+    walk_classish_member: ClassishMember => {
+        match node {
+            ClassishMember::Constant(constant) => {
+                visitor.visit_classish_constant(constant);
+            },
+            ClassishMember::TraitUsage(usage) => {
+                visitor.visit_trait_usage(usage);
+            },
+            ClassishMember::Property(property) => {
+                visitor.visit_property(property);
+            },
+            ClassishMember::VariableProperty(property) => {
+                visitor.visit_variable_property(property);
+            },
+            ClassishMember::AbstractMethod(method) => {
+                visitor.visit_abstract_method(method);
+            },
+            ClassishMember::AbstractConstructor(method) => {
+                visitor.visit_abstract_constructor(method);
+            },
+            ClassishMember::ConcreteMethod(method) => {
+                visitor.visit_concrete_method(method);
+            },
+            ClassishMember::ConcreteConstructor(method) => {
+                visitor.visit_concrete_constructor(method);
+            },
+        }
+    }
+
+    walk_classish_constant: ClassishConstant => {
+        // FIXME: Walk attributes here.
+        // FIXME: Walk modifiers here.
+
+        for entries in node.entries.iter_mut() {
+            visitor.visit_constant_entry(entries);
+        }
+    }
+
+    walk_trait_usage: TraitUsage => {
+        for r#trait in node.traits.iter_mut() {
+            visitor.visit_simple_identifier(r#trait);
+        }
+
+        for adaptation in node.adaptations.iter_mut() {
+            visitor.visit_trait_usage_adaptation(adaptation);
+        }
+    }
+
+    walk_trait_usage_adaptation: TraitUsageAdaptation => {
+        match node {
+            TraitUsageAdaptation::Alias { r#trait, method, alias, visibility } => {
+                if let Some(r#trait) = r#trait {
+                    visitor.visit_simple_identifier(r#trait);
+                }
+
+                visitor.visit_simple_identifier(method);
+                visitor.visit_simple_identifier(alias);
+
+                if let Some(visibility) = visibility {
+                    // FIXME: Visit visibility here.
+                    // visitor.visit_visibility_modifier(visibility);
+                }
+            },
+            TraitUsageAdaptation::Visibility { r#trait, method, visibility } => {
+                if let Some(r#trait) = r#trait {
+                    visitor.visit_simple_identifier(r#trait);
+                }
+
+                visitor.visit_simple_identifier(method);
+                // FIXME: Visit visibility here.
+            },
+            TraitUsageAdaptation::Precedence { r#trait, method, insteadof } => {
+                if let Some(r#trait) = r#trait {
+                    visitor.visit_simple_identifier(r#trait);
+                }
+
+                visitor.visit_simple_identifier(method);
+
+                for insteadof in insteadof.iter_mut() {
+                    visitor.visit_simple_identifier(insteadof);
+                }
+            }
+        }
+    }
+
+    walk_property: Property => {
+        // FIXME: Walk attributes here.
+        // FIXME: Walk modifiers here.
+        // FIXME: Walk type here.
+        
+        for entry in node.entries.iter_mut() {
+            visitor.visit_property_entry(entry);
+        }
+    }
+
+    walk_property_entry: PropertyEntry => {
+        match node {
+            PropertyEntry::Uninitialized { variable } => {
+                visitor.visit_simple_variable(variable);
+            },
+            PropertyEntry::Initialized { variable, value, .. } => {
+                visitor.visit_simple_variable(variable);
+                visitor.visit_expression(value);
+            },
+        }
+    }
+
+    walk_variable_property: VariableProperty => {
+        // FIXME: Walk attributes here.
+        // FIXME: Walk type here.
+
+        for entry in node.entries.iter_mut() {
+            visitor.visit_property_entry(entry);
+        }
+    }
+
+    walk_abstract_method: AbstractMethod => {
+        // FIXME: Walk attributes here.
+        // FIXME: Walk modifiers here.
+
+        visitor.visit_simple_identifier(&mut node.name);
+        visitor.visit_function_parameter_list(&mut node.parameters);
+
+        // FIXME: Walk return type here.
+    }
+
+    walk_abstract_constructor: AbstractConstructor => {
+        // FIXME: Walk attributes here.
+        // FIXME: Walk modifiers here.
+
+        visitor.visit_constructor_parameter_list(&mut node.parameters);
+    }
+
+    walk_constructor_parameter_list: ConstructorParameterList => {
+        for parameter in node.parameters.iter_mut() {
+            visitor.visit_constructor_parameter(parameter);
+        }
+    }
+
+    walk_constructor_parameter: ConstructorParameter => {
+        // FIXME: Walk attributes here.
+        // FIXME: Visit modifiers here.
+        // FIXME: Visit type here.
+        visitor.visit_simple_variable(&mut node.name);
+
+        if let Some(default) = &mut node.default {
+            visitor.visit_expression(default);
+        }
+    }
+
+    walk_concrete_method: ConcreteMethod => {
+        // FIXME: Walk attributes here.
+        // FIXME: Walk modifiers here.
+
+        visitor.visit_simple_identifier(&mut node.name);
+        visitor.visit_function_parameter_list(&mut node.parameters);
+
+        // FIXME: Walk return type here.
+
+        visitor.visit_method_body(&mut node.body);
+    }
+
+    walk_method_body: MethodBody => {
+        visitor.visit(&mut node.statements);
+    }
+
+    walk_concrete_constructor: ConcreteConstructor => {
+        // FIXME: Walk attributes here.
+        // FIXME: Walk modifiers here.
+
+        visitor.visit_constructor_parameter_list(&mut node.parameters);
+        visitor.visit_method_body(&mut node.body);
+    }
+
+    walk_interface: InterfaceStatement => {
+        // FIXME: Walk attributes here.
+
+        visitor.visit_simple_identifier(&mut node.name);
+
+        if let Some(extends) = &mut node.extends {
+            visitor.visit_interface_extends(extends);
+        }
+
+        visitor.visit_interface_body(&mut node.body);
+    }
+
+    walk_interface_extends: InterfaceExtends => {
+        for parent in node.parents.iter_mut() {
+            visitor.visit_simple_identifier(parent);
+        }
+    }
+
+    walk_interface_body: InterfaceBody => {
+        for member in node.members.iter_mut() {
+            visitor.visit_classish_member(member);
+        }
     }
 }

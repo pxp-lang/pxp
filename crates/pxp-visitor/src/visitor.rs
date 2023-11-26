@@ -1,132 +1,290 @@
-use pxp_ast::{Statement, FullOpeningTagStatement, ShortOpeningTagStatement, EchoOpeningTagStatement, ClosingTagStatement, InlineHtmlStatement, goto::{LabelStatement, GotoStatement}, StaticStatement, GlobalStatement, HaltCompilerStatement, loops::{DoWhileStatement, WhileStatement, ForStatement, ForeachStatement, BreakStatement, ContinueStatement}, constant::ConstantStatement, functions::{FunctionStatement, ClosureExpression, ArrowFunctionExpression}, classes::{ClassStatement, AnonymousClassExpression}, traits::TraitStatement, interfaces::InterfaceStatement, control_flow::IfStatement, SwitchStatement, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::NamespaceStatement, UseStatement, GroupUseStatement, try_block::TryStatement, enums::{UnitEnumStatement, BackedEnumStatement}, BlockStatement, declares::DeclareStatement, EvalExpression, EmptyExpression, DieExpression, ExitExpression, IssetExpression, UnsetExpression, PrintExpression, literals::Literal, operators::{ArithmeticOperationExpression, AssignmentOperationExpression, BitwiseOperationExpression, ComparisonOperationExpression, LogicalOperationExpression}, ConcatExpression, InstanceofExpression, ReferenceExpression, ParenthesizedExpression, ErrorSuppressExpression, identifiers::Identifier, variables::Variable, IncludeExpression, IncludeOnceExpression, RequireExpression, RequireOnceExpression, FunctionCallExpression, FunctionClosureCreationExpression, MethodCallExpression, MethodClosureCreationExpression, NullsafeMethodCallExpression, StaticMethodCallExpression, StaticVariableMethodCallExpression, StaticMethodClosureCreationExpression, StaticVariableMethodClosureCreationExpression, PropertyFetchExpression, NullsafePropertyFetchExpression, StaticPropertyFetchExpression, ConstantFetchExpression, ShortArrayExpression, ArrayExpression, ListExpression, NewExpression, InterpolatedStringExpression, HeredocExpression, NowdocExpression, ShellExecExpression, BoolExpression, ArrayIndexExpression, MagicConstantExpression, ShortTernaryExpression, TernaryExpression, CoalesceExpression, CloneExpression, MatchExpression, ThrowExpression, YieldExpression, YieldFromExpression, CastExpression};
+use pxp_ast::{Statement, FullOpeningTagStatement, ShortOpeningTagStatement, EchoOpeningTagStatement, ClosingTagStatement, InlineHtmlStatement, goto::{LabelStatement, GotoStatement}, StaticStatement, GlobalStatement, HaltCompilerStatement, loops::{DoWhileStatement, WhileStatement, ForStatement, ForeachStatement, BreakStatement, ContinueStatement, WhileStatementBody, ForStatementIterator, ForStatementBody, ForeachStatementIterator, ForeachStatementBody, Level}, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, ClosureExpression, ArrowFunctionExpression, FunctionParameterList, FunctionBody, FunctionParameter, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor}, classes::{ClassStatement, AnonymousClassExpression, ClassExtends, ClassImplements, ClassBody, ClassishMember}, traits::{TraitStatement, TraitUsage, TraitUsageAdaptation}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElse, IfStatementElseIfBlock, IfStatementElseBlock}, SwitchStatement, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::NamespaceStatement, UseStatement, GroupUseStatement, try_block::TryStatement, enums::{UnitEnumStatement, BackedEnumStatement}, BlockStatement, declares::DeclareStatement, EvalExpression, EmptyExpression, DieExpression, ExitExpression, IssetExpression, UnsetExpression, PrintExpression, literals::Literal, operators::{ArithmeticOperationExpression, AssignmentOperationExpression, BitwiseOperationExpression, ComparisonOperationExpression, LogicalOperationExpression}, ConcatExpression, InstanceofExpression, ReferenceExpression, ParenthesizedExpression, ErrorSuppressExpression, identifiers::{Identifier, SimpleIdentifier}, variables::{Variable, SimpleVariable}, IncludeExpression, IncludeOnceExpression, RequireExpression, RequireOnceExpression, FunctionCallExpression, FunctionClosureCreationExpression, MethodCallExpression, MethodClosureCreationExpression, NullsafeMethodCallExpression, StaticMethodCallExpression, StaticVariableMethodCallExpression, StaticMethodClosureCreationExpression, StaticVariableMethodClosureCreationExpression, PropertyFetchExpression, NullsafePropertyFetchExpression, StaticPropertyFetchExpression, ConstantFetchExpression, ShortArrayExpression, ArrayExpression, ListExpression, NewExpression, InterpolatedStringExpression, HeredocExpression, NowdocExpression, ShellExecExpression, BoolExpression, ArrayIndexExpression, MagicConstantExpression, ShortTernaryExpression, TernaryExpression, CoalesceExpression, CloneExpression, MatchExpression, ThrowExpression, YieldExpression, YieldFromExpression, CastExpression, StaticVar, Expression, Case, properties::{Property, PropertyEntry, VariableProperty}};
 use pxp_span::Span;
 use pxp_syntax::comments::Comment;
 use crate::walk::*;
 
 pub trait Visitor {
-    fn visit(&mut self, program: &mut [Statement]) {
-        walk(self, program);
+    fn visit(&mut self, node: &mut [Statement]) {
+        walk(self, node);
     }
 
-    fn visit_statement(&mut self, statement: &mut Statement) {
-        walk_statement(self, statement)
+    fn visit_statement(&mut self, node: &mut Statement) {
+        walk_statement(self, node)
     }
 
-    fn visit_full_opening_tag(&mut self, statement: &mut FullOpeningTagStatement) {}
-    fn visit_short_opening_tag(&mut self, statement: &mut ShortOpeningTagStatement) {}
-    fn visit_echo_opening_tag(&mut self, statement: &mut EchoOpeningTagStatement) {}
-    fn visit_closing_tag(&mut self, statement: &mut ClosingTagStatement) {}
-
-    fn visit_inline_html(&mut self, statement: &mut InlineHtmlStatement) {}
-    fn visit_halt_compiler(&mut self, statement: &mut HaltCompilerStatement) {}
-
-    fn visit_label(&mut self, statement: &mut LabelStatement) {}
-    fn visit_goto(&mut self, statement: &mut GotoStatement) {}
-
-    fn visit_static(&mut self, statement: &mut StaticStatement) {}
-    fn visit_global(&mut self, statement: &mut GlobalStatement) {}
-
-    fn visit_do_while(&mut self, statement: &mut DoWhileStatement) {
-        todo!("walk do while")
+    fn visit_expression(&mut self, expression: &mut Expression) {
+        walk_expression(self, expression)
     }
 
-    fn visit_while(&mut self, statement: &mut WhileStatement) {
-        todo!("walk while")
+    fn visit_full_opening_tag(&mut self, node: &mut FullOpeningTagStatement) {}
+    fn visit_short_opening_tag(&mut self, node: &mut ShortOpeningTagStatement) {}
+    fn visit_echo_opening_tag(&mut self, node: &mut EchoOpeningTagStatement) {}
+    fn visit_closing_tag(&mut self, node: &mut ClosingTagStatement) {}
+
+    fn visit_inline_html(&mut self, node: &mut InlineHtmlStatement) {}
+    fn visit_halt_compiler(&mut self, node: &mut HaltCompilerStatement) {}
+
+    fn visit_label(&mut self, node: &mut LabelStatement) {
+        walk_label(self, node)
     }
 
-    fn visit_for(&mut self, statement: &mut ForStatement) {
-        todo!("walk for")
+    fn visit_goto(&mut self, node: &mut GotoStatement) {
+        walk_goto(self, node)
     }
 
-    fn visit_foreach(&mut self, statement: &mut ForeachStatement) {
-        todo!("walk foreach")
+    fn visit_static(&mut self, node: &mut StaticStatement) {
+        walk_static(self, node)
     }
 
-    fn visit_if(&mut self, statement: &mut IfStatement) {
-        todo!("walk if")
+    fn visit_static_var(&mut self, var: &mut StaticVar) {
+        walk_static_var(self, var)
     }
 
-    fn visit_switch(&mut self, statement: &mut SwitchStatement) {
-        todo!("walk switch")
+    fn visit_global(&mut self, node: &mut GlobalStatement) {
+        walk_global(self, node);
     }
 
-    fn visit_break(&mut self, statement: &mut BreakStatement) {
-        todo!("walk break")
+    fn visit_do_while(&mut self, node: &mut DoWhileStatement) {
+        walk_do_while(self, node)
     }
 
-    fn visit_continue(&mut self, statement: &mut ContinueStatement) {
-        todo!("walk continue")
+    fn visit_while(&mut self, node: &mut WhileStatement) {
+        walk_while(self, node)
     }
 
-    fn visit_constant(&mut self, statement: &mut ConstantStatement) {
-        todo!("walk constant")
+    fn visit_while_statement_body(&mut self, node: &mut WhileStatementBody) {
+        walk_while_statement_body(self, node)
     }
 
-    fn visit_function(&mut self, statement: &mut FunctionStatement) {
-        todo!("walk function")
+    fn visit_for(&mut self, node: &mut ForStatement) {
+        walk_for(self, node)
     }
 
-    fn visit_class(&mut self, statement: &mut ClassStatement) {
-        todo!("walk class")
+    fn visit_for_statement_iterator(&mut self, node: &mut ForStatementIterator) {
+        walk_for_statement_iterator(self, node);
     }
 
-    fn visit_trait(&mut self, statement: &mut TraitStatement) {
+    fn visit_for_statement_body(&mut self, node: &mut ForStatementBody) {
+        walk_for_statement_body(self, node);
+    }
+
+    fn visit_foreach(&mut self, node: &mut ForeachStatement) {
+        walk_foreach(self, node)
+    }
+
+    fn visit_foreach_statement_iterator(&mut self, node: &mut ForeachStatementIterator) {
+        walk_foreach_statement_iterator(self, node)
+    }
+
+    fn visit_foreach_statement_body(&mut self, node: &mut ForeachStatementBody) {
+        walk_foreach_statement_body(self, node)
+    }
+
+    fn visit_if(&mut self, node: &mut IfStatement) {
+        walk_if(self, node)
+    }
+
+    fn visit_if_statement_body(&mut self, node: &mut IfStatementBody) {
+        walk_if_statement_body(self, node)
+    }
+
+    fn visit_if_statement_elseif(&mut self, node: &mut IfStatementElseIf) {
+        walk_if_statement_elseif(self, node)
+    }
+
+    fn visit_if_statement_else(&mut self, node: &mut IfStatementElse) {
+        walk_if_statement_else(self, node)
+    }
+
+    fn visit_if_statement_elseif_block(&mut self, node: &mut IfStatementElseIfBlock) {
+        walk_if_statement_elseif_block(self, node)
+    }
+
+    fn visit_if_statement_else_block(&mut self, node: &mut IfStatementElseBlock) {
+        walk_if_statement_else_block(self, node)
+    }
+
+    fn visit_switch(&mut self, node: &mut SwitchStatement) {
+        walk_switch(self, node)
+    }
+
+    fn visit_switch_case(&mut self, node: &mut Case) {
+        walk_switch_case(self, node)
+    }
+
+    fn visit_level(&mut self, node: &mut Level) {
+        walk_level(self, node)
+    }
+
+    fn visit_break(&mut self, node: &mut BreakStatement) {
+        walk_break(self, node)
+    }
+
+    fn visit_continue(&mut self, node: &mut ContinueStatement) {
+        walk_continue(self, node)
+    }
+
+    fn visit_constant(&mut self, node: &mut ConstantStatement) {
+        walk_constant(self, node)
+    }
+
+    fn visit_constant_entry(&mut self, node: &mut ConstantEntry) {
+        walk_constant_entry(self, node)
+    }
+
+    fn visit_function(&mut self, node: &mut FunctionStatement) {
+        walk_function(self, node)
+    }
+
+    fn visit_function_parameter_list(&mut self, node: &mut FunctionParameterList) {
+        walk_function_parameter_list(self, node)
+    }
+
+    fn visit_function_parameter(&mut self, node: &mut FunctionParameter) {
+        walk_function_parameter(self, node)
+    }
+
+    fn visit_function_body(&mut self, node: &mut FunctionBody) {
+        walk_function_body(self, node)
+    }
+
+    fn visit_class(&mut self, node: &mut ClassStatement) {
+        walk_class(self, node)
+    }
+
+    fn visit_class_extends(&mut self, node: &mut ClassExtends) {
+        walk_class_extends(self, node)
+    }
+
+    fn visit_class_implements(&mut self, node: &mut ClassImplements) {
+        walk_class_implements(self, node)
+    }
+
+    fn visit_class_body(&mut self, node: &mut ClassBody) {
+        walk_class_body(self, node)
+    }
+
+    fn visit_classish_member(&mut self, node: &mut ClassishMember) {
+        walk_classish_member(self, node)
+    }
+
+    fn visit_classish_constant(&mut self, node: &mut ClassishConstant) {
+        walk_classish_constant(self, node)
+    }
+
+    fn visit_trait_usage(&mut self, node: &mut TraitUsage) {
+        walk_trait_usage(self, node)
+    }
+
+    fn visit_trait_usage_adaptation(&mut self, node: &mut TraitUsageAdaptation) {
+        walk_trait_usage_adaptation(self, node)
+    }
+
+    fn visit_property(&mut self, node: &mut Property) {
+        walk_property(self, node)
+    }
+
+    fn visit_property_entry(&mut self, node: &mut PropertyEntry) {
+        walk_property_entry(self, node)
+    }
+
+    fn visit_variable_property(&mut self, node: &mut VariableProperty) {
+        walk_variable_property(self, node)
+    }
+
+    fn visit_abstract_method(&mut self, node: &mut AbstractMethod) {
+        walk_abstract_method(self, node)
+    }
+
+    fn visit_abstract_constructor(&mut self, node: &mut AbstractConstructor) {
+        walk_abstract_constructor(self, node)
+    }
+
+    fn visit_constructor_parameter_list(&mut self, node: &mut ConstructorParameterList) {
+        walk_constructor_parameter_list(self, node)
+    }
+
+    fn visit_concrete_method(&mut self, node: &mut ConcreteMethod) {
+        walk_concrete_method(self, node)
+    }
+
+    fn visit_method_body(&mut self, node: &mut MethodBody) {
+        walk_method_body(self, node)
+    }
+
+    fn visit_constructor_parameter(&mut self, node: &mut ConstructorParameter) {
+        walk_constructor_parameter(self, node)
+    }
+
+    fn visit_concrete_constructor(&mut self, node: &mut ConcreteConstructor) {
+        walk_concrete_constructor(self, node)
+    }
+
+    fn visit_interface(&mut self, node: &mut InterfaceStatement) {
+        walk_interface(self, node)
+    }
+
+    fn visit_interface_extends(&mut self, node: &mut InterfaceExtends) {
+        walk_interface_extends(self, node)
+    }
+
+    fn visit_interface_body(&mut self, node: &mut InterfaceBody) {
+        walk_interface_body(self, node)
+    }
+
+    fn visit_trait(&mut self, node: &mut TraitStatement) {
         todo!("walk trait")
     }
 
-    fn visit_interface(&mut self, statement: &mut InterfaceStatement) {
-        todo!("walk interface")
-    }
-
-    fn visit_echo(&mut self, statement: &mut EchoStatement) {
+    fn visit_echo(&mut self, node: &mut EchoStatement) {
         todo!("walk echo")
     }
 
-    fn visit_expression_stmt(&mut self, statement: &mut ExpressionStatement) {
+    fn visit_expression_stmt(&mut self, node: &mut ExpressionStatement) {
         todo!("walk expression")
     }
 
-    fn visit_return(&mut self, statement: &mut ReturnStatement) {
+    fn visit_return(&mut self, node: &mut ReturnStatement) {
         todo!("walk return")
     }
 
-    fn visit_namespace(&mut self, statement: &mut NamespaceStatement) {
+    fn visit_namespace(&mut self, node: &mut NamespaceStatement) {
         todo!("walk namespace")
     }
 
-    fn visit_use(&mut self, statement: &mut UseStatement) {
+    fn visit_use(&mut self, node: &mut UseStatement) {
         todo!("walk use")
     }
 
-    fn visit_group_use(&mut self, statement: &mut GroupUseStatement) {
+    fn visit_group_use(&mut self, node: &mut GroupUseStatement) {
         todo!("walk group use")
     }
 
-    fn visit_comment_stmt(&mut self, statement: &mut Comment) {
+    fn visit_comment_stmt(&mut self, node: &mut Comment) {
         todo!("walk comment")
     }
 
-    fn visit_try(&mut self, statement: &mut TryStatement) {
+    fn visit_try(&mut self, node: &mut TryStatement) {
         todo!("walk try")
     }
 
-    fn visit_unit_enum(&mut self, statement: &mut UnitEnumStatement) {
+    fn visit_unit_enum(&mut self, node: &mut UnitEnumStatement) {
         todo!("walk unit enum")
     }
 
-    fn visit_backed_enum(&mut self, statement: &mut BackedEnumStatement) {
+    fn visit_backed_enum(&mut self, node: &mut BackedEnumStatement) {
         todo!("walk backed enum")
     }
 
-    fn visit_block(&mut self, statement: &mut BlockStatement) {
+    fn visit_block(&mut self, node: &mut BlockStatement) {
         todo!("walk block")
     }
 
-    fn visit_declare(&mut self, statement: &mut DeclareStatement) {
+    fn visit_declare(&mut self, node: &mut DeclareStatement) {
         todo!("walk declare")
     }
 
-    fn visit_noop(&mut self, statement: Span) {
+    fn visit_noop(&mut self, node: Span) {
         todo!("walk noop")
     }
 
@@ -208,9 +366,15 @@ pub trait Visitor {
         todo!("walk identifier - maybe walk identifier kind?")
     }
 
+    fn visit_simple_identifier(&mut self, identifier: &mut SimpleIdentifier) {
+        todo!("walk simple identifier")
+    }
+
     fn visit_variable(&mut self, expression: &mut Variable) {
         todo!("walk variable - maybe walk variable kind?")
     }
+
+    fn visit_simple_variable(&mut self, variable: &mut SimpleVariable) {}
 
     fn visit_include(&mut self, expression: &mut IncludeExpression) {
         todo!("walk include")
