@@ -1,4 +1,4 @@
-use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember}, traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}, UseStatement, Use, GroupUseStatement, try_block::{TryStatement, CatchBlock, FinallyBlock}};
+use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember}, traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}, UseStatement, Use, GroupUseStatement, try_block::{TryStatement, CatchBlock, FinallyBlock}, enums::{UnitEnumStatement, UnitEnumMember, UnitEnumCase, BackedEnumStatement, BackedEnumMember, BackedEnumCase}, declares::{DeclareStatement, DeclareEntry, DeclareBody}};
 
 use crate::Visitor;
 
@@ -693,5 +693,96 @@ walk! {
 
     walk_finally_block: FinallyBlock => {
         visitor.visit(&mut node.body);
+    }
+
+    walk_unit_enum: UnitEnumStatement => {
+        // FIXME: Walk attributes here.
+
+        visitor.visit_simple_identifier(&mut node.name);
+
+        for implements in node.implements.iter_mut() {
+            visitor.visit_simple_identifier(implements);
+        }
+
+        for member in node.body.members.iter_mut() {
+            visitor.visit_unit_enum_member(member);
+        }
+    }
+
+    walk_unit_enum_member: UnitEnumMember => {
+        match node {
+            UnitEnumMember::Case(node) => {
+                visitor.visit_unit_enum_case(node);
+            }
+            UnitEnumMember::Classish(node) => {
+                visitor.visit_classish_member(node);
+            }
+        }
+    }
+
+    walk_unit_enum_case: UnitEnumCase => {
+        // FIXME: Walk attributes here.
+
+        visitor.visit_simple_identifier(&mut node.name);
+    }
+
+    walk_backed_enum: BackedEnumStatement => {
+        // FIXME: Walk attributes here.
+
+        visitor.visit_simple_identifier(&mut node.name);
+
+        for implements in node.implements.iter_mut() {
+            visitor.visit_simple_identifier(implements);
+        }
+
+        for member in node.body.members.iter_mut() {
+            visitor.visit_backed_enum_member(member);
+        }
+    }
+
+    walk_backed_enum_member: BackedEnumMember => {
+        match node {
+            BackedEnumMember::Case(node) => {
+                visitor.visit_backed_enum_case(node);
+            }
+            BackedEnumMember::Classish(node) => {
+                visitor.visit_classish_member(node);
+            }
+        }
+    }
+
+    walk_backed_enum_case: BackedEnumCase => {
+        // FIXME: Walk attributes here.
+
+        visitor.visit_simple_identifier(&mut node.name);
+        visitor.visit_expression(&mut node.value);
+    }
+
+    walk_declare: DeclareStatement => {
+        for entry in node.entries.entries.iter_mut() {
+            visitor.visit_declare_entry(entry);
+        }
+
+        visitor.visit_declare_body(&mut node.body);
+    }
+
+    walk_declare_entry: DeclareEntry => {
+        visitor.visit_simple_identifier(&mut node.key);
+        visitor.visit_literal(&mut node.value);
+    }
+
+    walk_declare_body: DeclareBody => {
+        match node {
+            DeclareBody::Noop { .. } => {},
+            DeclareBody::Braced { statements, .. } => {
+                visitor.visit(statements);
+            },
+            DeclareBody::Expression { expression, .. } => {
+                visitor.visit_expression(expression);
+            },
+            DeclareBody::Block { statements, .. } => {
+                visitor.visit(statements);
+            },
+        }
     }
 }
