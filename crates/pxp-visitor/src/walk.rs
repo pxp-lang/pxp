@@ -1,4 +1,4 @@
-use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember}, traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}, UseStatement, Use, GroupUseStatement, try_block::{TryStatement, CatchBlock, FinallyBlock}, enums::{UnitEnumStatement, UnitEnumMember, UnitEnumCase, BackedEnumStatement, BackedEnumMember, BackedEnumCase}, declares::{DeclareStatement, DeclareEntry, DeclareBody}};
+use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember}, traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}, UseStatement, Use, GroupUseStatement, try_block::{TryStatement, CatchBlock, FinallyBlock}, enums::{UnitEnumStatement, UnitEnumMember, UnitEnumCase, BackedEnumStatement, BackedEnumMember, BackedEnumCase}, declares::{DeclareStatement, DeclareEntry, DeclareBody}, EvalExpression, arguments::{Argument, ArgumentList}, EmptyExpression, DieExpression, ExitExpression, IssetExpression, UnsetExpression, PrintExpression};
 
 use crate::Visitor;
 
@@ -783,6 +783,72 @@ walk! {
             DeclareBody::Block { statements, .. } => {
                 visitor.visit(statements);
             },
+        }
+    }
+
+    walk_argument_list: ArgumentList => {
+        for argument in node.arguments.iter_mut() {
+            visitor.visit_argument(argument);
+        }
+    }
+
+    walk_argument: Argument => {
+        match node {
+            Argument::Positional(node) => {
+                visitor.visit_expression(&mut node.value);
+            },
+            Argument::Named(node) => {
+                visitor.visit_simple_identifier(&mut node.name);
+                visitor.visit_expression(&mut node.value);
+            },
+        }
+    }
+
+    walk_eval: EvalExpression => {
+        if let Some(argument) = &mut node.argument.argument {
+            visitor.visit_argument(argument);
+        }
+    }
+
+    walk_empty: EmptyExpression => {
+        if let Some(argument) = &mut node.argument.argument {
+            visitor.visit_argument(argument);
+        }
+    }
+
+    walk_die: DieExpression => {
+        if let Some(argument) = &mut node.argument {
+            if let Some(argument) = &mut argument.argument {
+                visitor.visit_argument(argument);
+            }
+        }
+    }
+
+    walk_exit: ExitExpression => {
+        if let Some(argument) = &mut node.argument {
+            if let Some(argument) = &mut argument.argument {
+                visitor.visit_argument(argument);
+            }
+        }
+    }
+
+    walk_isset: IssetExpression => {
+        visitor.visit_argument_list(&mut node.arguments);
+    }
+
+    walk_unset: UnsetExpression => {
+        visitor.visit_argument_list(&mut node.arguments);
+    }
+
+    walk_print: PrintExpression => {
+        if let Some(value) = &mut node.value {
+            visitor.visit_expression(value);
+        }
+
+        if let Some(argument) = &mut node.argument {
+            if let Some(argument) = &mut argument.argument {
+                visitor.visit_argument(argument);
+            }
         }
     }
 }
