@@ -1,4 +1,4 @@
-use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember}, traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}};
+use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember}, traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}, UseStatement, Use, GroupUseStatement, try_block::{TryStatement, CatchBlock, FinallyBlock}};
 
 use crate::Visitor;
 
@@ -456,12 +456,12 @@ walk! {
                 visitor.visit_simple_identifier(method);
                 visitor.visit_simple_identifier(alias);
 
-                if let Some(visibility) = visibility {
+                if let Some(_visibility) = visibility {
                     // FIXME: Visit visibility here.
                     // visitor.visit_visibility_modifier(visibility);
                 }
             },
-            TraitUsageAdaptation::Visibility { r#trait, method, visibility } => {
+            TraitUsageAdaptation::Visibility { r#trait, method, visibility: _visibility } => {
                 if let Some(r#trait) = r#trait {
                     visitor.visit_simple_identifier(r#trait);
                 }
@@ -647,5 +647,51 @@ walk! {
         }
 
         visitor.visit(&mut node.body.statements);
+    }
+
+    walk_use: UseStatement => {
+        for r#use in node.uses.iter_mut() {
+            visitor.visit_use_use(r#use);
+        }
+    }
+
+    walk_use_use: Use => {
+        visitor.visit_simple_identifier(&mut node.name);
+
+        if let Some(alias) = &mut node.alias {
+            visitor.visit_simple_identifier(alias);
+        }
+    }
+
+    walk_group_use: GroupUseStatement => {
+        visitor.visit_simple_identifier(&mut node.prefix);
+
+        for r#use in node.uses.iter_mut() {
+            visitor.visit_use_use(r#use);
+        }
+    }
+
+    walk_try: TryStatement => {
+        visitor.visit(&mut node.body);
+
+        for catch in node.catches.iter_mut() {
+            visitor.visit_catch_block(catch);
+        }
+
+        if let Some(finally) = &mut node.finally {
+            visitor.visit_finally_block(finally);
+        }
+    }
+
+    walk_catch_block: CatchBlock => {
+        if let Some(variable) = &mut node.var {
+            visitor.visit_simple_variable(variable);
+        }
+
+        visitor.visit(&mut node.body);
+    }
+
+    walk_finally_block: FinallyBlock => {
+        visitor.visit(&mut node.body);
     }
 }
