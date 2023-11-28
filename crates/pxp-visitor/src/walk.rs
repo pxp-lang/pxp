@@ -1,4 +1,4 @@
-use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember}, traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}, UseStatement, Use, GroupUseStatement, try_block::{TryStatement, CatchBlock, FinallyBlock}, enums::{UnitEnumStatement, UnitEnumMember, UnitEnumCase, BackedEnumStatement, BackedEnumMember, BackedEnumCase}, declares::{DeclareStatement, DeclareEntry, DeclareBody}, EvalExpression, arguments::{Argument, ArgumentList}, EmptyExpression, DieExpression, ExitExpression, IssetExpression, UnsetExpression, PrintExpression, literals::Literal, operators::{ArithmeticOperationExpression, AssignmentOperationExpression, BitwiseOperationExpression, ComparisonOperationExpression, LogicalOperationExpression}};
+use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember}, traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}, UseStatement, Use, GroupUseStatement, try_block::{TryStatement, CatchBlock, FinallyBlock}, enums::{UnitEnumStatement, UnitEnumMember, UnitEnumCase, BackedEnumStatement, BackedEnumMember, BackedEnumCase}, declares::{DeclareStatement, DeclareEntry, DeclareBody}, EvalExpression, arguments::{Argument, ArgumentList}, EmptyExpression, DieExpression, ExitExpression, IssetExpression, UnsetExpression, PrintExpression, literals::Literal, operators::{ArithmeticOperationExpression, AssignmentOperationExpression, BitwiseOperationExpression, ComparisonOperationExpression, LogicalOperationExpression}, ConcatExpression, InstanceofExpression, ReferenceExpression, ParenthesizedExpression, ErrorSuppressExpression, identifiers::{Identifier, DynamicIdentifier}};
 
 use crate::Visitor;
 
@@ -1142,5 +1142,42 @@ walk! {
                 visitor.visit_expression(right);
             }
         }
+    }
+
+    walk_concat: ConcatExpression => {
+        visitor.visit_expression(&mut node.left);
+        visitor.visit_expression(&mut node.right);
+    }
+
+    walk_instanceof: InstanceofExpression => {
+        visitor.visit_expression(&mut node.left);
+        visitor.visit_expression(&mut node.right);
+    }
+
+    walk_reference: ReferenceExpression => {
+        visitor.visit_expression(&mut node.right);
+    }
+
+    walk_parenthesized: ParenthesizedExpression => {
+        visitor.visit_expression(&mut node.expr);
+    }
+
+    walk_error_suppress: ErrorSuppressExpression => {
+        visitor.visit_expression(&mut node.expr);
+    }
+
+    walk_identifier: Identifier => {
+        match node {
+            Identifier::SimpleIdentifier(node) => {
+                visitor.visit_simple_identifier(node);
+            },
+            Identifier::DynamicIdentifier(node) => {
+                visitor.visit_dynamic_identifier(node);
+            },
+        }
+    }
+
+    walk_dynamic_identifier: DynamicIdentifier => {
+        visitor.visit_expression(&mut node.expr);
     }
 }
