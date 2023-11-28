@@ -372,28 +372,26 @@ pub trait Visitor {
         walk_print(self, node)
     }
 
-    fn visit_literal(&mut self, node: &mut Literal) {
-        todo!("walk literal - maybe walk literal kind?")
-    }
+    fn visit_literal(&mut self, _: &mut Literal) {}
 
     fn visit_arithmetic_operation(&mut self, node: &mut ArithmeticOperationExpression) {
-        todo!("walk arithmetic operation")
+        walk_arithmetic_operation(self, node)
     }
 
     fn visit_assignment_operation(&mut self, node: &mut AssignmentOperationExpression) {
-        todo!("walk assignment operation")
+        walk_assignment_operation(self, node)
     }
 
     fn visit_bitwise_operation(&mut self, node: &mut BitwiseOperationExpression) {
-        todo!("walk bitwise operation")
+        walk_bitwise_operation(self, node)
     }    
 
     fn visit_comparison_operation(&mut self, node: &mut ComparisonOperationExpression) {
-        todo!("walk comparsion operation")
+        walk_comparison_operation(self, node)
     }
 
     fn visit_logical_operation(&mut self, node: &mut LogicalOperationExpression) {
-        todo!("walk logical operation")
+        walk_logical_operation(self, node)
     }
 
     fn visit_concat(&mut self, node: &mut ConcatExpression) {

@@ -1,4 +1,4 @@
-use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember}, traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}, UseStatement, Use, GroupUseStatement, try_block::{TryStatement, CatchBlock, FinallyBlock}, enums::{UnitEnumStatement, UnitEnumMember, UnitEnumCase, BackedEnumStatement, BackedEnumMember, BackedEnumCase}, declares::{DeclareStatement, DeclareEntry, DeclareBody}, EvalExpression, arguments::{Argument, ArgumentList}, EmptyExpression, DieExpression, ExitExpression, IssetExpression, UnsetExpression, PrintExpression};
+use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember}, traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}, UseStatement, Use, GroupUseStatement, try_block::{TryStatement, CatchBlock, FinallyBlock}, enums::{UnitEnumStatement, UnitEnumMember, UnitEnumCase, BackedEnumStatement, BackedEnumMember, BackedEnumCase}, declares::{DeclareStatement, DeclareEntry, DeclareBody}, EvalExpression, arguments::{Argument, ArgumentList}, EmptyExpression, DieExpression, ExitExpression, IssetExpression, UnsetExpression, PrintExpression, literals::Literal, operators::{ArithmeticOperationExpression, AssignmentOperationExpression, BitwiseOperationExpression, ComparisonOperationExpression, LogicalOperationExpression}};
 
 use crate::Visitor;
 
@@ -848,6 +848,298 @@ walk! {
         if let Some(argument) = &mut node.argument {
             if let Some(argument) = &mut argument.argument {
                 visitor.visit_argument(argument);
+            }
+        }
+    }
+
+    walk_arithmetic_operation: ArithmeticOperationExpression => {
+        match node {
+            ArithmeticOperationExpression::Addition {
+                left,
+                right,
+                ..
+            } => {
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
+            },
+            ArithmeticOperationExpression::Subtraction {
+                left,
+                right,
+                ..
+            } => {
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
+            },
+            ArithmeticOperationExpression::Multiplication {
+                left,
+                right,
+                ..
+            } => {
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
+            },
+            ArithmeticOperationExpression::Division {
+                left,
+                right,
+                ..
+            } => {
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
+            },
+            ArithmeticOperationExpression::Modulo {
+                left, right, ..
+            }  => {
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
+            },
+            ArithmeticOperationExpression::Exponentiation {
+                left, right, ..
+            } => {
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
+            },
+            ArithmeticOperationExpression::Negative {
+                right, ..
+            } => {
+                visitor.visit_expression(right);
+            },
+            ArithmeticOperationExpression::Positive {
+                right,
+                ..
+            } => {
+                visitor.visit_expression(right);
+            },
+            ArithmeticOperationExpression::PreIncrement {
+                right, ..
+            } => {
+                visitor.visit_expression(right);
+            },
+            ArithmeticOperationExpression::PostIncrement {
+                left, ..
+            } => {
+                visitor.visit_expression(left);
+            },
+            ArithmeticOperationExpression::PreDecrement {
+                right, ..
+            } => {
+                visitor.visit_expression(right);
+            },
+            ArithmeticOperationExpression::PostDecrement {
+                left, ..
+            } => {
+                visitor.visit_expression(left);
+            },
+        }
+    }
+
+    walk_assignment_operation: AssignmentOperationExpression => {
+        match node {
+            AssignmentOperationExpression::Assign {
+                left,
+                right,
+                ..
+            } |
+            AssignmentOperationExpression::Addition {
+                left,
+                right,
+                ..
+            } |
+            AssignmentOperationExpression::Subtraction {
+                left,
+                right,
+                ..
+            } |
+            AssignmentOperationExpression::Multiplication {
+                left,
+                right,
+                ..
+            } |
+            AssignmentOperationExpression::Division {
+                left,
+                right,
+                ..
+            } |
+            AssignmentOperationExpression::Modulo {
+                left,
+                right,
+                ..
+            } |
+            AssignmentOperationExpression::Exponentiation {
+                left,
+                right,
+                ..
+            } |
+            AssignmentOperationExpression::Concat {
+                left,
+                right,
+                ..
+            } |
+            AssignmentOperationExpression::BitwiseAnd {
+                left,
+                right,
+                ..
+            } |
+            AssignmentOperationExpression::BitwiseOr {
+                left,
+                right,
+                ..
+            } |
+            AssignmentOperationExpression::BitwiseXor {
+                left,
+                right,
+                ..
+            } |
+            AssignmentOperationExpression::LeftShift {
+                left,
+                right,
+                ..
+            } |
+            AssignmentOperationExpression::RightShift {
+                left,
+                right,
+                ..
+            } |
+            AssignmentOperationExpression::Coalesce {
+                left,
+                right,
+                ..
+            } => {
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
+            }
+        }
+    }
+
+    walk_bitwise_operation: BitwiseOperationExpression => {
+        match node {
+            BitwiseOperationExpression::And {
+                left,
+                right,
+                ..
+            } |
+            BitwiseOperationExpression::Or {
+                left,
+                right,
+                ..
+            } |
+            BitwiseOperationExpression::Xor {
+                left,
+                right,
+                ..
+            } |
+            BitwiseOperationExpression::LeftShift {
+                left,
+                right,
+                ..
+            } |
+            BitwiseOperationExpression::RightShift {
+                left,
+                right,
+                ..
+            } => {
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
+            },
+            BitwiseOperationExpression::Not {
+                right,
+                ..
+            } => {
+                visitor.visit_expression(right);
+            },
+        }
+    }
+
+    walk_comparison_operation: ComparisonOperationExpression => {
+        match node {
+            ComparisonOperationExpression::Equal {
+                left,
+                right,
+                ..
+            } |
+            ComparisonOperationExpression::Identical {
+                left,
+                right,
+                ..
+            } |
+            ComparisonOperationExpression::NotEqual {
+                left,
+                right,
+                ..
+            } |
+            ComparisonOperationExpression::AngledNotEqual {
+                left,
+                right,
+                ..
+            } |
+            ComparisonOperationExpression::NotIdentical {
+                left,
+                right,
+                ..
+            } |
+            ComparisonOperationExpression::LessThan {
+                left,
+                right,
+                ..
+            } |
+            ComparisonOperationExpression::GreaterThan {
+                left,
+                right,
+                ..
+            } |
+            ComparisonOperationExpression::LessThanOrEqual {
+                left,
+                right,
+                ..
+            } |
+            ComparisonOperationExpression::GreaterThanOrEqual {
+                left,
+                right,
+                ..
+            } |
+            ComparisonOperationExpression::Spaceship {
+                left,
+                right,
+                ..
+            } => {
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
+            }
+        }
+    }
+
+    walk_logical_operation: LogicalOperationExpression => {
+        match node {
+            LogicalOperationExpression::And {
+                left,
+                right,
+                ..
+            } |
+            LogicalOperationExpression::Or {
+                left,
+                right,
+                ..
+            } |
+            LogicalOperationExpression::Not {
+                right,
+                ..
+            } |
+            LogicalOperationExpression::LogicalAnd {
+                left,
+                right,
+                ..
+            } |
+            LogicalOperationExpression::LogicalOr {
+                left,
+                right,
+                ..
+            } |
+            LogicalOperationExpression::LogicalXor {
+                left,
+                right,
+                ..
+            } => {
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
             }
         }
     }
