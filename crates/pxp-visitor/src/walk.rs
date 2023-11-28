@@ -1119,10 +1119,6 @@ walk! {
                 right,
                 ..
             } |
-            LogicalOperationExpression::Not {
-                right,
-                ..
-            } |
             LogicalOperationExpression::LogicalAnd {
                 left,
                 right,
@@ -1140,7 +1136,13 @@ walk! {
             } => {
                 visitor.visit_expression(left);
                 visitor.visit_expression(right);
-            }
+            },
+            LogicalOperationExpression::Not {
+                right,
+                ..
+            } => {
+                visitor.visit_expression(right);
+            },
         }
     }
 
