@@ -1,4 +1,4 @@
-use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember}, traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}, UseStatement, Use, GroupUseStatement, try_block::{TryStatement, CatchBlock, FinallyBlock}, enums::{UnitEnumStatement, UnitEnumMember, UnitEnumCase, BackedEnumStatement, BackedEnumMember, BackedEnumCase}, declares::{DeclareStatement, DeclareEntry, DeclareBody}, EvalExpression, arguments::{Argument, ArgumentList}, EmptyExpression, DieExpression, ExitExpression, IssetExpression, UnsetExpression, PrintExpression, literals::Literal, operators::{ArithmeticOperationExpression, AssignmentOperationExpression, BitwiseOperationExpression, ComparisonOperationExpression, LogicalOperationExpression}, ConcatExpression, InstanceofExpression, ReferenceExpression, ParenthesizedExpression, ErrorSuppressExpression, identifiers::{Identifier, DynamicIdentifier}};
+use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor, ClosureExpression, ArrowFunctionExpression}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember, AnonymousClassExpression, AnonymousClassBody}, traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}, UseStatement, Use, GroupUseStatement, try_block::{TryStatement, CatchBlock, FinallyBlock}, enums::{UnitEnumStatement, UnitEnumMember, UnitEnumCase, BackedEnumStatement, BackedEnumMember, BackedEnumCase}, declares::{DeclareStatement, DeclareEntry, DeclareBody}, EvalExpression, arguments::{Argument, ArgumentList}, EmptyExpression, DieExpression, ExitExpression, IssetExpression, UnsetExpression, PrintExpression, literals::Literal, operators::{ArithmeticOperationExpression, AssignmentOperationExpression, BitwiseOperationExpression, ComparisonOperationExpression, LogicalOperationExpression}, ConcatExpression, InstanceofExpression, ReferenceExpression, ParenthesizedExpression, ErrorSuppressExpression, identifiers::{Identifier, DynamicIdentifier}, variables::{Variable, VariableVariable, BracedVariableVariable}, IncludeExpression, IncludeOnceExpression, RequireExpression, RequireOnceExpression, FunctionCallExpression, FunctionClosureCreationExpression, MethodCallExpression, MethodClosureCreationExpression, NullsafeMethodCallExpression, StaticMethodCallExpression, StaticVariableMethodCallExpression, StaticMethodClosureCreationExpression, StaticVariableMethodClosureCreationExpression, PropertyFetchExpression, NullsafePropertyFetchExpression, StaticPropertyFetchExpression, ConstantFetchExpression, ShortArrayExpression, ArrayItem, ArrayExpression, ListExpression, ListEntry, NewExpression, InterpolatedStringExpression, StringPart, ExpressionStringPart, HeredocExpression, ShellExecExpression, ArrayIndexExpression, ShortTernaryExpression, TernaryExpression, CoalesceExpression, CloneExpression, MatchExpression, MatchArm, DefaultMatchArm, ThrowExpression, YieldExpression, YieldFromExpression, CastExpression};
 
 use crate::Visitor;
 
@@ -1181,5 +1181,336 @@ walk! {
 
     walk_dynamic_identifier: DynamicIdentifier => {
         visitor.visit_expression(&mut node.expr);
+    }
+
+    walk_variable: Variable => {
+        match node {
+            Variable::SimpleVariable(node) => {
+                visitor.visit_simple_variable(node);
+            },
+            Variable::VariableVariable(node) => {
+                visitor.visit_variable_variable(node);
+            },
+            Variable::BracedVariableVariable(node) => {
+                visitor.visit_braced_variable_variable(node);
+            }   
+        }
+    }
+
+    walk_variable_variable: VariableVariable => {
+        visitor.visit_variable(&mut node.variable);
+    }
+
+    walk_braced_variable_variable: BracedVariableVariable => {
+        visitor.visit_expression(&mut node.variable);
+    }
+
+    walk_include: IncludeExpression => {
+        visitor.visit_expression(&mut node.path);
+    }
+
+    walk_include_once: IncludeOnceExpression => {
+        visitor.visit_expression(&mut node.path);
+    }
+
+    walk_require: RequireExpression => {
+        visitor.visit_expression(&mut node.path);
+    }
+
+    walk_require_once: RequireOnceExpression => {
+        visitor.visit_expression(&mut node.path);
+    }
+
+    walk_function_call: FunctionCallExpression => {
+        visitor.visit_expression(&mut node.target);
+        visitor.visit_argument_list(&mut node.arguments);
+    }
+
+    walk_function_closure_creation: FunctionClosureCreationExpression => {
+        visitor.visit_expression(&mut node.target);
+    }
+
+    walk_method_call: MethodCallExpression => {
+        visitor.visit_expression(&mut node.target);
+        visitor.visit_expression(&mut node.method);
+        visitor.visit_argument_list(&mut node.arguments);
+    }
+
+    walk_method_closure_creation: MethodClosureCreationExpression => {
+        visitor.visit_expression(&mut node.target);
+        visitor.visit_expression(&mut node.method);
+    }
+
+    walk_nullsafe_method_call: NullsafeMethodCallExpression => {
+        visitor.visit_expression(&mut node.target);
+        visitor.visit_expression(&mut node.method);
+        visitor.visit_argument_list(&mut node.arguments);
+    }
+
+    walk_static_method_call: StaticMethodCallExpression => {
+        visitor.visit_expression(&mut node.target);
+        visitor.visit_identifier(&mut node.method);
+        visitor.visit_argument_list(&mut node.arguments);
+    }
+
+    walk_static_variable_method_call: StaticVariableMethodCallExpression => {
+        visitor.visit_expression(&mut node.target);
+        visitor.visit_variable(&mut node.method);
+        visitor.visit_argument_list(&mut node.arguments);
+    }
+
+    walk_static_method_closure_creation: StaticMethodClosureCreationExpression => {
+        visitor.visit_expression(&mut node.target);
+        visitor.visit_identifier(&mut node.method);
+    }
+
+    walk_static_variable_method_closure_creation: StaticVariableMethodClosureCreationExpression => {
+        visitor.visit_expression(&mut node.target);
+        visitor.visit_variable(&mut node.method);
+    }
+
+    walk_property_fetch: PropertyFetchExpression => {
+        visitor.visit_expression(&mut node.target);
+        visitor.visit_expression(&mut node.property);
+    }
+
+    walk_nullsafe_property_fetch: NullsafePropertyFetchExpression => {
+        visitor.visit_expression(&mut node.target);
+        visitor.visit_expression(&mut node.property);
+    }
+
+    walk_static_property_fetch: StaticPropertyFetchExpression => {
+        visitor.visit_expression(&mut node.target);
+        visitor.visit_variable(&mut node.property);
+    }
+
+    walk_constant_fetch: ConstantFetchExpression => {
+        visitor.visit_expression(&mut node.target);
+        visitor.visit_identifier(&mut node.constant);
+    }
+
+    walk_array_item: ArrayItem => {
+        match node {
+            ArrayItem::Skipped => {},
+            ArrayItem::Value {
+                value
+            } => {
+                visitor.visit_expression(value);
+            },
+            ArrayItem::ReferencedValue {
+                value, ..
+            } => {
+                visitor.visit_expression(value);
+            },
+            ArrayItem::SpreadValue {
+                value, ..
+            } => {
+                visitor.visit_expression(value);
+            },
+            ArrayItem::KeyValue {
+                key,
+                value,
+                ..
+            } => {
+                visitor.visit_expression(key);
+                visitor.visit_expression(value);
+            },
+            ArrayItem::ReferencedKeyValue {
+                key,
+                value, ..
+            } => {
+                visitor.visit_expression(key);
+                visitor.visit_expression(value);
+            },
+        }
+    }
+
+    walk_short_array: ShortArrayExpression => {
+        for item in node.items.inner.iter_mut() {
+            visitor.visit_array_item(item);
+        }
+    }
+
+    walk_array: ArrayExpression => {
+        for item in node.items.inner.iter_mut() {
+            visitor.visit_array_item(item);
+        }
+    }
+
+    walk_list: ListExpression => {
+        for entry in node.items.iter_mut() {
+            visitor.visit_list_entry(entry);
+        }
+    }
+
+    walk_list_entry: ListEntry => {
+        match node {
+            ListEntry::Skipped => {},
+            ListEntry::Value {
+                value
+            } => {
+                visitor.visit_expression(value);
+            },
+            ListEntry::KeyValue {
+                key,
+                value,
+                ..
+            } => {
+                visitor.visit_expression(key);
+                visitor.visit_expression(value);
+            },
+        }
+    }
+
+    walk_closure: ClosureExpression => {
+        // FIXME: Walk attributes here.
+
+        visitor.visit_function_parameter_list(&mut node.parameters);
+
+        // FIXME: Visit return type here.
+
+        visitor.visit_function_body(&mut node.body);
+    }
+
+    walk_arrow_function: ArrowFunctionExpression => {
+        // FIXME: Walk attributes here.
+
+        visitor.visit_function_parameter_list(&mut node.parameters);
+        visitor.visit_expression(&mut node.body);   
+    }
+
+    walk_new: NewExpression => {
+        visitor.visit_expression(&mut node.target);
+
+        if let Some(arguments) = &mut node.arguments {
+            visitor.visit_argument_list(arguments);
+        }
+    }
+
+    walk_interpolated_string: InterpolatedStringExpression => {
+        for part in node.parts.iter_mut() {
+            visitor.visit_string_part(part);
+        }
+    }
+
+    walk_string_part: StringPart => {
+        match node {
+            StringPart::Literal(node) => {
+                visitor.visit_literal_string_part(node);
+            },
+            StringPart::Expression(node) => {
+                visitor.visit_expression_string_part(node);
+            }
+        }
+    }
+
+    walk_expression_string_part: ExpressionStringPart => {
+        visitor.visit_expression(&mut node.expression);
+    }
+
+    walk_heredoc: HeredocExpression => {
+        for part in node.parts.iter_mut() {
+            visitor.visit_string_part(part);
+        }
+    }
+
+    walk_shell_exec: ShellExecExpression => {
+        for part in node.parts.iter_mut() {
+            visitor.visit_string_part(part);
+        }
+    }
+
+    walk_anonymous_class: AnonymousClassExpression => {
+        // FIXME: Walk attributes here.
+
+        if let Some(extends) = &mut node.extends {
+            visitor.visit_class_extends(extends);
+        }
+
+        if let Some(implements) = &mut node.implements {
+            visitor.visit_class_implements(implements);
+        }
+
+        visitor.visit_anonymous_class_body(&mut node.body);
+    }
+
+    walk_anonymous_class_body: AnonymousClassBody => {
+        for member in node.members.iter_mut() {
+            visitor.visit_classish_member(member);
+        }
+    }
+    
+    walk_array_index: ArrayIndexExpression => {
+        visitor.visit_expression(&mut node.array);
+
+        if let Some(index) = &mut node.index {
+            visitor.visit_expression(index);
+        }
+    }
+
+    walk_short_ternary: ShortTernaryExpression => {
+        visitor.visit_expression(&mut node.condition);
+        visitor.visit_expression(&mut node.r#else);
+    }
+
+    walk_ternary: TernaryExpression => {
+        visitor.visit_expression(&mut node.condition);
+        visitor.visit_expression(&mut node.then);
+        visitor.visit_expression(&mut node.r#else);
+    }
+
+    walk_coalesce: CoalesceExpression => {
+        visitor.visit_expression(&mut node.lhs);
+        visitor.visit_expression(&mut node.rhs);
+    }
+
+    walk_clone: CloneExpression => {
+        visitor.visit_expression(&mut node.target);
+    }
+
+    walk_match: MatchExpression => {
+        visitor.visit_expression(&mut node.condition);
+
+        for arm in node.arms.iter_mut() {
+            visitor.visit_match_arm(arm);
+        }
+
+        if let Some(default) = &mut node.default {
+            visitor.visit_default_match_arm(default);
+        }
+    }
+
+    walk_match_arm: MatchArm => {
+        for condition in &mut node.conditions.iter_mut() {
+            visitor.visit_expression(condition);
+        }
+
+        visitor.visit_expression(&mut node.body);
+    }
+
+    walk_default_match_arm: DefaultMatchArm => {
+        visitor.visit_expression(&mut node.body);
+    }
+
+    walk_throw: ThrowExpression => {
+        visitor.visit_expression(&mut node.value);
+    }
+
+    walk_yield: YieldExpression => {
+        if let Some(key) = &mut node.key {
+            visitor.visit_expression(key);
+        }
+
+        if let Some(value) = &mut node.value {
+            visitor.visit_expression(value);
+        }
+    }
+
+    walk_yield_from: YieldFromExpression => {
+        visitor.visit_expression(&mut node.value);
+    }
+
+    walk_cast: CastExpression => {
+        visitor.visit_expression(&mut node.value);
     }
 }
