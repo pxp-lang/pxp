@@ -1,4 +1,5 @@
-use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor, ClosureExpression, ArrowFunctionExpression}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember, AnonymousClassExpression, AnonymousClassBody}, traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}, UseStatement, Use, GroupUseStatement, try_block::{TryStatement, CatchBlock, FinallyBlock}, enums::{UnitEnumStatement, UnitEnumMember, UnitEnumCase, BackedEnumStatement, BackedEnumMember, BackedEnumCase}, declares::{DeclareStatement, DeclareEntry, DeclareBody}, EvalExpression, arguments::{Argument, ArgumentList}, EmptyExpression, DieExpression, ExitExpression, IssetExpression, UnsetExpression, PrintExpression, literals::Literal, operators::{ArithmeticOperationExpression, AssignmentOperationExpression, BitwiseOperationExpression, ComparisonOperationExpression, LogicalOperationExpression}, ConcatExpression, InstanceofExpression, ReferenceExpression, ParenthesizedExpression, ErrorSuppressExpression, identifiers::{Identifier, DynamicIdentifier}, variables::{Variable, VariableVariable, BracedVariableVariable}, IncludeExpression, IncludeOnceExpression, RequireExpression, RequireOnceExpression, FunctionCallExpression, FunctionClosureCreationExpression, MethodCallExpression, MethodClosureCreationExpression, NullsafeMethodCallExpression, StaticMethodCallExpression, StaticVariableMethodCallExpression, StaticMethodClosureCreationExpression, StaticVariableMethodClosureCreationExpression, PropertyFetchExpression, NullsafePropertyFetchExpression, StaticPropertyFetchExpression, ConstantFetchExpression, ShortArrayExpression, ArrayItem, ArrayExpression, ListExpression, ListEntry, NewExpression, InterpolatedStringExpression, StringPart, ExpressionStringPart, HeredocExpression, ShellExecExpression, ArrayIndexExpression, ShortTernaryExpression, TernaryExpression, CoalesceExpression, CloneExpression, MatchExpression, MatchArm, DefaultMatchArm, ThrowExpression, YieldExpression, YieldFromExpression, CastExpression};
+use pxp_ast::{Statement, StatementKind, Expression, ExpressionKind, goto::{LabelStatement, GotoStatement}, StaticStatement, StaticVar, GlobalStatement, loops::{DoWhileStatement, WhileStatement, WhileStatementBody, ForStatement, ForStatementIterator, ForStatementBody, ForeachStatement, ForeachStatementIterator, ForeachStatementBody, BreakStatement, Level, ContinueStatement}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElseIfBlock, IfStatementElse, IfStatementElseBlock}, SwitchStatement, Case, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, FunctionParameterList, FunctionParameter, FunctionBody, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor, ClosureExpression, ArrowFunctionExpression, ReturnType}, classes::{ClassStatement, ClassExtends, ClassImplements, ClassBody, ClassishMember, AnonymousClassExpression, AnonymousClassBody}, traits::{TraitUsage, TraitUsageAdaptation, TraitStatement, TraitBody}, properties::{Property, PropertyEntry, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, EchoStatement, ExpressionStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}, UseStatement, Use, GroupUseStatement, try_block::{TryStatement, CatchBlock, FinallyBlock}, enums::{UnitEnumStatement, UnitEnumMember, UnitEnumCase, BackedEnumStatement, BackedEnumMember, BackedEnumCase}, declares::{DeclareStatement, DeclareEntry, DeclareBody}, EvalExpression, arguments::{Argument, ArgumentList}, EmptyExpression, DieExpression, ExitExpression, IssetExpression, UnsetExpression, PrintExpression, literals::Literal, operators::{ArithmeticOperationExpression, AssignmentOperationExpression, BitwiseOperationExpression, ComparisonOperationExpression, LogicalOperationExpression}, ConcatExpression, InstanceofExpression, ReferenceExpression, ParenthesizedExpression, ErrorSuppressExpression, identifiers::{Identifier, DynamicIdentifier}, variables::{Variable, VariableVariable, BracedVariableVariable}, IncludeExpression, IncludeOnceExpression, RequireExpression, RequireOnceExpression, FunctionCallExpression, FunctionClosureCreationExpression, MethodCallExpression, MethodClosureCreationExpression, NullsafeMethodCallExpression, StaticMethodCallExpression, StaticVariableMethodCallExpression, StaticMethodClosureCreationExpression, StaticVariableMethodClosureCreationExpression, PropertyFetchExpression, NullsafePropertyFetchExpression, StaticPropertyFetchExpression, ConstantFetchExpression, ShortArrayExpression, ArrayItem, ArrayExpression, ListExpression, ListEntry, NewExpression, InterpolatedStringExpression, StringPart, ExpressionStringPart, HeredocExpression, ShellExecExpression, ArrayIndexExpression, ShortTernaryExpression, TernaryExpression, CoalesceExpression, CloneExpression, MatchExpression, MatchArm, DefaultMatchArm, ThrowExpression, YieldExpression, YieldFromExpression, CastExpression};
+use pxp_type::Type;
 
 use crate::Visitor;
 
@@ -357,6 +358,10 @@ walk! {
         visitor.visit_simple_variable(&mut node.name);
         // FIXME: Walk attributes here.
 
+        if let Some(ty) = &mut node.data_type {
+            visitor.visit_type(ty);
+        }
+
         if let Some(default) = &mut node.default {
             visitor.visit_expression(default);
         }
@@ -486,7 +491,10 @@ walk! {
     walk_property: Property => {
         // FIXME: Walk attributes here.
         // FIXME: Walk modifiers here.
-        // FIXME: Walk type here.
+        
+        if let Some(ty) = &mut node.r#type {
+            visitor.visit_type(ty);
+        }
         
         for entry in node.entries.iter_mut() {
             visitor.visit_property_entry(entry);
@@ -521,7 +529,9 @@ walk! {
         visitor.visit_simple_identifier(&mut node.name);
         visitor.visit_function_parameter_list(&mut node.parameters);
 
-        // FIXME: Walk return type here.
+        if let Some(ty) = &mut node.return_type {
+            visitor.visit_return_type(ty);
+        }
     }
 
     walk_abstract_constructor: AbstractConstructor => {
@@ -555,7 +565,9 @@ walk! {
         visitor.visit_simple_identifier(&mut node.name);
         visitor.visit_function_parameter_list(&mut node.parameters);
 
-        // FIXME: Walk return type here.
+        if let Some(ty) = &mut node.return_type {
+            visitor.visit_return_type(ty);
+        }
 
         visitor.visit_method_body(&mut node.body);
     }
@@ -1367,7 +1379,9 @@ walk! {
 
         visitor.visit_function_parameter_list(&mut node.parameters);
 
-        // FIXME: Visit return type here.
+        if let Some(return_type) = &mut node.return_type {
+            visitor.visit_return_type(return_type);
+        }
 
         visitor.visit_function_body(&mut node.body);
     }
@@ -1512,5 +1526,24 @@ walk! {
 
     walk_cast: CastExpression => {
         visitor.visit_expression(&mut node.value);
+    }
+
+    walk_return_type: ReturnType => {
+        visitor.visit_type(&mut node.data_type);
+    }
+
+    walk_type: Type => {
+        match node {
+            Type::Nullable(_, ty) => {
+                visitor.visit_type(ty);
+            },
+            Type::Union(tys) |
+            Type::Intersection(tys) => {
+                for ty in tys.iter_mut() {
+                    visitor.visit_type(ty);
+                }
+            },
+            _ => {},
+        }
     }
 }
