@@ -63,7 +63,7 @@ pub enum TokenKind {
     Integer,
     SingleQuotedString,
     DoubleQuotedString,
-    Wildcard,
+    Asterisk,
 
     Other,
 }

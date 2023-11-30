@@ -310,6 +310,11 @@ impl<'a, 'b> Lexer<'a, 'b> {
                                 tokens.push(Token::new_without_symbol(TokenKind::CloseDoc, self.span()));
                                 break;
                             },
+                            [b'*', ..] => {
+                                self.next();
+
+                                tokens.push(Token::new_without_symbol(TokenKind::Asterisk, self.span()));
+                            },
                             _ => match self.range_n(5) {
                                 [b'$', b't', b'h', b'i', b's', ..] => {
                                     self.skip(5);
@@ -572,6 +577,38 @@ mod tests {
             TokenKind::Arrow,
             TokenKind::Equal,
             TokenKind::Colon,
+        ]);
+    }
+
+    #[test]
+    fn it_can_tokenize_a_full_docblock() {
+        let tokens = tokenise(r#"
+        /**
+         * @template T
+         * @method T foo(T $bar)
+         * @property T $baz
+         */"
+        "#);
+
+        assert_kinds!(tokens, vec![
+            TokenKind::OpenDoc,
+            TokenKind::Asterisk,
+            TokenKind::Tag,
+            TokenKind::Identifier,
+            TokenKind::Asterisk,
+            TokenKind::Tag,
+            TokenKind::Identifier,
+            TokenKind::Identifier,
+            TokenKind::OpenParen,
+            TokenKind::Identifier,
+            TokenKind::Variable,
+            TokenKind::CloseParen,
+            TokenKind::Asterisk,
+            TokenKind::Tag,
+            TokenKind::Identifier,
+            TokenKind::Variable,
+            TokenKind::CloseDoc,
+            TokenKind::CloseDoc,
         ]);
     }
 
