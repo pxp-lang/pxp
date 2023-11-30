@@ -6,6 +6,7 @@ use self::token::{Token, TokenKind};
 pub(crate) mod token;
 #[macro_use]
 pub(crate) mod macros;
+pub(crate) mod stream;
 
 pub struct Lexer<'a, 'b> {
     input: &'a [u8],
