@@ -19,13 +19,13 @@ pub mod stream;
 #[derive(Debug)]
 pub struct Lexer<'a, 'b> {
     state: State<'a>,
-    symbol_table: &'b mut SymbolTable<'a>,
+    symbol_table: &'b mut SymbolTable,
 }
 
 impl<'a, 'b> Lexer<'a, 'b> {
     pub fn new<B: ?Sized + AsRef<[u8]>>(
         input: &'a B,
-        symbol_table: &'b mut SymbolTable<'a>,
+        symbol_table: &'b mut SymbolTable,
     ) -> Self {
         Self {
             state: State::new(Source::new(input.as_ref())),
