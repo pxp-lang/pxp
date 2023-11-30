@@ -9,3 +9,4 @@ license-file.workspace = true
 [dependencies]
 pxp-span = { path = "../pxp-span" }
 pxp-symbol = { path = "../pxp-symbol" }
+pxp-type = { path = "../pxp-type" }
