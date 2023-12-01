@@ -58,7 +58,7 @@ pub struct ParseResult {
 
 pub fn parse<'b, B: Sized + AsRef<[u8]>>(
     input: &'b B,
-    symbol_table: &mut SymbolTable<'b>,
+    symbol_table: &mut SymbolTable,
 ) -> ParseResult {
     let mut lexer = Lexer::new(input, symbol_table);
     let tokens = match lexer.tokenize() {

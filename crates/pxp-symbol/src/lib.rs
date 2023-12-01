@@ -5,30 +5,30 @@ use pxp_bytestring::ByteStr;
 pub type Symbol = usize;
 
 #[derive(Default, Debug, Clone)]
-pub struct SymbolTable<'s> {
-    map: HashMap<&'s [u8], Symbol>,
-    vec: Vec<&'s [u8]>,
+pub struct SymbolTable {
+    map: HashMap<Vec<u8>, Symbol>,
+    vec: Vec<Vec<u8>>,
 }
 
-impl<'s> SymbolTable<'s> {
+impl SymbolTable {
     pub fn new() -> Self {
         Self::default()
     }
 
-    pub fn intern(&mut self, contents: &'s [u8]) -> Symbol {
+    pub fn intern(&mut self, contents: &[u8]) -> Symbol {
         if let Some(symbol) = self.map.get(contents) {
             return *symbol;
         }
 
         let symbol = self.vec.len();
 
-        self.map.insert(contents, symbol);
-        self.vec.push(contents);
+        self.map.insert(contents.to_vec(), symbol);
+        self.vec.push(contents.to_vec());
 
         symbol
     }
 
-    pub fn resolve(&self, symbol: Symbol) -> Option<ByteStr<'s>> {
+    pub fn resolve(&self, symbol: Symbol) -> Option<ByteStr> {
         self.vec.get(symbol).map(|s| ByteStr::new(s))
     }
 }
