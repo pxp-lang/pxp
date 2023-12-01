@@ -15,6 +15,7 @@ fn main() {
 
     let path = args.first().unwrap();
     let path = Path::new(path);
+    let mut symbol_table = SymbolTable::new();
 
     if path.is_dir() {
         let mut errors = Vec::new();
@@ -26,7 +27,6 @@ fn main() {
             }
 
             let contents = std::fs::read(file).unwrap();
-            let mut symbol_table = SymbolTable::new();
             let mut lexer = Lexer::new(&contents[..], &mut symbol_table);
 
             match lexer.tokenize() {
@@ -51,7 +51,6 @@ fn main() {
         }
     } else {
         let contents = std::fs::read(path).unwrap();
-        let mut symbol_table = SymbolTable::new();
         let mut lexer = Lexer::new(&contents[..], &mut symbol_table);
         let tokens = lexer.tokenize().unwrap();
 
