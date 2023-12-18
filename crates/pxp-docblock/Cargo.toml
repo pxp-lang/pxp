@@ -10,3 +10,7 @@ license-file.workspace = true
 pxp-span = { path = "../pxp-span" }
 pxp-symbol = { path = "../pxp-symbol" }
 pxp-type = { path = "../pxp-type" }
+
+[[bin]]
+name = "parse-doc"
+path = "bin/parse-doc.rs"
