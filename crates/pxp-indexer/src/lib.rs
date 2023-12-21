@@ -1,14 +1,9 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+mod index;
+mod entities;
+mod indexer;
+mod location;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use indexer::Indexer;
+pub use index::Index;
+pub use entities::*;
+pub use location::Location;

@@ -30,6 +30,12 @@ pub enum Type {
     Missing(Span),
 }
 
+impl Default for Type {
+    fn default() -> Self {
+        Self::Missing(Span::default())
+    }
+}
+
 impl Type {
     pub fn standalone(&self) -> bool {
         matches!(
