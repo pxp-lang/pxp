@@ -38,7 +38,7 @@ impl<'a> Debug for NodeWithSymbolTable<'a> {
             NodeKind::Text(text) => {
                 write!(f, "Text({:?})", self.symbol_table.resolve(text.text).unwrap())
             },
-            _ => self.node.fmt(f),
+            NodeKind::Tag(tag) => tag.with_symbol_table(self.symbol_table).fmt(f),
         }
     }
 }
@@ -55,6 +55,38 @@ pub struct Tag {
     pub span: Span,
 }
 
+impl Tag {
+    pub fn new(kind: TagKind, span: Span) -> Self {
+        Self { kind, span }
+    }
+}
+
+impl Tag {
+    fn with_symbol_table<'a>(&self, symbol_table: &'a SymbolTable) -> TagWithSymbolTable<'a> {
+        TagWithSymbolTable {
+            tag: self.clone(),
+            symbol_table,
+        }
+    }
+}
+
+struct TagWithSymbolTable<'a> {
+    tag: Tag,
+    symbol_table: &'a SymbolTable,
+}
+
+impl<'a> Debug for TagWithSymbolTable<'a> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match &self.tag.kind {
+            TagKind::Generic { tag, description } => match description {
+                Some(description) => write!(f, "Tag::Generic\n\ttag: {}\n\tdescription: {}", self.symbol_table.resolve(*tag).unwrap(), self.symbol_table.resolve(*description).unwrap()),
+                None => write!(f, "Tag::Generic\n\ttag: {}", self.symbol_table.resolve(*tag).unwrap()),
+            }
+            _ => self.tag.fmt(f)
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TagKind {
     Deprecated {
@@ -65,6 +97,7 @@ pub enum TagKind {
         description: Option<Symbol>,
     },
     Generic {
+        tag: Symbol,
         description: Option<Symbol>,
     },
     Implements {

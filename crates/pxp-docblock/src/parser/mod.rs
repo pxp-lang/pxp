@@ -1,7 +1,7 @@
 use pxp_span::Span;
-use pxp_symbol::SymbolTable;
+use pxp_symbol::{SymbolTable, Symbol};
 
-use crate::{token::{Token, TokenKind}, ast::{Node, NodeKind, Text}};
+use crate::{token::{Token, TokenKind}, ast::{Node, NodeKind, Text, Tag, TagKind}};
 
 use self::state::State;
 
@@ -38,6 +38,10 @@ impl Parser {
                 TokenKind::HorizontalWhitespace => {
                     state.next();
                 }
+                TokenKind::PhpdocTag => {
+                    let node = self.parse_tag(&mut state)?;
+                    nodes.push(node);
+                },
                 _ => {
                     let node = self.parse_text(&mut state)?;
                     nodes.push(node);
@@ -54,9 +58,47 @@ impl Parser {
         Ok(nodes)
     }
 
-    fn parse_text(&self, state: &mut State) -> ParseResult<Node> {
+    fn parse_tag(&self, state: &mut State) -> ParseResult<Node> {
         let start_span = state.current().span;
+        let tag_token = state.current();
+        state.next();
+        let tag = state.symbol_table.resolve(tag_token.symbol).unwrap();
+
+        Ok(match tag {
+            _ => {
+                let description = self.parse_optional_description(state)?;
+                let end_span = state.previous().span;
+                let span = Span::new(start_span.start, end_span.end);
+
+                Node::new(NodeKind::Tag(Tag::new(TagKind::Generic { tag: tag_token.symbol, description }, span)), span)
+            },
+        })
+    }
+
+    fn parse_optional_description(&self, state: &mut State) -> ParseResult<Option<Symbol>> {
+        if state.is_eof() {
+            return Ok(None);
+        }
+
+        let current = state.current();
+
+        match current.kind {
+            TokenKind::PhpdocEol => {
+                Ok(None)
+            },
+            _ => {
+                Ok(Some(self.parse_text_symbol(state)?))
+            }
+        }
+    }
+
+    fn parse_text_symbol(&self, state: &mut State) -> ParseResult<Symbol> {
         let mut symbols = Vec::new();
+
+        // We don't care about leading whitespace in the description.
+        if state.current().kind == TokenKind::HorizontalWhitespace {
+            state.next();
+        }
 
         loop {
             if state.is_eof() {
@@ -76,9 +118,14 @@ impl Parser {
             }
         }
 
+        Ok(state.symbol_table.coagulate(&symbols))
+    }
+
+    fn parse_text(&self, state: &mut State) -> ParseResult<Node> {
+        let start_span = state.current().span;
+        let symbol = self.parse_text_symbol(state)?;
         let end_span = state.previous().span;
         let span = Span::new(start_span.start, end_span.end);
-        let symbol = state.symbol_table.coagulate(&symbols);
 
         Ok(Node::new(NodeKind::Text(Text::new(symbol)), span))
     }
