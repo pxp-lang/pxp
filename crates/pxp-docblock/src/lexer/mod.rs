@@ -280,6 +280,38 @@ impl<'a> Lexer<'a> {
                         state.push(Token::new(TokenKind::Integer(symbol), span));
                     }
                 },
+                [b'$', b'a'..=b'z' | b'A'..=b'Z' | b'\x80'..=b'\xFF' | b'_', ..] => {
+                    state.skip(1);
+
+                    let mut bytes = vec![];
+                    let mut this = false;
+
+                    // Since we are only inside of this block if the first non-$ characters are valid, we can also
+                    // tokenise numeric characters here as they definitely won't be at the start of the variable name.
+                    while let b'a'..=b'z' | b'A'..=b'Z' | b'\x80'..=b'\xFF' | b'_' | b'0'..=b'9' = state.current() {
+                        if this {
+                            this = false;
+                        }
+
+                        bytes.push(state.current());
+                        this = bytes == b"this";
+
+                        state.next();
+
+                        if state.is_eof() {
+                            break;
+                        }
+                    }
+
+                    let span = state.span();
+                    let symbol = self.symbol_table.intern(state.range(span.start.offset, span.end.offset));
+
+                    if this {
+                        state.push(Token::new(TokenKind::ThisVariable(symbol), span));
+                    } else {
+                        state.push(Token::new(TokenKind::Variable(symbol), span));
+                    }
+                }
                 [fb @ b'\r', b'\n', ..] | [fb @ b'\n', ..] => {
                     if *fb == b'\r' {
                         state.skip(2);
