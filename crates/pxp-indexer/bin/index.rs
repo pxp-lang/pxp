@@ -1,6 +1,7 @@
 use std::{env::args, path::PathBuf, io::{stdin, stdout, Write}, time::Instant, process::exit};
 
 use pxp_indexer::{Indexer, Index};
+use pxp_symbol::SymbolTable;
 use rustyline::{DefaultEditor, error::ReadlineError};
 
 fn main() {
@@ -11,7 +12,7 @@ fn main() {
     let start = Instant::now();
 
     let mut indexer = Indexer::new();
-    let index = indexer.index(vec![directory]);
+    let (index, symbol_table) = indexer.index(vec![directory]);
 
     let duration = start.elapsed();
 
@@ -31,7 +32,7 @@ fn main() {
                 if command == "clear" {
                     rl.clear_screen().unwrap();
                 } else {
-                    process_command(&command, &index);
+                    process_command(&command, &index, &symbol_table);
                 }
             }
             Err(ReadlineError::Interrupted) => {
@@ -43,7 +44,7 @@ fn main() {
     }
 }
 
-fn process_command(command: &str, index: &Index) {
+fn process_command(command: &str, index: &Index, symbol_table: &SymbolTable) {
     match command {
         "help" => {
             println!("help              Display this help message.");
