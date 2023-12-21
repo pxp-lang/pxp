@@ -22,11 +22,13 @@ fn main() {
     }
 
     let parser = Parser::new();
-    let ast = parser.parse(&tokens, &symbol_table);
+    let ast = parser.parse(&tokens, &mut symbol_table);
 
     if args.contains(&"--dump-ast".to_string()) {
         println!("AST:");
 
-        println!("{:#?}", ast.unwrap());
+        for node in ast.unwrap().iter() {
+            println!("{:?}", node.with_symbol_table(&symbol_table));
+        }
     }
 }

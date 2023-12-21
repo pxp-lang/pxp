@@ -29,14 +29,14 @@ impl<'a> Lexer<'a> {
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::OpenPhpdoc, span));
+                    state.push(Token::new(TokenKind::OpenPhpdoc, span, self.symbol_table.intern(b"/**")));
                 },
                 [b'*', b'/', ..] => {
                     state.skip(2);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::ClosePhpdoc, span));
+                    state.push(Token::new(TokenKind::ClosePhpdoc, span, self.symbol_table.intern(b"*/")));
                 },
                 [b'\x09' | b'\x20', ..] => {
                     state.skip_horizontal_whitespace();
@@ -44,7 +44,7 @@ impl<'a> Lexer<'a> {
                     let span = state.span();
                     let symbol = self.symbol_table.intern(state.range(span.start.offset, span.end.offset));
 
-                    state.push(Token::new(TokenKind::HorizontalWhitespace(symbol), span))
+                    state.push(Token::new(TokenKind::HorizontalWhitespace, span, symbol))
                 },
                 [fb @ b'\r', b'\n', b'\x09' | b'\x20', ..] | [fb @ b'\n', b'\x09' | b'\x20', ..] => {
                     // Consume a carriage return if it exists.
@@ -65,7 +65,7 @@ impl<'a> Lexer<'a> {
                     if state.peek() == b'/' {
                         let span = state.span();
 
-                        state.push(Token::new(TokenKind::PhpdocEol(self.symbol_table.intern(state.range(span.start.offset, span.end.offset))), span));
+                        state.push(Token::new(TokenKind::PhpdocEol, span, self.symbol_table.intern(state.range(span.start.offset, span.end.offset))));
                         continue;
                     }
 
@@ -80,7 +80,7 @@ impl<'a> Lexer<'a> {
                     let span = state.span();
                     let symbol = self.symbol_table.intern(state.range(span.start.offset, span.end.offset));
 
-                    state.push(Token::new(TokenKind::PhpdocEol(symbol), span));
+                    state.push(Token::new(TokenKind::PhpdocEol, span, symbol));
                 },
                 [b'\\', b'a'..=b'z' | b'A'..=b'Z' | b'\x80'..=b'\xFF' | b'_', ..] | [b'a'..=b'z' | b'A'..=b'Z' | b'\x80'..=b'\xFF' | b'_', ..] => {
                     let fully_qualified = state.current() == b'\\';
@@ -123,12 +123,12 @@ impl<'a> Lexer<'a> {
                     let symbol = self.symbol_table.intern(state.range(span.start.offset, span.end.offset));
 
                     state.push(Token::new(if fully_qualified {
-                        TokenKind::FullyQualifiedIdentifier(symbol)
+                        TokenKind::FullyQualifiedIdentifier
                     } else if qualified {
-                        TokenKind::QualifiedIdentifier(symbol)
+                        TokenKind::QualifiedIdentifier
                     } else {
-                        TokenKind::Identifier(symbol)
-                    }, span));
+                        TokenKind::Identifier
+                    }, span, symbol));
                 },
                 [b'@', b'a'..=b'z' | b'A'..=b'Z', ..] => {
                     state.skip(1);
@@ -156,119 +156,119 @@ impl<'a> Lexer<'a> {
                     let span = state.span();
                     let symbol = self.symbol_table.intern(state.range(span.start.offset, span.end.offset));
 
-                    state.push(Token::new(TokenKind::PhpdocTag(symbol), span));
+                    state.push(Token::new(TokenKind::PhpdocTag, span, symbol));
                 },
                 [b'.', b'.', b'.', ..] => {
                     state.skip(3);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::Variadic, span));
+                    state.push(Token::new(TokenKind::Variadic, span, self.symbol_table.intern(b"...")));
                 },
                 [b'=', b'>', ..] => {
                     state.skip(2);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::DoubleArrow, span));
+                    state.push(Token::new(TokenKind::DoubleArrow, span, self.symbol_table.intern(b"=>")));
                 },
                 [b':', b':', ..] => {
                     state.skip(2);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::DoubleColon, span));
+                    state.push(Token::new(TokenKind::DoubleColon, span, self.symbol_table.intern(b"::")));
                 },
                 [b'&', ..] => {
                     state.skip(1);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::Intersection, span));
+                    state.push(Token::new(TokenKind::Intersection, span, self.symbol_table.intern(b"&")));
                 },
                 [b'|', ..] => {
                     state.skip(1);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::Union, span));
+                    state.push(Token::new(TokenKind::Union, span, self.symbol_table.intern(b"|")));
                 },
                 [b'(', ..] => {
                     state.skip(1);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::OpenParen, span));
+                    state.push(Token::new(TokenKind::OpenParen, span, self.symbol_table.intern(b"(")));
                 },
                 [b')', ..] => {
                     state.skip(1);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::CloseParen, span));
+                    state.push(Token::new(TokenKind::CloseParen, span, self.symbol_table.intern(b")")));
                 },
                 [b'{', ..] => {
                     state.skip(1);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::OpenBrace, span));
+                    state.push(Token::new(TokenKind::OpenBrace, span, self.symbol_table.intern(b"{")));
                 },
                 [b'}', ..] => {
                     state.skip(1);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::CloseBrace, span));
+                    state.push(Token::new(TokenKind::CloseBrace, span, self.symbol_table.intern(b"}")));
                 },
                 [b'[', ..] => {
                     state.skip(1);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::OpenBracket, span));
+                    state.push(Token::new(TokenKind::OpenBracket, span, self.symbol_table.intern(b"[")));
                 },
                 [b']', ..] => {
                     state.skip(1);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::CloseBracket, span));
+                    state.push(Token::new(TokenKind::CloseBracket, span, self.symbol_table.intern(b"]")));
                 },
                 [b'<', ..] => {
                     state.skip(1);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::OpenAngle, span));
+                    state.push(Token::new(TokenKind::OpenAngle, span, self.symbol_table.intern(b"<")));
                 },
                 [b'>', ..] => {
                     state.skip(1);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::CloseAngle, span));
+                    state.push(Token::new(TokenKind::CloseAngle, span, self.symbol_table.intern(b">")));
                 },
                 [b'=', ..] => {
                     state.skip(1);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::Equal, span));
+                    state.push(Token::new(TokenKind::Equal, span, self.symbol_table.intern(b"=")));
                 },
                 [b',', ..] => {
                     state.skip(1);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::Comma, span));
+                    state.push(Token::new(TokenKind::Comma, span, self.symbol_table.intern(b",")));
                 },
                 [b':', ..] => {
                     state.skip(1);
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::Colon, span));
+                    state.push(Token::new(TokenKind::Colon, span, self.symbol_table.intern(b":")));
                 },
                 [fb @ b'+' | fb @ b'-', b'0'..=b'9', ..] | [fb @ b'0'..=b'9', ..] => {
                     if *fb == b'+' || *fb == b'-' {
@@ -303,9 +303,9 @@ impl<'a> Lexer<'a> {
                     let symbol = self.symbol_table.intern(state.range(span.start.offset, span.end.offset));
 
                     if is_float {
-                        state.push(Token::new(TokenKind::Float(symbol), span));
+                        state.push(Token::new(TokenKind::Float, span, symbol));
                     } else {
-                        state.push(Token::new(TokenKind::Integer(symbol), span));
+                        state.push(Token::new(TokenKind::Integer, span, symbol));
                     }
                 },
                 [b'$', b'a'..=b'z' | b'A'..=b'Z' | b'\x80'..=b'\xFF' | b'_', ..] => {
@@ -335,9 +335,9 @@ impl<'a> Lexer<'a> {
                     let symbol = self.symbol_table.intern(state.range(span.start.offset, span.end.offset));
 
                     if this {
-                        state.push(Token::new(TokenKind::ThisVariable(symbol), span));
+                        state.push(Token::new(TokenKind::ThisVariable, span, symbol));
                     } else {
-                        state.push(Token::new(TokenKind::Variable(symbol), span));
+                        state.push(Token::new(TokenKind::Variable, span, symbol));
                     }
                 }
                 [fb @ b'\r', b'\n', ..] | [fb @ b'\n', ..] => {
@@ -348,8 +348,9 @@ impl<'a> Lexer<'a> {
                     }
 
                     let span = state.span();
+                    let symbol = self.symbol_table.intern(state.range(span.start.offset, span.end.offset));
 
-                    state.push(Token::new(TokenKind::Eol, span));
+                    state.push(Token::new(TokenKind::Eol, span, symbol));
                 },
                 [b'\'', ..] => {
                     state.skip(1);
@@ -367,7 +368,7 @@ impl<'a> Lexer<'a> {
                     let span = state.span();
                     let symbol = self.symbol_table.intern(state.range(span.start.offset, span.end.offset));
 
-                    state.push(Token::new(TokenKind::SingleQuotedString(symbol), span));
+                    state.push(Token::new(TokenKind::SingleQuotedString, span, symbol));
                 },
                 [b'"', ..] => {
                     state.skip(1);
@@ -385,9 +386,16 @@ impl<'a> Lexer<'a> {
                     let span = state.span();
                     let symbol = self.symbol_table.intern(state.range(span.start.offset, span.end.offset));
 
-                    state.push(Token::new(TokenKind::DoubleQuotedString(symbol), span));
+                    state.push(Token::new(TokenKind::DoubleQuotedString, span, symbol));
                 },
-                _ => unimplemented!("{:?}", state.current() as char)
+                _ => {
+                    state.next();
+
+                    let span = state.span();
+                    let symbol = self.symbol_table.intern(state.range(span.start.offset, span.end.offset));
+
+                    state.push(Token::new(TokenKind::Other, span, symbol));
+                }
             }
         }
 

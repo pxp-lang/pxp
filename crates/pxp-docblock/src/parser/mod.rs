@@ -1,6 +1,7 @@
+use pxp_span::Span;
 use pxp_symbol::SymbolTable;
 
-use crate::{token::{Token, TokenKind}, ast::Node};
+use crate::{token::{Token, TokenKind}, ast::{Node, NodeKind, Text}};
 
 use self::state::State;
 
@@ -13,7 +14,7 @@ impl Parser {
         Self
     }
 
-    pub fn parse(&self, tokens: &[Token], symbol_table: &SymbolTable) -> ParseResult<Vec<Node>> {
+    pub fn parse(&self, tokens: &[Token], symbol_table: &mut SymbolTable) -> ParseResult<Vec<Node>> {
         let mut state = State::new(tokens, symbol_table);
         let mut nodes = Vec::new();
 
@@ -23,22 +24,24 @@ impl Parser {
 
         state.next();
 
-        if let TokenKind::PhpdocEol(_) = state.current().kind {
+        if let TokenKind::PhpdocEol = state.current().kind {
             state.next();
         }
 
-        while ! state.is_eof() {
-            if state.current().kind == TokenKind::ClosePhpdoc {
-                break;
-            }
-
+        while state.current().kind != TokenKind::ClosePhpdoc {
             let current = state.current();
 
             match current.kind {
-                TokenKind::HorizontalWhitespace(_) => {
+                TokenKind::PhpdocEol => {
+                    state.next();
+                },
+                TokenKind::HorizontalWhitespace => {
                     state.next();
                 }
-                _ => unimplemented!("{:?}", current.with_symbol_table(symbol_table))
+                _ => {
+                    let node = self.parse_text(&mut state)?;
+                    nodes.push(node);
+                }
             }
         }
 
@@ -49,6 +52,35 @@ impl Parser {
         state.next();
 
         Ok(nodes)
+    }
+
+    fn parse_text(&self, state: &mut State) -> ParseResult<Node> {
+        let start_span = state.current().span;
+        let mut symbols = Vec::new();
+
+        loop {
+            if state.is_eof() {
+                break;
+            }
+
+            let current = state.current();
+
+            match current.kind {
+                TokenKind::PhpdocEol => break,
+                TokenKind::ClosePhpdoc => break,
+                _ => {
+                    state.next();
+
+                    symbols.push(current.symbol);
+                }
+            }
+        }
+
+        let end_span = state.previous().span;
+        let span = Span::new(start_span.start, end_span.end);
+        let symbol = state.symbol_table.coagulate(&symbols);
+
+        Ok(Node::new(NodeKind::Text(Text::new(symbol)), span))
     }
 }
 

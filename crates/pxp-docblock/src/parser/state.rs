@@ -5,26 +5,27 @@ use crate::token::{Token, TokenKind};
 
 pub struct State<'a> {
     tokens: &'a [Token],
-    symbol_table: &'a SymbolTable,
+    pub symbol_table: &'a mut SymbolTable,
     position: usize,
 }
 
 impl<'a> State<'a> {
-    pub fn new(tokens: &'a [Token], symbol_table: &'a SymbolTable) -> Self {
+    pub fn new(tokens: &'a [Token], symbol_table: &'a mut SymbolTable) -> Self {
         Self { tokens, symbol_table, position: 0 }
     }
 
-    pub fn get_current_symbol(&self) -> Option<ByteStr> {
+    pub fn get_current_symbol(&self) -> ByteStr {
         let token = self.current();
 
-        match token.kind.get_symbol() {
-            Some(symbol) => self.symbol_table.resolve(symbol),
-            None => None,
-        }
+        self.symbol_table.resolve(token.symbol).unwrap()
     }
 
     pub fn current(&self) -> &'a Token {
         &self.tokens[self.position]
+    }
+
+    pub fn previous(&self) -> &'a Token {
+        &self.tokens[self.position - 1]
     }
 
     pub fn peek(&self) -> &'a Token {

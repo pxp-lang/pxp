@@ -1,30 +1,61 @@
+use std::fmt::{Debug, self, Formatter};
+
 use pxp_span::Span;
-use pxp_symbol::Symbol;
+use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
 
 use self::const_expr::ConstExpr;
 
 pub mod const_expr;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Node {
     pub kind: NodeKind,
     pub span: Span,
 }
 
-#[derive(Debug, Clone)]
+impl Node {
+    pub fn new(kind: NodeKind, span: Span) -> Self {
+        Self { kind, span }
+    }
+
+    pub fn with_symbol_table<'a>(&self, symbol_table: &'a SymbolTable) -> NodeWithSymbolTable<'a> {
+        NodeWithSymbolTable {
+            node: self.clone(),
+            symbol_table,
+        }
+    }
+}
+
+pub struct NodeWithSymbolTable<'a> {
+    node: Node,
+    symbol_table: &'a SymbolTable,
+}
+
+impl<'a> Debug for NodeWithSymbolTable<'a> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        match &self.node.kind {
+            NodeKind::Text(text) => {
+                write!(f, "Text({:?})", self.symbol_table.resolve(text.text).unwrap())
+            },
+            _ => self.node.fmt(f),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum NodeKind {
     Tag(Tag),
     Text(Text),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Tag {
     pub kind: TagKind,
     pub span: Span,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TagKind {
     Deprecated {
         description: Option<Symbol>,
@@ -93,7 +124,7 @@ pub enum TagKind {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Template {
     pub name: Symbol,
     pub bound: Option<Type>,
@@ -101,7 +132,7 @@ pub struct Template {
     pub description: Option<Symbol>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MethodTagParameter {
     pub r#type: Type,
     pub is_reference: bool,
@@ -110,7 +141,13 @@ pub struct MethodTagParameter {
     pub default: Option<ConstExpr>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Text {
     pub text: Symbol,
+}
+
+impl Text {
+    pub fn new(text: Symbol) -> Self {
+        Self { text }
+    }
 }

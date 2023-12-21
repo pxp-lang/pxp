@@ -1,0 +1,4 @@
+/**
+ * Hello, world!
+ * This is a multi-line description inside of the comment.
+ */

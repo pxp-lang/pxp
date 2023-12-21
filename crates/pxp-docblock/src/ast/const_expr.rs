@@ -1,13 +1,13 @@
 use pxp_span::Span;
 use pxp_symbol::Symbol;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ConstExpr {
     pub kind: ConstExprKind,
     pub span: Span,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ConstExprKind {
     Null,
     True,
@@ -18,7 +18,7 @@ pub enum ConstExprKind {
     ConstFetch(Symbol, Symbol),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ConstExprArrayItem {
     pub key: Option<ConstExpr>,
     pub value: ConstExpr,
