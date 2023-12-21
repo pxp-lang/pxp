@@ -323,6 +323,42 @@ impl<'a> Lexer<'a> {
 
                     state.push(Token::new(TokenKind::Eol, span));
                 },
+                [b'\'', ..] => {
+                    state.skip(1);
+
+                    while state.current() != b'\'' {
+                        state.next();
+
+                        if state.is_eof() {
+                            return Err(LexerError::UnexpectedEndOfInput);
+                        }
+                    }
+
+                    state.skip(1);
+
+                    let span = state.span();
+                    let symbol = self.symbol_table.intern(state.range(span.start.offset, span.end.offset));
+
+                    state.push(Token::new(TokenKind::SingleQuotedString(symbol), span));
+                },
+                [b'"', ..] => {
+                    state.skip(1);
+
+                    while state.current() != b'"' {
+                        state.next();
+
+                        if state.is_eof() {
+                            return Err(LexerError::UnexpectedEndOfInput);
+                        }
+                    }
+
+                    state.skip(1);
+
+                    let span = state.span();
+                    let symbol = self.symbol_table.intern(state.range(span.start.offset, span.end.offset));
+
+                    state.push(Token::new(TokenKind::DoubleQuotedString(symbol), span));
+                },
                 _ => unimplemented!("{:?}", state.current() as char)
             }
         }
