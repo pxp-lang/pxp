@@ -130,6 +130,34 @@ impl<'a> Lexer<'a> {
                         TokenKind::Identifier(symbol)
                     }, span));
                 },
+                [b'@', b'a'..=b'z' | b'A'..=b'Z', ..] => {
+                    state.skip(1);
+
+                    while let b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'\\' | b'-' = state.current() {
+                        state.next();
+
+                        if state.is_eof() {
+                            break;
+                        }
+                    }
+
+                    if state.current() == b':' {
+                        state.next();
+
+                        while let b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'\\' | b'-' = state.current() {
+                            state.next();
+
+                            if state.is_eof() {
+                                break;
+                            }
+                        }
+                    }
+
+                    let span = state.span();
+                    let symbol = self.symbol_table.intern(state.range(span.start.offset, span.end.offset));
+
+                    state.push(Token::new(TokenKind::PhpdocTag(symbol), span));
+                },
                 [b'.', b'.', b'.', ..] => {
                     state.skip(3);
 

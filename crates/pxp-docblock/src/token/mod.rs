@@ -43,7 +43,7 @@ pub enum TokenKind {
     Equal,
     OpenPhpdoc,
     ClosePhpdoc,
-    PhpdocTag,
+    PhpdocTag(Symbol),
     Float(Symbol),
     Integer(Symbol),
     SingleQuotedString(Symbol),
@@ -76,8 +76,8 @@ impl TokenKind {
             TokenKind::FullyQualifiedIdentifier(symbol) => Some(*symbol),
             TokenKind::ThisVariable(symbol) => Some(*symbol),
             TokenKind::Variable(symbol) => Some(*symbol),
-            TokenKind::HorizontalWhitespace(symbol) => Some(*symbol),
             TokenKind::PhpdocEol(symbol) => Some(*symbol),
+            TokenKind::PhpdocTag(symbol) => Some(*symbol),
             _ => None,
         }
     }
