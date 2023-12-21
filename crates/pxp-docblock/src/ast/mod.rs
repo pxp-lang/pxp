@@ -81,7 +81,19 @@ impl<'a> Debug for TagWithSymbolTable<'a> {
             TagKind::Generic { tag, description } => match description {
                 Some(description) => write!(f, "Tag::Generic\n\ttag: {}\n\tdescription: {}", self.symbol_table.resolve(*tag).unwrap(), self.symbol_table.resolve(*description).unwrap()),
                 None => write!(f, "Tag::Generic\n\ttag: {}", self.symbol_table.resolve(*tag).unwrap()),
-            }
+            },
+            TagKind::Param { r#type, name, is_reference, is_variadic, description } => {
+                match r#type {
+                    Some(r#type) => match description {
+                        Some(description) => write!(f, "Tag::Param\n\ttype: {:?}\n\tname: {}\n\tis_reference: {}\n\tis_variadic: {}\n\tdescription: {}", r#type.with_symbol_table(self.symbol_table), self.symbol_table.resolve(*name).unwrap(), is_reference, is_variadic, self.symbol_table.resolve(*description).unwrap()),
+                        None => write!(f, "Tag::Param\n\ttype: {:?}\n\tname: {}\n\tis_reference: {}\n\tis_variadic: {}", r#type.with_symbol_table(self.symbol_table), self.symbol_table.resolve(*name).unwrap(), is_reference, is_variadic),
+                    },
+                    None => match description {
+                        Some(description) => write!(f, "Tag::Param\n\tname: {}\n\tis_reference: {}\n\tis_variadic: {}\n\tdescription: {}", self.symbol_table.resolve(*name).unwrap(), is_reference, is_variadic, self.symbol_table.resolve(*description).unwrap()),
+                        None => write!(f, "Tag::Param\n\tname: {}\n\tis_reference: {}\n\tis_variadic: {}", self.symbol_table.resolve(*name).unwrap(), is_reference, is_variadic),
+                    }
+                }
+            },
             _ => self.tag.fmt(f)
         }
     }
@@ -122,7 +134,7 @@ pub enum TagKind {
         description: Option<Symbol>,
     },
     Param {
-        r#type: Type,
+        r#type: Option<Type>,
         name: Symbol,
         is_reference: bool,
         is_variadic: bool,

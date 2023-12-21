@@ -20,6 +20,12 @@ impl<'a> State<'a> {
         self.symbol_table.resolve(token.symbol).unwrap()
     }
 
+    pub fn skip_horizontal_whitespace(&mut self) {
+        while self.current().kind == TokenKind::HorizontalWhitespace {
+            self.next();
+        }
+    }
+
     pub fn current(&self) -> &'a Token {
         &self.tokens[self.position]
     }

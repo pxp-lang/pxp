@@ -180,11 +180,15 @@ impl<'a> Lexer<'a> {
                     state.push(Token::new(TokenKind::DoubleColon, span, self.symbol_table.intern(b"::")));
                 },
                 [b'&', ..] => {
-                    state.skip(1);
+                    state.next();
 
                     let span = state.span();
 
-                    state.push(Token::new(TokenKind::Intersection, span, self.symbol_table.intern(b"&")));
+                    if matches!(state.peek_n(2), [b'$', b'a'..=b'z' | b'A'..=b'Z' | b'\x80'..=b'\xFF' | b'_']) {
+                        state.push(Token::new(TokenKind::Reference, span, self.symbol_table.intern(b"&")));
+                    } else {
+                        state.push(Token::new(TokenKind::Intersection, span, self.symbol_table.intern(b"&")));
+                    }
                 },
                 [b'|', ..] => {
                     state.skip(1);
@@ -269,6 +273,13 @@ impl<'a> Lexer<'a> {
                     let span = state.span();
 
                     state.push(Token::new(TokenKind::Colon, span, self.symbol_table.intern(b":")));
+                },
+                [b'?', ..] => {
+                    state.skip(1);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::Nullable, span, self.symbol_table.intern(b"?")));
                 },
                 [fb @ b'+' | fb @ b'-', b'0'..=b'9', ..] | [fb @ b'0'..=b'9', ..] => {
                     if *fb == b'+' || *fb == b'-' {

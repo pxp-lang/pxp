@@ -1,0 +1,9 @@
+/**
+ * @param string $a
+ * @param ?string $a
+ * @param Foo $a
+ * @param \Foo $a
+ * @param Foo\Bar $a
+ * @param string|int $a
+ * @param Foo&Bar $a
+ */
