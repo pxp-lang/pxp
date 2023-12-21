@@ -1,6 +1,6 @@
 use std::env::args;
 
-use pxp_docblock::lexer::Lexer;
+use pxp_docblock::{lexer::Lexer, parser::Parser};
 use pxp_symbol::SymbolTable;
 
 fn main() {
@@ -15,9 +15,18 @@ fn main() {
 
     if args.contains(&"--dump-tokens".to_string()) {
         println!("Tokens:");
-        
+
         for token in tokens.iter() {
             println!("{:?}", token.with_symbol_table(&symbol_table));
         }
+    }
+
+    let parser = Parser::new();
+    let ast = parser.parse(&tokens, &symbol_table);
+
+    if args.contains(&"--dump-ast".to_string()) {
+        println!("AST:");
+
+        println!("{:#?}", ast.unwrap());
     }
 }
