@@ -61,6 +61,7 @@ pub enum TokenKind {
     Wildcard,
     Negated,
     Arrow,
+    Eol,
 }
 
 impl TokenKind {

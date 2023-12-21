@@ -130,7 +130,168 @@ impl<'a> Lexer<'a> {
                         TokenKind::Identifier(symbol)
                     }, span));
                 },
-                _ => unimplemented!("{}", state.current() as char)
+                [b'.', b'.', b'.', ..] => {
+                    state.skip(3);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::Variadic, span));
+                },
+                [b'=', b'>', ..] => {
+                    state.skip(2);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::DoubleArrow, span));
+                },
+                [b':', b':', ..] => {
+                    state.skip(2);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::DoubleColon, span));
+                },
+                [b'&', ..] => {
+                    state.skip(1);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::Intersection, span));
+                },
+                [b'|', ..] => {
+                    state.skip(1);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::Union, span));
+                },
+                [b'(', ..] => {
+                    state.skip(1);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::OpenParen, span));
+                },
+                [b')', ..] => {
+                    state.skip(1);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::CloseParen, span));
+                },
+                [b'{', ..] => {
+                    state.skip(1);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::OpenBrace, span));
+                },
+                [b'}', ..] => {
+                    state.skip(1);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::CloseBrace, span));
+                },
+                [b'[', ..] => {
+                    state.skip(1);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::OpenBracket, span));
+                },
+                [b']', ..] => {
+                    state.skip(1);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::CloseBracket, span));
+                },
+                [b'<', ..] => {
+                    state.skip(1);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::OpenAngle, span));
+                },
+                [b'>', ..] => {
+                    state.skip(1);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::CloseAngle, span));
+                },
+                [b'=', ..] => {
+                    state.skip(1);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::Equal, span));
+                },
+                [b',', ..] => {
+                    state.skip(1);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::Comma, span));
+                },
+                [b':', ..] => {
+                    state.skip(1);
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::Colon, span));
+                },
+                [fb @ b'+' | fb @ b'-', b'0'..=b'9', ..] | [fb @ b'0'..=b'9', ..] => {
+                    if *fb == b'+' || *fb == b'-' {
+                        state.skip(1);
+                    }
+
+                    let mut is_float = false;
+
+                    while let b'0'..=b'9' = state.current() {
+                        state.next();
+
+                        if state.is_eof() {
+                            break;
+                        }
+                    }
+
+                    if state.current() == b'.' {
+                        is_float = true;
+
+                        state.next();
+
+                        while let b'0'..=b'9' = state.current() {
+                            state.next();
+
+                            if state.is_eof() {
+                                break;
+                            }
+                        }
+                    }
+
+                    let span = state.span();
+                    let symbol = self.symbol_table.intern(state.range(span.start.offset, span.end.offset));
+
+                    if is_float {
+                        state.push(Token::new(TokenKind::Float(symbol), span));
+                    } else {
+                        state.push(Token::new(TokenKind::Integer(symbol), span));
+                    }
+                },
+                [fb @ b'\r', b'\n', ..] | [fb @ b'\n', ..] => {
+                    if *fb == b'\r' {
+                        state.skip(2);
+                    } else {
+                        state.skip(1);
+                    }
+
+                    let span = state.span();
+
+                    state.push(Token::new(TokenKind::Eol, span));
+                },
+                _ => unimplemented!("{:?}", state.current() as char)
             }
         }
 
