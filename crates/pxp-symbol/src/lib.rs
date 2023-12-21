@@ -31,6 +31,16 @@ impl SymbolTable {
     pub fn resolve(&self, symbol: Symbol) -> Option<ByteStr> {
         self.vec.get(symbol).map(|s| ByteStr::new(s))
     }
+
+    pub fn coagulate(&mut self, symbols: &[Symbol]) -> Symbol {
+        let mut contents = Vec::new();
+
+        for symbol in symbols {
+            contents.extend_from_slice(&self.resolve(*symbol).unwrap());
+        }
+
+        self.intern(&contents)
+    }
 }
 
 #[cfg(test)]

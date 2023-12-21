@@ -6,3 +6,6 @@ tokenise +args:
 
 parse +args:
     RUSTFLAGS=-Awarnings cargo run -q --package pxp-parser --bin parse --release -- {{args}}
+
+parse-doc +args:
+    RUSTFLAGS=-Awarnings cargo run -q --package pxp-docblock --bin parse-doc --release -- {{args}}

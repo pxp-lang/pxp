@@ -1,4 +1,3 @@
-// Reusable pattern for the first byte of an identifier.
 #[macro_export]
 macro_rules! ident_start {
     () => {
@@ -6,7 +5,6 @@ macro_rules! ident_start {
     };
 }
 
-// Reusable pattern for identifier after the first byte.
 #[macro_export]
 macro_rules! ident {
     () => {
