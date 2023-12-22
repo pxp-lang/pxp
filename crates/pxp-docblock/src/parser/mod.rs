@@ -270,7 +270,7 @@ impl Parser {
             }
         }
 
-        Ok(state.symbol_table.coagulate(&symbols))
+        Ok(state.symbol_table.coagulate(&symbols, None))
     }
 
     fn parse_text(&self, state: &mut State) -> ParseResult<Node> {

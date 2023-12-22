@@ -31,13 +31,21 @@ pub struct ParameterEntity {
     pub location: Location,
 }
 
+type DebuggableEntityDebuggerCallback<'a, T> = dyn Fn(&T, &'a SymbolTable, &mut Formatter) -> std::fmt::Result;
+
 pub struct DebuggableEntityWithSymbolTable<'a, T> {
     entity: T,
     symbol_table: &'a SymbolTable,
-    debugger: Box<dyn Fn(&T, &'a SymbolTable, &mut Formatter)>,
+    debugger: Box<DebuggableEntityDebuggerCallback<'a, T>>,
 }
 
-pub fn debuggable_entity<T>(entity: T, symbol_table: &SymbolTable, debugger: Box<dyn Fn(&T, &SymbolTable, &mut Formatter)>) -> DebuggableEntityWithSymbolTable<T> {
+impl<'a, T> Debug for DebuggableEntityWithSymbolTable<'a, T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        (self.debugger)(&self.entity, self.symbol_table, f)
+    }
+}
+
+pub fn debuggable_entity<'a, T>(entity: T, symbol_table: &'a SymbolTable, debugger: Box<DebuggableEntityDebuggerCallback<'a, T>>) -> DebuggableEntityWithSymbolTable<'a, T> {
     DebuggableEntityWithSymbolTable {
         entity,
         symbol_table,

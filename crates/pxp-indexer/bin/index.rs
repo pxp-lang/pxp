@@ -53,7 +53,7 @@ fn process_command(command: &str, index: &Index, symbol_table: &SymbolTable) {
             println!("exit              Exit the REPL.")
         },
         "dump" => {
-            dbg!(index);
+            print!("{:?}", index.debuggable(symbol_table));
         },
         "exit" => {
             exit(0);
