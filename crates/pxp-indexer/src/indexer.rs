@@ -1,7 +1,7 @@
 use std::{path::{PathBuf, Path}, fs::read, collections::HashMap};
 
 use discoverer::discover;
-use pxp_ast::{functions::{FunctionStatement, ConcreteMethod, AbstractMethod, ConcreteConstructor, AbstractConstructor}, namespaces::{UnbracedNamespace, BracedNamespace}, classes::{ClassStatement, ClassExtends, ClassImplements}, UseStatement, Use, GroupUseStatement, UseKind, constant::ClassishConstant, modifiers::Visibility, properties::Property, interfaces::{InterfaceStatement, InterfaceExtends}};
+use pxp_ast::{functions::{FunctionStatement, ConcreteMethod, AbstractMethod, ConcreteConstructor, AbstractConstructor}, namespaces::{UnbracedNamespace, BracedNamespace}, classes::{ClassStatement, ClassExtends, ClassImplements}, UseStatement, Use, GroupUseStatement, UseKind, constant::ClassishConstant, modifiers::Visibility, properties::{Property, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends}};
 use pxp_parser::parse;
 use pxp_span::Span;
 use pxp_symbol::{SymbolTable, Symbol};
@@ -407,6 +407,23 @@ impl Visitor for Indexer {
         self.scope.current_class_like.methods.push(entity);
 
         walk_abstract_constructor(self, node);
+    }
+
+    fn visit_variable_property(&mut self, node: &mut VariableProperty) {
+        let visibility = Visibility::Public;
+        let r#static = false;
+        let r#type = node.r#type.clone().unwrap_or_default();
+
+        for property in node.entries.iter() {
+            let mut entity = PropertyEntity::default();
+            entity.name = property.variable().token.symbol.unwrap();
+            entity.visibility = visibility;
+            entity.r#static = r#static;
+            entity.r#type = r#type.clone();
+            entity.default = property.is_initialized();
+
+            self.scope.current_class_like.properties.push(entity);
+        }
     }
 
     // FIXME: Walk rest of classish members.
