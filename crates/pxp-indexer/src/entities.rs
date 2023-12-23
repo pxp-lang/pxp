@@ -1,5 +1,6 @@
 use std::fmt::{Debug, Formatter};
 
+use pxp_ast::modifiers::Visibility;
 use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
@@ -15,12 +16,6 @@ pub struct FunctionEntity {
     pub location: Location,
 }
 
-// impl Debug for FunctionEntity {
-//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-//         write!(f, "{}({}): {} -> {}@{}:{}", )
-//     }
-// }
-
 #[derive(Debug, Clone, Default)]
 pub struct ParameterEntity {
     pub name: Symbol,
@@ -29,6 +24,52 @@ pub struct ParameterEntity {
     pub optional: bool,
     pub r#type: Type,
     pub location: Location,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct ClassLikeEntity {
+    pub name: Symbol,
+    pub short_name: Symbol,
+    pub is_class: bool,
+    // This needs to be a Vec<Symbol> because we need to be able to
+    // represent interfaces that extend multiple other interfaces.
+    pub extends: Vec<Symbol>,
+    pub implements: Vec<Symbol>,
+    pub constants: Vec<ClassishConstantEntity>,
+    pub properties: Vec<PropertyEntity>,
+    pub methods: Vec<MethodEntity>,
+    pub r#final: bool,
+    pub r#abstract: bool,
+    pub r#readonly: bool,
+    pub location: Location,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct ClassishConstantEntity {
+    pub name: Symbol,
+    pub r#type: Type,
+    pub visibility: Visibility,
+    pub r#final: bool,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct PropertyEntity {
+    pub name: Symbol,
+    pub r#static: bool,
+    pub visibility: Visibility,
+    pub r#type: Type,
+    pub default: bool,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct MethodEntity {
+    pub name: Symbol,
+    pub visibility: Visibility,
+    pub parameters: Vec<ParameterEntity>,
+    pub r#static: bool,
+    pub r#final: bool,
+    pub r#abstract: bool,
+    pub return_type: Type,
 }
 
 type DebuggableEntityDebuggerCallback<'a, T> = dyn Fn(&T, &'a SymbolTable, &mut Formatter) -> std::fmt::Result;

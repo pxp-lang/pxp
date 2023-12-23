@@ -13,6 +13,7 @@ pxp-ast = { path = "../pxp-ast" }
 pxp-symbol = { path = "../pxp-symbol" }
 pxp-type = { path = "../pxp-type" }
 pxp-span = { path = "../pxp-span" }
+pxp-bytestring = { path = "../pxp-bytestring" }
 discoverer = "0.2.0"
 rustyline = "13.0.0"
 
