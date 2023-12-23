@@ -29,6 +29,15 @@ pub enum Argument {
     Named(NamedArgument),
 }
 
+impl Argument {
+    pub fn get_value(&self) -> &Expression {
+        match self {
+            Self::Positional(pos) => &pos.value,
+            Self::Named(named) => &named.value,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ArgumentList {

@@ -13,6 +13,20 @@ impl Identifier {
     pub fn missing(token: Token) -> Self {
         Self::SimpleIdentifier(SimpleIdentifier { token })
     }
+
+    pub fn is_simple(&self) -> bool {
+        match self {
+            Self::SimpleIdentifier(..) => true,
+            Self::DynamicIdentifier(..) => false,
+        }
+    }
+
+    pub fn is_dynamic(&self) -> bool {
+        match self {
+            Self::SimpleIdentifier(..) => false,
+            Self::DynamicIdentifier(..) => true,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]

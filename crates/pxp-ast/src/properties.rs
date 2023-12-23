@@ -46,4 +46,11 @@ impl PropertyEntry {
             PropertyEntry::Initialized { variable, .. } => variable,
         }
     }
+
+    pub fn is_initialized(&self) -> bool {
+        match self {
+            PropertyEntry::Uninitialized { .. } => false,
+            PropertyEntry::Initialized { .. } => true,
+        }
+    }
 }

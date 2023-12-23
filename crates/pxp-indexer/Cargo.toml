@@ -1,0 +1,26 @@
+[package]
+name = "pxp-indexer"
+version = "0.1.0"
+edition = "2021"
+license-file.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+pxp-visitor = { path = "../pxp-visitor" }
+pxp-parser = { path = "../pxp-parser" }
+pxp-ast = { path = "../pxp-ast" }
+pxp-token = { path = "../pxp-token" }
+pxp-symbol = { path = "../pxp-symbol" }
+pxp-type = { path = "../pxp-type" }
+pxp-span = { path = "../pxp-span" }
+pxp-bytestring = { path = "../pxp-bytestring" }
+discoverer = "0.2.0"
+rustyline = "13.0.0"
+
+[[bin]]
+name = "index"
+path = "bin/index.rs"
+
+[dev-dependencies]
+rustyline = "13.0.0"
