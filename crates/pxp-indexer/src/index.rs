@@ -59,7 +59,14 @@ impl Index {
 
             for class in index.get_class_likes() {
                 writeln!(f, "    {:?}", debuggable_entity(class, symbol_table, Box::new(|class, symbol_table, f| {
-                    write!(f, "{}{}{}", if class.r#final { "final " } else if class.r#abstract { "abstract " } else { "" }, if class.readonly { " readonly " } else { "" }, symbol_table.resolve(class.name).unwrap())?;
+                    write!(
+                        f,
+                        "{}{}{}{}",
+                        if class.r#final { "final " } else if class.r#abstract { "abstract " } else { "" },
+                        if class.readonly { " readonly " } else { "" },
+                        if class.is_class { "class " } else if class.is_interface { "interface " } else { "" },
+                        symbol_table.resolve(class.name).unwrap()
+                    )?;
 
                     if !class.extends.is_empty() {
                         write!(f, "\n        extends {}", symbol_table.resolve(*class.extends.get(0).unwrap()).unwrap())?;

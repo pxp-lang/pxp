@@ -31,6 +31,7 @@ pub struct ClassLikeEntity {
     pub name: Symbol,
     pub short_name: Symbol,
     pub is_class: bool,
+    pub is_interface: bool,
     // This needs to be a Vec<Symbol> because we need to be able to
     // represent interfaces that extend multiple other interfaces.
     pub extends: Vec<Symbol>,
@@ -69,6 +70,7 @@ pub struct MethodEntity {
     pub r#static: bool,
     pub r#final: bool,
     pub r#abstract: bool,
+    pub r#virtual: bool,
     pub return_type: Type,
 }
 

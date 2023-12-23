@@ -1,12 +1,12 @@
 use std::{path::{PathBuf, Path}, fs::read, collections::HashMap};
 
 use discoverer::discover;
-use pxp_ast::{functions::{FunctionStatement, ConcreteMethod}, namespaces::{UnbracedNamespace, BracedNamespace}, classes::{ClassStatement, ClassExtends, ClassImplements}, UseStatement, Use, GroupUseStatement, UseKind, constant::ClassishConstant, modifiers::Visibility, properties::Property};
+use pxp_ast::{functions::{FunctionStatement, ConcreteMethod, AbstractMethod, ConcreteConstructor, AbstractConstructor}, namespaces::{UnbracedNamespace, BracedNamespace}, classes::{ClassStatement, ClassExtends, ClassImplements}, UseStatement, Use, GroupUseStatement, UseKind, constant::ClassishConstant, modifiers::Visibility, properties::Property, interfaces::{InterfaceStatement, InterfaceExtends}};
 use pxp_parser::parse;
 use pxp_span::Span;
 use pxp_symbol::{SymbolTable, Symbol};
 use pxp_type::Type;
-use pxp_visitor::{Visitor, walk_function, walk_braced_namespace, walk_unbraced_namespace, walk_class, walk_use, walk_group_use, walk_concrete_method};
+use pxp_visitor::{Visitor, walk_function, walk_braced_namespace, walk_unbraced_namespace, walk_class, walk_use, walk_group_use, walk_concrete_method, walk_interface, walk_abstract_method, walk_concrete_constructor, walk_abstract_constructor};
 
 use crate::{index::Index, FunctionEntity, ParameterEntity, Location, ClassLikeEntity, ClassishConstantEntity, PropertyEntity, MethodEntity};
 
@@ -158,6 +158,30 @@ impl Visitor for Indexer {
         walk_function(self, node);
     }
 
+    fn visit_interface(&mut self, node: &mut InterfaceStatement) {
+        let mut interface = ClassLikeEntity::default();
+        interface.is_interface = true;
+
+        let name = node.name.token.symbol.unwrap();
+        interface.name = self.qualify(name);
+        interface.short_name = name;
+        interface.r#final = false;
+        interface.r#abstract = false;
+        interface.r#readonly = false;
+
+        if let Some(InterfaceExtends { parents, .. }) = &node.extends {
+            interface.extends = parents.iter().map(|p| self.qualify(p.token.symbol.unwrap())).collect();
+        }
+
+        self.scope.current_class_like = interface;
+        walk_interface(self, node);
+
+        let mut interface = self.scope.current_class_like.clone();
+        interface.location = Location::new(self.scope.file().to_string(), Span::new(node.name.token.span.start, node.body.right_brace.end));
+
+        self.index.add_class_like(interface);
+    }
+
     fn visit_class(&mut self, node: &mut ClassStatement) {
         let mut class = ClassLikeEntity::default();
         class.is_class = true;
@@ -217,6 +241,45 @@ impl Visitor for Indexer {
         }
     }
 
+    fn visit_abstract_method(&mut self, node: &mut AbstractMethod) {
+        let mut entity = MethodEntity::default();
+        entity.name = node.name.token.symbol.unwrap();
+        entity.visibility = node.modifiers.visibility();
+        entity.r#static = node.modifiers.has_static();
+        entity.r#abstract = false;
+        entity.r#virtual = self.scope.current_class_like.is_interface;
+        entity.r#final = node.modifiers.has_final();
+
+        let mut parameters = Vec::new();
+
+        for parameter in node.parameters.iter() {
+            let mut p = ParameterEntity::default();
+            p.name = parameter.name.token.symbol.unwrap();
+            p.reference = parameter.ampersand.is_some();
+            p.variadic = parameter.ellipsis.is_some();
+            p.optional = parameter.default.is_some();
+            p.r#type = if let Some(r#type) = &parameter.data_type {
+                r#type.clone()
+            } else {
+                Type::Mixed(Span::default())
+            };
+
+            parameters.push(p);
+        }
+
+        entity.parameters = parameters;
+
+        entity.return_type = if let Some(return_type) = &node.return_type {
+            return_type.data_type.clone()
+        } else {
+            Type::Mixed(Span::default())
+        };
+
+        self.scope.current_class_like.methods.push(entity);
+
+        walk_abstract_method(self, node);
+    }
+
     fn visit_concrete_method(&mut self, node: &mut ConcreteMethod) {
         let mut entity = MethodEntity::default();
         entity.name = node.name.token.symbol.unwrap();
@@ -253,6 +316,97 @@ impl Visitor for Indexer {
         self.scope.current_class_like.methods.push(entity);
 
         walk_concrete_method(self, node);
+    }
+
+    fn visit_concrete_constructor(&mut self, node: &mut ConcreteConstructor) {
+        let mut entity = MethodEntity::default();
+        entity.name = node.name.token.symbol.unwrap();
+        entity.visibility = node.modifiers.visibility();
+        entity.r#static = node.modifiers.has_static();
+        entity.r#abstract = false;
+        entity.r#final = node.modifiers.has_final();
+
+        let mut parameters = Vec::new();
+
+        for parameter in node.parameters.parameters.iter() {
+            let mut p = ParameterEntity::default();
+            p.name = parameter.name.token.symbol.unwrap();
+            p.reference = parameter.ampersand.is_some();
+            p.variadic = parameter.ellipsis.is_some();
+            p.optional = parameter.default.is_some();
+            p.r#type = if let Some(r#type) = &parameter.data_type {
+                r#type.clone()
+            } else {
+                Type::Mixed(Span::default())
+            };
+
+            // Indicates that this is a promoted property.
+            if !parameter.modifiers.is_empty() {
+                let mut property = PropertyEntity::default();
+                property.name = parameter.name.token.symbol.unwrap();
+                property.visibility = Visibility::Public;
+                property.r#static = false;
+                property.r#type = p.r#type.clone();
+                property.default = true;
+
+                self.scope.current_class_like.properties.push(property);
+            }
+
+            parameters.push(p);
+        }
+
+        entity.parameters = parameters;
+        entity.return_type = Type::Void(Span::default());
+
+        self.scope.current_class_like.methods.push(entity);
+
+        walk_concrete_constructor(self, node);
+    }
+
+    fn visit_abstract_constructor(&mut self, node: &mut AbstractConstructor) {
+        let mut entity = MethodEntity::default();
+        entity.name = node.name.token.symbol.unwrap();
+        entity.visibility = node.modifiers.visibility();
+        entity.r#static = node.modifiers.has_static();
+        entity.r#abstract = !self.scope.current_class_like.is_interface;
+        entity.r#virtual = self.scope.current_class_like.is_interface;
+        entity.r#final = node.modifiers.has_final();
+
+        let mut parameters = Vec::new();
+
+        for parameter in node.parameters.parameters.iter() {
+            let mut p = ParameterEntity::default();
+            p.name = parameter.name.token.symbol.unwrap();
+            p.reference = parameter.ampersand.is_some();
+            p.variadic = parameter.ellipsis.is_some();
+            p.optional = parameter.default.is_some();
+            p.r#type = if let Some(r#type) = &parameter.data_type {
+                r#type.clone()
+            } else {
+                Type::Mixed(Span::default())
+            };
+
+            // Indicates that this is a promoted property.
+            if !parameter.modifiers.is_empty() {
+                let mut property = PropertyEntity::default();
+                property.name = parameter.name.token.symbol.unwrap();
+                property.visibility = Visibility::Public;
+                property.r#static = false;
+                property.r#type = p.r#type.clone();
+                property.default = true;
+
+                self.scope.current_class_like.properties.push(property);
+            }
+
+            parameters.push(p);
+        }
+
+        entity.parameters = parameters;
+        entity.return_type = Type::Void(Span::default());
+
+        self.scope.current_class_like.methods.push(entity);
+
+        walk_abstract_constructor(self, node);
     }
 
     // FIXME: Walk rest of classish members.
