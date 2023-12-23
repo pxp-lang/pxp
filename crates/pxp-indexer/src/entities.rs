@@ -33,6 +33,7 @@ pub struct ClassLikeEntity {
     pub is_class: bool,
     pub is_interface: bool,
     pub is_enum: bool,
+    pub is_trait: bool,
     pub backing_type: BackedEnumType,
     // This needs to be a Vec<Symbol> because we need to be able to
     // represent interfaces that extend multiple other interfaces.

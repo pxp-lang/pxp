@@ -63,7 +63,7 @@ impl Index {
                         "{}{}{}{}",
                         if class.r#final { "final " } else if class.r#abstract { "abstract " } else { "" },
                         if class.readonly { " readonly " } else { "" },
-                        if class.is_class { "class " } else if class.is_interface { "interface " } else if class.is_enum { "enum " } else { "" },
+                        if class.is_class { "class " } else if class.is_interface { "interface " } else if class.is_enum { "enum " } else if class.is_trait { "trait " } else { unreachable!() },
                         symbol_table.resolve(class.name).unwrap()
                     )?;
 

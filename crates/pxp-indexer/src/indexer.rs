@@ -1,14 +1,14 @@
 use std::{path::{PathBuf, Path}, fs::read, collections::HashMap};
 
 use discoverer::discover;
-use pxp_ast::{functions::{FunctionStatement, ConcreteMethod, AbstractMethod, ConcreteConstructor, AbstractConstructor}, namespaces::{UnbracedNamespace, BracedNamespace}, classes::{ClassStatement, ClassExtends, ClassImplements}, UseStatement, Use, GroupUseStatement, UseKind, constant::ClassishConstant, modifiers::Visibility, properties::{Property, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends}, traits::TraitUsage, enums::{UnitEnumStatement, UnitEnumCase, BackedEnumStatement, BackedEnumCase}};
+use pxp_ast::{functions::{FunctionStatement, ConcreteMethod, AbstractMethod, ConcreteConstructor, AbstractConstructor}, namespaces::{UnbracedNamespace, BracedNamespace}, classes::{ClassStatement, ClassExtends, ClassImplements}, UseStatement, Use, GroupUseStatement, UseKind, constant::ClassishConstant, modifiers::Visibility, properties::{Property, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends}, traits::{TraitUsage, TraitStatement}, enums::{UnitEnumStatement, UnitEnumCase, BackedEnumStatement, BackedEnumCase}};
 use pxp_bytestring::ByteStr;
 use pxp_parser::parse;
 use pxp_span::Span;
 use pxp_symbol::{SymbolTable, Symbol};
 use pxp_token::{Token, TokenKind};
 use pxp_type::Type;
-use pxp_visitor::{Visitor, walk_function, walk_braced_namespace, walk_unbraced_namespace, walk_class, walk_use, walk_group_use, walk_concrete_method, walk_interface, walk_abstract_method, walk_concrete_constructor, walk_abstract_constructor, walk_trait_usage, walk_unit_enum, walk_backed_enum};
+use pxp_visitor::{Visitor, walk_function, walk_braced_namespace, walk_unbraced_namespace, walk_class, walk_use, walk_group_use, walk_concrete_method, walk_interface, walk_abstract_method, walk_concrete_constructor, walk_abstract_constructor, walk_trait_usage, walk_unit_enum, walk_backed_enum, walk_trait};
 
 use crate::{index::Index, FunctionEntity, ParameterEntity, Location, ClassLikeEntity, ClassishConstantEntity, PropertyEntity, MethodEntity};
 
@@ -274,6 +274,26 @@ impl Visitor for Indexer {
 
     fn visit_backed_enum_case(&mut self, node: &mut BackedEnumCase) {
         self.scope.current_class_like.cases.push(node.name.token.symbol.unwrap());
+    }
+
+    fn visit_trait(&mut self, node: &mut TraitStatement) {
+        let mut trait_ = ClassLikeEntity::default();
+        trait_.is_trait = true;
+
+        let name = node.name.token.symbol.unwrap();
+        trait_.name = self.qualify(name, node.name.token);
+        trait_.short_name = name;
+        trait_.r#final = false;
+        trait_.r#abstract = false;
+        trait_.r#readonly = false;
+
+        self.scope.current_class_like = trait_;
+        walk_trait(self, node);
+
+        let mut trait_ = self.scope.current_class_like.clone();
+        trait_.location = Location::new(self.scope.file().to_string(), Span::new(node.name.token.span.start, node.body.right_brace.end));
+
+        self.index.add_class_like(trait_);
     }
 
     fn visit_interface(&mut self, node: &mut InterfaceStatement) {
