@@ -205,4 +205,16 @@ impl Index {
     pub fn get_number_of_classes(&self) -> usize {
         self.class_likes.values().filter(|class_like| class_like.is_class).count()
     }
+
+    pub fn get_function(&self, symbol: Symbol) -> Option<&FunctionEntity> {
+        self.functions.get(&symbol)
+    }
+
+    pub fn get_class_like(&self, symbol: Symbol) -> Option<&ClassLikeEntity> {
+        self.class_likes.get(&symbol)
+    }
+
+    pub fn get_constant(&self, symbol: Symbol) -> Option<&ConstantEntity> {
+        self.constants.get(&symbol)
+    }
 }

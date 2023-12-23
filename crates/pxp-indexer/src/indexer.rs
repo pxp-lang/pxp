@@ -128,6 +128,10 @@ impl Indexer {
         }
     }
 
+    pub fn with_symbol_table(symbol_table: SymbolTable) -> Self {
+        Self { index: Index::default(), symbol_table, scope: Scope::default() }
+    }
+
     pub fn of(index: Index, symbol_table: SymbolTable) -> Self {
         Self { index, symbol_table, scope: Scope::default() }
     }
