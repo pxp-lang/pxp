@@ -8,3 +8,5 @@ function bar(string $baz): void
 {
 
 }
+
+const FOO = 1;

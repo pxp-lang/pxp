@@ -8,6 +8,14 @@ use pxp_type::Type;
 use crate::Location;
 
 #[derive(Debug, Clone, Default)]
+pub struct ConstantEntity {
+    pub name: Symbol,
+    pub short_name: Symbol,
+    pub r#type: Type,
+    pub location: Location,
+}
+
+#[derive(Debug, Clone, Default)]
 pub struct FunctionEntity {
     pub name: Symbol,
     pub short_name: Symbol,

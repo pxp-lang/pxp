@@ -1,7 +1,7 @@
 use std::{path::{PathBuf, Path}, fs::read, collections::HashMap};
 
 use discoverer::discover;
-use pxp_ast::{functions::{FunctionStatement, ConcreteMethod, AbstractMethod, ConcreteConstructor, AbstractConstructor}, namespaces::{UnbracedNamespace, BracedNamespace}, classes::{ClassStatement, ClassExtends, ClassImplements}, UseStatement, Use, GroupUseStatement, UseKind, constant::ClassishConstant, modifiers::Visibility, properties::{Property, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends}, traits::{TraitUsage, TraitStatement}, enums::{UnitEnumStatement, UnitEnumCase, BackedEnumStatement, BackedEnumCase}};
+use pxp_ast::{functions::{FunctionStatement, ConcreteMethod, AbstractMethod, ConcreteConstructor, AbstractConstructor}, namespaces::{UnbracedNamespace, BracedNamespace}, classes::{ClassStatement, ClassExtends, ClassImplements}, UseStatement, Use, GroupUseStatement, UseKind, constant::{ClassishConstant, ConstantStatement}, modifiers::Visibility, properties::{Property, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends}, traits::{TraitUsage, TraitStatement}, enums::{UnitEnumStatement, UnitEnumCase, BackedEnumStatement, BackedEnumCase}};
 use pxp_bytestring::ByteStr;
 use pxp_parser::parse;
 use pxp_span::Span;
@@ -10,7 +10,7 @@ use pxp_token::{Token, TokenKind};
 use pxp_type::Type;
 use pxp_visitor::{Visitor, walk_function, walk_braced_namespace, walk_unbraced_namespace, walk_class, walk_use, walk_group_use, walk_concrete_method, walk_interface, walk_abstract_method, walk_concrete_constructor, walk_abstract_constructor, walk_trait_usage, walk_unit_enum, walk_backed_enum, walk_trait};
 
-use crate::{index::Index, FunctionEntity, ParameterEntity, Location, ClassLikeEntity, ClassishConstantEntity, PropertyEntity, MethodEntity};
+use crate::{index::Index, FunctionEntity, ParameterEntity, Location, ClassLikeEntity, ClassishConstantEntity, PropertyEntity, MethodEntity, ConstantEntity};
 
 #[derive(Debug, Clone)]
 pub struct Indexer {
@@ -183,6 +183,18 @@ impl Visitor for Indexer {
 
     fn visit_group_use(&mut self, node: &mut GroupUseStatement) {
         walk_group_use(self, node)
+    }
+
+    fn visit_constant(&mut self, node: &mut ConstantStatement) {
+        for entry in node.entries.iter() {
+            let mut constant = ConstantEntity::default();
+            constant.name = entry.name.token.symbol.unwrap();
+            // FIXME: Add some simple type inference here.
+            constant.r#type = Type::Mixed(Span::default());
+            constant.location = Location::new(self.scope.file().to_string(), Span::new(entry.name.token.span.start, entry.value.span.end));
+
+            self.index.add_constant(constant);
+        }
     }
 
     fn visit_function(&mut self, node: &mut FunctionStatement) {

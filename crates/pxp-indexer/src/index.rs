@@ -2,12 +2,13 @@ use std::collections::HashMap;
 
 use pxp_symbol::{Symbol, SymbolTable};
 
-use crate::{entities::FunctionEntity, DebuggableEntityWithSymbolTable, debuggable_entity, ClassLikeEntity};
+use crate::{entities::FunctionEntity, DebuggableEntityWithSymbolTable, debuggable_entity, ClassLikeEntity, ConstantEntity};
 
 #[derive(Debug, Clone, Default)]
 pub struct Index {
     // Using Symbol as the key for entities is a good idea because it
     // allows us to do super fast lookups when we have a resolved identifier.
+    constants: HashMap<Symbol, ConstantEntity>,
     functions: HashMap<Symbol, FunctionEntity>,
     class_likes: HashMap<Symbol, ClassLikeEntity>,
 }
@@ -148,12 +149,31 @@ impl Index {
                 })))?;
             }
 
+            writeln!(f, "Constants ({}):", index.get_number_of_constants())?;
+
+            for constant in index.get_constants() {
+                write!(f, "    const {}", symbol_table.resolve(constant.name).unwrap())?;
+                write!(f, "\n        ({} on line {})\n", constant.location.file, constant.location.span.start.line)?;
+            }
+
             writeln!(f, "")
         }))
     }
 }
 
 impl Index {
+    pub fn add_constant(&mut self, constant: ConstantEntity) {
+        self.constants.insert(constant.name, constant);
+    }
+
+    pub fn get_constants(&self) -> impl Iterator<Item = &ConstantEntity> {
+        self.constants.values()
+    }
+
+    pub fn get_number_of_constants(&self) -> usize {
+        self.constants.len()
+    }
+
     pub fn add_function(&mut self, function: FunctionEntity) {
         self.functions.insert(function.name, function);
     }
