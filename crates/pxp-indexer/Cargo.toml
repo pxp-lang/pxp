@@ -10,6 +10,7 @@ license-file.workspace = true
 pxp-visitor = { path = "../pxp-visitor" }
 pxp-parser = { path = "../pxp-parser" }
 pxp-ast = { path = "../pxp-ast" }
+pxp-token = { path = "../pxp-token" }
 pxp-symbol = { path = "../pxp-symbol" }
 pxp-type = { path = "../pxp-type" }
 pxp-span = { path = "../pxp-span" }

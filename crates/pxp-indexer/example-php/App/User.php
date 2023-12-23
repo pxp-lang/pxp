@@ -2,10 +2,10 @@
 
 namespace App;
 
-use App\Interfaces\Model;
+use Nested\Interfaces;
 use DateTimeInterface;
 
-class User implements Model
+class User implements Interfaces\Model
 {
     private string $name;
 

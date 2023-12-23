@@ -1,3 +1,5 @@
+use std::fmt::{Display, Formatter};
+
 use crate::arguments::ArgumentPlaceholder;
 use crate::arguments::{ArgumentList, SingleArgument};
 use crate::classes::AnonymousClassExpression;
@@ -67,6 +69,16 @@ pub enum UseKind {
     Normal,
     Function,
     Const,
+}
+
+impl Display for UseKind {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            UseKind::Normal => write!(f, "use"),
+            UseKind::Function => write!(f, "use function"),
+            UseKind::Const => write!(f, "use const"),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]

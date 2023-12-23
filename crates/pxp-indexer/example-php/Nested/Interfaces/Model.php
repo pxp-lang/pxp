@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interfaces;
+namespace Nested\Interfaces;
 
 interface Model
 {
