@@ -1,7 +1,7 @@
 use std::{path::{PathBuf, Path}, fs::read, collections::HashMap};
 
 use discoverer::discover;
-use pxp_ast::{functions::{FunctionStatement, ConcreteMethod, AbstractMethod, ConcreteConstructor, AbstractConstructor}, namespaces::{UnbracedNamespace, BracedNamespace}, classes::{ClassStatement, ClassExtends, ClassImplements}, UseStatement, Use, GroupUseStatement, UseKind, constant::{ClassishConstant, ConstantStatement}, modifiers::Visibility, properties::{Property, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends}, traits::{TraitUsage, TraitStatement}, enums::{UnitEnumStatement, UnitEnumCase, BackedEnumStatement, BackedEnumCase}};
+use pxp_ast::{functions::{FunctionStatement, ConcreteMethod, AbstractMethod, ConcreteConstructor, AbstractConstructor}, namespaces::{UnbracedNamespace, BracedNamespace}, classes::{ClassStatement, ClassExtends, ClassImplements}, UseStatement, Use, GroupUseStatement, UseKind, constant::{ClassishConstant, ConstantStatement}, modifiers::Visibility, properties::{Property, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends}, traits::{TraitUsage, TraitStatement}, enums::{UnitEnumStatement, UnitEnumCase, BackedEnumStatement, BackedEnumCase}, FunctionCallExpression, ExpressionKind, identifiers::{Identifier, SimpleIdentifier}, literals::Literal};
 use pxp_bytestring::ByteStr;
 use pxp_parser::parse;
 use pxp_span::Span;
@@ -194,6 +194,42 @@ impl Visitor for Indexer {
             constant.location = Location::new(self.scope.file().to_string(), Span::new(entry.name.token.span.start, entry.value.span.end));
 
             self.index.add_constant(constant);
+        }
+    }
+
+    fn visit_function_call(&mut self, node: &mut FunctionCallExpression) {
+        // We only care about calls to the define() function with at least one argument.
+        if node.arguments.arguments.is_empty() {
+            return;
+        }
+
+        // We only care about calls to the define() function.
+        if let ExpressionKind::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier { token })) = &node.target.kind {
+            let symbol = self.symbol_table.resolve(token.symbol.unwrap()).unwrap();
+
+            if symbol != b"define" {
+                return;
+            }
+
+            let mut constant = ConstantEntity::default();
+            let name_argument = node.arguments.arguments.first().unwrap();
+
+            if let ExpressionKind::Literal(Literal { token, .. }) = name_argument.get_value().kind {
+                let name = self.symbol_table.resolve(token.symbol.unwrap()).unwrap().to_bytestring();
+                // We need to remove the quotes from the name.
+                // FIXME: This is a bit of a hack, but it'll do for now.
+                let name = &name[1..name.len() - 1];
+                let name_symbol = self.symbol_table.intern(name);
+
+                constant.name = name_symbol;
+                constant.short_name = name_symbol;
+                constant.r#type = Type::Mixed(Span::default());
+                constant.location = Location::new(self.scope.file().to_string(), Span::new(node.target.span.start, node.arguments.right_parenthesis.end));
+
+                self.index.add_constant(constant);
+            } else {
+                return;
+            }
         }
     }
 
