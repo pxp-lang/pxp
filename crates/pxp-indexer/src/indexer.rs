@@ -1,12 +1,12 @@
 use std::{path::{PathBuf, Path}, fs::read, collections::HashMap};
 
 use discoverer::discover;
-use pxp_ast::{functions::{FunctionStatement, ConcreteMethod, AbstractMethod, ConcreteConstructor, AbstractConstructor}, namespaces::{UnbracedNamespace, BracedNamespace}, classes::{ClassStatement, ClassExtends, ClassImplements}, UseStatement, Use, GroupUseStatement, UseKind, constant::ClassishConstant, modifiers::Visibility, properties::{Property, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends}};
+use pxp_ast::{functions::{FunctionStatement, ConcreteMethod, AbstractMethod, ConcreteConstructor, AbstractConstructor}, namespaces::{UnbracedNamespace, BracedNamespace}, classes::{ClassStatement, ClassExtends, ClassImplements}, UseStatement, Use, GroupUseStatement, UseKind, constant::ClassishConstant, modifiers::Visibility, properties::{Property, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends}, traits::TraitUsage};
 use pxp_parser::parse;
 use pxp_span::Span;
 use pxp_symbol::{SymbolTable, Symbol};
 use pxp_type::Type;
-use pxp_visitor::{Visitor, walk_function, walk_braced_namespace, walk_unbraced_namespace, walk_class, walk_use, walk_group_use, walk_concrete_method, walk_interface, walk_abstract_method, walk_concrete_constructor, walk_abstract_constructor};
+use pxp_visitor::{Visitor, walk_function, walk_braced_namespace, walk_unbraced_namespace, walk_class, walk_use, walk_group_use, walk_concrete_method, walk_interface, walk_abstract_method, walk_concrete_constructor, walk_abstract_constructor, walk_trait_usage};
 
 use crate::{index::Index, FunctionEntity, ParameterEntity, Location, ClassLikeEntity, ClassishConstantEntity, PropertyEntity, MethodEntity};
 
@@ -424,6 +424,16 @@ impl Visitor for Indexer {
 
             self.scope.current_class_like.properties.push(entity);
         }
+    }
+
+    fn visit_trait_usage(&mut self, node: &mut TraitUsage) {
+        for r#use in node.traits.iter() {
+            let name = self.qualify(r#use.token.symbol.unwrap());
+
+            self.scope.current_class_like.uses.push(name);
+        }
+
+        walk_trait_usage(self, node);
     }
 
     // FIXME: Walk rest of classish members.

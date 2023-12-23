@@ -76,6 +76,10 @@ impl Index {
                         write!(f, "\n        implements {}", class.implements.iter().map(|i| format!("{}", symbol_table.resolve(*i).unwrap())).collect::<Vec<String>>().join(", "))?;
                     }
 
+                    if !class.uses.is_empty() {
+                        write!(f, "\n        uses {}", class.uses.iter().map(|i| format!("{}", symbol_table.resolve(*i).unwrap())).collect::<Vec<String>>().join(", "))?;
+                    }
+
                     if !class.constants.is_empty() {
                         writeln!(f)?;
 

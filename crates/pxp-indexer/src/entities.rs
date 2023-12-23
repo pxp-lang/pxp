@@ -39,6 +39,7 @@ pub struct ClassLikeEntity {
     pub constants: Vec<ClassishConstantEntity>,
     pub properties: Vec<PropertyEntity>,
     pub methods: Vec<MethodEntity>,
+    pub uses: Vec<Symbol>,
     pub r#final: bool,
     pub r#abstract: bool,
     pub r#readonly: bool,
