@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use pxp_bytestring::ByteStr;
 use pxp_symbol::{Symbol, SymbolTable};
 
 use crate::{entities::FunctionEntity, DebuggableEntityWithSymbolTable, debuggable_entity, ClassLikeEntity};
@@ -64,9 +63,13 @@ impl Index {
                         "{}{}{}{}",
                         if class.r#final { "final " } else if class.r#abstract { "abstract " } else { "" },
                         if class.readonly { " readonly " } else { "" },
-                        if class.is_class { "class " } else if class.is_interface { "interface " } else { "" },
+                        if class.is_class { "class " } else if class.is_interface { "interface " } else if class.is_enum { "enum " } else { "" },
                         symbol_table.resolve(class.name).unwrap()
                     )?;
+
+                    if class.is_enum && class.backing_type.is_valid() {
+                        write!(f, ": {}", class.backing_type)?;
+                    }
 
                     if !class.extends.is_empty() {
                         write!(f, "\n        extends {}", symbol_table.resolve(*class.extends.get(0).unwrap()).unwrap())?;
@@ -85,6 +88,14 @@ impl Index {
 
                         for (i, constant) in class.constants.iter().enumerate() {
                             write!(f, "        {}{} const {:?} {}{}", if constant.r#final { "final " } else { "" }, constant.visibility, constant.r#type.with_symbol_table(symbol_table), symbol_table.resolve(constant.name).unwrap(), if i < class.constants.len() - 1 { "\n" } else { "" })?;
+                        }
+                    }
+
+                    if !class.cases.is_empty() {
+                        writeln!(f)?;
+
+                        for (i, case) in class.cases.iter().enumerate() {
+                            write!(f, "        case {}{}{}", symbol_table.resolve(*case).unwrap(), if class.backing_type.is_valid() { " = ..." } else { "" }, if i < class.cases.len() - 1 { "\n" } else { "" })?;
                         }
                     }
 

@@ -1,14 +1,14 @@
 use std::{path::{PathBuf, Path}, fs::read, collections::HashMap};
 
 use discoverer::discover;
-use pxp_ast::{functions::{FunctionStatement, ConcreteMethod, AbstractMethod, ConcreteConstructor, AbstractConstructor}, namespaces::{UnbracedNamespace, BracedNamespace}, classes::{ClassStatement, ClassExtends, ClassImplements}, UseStatement, Use, GroupUseStatement, UseKind, constant::ClassishConstant, modifiers::Visibility, properties::{Property, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends}, traits::TraitUsage};
+use pxp_ast::{functions::{FunctionStatement, ConcreteMethod, AbstractMethod, ConcreteConstructor, AbstractConstructor}, namespaces::{UnbracedNamespace, BracedNamespace}, classes::{ClassStatement, ClassExtends, ClassImplements}, UseStatement, Use, GroupUseStatement, UseKind, constant::ClassishConstant, modifiers::Visibility, properties::{Property, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends}, traits::TraitUsage, enums::{UnitEnumStatement, UnitEnumCase, BackedEnumStatement, BackedEnumCase}};
 use pxp_bytestring::ByteStr;
 use pxp_parser::parse;
 use pxp_span::Span;
 use pxp_symbol::{SymbolTable, Symbol};
 use pxp_token::{Token, TokenKind};
 use pxp_type::Type;
-use pxp_visitor::{Visitor, walk_function, walk_braced_namespace, walk_unbraced_namespace, walk_class, walk_use, walk_group_use, walk_concrete_method, walk_interface, walk_abstract_method, walk_concrete_constructor, walk_abstract_constructor, walk_trait_usage};
+use pxp_visitor::{Visitor, walk_function, walk_braced_namespace, walk_unbraced_namespace, walk_class, walk_use, walk_group_use, walk_concrete_method, walk_interface, walk_abstract_method, walk_concrete_constructor, walk_abstract_constructor, walk_trait_usage, walk_unit_enum, walk_backed_enum};
 
 use crate::{index::Index, FunctionEntity, ParameterEntity, Location, ClassLikeEntity, ClassishConstantEntity, PropertyEntity, MethodEntity};
 
@@ -39,18 +39,6 @@ impl Scope {
 
     pub fn add_use(&mut self, alias_or_name: Symbol, maps_to: (UseKind, Symbol)) {
         self.uses.insert(alias_or_name, maps_to);
-    }
-
-    fn debug_uses(&self, symbol_table: &SymbolTable) {
-        for (alias, (kind, name)) in self.uses.iter() {
-            println!(
-                "{} {}{}{}",
-                kind,
-                symbol_table.resolve(*name).unwrap(),
-                if alias == name { "" } else { " as " },
-                if alias == name { ByteStr::default() } else { symbol_table.resolve(*alias).unwrap() },
-            );
-        }
     }
 }
 
@@ -233,6 +221,59 @@ impl Visitor for Indexer {
         self.index.add_function(function);
 
         walk_function(self, node);
+    }
+
+    fn visit_unit_enum(&mut self, node: &mut UnitEnumStatement) {
+        let mut enumeration = ClassLikeEntity::default();
+        enumeration.is_enum = true;
+
+        let name = node.name.token.symbol.unwrap();
+        enumeration.name = self.qualify(name, node.name.token);
+        enumeration.short_name = name;
+
+        for implements in node.implements.iter() {
+            let name = self.qualify(implements.token.symbol.unwrap(), implements.token);
+            enumeration.implements.push(name);
+        }
+
+        self.scope.current_class_like = enumeration;
+        walk_unit_enum(self, node);
+
+        let mut enumeration = self.scope.current_class_like.clone();
+        enumeration.location = Location::new(self.scope.file().to_string(), Span::new(node.name.token.span.start, node.body.right_brace.end));
+
+        self.index.add_class_like(enumeration);
+    }
+
+    fn visit_unit_enum_case(&mut self, node: &mut UnitEnumCase) {
+        self.scope.current_class_like.cases.push(node.name.token.symbol.unwrap());
+    }
+
+    fn visit_backed_enum(&mut self, node: &mut BackedEnumStatement) {
+        let mut enumeration = ClassLikeEntity::default();
+        enumeration.is_enum = true;
+        enumeration.backing_type = node.backed_type.clone();
+
+        let name = node.name.token.symbol.unwrap();
+        enumeration.name = self.qualify(name, node.name.token);
+        enumeration.short_name = name;
+
+        for implements in node.implements.iter() {
+            let name = self.qualify(implements.token.symbol.unwrap(), implements.token);
+            enumeration.implements.push(name);
+        }
+
+        self.scope.current_class_like = enumeration;
+        walk_backed_enum(self, node);
+
+        let mut enumeration = self.scope.current_class_like.clone();
+        enumeration.location = Location::new(self.scope.file().to_string(), Span::new(node.name.token.span.start, node.body.right_brace.end));
+
+        self.index.add_class_like(enumeration);
+    }
+
+    fn visit_backed_enum_case(&mut self, node: &mut BackedEnumCase) {
+        self.scope.current_class_like.cases.push(node.name.token.symbol.unwrap());
     }
 
     fn visit_interface(&mut self, node: &mut InterfaceStatement) {

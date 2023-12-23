@@ -1,6 +1,6 @@
 use std::fmt::{Debug, Formatter};
 
-use pxp_ast::modifiers::Visibility;
+use pxp_ast::{modifiers::Visibility, enums::BackedEnumType};
 use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
@@ -32,6 +32,8 @@ pub struct ClassLikeEntity {
     pub short_name: Symbol,
     pub is_class: bool,
     pub is_interface: bool,
+    pub is_enum: bool,
+    pub backing_type: BackedEnumType,
     // This needs to be a Vec<Symbol> because we need to be able to
     // represent interfaces that extend multiple other interfaces.
     pub extends: Vec<Symbol>,
@@ -40,6 +42,7 @@ pub struct ClassLikeEntity {
     pub properties: Vec<PropertyEntity>,
     pub methods: Vec<MethodEntity>,
     pub uses: Vec<Symbol>,
+    pub cases: Vec<Symbol>,
     pub r#final: bool,
     pub r#abstract: bool,
     pub r#readonly: bool,
