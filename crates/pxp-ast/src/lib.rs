@@ -62,6 +62,7 @@ pub mod utils;
 pub mod variables;
 
 pub type Block = Vec<Statement>;
+pub type NodeId = usize;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -158,16 +159,19 @@ pub struct GroupUseStatement {
     pub kind: UseKind,
     pub uses: Vec<Use>,
 }
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Statement {
+    pub id: NodeId,
     pub kind: StatementKind,
     pub span: Span,
     pub comments: CommentGroup,
 }
 
 impl Statement {
-    pub fn new(kind: StatementKind, span: Span, comments: CommentGroup) -> Self {
+    pub fn new(id: NodeId, kind: StatementKind, span: Span, comments: CommentGroup) -> Self {
         Self {
+            id,
             kind,
             span,
             comments,
@@ -697,26 +701,28 @@ pub struct CastExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Expression {
+    pub id: NodeId,
     pub kind: ExpressionKind,
     pub span: Span,
     pub comments: CommentGroup,
 }
 
 impl Expression {
-    pub fn new(kind: ExpressionKind, span: Span, comments: CommentGroup) -> Self {
+    pub fn new(id: NodeId, kind: ExpressionKind, span: Span, comments: CommentGroup) -> Self {
         Self {
+            id,
             kind,
             span,
             comments,
         }
     }
 
-    pub fn missing(span: Span) -> Self {
-        Self::new(ExpressionKind::Missing, span, CommentGroup::default())
+    pub fn missing(id: NodeId, span: Span) -> Self {
+        Self::new(id, ExpressionKind::Missing, span, CommentGroup::default())
     }
 
-    pub fn noop(span: Span) -> Self {
-        Self::new(ExpressionKind::Noop, span, CommentGroup::default())
+    pub fn noop(id: NodeId, span: Span) -> Self {
+        Self::new(id, ExpressionKind::Noop, span, CommentGroup::default())
     }
 }
 
