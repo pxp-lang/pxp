@@ -1,7 +1,7 @@
 use crate::state::State;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_diagnostics::{DiagnosticKind, Severity};
-use pxp_token::{TokenKind, Token};
+use pxp_token::{Token, TokenKind};
 
 use crate::peek_token;
 
@@ -43,7 +43,10 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Identifier], found: *current },
+                DiagnosticKind::ExpectedToken {
+                    expected: vec![TokenKind::Identifier],
+                    found: *current,
+                },
                 Severity::Error,
                 current.span,
             );
@@ -91,7 +94,10 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Identifier], found: *current },
+                DiagnosticKind::ExpectedToken {
+                    expected: vec![TokenKind::Identifier],
+                    found: *current,
+                },
                 Severity::Error,
                 current.span,
             );
@@ -127,7 +133,10 @@ pub fn constant_identifier(state: &mut State) -> SimpleIdentifier {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Identifier], found: *current },
+                DiagnosticKind::ExpectedToken {
+                    expected: vec![TokenKind::Identifier],
+                    found: *current,
+                },
                 Severity::Error,
                 current.span,
             );
@@ -200,7 +209,10 @@ pub fn full_name(state: &mut State) -> SimpleIdentifier {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Identifier], found: *current },
+                DiagnosticKind::ExpectedToken {
+                    expected: vec![TokenKind::Identifier],
+                    found: *current,
+                },
                 Severity::Error,
                 current.span,
             );
@@ -250,7 +262,10 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Identifier], found: *current },
+                DiagnosticKind::ExpectedToken {
+                    expected: vec![TokenKind::Identifier],
+                    found: *current,
+                },
                 Severity::Error,
                 current.span,
             );
@@ -293,7 +308,10 @@ pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Identifier], found: *current },
+                DiagnosticKind::ExpectedToken {
+                    expected: vec![TokenKind::Identifier],
+                    found: *current,
+                },
                 Severity::Error,
                 current.span,
             );

@@ -45,7 +45,7 @@ pub fn namespace(state: &mut State) -> StatementKind {
             );
 
             braced_namespace(state, start, name)
-        },
+        }
         Some(NamespaceType::Braced) if state.namespace().is_some() => {
             state.diagnostic(
                 DiagnosticKind::NestedNamespace,

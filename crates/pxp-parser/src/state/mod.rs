@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 
-use pxp_ast::{attributes::AttributeGroup, NodeId};
 use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_ast::{attributes::AttributeGroup, NodeId};
 use pxp_diagnostics::{Diagnostic, DiagnosticKind, Severity};
 use pxp_lexer::stream::TokenStream;
 use pxp_span::Span;

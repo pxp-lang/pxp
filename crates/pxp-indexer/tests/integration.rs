@@ -1,6 +1,6 @@
-use std::path::PathBuf;
 use pxp_indexer::Indexer;
 use pxp_type::Type;
+use std::path::PathBuf;
 
 macro_rules! assert_matches {
     ($expression:expr, $pattern:pat) => {
@@ -14,9 +14,11 @@ macro_rules! assert_matches {
 #[test]
 fn it_indexes_correctly() {
     let mut indexer = Indexer::new();
-    let (index, mut symbol_table) = indexer.index(vec![
-        PathBuf::from(format!("{}/{}", env!("CARGO_MANIFEST_DIR"), "example-php"))
-    ]);
+    let (index, mut symbol_table) = indexer.index(vec![PathBuf::from(format!(
+        "{}/{}",
+        env!("CARGO_MANIFEST_DIR"),
+        "example-php"
+    ))]);
 
     assert_eq!(index.get_number_of_functions(), 2);
     assert_eq!(index.get_number_of_class_likes(), 8);
@@ -49,7 +51,10 @@ fn it_indexes_correctly() {
         None => unreachable!("Nested\\Interfaces\\Model is not defined"),
     };
 
-    assert_eq!(model.name, symbol_table.intern(b"Nested\\Interfaces\\Model"));
+    assert_eq!(
+        model.name,
+        symbol_table.intern(b"Nested\\Interfaces\\Model")
+    );
     assert_eq!(model.short_name, symbol_table.intern(b"Model"));
 
     let example = match index.get_class_like(symbol_table.intern(b"Nested\\Interfaces\\Example")) {
@@ -57,7 +62,10 @@ fn it_indexes_correctly() {
         None => unreachable!("Nested\\Interfaces\\Example is not defined"),
     };
 
-    assert_eq!(example.name, symbol_table.intern(b"Nested\\Interfaces\\Example"));
+    assert_eq!(
+        example.name,
+        symbol_table.intern(b"Nested\\Interfaces\\Example")
+    );
     assert_eq!(example.short_name, symbol_table.intern(b"Example"));
     assert_eq!(example.methods.len(), 1);
     assert_eq!(example.methods[0].name, symbol_table.intern(b"example"));
@@ -74,7 +82,10 @@ fn it_indexes_correctly() {
     assert_eq!(user.short_name, symbol_table.intern(b"User"));
     assert_eq!(user.properties.len(), 3);
     assert_eq!(user.implements.len(), 1);
-    assert_eq!(user.implements[0], symbol_table.intern(b"Nested\\Interfaces\\Model"));
+    assert_eq!(
+        user.implements[0],
+        symbol_table.intern(b"Nested\\Interfaces\\Model")
+    );
 
     assert_eq!(user.properties[0].name, symbol_table.intern(b"$name"));
     assert_matches!(user.properties[0].r#type, Type::String(_));

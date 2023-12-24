@@ -498,7 +498,7 @@ impl Display for TokenKind {
             | Self::HashMarkComment
             | Self::DocumentComment => {
                 return write!(f, "{:?}", self);
-            },
+            }
             Self::Missing => return write!(f, "<missing>"),
         };
 

@@ -1,8 +1,11 @@
 use pxp_span::Span;
-use pxp_symbol::{SymbolTable, Symbol};
+use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
 
-use crate::{token::{Token, TokenKind}, ast::{Node, NodeKind, Text, Tag, TagKind}};
+use crate::{
+    ast::{Node, NodeKind, Tag, TagKind, Text},
+    token::{Token, TokenKind},
+};
 
 use self::state::State;
 
@@ -15,7 +18,11 @@ impl Parser {
         Self
     }
 
-    pub fn parse(&self, tokens: &[Token], symbol_table: &mut SymbolTable) -> ParseResult<Vec<Node>> {
+    pub fn parse(
+        &self,
+        tokens: &[Token],
+        symbol_table: &mut SymbolTable,
+    ) -> ParseResult<Vec<Node>> {
         let mut state = State::new(tokens, symbol_table);
         let mut nodes = Vec::new();
 
@@ -35,14 +42,14 @@ impl Parser {
             match current.kind {
                 TokenKind::PhpdocEol => {
                     state.next();
-                },
+                }
                 TokenKind::HorizontalWhitespace => {
                     state.next();
                 }
                 TokenKind::PhpdocTag => {
                     let node = self.parse_tag(&mut state)?;
                     nodes.push(node);
-                },
+                }
                 _ => {
                     let node = self.parse_text(&mut state)?;
                     nodes.push(node);
@@ -72,8 +79,17 @@ impl Parser {
                 let end_span = state.previous().span;
                 let span = Span::new(start_span.start, end_span.end);
 
-                Node::new(NodeKind::Tag(Tag::new(TagKind::Generic { tag: tag_token.symbol, description }, span)), span)
-            },
+                Node::new(
+                    NodeKind::Tag(Tag::new(
+                        TagKind::Generic {
+                            tag: tag_token.symbol,
+                            description,
+                        },
+                        span,
+                    )),
+                    span,
+                )
+            }
         })
     }
 
@@ -85,9 +101,7 @@ impl Parser {
         state.skip_horizontal_whitespace();
 
         let r#type = match state.current().kind {
-            TokenKind::Variable | TokenKind::Variadic | TokenKind::Reference => {
-                None
-            },
+            TokenKind::Variable | TokenKind::Variadic | TokenKind::Reference => None,
             _ => Some(self.parse_type(state)?),
         };
 
@@ -96,7 +110,7 @@ impl Parser {
                 state.next();
 
                 true
-            },
+            }
             _ => false,
         };
 
@@ -107,7 +121,7 @@ impl Parser {
                 state.next();
 
                 true
-            },
+            }
             _ => false,
         };
 
@@ -121,7 +135,19 @@ impl Parser {
 
         let span = Span::new(start_span.start, end_span.end);
 
-        Ok(Node::new(NodeKind::Tag(Tag::new(TagKind::Param { r#type, is_reference, is_variadic, name, description }, span)), span))
+        Ok(Node::new(
+            NodeKind::Tag(Tag::new(
+                TagKind::Param {
+                    r#type,
+                    is_reference,
+                    is_variadic,
+                    name,
+                    description,
+                },
+                span,
+            )),
+            span,
+        ))
     }
 
     fn parse_optional_description(&self, state: &mut State) -> ParseResult<Option<Symbol>> {
@@ -132,12 +158,8 @@ impl Parser {
         let current = state.current();
 
         match current.kind {
-            TokenKind::PhpdocEol => {
-                Ok(None)
-            },
-            _ => {
-                Ok(Some(self.parse_text_symbol(state)?))
-            }
+            TokenKind::PhpdocEol => Ok(None),
+            _ => Ok(Some(self.parse_text_symbol(state)?)),
         }
     }
 

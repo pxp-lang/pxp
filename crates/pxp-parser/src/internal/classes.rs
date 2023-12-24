@@ -151,10 +151,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
         members: {
             let mut members = Vec::new();
             while state.stream.current().kind != TokenKind::RightBrace {
-                members.push(member(
-                    state,
-                    false,
-                ));
+                members.push(member(state, false));
             }
             members
         },
@@ -163,7 +160,8 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
 
     let end_span = body.right_brace;
 
-    let anonymous_class = Expression::new(state.id(),
+    let anonymous_class = Expression::new(
+        state.id(),
         ExpressionKind::AnonymousClass(AnonymousClassExpression {
             class,
             extends,
@@ -175,7 +173,8 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
         CommentGroup::default(),
     );
 
-    Expression::new(state.id(),
+    Expression::new(
+        state.id(),
         ExpressionKind::New(NewExpression {
             target: Box::new(anonymous_class),
             new,
@@ -217,7 +216,7 @@ pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
                         method.modifiers.get_abstract().unwrap().span(),
                     );
                 }
-                
+
                 ClassishMember::AbstractMethod(method)
             }
             Method::Concrete(method) => ClassishMember::ConcreteMethod(method),

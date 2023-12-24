@@ -23,11 +23,7 @@ pub fn class_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ClassMod
             TokenKind::Final => Some(ClassModifier::Final(*span)),
             TokenKind::Abstract => Some(ClassModifier::Abstract(*span)),
             _ => {
-                state.diagnostic(
-                    DiagnosticKind::InvalidClassModifier,
-                    Severity::Error,
-                    *span
-                );
+                state.diagnostic(DiagnosticKind::InvalidClassModifier, Severity::Error, *span);
 
                 None
             }
@@ -44,7 +40,7 @@ pub fn class_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ClassMod
         state.diagnostic(
             DiagnosticKind::CannotUseFinalWithAbstract,
             Severity::Error,
-            span
+            span,
         );
     }
 
@@ -66,7 +62,7 @@ pub fn method_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> MethodM
                 state.diagnostic(
                     DiagnosticKind::InvalidMethodModifier,
                     Severity::Error,
-                    *span
+                    *span,
                 );
 
                 None
@@ -84,7 +80,7 @@ pub fn method_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> MethodM
         state.diagnostic(
             DiagnosticKind::CannotUseFinalWithAbstract,
             Severity::Error,
-            span
+            span,
         );
     }
 
@@ -105,7 +101,7 @@ pub fn property_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Prope
                 state.diagnostic(
                     DiagnosticKind::InvalidPropertyModifier,
                     Severity::Error,
-                    *span
+                    *span,
                 );
 
                 None
@@ -117,7 +113,10 @@ pub fn property_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Prope
 }
 
 #[inline(always)]
-pub fn promoted_property_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> PromotedPropertyModifierGroup {
+pub fn promoted_property_group(
+    state: &mut State,
+    input: Vec<(Span, TokenKind)>,
+) -> PromotedPropertyModifierGroup {
     let modifiers = input
         .iter()
         .filter_map(|(span, token)| match token {
@@ -129,7 +128,7 @@ pub fn promoted_property_group(state: &mut State, input: Vec<(Span, TokenKind)>)
                 state.diagnostic(
                     DiagnosticKind::InvalidPropertyModifier,
                     Severity::Error,
-                    *span
+                    *span,
                 );
 
                 None
@@ -152,7 +151,7 @@ pub fn constant_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Const
                 state.diagnostic(
                     DiagnosticKind::InvalidConstantModifier,
                     Severity::Error,
-                    *span
+                    *span,
                 );
 
                 None
@@ -170,7 +169,7 @@ pub fn constant_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Const
         state.diagnostic(
             DiagnosticKind::CannotUseFinalWithPrivateOnConstant,
             Severity::Error,
-            span
+            span,
         );
     }
 
@@ -196,11 +195,7 @@ pub fn collect(state: &mut State) -> Vec<(Span, TokenKind)> {
 
     while collectable_tokens.contains(&current_kind) {
         if let Some((span, _)) = collected.iter().find(|(_, kind)| kind == &current_kind) {
-            state.diagnostic(
-                DiagnosticKind::DuplicateModifier,
-                Severity::Error,
-                *span
-            );
+            state.diagnostic(DiagnosticKind::DuplicateModifier, Severity::Error, *span);
         }
 
         // guard against multiple visibility modifiers, we don't care where these modifiers are used.
@@ -217,7 +212,7 @@ pub fn collect(state: &mut State) -> Vec<(Span, TokenKind)> {
                 state.diagnostic(
                     DiagnosticKind::MultipleVisibilityModifiers,
                     Severity::Error,
-                    *span
+                    *span,
                 );
             }
         }

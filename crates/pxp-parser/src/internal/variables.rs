@@ -33,12 +33,17 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Variable], found: *current },
+                DiagnosticKind::ExpectedToken {
+                    expected: vec![TokenKind::Variable],
+                    found: *current,
+                },
                 Severity::Error,
                 current.span,
             );
 
-            SimpleVariable { token: Token::missing(current.span) }
+            SimpleVariable {
+                token: Token::missing(current.span),
+            }
         }
     }
 }
@@ -93,27 +98,37 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
                         span,
                         variable: Box::new(variable),
                     })
-                },
+                }
                 // This allows us to handle standalone $ tokens, i.e. incomplete variables.
                 _ => {
                     state.diagnostic(
-                        DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Variable], found: *current },
+                        DiagnosticKind::ExpectedToken {
+                            expected: vec![TokenKind::Variable],
+                            found: *current,
+                        },
                         Severity::Error,
                         current.span,
                     );
 
-                    Variable::SimpleVariable(SimpleVariable { token: Token::missing(current.span) })
+                    Variable::SimpleVariable(SimpleVariable {
+                        token: Token::missing(current.span),
+                    })
                 }
             }
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::Variable], found: *current },
+                DiagnosticKind::ExpectedToken {
+                    expected: vec![TokenKind::Variable],
+                    found: *current,
+                },
                 Severity::Error,
                 current.span,
             );
 
-            Variable::SimpleVariable(SimpleVariable { token: Token::missing(current.span) })
+            Variable::SimpleVariable(SimpleVariable {
+                token: Token::missing(current.span),
+            })
         }
     }
 }

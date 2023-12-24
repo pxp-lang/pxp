@@ -1,6 +1,6 @@
 use std::fmt::{Debug, Formatter};
 
-use pxp_ast::{modifiers::Visibility, enums::BackedEnumType};
+use pxp_ast::{enums::BackedEnumType, modifiers::Visibility};
 use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
@@ -87,7 +87,8 @@ pub struct MethodEntity {
     pub return_type: Type,
 }
 
-type DebuggableEntityDebuggerCallback<'a, T> = dyn Fn(&T, &'a SymbolTable, &mut Formatter) -> std::fmt::Result;
+type DebuggableEntityDebuggerCallback<'a, T> =
+    dyn Fn(&T, &'a SymbolTable, &mut Formatter) -> std::fmt::Result;
 
 pub struct DebuggableEntityWithSymbolTable<'a, T> {
     entity: T,
@@ -101,10 +102,14 @@ impl<'a, T> Debug for DebuggableEntityWithSymbolTable<'a, T> {
     }
 }
 
-pub fn debuggable_entity<'a, T>(entity: T, symbol_table: &'a SymbolTable, debugger: Box<DebuggableEntityDebuggerCallback<'a, T>>) -> DebuggableEntityWithSymbolTable<'a, T> {
+pub fn debuggable_entity<'a, T>(
+    entity: T,
+    symbol_table: &'a SymbolTable,
+    debugger: Box<DebuggableEntityDebuggerCallback<'a, T>>,
+) -> DebuggableEntityWithSymbolTable<'a, T> {
     DebuggableEntityWithSymbolTable {
         entity,
         symbol_table,
-        debugger
+        debugger,
     }
 }

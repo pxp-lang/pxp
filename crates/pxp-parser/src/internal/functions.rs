@@ -114,7 +114,8 @@ pub fn anonymous_function(state: &mut State) -> Expression {
 
     let end_span = body.right_brace;
 
-    Expression::new(state.id(),
+    Expression::new(
+        state.id(),
         ExpressionKind::Closure(ClosureExpression {
             comments,
             attributes,
@@ -170,7 +171,8 @@ pub fn arrow_function(state: &mut State) -> Expression {
     let body = Box::new(expressions::create(state));
     let end_span = body.span;
 
-    Expression::new(state.id(),
+    Expression::new(
+        state.id(),
         ExpressionKind::ArrowFunction(ArrowFunctionExpression {
             comments,
             attributes,
@@ -236,10 +238,7 @@ pub fn function(state: &mut State) -> StatementKind {
     })
 }
 
-pub fn method(
-    state: &mut State,
-    modifiers: MethodModifierGroup,
-) -> Method {
+pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
     let comments = state.stream.comments();
     let attributes = state.get_attributes();
     let function = utils::skip(state, TokenKind::Function);

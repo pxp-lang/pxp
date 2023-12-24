@@ -193,7 +193,7 @@ fn simple_data_type(state: &mut State) -> Type {
             );
 
             Type::Missing(state.stream.current().span)
-        },
+        }
     }
 }
 
@@ -314,7 +314,7 @@ fn intersection(state: &mut State, other: Type, within_dnf: bool) -> Type {
                 //     v-- get_intersection_type: within_dnf = true
                 //        v-- error
                 // F|(A&B&(D|S))
-                
+
                 state.diagnostic(
                     DiagnosticKind::NestedDisjunctiveNormalFormType,
                     Severity::Error,

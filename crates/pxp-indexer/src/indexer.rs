@@ -1,16 +1,43 @@
-use std::{path::{PathBuf, Path}, fs::read, collections::HashMap};
+use std::{
+    collections::HashMap,
+    fs::read,
+    path::{Path, PathBuf},
+};
 
 use discoverer::discover;
-use pxp_ast::{functions::{FunctionStatement, ConcreteMethod, AbstractMethod, ConcreteConstructor, AbstractConstructor}, namespaces::{UnbracedNamespace, BracedNamespace}, classes::{ClassStatement, ClassExtends, ClassImplements}, UseStatement, Use, GroupUseStatement, UseKind, constant::{ClassishConstant, ConstantStatement}, modifiers::Visibility, properties::{Property, VariableProperty}, interfaces::{InterfaceStatement, InterfaceExtends}, traits::{TraitUsage, TraitStatement}, enums::{UnitEnumStatement, UnitEnumCase, BackedEnumStatement, BackedEnumCase}, FunctionCallExpression, ExpressionKind, identifiers::{Identifier, SimpleIdentifier}, literals::Literal};
+use pxp_ast::{
+    classes::{ClassExtends, ClassImplements, ClassStatement},
+    constant::{ClassishConstant, ConstantStatement},
+    enums::{BackedEnumCase, BackedEnumStatement, UnitEnumCase, UnitEnumStatement},
+    functions::{
+        AbstractConstructor, AbstractMethod, ConcreteConstructor, ConcreteMethod, FunctionStatement,
+    },
+    identifiers::{Identifier, SimpleIdentifier},
+    interfaces::{InterfaceExtends, InterfaceStatement},
+    literals::Literal,
+    modifiers::Visibility,
+    namespaces::{BracedNamespace, UnbracedNamespace},
+    properties::{Property, VariableProperty},
+    traits::{TraitStatement, TraitUsage},
+    ExpressionKind, FunctionCallExpression, GroupUseStatement, Use, UseKind, UseStatement,
+};
 use pxp_bytestring::ByteStr;
 use pxp_parser::parse;
 use pxp_span::Span;
-use pxp_symbol::{SymbolTable, Symbol};
+use pxp_symbol::{Symbol, SymbolTable};
 use pxp_token::{Token, TokenKind};
 use pxp_type::Type;
-use pxp_visitor::{Visitor, walk_function, walk_braced_namespace, walk_unbraced_namespace, walk_class, walk_use, walk_group_use, walk_concrete_method, walk_interface, walk_abstract_method, walk_concrete_constructor, walk_abstract_constructor, walk_trait_usage, walk_unit_enum, walk_backed_enum, walk_trait};
+use pxp_visitor::{
+    walk_abstract_constructor, walk_abstract_method, walk_backed_enum, walk_braced_namespace,
+    walk_class, walk_concrete_constructor, walk_concrete_method, walk_function, walk_group_use,
+    walk_interface, walk_trait, walk_trait_usage, walk_unbraced_namespace, walk_unit_enum,
+    walk_use, Visitor,
+};
 
-use crate::{index::Index, FunctionEntity, ParameterEntity, Location, ClassLikeEntity, ClassishConstantEntity, PropertyEntity, MethodEntity, ConstantEntity};
+use crate::{
+    index::Index, ClassLikeEntity, ClassishConstantEntity, ConstantEntity, FunctionEntity,
+    Location, MethodEntity, ParameterEntity, PropertyEntity,
+};
 
 #[derive(Debug, Clone)]
 pub struct Indexer {
@@ -52,7 +79,14 @@ impl Indexer {
     }
 
     pub fn index(&mut self, directories: Vec<PathBuf>) -> (Index, SymbolTable) {
-        let files = discover(&["php"], &directories.iter().map(|d| d.to_str().unwrap()).collect::<Vec<&str>>()).unwrap();
+        let files = discover(
+            &["php"],
+            &directories
+                .iter()
+                .map(|d| d.to_str().unwrap())
+                .collect::<Vec<&str>>(),
+        )
+        .unwrap();
 
         for file in files {
             self.index_file(file);
@@ -110,9 +144,18 @@ impl Indexer {
             // the fully-qualified symbol.
             if let Some((_, qualified)) = self.scope.uses.get(&first_symbol) {
                 // We can grab the string that represents the import.
-                let mut qualified = self.symbol_table.resolve(*qualified).unwrap().to_bytestring();
+                let mut qualified = self
+                    .symbol_table
+                    .resolve(*qualified)
+                    .unwrap()
+                    .to_bytestring();
                 // We can then grab the rest of the identifier, i.e. [B, C].
-                let rest = split.iter().skip(1).map(|b| b.to_vec()).collect::<Vec<Vec<u8>>>().join(&b"\\"[..]);
+                let rest = split
+                    .iter()
+                    .skip(1)
+                    .map(|b| b.to_vec())
+                    .collect::<Vec<Vec<u8>>>()
+                    .join(&b"\\"[..]);
                 // We can then append the rest of the identifier to the import.
                 qualified.extend(b"\\");
                 qualified.extend(&rest);
@@ -122,18 +165,27 @@ impl Indexer {
         }
 
         if let Some(namespace) = self.scope.namespace() {
-            self.symbol_table.coagulate(&[*namespace, symbol], Some(b"\\"))
+            self.symbol_table
+                .coagulate(&[*namespace, symbol], Some(b"\\"))
         } else {
             symbol
         }
     }
 
     pub fn with_symbol_table(symbol_table: SymbolTable) -> Self {
-        Self { index: Index::default(), symbol_table, scope: Scope::default() }
+        Self {
+            index: Index::default(),
+            symbol_table,
+            scope: Scope::default(),
+        }
     }
 
     pub fn of(index: Index, symbol_table: SymbolTable) -> Self {
-        Self { index, symbol_table, scope: Scope::default() }
+        Self {
+            index,
+            symbol_table,
+            scope: Scope::default(),
+        }
     }
 }
 
@@ -195,7 +247,10 @@ impl Visitor for Indexer {
             constant.name = entry.name.token.symbol.unwrap();
             // FIXME: Add some simple type inference here.
             constant.r#type = Type::Mixed(Span::default());
-            constant.location = Location::new(self.scope.file().to_string(), Span::new(entry.name.token.span.start, entry.value.span.end));
+            constant.location = Location::new(
+                self.scope.file().to_string(),
+                Span::new(entry.name.token.span.start, entry.value.span.end),
+            );
 
             self.index.add_constant(constant);
         }
@@ -208,7 +263,10 @@ impl Visitor for Indexer {
         }
 
         // We only care about calls to the define() function.
-        if let ExpressionKind::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier { token })) = &node.target.kind {
+        if let ExpressionKind::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier {
+            token,
+        })) = &node.target.kind
+        {
             let symbol = self.symbol_table.resolve(token.symbol.unwrap()).unwrap();
 
             if symbol != b"define" {
@@ -219,7 +277,11 @@ impl Visitor for Indexer {
             let name_argument = node.arguments.arguments.first().unwrap();
 
             if let ExpressionKind::Literal(Literal { token, .. }) = name_argument.get_value().kind {
-                let name = self.symbol_table.resolve(token.symbol.unwrap()).unwrap().to_bytestring();
+                let name = self
+                    .symbol_table
+                    .resolve(token.symbol.unwrap())
+                    .unwrap()
+                    .to_bytestring();
                 // We need to remove the quotes from the name.
                 // FIXME: This is a bit of a hack, but it'll do for now.
                 let name = &name[1..name.len() - 1];
@@ -228,7 +290,10 @@ impl Visitor for Indexer {
                 constant.name = name_symbol;
                 constant.short_name = name_symbol;
                 constant.r#type = Type::Mixed(Span::default());
-                constant.location = Location::new(self.scope.file().to_string(), Span::new(node.target.span.start, node.arguments.right_parenthesis.end));
+                constant.location = Location::new(
+                    self.scope.file().to_string(),
+                    Span::new(node.target.span.start, node.arguments.right_parenthesis.end),
+                );
 
                 self.index.add_constant(constant);
             } else {
@@ -268,7 +333,10 @@ impl Visitor for Indexer {
             Type::Mixed(Span::default())
         };
 
-        function.location = Location::new(self.scope.file().to_string(), Span::new(node.name.token.span.start, node.body.right_brace.end));
+        function.location = Location::new(
+            self.scope.file().to_string(),
+            Span::new(node.name.token.span.start, node.body.right_brace.end),
+        );
 
         self.index.add_function(function);
 
@@ -292,13 +360,19 @@ impl Visitor for Indexer {
         walk_unit_enum(self, node);
 
         let mut enumeration = self.scope.current_class_like.clone();
-        enumeration.location = Location::new(self.scope.file().to_string(), Span::new(node.name.token.span.start, node.body.right_brace.end));
+        enumeration.location = Location::new(
+            self.scope.file().to_string(),
+            Span::new(node.name.token.span.start, node.body.right_brace.end),
+        );
 
         self.index.add_class_like(enumeration);
     }
 
     fn visit_unit_enum_case(&mut self, node: &mut UnitEnumCase) {
-        self.scope.current_class_like.cases.push(node.name.token.symbol.unwrap());
+        self.scope
+            .current_class_like
+            .cases
+            .push(node.name.token.symbol.unwrap());
     }
 
     fn visit_backed_enum(&mut self, node: &mut BackedEnumStatement) {
@@ -319,13 +393,19 @@ impl Visitor for Indexer {
         walk_backed_enum(self, node);
 
         let mut enumeration = self.scope.current_class_like.clone();
-        enumeration.location = Location::new(self.scope.file().to_string(), Span::new(node.name.token.span.start, node.body.right_brace.end));
+        enumeration.location = Location::new(
+            self.scope.file().to_string(),
+            Span::new(node.name.token.span.start, node.body.right_brace.end),
+        );
 
         self.index.add_class_like(enumeration);
     }
 
     fn visit_backed_enum_case(&mut self, node: &mut BackedEnumCase) {
-        self.scope.current_class_like.cases.push(node.name.token.symbol.unwrap());
+        self.scope
+            .current_class_like
+            .cases
+            .push(node.name.token.symbol.unwrap());
     }
 
     fn visit_trait(&mut self, node: &mut TraitStatement) {
@@ -343,7 +423,10 @@ impl Visitor for Indexer {
         walk_trait(self, node);
 
         let mut trait_ = self.scope.current_class_like.clone();
-        trait_.location = Location::new(self.scope.file().to_string(), Span::new(node.name.token.span.start, node.body.right_brace.end));
+        trait_.location = Location::new(
+            self.scope.file().to_string(),
+            Span::new(node.name.token.span.start, node.body.right_brace.end),
+        );
 
         self.index.add_class_like(trait_);
     }
@@ -360,14 +443,20 @@ impl Visitor for Indexer {
         interface.r#readonly = false;
 
         if let Some(InterfaceExtends { parents, .. }) = &node.extends {
-            interface.extends = parents.iter().map(|p| self.qualify(p.token.symbol.unwrap(), p.token)).collect();
+            interface.extends = parents
+                .iter()
+                .map(|p| self.qualify(p.token.symbol.unwrap(), p.token))
+                .collect();
         }
 
         self.scope.current_class_like = interface;
         walk_interface(self, node);
 
         let mut interface = self.scope.current_class_like.clone();
-        interface.location = Location::new(self.scope.file().to_string(), Span::new(node.name.token.span.start, node.body.right_brace.end));
+        interface.location = Location::new(
+            self.scope.file().to_string(),
+            Span::new(node.name.token.span.start, node.body.right_brace.end),
+        );
 
         self.index.add_class_like(interface);
     }
@@ -388,14 +477,20 @@ impl Visitor for Indexer {
         }
 
         if let Some(ClassImplements { interfaces, .. }) = &node.implements {
-            class.implements = interfaces.iter().map(|i| self.qualify(i.token.symbol.unwrap(), i.token)).collect();
+            class.implements = interfaces
+                .iter()
+                .map(|i| self.qualify(i.token.symbol.unwrap(), i.token))
+                .collect();
         }
 
         self.scope.current_class_like = class;
         walk_class(self, node);
 
         let mut class = self.scope.current_class_like.clone();
-        class.location = Location::new(self.scope.file().to_string(), Span::new(node.name.token.span.start, node.body.right_brace.end));
+        class.location = Location::new(
+            self.scope.file().to_string(),
+            Span::new(node.name.token.span.start, node.body.right_brace.end),
+        );
         self.index.add_class_like(class);
     }
 

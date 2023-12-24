@@ -18,9 +18,20 @@ pub fn skip_ending(state: &mut State) -> Ending {
         Ending::Semicolon(current.span)
     } else {
         if state.stream.is_eof() {
-            state.diagnostic(DiagnosticKind::UnexpectedEndOfFile, Severity::Error, current.span);
+            state.diagnostic(
+                DiagnosticKind::UnexpectedEndOfFile,
+                Severity::Error,
+                current.span,
+            );
         } else {
-            state.diagnostic(DiagnosticKind::ExpectedToken { expected: vec![TokenKind::CloseTag, TokenKind::SemiColon], found: *current }, Severity::Error, current.span);
+            state.diagnostic(
+                DiagnosticKind::ExpectedToken {
+                    expected: vec![TokenKind::CloseTag, TokenKind::SemiColon],
+                    found: *current,
+                },
+                Severity::Error,
+                current.span,
+            );
         }
 
         Ending::Missing(current.span)
@@ -35,7 +46,14 @@ pub fn skip_semicolon(state: &mut State) -> Span {
 
         current.span
     } else {
-        state.diagnostic(DiagnosticKind::ExpectedToken { expected: vec![TokenKind::SemiColon], found: *current }, Severity::Error, current.span);
+        state.diagnostic(
+            DiagnosticKind::ExpectedToken {
+                expected: vec![TokenKind::SemiColon],
+                found: *current,
+            },
+            Severity::Error,
+            current.span,
+        );
 
         current.span
     }
@@ -80,16 +98,25 @@ pub fn skip_colon(state: &mut State) -> Span {
 pub fn skip(state: &mut State, kind: TokenKind) -> Span {
     while state.stream.current().kind != kind {
         let current = state.stream.current();
-        
+
         if state.stream.is_eof() {
-            state.diagnostic(DiagnosticKind::UnexpectedEndOfFileExpected { expected: vec![kind] }, Severity::Error, current.span);
+            state.diagnostic(
+                DiagnosticKind::UnexpectedEndOfFileExpected {
+                    expected: vec![kind],
+                },
+                Severity::Error,
+                current.span,
+            );
             break;
         }
 
         state.stream.next();
 
         state.diagnostic(
-            DiagnosticKind::ExpectedToken { expected: vec![kind], found: *current },
+            DiagnosticKind::ExpectedToken {
+                expected: vec![kind],
+                found: *current,
+            },
             Severity::Error,
             current.span,
         );
@@ -112,7 +139,14 @@ pub fn skip_any_of(state: &mut State, kinds: &[TokenKind]) -> Span {
 
         end
     } else {
-        state.diagnostic(DiagnosticKind::ExpectedToken { expected: kinds.to_vec(), found: *current }, Severity::Error, current.span);
+        state.diagnostic(
+            DiagnosticKind::ExpectedToken {
+                expected: kinds.to_vec(),
+                found: *current,
+            },
+            Severity::Error,
+            current.span,
+        );
 
         current.span
     }

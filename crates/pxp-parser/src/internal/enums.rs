@@ -31,33 +31,30 @@ pub fn parse(state: &mut State) -> StatementKind {
 
         match current.kind {
             TokenKind::Identifier => {
-                let symbol = state
-                    .symbol_table
-                    .resolve(current.symbol.unwrap())
-                    .unwrap();
+                let symbol = state.symbol_table.resolve(current.symbol.unwrap()).unwrap();
 
                 Some(match &symbol[..] {
                     b"string" => {
                         state.stream.next();
                         BackedEnumType::String(span, current.span)
-                    },
+                    }
                     b"int" => {
                         state.stream.next();
                         BackedEnumType::Int(span, current.span)
-                    },
+                    }
                     _ => {
                         state.stream.next();
 
                         state.diagnostic(
                             DiagnosticKind::InvalidBackedEnumType,
                             Severity::Error,
-                            current.span
+                            current.span,
                         );
 
                         BackedEnumType::Invalid(span)
-                    },
+                    }
                 })
-            },
+            }
             TokenKind::LeftBrace => {
                 state.diagnostic(
                     DiagnosticKind::UnexpectedToken { token: *current },
@@ -66,14 +63,14 @@ pub fn parse(state: &mut State) -> StatementKind {
                 );
 
                 Some(BackedEnumType::Invalid(span))
-            },
+            }
             _ => {
                 state.stream.next();
 
                 state.diagnostic(
                     DiagnosticKind::InvalidBackedEnumType,
                     Severity::Error,
-                    current.span
+                    current.span,
                 );
 
                 Some(BackedEnumType::Invalid(span))

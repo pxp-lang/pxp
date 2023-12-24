@@ -66,9 +66,9 @@ impl IntoIterator for ArgumentList {
 
 pub struct SingleArgument {
     pub comments: CommentGroup,
-    pub left_parenthesis: Span,  // `(`
-    pub argument: Option<Argument>,      // `$var`
-    pub right_parenthesis: Span, // `)`
+    pub left_parenthesis: Span,     // `(`
+    pub argument: Option<Argument>, // `$var`
+    pub right_parenthesis: Span,    // `)`
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]

@@ -73,17 +73,72 @@ pub struct TokenWithSymbolTable<'a> {
 impl<'a> Debug for TokenWithSymbolTable<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self.token.kind {
-            TokenKind::Float => write!(f, "{:?} (Symbol: {:?})", self.token.kind, self.symbol_table.resolve(self.token.symbol).unwrap()),
-            TokenKind::Integer => write!(f, "{:?} (Symbol: {:?})", self.token.kind, self.symbol_table.resolve(self.token.symbol).unwrap()),
-            TokenKind::SingleQuotedString => write!(f, "{:?} (Symbol: {:?})", self.token.kind, self.symbol_table.resolve(self.token.symbol).unwrap()),
-            TokenKind::DoubleQuotedString => write!(f, "{:?} (Symbol: {:?})", self.token.kind, self.symbol_table.resolve(self.token.symbol).unwrap()),
-            TokenKind::Identifier => write!(f, "{:?} (Symbol: {:?})", self.token.kind, self.symbol_table.resolve(self.token.symbol).unwrap()),
-            TokenKind::QualifiedIdentifier => write!(f, "{:?} (Symbol: {:?})", self.token.kind, self.symbol_table.resolve(self.token.symbol).unwrap()),
-            TokenKind::FullyQualifiedIdentifier => write!(f, "{:?} (Symbol: {:?})", self.token.kind, self.symbol_table.resolve(self.token.symbol).unwrap()),
-            TokenKind::ThisVariable => write!(f, "{:?} (Symbol: {:?})", self.token.kind, self.symbol_table.resolve(self.token.symbol).unwrap()),
-            TokenKind::Variable => write!(f, "{:?} (Symbol: {:?})", self.token.kind, self.symbol_table.resolve(self.token.symbol).unwrap()),
-            TokenKind::PhpdocEol => write!(f, "{:?} (Symbol: {:?})", self.token.kind, self.symbol_table.resolve(self.token.symbol).unwrap()),
-            TokenKind::PhpdocTag => write!(f, "{:?} (Symbol: {:?})", self.token.kind, self.symbol_table.resolve(self.token.symbol).unwrap()),
+            TokenKind::Float => write!(
+                f,
+                "{:?} (Symbol: {:?})",
+                self.token.kind,
+                self.symbol_table.resolve(self.token.symbol).unwrap()
+            ),
+            TokenKind::Integer => write!(
+                f,
+                "{:?} (Symbol: {:?})",
+                self.token.kind,
+                self.symbol_table.resolve(self.token.symbol).unwrap()
+            ),
+            TokenKind::SingleQuotedString => write!(
+                f,
+                "{:?} (Symbol: {:?})",
+                self.token.kind,
+                self.symbol_table.resolve(self.token.symbol).unwrap()
+            ),
+            TokenKind::DoubleQuotedString => write!(
+                f,
+                "{:?} (Symbol: {:?})",
+                self.token.kind,
+                self.symbol_table.resolve(self.token.symbol).unwrap()
+            ),
+            TokenKind::Identifier => write!(
+                f,
+                "{:?} (Symbol: {:?})",
+                self.token.kind,
+                self.symbol_table.resolve(self.token.symbol).unwrap()
+            ),
+            TokenKind::QualifiedIdentifier => write!(
+                f,
+                "{:?} (Symbol: {:?})",
+                self.token.kind,
+                self.symbol_table.resolve(self.token.symbol).unwrap()
+            ),
+            TokenKind::FullyQualifiedIdentifier => write!(
+                f,
+                "{:?} (Symbol: {:?})",
+                self.token.kind,
+                self.symbol_table.resolve(self.token.symbol).unwrap()
+            ),
+            TokenKind::ThisVariable => write!(
+                f,
+                "{:?} (Symbol: {:?})",
+                self.token.kind,
+                self.symbol_table.resolve(self.token.symbol).unwrap()
+            ),
+            TokenKind::Variable => write!(
+                f,
+                "{:?} (Symbol: {:?})",
+                self.token.kind,
+                self.symbol_table.resolve(self.token.symbol).unwrap()
+            ),
+            TokenKind::PhpdocEol => write!(
+                f,
+                "{:?} (Symbol: {:?})",
+                self.token.kind,
+                self.symbol_table.resolve(self.token.symbol).unwrap()
+            ),
+            TokenKind::PhpdocTag => write!(
+                f,
+                "{:?} (Symbol: {:?})",
+                self.token.kind,
+                self.symbol_table.resolve(self.token.symbol).unwrap()
+            ),
             _ => write!(f, "{:?}", self.token.kind),
         }
     }

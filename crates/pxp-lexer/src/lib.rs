@@ -23,10 +23,7 @@ pub struct Lexer<'a, 'b> {
 }
 
 impl<'a, 'b> Lexer<'a, 'b> {
-    pub fn new<B: ?Sized + AsRef<[u8]>>(
-        input: &'a B,
-        symbol_table: &'b mut SymbolTable,
-    ) -> Self {
+    pub fn new<B: ?Sized + AsRef<[u8]>>(input: &'a B, symbol_table: &'b mut SymbolTable) -> Self {
         Self {
             state: State::new(Source::new(input.as_ref())),
             symbol_table,

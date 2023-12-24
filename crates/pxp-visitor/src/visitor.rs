@@ -1,8 +1,66 @@
-use pxp_ast::{Statement, FullOpeningTagStatement, ShortOpeningTagStatement, EchoOpeningTagStatement, ClosingTagStatement, InlineHtmlStatement, goto::{LabelStatement, GotoStatement}, StaticStatement, GlobalStatement, HaltCompilerStatement, loops::{DoWhileStatement, WhileStatement, ForStatement, ForeachStatement, BreakStatement, ContinueStatement, WhileStatementBody, ForStatementIterator, ForStatementBody, ForeachStatementIterator, ForeachStatementBody, Level}, constant::{ConstantStatement, ConstantEntry, ClassishConstant}, functions::{FunctionStatement, ClosureExpression, ArrowFunctionExpression, FunctionParameterList, FunctionBody, FunctionParameter, AbstractMethod, AbstractConstructor, ConstructorParameterList, ConstructorParameter, ConcreteMethod, MethodBody, ConcreteConstructor, ReturnType}, classes::{ClassStatement, AnonymousClassExpression, ClassExtends, ClassImplements, ClassBody, ClassishMember, AnonymousClassBody}, traits::{TraitStatement, TraitUsage, TraitUsageAdaptation, TraitBody}, interfaces::{InterfaceStatement, InterfaceExtends, InterfaceBody}, control_flow::{IfStatement, IfStatementBody, IfStatementElseIf, IfStatementElse, IfStatementElseIfBlock, IfStatementElseBlock}, SwitchStatement, EchoStatement, ReturnStatement, namespaces::{NamespaceStatement, UnbracedNamespace, BracedNamespace}, UseStatement, GroupUseStatement, try_block::{TryStatement, CatchBlock, FinallyBlock}, enums::{UnitEnumStatement, BackedEnumStatement, UnitEnumMember, UnitEnumCase, BackedEnumMember, BackedEnumCase}, BlockStatement, declares::{DeclareStatement, DeclareEntry, DeclareBody}, EvalExpression, EmptyExpression, DieExpression, ExitExpression, IssetExpression, UnsetExpression, PrintExpression, literals::Literal, operators::{ArithmeticOperationExpression, AssignmentOperationExpression, BitwiseOperationExpression, ComparisonOperationExpression, LogicalOperationExpression}, ConcatExpression, InstanceofExpression, ReferenceExpression, ParenthesizedExpression, ErrorSuppressExpression, identifiers::{Identifier, SimpleIdentifier, DynamicIdentifier}, variables::{Variable, SimpleVariable, VariableVariable, BracedVariableVariable}, IncludeExpression, IncludeOnceExpression, RequireExpression, RequireOnceExpression, FunctionCallExpression, FunctionClosureCreationExpression, MethodCallExpression, MethodClosureCreationExpression, NullsafeMethodCallExpression, StaticMethodCallExpression, StaticVariableMethodCallExpression, StaticMethodClosureCreationExpression, StaticVariableMethodClosureCreationExpression, PropertyFetchExpression, NullsafePropertyFetchExpression, StaticPropertyFetchExpression, ConstantFetchExpression, ShortArrayExpression, ArrayExpression, ListExpression, NewExpression, InterpolatedStringExpression, HeredocExpression, NowdocExpression, ShellExecExpression, BoolExpression, ArrayIndexExpression, MagicConstantExpression, ShortTernaryExpression, TernaryExpression, CoalesceExpression, CloneExpression, MatchExpression, ThrowExpression, YieldExpression, YieldFromExpression, CastExpression, StaticVar, Case, properties::{Property, PropertyEntry, VariableProperty}, Use, arguments::{Argument, ArgumentList}, ExpressionStatement, Expression, ArrayItem, ListEntry, StringPart, LiteralStringPart, ExpressionStringPart, MatchArm, DefaultMatchArm};
+use crate::walk::*;
+use pxp_ast::{
+    arguments::{Argument, ArgumentList},
+    classes::{
+        AnonymousClassBody, AnonymousClassExpression, ClassBody, ClassExtends, ClassImplements,
+        ClassStatement, ClassishMember,
+    },
+    constant::{ClassishConstant, ConstantEntry, ConstantStatement},
+    control_flow::{
+        IfStatement, IfStatementBody, IfStatementElse, IfStatementElseBlock, IfStatementElseIf,
+        IfStatementElseIfBlock,
+    },
+    declares::{DeclareBody, DeclareEntry, DeclareStatement},
+    enums::{
+        BackedEnumCase, BackedEnumMember, BackedEnumStatement, UnitEnumCase, UnitEnumMember,
+        UnitEnumStatement,
+    },
+    functions::{
+        AbstractConstructor, AbstractMethod, ArrowFunctionExpression, ClosureExpression,
+        ConcreteConstructor, ConcreteMethod, ConstructorParameter, ConstructorParameterList,
+        FunctionBody, FunctionParameter, FunctionParameterList, FunctionStatement, MethodBody,
+        ReturnType,
+    },
+    goto::{GotoStatement, LabelStatement},
+    identifiers::{DynamicIdentifier, Identifier, SimpleIdentifier},
+    interfaces::{InterfaceBody, InterfaceExtends, InterfaceStatement},
+    literals::Literal,
+    loops::{
+        BreakStatement, ContinueStatement, DoWhileStatement, ForStatement, ForStatementBody,
+        ForStatementIterator, ForeachStatement, ForeachStatementBody, ForeachStatementIterator,
+        Level, WhileStatement, WhileStatementBody,
+    },
+    namespaces::{BracedNamespace, NamespaceStatement, UnbracedNamespace},
+    operators::{
+        ArithmeticOperationExpression, AssignmentOperationExpression, BitwiseOperationExpression,
+        ComparisonOperationExpression, LogicalOperationExpression,
+    },
+    properties::{Property, PropertyEntry, VariableProperty},
+    traits::{TraitBody, TraitStatement, TraitUsage, TraitUsageAdaptation},
+    try_block::{CatchBlock, FinallyBlock, TryStatement},
+    variables::{BracedVariableVariable, SimpleVariable, Variable, VariableVariable},
+    ArrayExpression, ArrayIndexExpression, ArrayItem, BlockStatement, BoolExpression, Case,
+    CastExpression, CloneExpression, ClosingTagStatement, CoalesceExpression, ConcatExpression,
+    ConstantFetchExpression, DefaultMatchArm, DieExpression, EchoOpeningTagStatement,
+    EchoStatement, EmptyExpression, ErrorSuppressExpression, EvalExpression, ExitExpression,
+    Expression, ExpressionStatement, ExpressionStringPart, FullOpeningTagStatement,
+    FunctionCallExpression, FunctionClosureCreationExpression, GlobalStatement, GroupUseStatement,
+    HaltCompilerStatement, HeredocExpression, IncludeExpression, IncludeOnceExpression,
+    InlineHtmlStatement, InstanceofExpression, InterpolatedStringExpression, IssetExpression,
+    ListEntry, ListExpression, LiteralStringPart, MagicConstantExpression, MatchArm,
+    MatchExpression, MethodCallExpression, MethodClosureCreationExpression, NewExpression,
+    NowdocExpression, NullsafeMethodCallExpression, NullsafePropertyFetchExpression,
+    ParenthesizedExpression, PrintExpression, PropertyFetchExpression, ReferenceExpression,
+    RequireExpression, RequireOnceExpression, ReturnStatement, ShellExecExpression,
+    ShortArrayExpression, ShortOpeningTagStatement, ShortTernaryExpression, Statement,
+    StaticMethodCallExpression, StaticMethodClosureCreationExpression,
+    StaticPropertyFetchExpression, StaticStatement, StaticVar, StaticVariableMethodCallExpression,
+    StaticVariableMethodClosureCreationExpression, StringPart, SwitchStatement, TernaryExpression,
+    ThrowExpression, UnsetExpression, Use, UseStatement, YieldExpression, YieldFromExpression,
+};
 use pxp_span::Span;
 use pxp_syntax::comments::Comment;
 use pxp_type::Type;
-use crate::walk::*;
 
 pub trait Visitor {
     fn visit(&mut self, node: &mut [Statement]) {
@@ -331,9 +389,7 @@ pub trait Visitor {
         walk_declare_body(self, node)
     }
 
-    fn visit_noop(&mut self, _: Span) {
-        
-    }
+    fn visit_noop(&mut self, _: Span) {}
 
     fn visit_missing_expr(&mut self) {}
 
@@ -385,7 +441,7 @@ pub trait Visitor {
 
     fn visit_bitwise_operation(&mut self, node: &mut BitwiseOperationExpression) {
         walk_bitwise_operation(self, node)
-    }    
+    }
 
     fn visit_comparison_operation(&mut self, node: &mut ComparisonOperationExpression) {
         walk_comparison_operation(self, node)
@@ -419,9 +475,7 @@ pub trait Visitor {
         walk_identifier(self, node)
     }
 
-    fn visit_simple_identifier(&mut self, _: &mut SimpleIdentifier) {
-        
-    }
+    fn visit_simple_identifier(&mut self, _: &mut SimpleIdentifier) {}
 
     fn visit_dynamic_identifier(&mut self, node: &mut DynamicIdentifier) {
         walk_dynamic_identifier(self, node)
@@ -485,11 +539,17 @@ pub trait Visitor {
         walk_static_variable_method_call(self, node);
     }
 
-    fn visit_static_method_closure_creation(&mut self, node: &mut StaticMethodClosureCreationExpression) {
+    fn visit_static_method_closure_creation(
+        &mut self,
+        node: &mut StaticMethodClosureCreationExpression,
+    ) {
         walk_static_method_closure_creation(self, node);
     }
 
-    fn visit_static_variable_method_closure_creation(&mut self, node: &mut StaticVariableMethodClosureCreationExpression) {
+    fn visit_static_variable_method_closure_creation(
+        &mut self,
+        node: &mut StaticVariableMethodClosureCreationExpression,
+    ) {
         walk_static_variable_method_closure_creation(self, node);
     }
 

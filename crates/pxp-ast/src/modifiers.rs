@@ -1,4 +1,4 @@
-use std::{fmt::{Formatter, Display}};
+use std::fmt::{Display, Formatter};
 
 use pxp_span::Span;
 

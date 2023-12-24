@@ -1,4 +1,4 @@
-use pxp_bytestring::{ByteString, ByteStr};
+use pxp_bytestring::{ByteStr, ByteString};
 use pxp_symbol::SymbolTable;
 
 use crate::token::{Token, TokenKind};
@@ -11,7 +11,11 @@ pub struct State<'a> {
 
 impl<'a> State<'a> {
     pub fn new(tokens: &'a [Token], symbol_table: &'a mut SymbolTable) -> Self {
-        Self { tokens, symbol_table, position: 0 }
+        Self {
+            tokens,
+            symbol_table,
+            position: 0,
+        }
     }
 
     pub fn get_current_symbol(&self) -> ByteStr {

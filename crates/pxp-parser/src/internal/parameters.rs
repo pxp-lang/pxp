@@ -76,9 +76,7 @@ pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
     }
 }
 
-pub fn constructor_parameter_list(
-    state: &mut State,
-) -> ConstructorParameterList {
+pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList {
     let comments = state.stream.comments();
 
     let left_parenthesis = utils::skip_left_parenthesis(state);

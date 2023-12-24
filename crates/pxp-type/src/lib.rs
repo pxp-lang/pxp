@@ -1,4 +1,4 @@
-use std::fmt::{Display, Debug};
+use std::fmt::{Debug, Display};
 
 use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
@@ -161,10 +161,28 @@ impl<'a> Debug for TypeWithSymbolTable<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self.r#type {
             Type::Named(_, name) => write!(f, "{}", self.symbol_table.resolve(*name).unwrap()),
-            Type::Nullable(_, inner) => write!(f, "?{:?}", inner.with_symbol_table(&self.symbol_table)),
-            Type::Union(inner) => write!(f, "{}", inner.iter().map(|t| format!("{:?}", t.with_symbol_table(&self.symbol_table))).collect::<Vec<String>>().join("|")),
-            Type::Intersection(inner) => write!(f, "{}", inner.iter().map(|t| format!("{:?}", t.with_symbol_table(&self.symbol_table))).collect::<Vec<String>>().join("&")),
-            _ => write!(f, "{}", &self.r#type)
+            Type::Nullable(_, inner) => {
+                write!(f, "?{:?}", inner.with_symbol_table(&self.symbol_table))
+            }
+            Type::Union(inner) => write!(
+                f,
+                "{}",
+                inner
+                    .iter()
+                    .map(|t| format!("{:?}", t.with_symbol_table(&self.symbol_table)))
+                    .collect::<Vec<String>>()
+                    .join("|")
+            ),
+            Type::Intersection(inner) => write!(
+                f,
+                "{}",
+                inner
+                    .iter()
+                    .map(|t| format!("{:?}", t.with_symbol_table(&self.symbol_table)))
+                    .collect::<Vec<String>>()
+                    .join("&")
+            ),
+            _ => write!(f, "{}", &self.r#type),
         }
     }
 }

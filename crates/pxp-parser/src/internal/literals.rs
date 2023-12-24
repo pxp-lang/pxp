@@ -24,12 +24,20 @@ pub fn expect_literal(state: &mut State) -> Literal {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken { expected: vec![TokenKind::LiteralInteger, TokenKind::LiteralFloat, TokenKind::LiteralSingleQuotedString, TokenKind::LiteralDoubleQuotedString], found: *token },
+                DiagnosticKind::ExpectedToken {
+                    expected: vec![
+                        TokenKind::LiteralInteger,
+                        TokenKind::LiteralFloat,
+                        TokenKind::LiteralSingleQuotedString,
+                        TokenKind::LiteralDoubleQuotedString,
+                    ],
+                    found: *token,
+                },
                 Severity::Error,
-                token.span
+                token.span,
             );
 
-            return Literal::missing(token.span)
+            return Literal::missing(token.span);
         }
     };
 

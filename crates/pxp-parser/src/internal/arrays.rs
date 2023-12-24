@@ -110,7 +110,8 @@ pub fn list_expression(state: &mut State) -> Expression {
     });
     let end_span = state.stream.current().span;
 
-    Expression::new(state.id(),
+    Expression::new(
+        state.id(),
         kind,
         Span::new(start_span.start, end_span.end),
         CommentGroup::default(),
@@ -137,7 +138,8 @@ pub fn short_array_expression(state: &mut State) -> Expression {
     });
     let end_span = state.stream.current().span;
 
-    Expression::new(state.id(),
+    Expression::new(
+        state.id(),
         kind,
         Span::new(start_span.start, end_span.end),
         CommentGroup::default(),
@@ -154,7 +156,8 @@ pub fn array_expression(state: &mut State) -> Expression {
     });
     let end_span = state.stream.current().span;
 
-    Expression::new(state.id(),
+    Expression::new(
+        state.id(),
         kind,
         Span::new(start_span.start, end_span.end),
         CommentGroup::default(),
@@ -196,7 +199,10 @@ fn array_pair(state: &mut State) -> ArrayItem {
     }
 
     if let Some(ampersand) = ampersand {
-        return ArrayItem::ReferencedValue { ampersand: ampersand.span, value };
+        return ArrayItem::ReferencedValue {
+            ampersand: ampersand.span,
+            value,
+        };
     }
 
     let mut current = state.stream.current();

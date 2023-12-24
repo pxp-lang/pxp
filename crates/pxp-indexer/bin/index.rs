@@ -1,8 +1,14 @@
-use std::{env::args, path::PathBuf, io::{stdin, stdout, Write}, time::Instant, process::exit};
+use std::{
+    env::args,
+    io::{stdin, stdout, Write},
+    path::PathBuf,
+    process::exit,
+    time::Instant,
+};
 
-use pxp_indexer::{Indexer, Index};
+use pxp_indexer::{Index, Indexer};
 use pxp_symbol::SymbolTable;
-use rustyline::{DefaultEditor, error::ReadlineError};
+use rustyline::{error::ReadlineError, DefaultEditor};
 
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
@@ -16,7 +22,10 @@ fn main() {
 
     let duration = start.elapsed();
 
-    println!("Indexing completed. Took {} milliseconds.", duration.as_millis());
+    println!(
+        "Indexing completed. Took {} milliseconds.",
+        duration.as_millis()
+    );
     println!();
     println!("Enter a search query below to look through the index.");
 
@@ -38,8 +47,8 @@ fn main() {
             Err(ReadlineError::Interrupted) => {
                 println!("Exiting...");
                 break;
-            },
-            _ => todo!()
+            }
+            _ => todo!(),
         }
     }
 }
@@ -51,13 +60,13 @@ fn process_command(command: &str, index: &Index, symbol_table: &SymbolTable) {
             println!("search <name>     Search through the index for the given entity.");
             println!("dump              Output a minified list of all indexed entities.");
             println!("exit              Exit the REPL.")
-        },
+        }
         "dump" => {
             print!("{:?}", index.debuggable(symbol_table));
-        },
+        }
         "exit" => {
             exit(0);
-        },
+        }
         _ => {
             println!("Unrecognised command.");
         }

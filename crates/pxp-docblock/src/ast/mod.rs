@@ -1,4 +1,4 @@
-use std::fmt::{Debug, self, Formatter};
+use std::fmt::{self, Debug, Formatter};
 
 use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
@@ -36,8 +36,12 @@ impl<'a> Debug for NodeWithSymbolTable<'a> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match &self.node.kind {
             NodeKind::Text(text) => {
-                write!(f, "Text({:?})", self.symbol_table.resolve(text.text).unwrap())
-            },
+                write!(
+                    f,
+                    "Text({:?})",
+                    self.symbol_table.resolve(text.text).unwrap()
+                )
+            }
             NodeKind::Tag(tag) => tag.with_symbol_table(self.symbol_table).fmt(f),
         }
     }
@@ -166,7 +170,7 @@ pub enum TagKind {
         r#type: Type,
         name: Option<Symbol>,
         description: Option<Symbol>,
-    }
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -11,10 +11,7 @@ use pxp_diagnostics::DiagnosticKind;
 use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;
 
-pub fn parse(
-    state: &mut State,
-    modifiers: PropertyModifierGroup,
-) -> Property {
+pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
     let ty = data_type::optional_data_type(state);
 
     let mut entries = vec![];
