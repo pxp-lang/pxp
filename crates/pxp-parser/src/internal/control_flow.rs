@@ -100,7 +100,7 @@ pub fn match_expression(state: &mut State) -> Expression {
 
     let right_brace = utils::skip_right_brace(state);
 
-    Expression::new(
+    Expression::new(state.id(),
         ExpressionKind::Match(MatchExpression {
             keyword,
             left_parenthesis,

@@ -163,7 +163,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
 
     let end_span = body.right_brace;
 
-    let anonymous_class = Expression::new(
+    let anonymous_class = Expression::new(state.id(),
         ExpressionKind::AnonymousClass(AnonymousClassExpression {
             class,
             extends,
@@ -175,7 +175,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
         CommentGroup::default(),
     );
 
-    Expression::new(
+    Expression::new(state.id(),
         ExpressionKind::New(NewExpression {
             target: Box::new(anonymous_class),
             new,

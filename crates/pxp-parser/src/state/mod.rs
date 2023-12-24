@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use pxp_ast::attributes::AttributeGroup;
+use pxp_ast::{attributes::AttributeGroup, NodeId};
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_diagnostics::{Diagnostic, DiagnosticKind, Severity};
 use pxp_lexer::stream::TokenStream;
@@ -27,6 +27,7 @@ pub struct State<'a, 'b> {
     pub attributes: Vec<AttributeGroup>,
     pub namespace_type: Option<NamespaceType>,
     pub diagnostics: Vec<Diagnostic>,
+    pub id: NodeId,
 }
 
 impl<'a, 'b> State<'a, 'b> {
@@ -38,7 +39,14 @@ impl<'a, 'b> State<'a, 'b> {
             namespace_type: None,
             attributes: vec![],
             diagnostics: vec![],
+            id: 0,
         }
+    }
+
+    #[inline(always)]
+    pub fn id(&mut self) -> usize {
+        self.id += 1;
+        self.id
     }
 
     pub fn attribute(&mut self, attr: AttributeGroup) {
