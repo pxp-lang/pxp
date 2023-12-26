@@ -96,12 +96,18 @@ impl Indexer {
     }
 
     fn index_file(&mut self, file: PathBuf) {
+        if !self.index.should_index_file(&file) {
+            return;
+        }
+
         let contents = read(&file).unwrap();
         let mut program = parse(&contents, &mut self.symbol_table);
 
         self.scope = Scope::default();
         self.scope.file = file.to_str().unwrap().to_string();
         self.visit(&mut program.ast);
+
+        self.index.add_file(file);
     }
 
     fn qualify(&mut self, symbol: Symbol, token: Token) -> Symbol {
