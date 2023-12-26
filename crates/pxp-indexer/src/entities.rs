@@ -1,13 +1,13 @@
 use std::fmt::{Debug, Formatter};
 
-use pxp_ast::{enums::BackedEnumType, modifiers::Visibility};
-use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
+use pxp_syntax::{visibility::Visibility, backed_enum_type::BackedEnumType};
 use pxp_type::Type;
+use serde::{Serialize, Deserialize};
 
 use crate::Location;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ConstantEntity {
     pub name: Symbol,
     pub short_name: Symbol,
@@ -15,7 +15,7 @@ pub struct ConstantEntity {
     pub location: Location,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct FunctionEntity {
     pub name: Symbol,
     pub short_name: Symbol,
@@ -24,7 +24,7 @@ pub struct FunctionEntity {
     pub location: Location,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ParameterEntity {
     pub name: Symbol,
     pub reference: bool,
@@ -34,7 +34,7 @@ pub struct ParameterEntity {
     pub location: Location,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ClassLikeEntity {
     pub name: Symbol,
     pub short_name: Symbol,
@@ -58,7 +58,7 @@ pub struct ClassLikeEntity {
     pub location: Location,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ClassishConstantEntity {
     pub name: Symbol,
     pub r#type: Type,
@@ -66,7 +66,7 @@ pub struct ClassishConstantEntity {
     pub r#final: bool,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PropertyEntity {
     pub name: Symbol,
     pub r#static: bool,
@@ -75,7 +75,7 @@ pub struct PropertyEntity {
     pub default: bool,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct MethodEntity {
     pub name: Symbol,
     pub visibility: Visibility,

@@ -1,12 +1,11 @@
 use std::{
     env::args,
-    io::{stdin, stdout, Write},
     path::PathBuf,
     process::exit,
     time::Instant,
 };
 
-use pxp_indexer::{Index, Indexer};
+use pxp_indexer::{Index, Indexer, write_index_to_cache, try_load_index_from_cache};
 use pxp_symbol::SymbolTable;
 use rustyline::{error::ReadlineError, DefaultEditor};
 
@@ -17,8 +16,14 @@ fn main() {
     println!("Indexing...");
     let start = Instant::now();
 
-    let mut indexer = Indexer::new();
-    let (index, symbol_table) = indexer.index(vec![directory]);
+    let mut indexer = if let Some(result) = try_load_index_from_cache(&directory) {
+        Indexer::of(result.0, result.1)
+    } else {
+        Indexer::new()
+    };
+
+    let (index, symbol_table) = indexer.index(&directory);
+    write_index_to_cache((&index, &symbol_table), &directory);
 
     let duration = start.elapsed();
 

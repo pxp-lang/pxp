@@ -1,10 +1,11 @@
 use std::collections::HashMap;
 
 use pxp_bytestring::ByteStr;
+use serde::{Serialize, Deserialize};
 
 pub type Symbol = usize;
 
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct SymbolTable {
     map: HashMap<Vec<u8>, Symbol>,
     vec: Vec<Vec<u8>>,

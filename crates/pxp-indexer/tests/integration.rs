@@ -14,11 +14,11 @@ macro_rules! assert_matches {
 #[test]
 fn it_indexes_correctly() {
     let mut indexer = Indexer::new();
-    let (index, mut symbol_table) = indexer.index(vec![PathBuf::from(format!(
+    let (index, mut symbol_table) = indexer.index(&PathBuf::from(format!(
         "{}/{}",
         env!("CARGO_MANIFEST_DIR"),
         "example-php"
-    ))]);
+    )));
 
     assert_eq!(index.get_number_of_functions(), 2);
     assert_eq!(index.get_number_of_class_likes(), 8);

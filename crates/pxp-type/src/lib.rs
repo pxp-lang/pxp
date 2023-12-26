@@ -2,8 +2,9 @@ use std::fmt::{Debug, Display};
 
 use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 
 pub enum Type {
     Named(Span, Symbol),

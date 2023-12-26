@@ -1,7 +1,7 @@
 use std::{
     collections::HashMap,
     fs::read,
-    path::{Path, PathBuf},
+    path::PathBuf,
 };
 
 use discoverer::discover;
@@ -15,16 +15,15 @@ use pxp_ast::{
     identifiers::{Identifier, SimpleIdentifier},
     interfaces::{InterfaceExtends, InterfaceStatement},
     literals::Literal,
-    modifiers::Visibility,
     namespaces::{BracedNamespace, UnbracedNamespace},
     properties::{Property, VariableProperty},
     traits::{TraitStatement, TraitUsage},
-    ExpressionKind, FunctionCallExpression, GroupUseStatement, Use, UseKind, UseStatement,
+    ExpressionKind, FunctionCallExpression, GroupUseStatement, UseKind, UseStatement,
 };
-use pxp_bytestring::ByteStr;
 use pxp_parser::parse;
 use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
+use pxp_syntax::visibility::Visibility;
 use pxp_token::{Token, TokenKind};
 use pxp_type::Type;
 use pxp_visitor::{
@@ -78,13 +77,10 @@ impl Indexer {
         }
     }
 
-    pub fn index(&mut self, directories: Vec<PathBuf>) -> (Index, SymbolTable) {
+    pub fn index(&mut self, directory: &PathBuf) -> (Index, SymbolTable) {
         let files = discover(
             &["php"],
-            &directories
-                .iter()
-                .map(|d| d.to_str().unwrap())
-                .collect::<Vec<&str>>(),
+            &[directory.to_str().unwrap().to_string().as_str()]
         )
         .unwrap();
 
@@ -96,12 +92,18 @@ impl Indexer {
     }
 
     fn index_file(&mut self, file: PathBuf) {
+        if !self.index.should_index_file(&file) {
+            return;
+        }
+
         let contents = read(&file).unwrap();
         let mut program = parse(&contents, &mut self.symbol_table);
 
         self.scope = Scope::default();
         self.scope.file = file.to_str().unwrap().to_string();
         self.visit(&mut program.ast);
+
+        self.index.add_file(file);
     }
 
     fn qualify(&mut self, symbol: Symbol, token: Token) -> Symbol {

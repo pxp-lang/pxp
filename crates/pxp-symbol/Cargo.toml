@@ -8,3 +8,4 @@ license-file.workspace = true
 
 [dependencies]
 pxp-bytestring = { path = "../pxp-bytestring" }
+serde = { version = "1.0.193", features = ["derive"] }

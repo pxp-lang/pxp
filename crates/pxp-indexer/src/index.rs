@@ -1,19 +1,21 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, path::PathBuf, time::SystemTime};
 
 use pxp_symbol::{Symbol, SymbolTable};
+use serde::{Serialize, Deserialize};
 
 use crate::{
     debuggable_entity, entities::FunctionEntity, ClassLikeEntity, ConstantEntity,
     DebuggableEntityWithSymbolTable,
 };
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Index {
     // Using Symbol as the key for entities is a good idea because it
     // allows us to do super fast lookups when we have a resolved identifier.
     constants: HashMap<Symbol, ConstantEntity>,
     functions: HashMap<Symbol, FunctionEntity>,
     class_likes: HashMap<Symbol, ClassLikeEntity>,
+    files: HashMap<PathBuf, SystemTime>,
 }
 
 impl Index {
@@ -385,5 +387,26 @@ impl Index {
 
     pub fn get_constant(&self, symbol: Symbol) -> Option<&ConstantEntity> {
         self.constants.get(&symbol)
+    }
+
+    pub fn add_file(&mut self, path: PathBuf) {
+        let modified_at = match std::fs::metadata(&path) {
+            Ok(metadata) => metadata.modified().unwrap(),
+            Err(_) => return,
+        };
+
+        self.files.insert(path, modified_at);
+    }
+
+    pub fn should_index_file(&self, path: &PathBuf) -> bool {
+        let modified_at = match std::fs::metadata(path) {
+            Ok(metadata) => metadata.modified().unwrap(),
+            Err(_) => return true,
+        };
+
+        match self.files.get(path) {
+            Some(last_modified_at) => last_modified_at < &modified_at,
+            None => true,
+        }
     }
 }

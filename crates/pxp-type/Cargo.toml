@@ -9,3 +9,4 @@ license-file.workspace = true
 [dependencies]
 pxp-symbol = { path = "../pxp-symbol" }
 pxp-span = { path = "../pxp-span" }
+serde = { version = "1.0.193", features = ["derive"] }
