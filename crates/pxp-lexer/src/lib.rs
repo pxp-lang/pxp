@@ -30,6 +30,14 @@ impl<'a, 'b> Lexer<'a, 'b> {
         }
     }
 
+    /// Tokenize the input in immediate mode, which means that the lexer will immediately
+    /// enter scripting state and start parsing PHP tokens.
+    pub fn tokenize_in_immediate_mode(&'b mut self) -> SyntaxResult<Vec<Token>> {
+        self.state.replace(StackFrame::Scripting);
+
+        self.tokenize()
+    }
+
     pub fn tokenize(&'b mut self) -> SyntaxResult<Vec<Token>> {
         let mut tokens = Vec::new();
 

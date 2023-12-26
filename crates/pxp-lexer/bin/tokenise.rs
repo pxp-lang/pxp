@@ -9,13 +9,14 @@ fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
 
     if args.is_empty() {
-        eprintln!("Usage: tokenise <path> [--debug]");
+        eprintln!("Usage: tokenise <path> --debug --immediate");
         exit(1);
     }
 
     let path = args.first().unwrap();
     let path = Path::new(path);
     let mut symbol_table = SymbolTable::new();
+    let immediate = args.contains(&"--immediate".to_string());
 
     if path.is_dir() {
         let mut errors = Vec::new();
@@ -29,7 +30,7 @@ fn main() {
             let contents = std::fs::read(file).unwrap();
             let mut lexer = Lexer::new(&contents[..], &mut symbol_table);
 
-            match lexer.tokenize() {
+            match if immediate { lexer.tokenize_in_immediate_mode() } else { lexer.tokenize() } {
                 Ok(_) => {
                     print!(".");
                 }
@@ -52,7 +53,7 @@ fn main() {
     } else {
         let contents = std::fs::read(path).unwrap();
         let mut lexer = Lexer::new(&contents[..], &mut symbol_table);
-        let tokens = lexer.tokenize().unwrap();
+        let tokens = if immediate { lexer.tokenize_in_immediate_mode() } else { lexer.tokenize() }.unwrap();
 
         if args.contains(&"--debug".to_string()) {
             dbg_tokens(&symbol_table, &tokens);
