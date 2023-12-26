@@ -1,6 +1,5 @@
 use std::{
     env::args,
-    io::{stdin, stdout, Write},
     path::PathBuf,
     process::exit,
     time::Instant,

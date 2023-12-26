@@ -1,6 +1,7 @@
 use pxp_span::Span;
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Location {
     pub file: String,
     pub span: Span,

@@ -1,7 +1,7 @@
 use std::{
     collections::HashMap,
     fs::read,
-    path::{Path, PathBuf},
+    path::PathBuf,
 };
 
 use discoverer::discover;
@@ -15,16 +15,15 @@ use pxp_ast::{
     identifiers::{Identifier, SimpleIdentifier},
     interfaces::{InterfaceExtends, InterfaceStatement},
     literals::Literal,
-    modifiers::Visibility,
     namespaces::{BracedNamespace, UnbracedNamespace},
     properties::{Property, VariableProperty},
     traits::{TraitStatement, TraitUsage},
-    ExpressionKind, FunctionCallExpression, GroupUseStatement, Use, UseKind, UseStatement,
+    ExpressionKind, FunctionCallExpression, GroupUseStatement, UseKind, UseStatement,
 };
-use pxp_bytestring::ByteStr;
 use pxp_parser::parse;
 use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
+use pxp_syntax::visibility::Visibility;
 use pxp_token::{Token, TokenKind};
 use pxp_type::Type;
 use pxp_visitor::{

@@ -1,13 +1,14 @@
 use std::{collections::HashMap, path::PathBuf, time::SystemTime};
 
 use pxp_symbol::{Symbol, SymbolTable};
+use serde::{Serialize, Deserialize};
 
 use crate::{
     debuggable_entity, entities::FunctionEntity, ClassLikeEntity, ConstantEntity,
     DebuggableEntityWithSymbolTable,
 };
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Index {
     // Using Symbol as the key for entities is a good idea because it
     // allows us to do super fast lookups when we have a resolved identifier.

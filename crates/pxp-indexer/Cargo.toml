@@ -17,6 +17,8 @@ pxp-span = { path = "../pxp-span" }
 pxp-bytestring = { path = "../pxp-bytestring" }
 discoverer = "0.2.0"
 rustyline = "13.0.0"
+serde = { version = "1.0.193", features = ["derive"] }
+pxp-syntax = { path = "../pxp-syntax" }
 
 [[bin]]
 name = "index"
