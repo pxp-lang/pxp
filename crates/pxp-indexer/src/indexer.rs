@@ -77,13 +77,10 @@ impl Indexer {
         }
     }
 
-    pub fn index(&mut self, directories: Vec<PathBuf>) -> (Index, SymbolTable) {
+    pub fn index(&mut self, directory: &PathBuf) -> (Index, SymbolTable) {
         let files = discover(
             &["php"],
-            &directories
-                .iter()
-                .map(|d| d.to_str().unwrap())
-                .collect::<Vec<&str>>(),
+            &[directory.to_str().unwrap().to_string().as_str()]
         )
         .unwrap();
 
