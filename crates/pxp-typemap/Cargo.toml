@@ -9,6 +9,12 @@ license-file.workspace = true
 [dependencies]
 pxp-ast = { version = "0.1.0", path = "../pxp-ast" }
 pxp-bytestring = { version = "0.1.0", path = "../pxp-bytestring" }
+pxp-parser = { version = "0.1.0", path = "../pxp-parser" }
+pxp-symbol = { version = "0.1.0", path = "../pxp-symbol" }
 pxp-syntax = { version = "0.1.0", path = "../pxp-syntax" }
 pxp-type = { version = "0.1.0", path = "../pxp-type" }
 pxp-visitor = { version = "0.1.0", path = "../pxp-visitor" }
+
+[[bin]]
+name = "analyse"
+path = "bin/analyse.rs"
