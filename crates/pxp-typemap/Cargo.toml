@@ -7,3 +7,8 @@ license-file.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+pxp-ast = { version = "0.1.0", path = "../pxp-ast" }
+pxp-bytestring = { version = "0.1.0", path = "../pxp-bytestring" }
+pxp-syntax = { version = "0.1.0", path = "../pxp-syntax" }
+pxp-type = { version = "0.1.0", path = "../pxp-type" }
+pxp-visitor = { version = "0.1.0", path = "../pxp-visitor" }
