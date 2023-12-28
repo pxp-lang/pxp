@@ -35,7 +35,7 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
                         state.diagnostic(
                             DiagnosticKind::ForbiddenTypeUsedInProperty,
                             Severity::Error,
-                            ty.first_span(),
+                            ty.get_span(),
                         );
                     }
                 }
@@ -109,7 +109,7 @@ pub fn parse_var(state: &mut State) -> VariableProperty {
                     state.diagnostic(
                         DiagnosticKind::ForbiddenTypeUsedInProperty,
                         Severity::Error,
-                        ty.first_span(),
+                        ty.get_span(),
                     );
                 }
             }

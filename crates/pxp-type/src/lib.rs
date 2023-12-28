@@ -1,40 +1,39 @@
 use std::fmt::{Debug, Display};
 
-use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Hash)]
 
 pub enum Type {
-    Named(Span, Symbol),
-    Nullable(Span, Box<Type>),
+    Named(Symbol),
+    Nullable(Box<Type>),
     Union(Vec<Type>),
     Intersection(Vec<Type>),
-    Void(Span),
-    Null(Span),
-    True(Span),
-    False(Span),
-    Never(Span),
-    Float(Span),
-    Boolean(Span),
-    Integer(Span),
-    String(Span),
-    Array(Span),
-    GenericArray(Span, Box<Type>, Box<Type>),
-    Object(Span),
-    Mixed(Span),
-    Callable(Span),
-    Iterable(Span),
-    StaticReference(Span),
-    SelfReference(Span),
-    ParentReference(Span),
-    Missing(Span),
+    Void,
+    Null,
+    True,
+    False,
+    Never,
+    Float,
+    Boolean,
+    Integer,
+    String,
+    Array,
+    GenericArray(Box<Type>, Box<Type>),
+    Object,
+    Mixed,
+    Callable,
+    Iterable,
+    StaticReference,
+    SelfReference,
+    ParentReference,
+    Missing,
 }
 
 impl Default for Type {
     fn default() -> Self {
-        Self::Missing(Span::default())
+        Self::Missing
     }
 }
 
@@ -42,17 +41,17 @@ impl Type {
     pub fn standalone(&self) -> bool {
         matches!(
             self,
-            Type::Mixed(_) | Type::Never(_) | Type::Void(_) | Type::Nullable(_, _)
+            Type::Mixed | Type::Never | Type::Void | Type::Nullable(_)
         )
     }
 
     pub fn nullable(&self) -> bool {
-        matches!(self, Type::Nullable(_, _))
+        matches!(self, Type::Nullable(_))
     }
 
     pub fn includes_callable(&self) -> bool {
         match &self {
-            Self::Callable(_) => true,
+            Self::Callable => true,
             Self::Union(types) | Self::Intersection(types) => {
                 types.iter().any(|x| x.includes_callable())
             }
@@ -61,35 +60,7 @@ impl Type {
     }
 
     pub fn is_bottom(&self) -> bool {
-        matches!(self, Type::Never(_) | Type::Void(_))
-    }
-
-    pub fn first_span(&self) -> Span {
-        match &self {
-            Type::Named(span, _) => *span,
-            Type::Nullable(span, _) => *span,
-            Type::Union(inner) => inner[0].first_span(),
-            Type::Intersection(inner) => inner[0].first_span(),
-            Type::Void(span) => *span,
-            Type::Null(span) => *span,
-            Type::True(span) => *span,
-            Type::False(span) => *span,
-            Type::Never(span) => *span,
-            Type::Float(span) => *span,
-            Type::Boolean(span) => *span,
-            Type::Integer(span) => *span,
-            Type::String(span) => *span,
-            Type::Array(span) => *span,
-            Type::Object(span) => *span,
-            Type::Mixed(span) => *span,
-            Type::Callable(span) => *span,
-            Type::Iterable(span) => *span,
-            Type::StaticReference(span) => *span,
-            Type::SelfReference(span) => *span,
-            Type::ParentReference(span) => *span,
-            Type::Missing(span) => *span,
-            Type::GenericArray(span, _, _) => *span,
-        }
+        matches!(self, Type::Never | Type::Void)
     }
 
     pub fn with_symbol_table<'a>(&self, symbol_table: &'a SymbolTable) -> TypeWithSymbolTable<'a> {
@@ -103,8 +74,8 @@ impl Type {
 impl Display for Type {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
-            Type::Named(_, inner) => write!(f, "{}", inner),
-            Type::Nullable(_, inner) => write!(f, "?{}", inner),
+            Type::Named(inner) => write!(f, "{}", inner),
+            Type::Nullable(inner) => write!(f, "?{}", inner),
             Type::Union(inner) => write!(
                 f,
                 "{}",
@@ -123,25 +94,25 @@ impl Display for Type {
                     .collect::<Vec<String>>()
                     .join("&")
             ),
-            Type::Void(_) => write!(f, "void"),
-            Type::Null(_) => write!(f, "null"),
-            Type::True(_) => write!(f, "true"),
-            Type::False(_) => write!(f, "false"),
-            Type::Never(_) => write!(f, "never"),
-            Type::Float(_) => write!(f, "float"),
-            Type::Boolean(_) => write!(f, "bool"),
-            Type::Integer(_) => write!(f, "int"),
-            Type::String(_) => write!(f, "string"),
-            Type::Array(_) => write!(f, "array"),
-            Type::GenericArray(_, key, value) => write!(f, "array<{}, {}>", key, value),
-            Type::Object(_) => write!(f, "object"),
-            Type::Mixed(_) => write!(f, "mixed"),
-            Type::Callable(_) => write!(f, "callable"),
-            Type::Iterable(_) => write!(f, "iterable"),
-            Type::StaticReference(_) => write!(f, "static"),
-            Type::SelfReference(_) => write!(f, "self"),
-            Type::ParentReference(_) => write!(f, "parent"),
-            Type::Missing(_) => write!(f, "<missing>"),
+            Type::Void => write!(f, "void"),
+            Type::Null => write!(f, "null"),
+            Type::True => write!(f, "true"),
+            Type::False => write!(f, "false"),
+            Type::Never => write!(f, "never"),
+            Type::Float => write!(f, "float"),
+            Type::Boolean => write!(f, "bool"),
+            Type::Integer => write!(f, "int"),
+            Type::String => write!(f, "string"),
+            Type::Array => write!(f, "array"),
+            Type::GenericArray(key, value) => write!(f, "array<{}, {}>", key, value),
+            Type::Object => write!(f, "object"),
+            Type::Mixed => write!(f, "mixed"),
+            Type::Callable => write!(f, "callable"),
+            Type::Iterable => write!(f, "iterable"),
+            Type::StaticReference => write!(f, "static"),
+            Type::SelfReference => write!(f, "self"),
+            Type::ParentReference => write!(f, "parent"),
+            Type::Missing => write!(f, "<missing>"),
         }
     }
 }
@@ -154,8 +125,8 @@ pub struct TypeWithSymbolTable<'a> {
 impl<'a> Debug for TypeWithSymbolTable<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self.r#type {
-            Type::Named(_, name) => write!(f, "{}", self.symbol_table.resolve(*name).unwrap()),
-            Type::Nullable(_, inner) => {
+            Type::Named(name) => write!(f, "{}", self.symbol_table.resolve(*name).unwrap()),
+            Type::Nullable(inner) => {
                 write!(f, "?{:?}", inner.with_symbol_table(&self.symbol_table))
             }
             Type::Union(inner) => write!(

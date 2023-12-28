@@ -52,7 +52,7 @@ use pxp_ast::{
     StatementKind, StaticMethodCallExpression, StaticMethodClosureCreationExpression,
     StaticPropertyFetchExpression, StaticStatement, StaticVar, StaticVariableMethodCallExpression,
     StaticVariableMethodClosureCreationExpression, StringPart, SwitchStatement, TernaryExpression,
-    ThrowExpression, UnsetExpression, Use, UseStatement, YieldExpression, YieldFromExpression,
+    ThrowExpression, UnsetExpression, Use, UseStatement, YieldExpression, YieldFromExpression, data_type::DataType,
 };
 use pxp_type::Type;
 
@@ -422,7 +422,7 @@ walk! {
         // FIXME: Walk attributes here.
 
         if let Some(ty) = &mut node.data_type {
-            visitor.visit_type(ty);
+            visitor.visit_data_type(ty);
         }
 
         if let Some(default) = &mut node.default {
@@ -556,7 +556,7 @@ walk! {
         // FIXME: Walk modifiers here.
 
         if let Some(ty) = &mut node.r#type {
-            visitor.visit_type(ty);
+            visitor.visit_data_type(ty);
         }
 
         for entry in node.entries.iter_mut() {
@@ -1592,12 +1592,16 @@ walk! {
     }
 
     walk_return_type: ReturnType => {
-        visitor.visit_type(&mut node.data_type);
+        visitor.visit_data_type(&mut node.data_type);
+    }
+
+    walk_data_type: DataType => {
+        visitor.visit_type(&mut node.kind);
     }
 
     walk_type: Type => {
         match node {
-            Type::Nullable(_, ty) => {
+            Type::Nullable(ty) => {
                 visitor.visit_type(ty);
             },
             Type::Union(tys) |

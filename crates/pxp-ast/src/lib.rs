@@ -60,6 +60,7 @@ pub mod traits;
 pub mod try_block;
 pub mod utils;
 pub mod variables;
+pub mod data_type;
 
 pub type Block = Vec<Statement>;
 pub type NodeId = usize;

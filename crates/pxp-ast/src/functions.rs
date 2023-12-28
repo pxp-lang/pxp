@@ -1,6 +1,7 @@
 use std::slice::Iter;
 
 use crate::attributes::AttributeGroup;
+use crate::data_type::DataType;
 use crate::identifiers::SimpleIdentifier;
 use crate::modifiers::MethodModifierGroup;
 use crate::modifiers::PromotedPropertyModifierGroup;
@@ -18,7 +19,7 @@ use pxp_type::Type;
 
 pub struct ReturnType {
     pub colon: Span,
-    pub data_type: Type,
+    pub data_type: DataType,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -27,7 +28,7 @@ pub struct FunctionParameter {
     pub comments: CommentGroup,
     pub name: SimpleVariable,
     pub attributes: Vec<AttributeGroup>,
-    pub data_type: Option<Type>,
+    pub data_type: Option<DataType>,
     pub ellipsis: Option<Span>,
     pub default: Option<Expression>,
     pub ampersand: Option<Span>,
@@ -132,7 +133,7 @@ pub struct ConstructorParameter {
     pub comments: CommentGroup,
     pub ampersand: Option<Span>,
     pub name: SimpleVariable,
-    pub data_type: Option<Type>,
+    pub data_type: Option<DataType>,
     pub ellipsis: Option<Span>,
     pub default: Option<Expression>,
 

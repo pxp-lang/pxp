@@ -126,7 +126,7 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
                             state.diagnostic(
                                 DiagnosticKind::ForbiddenTypeUsedInProperty,
                                 Severity::Error,
-                                ty.first_span(),
+                                ty.get_span(),
                             );
                         }
                     }

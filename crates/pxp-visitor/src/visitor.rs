@@ -56,7 +56,7 @@ use pxp_ast::{
     StaticMethodCallExpression, StaticMethodClosureCreationExpression,
     StaticPropertyFetchExpression, StaticStatement, StaticVar, StaticVariableMethodCallExpression,
     StaticVariableMethodClosureCreationExpression, StringPart, SwitchStatement, TernaryExpression,
-    ThrowExpression, UnsetExpression, Use, UseStatement, YieldExpression, YieldFromExpression,
+    ThrowExpression, UnsetExpression, Use, UseStatement, YieldExpression, YieldFromExpression, data_type::DataType,
 };
 use pxp_span::Span;
 use pxp_syntax::comments::Comment;
@@ -695,6 +695,10 @@ pub trait Visitor {
 
     fn visit_return_type(&mut self, node: &mut ReturnType) {
         walk_return_type(self, node);
+    }
+
+    fn visit_data_type(&mut self, node: &mut DataType) {
+        walk_data_type(self, node);
     }
 
     fn visit_type(&mut self, node: &mut Type) {

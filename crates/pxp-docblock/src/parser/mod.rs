@@ -235,7 +235,7 @@ impl Parser {
 
         let span = Span::new(start_span.start, end_span.end);
 
-        Ok(Type::Nullable(span, Box::new(ty)))
+        Ok(Type::Nullable(Box::new(ty)))
     }
 
     fn parse_simple_type(&self, state: &mut State) -> ParseResult<Type> {
@@ -245,24 +245,24 @@ impl Parser {
         let span = current.span;
 
         Ok(match &symbol[..] {
-            b"int" => Type::Integer(span),
-            b"float" => Type::Float(span),
-            b"string" => Type::String(span),
-            b"void" => Type::Void(span),
-            b"null" => Type::Null(span),
-            b"true" => Type::True(span),
-            b"false" => Type::False(span),
-            b"never" => Type::Never(span),
-            b"bool" => Type::Boolean(span),
-            b"array" => Type::Array(span),
-            b"object" => Type::Object(span),
-            b"mixed" => Type::Mixed(span),
-            b"callable" => Type::Callable(span),
-            b"iterable" => Type::Iterable(span),
-            b"static" => Type::StaticReference(span),
-            b"self" => Type::SelfReference(span),
-            b"parent" => Type::ParentReference(span),
-            _ => Type::Named(span, current.symbol),
+            b"int" => Type::Integer,
+            b"float" => Type::Float,
+            b"string" => Type::String,
+            b"void" => Type::Void,
+            b"null" => Type::Null,
+            b"true" => Type::True,
+            b"false" => Type::False,
+            b"never" => Type::Never,
+            b"bool" => Type::Boolean,
+            b"array" => Type::Array,
+            b"object" => Type::Object,
+            b"mixed" => Type::Mixed,
+            b"callable" => Type::Callable,
+            b"iterable" => Type::Iterable,
+            b"static" => Type::StaticReference,
+            b"self" => Type::SelfReference,
+            b"parent" => Type::ParentReference,
+            _ => Type::Named(current.symbol),
         })
     }
 

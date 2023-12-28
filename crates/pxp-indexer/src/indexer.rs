@@ -248,7 +248,7 @@ impl Visitor for Indexer {
             let mut constant = ConstantEntity::default();
             constant.name = entry.name.token.symbol.unwrap();
             // FIXME: Add some simple type inference here.
-            constant.r#type = Type::Mixed(Span::default());
+            constant.r#type = Type::Mixed;
             constant.location = Location::new(
                 self.scope.file().to_string(),
                 Span::new(entry.name.token.span.start, entry.value.span.end),
@@ -291,7 +291,7 @@ impl Visitor for Indexer {
 
                 constant.name = name_symbol;
                 constant.short_name = name_symbol;
-                constant.r#type = Type::Mixed(Span::default());
+                constant.r#type = Type::Mixed;
                 constant.location = Location::new(
                     self.scope.file().to_string(),
                     Span::new(node.target.span.start, node.arguments.right_parenthesis.end),
@@ -320,9 +320,9 @@ impl Visitor for Indexer {
             p.variadic = parameter.ellipsis.is_some();
             p.optional = parameter.default.is_some();
             p.r#type = if let Some(r#type) = &parameter.data_type {
-                r#type.clone()
+                r#type.kind.clone()
             } else {
-                Type::Mixed(Span::default())
+                Type::Mixed
             };
 
             parameters.push(p);
@@ -330,9 +330,9 @@ impl Visitor for Indexer {
 
         function.parameters = parameters;
         function.return_type = if let Some(return_type) = &node.return_type {
-            return_type.data_type.clone()
+            return_type.data_type.kind.clone()
         } else {
-            Type::Mixed(Span::default())
+            Type::Mixed
         };
 
         function.location = Location::new(
@@ -514,7 +514,7 @@ impl Visitor for Indexer {
     fn visit_property(&mut self, node: &mut Property) {
         let visibility = node.modifiers.visibility();
         let r#static = node.modifiers.has_static();
-        let r#type = node.r#type.clone().unwrap_or_default();
+        let r#type = node.r#type.clone().unwrap_or_default().kind;
 
         for property in node.entries.iter() {
             let mut entity = PropertyEntity::default();
@@ -546,9 +546,9 @@ impl Visitor for Indexer {
             p.variadic = parameter.ellipsis.is_some();
             p.optional = parameter.default.is_some();
             p.r#type = if let Some(r#type) = &parameter.data_type {
-                r#type.clone()
+                r#type.kind.clone()
             } else {
-                Type::Mixed(Span::default())
+                Type::Mixed
             };
 
             parameters.push(p);
@@ -557,9 +557,9 @@ impl Visitor for Indexer {
         entity.parameters = parameters;
 
         entity.return_type = if let Some(return_type) = &node.return_type {
-            return_type.data_type.clone()
+            return_type.data_type.kind.clone()
         } else {
-            Type::Mixed(Span::default())
+            Type::Mixed
         };
 
         self.scope.current_class_like.methods.push(entity);
@@ -584,9 +584,9 @@ impl Visitor for Indexer {
             p.variadic = parameter.ellipsis.is_some();
             p.optional = parameter.default.is_some();
             p.r#type = if let Some(r#type) = &parameter.data_type {
-                r#type.clone()
+                r#type.kind.clone()
             } else {
-                Type::Mixed(Span::default())
+                Type::Mixed
             };
 
             parameters.push(p);
@@ -595,9 +595,9 @@ impl Visitor for Indexer {
         entity.parameters = parameters;
 
         entity.return_type = if let Some(return_type) = &node.return_type {
-            return_type.data_type.clone()
+            return_type.data_type.kind.clone()
         } else {
-            Type::Mixed(Span::default())
+            Type::Mixed
         };
 
         self.scope.current_class_like.methods.push(entity);
@@ -622,9 +622,9 @@ impl Visitor for Indexer {
             p.variadic = parameter.ellipsis.is_some();
             p.optional = parameter.default.is_some();
             p.r#type = if let Some(r#type) = &parameter.data_type {
-                r#type.clone()
+                r#type.kind.clone()
             } else {
-                Type::Mixed(Span::default())
+                Type::Mixed
             };
 
             // Indicates that this is a promoted property.
@@ -643,7 +643,7 @@ impl Visitor for Indexer {
         }
 
         entity.parameters = parameters;
-        entity.return_type = Type::Void(Span::default());
+        entity.return_type = Type::Void;
 
         self.scope.current_class_like.methods.push(entity);
 
@@ -668,9 +668,9 @@ impl Visitor for Indexer {
             p.variadic = parameter.ellipsis.is_some();
             p.optional = parameter.default.is_some();
             p.r#type = if let Some(r#type) = &parameter.data_type {
-                r#type.clone()
+                r#type.kind.clone()
             } else {
-                Type::Mixed(Span::default())
+                Type::Mixed
             };
 
             // Indicates that this is a promoted property.
@@ -689,7 +689,7 @@ impl Visitor for Indexer {
         }
 
         entity.parameters = parameters;
-        entity.return_type = Type::Void(Span::default());
+        entity.return_type = Type::Void;
 
         self.scope.current_class_like.methods.push(entity);
 
@@ -706,7 +706,7 @@ impl Visitor for Indexer {
             entity.name = property.variable().token.symbol.unwrap();
             entity.visibility = visibility;
             entity.r#static = r#static;
-            entity.r#type = r#type.clone();
+            entity.r#type = r#type.kind.clone();
             entity.default = property.is_initialized();
 
             self.scope.current_class_like.properties.push(entity);

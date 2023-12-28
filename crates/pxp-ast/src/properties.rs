@@ -1,4 +1,5 @@
 use crate::attributes::AttributeGroup;
+use crate::data_type::DataType;
 use crate::modifiers::PropertyModifierGroup;
 
 use crate::variables::SimpleVariable;
@@ -12,7 +13,7 @@ pub struct Property {
     pub attributes: Vec<AttributeGroup>,
 
     pub modifiers: PropertyModifierGroup,
-    pub r#type: Option<Type>,
+    pub r#type: Option<DataType>,
     pub entries: Vec<PropertyEntry>,
     pub end: Span,
 }
@@ -21,7 +22,7 @@ pub struct Property {
 
 pub struct VariableProperty {
     pub attributes: Vec<AttributeGroup>,
-    pub r#type: Option<Type>,
+    pub r#type: Option<DataType>,
     pub entries: Vec<PropertyEntry>,
     pub end: Span,
 }

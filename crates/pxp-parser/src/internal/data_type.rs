@@ -1,69 +1,72 @@
 use crate::internal::utils;
 use crate::peek_token;
 use crate::state::State;
+use pxp_ast::data_type::DataType;
 use pxp_diagnostics::{DiagnosticKind, Severity};
+use pxp_span::Span;
 use pxp_token::TokenKind;
 use pxp_type::Type;
 
-pub fn data_type(state: &mut State) -> Type {
-    if state.stream.current().kind == TokenKind::Question {
-        return nullable(state);
-    }
+pub fn data_type(state: &mut State) -> DataType {
+    let start = state.stream.current().span;
 
-    // (A|B|..)&C.. or (A&B&..)|C..
-    if state.stream.current().kind == TokenKind::LeftParen {
-        return dnf(state);
-    }
+    let kind = if state.stream.current().kind == TokenKind::Question {
+        nullable(state)
+    } else if state.stream.current().kind == TokenKind::LeftParen {
+        dnf(state)
+    } else {
+        let ty = simple_data_type(state);
 
-    let ty = simple_data_type(state);
-
-    if state.stream.current().kind == TokenKind::Pipe {
-        return union(state, ty, false);
-    }
-
-    if state.stream.current().kind == TokenKind::Ampersand
-        && !matches!(
-            state.stream.peek().kind,
-            TokenKind::Variable | TokenKind::Ellipsis | TokenKind::Ampersand
-        )
-    {
-        return intersection(state, ty, false);
-    }
-
-    ty
+        if state.stream.current().kind == TokenKind::Pipe {
+            union(state, ty, false)
+        } else if state.stream.current().kind == TokenKind::Ampersand
+            && !matches!(
+                state.stream.peek().kind,
+                TokenKind::Variable | TokenKind::Ellipsis | TokenKind::Ampersand
+            )
+        {
+            intersection(state, ty, false)
+        } else {
+            ty
+        }
+    };
+    
+    let end = state.stream.previous().span;
+    
+    DataType::new(kind, Span::new(start.start, end.end))
 }
 
-pub fn optional_data_type(state: &mut State) -> Option<Type> {
-    if state.stream.current().kind == TokenKind::Question {
-        return Some(nullable(state));
-    }
+pub fn optional_data_type(state: &mut State) -> Option<DataType> {
+    let start = state.stream.current().span;
+    let kind = if state.stream.current().kind == TokenKind::Question {
+        nullable(state)
+    } else if state.stream.current().kind == TokenKind::LeftParen {
+        dnf(state)
+    } else {
+        let ty = optional_simple_data_type(state);
 
-    // (A|B|..)&C.. or (A&B&..)|C..
-    if state.stream.current().kind == TokenKind::LeftParen {
-        return Some(dnf(state));
-    }
-
-    let ty = optional_simple_data_type(state);
-
-    match ty {
-        Some(ty) => {
-            if state.stream.current().kind == TokenKind::Pipe {
-                return Some(union(state, ty, false));
+        match ty {
+            Some(ty) => {
+                if state.stream.current().kind == TokenKind::Pipe {
+                    union(state, ty, false)
+                } else if state.stream.current().kind == TokenKind::Ampersand
+                    && !matches!(
+                        state.stream.peek().kind,
+                        TokenKind::Variable | TokenKind::Ellipsis | TokenKind::Ampersand
+                    )
+                {
+                    intersection(state, ty, false)
+                } else {
+                    ty
+                }
             }
-
-            if state.stream.current().kind == TokenKind::Ampersand
-                && !matches!(
-                    state.stream.peek().kind,
-                    TokenKind::Variable | TokenKind::Ellipsis | TokenKind::Ampersand
-                )
-            {
-                return Some(intersection(state, ty, false));
-            }
-
-            Some(ty)
+            None => return None,
         }
-        None => None,
-    }
+    };
+
+    let end = state.stream.previous().span;
+
+    Some(DataType::new(kind, Span::new(start.start, end.end)))
 }
 
 fn dnf(state: &mut State) -> Type {
@@ -93,96 +96,86 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type> {
 
     match &current.kind {
         TokenKind::Array => {
-            let span = current.span;
             state.stream.next();
 
-            Some(Type::Array(span))
+            Some(Type::Array)
         }
         TokenKind::Callable => {
-            let span = current.span;
             state.stream.next();
 
-            Some(Type::Callable(span))
+            Some(Type::Callable)
         }
         TokenKind::Null => {
-            let span = current.span;
             state.stream.next();
 
-            Some(Type::Null(span))
+            Some(Type::Null)
         }
         TokenKind::True => {
-            let span = current.span;
             state.stream.next();
 
-            Some(Type::True(span))
+            Some(Type::True)
         }
         TokenKind::False => {
-            let span = current.span;
             state.stream.next();
 
-            Some(Type::False(span))
+            Some(Type::False)
         }
         TokenKind::Static => {
-            let span = current.span;
             state.stream.next();
 
-            Some(Type::StaticReference(span))
+            Some(Type::StaticReference)
         }
         TokenKind::Self_ => {
-            let span = current.span;
             state.stream.next();
 
-            Some(Type::SelfReference(span))
+            Some(Type::SelfReference)
         }
         TokenKind::Parent => {
-            let span = current.span;
             state.stream.next();
 
-            Some(Type::ParentReference(span))
+            Some(Type::ParentReference)
         }
         TokenKind::Enum | TokenKind::From => {
-            let span = current.span;
-
             state.stream.next();
 
-            Some(Type::Named(span, current.symbol.unwrap()))
+            Some(Type::Named(current.symbol.unwrap()))
         }
         TokenKind::Identifier => {
             let id = state.symbol_table.resolve(current.symbol.unwrap()).unwrap();
-            let span = current.span;
             state.stream.next();
 
             let name = &id[..];
             let lowered_name = name.to_ascii_lowercase();
             match lowered_name.as_slice() {
-                b"void" => Some(Type::Void(span)),
-                b"never" => Some(Type::Never(span)),
-                b"float" => Some(Type::Float(span)),
-                b"bool" => Some(Type::Boolean(span)),
-                b"int" => Some(Type::Integer(span)),
-                b"string" => Some(Type::String(span)),
-                b"object" => Some(Type::Object(span)),
-                b"mixed" => Some(Type::Mixed(span)),
-                b"iterable" => Some(Type::Iterable(span)),
-                b"null" => Some(Type::Null(span)),
-                b"true" => Some(Type::True(span)),
-                b"false" => Some(Type::False(span)),
-                b"array" => Some(Type::Array(span)),
-                b"callable" => Some(Type::Callable(span)),
-                _ => Some(Type::Named(span, current.symbol.unwrap())),
+                b"void" => Some(Type::Void),
+                b"never" => Some(Type::Never),
+                b"float" => Some(Type::Float),
+                b"bool" => Some(Type::Boolean),
+                b"int" => Some(Type::Integer),
+                b"string" => Some(Type::String),
+                b"object" => Some(Type::Object),
+                b"mixed" => Some(Type::Mixed),
+                b"iterable" => Some(Type::Iterable),
+                b"null" => Some(Type::Null),
+                b"true" => Some(Type::True),
+                b"false" => Some(Type::False),
+                b"array" => Some(Type::Array),
+                b"callable" => Some(Type::Callable),
+                _ => Some(Type::Named(current.symbol.unwrap())),
             }
         }
         TokenKind::QualifiedIdentifier | TokenKind::FullyQualifiedIdentifier => {
-            let span = current.span;
             state.stream.next();
 
-            Some(Type::Named(span, current.symbol.unwrap()))
+            Some(Type::Named(current.symbol.unwrap()))
         }
         _ => None,
     }
 }
 
 fn simple_data_type(state: &mut State) -> Type {
+    let start = state.stream.current().span;
+    
     match optional_simple_data_type(state) {
         Some(ty) => ty,
         None => {
@@ -192,7 +185,7 @@ fn simple_data_type(state: &mut State) -> Type {
                 state.stream.current().span,
             );
 
-            Type::Missing(state.stream.current().span)
+            Type::Missing
         }
     }
 }
@@ -212,7 +205,7 @@ fn nullable(state: &mut State) -> Type {
         );
     }
 
-    Type::Nullable(current.span, Box::new(ty))
+    Type::Nullable(Box::new(ty))
 }
 
 fn union(state: &mut State, other: Type, within_dnf: bool) -> Type {
