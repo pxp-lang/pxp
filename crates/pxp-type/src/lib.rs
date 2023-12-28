@@ -4,7 +4,7 @@ use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
 use serde::{Serialize, Deserialize};
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Hash)]
 
 pub enum Type {
     Named(Span, Symbol),
@@ -21,6 +21,7 @@ pub enum Type {
     Integer(Span),
     String(Span),
     Array(Span),
+    GenericArray(Span, Box<Type>, Box<Type>),
     Object(Span),
     Mixed(Span),
     Callable(Span),
@@ -59,16 +60,6 @@ impl Type {
         }
     }
 
-    pub fn includes_class_scoped(&self) -> bool {
-        match &self {
-            Self::StaticReference(_) | Self::SelfReference(_) | Self::ParentReference(_) => true,
-            Self::Union(types) | Self::Intersection(types) => {
-                types.iter().any(|x| x.includes_class_scoped())
-            }
-            _ => false,
-        }
-    }
-
     pub fn is_bottom(&self) -> bool {
         matches!(self, Type::Never(_) | Type::Void(_))
     }
@@ -97,6 +88,7 @@ impl Type {
             Type::SelfReference(span) => *span,
             Type::ParentReference(span) => *span,
             Type::Missing(span) => *span,
+            Type::GenericArray(span, _, _) => *span,
         }
     }
 
@@ -141,6 +133,7 @@ impl Display for Type {
             Type::Integer(_) => write!(f, "int"),
             Type::String(_) => write!(f, "string"),
             Type::Array(_) => write!(f, "array"),
+            Type::GenericArray(_, key, value) => write!(f, "array<{}, {}>", key, value),
             Type::Object(_) => write!(f, "object"),
             Type::Mixed(_) => write!(f, "mixed"),
             Type::Callable(_) => write!(f, "callable"),

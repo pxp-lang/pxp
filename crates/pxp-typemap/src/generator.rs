@@ -1,4 +1,7 @@
+use std::collections::HashSet;
+
 use pxp_ast::{Expression, ExpressionKind, literals::LiteralKind, NodeId, Statement};
+use pxp_span::Span;
 use pxp_type::Type;
 use pxp_visitor::{Visitor, walk_expression};
 
@@ -9,6 +12,7 @@ pub struct TypeMapGenerator {
     type_map: TypeMap,
     // Vec<(FromNodeId, ToNodeId)>
     deferred: Vec<(NodeId, NodeId)>,
+    array_refinements: Vec<(NodeId, Vec<NodeId>)>,
 }
 
 impl TypeMapGenerator {
@@ -18,7 +22,32 @@ impl TypeMapGenerator {
 
     pub fn generate(&mut self, ast: &mut [Statement]) -> TypeMap {
         self.visit(ast);
+        self.process_array_refinements();
+
         self.type_map()
+    }
+
+    fn process_array_refinements(&mut self) {
+        for (target_id, child_ids) in self.array_refinements.iter() {
+            let mut union = vec![];
+
+            for child_id in child_ids.iter() {
+                if let Some(child_type) = self.type_map.get_expr_type(*child_id) {
+                    union.push(child_type.clone());
+                }
+            }
+
+            if union.is_empty() {
+                continue;
+            }
+
+            self.type_map.insert_expr_type(*target_id, Type::GenericArray(Span::default(), Box::new(Type::Integer(Span::default())), Box::new(Type::Union(self.simplify_union(&union)))));
+        }
+    }
+
+    fn simplify_union(&self, union: &Vec<Type>) -> Vec<Type> {
+        let set: HashSet<Type> = union.into_iter().cloned().collect();
+        set.into_iter().collect()
     }
 
     pub fn type_map(&self) -> TypeMap {
@@ -125,7 +154,19 @@ impl Visitor for TypeMapGenerator {
             ExpressionKind::Self_ => Type::Object(node.span),
             // FIXME: We can get this information by looking at the current scope.
             ExpressionKind::Parent => Type::Object(node.span),
-            ExpressionKind::ShortArray(_) => Type::Array(node.span),
+            ExpressionKind::ShortArray(inner) => {
+                let mut refinements = Vec::new();
+
+                for item in inner.items.iter() {
+                    if let Some(expr) = item.value() {
+                        refinements.push(expr.id);
+                    }
+                }
+
+                self.array_refinements.push((node.id, refinements));
+
+                Type::Array(node.span)
+            },
             ExpressionKind::Array(_) => Type::Array(node.span),
             ExpressionKind::List(_) => Type::Array(node.span),
             // FIXME: This should really be a named Closure type, with the correct arguments.

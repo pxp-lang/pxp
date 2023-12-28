@@ -12,3 +12,6 @@ parse-doc +args:
 
 index +args:
     RUSTFLAGS=-Awarnings cargo run -q --package pxp-indexer --bin index --release -- {{args}}
+
+typemap +args:
+    RUSTFLAGS=-Awarnings cargo run -q --package pxp-typemap --bin analyse --release -- {{args}}

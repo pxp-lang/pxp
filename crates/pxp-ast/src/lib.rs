@@ -932,6 +932,19 @@ pub enum ArrayItem {
     },
 }
 
+impl ArrayItem {
+    pub fn value(&self) -> Option<&Expression> {
+        match self {
+            ArrayItem::Skipped => None,
+            ArrayItem::Value { value } => Some(value),
+            ArrayItem::ReferencedValue { ampersand, value } => Some(value),
+            ArrayItem::SpreadValue { ellipsis, value } => Some(value),
+            ArrayItem::KeyValue { key, double_arrow, value } => Some(value),
+            ArrayItem::ReferencedKeyValue { key, double_arrow, ampersand, value } => Some(value),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub enum ListEntry {
