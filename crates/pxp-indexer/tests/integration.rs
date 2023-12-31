@@ -32,7 +32,7 @@ fn it_indexes_correctly() {
     assert_eq!(foo.name, symbol_table.intern(b"foo"));
     assert_eq!(foo.short_name, symbol_table.intern(b"foo"));
     assert_eq!(foo.parameters.len(), 0);
-    assert_matches!(foo.return_type, Type::Mixed(_));
+    assert_matches!(foo.return_type, Type::Mixed);
 
     let bar = match index.get_function(symbol_table.intern(b"bar")) {
         Some(foo) => foo,
@@ -43,8 +43,8 @@ fn it_indexes_correctly() {
     assert_eq!(bar.short_name, symbol_table.intern(b"bar"));
     assert_eq!(bar.parameters.len(), 1);
     assert_eq!(bar.parameters[0].name, symbol_table.intern(b"$baz"));
-    assert_matches!(bar.parameters[0].r#type, Type::String(_));
-    assert_matches!(bar.return_type, Type::Void(_));
+    assert_matches!(bar.parameters[0].r#type, Type::String);
+    assert_matches!(bar.return_type, Type::Void);
 
     let model = match index.get_class_like(symbol_table.intern(b"Nested\\Interfaces\\Model")) {
         Some(model) => model,
@@ -71,7 +71,7 @@ fn it_indexes_correctly() {
     assert_eq!(example.methods[0].name, symbol_table.intern(b"example"));
     assert_eq!(example.methods[0].parameters.len(), 0);
     assert!(example.methods[0].r#virtual);
-    assert_matches!(example.methods[0].return_type, Type::Void(_));
+    assert_matches!(example.methods[0].return_type, Type::Void);
 
     let user = match index.get_class_like(symbol_table.intern(b"App\\User")) {
         Some(user) => user,
@@ -88,15 +88,15 @@ fn it_indexes_correctly() {
     );
 
     assert_eq!(user.properties[0].name, symbol_table.intern(b"$name"));
-    assert_matches!(user.properties[0].r#type, Type::String(_));
+    assert_matches!(user.properties[0].r#type, Type::String);
 
     assert_eq!(user.properties[1].name, symbol_table.intern(b"$email"));
-    assert_matches!(user.properties[1].r#type, Type::String(_));
+    assert_matches!(user.properties[1].r#type, Type::String);
 
     assert_eq!(user.properties[2].name, symbol_table.intern(b"$createdAt"));
-    assert_matches!(user.properties[2].r#type, Type::Named(_, _));
+    assert_matches!(user.properties[2].r#type, Type::Named(_));
     let created_at_type = match user.properties[2].r#type {
-        Type::Named(_, created_at_type) => created_at_type,
+        Type::Named(created_at_type) => created_at_type,
         _ => unreachable!("createdAt is not defined"),
     };
     assert_eq!(created_at_type, symbol_table.intern(b"DateTimeInterface"));
