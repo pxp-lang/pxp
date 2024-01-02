@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use pxp_ast::{Statement, ExpressionKind, literals::LiteralKind, BoolExpression, CastExpression, CastKind};
+use pxp_ast::{Statement, ExpressionKind, literals::LiteralKind, BoolExpression, CastExpression, CastKind, operators::AssignmentOperationExpression, variables::{Variable, SimpleVariable}};
 use pxp_indexer::Index;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
@@ -21,6 +21,14 @@ impl<'a> TypeMapGenerator<'a> {
         Self { index, symbol_table, scopes: Vec::new(), map: TypeMap::new() }
     }
 
+    fn scope(&self) -> &Scope {
+        self.scopes.last().unwrap()
+    }
+
+    fn scope_mut(&mut self) -> &mut Scope {
+        self.scopes.last_mut().unwrap()
+    }
+
     pub fn generate(&mut self, ast: &mut [Statement]) -> TypeMap {
         // We can use the same TypeMapGenerator for multiple files, so we need to reset the state
         // before we start generating the type map for a new file.
@@ -35,6 +43,10 @@ impl<'a> TypeMapGenerator<'a> {
 
 impl<'a> Visitor for TypeMapGenerator<'a> {
     fn visit_expression(&mut self, node: &mut pxp_ast::Expression) {
+        // We pre-walk the expression so that we can use type information of sub-expressions when
+        // determining the type of the current expression.
+        walk_expression(self, node);
+
         let r#type = match &node.kind {
             ExpressionKind::Missing => Type::Mixed,
             ExpressionKind::Eval(_) => Type::Mixed,
@@ -51,7 +63,21 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
                 LiteralKind::Missing => Type::Mixed,
             },
             ExpressionKind::ArithmeticOperation(_) => Type::Mixed,
-            ExpressionKind::AssignmentOperation(_) => Type::Mixed,
+            ExpressionKind::AssignmentOperation(operation) => match operation {
+                AssignmentOperationExpression::Assign { left, right, .. } if matches!(left.kind, ExpressionKind::Variable(Variable::SimpleVariable(_))) => {
+                    let variable = match &left.kind {
+                        ExpressionKind::Variable(Variable::SimpleVariable(SimpleVariable { token })) => token.symbol.unwrap(),
+                        _ => unreachable!(),
+                    };
+
+                    let r#type = self.map.get(right.id).cloned().unwrap_or(Type::Mixed);
+
+                    self.scope_mut().insert_variable(variable, r#type.clone());
+
+                    r#type
+                },
+                _ => Type::Mixed,
+            },
             ExpressionKind::BitwiseOperation(_) => Type::Mixed,
             ExpressionKind::ComparisonOperation(_) => Type::Mixed,
             ExpressionKind::LogicalOperation(_) => Type::Mixed,
@@ -63,7 +89,15 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
             // FIXME: This should return the same type as whatever the inner expression  is.
             ExpressionKind::ErrorSuppress(_) => Type::Mixed,
             ExpressionKind::Identifier(_) => Type::Mixed,
-            ExpressionKind::Variable(_) => Type::Mixed,
+            ExpressionKind::Variable(variable) => match variable {
+                Variable::SimpleVariable(SimpleVariable { token }) => {
+                    let variable = token.symbol.unwrap();
+                    self.scope().get_variable(variable).cloned().unwrap_or(Type::Mixed)
+                },
+                // FIXME: There might be cases where we can be more specific here, e.g. if we know
+                // what the value of the dynamic variable is.
+                _ => Type::Mixed,
+            },
             ExpressionKind::Include(_) => Type::Mixed,
             ExpressionKind::IncludeOnce(_) => Type::Mixed,
             ExpressionKind::Require(_) => Type::Mixed,
@@ -130,8 +164,6 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
         };
 
         self.map.insert(node.id, r#type);
-
-        walk_expression(self, node);
     }
 }
 
@@ -140,4 +172,14 @@ struct Scope {
     namespace: Option<Symbol>, 
     imports: HashMap<Symbol, Symbol>,
     variables: HashMap<Symbol, Type>,
+}
+
+impl Scope {
+    fn get_variable(&self, name: Symbol) -> Option<&Type> {
+        self.variables.get(&name)
+    }
+
+    fn insert_variable(&mut self, name: Symbol, ty: Type) {
+        self.variables.insert(name, ty);
+    }
 }
