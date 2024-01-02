@@ -934,14 +934,25 @@ pub enum ArrayItem {
 }
 
 impl ArrayItem {
+    pub fn key_and_value(&self) -> Option<(Option<&Expression>, &Expression)> {
+        match self {
+            ArrayItem::Skipped => None,
+            ArrayItem::Value { value } => Some((None, value)),
+            ArrayItem::ReferencedValue { value, .. } => Some((None, value)),
+            ArrayItem::SpreadValue { value, .. } => Some((None, value)),
+            ArrayItem::KeyValue { key, value, .. } => Some((Some(key), value)),
+            ArrayItem::ReferencedKeyValue { key, value, .. } => Some((Some(key), value)),
+        }
+    }
+
     pub fn value(&self) -> Option<&Expression> {
         match self {
             ArrayItem::Skipped => None,
             ArrayItem::Value { value } => Some(value),
-            ArrayItem::ReferencedValue { ampersand, value } => Some(value),
-            ArrayItem::SpreadValue { ellipsis, value } => Some(value),
-            ArrayItem::KeyValue { key, double_arrow, value } => Some(value),
-            ArrayItem::ReferencedKeyValue { key, double_arrow, ampersand, value } => Some(value),
+            ArrayItem::ReferencedValue { value, .. } => Some(value),
+            ArrayItem::SpreadValue { value, .. } => Some(value),
+            ArrayItem::KeyValue { value, .. } => Some(value),
+            ArrayItem::ReferencedKeyValue { value, .. } => Some(value),
         }
     }
 }
