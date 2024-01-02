@@ -18,6 +18,10 @@ impl<T> CommaSeparated<T> {
     pub fn iter_mut(&mut self) -> IterMut<'_, T> {
         self.inner.iter_mut()
     }
+
+    pub fn len(&self) -> usize {
+        self.inner.len()
+    }
 }
 
 impl<T> IntoIterator for CommaSeparated<T> {
