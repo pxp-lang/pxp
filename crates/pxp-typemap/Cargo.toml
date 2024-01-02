@@ -10,6 +10,7 @@ license-file.workspace = true
 indexmap = "2.1.0"
 pxp-ast = { version = "0.1.0", path = "../pxp-ast" }
 pxp-bytestring = { version = "0.1.0", path = "../pxp-bytestring" }
+pxp-indexer = { version = "0.1.0", path = "../pxp-indexer" }
 pxp-parser = { version = "0.1.0", path = "../pxp-parser" }
 pxp-span = { version = "0.1.0", path = "../pxp-span" }
 pxp-symbol = { version = "0.1.0", path = "../pxp-symbol" }
@@ -18,5 +19,5 @@ pxp-type = { version = "0.1.0", path = "../pxp-type" }
 pxp-visitor = { version = "0.1.0", path = "../pxp-visitor" }
 
 [[bin]]
-name = "analyse"
-path = "bin/analyse.rs"
+name = "typemap"
+path = "bin/typemap.rs"

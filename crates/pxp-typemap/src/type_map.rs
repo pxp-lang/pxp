@@ -15,11 +15,11 @@ impl TypeMap {
         }
     }
 
-    pub fn insert_expr_type(&mut self, node_id: NodeId, ty: Type) {
-        self.exprs.insert(node_id, ty);
+    pub fn insert(&mut self, id: NodeId, ty: Type) {
+        self.exprs.insert(id, ty);
     }
 
-    pub fn get_expr_type(&self, node_id: NodeId) -> Option<&Type> {
-        self.exprs.get(&node_id)
+    pub fn get(&self, id: NodeId) -> Option<&Type> {
+        self.exprs.get(&id)
     }
 }

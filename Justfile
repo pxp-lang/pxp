@@ -14,4 +14,4 @@ index +args:
     RUSTFLAGS=-Awarnings cargo run -q --package pxp-indexer --bin index --release -- {{args}}
 
 typemap +args:
-    RUSTFLAGS=-Awarnings cargo run -q --package pxp-typemap --bin analyse --release -- {{args}}
+    RUSTFLAGS=-Awarnings cargo run -q --package pxp-typemap --bin typemap --release -- {{args}}
