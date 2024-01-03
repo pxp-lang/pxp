@@ -191,8 +191,6 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
                     let variable = token.symbol.unwrap();
                     self.scope().get_variable(variable).cloned().unwrap_or(Type::Mixed)
                 },
-                // FIXME: There might be cases where we can be more specific here, e.g. if we know
-                // what the value of the dynamic variable is.
                 _ => Type::Mixed,
             },
             ExpressionKind::Include(_) => Type::Mixed,
