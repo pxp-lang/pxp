@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use indexmap::IndexSet;
-use pxp_ast::{Statement, ExpressionKind, literals::LiteralKind, BoolExpression, CastExpression, CastKind, operators::AssignmentOperationExpression, variables::{Variable, SimpleVariable}, ArrayIndexExpression, ShortArrayExpression, ArrayExpression, ArrayItem, utils::CommaSeparated, ParenthesizedExpression};
+use pxp_ast::{Statement, ExpressionKind, literals::LiteralKind, BoolExpression, CastExpression, CastKind, operators::AssignmentOperationExpression, variables::{Variable, SimpleVariable}, ArrayIndexExpression, ShortArrayExpression, ArrayExpression, ArrayItem, utils::CommaSeparated, ParenthesizedExpression, ErrorSuppressExpression};
 use pxp_indexer::Index;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
@@ -184,8 +184,7 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
             ExpressionKind::Instanceof(_) => Type::Boolean,
             ExpressionKind::Reference(_) => Type::Mixed,
             ExpressionKind::Parenthesized(ParenthesizedExpression { expr, .. }) => self.map.get(expr.id).cloned().unwrap_or(Type::Mixed),
-            // FIXME: This should return the same type as whatever the inner expression  is.
-            ExpressionKind::ErrorSuppress(_) => Type::Mixed,
+            ExpressionKind::ErrorSuppress(ErrorSuppressExpression { expr, .. }) => self.map.get(expr.id).cloned().unwrap_or(Type::Mixed),
             ExpressionKind::Identifier(_) => Type::Mixed,
             ExpressionKind::Variable(variable) => match variable {
                 Variable::SimpleVariable(SimpleVariable { token }) => {
