@@ -23,7 +23,6 @@ use pxp_ast::{
     goto::{GotoStatement, LabelStatement},
     identifiers::{DynamicIdentifier, Identifier},
     interfaces::{InterfaceBody, InterfaceExtends, InterfaceStatement},
-    literals::Literal,
     loops::{
         BreakStatement, ContinueStatement, DoWhileStatement, ForStatement, ForStatementBody,
         ForStatementIterator, ForeachStatement, ForeachStatementBody, ForeachStatementIterator,

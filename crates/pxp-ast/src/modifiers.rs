@@ -1,5 +1,3 @@
-use std::fmt::{Display, Formatter};
-
 use pxp_span::Span;
 use pxp_syntax::visibility::Visibility;
 

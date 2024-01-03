@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 use crate::attributes::AttributeGroup;
 use crate::classes::ClassishMember;
 

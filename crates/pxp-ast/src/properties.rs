@@ -5,7 +5,6 @@ use crate::modifiers::PropertyModifierGroup;
 use crate::variables::SimpleVariable;
 use crate::Expression;
 use pxp_span::Span;
-use pxp_type::Type;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

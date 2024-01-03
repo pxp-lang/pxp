@@ -173,9 +173,7 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type> {
     }
 }
 
-fn simple_data_type(state: &mut State) -> Type {
-    let start = state.stream.current().span;
-    
+fn simple_data_type(state: &mut State) -> Type {    
     match optional_simple_data_type(state) {
         Some(ty) => ty,
         None => {
