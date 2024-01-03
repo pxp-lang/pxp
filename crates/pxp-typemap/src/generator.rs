@@ -40,23 +40,36 @@ impl<'a> TypeMapGenerator<'a> {
             return Type::EmptyArray;
         }
 
-        let mut types = Vec::new();
+        let mut key_types = Vec::new();
+        let mut value_types = Vec::new();
 
         for item in items.iter() {
-            match item.value() {
-                Some(value) => types.push(self.map.get(value.id).cloned().unwrap_or(Type::Mixed)),
+            match item.key_and_value() {
+                Some((key, value)) => {
+                    if let Some(key) = key {
+                        key_types.push(self.map.get(key.id).cloned().unwrap_or(Type::Mixed));
+                    } else {
+                        key_types.push(Type::Integer);
+                    }
+
+                    value_types.push(self.map.get(value.id).cloned().unwrap_or(Type::Mixed))
+                },
                 None => {},
             }
         }
 
-        let simplified = self.simplify_union_of_types(&types);
+        if key_types.len() == 0 {
+            key_types = vec![Type::Integer];
+        }
 
-        // FIXME: We should also be handling cases where the keys are strings (not integers).
-        //        Perhaps we need a `key_and_value()` helper on `ArrayItem` that returns a tuple.
-        if simplified.len() == 1 {
-            Type::GenericArray(Box::new(Type::Integer), Box::new(simplified[0].clone()))
+        let key_types = self.simplify_union_of_types(&key_types);
+        let value_types = self.simplify_union_of_types(&value_types);
+        let key_type = if key_types.len() == 1 { key_types[0].clone() } else { Type::Union(key_types) };
+
+        if value_types.len() == 1 {
+            Type::GenericArray(Box::new(key_type), Box::new(value_types[0].clone()))
         } else {
-            Type::GenericArray(Box::new(Type::Integer), Box::new(Type::Union(simplified)))
+            Type::GenericArray(Box::new(key_type), Box::new(Type::Union(value_types)))
         }
     }
 
