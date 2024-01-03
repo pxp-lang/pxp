@@ -19,3 +19,7 @@ dumpType($items);
 $items[] = 1;
 
 dumpType($items);
+
+$items['foo'] = 2;
+
+dumpType($items);

@@ -120,11 +120,11 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
 
                     r#type
                 },
-                // This is to handle cases such as $items[] = 1, where we need to update the type of the array to include the new value.
-                AssignmentOperationExpression::Assign { left, right, .. } if matches!(&left.kind, ExpressionKind::ArrayIndex(ArrayIndexExpression { index, array, .. }) if index.is_none() && matches!(&array.kind, ExpressionKind::Variable(Variable::SimpleVariable(_)))) => {
-                    let variable = match &left.kind {
-                        ExpressionKind::ArrayIndex(ArrayIndexExpression { array, .. }) => match &array.kind {
-                            ExpressionKind::Variable(Variable::SimpleVariable(SimpleVariable { token })) => token.symbol.unwrap(),
+                // This is to handle cases such as $items[] = 1 and $items['foo'] = 2, where we need to update the type of the array to include the new value and key type.
+                AssignmentOperationExpression::Assign { left, right, .. } if matches!(&left.kind, ExpressionKind::ArrayIndex(ArrayIndexExpression { array, .. }) if matches!(&array.kind, ExpressionKind::Variable(Variable::SimpleVariable(_)))) => {
+                    let (variable, index) = match &left.kind {
+                        ExpressionKind::ArrayIndex(ArrayIndexExpression { array, index, .. }) => match &array.kind {
+                            ExpressionKind::Variable(Variable::SimpleVariable(SimpleVariable { token })) => (token.symbol.unwrap(), index),
                             _ => unreachable!(),
                         },
                         _ => unreachable!(),
@@ -144,16 +144,29 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
                         // FIXME: We should also check that the key types are the same.
                         if let Some((key_type, value_type)) = types {
                             // then we can update the type of the array to include the new value.
-                            let mut types = match value_type {
+                            let mut value_types = match value_type {
                                 Type::Union(types) => types.clone(),
                                 Type::Mixed => vec![],
                                 _ => vec![value_type.clone()],
                             };
 
-                            types.push(right_type.clone());
+                            value_types.push(right_type.clone());
 
-                            let simplified = self.simplify_union_of_types(&types);
+                            let simplified = self.simplify_union_of_types(&value_types);
                             let new_inner_type = if simplified.len() == 1 { simplified[0].clone() } else { Type::Union(simplified) };
+
+                            // we can also try to update the key type if there is one present.
+                            let key_type = if let Some(index) = &index {
+                                if let Some(index_type) = self.map.get(index.id) {
+                                    let key_union = vec![key_type, index_type.clone()];
+                                    let simplified = self.simplify_union_of_types(&key_union);
+                                    if simplified.len() == 1 { simplified[0].clone() } else { Type::Union(simplified) }
+                                } else {
+                                    key_type
+                                }
+                            } else {
+                                key_type
+                            };
 
                             // and then update the type of the variable to be the new array type.
                             self.scope_mut().insert_variable(variable, Type::GenericArray(Box::new(key_type), Box::new(new_inner_type)));
