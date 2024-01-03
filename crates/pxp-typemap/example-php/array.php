@@ -11,3 +11,4 @@ dumpType($items);
 $items[] = 1;
 
 dumpType($items);
+dumpType($items[1]);

@@ -231,7 +231,14 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
             ExpressionKind::Bool(BoolExpression { value }) => if *value { Type::True } else { Type::False },
             // FIXME: If we know the type of array we're accessing, we can be more specific here
             // and just return the inner type of the array.
-            ExpressionKind::ArrayIndex(_) => Type::Mixed,
+            ExpressionKind::ArrayIndex(ArrayIndexExpression { array, .. }) => {
+                let array_type = self.map.get(array.id).cloned().unwrap_or(Type::Array);
+
+                match array_type {
+                    Type::GenericArray(_, inner) => inner.as_ref().clone(),
+                    _ => Type::Mixed,
+                }
+            },
             ExpressionKind::Null => Type::Null,
             // FIXME: Since we know which constant is being referenced, we can be more specific
             // here, specifically for things like __CLASS__ etc.
