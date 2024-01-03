@@ -1,0 +1,3 @@
+<?php
+
+dumpType((1));
