@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use indexmap::IndexSet;
-use pxp_ast::{Statement, ExpressionKind, literals::LiteralKind, BoolExpression, CastExpression, CastKind, operators::AssignmentOperationExpression, variables::{Variable, SimpleVariable}, ArrayIndexExpression, ShortArrayExpression, ArrayExpression};
+use pxp_ast::{Statement, ExpressionKind, literals::LiteralKind, BoolExpression, CastExpression, CastKind, operators::AssignmentOperationExpression, variables::{Variable, SimpleVariable}, ArrayIndexExpression, ShortArrayExpression, ArrayExpression, ArrayItem, utils::CommaSeparated};
 use pxp_indexer::Index;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
@@ -33,6 +33,31 @@ impl<'a> TypeMapGenerator<'a> {
     fn simplify_union_of_types(&self, types: &[Type]) -> Vec<Type> {
         let set: IndexSet<Type> = types.iter().cloned().collect();
         set.into_iter().collect()
+    }
+
+    fn generate_array_type(&self, items: &CommaSeparated<ArrayItem>) -> Type {
+        if items.len() == 0 {
+            return Type::EmptyArray;
+        }
+
+        let mut types = Vec::new();
+
+        for item in items.iter() {
+            match item.value() {
+                Some(value) => types.push(self.map.get(value.id).cloned().unwrap_or(Type::Mixed)),
+                None => {},
+            }
+        }
+
+        let simplified = self.simplify_union_of_types(&types);
+
+        // FIXME: We should also be handling cases where the keys are strings (not integers).
+        //        Perhaps we need a `key_and_value()` helper on `ArrayItem` that returns a tuple.
+        if simplified.len() == 1 {
+            Type::GenericArray(Box::new(Type::Integer), Box::new(simplified[0].clone()))
+        } else {
+            Type::GenericArray(Box::new(Type::Integer), Box::new(Type::Union(simplified)))
+        }
     }
 
     pub fn generate(&mut self, ast: &mut [Statement]) -> TypeMap {
@@ -166,52 +191,8 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
             ExpressionKind::Static => Type::Mixed,
             ExpressionKind::Self_ => Type::Mixed,
             ExpressionKind::Parent => Type::Mixed,
-            ExpressionKind::ShortArray(ShortArrayExpression { items, .. }) => match items.len() {
-                0 => Type::EmptyArray,
-                _ => {
-                    let mut types = Vec::new();
-
-                    for item in items.iter() {
-                        match item.value() {
-                            Some(value) => types.push(self.map.get(value.id).cloned().unwrap_or(Type::Mixed)),
-                            None => {},
-                        }
-                    }
-
-                    let simplified = self.simplify_union_of_types(&types);
-
-                    // FIXME: We should also be handling cases where the keys are strings (not integers).
-                    //        Perhaps we need a `key_and_value()` helper on `ArrayItem` that returns a tuple.
-                    if simplified.len() == 1 {
-                        Type::GenericArray(Box::new(Type::Integer), Box::new(simplified[0].clone()))
-                    } else {
-                        Type::GenericArray(Box::new(Type::Integer), Box::new(Type::Union(simplified)))
-                    }
-                },
-            },
-            ExpressionKind::Array(ArrayExpression { items, .. }) => match items.len() {
-                0 => Type::EmptyArray,
-                _ => {
-                    let mut types = Vec::new();
-
-                    for item in items.iter() {
-                        match item.value() {
-                            Some(value) => types.push(self.map.get(value.id).cloned().unwrap_or(Type::Mixed)),
-                            None => {},
-                        }
-                    }
-
-                    let simplified = self.simplify_union_of_types(&types);
-
-                    // FIXME: We should also be handling cases where the keys are strings (not integers).
-                    //        Perhaps we need a `key_and_value()` helper on `ArrayItem` that returns a tuple.
-                    if simplified.len() == 1 {
-                        Type::GenericArray(Box::new(Type::Integer), Box::new(simplified[0].clone()))
-                    } else {
-                        Type::GenericArray(Box::new(Type::Integer), Box::new(Type::Union(simplified)))
-                    }
-                },
-            },
+            ExpressionKind::ShortArray(ShortArrayExpression { items, .. }) => self.generate_array_type(items),
+            ExpressionKind::Array(ArrayExpression { items, .. }) => self.generate_array_type(items),
             ExpressionKind::List(_) => Type::Array,
             // FIXME: This should be of Type::Named, where the name is `\Closure`.
             ExpressionKind::Closure(_) => Type::Callable,
