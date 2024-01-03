@@ -229,8 +229,6 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
             // anonymous class.
             ExpressionKind::AnonymousClass(_) => Type::Object,
             ExpressionKind::Bool(BoolExpression { value }) => if *value { Type::True } else { Type::False },
-            // FIXME: If we know the type of array we're accessing, we can be more specific here
-            // and just return the inner type of the array.
             ExpressionKind::ArrayIndex(ArrayIndexExpression { array, .. }) => {
                 let array_type = self.map.get(array.id).cloned().unwrap_or(Type::Array);
 
