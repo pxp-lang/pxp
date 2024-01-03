@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use indexmap::IndexSet;
-use pxp_ast::{Statement, ExpressionKind, literals::LiteralKind, BoolExpression, CastExpression, CastKind, operators::AssignmentOperationExpression, variables::{Variable, SimpleVariable}, ArrayIndexExpression, ShortArrayExpression, ArrayExpression, ArrayItem, utils::CommaSeparated, ParenthesizedExpression, ErrorSuppressExpression, ReferenceExpression};
+use pxp_ast::{Statement, ExpressionKind, literals::LiteralKind, BoolExpression, CastExpression, CastKind, operators::AssignmentOperationExpression, variables::{Variable, SimpleVariable}, ArrayIndexExpression, ShortArrayExpression, ArrayExpression, ArrayItem, utils::CommaSeparated, ParenthesizedExpression, ErrorSuppressExpression, ReferenceExpression, ShortTernaryExpression, TernaryExpression};
 use pxp_indexer::Index;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
@@ -243,8 +243,28 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
             // FIXME: Since we know which constant is being referenced, we can be more specific
             // here, specifically for things like __CLASS__ etc.
             ExpressionKind::MagicConstant(_) => Type::String,
-            ExpressionKind::ShortTernary(_) => Type::Mixed,
-            ExpressionKind::Ternary(_) => Type::Mixed,
+            ExpressionKind::ShortTernary(ShortTernaryExpression { condition, r#else, .. }) => {
+                // FIXME: If we know that the condition is definitely a truthy value, we can just
+                // return the type of the condition expression.
+                let condition_type = self.map.get(condition.id).cloned().unwrap_or(Type::Mixed);
+                let r#else_type = self.map.get(r#else.id).cloned().unwrap_or(Type::Mixed);
+
+                let types = vec![condition_type, r#else_type];
+                let simplified = self.simplify_union_of_types(&types);
+
+                if simplified.len() == 1 { simplified[0].clone() } else { Type::Union(simplified) }
+            },
+            ExpressionKind::Ternary(TernaryExpression { then, r#else, .. }) => {
+                // FIXME: If we know that the condition is definitely a truthy value, we can just
+                // return the type of the then expression.
+                let then_type = self.map.get(then.id).cloned().unwrap_or(Type::Mixed);
+                let r#else_type = self.map.get(r#else.id).cloned().unwrap_or(Type::Mixed);
+
+                let types = vec![then_type, r#else_type];
+                let simplified = self.simplify_union_of_types(&types);
+
+                if simplified.len() == 1 { simplified[0].clone() } else { Type::Union(simplified) }
+            },
             ExpressionKind::Coalesce(_) => Type::Mixed,
             // FIXME: If we know the type of value we're cloning, we can be more specific here
             // and just return that same type again.
