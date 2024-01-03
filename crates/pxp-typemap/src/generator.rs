@@ -221,7 +221,7 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
             // FIXME: This should be of Type::Named, where the name is `\Closure`.
             ExpressionKind::ArrowFunction(_) => Type::Callable,
             ExpressionKind::New(_) => Type::Mixed,
-            ExpressionKind::InterpolatedString(_) => Type::Mixed,
+            ExpressionKind::InterpolatedString(_) => Type::String,
             ExpressionKind::Heredoc(_) => Type::String,
             ExpressionKind::Nowdoc(_) => Type::String,
             ExpressionKind::ShellExec(_) => Type::String,
