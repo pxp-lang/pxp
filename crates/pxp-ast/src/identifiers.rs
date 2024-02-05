@@ -1,6 +1,6 @@
 use crate::Expression;
 use pxp_span::Span;
-use pxp_token::Token;
+use pxp_token::{Token, TokenKind};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -38,6 +38,18 @@ pub struct SimpleIdentifier {
 impl SimpleIdentifier {
     pub fn new(token: Token) -> Self {
         Self { token }
+    }
+
+    pub fn is_fully_qualified(&self) -> bool {
+        matches!(self.token.kind, TokenKind::FullyQualifiedIdentifier)
+    }
+
+    pub fn is_qualified(&self) -> bool {
+        matches!(self.token.kind, TokenKind::QualifiedIdentifier)
+    }
+
+    pub fn is_unqualified(&self) -> bool {
+        matches!(self.token.kind, TokenKind::Identifier)
     }
 }
 
