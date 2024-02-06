@@ -27,8 +27,8 @@ impl Visitor for NameResolvingVisitor {
     }
 }
 
-/// Internal structure for tracking AST state.
-struct State {
+/// Internal structure for tracking AST state and current scope.
+struct Scope {
     namespace: Option<Symbol>,
     uses: HashMap<Symbol, Symbol>,
 }
