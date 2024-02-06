@@ -8,6 +8,7 @@ use crate::Visitor;
 #[derive(Debug, Default)]
 pub struct NameResolvingVisitor {
     resolver: NameResolver,
+    scopes: Vec<Scope>,
 }
 
 impl NameResolvingVisitor {
@@ -19,6 +20,22 @@ impl NameResolvingVisitor {
         self.visit(ast);
         self.resolver.clone()
     }
+
+    fn scope(&self) -> &Scope {
+        self.scopes.last().unwrap()
+    }
+
+    fn scope_mut(&mut self) -> &mut Scope {
+        self.scopes.last_mut().unwrap()
+    }
+
+    fn push_scope(&mut self) {
+        self.scopes.push(Scope::default());
+    }
+
+    fn pop_scope(&mut self) {
+        self.scopes.pop();
+    }
 }
 
 impl Visitor for NameResolvingVisitor {
@@ -28,6 +45,7 @@ impl Visitor for NameResolvingVisitor {
 }
 
 /// Internal structure for tracking AST state and current scope.
+#[derive(Debug, Default)]
 struct Scope {
     namespace: Option<Symbol>,
     uses: HashMap<Symbol, Symbol>,
