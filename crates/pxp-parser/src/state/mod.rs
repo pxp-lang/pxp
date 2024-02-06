@@ -39,7 +39,8 @@ impl<'a, 'b> State<'a, 'b> {
             namespace_type: None,
             attributes: vec![],
             diagnostics: vec![],
-            id: 0,
+            // Node IDs start from 1 to reserve 0 for invalid / missing / unknown nodes.
+            id: 1,
         }
     }
 

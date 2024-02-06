@@ -13,12 +13,12 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
         TokenKind::Identifier => {
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), current.kind.into(), current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), current.kind.into(), current.span)
         }
         TokenKind::Enum | TokenKind::From => {
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
             state.diagnostic(
@@ -29,7 +29,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
 
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
@@ -40,7 +40,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
 
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
         }
         _ => {
             state.diagnostic(
@@ -52,7 +52,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(0, IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), 0, IdentifierQualification::Unqualified, current.span)
         }
     }
 }
@@ -64,12 +64,12 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
         TokenKind::Identifier => {
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
         }
         TokenKind::Enum | TokenKind::From => {
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
             state.diagnostic(
@@ -80,7 +80,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
 
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
@@ -91,7 +91,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
 
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
         }
         _ => {
             state.diagnostic(
@@ -103,7 +103,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(0, IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), 0, IdentifierQualification::Unqualified, current.span)
         }
     }
 }
@@ -119,7 +119,7 @@ pub fn constant_identifier(state: &mut State) -> SimpleIdentifier {
         | TokenKind::Parent => {
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
@@ -130,7 +130,7 @@ pub fn constant_identifier(state: &mut State) -> SimpleIdentifier {
 
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
         }
         _ => {
             state.diagnostic(
@@ -142,7 +142,7 @@ pub fn constant_identifier(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
         }
     }
 }
@@ -153,7 +153,7 @@ pub fn identifier(state: &mut State) -> SimpleIdentifier {
     if let TokenKind::Identifier = &current.kind {
         state.stream.next();
 
-        SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+        SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
     } else {
         state.diagnostic(
             DiagnosticKind::UnexpectedToken { token: *current },
@@ -161,7 +161,7 @@ pub fn identifier(state: &mut State) -> SimpleIdentifier {
             current.span,
         );
 
-        SimpleIdentifier::new(0, IdentifierQualification::Unqualified, current.span)
+        SimpleIdentifier::new(state.id(), 0, IdentifierQualification::Unqualified, current.span)
     }
 }
 
@@ -176,7 +176,7 @@ pub fn name(state: &mut State) -> SimpleIdentifier {
 
     state.stream.next();
 
-    SimpleIdentifier::new(name.symbol.unwrap(), IdentifierQualification::Unqualified, name.span)
+    SimpleIdentifier::new(state.id(), name.symbol.unwrap(), IdentifierQualification::Unqualified, name.span)
 }
 
 /// Expect an optional unqualified or qualified identifier such as Foo, Bar or Foo\Bar.
@@ -187,12 +187,12 @@ pub fn optional_name(state: &mut State) -> Option<SimpleIdentifier> {
         TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
             state.stream.next();
 
-            Some(SimpleIdentifier::new(current.symbol.unwrap(), current.kind.into(), current.span))
+            Some(SimpleIdentifier::new(state.id(), current.symbol.unwrap(), current.kind.into(), current.span))
         }
         t if is_reserved_identifier(t) => {
             state.stream.next();
 
-            Some(SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span))
+            Some(SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span))
         }
         _ => None,
     }
@@ -207,7 +207,7 @@ pub fn full_name(state: &mut State) -> SimpleIdentifier {
         | TokenKind::FullyQualifiedIdentifier => {
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), current.kind.into(), current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), current.kind.into(), current.span)
         }
         _ => {
             state.diagnostic(
@@ -219,7 +219,7 @@ pub fn full_name(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(0, IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), 0, IdentifierQualification::Unqualified, current.span)
         }
     }
 }
@@ -233,12 +233,12 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
         | TokenKind::FullyQualifiedIdentifier => {
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), current.kind.into(), current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), current.kind.into(), current.span)
         }
         TokenKind::Enum | TokenKind::From => {
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
             state.diagnostic(
@@ -249,7 +249,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
 
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
@@ -260,7 +260,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
 
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
         }
         _ => {
             state.diagnostic(
@@ -272,7 +272,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(0, IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), 0, IdentifierQualification::Unqualified, current.span)
         }
     }
 }
@@ -286,7 +286,7 @@ pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
         | TokenKind::FullyQualifiedIdentifier => {
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), current.kind.into(), current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), current.kind.into(), current.span)
         }
         TokenKind::Enum
         | TokenKind::From
@@ -295,7 +295,7 @@ pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
         | TokenKind::Parent => {
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
@@ -306,7 +306,7 @@ pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
 
             state.stream.next();
 
-            SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
         }
         _ => {
             state.diagnostic(
@@ -318,7 +318,7 @@ pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(0, IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), 0, IdentifierQualification::Unqualified, current.span)
         }
     }
 }
@@ -329,7 +329,7 @@ pub fn identifier_maybe_reserved(state: &mut State) -> SimpleIdentifier {
     if is_reserved_identifier(&current.kind) {
         state.stream.next();
 
-        SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+        SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
     } else {
         identifier(state)
     }
@@ -341,7 +341,7 @@ pub fn identifier_maybe_soft_reserved(state: &mut State) -> SimpleIdentifier {
     if is_soft_reserved_identifier(&current.kind) {
         state.stream.next();
 
-        SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+        SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
     } else {
         identifier(state)
     }

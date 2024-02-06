@@ -234,7 +234,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                         right: Box::new(Expression::new(
                             state.id(),
                             ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                                SimpleIdentifier::new(op.symbol.unwrap(), IdentifierQualification::Unqualified, op.span),
+                                SimpleIdentifier::new(state.id(), op.symbol.unwrap(), IdentifierQualification::Unqualified, op.span),
                             )),
                             Span::new(start_span.start, enum_span.end),
                             CommentGroup::default(),
@@ -251,7 +251,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                         right: Box::new(Expression::new(
                             state.id(),
                             ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                                SimpleIdentifier::new(op.symbol.unwrap(), IdentifierQualification::Unqualified, op.span),
+                                SimpleIdentifier::new(state.id(), op.symbol.unwrap(), IdentifierQualification::Unqualified, op.span),
                             )),
                             Span::new(start_span.start, from_span.end),
                             CommentGroup::default(),
@@ -1134,7 +1134,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                     Expression::new(
                         state.id(),
                         ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier::new(token.symbol.unwrap(), IdentifierQualification::Unqualified, token.span),
+                            SimpleIdentifier::new(state.id(), token.symbol.unwrap(), IdentifierQualification::Unqualified, token.span),
                         )),
                         span,
                         CommentGroup::default(),
@@ -1149,7 +1149,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                     Expression::new(
                         state.id(),
                         ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier::new(token.symbol.unwrap(), IdentifierQualification::Unqualified, token.span)
+                            SimpleIdentifier::new(state.id(), token.symbol.unwrap(), IdentifierQualification::Unqualified, token.span)
                         )),
                         span,
                         CommentGroup::default(),
@@ -1585,7 +1585,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                     state.stream.next();
 
                     ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                        SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+                        SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
                     ))
                 }
                 _ => {

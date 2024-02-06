@@ -18,7 +18,7 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
         TokenKind::Variable => {
             state.stream.next();
 
-            SimpleVariable { token: *current }
+            SimpleVariable { symbol: current.symbol.unwrap(), span: current.span }
         }
         TokenKind::Dollar => {
             state.stream.next();
@@ -29,7 +29,7 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
                 current.span,
             );
 
-            SimpleVariable { token: *current }
+            SimpleVariable { symbol: current.symbol.unwrap(), span: current.span }
         }
         _ => {
             state.diagnostic(
@@ -41,9 +41,7 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
                 current.span,
             );
 
-            SimpleVariable {
-                token: Token::missing(current.span),
-            }
+            SimpleVariable::missing(current.span)
         }
     }
 }
@@ -54,7 +52,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
         TokenKind::Variable => {
             state.stream.next();
 
-            Variable::SimpleVariable(SimpleVariable { token: *current })
+            Variable::SimpleVariable(SimpleVariable { symbol: current.symbol.unwrap(), span: current.span })
         }
         TokenKind::DollarLeftBrace => {
             let start = current.span;
@@ -110,9 +108,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
                         current.span,
                     );
 
-                    Variable::SimpleVariable(SimpleVariable {
-                        token: Token::missing(current.span),
-                    })
+                    Variable::SimpleVariable(SimpleVariable::missing(current.span))
                 }
             }
         }
@@ -126,9 +122,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
                 current.span,
             );
 
-            Variable::SimpleVariable(SimpleVariable {
-                token: Token::missing(current.span),
-            })
+            Variable::SimpleVariable(SimpleVariable::missing(current.span))
         }
     }
 }

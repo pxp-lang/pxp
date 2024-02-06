@@ -1,5 +1,6 @@
 use crate::Expression;
 use pxp_span::Span;
+use pxp_symbol::Symbol;
 use pxp_token::Token;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -13,7 +14,14 @@ pub enum Variable {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct SimpleVariable {
-    pub token: Token,
+    pub symbol: Symbol,
+    pub span: Span,
+}
+
+impl SimpleVariable {
+    pub fn missing(span: Span) -> Self {
+        Self { symbol: 0, span }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]

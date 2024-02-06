@@ -1,4 +1,4 @@
-use crate::Expression;
+use crate::{Expression, NodeId};
 use pxp_span::Span;
 use pxp_symbol::Symbol;
 use pxp_syntax::identifier::IdentifierQualification;
@@ -12,7 +12,7 @@ pub enum Identifier {
 
 impl Identifier {
     pub fn missing() -> Self {
-        Self::SimpleIdentifier(SimpleIdentifier::new(0, IdentifierQualification::Unqualified, Span::default()))
+        Self::SimpleIdentifier(SimpleIdentifier::new(0, 0, IdentifierQualification::Unqualified, Span::default()))
     }
 
     pub fn is_simple(&self) -> bool {
@@ -33,14 +33,15 @@ impl Identifier {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct SimpleIdentifier {
+    pub id: NodeId,
     pub symbol: Symbol,
     pub qualification: IdentifierQualification,
     pub span: Span,
 }
 
 impl SimpleIdentifier {
-    pub fn new(symbol: Symbol, qualification: IdentifierQualification, span: Span) -> Self {
-        Self { symbol, qualification, span }
+    pub fn new(id: NodeId, symbol: Symbol, qualification: IdentifierQualification, span: Span) -> Self {
+        Self { id, symbol, qualification, span }
     }
 
     pub fn is_fully_qualified(&self) -> bool {
