@@ -8,6 +8,12 @@ use rustyline::{error::ReadlineError, DefaultEditor};
 
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
+
+    if args.contains(&"--help".to_string()) {
+        println!("Usage: index <directory> [--help] [--no-interaction | -n]");
+        exit(0);
+    }
+
     let directory = PathBuf::from(args.get(0).unwrap());
 
     println!("Indexing...");
@@ -28,6 +34,11 @@ fn main() {
         "Indexing completed. Took {} milliseconds.",
         duration.as_millis()
     );
+
+    if args.contains(&"--no-interaction".to_string()) || args.contains(&"-n".to_string()) {
+        return;
+    }
+
     println!();
     println!("Enter a search query below to look through the index.");
 
