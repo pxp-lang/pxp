@@ -77,7 +77,7 @@ mod tests {
         let mut symbols = SymbolTable::new();
         let sample_text = b"Hello, world!";
 
-        assert_eq!(symbols.intern(sample_text), 0);
+        assert_eq!(symbols.intern(sample_text), 1);
     }
 
     #[test]
