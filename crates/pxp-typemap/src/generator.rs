@@ -110,7 +110,7 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
             ExpressionKind::AssignmentOperation(operation) => match operation {
                 AssignmentOperationExpression::Assign { left, right, .. } if matches!(left.kind, ExpressionKind::Variable(Variable::SimpleVariable(_))) => {
                     let variable = match &left.kind {
-                        ExpressionKind::Variable(Variable::SimpleVariable(SimpleVariable { token })) => token.symbol.unwrap(),
+                        ExpressionKind::Variable(Variable::SimpleVariable(SimpleVariable { symbol, .. })) => *symbol,
                         _ => unreachable!(),
                     };
 
@@ -124,7 +124,7 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
                 AssignmentOperationExpression::Assign { left, right, .. } if matches!(&left.kind, ExpressionKind::ArrayIndex(ArrayIndexExpression { array, .. }) if matches!(&array.kind, ExpressionKind::Variable(Variable::SimpleVariable(_)))) => {
                     let (variable, index) = match &left.kind {
                         ExpressionKind::ArrayIndex(ArrayIndexExpression { array, index, .. }) => match &array.kind {
-                            ExpressionKind::Variable(Variable::SimpleVariable(SimpleVariable { token })) => (token.symbol.unwrap(), index),
+                            ExpressionKind::Variable(Variable::SimpleVariable(SimpleVariable { symbol, .. })) => (*symbol, index),
                             _ => unreachable!(),
                         },
                         _ => unreachable!(),
@@ -187,8 +187,8 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
             ExpressionKind::ErrorSuppress(ErrorSuppressExpression { expr, .. }) => self.map.get(expr.id).cloned().unwrap_or(Type::Mixed),
             ExpressionKind::Identifier(_) => Type::Mixed,
             ExpressionKind::Variable(variable) => match variable {
-                Variable::SimpleVariable(SimpleVariable { token }) => {
-                    let variable = token.symbol.unwrap();
+                Variable::SimpleVariable(SimpleVariable { symbol, .. }) => {
+                    let variable = *symbol;
                     self.scope().get_variable(variable).cloned().unwrap_or(Type::Mixed)
                 },
                 _ => Type::Mixed,

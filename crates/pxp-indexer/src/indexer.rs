@@ -106,11 +106,11 @@ impl Indexer {
         self.index.add_file(file);
     }
 
-    fn qualify(&mut self, symbol: Symbol, token: Token) -> Symbol {
+    fn qualify(&mut self, identifier: &SimpleIdentifier) -> Symbol {
         // Fully-qualified identifiers don't need qualification, so we can
         // just return the symbol as-is.
-        if token.kind == TokenKind::FullyQualifiedIdentifier {
-            return symbol;
+        if identifier.is_fully_qualified() {
+            return identifier.symbol;
         }
 
         // If the symbol isn't qualified, i.e. Foo, then we need to check all of the
@@ -119,8 +119,8 @@ impl Indexer {
         //
         // This only works for unqualified identifiers as qualified identifiers require some byte manipulation.
         // It's quite naive but does the job.
-        if token.kind == TokenKind::Identifier {
-            if let Some((_, qualified)) = self.scope.uses.get(&symbol) {
+        if identifier.is_unqualified() {
+            if let Some((_, qualified)) = self.scope.uses.get(&identifier.symbol) {
                 return *qualified;
             }
         }
@@ -128,9 +128,9 @@ impl Indexer {
         // If we have a qualified identifier, i.e. A\B\C, then we need to check if the first part of the
         // identifier is a "use" in the current scope, i.e. use F\A. If it is, then we can join the
         // two symbols together to form the fully-qualified symbol.
-        if token.kind == TokenKind::QualifiedIdentifier {
+        if identifier.is_qualified() {
             // We first grab the symbol that we're trying to qualify, i.e. A\B\C.
-            let bytes = self.symbol_table.resolve(symbol).unwrap().to_bytestring();
+            let bytes = self.symbol_table.resolve(identifier.symbol).unwrap().to_bytestring();
             // We then need to split the symbol into its constituent parts, i.e. [A, B, C].
             let split = bytes.split(|b| *b == b'\\').collect::<Vec<&[u8]>>();
             // We then need to grab the first part of the identifier, i.e. A.
@@ -168,9 +168,9 @@ impl Indexer {
 
         if let Some(namespace) = self.scope.namespace() {
             self.symbol_table
-                .coagulate(&[*namespace, symbol], Some(b"\\"))
+                .coagulate(&[*namespace, identifier.symbol], Some(b"\\"))
         } else {
-            symbol
+            identifier.symbol
         }
     }
 
@@ -193,14 +193,14 @@ impl Indexer {
 
 impl Visitor for Indexer {
     fn visit_unbraced_namespace(&mut self, node: &mut UnbracedNamespace) {
-        self.scope.namespace = Some(node.name.token.symbol.unwrap());
+        self.scope.namespace = Some(node.name.symbol);
         walk_unbraced_namespace(self, node);
         self.scope.namespace = None;
     }
 
     fn visit_braced_namespace(&mut self, node: &mut BracedNamespace) {
         if let Some(name) = &node.name {
-            self.scope.namespace = Some(name.token.symbol.unwrap());
+            self.scope.namespace = Some(name.symbol);
         }
 
         walk_braced_namespace(self, node);
@@ -212,7 +212,7 @@ impl Visitor for Indexer {
 
     fn visit_use(&mut self, node: &mut UseStatement) {
         for r#use in node.uses.iter() {
-            let name = &r#use.name.token.symbol.unwrap();
+            let name = &r#use.name.symbol;
             let kind = match &r#use.kind {
                 Some(kind) => kind.clone(),
                 None => node.kind.clone(),
@@ -221,7 +221,7 @@ impl Visitor for Indexer {
             // If there is an alias present, we can use that since that will be a SimpleIdentifier.
             // If there's no alias, then we need to generate a SimpleIdentifier from the imported name, i.e. A\B\C => C.
             let key = if let Some(alias) = &r#use.alias {
-                alias.token.symbol.unwrap()
+                alias.symbol
             } else {
                 // We grab the name from the symbol table. This does involve heap-allocation
                 // the ByteStr into a ByteString, but it'll do for now.
@@ -246,12 +246,12 @@ impl Visitor for Indexer {
     fn visit_constant(&mut self, node: &mut ConstantStatement) {
         for entry in node.entries.iter() {
             let mut constant = ConstantEntity::default();
-            constant.name = entry.name.token.symbol.unwrap();
+            constant.name = entry.name.symbol;
             // FIXME: Add some simple type inference here.
             constant.r#type = Type::Mixed;
             constant.location = Location::new(
                 self.scope.file().to_string(),
-                Span::new(entry.name.token.span.start, entry.value.span.end),
+                Span::new(entry.name.span.start, entry.value.span.end),
             );
 
             self.index.add_constant(constant);
@@ -266,12 +266,12 @@ impl Visitor for Indexer {
 
         // We only care about calls to the define() function.
         if let ExpressionKind::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier {
-            token,
+            symbol, ..
         })) = &node.target.kind
         {
-            let symbol = self.symbol_table.resolve(token.symbol.unwrap()).unwrap();
+            let bstr = self.symbol_table.resolve(*symbol).unwrap();
 
-            if symbol != b"define" {
+            if bstr != b"define" {
                 return;
             }
 
@@ -281,7 +281,7 @@ impl Visitor for Indexer {
             if let ExpressionKind::Literal(Literal { token, .. }) = name_argument.get_value().kind {
                 let name = self
                     .symbol_table
-                    .resolve(token.symbol.unwrap())
+                    .resolve(*symbol)
                     .unwrap()
                     .to_bytestring();
                 // We need to remove the quotes from the name.
@@ -307,15 +307,14 @@ impl Visitor for Indexer {
     fn visit_function(&mut self, node: &mut FunctionStatement) {
         let mut function = FunctionEntity::default();
 
-        let short_name = node.name.token.symbol.unwrap();
-        function.name = self.qualify(short_name, node.name.token);
-        function.short_name = short_name;
+        function.name = self.qualify(&node.name);
+        function.short_name = node.name.symbol;
 
         let mut parameters = Vec::new();
 
         for parameter in node.parameters.iter() {
             let mut p = ParameterEntity::default();
-            p.name = parameter.name.token.symbol.unwrap();
+            p.name = parameter.name.symbol;
             p.reference = parameter.ampersand.is_some();
             p.variadic = parameter.ellipsis.is_some();
             p.optional = parameter.default.is_some();
@@ -337,7 +336,7 @@ impl Visitor for Indexer {
 
         function.location = Location::new(
             self.scope.file().to_string(),
-            Span::new(node.name.token.span.start, node.body.right_brace.end),
+            Span::new(node.name.span.start, node.body.right_brace.end),
         );
 
         self.index.add_function(function);
@@ -349,12 +348,11 @@ impl Visitor for Indexer {
         let mut enumeration = ClassLikeEntity::default();
         enumeration.is_enum = true;
 
-        let name = node.name.token.symbol.unwrap();
-        enumeration.name = self.qualify(name, node.name.token);
-        enumeration.short_name = name;
+        enumeration.name = self.qualify(&node.name);
+        enumeration.short_name = node.name.symbol;
 
         for implements in node.implements.iter() {
-            let name = self.qualify(implements.token.symbol.unwrap(), implements.token);
+            let name = self.qualify(implements);
             enumeration.implements.push(name);
         }
 
@@ -364,7 +362,7 @@ impl Visitor for Indexer {
         let mut enumeration = self.scope.current_class_like.clone();
         enumeration.location = Location::new(
             self.scope.file().to_string(),
-            Span::new(node.name.token.span.start, node.body.right_brace.end),
+            Span::new(node.name.span.start, node.body.right_brace.end),
         );
 
         self.index.add_class_like(enumeration);
@@ -374,7 +372,7 @@ impl Visitor for Indexer {
         self.scope
             .current_class_like
             .cases
-            .push(node.name.token.symbol.unwrap());
+            .push(node.name.symbol);
     }
 
     fn visit_backed_enum(&mut self, node: &mut BackedEnumStatement) {
@@ -382,12 +380,11 @@ impl Visitor for Indexer {
         enumeration.is_enum = true;
         enumeration.backing_type = node.backed_type.clone();
 
-        let name = node.name.token.symbol.unwrap();
-        enumeration.name = self.qualify(name, node.name.token);
-        enumeration.short_name = name;
+        enumeration.name = self.qualify(&node.name);
+        enumeration.short_name = node.name.symbol;
 
         for implements in node.implements.iter() {
-            let name = self.qualify(implements.token.symbol.unwrap(), implements.token);
+            let name = self.qualify(&implements);
             enumeration.implements.push(name);
         }
 
@@ -397,7 +394,7 @@ impl Visitor for Indexer {
         let mut enumeration = self.scope.current_class_like.clone();
         enumeration.location = Location::new(
             self.scope.file().to_string(),
-            Span::new(node.name.token.span.start, node.body.right_brace.end),
+            Span::new(node.name.span.start, node.body.right_brace.end),
         );
 
         self.index.add_class_like(enumeration);
@@ -407,16 +404,15 @@ impl Visitor for Indexer {
         self.scope
             .current_class_like
             .cases
-            .push(node.name.token.symbol.unwrap());
+            .push(node.name.symbol);
     }
 
     fn visit_trait(&mut self, node: &mut TraitStatement) {
         let mut trait_ = ClassLikeEntity::default();
         trait_.is_trait = true;
 
-        let name = node.name.token.symbol.unwrap();
-        trait_.name = self.qualify(name, node.name.token);
-        trait_.short_name = name;
+        trait_.name = self.qualify(&node.name);
+        trait_.short_name = node.name.symbol;
         trait_.r#final = false;
         trait_.r#abstract = false;
         trait_.r#readonly = false;
@@ -427,7 +423,7 @@ impl Visitor for Indexer {
         let mut trait_ = self.scope.current_class_like.clone();
         trait_.location = Location::new(
             self.scope.file().to_string(),
-            Span::new(node.name.token.span.start, node.body.right_brace.end),
+            Span::new(node.name.span.start, node.body.right_brace.end),
         );
 
         self.index.add_class_like(trait_);
@@ -437,9 +433,8 @@ impl Visitor for Indexer {
         let mut interface = ClassLikeEntity::default();
         interface.is_interface = true;
 
-        let name = node.name.token.symbol.unwrap();
-        interface.name = self.qualify(name, node.name.token);
-        interface.short_name = name;
+        interface.name = self.qualify(&node.name);
+        interface.short_name = node.name.symbol;
         interface.r#final = false;
         interface.r#abstract = false;
         interface.r#readonly = false;
@@ -447,7 +442,7 @@ impl Visitor for Indexer {
         if let Some(InterfaceExtends { parents, .. }) = &node.extends {
             interface.extends = parents
                 .iter()
-                .map(|p| self.qualify(p.token.symbol.unwrap(), p.token))
+                .map(|p| self.qualify(&p))
                 .collect();
         }
 
@@ -457,7 +452,7 @@ impl Visitor for Indexer {
         let mut interface = self.scope.current_class_like.clone();
         interface.location = Location::new(
             self.scope.file().to_string(),
-            Span::new(node.name.token.span.start, node.body.right_brace.end),
+            Span::new(node.name.span.start, node.body.right_brace.end),
         );
 
         self.index.add_class_like(interface);
@@ -467,21 +462,20 @@ impl Visitor for Indexer {
         let mut class = ClassLikeEntity::default();
         class.is_class = true;
 
-        let name = node.name.token.symbol.unwrap();
-        class.name = self.qualify(name, node.name.token);
-        class.short_name = name;
+        class.name = self.qualify(&node.name);
+        class.short_name = node.name.symbol;
         class.r#final = node.modifiers.has_final();
         class.r#abstract = node.modifiers.has_abstract();
         class.r#readonly = node.modifiers.has_readonly();
 
         if let Some(ClassExtends { parent, .. }) = &node.extends {
-            class.extends = vec![self.qualify(parent.token.symbol.unwrap(), parent.token)];
+            class.extends = vec![self.qualify(&parent)];
         }
 
         if let Some(ClassImplements { interfaces, .. }) = &node.implements {
             class.implements = interfaces
                 .iter()
-                .map(|i| self.qualify(i.token.symbol.unwrap(), i.token))
+                .map(|i| self.qualify(&i))
                 .collect();
         }
 
@@ -491,7 +485,7 @@ impl Visitor for Indexer {
         let mut class = self.scope.current_class_like.clone();
         class.location = Location::new(
             self.scope.file().to_string(),
-            Span::new(node.name.token.span.start, node.body.right_brace.end),
+            Span::new(node.name.span.start, node.body.right_brace.end),
         );
         self.index.add_class_like(class);
     }
@@ -503,7 +497,7 @@ impl Visitor for Indexer {
         for entry in node.entries.iter() {
             let mut entity = ClassishConstantEntity::default();
 
-            entity.name = entry.name.token.symbol.unwrap();
+            entity.name = entry.name.symbol;
             entity.r#final = r#final;
             entity.visibility = visibility;
 
@@ -518,7 +512,7 @@ impl Visitor for Indexer {
 
         for property in node.entries.iter() {
             let mut entity = PropertyEntity::default();
-            entity.name = property.variable().token.symbol.unwrap();
+            entity.name = property.variable().symbol;
             entity.visibility = visibility;
             entity.r#static = r#static;
             entity.r#type = r#type.clone();
@@ -530,7 +524,7 @@ impl Visitor for Indexer {
 
     fn visit_abstract_method(&mut self, node: &mut AbstractMethod) {
         let mut entity = MethodEntity::default();
-        entity.name = node.name.token.symbol.unwrap();
+        entity.name = node.name.symbol;
         entity.visibility = node.modifiers.visibility();
         entity.r#static = node.modifiers.has_static();
         entity.r#abstract = false;
@@ -541,7 +535,7 @@ impl Visitor for Indexer {
 
         for parameter in node.parameters.iter() {
             let mut p = ParameterEntity::default();
-            p.name = parameter.name.token.symbol.unwrap();
+            p.name = parameter.name.symbol;
             p.reference = parameter.ampersand.is_some();
             p.variadic = parameter.ellipsis.is_some();
             p.optional = parameter.default.is_some();
@@ -569,7 +563,7 @@ impl Visitor for Indexer {
 
     fn visit_concrete_method(&mut self, node: &mut ConcreteMethod) {
         let mut entity = MethodEntity::default();
-        entity.name = node.name.token.symbol.unwrap();
+        entity.name = node.name.symbol;
         entity.visibility = node.modifiers.visibility();
         entity.r#static = node.modifiers.has_static();
         entity.r#abstract = false;
@@ -579,7 +573,7 @@ impl Visitor for Indexer {
 
         for parameter in node.parameters.iter() {
             let mut p = ParameterEntity::default();
-            p.name = parameter.name.token.symbol.unwrap();
+            p.name = parameter.name.symbol;
             p.reference = parameter.ampersand.is_some();
             p.variadic = parameter.ellipsis.is_some();
             p.optional = parameter.default.is_some();
@@ -607,7 +601,7 @@ impl Visitor for Indexer {
 
     fn visit_concrete_constructor(&mut self, node: &mut ConcreteConstructor) {
         let mut entity = MethodEntity::default();
-        entity.name = node.name.token.symbol.unwrap();
+        entity.name = node.name.symbol;
         entity.visibility = node.modifiers.visibility();
         entity.r#static = node.modifiers.has_static();
         entity.r#abstract = false;
@@ -617,7 +611,7 @@ impl Visitor for Indexer {
 
         for parameter in node.parameters.parameters.iter() {
             let mut p = ParameterEntity::default();
-            p.name = parameter.name.token.symbol.unwrap();
+            p.name = parameter.name.symbol;
             p.reference = parameter.ampersand.is_some();
             p.variadic = parameter.ellipsis.is_some();
             p.optional = parameter.default.is_some();
@@ -630,7 +624,7 @@ impl Visitor for Indexer {
             // Indicates that this is a promoted property.
             if !parameter.modifiers.is_empty() {
                 let mut property = PropertyEntity::default();
-                property.name = parameter.name.token.symbol.unwrap();
+                property.name = parameter.name.symbol;
                 property.visibility = Visibility::Public;
                 property.r#static = false;
                 property.r#type = p.r#type.clone();
@@ -652,7 +646,7 @@ impl Visitor for Indexer {
 
     fn visit_abstract_constructor(&mut self, node: &mut AbstractConstructor) {
         let mut entity = MethodEntity::default();
-        entity.name = node.name.token.symbol.unwrap();
+        entity.name = node.name.symbol;
         entity.visibility = node.modifiers.visibility();
         entity.r#static = node.modifiers.has_static();
         entity.r#abstract = !self.scope.current_class_like.is_interface;
@@ -663,7 +657,7 @@ impl Visitor for Indexer {
 
         for parameter in node.parameters.parameters.iter() {
             let mut p = ParameterEntity::default();
-            p.name = parameter.name.token.symbol.unwrap();
+            p.name = parameter.name.symbol;
             p.reference = parameter.ampersand.is_some();
             p.variadic = parameter.ellipsis.is_some();
             p.optional = parameter.default.is_some();
@@ -676,7 +670,7 @@ impl Visitor for Indexer {
             // Indicates that this is a promoted property.
             if !parameter.modifiers.is_empty() {
                 let mut property = PropertyEntity::default();
-                property.name = parameter.name.token.symbol.unwrap();
+                property.name = parameter.name.symbol;
                 property.visibility = Visibility::Public;
                 property.r#static = false;
                 property.r#type = p.r#type.clone();
@@ -703,7 +697,7 @@ impl Visitor for Indexer {
 
         for property in node.entries.iter() {
             let mut entity = PropertyEntity::default();
-            entity.name = property.variable().token.symbol.unwrap();
+            entity.name = property.variable().symbol;
             entity.visibility = visibility;
             entity.r#static = r#static;
             entity.r#type = r#type.kind.clone();
@@ -715,7 +709,7 @@ impl Visitor for Indexer {
 
     fn visit_trait_usage(&mut self, node: &mut TraitUsage) {
         for r#use in node.traits.iter() {
-            let name = self.qualify(r#use.token.symbol.unwrap(), r#use.token);
+            let name = self.qualify(&r#use);
 
             self.scope.current_class_like.uses.push(name);
         }

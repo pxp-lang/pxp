@@ -54,8 +54,8 @@ struct TypeDumper<'a> {
 
 impl<'a> Visitor for TypeDumper<'a> {
     fn visit_function_call(&mut self, node: &mut FunctionCallExpression) {
-        if let ExpressionKind::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier { token })) = &node.target.kind {
-            if self.symbol_table.resolve(token.symbol.unwrap()).unwrap() == b"dumpType" {
+        if let ExpressionKind::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier { symbol, .. })) = &node.target.kind {
+            if self.symbol_table.resolve(*symbol).unwrap() == b"dumpType" {
                 let argument = node.arguments.arguments.first().unwrap();
                 
                 if let Some(r#type) = self.type_map.get(argument.get_value().id) {
