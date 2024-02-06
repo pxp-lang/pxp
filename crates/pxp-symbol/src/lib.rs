@@ -5,7 +5,7 @@ use serde::{Serialize, Deserialize};
 
 pub type Symbol = usize;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct SymbolTable {
     map: HashMap<Vec<u8>, Symbol>,
     vec: Vec<Vec<u8>>,
@@ -34,6 +34,10 @@ impl SymbolTable {
         self.vec.push(contents.to_vec());
 
         symbol
+    }
+
+    pub fn find(&self, contents: &[u8]) -> Option<Symbol> {
+        self.map.get(contents).copied()
     }
 
     pub fn resolve(&self, symbol: Symbol) -> Option<ByteStr> {
