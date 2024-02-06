@@ -11,3 +11,4 @@ pxp-ast = { path = "../pxp-ast" }
 pxp-syntax = { path = "../pxp-syntax" }
 pxp-span = { path = "../pxp-span" }
 pxp-type = { path = "../pxp-type" }
+pxp-symbol = { path = "../pxp-symbol" }
