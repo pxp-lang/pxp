@@ -9,4 +9,5 @@ license-file.workspace = true
 [dependencies]
 pxp-span = { path = "../pxp-span" }
 pxp-symbol = { path = "../pxp-symbol" }
+pxp-token = { path = "../pxp-token" }
 serde = { version = "1.0.193", features = ["derive"] }

@@ -5,7 +5,7 @@ use serde::{Serialize, Deserialize};
 
 pub type Symbol = usize;
 
-#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SymbolTable {
     map: HashMap<Vec<u8>, Symbol>,
     vec: Vec<Vec<u8>>,
@@ -13,7 +13,14 @@ pub struct SymbolTable {
 
 impl SymbolTable {
     pub fn new() -> Self {
-        Self::default()
+        let mut table = Self {
+            map: HashMap::new(),
+            vec: Vec::new(),
+        };
+
+        // This will reserve Symbol(0) for internal use (missing tokens, etc.)
+        table.intern(b"");
+        table
     }
 
     pub fn intern(&mut self, contents: &[u8]) -> Symbol {

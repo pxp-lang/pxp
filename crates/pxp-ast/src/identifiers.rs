@@ -1,6 +1,7 @@
 use crate::Expression;
 use pxp_span::Span;
-use pxp_token::{Token, TokenKind};
+use pxp_symbol::Symbol;
+use pxp_syntax::identifier::IdentifierQualification;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -10,8 +11,8 @@ pub enum Identifier {
 }
 
 impl Identifier {
-    pub fn missing(token: Token) -> Self {
-        Self::SimpleIdentifier(SimpleIdentifier { token })
+    pub fn missing() -> Self {
+        Self::SimpleIdentifier(SimpleIdentifier::new(0, IdentifierQualification::Unqualified, Span::default()))
     }
 
     pub fn is_simple(&self) -> bool {
@@ -32,24 +33,26 @@ impl Identifier {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct SimpleIdentifier {
-    pub token: Token,
+    pub symbol: Symbol,
+    pub qualification: IdentifierQualification,
+    pub span: Span,
 }
 
 impl SimpleIdentifier {
-    pub fn new(token: Token) -> Self {
-        Self { token }
+    pub fn new(symbol: Symbol, qualification: IdentifierQualification, span: Span) -> Self {
+        Self { symbol, qualification, span }
     }
 
     pub fn is_fully_qualified(&self) -> bool {
-        matches!(self.token.kind, TokenKind::FullyQualifiedIdentifier)
+        self.qualification.is_fully_qualified()
     }
 
     pub fn is_qualified(&self) -> bool {
-        matches!(self.token.kind, TokenKind::QualifiedIdentifier)
+        self.qualification.is_qualified()
     }
 
     pub fn is_unqualified(&self) -> bool {
-        matches!(self.token.kind, TokenKind::Identifier)
+        self.qualification.is_unqualified()
     }
 }
 

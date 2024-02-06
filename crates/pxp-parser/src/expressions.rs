@@ -38,6 +38,7 @@ use pxp_diagnostics::DiagnosticKind;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
+use pxp_syntax::identifier::IdentifierQualification;
 use pxp_token::DocStringKind;
 use pxp_token::TokenKind;
 
@@ -233,7 +234,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                         right: Box::new(Expression::new(
                             state.id(),
                             ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                                SimpleIdentifier { token: *op },
+                                SimpleIdentifier::new(op.symbol.unwrap(), IdentifierQualification::Unqualified, op.span),
                             )),
                             Span::new(start_span.start, enum_span.end),
                             CommentGroup::default(),
@@ -250,7 +251,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                         right: Box::new(Expression::new(
                             state.id(),
                             ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                                SimpleIdentifier { token: *op },
+                                SimpleIdentifier::new(op.symbol.unwrap(), IdentifierQualification::Unqualified, op.span),
                             )),
                             Span::new(start_span.start, from_span.end),
                             CommentGroup::default(),
@@ -1008,7 +1009,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             _,
         ) => {
             let identifier = identifiers::full_name(state);
-            let identifier_span = identifier.token.span;
+            let identifier_span = identifier.span;
 
             Expression::new(
                 state.id(),
@@ -1133,7 +1134,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                     Expression::new(
                         state.id(),
                         ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier { token },
+                            SimpleIdentifier::new(token.symbol.unwrap(), IdentifierQualification::Unqualified, token.span),
                         )),
                         span,
                         CommentGroup::default(),
@@ -1148,7 +1149,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                     Expression::new(
                         state.id(),
                         ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier { token },
+                            SimpleIdentifier::new(token.symbol.unwrap(), IdentifierQualification::Unqualified, token.span)
                         )),
                         span,
                         CommentGroup::default(),
@@ -1583,9 +1584,9 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                 TokenKind::Class => {
                     state.stream.next();
 
-                    ExpressionKind::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier {
-                        token: *current,
-                    }))
+                    ExpressionKind::Identifier(Identifier::SimpleIdentifier(
+                        SimpleIdentifier::new(current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
+                    ))
                 }
                 _ => {
                     return expected_token_err!(["`{`", "`$`", "an identifier"], state);

@@ -393,7 +393,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                     state.stream.next();
 
                     let identifier = identifiers::identifier_maybe_reserved(state);
-                    let id_span = identifier.token.span;
+                    let id_span = identifier.span;
                     let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier));
                     let identifier_expression =
                         Expression::new(state.id(), kind, id_span, CommentGroup::default());

@@ -254,7 +254,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
 
     let name = identifiers::identifier_maybe_reserved(state);
 
-    let symbol = state.symbol_table.resolve(name.token.symbol.unwrap());
+    let symbol = state.symbol_table.resolve(name.symbol);
     let is_constructor = symbol.is_some() && symbol.unwrap() == b"__construct";
 
     if is_constructor {
