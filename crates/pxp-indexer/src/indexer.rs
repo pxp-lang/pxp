@@ -281,11 +281,11 @@ impl Visitor for Indexer {
             if let ExpressionKind::Literal(Literal { token, .. }) = name_argument.get_value().kind {
                 let name = self
                     .symbol_table
-                    .resolve(*symbol)
+                    .resolve(token.symbol.unwrap())
                     .unwrap()
                     .to_bytestring();
+
                 // We need to remove the quotes from the name.
-                // FIXME: This is a bit of a hack, but it'll do for now.
                 let name = &name[1..name.len() - 1];
                 let name_symbol = self.symbol_table.intern(name);
 

@@ -109,4 +109,9 @@ fn it_indexes_correctly() {
     };
 
     assert!(controller.r#abstract);
+
+    let bar_constant = index.get_constant(symbol_table.must_find(b"BAR"));
+    assert!(bar_constant.is_some());
+    let bar_constant = bar_constant.unwrap();
+    assert_eq!(bar_constant.name, symbol_table.intern(b"BAR"));
 }

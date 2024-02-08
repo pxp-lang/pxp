@@ -40,6 +40,10 @@ impl SymbolTable {
         self.map.get(contents).copied()
     }
 
+    pub fn must_find(&self, contents: &[u8]) -> Symbol {
+        self.find(contents).expect(&format!("Symbol for {} not found", ByteStr::from(contents)))
+    }
+
     pub fn resolve(&self, symbol: Symbol) -> Option<ByteStr> {
         self.vec.get(symbol).map(|s| ByteStr::new(s))
     }
