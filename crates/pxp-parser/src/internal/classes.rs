@@ -9,6 +9,7 @@ use crate::internal::properties;
 use crate::internal::traits;
 use crate::internal::utils;
 use crate::state::State;
+use crate::ParserDiagnostic;
 use pxp_ast::classes::AnonymousClassBody;
 use pxp_ast::classes::AnonymousClassExpression;
 use pxp_ast::classes::ClassBody;
@@ -20,7 +21,7 @@ use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::Expression;
 use pxp_ast::StatementKind;
 use pxp_ast::{ExpressionKind, NewExpression};
-use pxp_diagnostics::DiagnosticKind;
+
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
@@ -211,7 +212,7 @@ pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
             Method::Abstract(method) => {
                 if !has_abstract {
                     state.diagnostic(
-                        DiagnosticKind::AbstractMethodInNonAbstractClass,
+                        ParserDiagnostic::AbstractMethodInNonAbstractClass,
                         Severity::Error,
                         method.modifiers.get_abstract().unwrap().span(),
                     );
@@ -223,7 +224,7 @@ pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
             Method::AbstractConstructor(ctor) => {
                 if !has_abstract {
                     state.diagnostic(
-                        DiagnosticKind::AbstractMethodInNonAbstractClass,
+                        ParserDiagnostic::AbstractMethodInNonAbstractClass,
                         Severity::Error,
                         ctor.modifiers.get_abstract().unwrap().span(),
                     );

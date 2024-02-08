@@ -1,4 +1,5 @@
 use crate::state::State;
+use crate::ParserDiagnostic;
 use pxp_ast::modifiers::ClassModifier;
 use pxp_ast::modifiers::ClassModifierGroup;
 use pxp_ast::modifiers::ConstantModifier;
@@ -9,7 +10,7 @@ use pxp_ast::modifiers::PromotedPropertyModifier;
 use pxp_ast::modifiers::PromotedPropertyModifierGroup;
 use pxp_ast::modifiers::PropertyModifier;
 use pxp_ast::modifiers::PropertyModifierGroup;
-use pxp_diagnostics::DiagnosticKind;
+
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
@@ -23,7 +24,7 @@ pub fn class_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ClassMod
             TokenKind::Final => Some(ClassModifier::Final(*span)),
             TokenKind::Abstract => Some(ClassModifier::Abstract(*span)),
             _ => {
-                state.diagnostic(DiagnosticKind::InvalidClassModifier, Severity::Error, *span);
+                state.diagnostic(ParserDiagnostic::InvalidClassModifier, Severity::Error, *span);
 
                 None
             }
@@ -38,7 +39,7 @@ pub fn class_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ClassMod
         let span = Span::new(start.start, end.end);
 
         state.diagnostic(
-            DiagnosticKind::CannotUseFinalWithAbstract,
+            ParserDiagnostic::CannotUseFinalWithAbstract,
             Severity::Error,
             span,
         );
@@ -60,7 +61,7 @@ pub fn method_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> MethodM
             TokenKind::Static => Some(MethodModifier::Static(*span)),
             _ => {
                 state.diagnostic(
-                    DiagnosticKind::InvalidMethodModifier,
+                    ParserDiagnostic::InvalidMethodModifier,
                     Severity::Error,
                     *span,
                 );
@@ -78,7 +79,7 @@ pub fn method_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> MethodM
         let span = Span::new(start.start, end.end);
 
         state.diagnostic(
-            DiagnosticKind::CannotUseFinalWithAbstract,
+            ParserDiagnostic::CannotUseFinalWithAbstract,
             Severity::Error,
             span,
         );
@@ -99,7 +100,7 @@ pub fn property_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Prope
             TokenKind::Private => Some(PropertyModifier::Private(*span)),
             _ => {
                 state.diagnostic(
-                    DiagnosticKind::InvalidPropertyModifier,
+                    ParserDiagnostic::InvalidPropertyModifier,
                     Severity::Error,
                     *span,
                 );
@@ -126,7 +127,7 @@ pub fn promoted_property_group(
             TokenKind::Public => Some(PromotedPropertyModifier::Public(*span)),
             _ => {
                 state.diagnostic(
-                    DiagnosticKind::InvalidPropertyModifier,
+                    ParserDiagnostic::InvalidPropertyModifier,
                     Severity::Error,
                     *span,
                 );
@@ -149,7 +150,7 @@ pub fn constant_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Const
             TokenKind::Final => Some(ConstantModifier::Final(*span)),
             _ => {
                 state.diagnostic(
-                    DiagnosticKind::InvalidConstantModifier,
+                    ParserDiagnostic::InvalidConstantModifier,
                     Severity::Error,
                     *span,
                 );
@@ -167,7 +168,7 @@ pub fn constant_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Const
         let span = Span::new(start.start, end.end);
 
         state.diagnostic(
-            DiagnosticKind::CannotUseFinalWithPrivateOnConstant,
+            ParserDiagnostic::CannotUseFinalWithPrivateOnConstant,
             Severity::Error,
             span,
         );
@@ -195,7 +196,7 @@ pub fn collect(state: &mut State) -> Vec<(Span, TokenKind)> {
 
     while collectable_tokens.contains(&current_kind) {
         if let Some((span, _)) = collected.iter().find(|(_, kind)| kind == &current_kind) {
-            state.diagnostic(DiagnosticKind::DuplicateModifier, Severity::Error, *span);
+            state.diagnostic(ParserDiagnostic::DuplicateModifier, Severity::Error, *span);
         }
 
         // guard against multiple visibility modifiers, we don't care where these modifiers are used.
@@ -210,7 +211,7 @@ pub fn collect(state: &mut State) -> Vec<(Span, TokenKind)> {
                 ) && kind != &current_kind
             }) {
                 state.diagnostic(
-                    DiagnosticKind::MultipleVisibilityModifiers,
+                    ParserDiagnostic::MultipleVisibilityModifiers,
                     Severity::Error,
                     *span,
                 );

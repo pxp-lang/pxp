@@ -6,6 +6,7 @@ use crate::internal::modifiers;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
+use crate::ParserDiagnostic;
 use pxp_ast::arguments::{Argument, SingleArgument};
 use pxp_ast::arguments::{ArgumentList, NamedArgument, PositionalArgument};
 use pxp_ast::functions::ConstructorParameter;
@@ -13,7 +14,7 @@ use pxp_ast::functions::ConstructorParameterList;
 use pxp_ast::functions::FunctionParameter;
 use pxp_ast::functions::FunctionParameterList;
 use pxp_ast::identifiers::SimpleIdentifier;
-use pxp_diagnostics::DiagnosticKind;
+
 use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;
 
@@ -106,7 +107,7 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
                 let var = variables::simple_variable(state);
                 if !modifiers.is_empty() {
                     state.diagnostic(
-                        DiagnosticKind::PromotedPropertyCannotBeVariadic,
+                        ParserDiagnostic::PromotedPropertyCannotBeVariadic,
                         Severity::Error,
                         current.span,
                     );
@@ -124,7 +125,7 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
                     Some(ty) => {
                         if ty.includes_callable() || ty.is_bottom() {
                             state.diagnostic(
-                                DiagnosticKind::ForbiddenTypeUsedInProperty,
+                                ParserDiagnostic::ForbiddenTypeUsedInProperty,
                                 Severity::Error,
                                 ty.get_span(),
                             );
@@ -133,7 +134,7 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
                     None => {
                         if let Some(modifier) = modifiers.get_readonly() {
                             state.diagnostic(
-                                DiagnosticKind::ReadonlyPropertyMustHaveType,
+                                ParserDiagnostic::ReadonlyPropertyMustHaveType,
                                 Severity::Error,
                                 modifier.span(),
                             );
@@ -186,7 +187,7 @@ pub fn argument_list(state: &mut State) -> ArgumentList {
             has_used_named_arguments = true;
         } else if has_used_named_arguments {
             state.diagnostic(
-                DiagnosticKind::CannotUsePositionalArgumentAfterNamedArgument,
+                ParserDiagnostic::CannotUsePositionalArgumentAfterNamedArgument,
                 Severity::Error,
                 span,
             );
@@ -231,7 +232,7 @@ pub fn single_argument(
         let (named, argument) = argument(state);
         if only_positional && named {
             state.diagnostic(
-                DiagnosticKind::PositionalArgumentsOnly,
+                ParserDiagnostic::PositionalArgumentsOnly,
                 Severity::Error,
                 span,
             );
@@ -239,7 +240,7 @@ pub fn single_argument(
 
         if first_argument.is_some() {
             state.diagnostic(
-                DiagnosticKind::OnlyAllowedOneArgument,
+                ParserDiagnostic::OnlyAllowedOneArgument,
                 Severity::Error,
                 span,
             );
@@ -256,7 +257,7 @@ pub fn single_argument(
 
     if required && first_argument.is_none() {
         state.diagnostic(
-            DiagnosticKind::ArgumentRequired,
+            ParserDiagnostic::ArgumentRequired,
             Severity::Error,
             state.stream.current().span,
         );

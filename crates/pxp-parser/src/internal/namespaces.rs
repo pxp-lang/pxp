@@ -4,6 +4,7 @@ use crate::scoped;
 use crate::state::NamespaceType;
 use crate::state::Scope;
 use crate::state::State;
+use crate::ParserDiagnostic;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::namespaces::BracedNamespace;
 use pxp_ast::namespaces::BracedNamespaceBody;
@@ -11,7 +12,7 @@ use pxp_ast::namespaces::NamespaceStatement;
 use pxp_ast::namespaces::UnbracedNamespace;
 use pxp_ast::Block;
 use pxp_ast::StatementKind;
-use pxp_diagnostics::DiagnosticKind;
+
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
@@ -26,7 +27,7 @@ pub fn namespace(state: &mut State) -> StatementKind {
         if current.kind != TokenKind::LeftBrace {
             if let Some(NamespaceType::Braced) = state.namespace_type() {
                 state.diagnostic(
-                    DiagnosticKind::CannotMixBracketedAndUnbracketedNamespaceDeclarations,
+                    ParserDiagnostic::CannotMixBracketedAndUnbracketedNamespaceDeclarations,
                     Severity::Error,
                     current.span,
                 );
@@ -39,7 +40,7 @@ pub fn namespace(state: &mut State) -> StatementKind {
     match state.namespace_type() {
         Some(NamespaceType::Unbraced) => {
             state.diagnostic(
-                DiagnosticKind::CannotMixBracketedAndUnbracketedNamespaceDeclarations,
+                ParserDiagnostic::CannotMixBracketedAndUnbracketedNamespaceDeclarations,
                 Severity::Error,
                 current.span,
             );
@@ -48,7 +49,7 @@ pub fn namespace(state: &mut State) -> StatementKind {
         }
         Some(NamespaceType::Braced) if state.namespace().is_some() => {
             state.diagnostic(
-                DiagnosticKind::NestedNamespace,
+                ParserDiagnostic::NestedNamespace,
                 Severity::Error,
                 current.span,
             );

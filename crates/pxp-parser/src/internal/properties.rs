@@ -3,11 +3,12 @@ use crate::internal::data_type;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
+use crate::ParserDiagnostic;
 use pxp_ast::modifiers::PropertyModifierGroup;
 use pxp_ast::properties::Property;
 use pxp_ast::properties::PropertyEntry;
 use pxp_ast::properties::VariableProperty;
-use pxp_diagnostics::DiagnosticKind;
+
 use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;
 
@@ -23,7 +24,7 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
             type_checked = true;
             if modifiers.has_readonly() && modifiers.has_static() {
                 state.diagnostic(
-                    DiagnosticKind::StaticPropertyCannotBeReadonly,
+                    ParserDiagnostic::StaticPropertyCannotBeReadonly,
                     Severity::Error,
                     state.stream.current().span,
                 );
@@ -33,7 +34,7 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
                 Some(ty) => {
                     if ty.includes_callable() || ty.is_bottom() {
                         state.diagnostic(
-                            DiagnosticKind::ForbiddenTypeUsedInProperty,
+                            ParserDiagnostic::ForbiddenTypeUsedInProperty,
                             Severity::Error,
                             ty.get_span(),
                         );
@@ -42,7 +43,7 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
                 None => {
                     if let Some(modifier) = modifiers.get_readonly() {
                         state.diagnostic(
-                            DiagnosticKind::ReadonlyPropertyMustHaveType,
+                            ParserDiagnostic::ReadonlyPropertyMustHaveType,
                             Severity::Error,
                             modifier.span(),
                         );
@@ -55,7 +56,7 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
         if current.kind == TokenKind::Equals {
             if let Some(modifier) = modifiers.get_readonly() {
                 state.diagnostic(
-                    DiagnosticKind::ReadonlyPropertyCannotHaveDefaultValue,
+                    ParserDiagnostic::ReadonlyPropertyCannotHaveDefaultValue,
                     Severity::Error,
                     modifier.span(),
                 );
@@ -107,7 +108,7 @@ pub fn parse_var(state: &mut State) -> VariableProperty {
             if let Some(ty) = &ty {
                 if ty.includes_callable() || ty.is_bottom() {
                     state.diagnostic(
-                        DiagnosticKind::ForbiddenTypeUsedInProperty,
+                        ParserDiagnostic::ForbiddenTypeUsedInProperty,
                         Severity::Error,
                         ty.get_span(),
                     );

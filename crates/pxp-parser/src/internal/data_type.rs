@@ -1,8 +1,8 @@
-use crate::internal::utils;
+use crate::{internal::utils, ParserDiagnostic};
 use crate::peek_token;
 use crate::state::State;
 use pxp_ast::data_type::DataType;
-use pxp_diagnostics::{DiagnosticKind, Severity};
+use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 use pxp_type::Type;
@@ -178,7 +178,7 @@ fn simple_data_type(state: &mut State) -> Type {
         Some(ty) => ty,
         None => {
             state.diagnostic(
-                DiagnosticKind::MissingType,
+                ParserDiagnostic::MissingType,
                 Severity::Error,
                 state.stream.current().span,
             );
@@ -197,7 +197,7 @@ fn nullable(state: &mut State) -> Type {
 
     if ty.standalone() {
         state.diagnostic(
-            DiagnosticKind::StandaloneTypeUsedInNullableType,
+            ParserDiagnostic::StandaloneTypeUsedInNullableType,
             Severity::Error,
             current.span,
         );
@@ -209,7 +209,7 @@ fn nullable(state: &mut State) -> Type {
 fn union(state: &mut State, other: Type, within_dnf: bool) -> Type {
     if other.standalone() {
         state.diagnostic(
-            DiagnosticKind::StandaloneTypeUsedInUnionType,
+            ParserDiagnostic::StandaloneTypeUsedInUnionType,
             Severity::Error,
             state.stream.current().span,
         );
@@ -236,7 +236,7 @@ fn union(state: &mut State, other: Type, within_dnf: bool) -> Type {
                 //        v-- error
                 // F&(A|B|(D&S))
                 state.diagnostic(
-                    DiagnosticKind::NestedDisjunctiveNormalFormType,
+                    ParserDiagnostic::NestedDisjunctiveNormalFormType,
                     Severity::Error,
                     current.span,
                 );
@@ -254,7 +254,7 @@ fn union(state: &mut State, other: Type, within_dnf: bool) -> Type {
             let ty = simple_data_type(state);
             if ty.standalone() {
                 state.diagnostic(
-                    DiagnosticKind::StandaloneTypeUsedInUnionType,
+                    ParserDiagnostic::StandaloneTypeUsedInUnionType,
                     Severity::Error,
                     last_pipe,
                 );
@@ -278,7 +278,7 @@ fn union(state: &mut State, other: Type, within_dnf: bool) -> Type {
 fn intersection(state: &mut State, other: Type, within_dnf: bool) -> Type {
     if other.standalone() {
         state.diagnostic(
-            DiagnosticKind::StandaloneTypeUsedInIntersectionType,
+            ParserDiagnostic::StandaloneTypeUsedInIntersectionType,
             Severity::Error,
             state.stream.current().span,
         );
@@ -307,7 +307,7 @@ fn intersection(state: &mut State, other: Type, within_dnf: bool) -> Type {
                 // F|(A&B&(D|S))
 
                 state.diagnostic(
-                    DiagnosticKind::NestedDisjunctiveNormalFormType,
+                    ParserDiagnostic::NestedDisjunctiveNormalFormType,
                     Severity::Error,
                     current.span,
                 );
@@ -325,7 +325,7 @@ fn intersection(state: &mut State, other: Type, within_dnf: bool) -> Type {
             let ty = simple_data_type(state);
             if ty.standalone() {
                 state.diagnostic(
-                    DiagnosticKind::StandaloneTypeUsedInIntersectionType,
+                    ParserDiagnostic::StandaloneTypeUsedInIntersectionType,
                     Severity::Error,
                     last_ampersand,
                 );

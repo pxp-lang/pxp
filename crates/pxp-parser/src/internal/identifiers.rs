@@ -1,6 +1,6 @@
-use crate::state::State;
+use crate::{state::State, ParserDiagnostic};
 use pxp_ast::identifiers::SimpleIdentifier;
-use pxp_diagnostics::{DiagnosticKind, Severity};
+use pxp_diagnostics::Severity;
 use pxp_syntax::identifier::IdentifierQualification;
 use pxp_token::{Token, TokenKind};
 
@@ -22,7 +22,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
             state.diagnostic(
-                DiagnosticKind::CannotUseReservedKeywordAsTypeName,
+                ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
                 Severity::Error,
                 current.span,
             );
@@ -33,7 +33,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
-                DiagnosticKind::CannotUseReservedKeywordAsTypeName,
+                ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
                 Severity::Error,
                 current.span,
             );
@@ -44,7 +44,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken {
+                ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier],
                     found: *current,
                 },
@@ -73,7 +73,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
             state.diagnostic(
-                DiagnosticKind::CannotUseReservedKeywordAsLabel,
+                ParserDiagnostic::CannotUseReservedKeywordAsLabel,
                 Severity::Error,
                 current.span,
             );
@@ -84,7 +84,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
-                DiagnosticKind::CannotUseReservedKeywordAsLabel,
+                ParserDiagnostic::CannotUseReservedKeywordAsLabel,
                 Severity::Error,
                 current.span,
             );
@@ -95,7 +95,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken {
+                ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier],
                     found: *current,
                 },
@@ -123,7 +123,7 @@ pub fn constant_identifier(state: &mut State) -> SimpleIdentifier {
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
-                DiagnosticKind::CannotUseReservedKeywordAsConstantName,
+                ParserDiagnostic::CannotUseReservedKeywordAsConstantName,
                 Severity::Error,
                 current.span,
             );
@@ -134,7 +134,7 @@ pub fn constant_identifier(state: &mut State) -> SimpleIdentifier {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken {
+                ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier],
                     found: *current,
                 },
@@ -156,7 +156,7 @@ pub fn identifier(state: &mut State) -> SimpleIdentifier {
         SimpleIdentifier::new(state.id(), current.symbol.unwrap(), IdentifierQualification::Unqualified, current.span)
     } else {
         state.diagnostic(
-            DiagnosticKind::UnexpectedToken { token: *current },
+            ParserDiagnostic::UnexpectedToken { token: *current },
             Severity::Error,
             current.span,
         );
@@ -211,7 +211,7 @@ pub fn full_name(state: &mut State) -> SimpleIdentifier {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken {
+                ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier],
                     found: *current,
                 },
@@ -242,7 +242,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
             state.diagnostic(
-                DiagnosticKind::CannotUseReservedKeywordAsTypeName,
+                ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
                 Severity::Error,
                 current.span,
             );
@@ -253,7 +253,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
-                DiagnosticKind::CannotUseReservedKeywordAsTypeName,
+                ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
                 Severity::Error,
                 current.span,
             );
@@ -264,7 +264,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken {
+                ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier],
                     found: *current,
                 },
@@ -299,7 +299,7 @@ pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
-                DiagnosticKind::CannotUseReservedKeywordAsTypeName,
+                ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
                 Severity::Error,
                 current.span,
             );
@@ -310,7 +310,7 @@ pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken {
+                ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier],
                     found: *current,
                 },

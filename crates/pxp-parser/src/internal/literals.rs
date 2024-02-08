@@ -1,8 +1,8 @@
 use pxp_ast::literals::{Literal, LiteralKind};
-use pxp_diagnostics::{DiagnosticKind, Severity};
+use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;
 
-use crate::state::State;
+use crate::{state::State, ParserDiagnostic};
 
 pub fn expect_literal(state: &mut State) -> Literal {
     let token = state.stream.current();
@@ -24,7 +24,7 @@ pub fn expect_literal(state: &mut State) -> Literal {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken {
+                ParserDiagnostic::ExpectedToken {
                     expected: vec![
                         TokenKind::LiteralInteger,
                         TokenKind::LiteralFloat,

@@ -2,11 +2,12 @@ use crate::expected_token_err;
 use crate::expressions;
 use crate::internal::utils;
 use crate::state::State;
+use crate::ParserDiagnostic;
 use pxp_ast::variables::BracedVariableVariable;
 use pxp_ast::variables::SimpleVariable;
 use pxp_ast::variables::Variable;
 use pxp_ast::variables::VariableVariable;
-use pxp_diagnostics::DiagnosticKind;
+
 use pxp_diagnostics::Severity;
 use pxp_token::Token;
 use pxp_token::TokenKind;
@@ -24,7 +25,7 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
             state.stream.next();
 
             state.diagnostic(
-                DiagnosticKind::DynamicVariableNotAllowed,
+                ParserDiagnostic::DynamicVariableNotAllowed,
                 Severity::Error,
                 current.span,
             );
@@ -33,7 +34,7 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken {
+                ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Variable],
                     found: *current,
                 },
@@ -100,7 +101,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
                 // This allows us to handle standalone $ tokens, i.e. incomplete variables.
                 _ => {
                     state.diagnostic(
-                        DiagnosticKind::ExpectedToken {
+                        ParserDiagnostic::ExpectedToken {
                             expected: vec![TokenKind::Variable],
                             found: *current,
                         },
@@ -114,7 +115,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
         }
         _ => {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken {
+                ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Variable],
                     found: *current,
                 },

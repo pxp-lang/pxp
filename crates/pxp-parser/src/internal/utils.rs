@@ -1,7 +1,8 @@
 use crate::state::State;
+use crate::ParserDiagnostic;
 use pxp_ast::utils::CommaSeparated;
 use pxp_ast::Ending;
-use pxp_diagnostics::{DiagnosticKind, Severity};
+use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
@@ -19,13 +20,13 @@ pub fn skip_ending(state: &mut State) -> Ending {
     } else {
         if state.stream.is_eof() {
             state.diagnostic(
-                DiagnosticKind::UnexpectedEndOfFile,
+                ParserDiagnostic::UnexpectedEndOfFile,
                 Severity::Error,
                 current.span,
             );
         } else {
             state.diagnostic(
-                DiagnosticKind::ExpectedToken {
+                ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::CloseTag, TokenKind::SemiColon],
                     found: *current,
                 },
@@ -47,7 +48,7 @@ pub fn skip_semicolon(state: &mut State) -> Span {
         current.span
     } else {
         state.diagnostic(
-            DiagnosticKind::ExpectedToken {
+            ParserDiagnostic::ExpectedToken {
                 expected: vec![TokenKind::SemiColon],
                 found: *current,
             },
@@ -101,7 +102,7 @@ pub fn skip(state: &mut State, kind: TokenKind) -> Span {
 
         if state.stream.is_eof() {
             state.diagnostic(
-                DiagnosticKind::UnexpectedEndOfFileExpected {
+                ParserDiagnostic::UnexpectedEndOfFileExpected {
                     expected: vec![kind],
                 },
                 Severity::Error,
@@ -113,7 +114,7 @@ pub fn skip(state: &mut State, kind: TokenKind) -> Span {
         state.stream.next();
 
         state.diagnostic(
-            DiagnosticKind::ExpectedToken {
+            ParserDiagnostic::ExpectedToken {
                 expected: vec![kind],
                 found: *current,
             },
@@ -140,7 +141,7 @@ pub fn skip_any_of(state: &mut State, kinds: &[TokenKind]) -> Span {
         end
     } else {
         state.diagnostic(
-            DiagnosticKind::ExpectedToken {
+            ParserDiagnostic::ExpectedToken {
                 expected: kinds.to_vec(),
                 found: *current,
             },

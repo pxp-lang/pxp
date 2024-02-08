@@ -2,12 +2,13 @@ use crate::internal::blocks;
 use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
+use crate::ParserDiagnostic;
 use pxp_ast::try_block::CatchBlock;
 use pxp_ast::try_block::CatchType;
 use pxp_ast::try_block::FinallyBlock;
 use pxp_ast::try_block::TryStatement;
 use pxp_ast::StatementKind;
-use pxp_diagnostics::DiagnosticKind;
+
 use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;
 
@@ -79,7 +80,7 @@ pub fn try_block(state: &mut State) -> StatementKind {
 
     if catches.is_empty() && finally.is_none() {
         state.diagnostic(
-            DiagnosticKind::TryMustHaveCatchOrFinally,
+            ParserDiagnostic::TryMustHaveCatchOrFinally,
             Severity::Error,
             last_right_brace,
         );

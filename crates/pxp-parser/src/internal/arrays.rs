@@ -1,11 +1,12 @@
 use crate::expressions;
 use crate::internal::utils;
 use crate::state::State;
+use crate::ParserDiagnostic;
 use pxp_ast::Expression;
 use pxp_ast::ExpressionKind;
 use pxp_ast::ListEntry;
 use pxp_ast::{ArrayExpression, ArrayItem, ListExpression, ShortArrayExpression};
-use pxp_diagnostics::DiagnosticKind;
+
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
@@ -36,7 +37,7 @@ pub fn list_expression(state: &mut State) -> Expression {
                     state.stream.next();
 
                     state.diagnostic(
-                        DiagnosticKind::InvalidSpreadOperator,
+                        ParserDiagnostic::InvalidSpreadOperator,
                         Severity::Error,
                         current.span,
                     );
@@ -47,7 +48,7 @@ pub fn list_expression(state: &mut State) -> Expression {
                 if current.kind == TokenKind::DoubleArrow {
                     if !has_at_least_one_key && !items.is_empty() {
                         state.diagnostic(
-                            DiagnosticKind::CannotMixKeyedAndUnkeyedListEntries,
+                            ParserDiagnostic::CannotMixKeyedAndUnkeyedListEntries,
                             Severity::Error,
                             current.span,
                         );
@@ -62,7 +63,7 @@ pub fn list_expression(state: &mut State) -> Expression {
                         state.stream.next();
 
                         state.diagnostic(
-                            DiagnosticKind::InvalidSpreadOperator,
+                            ParserDiagnostic::InvalidSpreadOperator,
                             Severity::Error,
                             current.span,
                         );
@@ -83,7 +84,7 @@ pub fn list_expression(state: &mut State) -> Expression {
                 } else {
                     if has_at_least_one_key {
                         state.diagnostic(
-                            DiagnosticKind::CannotMixKeyedAndUnkeyedListEntries,
+                            ParserDiagnostic::CannotMixKeyedAndUnkeyedListEntries,
                             Severity::Error,
                             current.span,
                         );
@@ -189,7 +190,7 @@ fn array_pair(state: &mut State) -> ArrayItem {
     if let Some(ellipsis) = ellipsis {
         if let Some(ampersand) = ampersand {
             state.diagnostic(
-                DiagnosticKind::UnexpectedToken { token: *ampersand },
+                ParserDiagnostic::UnexpectedToken { token: *ampersand },
                 Severity::Error,
                 ampersand.span,
             );
@@ -216,7 +217,7 @@ fn array_pair(state: &mut State) -> ArrayItem {
             state.stream.next();
 
             state.diagnostic(
-                DiagnosticKind::InvalidSpreadOperator,
+                ParserDiagnostic::InvalidSpreadOperator,
                 Severity::Error,
                 current.span,
             );

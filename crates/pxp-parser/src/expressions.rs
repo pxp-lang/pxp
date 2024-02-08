@@ -12,6 +12,7 @@ use crate::internal::strings;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
+use crate::ParserDiagnostic;
 use pxp_ast::arguments::ArgumentPlaceholder;
 use pxp_ast::identifiers::DynamicIdentifier;
 use pxp_ast::identifiers::Identifier;
@@ -34,7 +35,7 @@ use pxp_ast::{
     StaticPropertyFetchExpression, StaticVariableMethodCallExpression,
     StaticVariableMethodClosureCreationExpression, TernaryExpression,
 };
-use pxp_diagnostics::DiagnosticKind;
+
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
@@ -111,7 +112,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
 
             if rpred == precedence && matches!(rpred.associativity(), Some(Associativity::Non)) {
                 state.diagnostic(
-                    DiagnosticKind::UnexpectedToken { token: *current },
+                    ParserDiagnostic::UnexpectedToken { token: *current },
                     Severity::Error,
                     current.span,
                 );
@@ -592,7 +593,7 @@ pub fn attributes(state: &mut State) -> Expression {
         TokenKind::Fn => functions::arrow_function(state),
         _ => {
             state.diagnostic(
-                DiagnosticKind::InvalidTargetForAttributes,
+                ParserDiagnostic::InvalidTargetForAttributes,
                 Severity::Error,
                 current.span,
             );
@@ -605,7 +606,7 @@ pub fn attributes(state: &mut State) -> Expression {
 fn left(state: &mut State, precedence: &Precedence) -> Expression {
     if state.stream.is_eof() {
         state.diagnostic(
-            DiagnosticKind::UnexpectedEndOfFile,
+            ParserDiagnostic::UnexpectedEndOfFile,
             Severity::Error,
             state.stream.current().span,
         );
@@ -1485,7 +1486,7 @@ fn unexpected_token(state: &mut State, _: &Precedence) -> Expression {
     let current = state.stream.current();
 
     state.diagnostic(
-        DiagnosticKind::UnexpectedToken { token: *current },
+        ParserDiagnostic::UnexpectedToken { token: *current },
         Severity::Error,
         current.span,
     );

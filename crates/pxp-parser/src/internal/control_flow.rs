@@ -3,6 +3,7 @@ use crate::internal::blocks;
 use crate::internal::utils;
 use crate::state::State;
 use crate::statement;
+use crate::ParserDiagnostic;
 use pxp_ast::control_flow::IfStatement;
 use pxp_ast::control_flow::IfStatementBody;
 use pxp_ast::control_flow::IfStatementElse;
@@ -17,7 +18,7 @@ use pxp_ast::MatchArm;
 use pxp_ast::StatementKind;
 use pxp_ast::SwitchStatement;
 use pxp_ast::{Block, MatchExpression};
-use pxp_diagnostics::DiagnosticKind;
+
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
@@ -41,7 +42,7 @@ pub fn match_expression(state: &mut State) -> Expression {
         if current.kind == TokenKind::Default {
             if default.is_some() {
                 state.diagnostic(
-                    DiagnosticKind::CannotHaveMultipleDefaultArmsInMatch,
+                    ParserDiagnostic::CannotHaveMultipleDefaultArmsInMatch,
                     Severity::Error,
                     current.span,
                 );
@@ -177,7 +178,7 @@ pub fn switch_statement(state: &mut State) -> StatementKind {
             }
             _ => {
                 state.diagnostic(
-                    DiagnosticKind::ExpectedToken {
+                    ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::Case, TokenKind::Default, end_token],
                         found: *state.stream.current(),
                     },

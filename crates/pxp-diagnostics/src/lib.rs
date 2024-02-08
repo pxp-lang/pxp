@@ -1,21 +1,19 @@
-mod kind;
 mod severity;
 
 use std::fmt::Display;
 
-pub use kind::*;
 use pxp_span::Span;
 pub use severity::*;
 
 #[derive(Debug)]
-pub struct Diagnostic {
-    pub kind: DiagnosticKind,
+pub struct Diagnostic<K: Display> {
+    pub kind: K,
     pub severity: Severity,
     pub span: Span,
 }
 
-impl Diagnostic {
-    pub fn new(kind: DiagnosticKind, severity: Severity, span: Span) -> Self {
+impl<K: Display> Diagnostic<K> {
+    pub fn new(kind: K, severity: Severity, span: Span) -> Self {
         Self {
             kind,
             severity,
@@ -24,7 +22,7 @@ impl Diagnostic {
     }
 }
 
-impl Display for Diagnostic {
+impl<K: Display> Display for Diagnostic<K> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,

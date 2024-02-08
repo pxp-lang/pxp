@@ -3,6 +3,7 @@ use crate::internal::attributes;
 use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
+use crate::ParserDiagnostic;
 use pxp_ast::enums::BackedEnumBody;
 use pxp_ast::enums::BackedEnumCase;
 use pxp_ast::enums::BackedEnumMember;
@@ -12,7 +13,7 @@ use pxp_ast::enums::UnitEnumCase;
 use pxp_ast::enums::UnitEnumMember;
 use pxp_ast::enums::UnitEnumStatement;
 use pxp_ast::StatementKind;
-use pxp_diagnostics::DiagnosticKind;
+
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_syntax::backed_enum_type::BackedEnumType;
@@ -46,7 +47,7 @@ pub fn parse(state: &mut State) -> StatementKind {
                         state.stream.next();
 
                         state.diagnostic(
-                            DiagnosticKind::InvalidBackedEnumType,
+                            ParserDiagnostic::InvalidBackedEnumType,
                             Severity::Error,
                             current.span,
                         );
@@ -57,7 +58,7 @@ pub fn parse(state: &mut State) -> StatementKind {
             }
             TokenKind::LeftBrace => {
                 state.diagnostic(
-                    DiagnosticKind::UnexpectedToken { token: *current },
+                    ParserDiagnostic::UnexpectedToken { token: *current },
                     Severity::Error,
                     current.span,
                 );
@@ -68,7 +69,7 @@ pub fn parse(state: &mut State) -> StatementKind {
                 state.stream.next();
 
                 state.diagnostic(
-                    DiagnosticKind::InvalidBackedEnumType,
+                    ParserDiagnostic::InvalidBackedEnumType,
                     Severity::Error,
                     current.span,
                 );
@@ -165,7 +166,7 @@ fn unit_member(state: &mut State) -> Option<UnitEnumMember> {
             utils::skip_semicolon(state);
 
             state.diagnostic(
-                DiagnosticKind::UnitEnumsCannotHaveCaseValues,
+                ParserDiagnostic::UnitEnumsCannotHaveCaseValues,
                 Severity::Error,
                 Span::new(equals.start, expression.span.end),
             );
@@ -204,7 +205,7 @@ fn backed_member(state: &mut State) -> Option<BackedEnumMember> {
             let semi = utils::skip_semicolon(state);
 
             state.diagnostic(
-                DiagnosticKind::BackedEnumCaseMustHaveValue,
+                ParserDiagnostic::BackedEnumCaseMustHaveValue,
                 Severity::Error,
                 Span::new(case.start, semi.end),
             );

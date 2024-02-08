@@ -2,10 +2,12 @@ use std::collections::VecDeque;
 
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::{attributes::AttributeGroup, NodeId};
-use pxp_diagnostics::{Diagnostic, DiagnosticKind, Severity};
+use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::stream::TokenStream;
 use pxp_span::Span;
 use pxp_symbol::SymbolTable;
+
+use crate::ParserDiagnostic;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum NamespaceType {
@@ -26,7 +28,7 @@ pub struct State<'a, 'b> {
     pub symbol_table: &'b SymbolTable,
     pub attributes: Vec<AttributeGroup>,
     pub namespace_type: Option<NamespaceType>,
-    pub diagnostics: Vec<Diagnostic>,
+    pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
     pub id: NodeId,
 }
 
@@ -81,7 +83,7 @@ impl<'a, 'b> State<'a, 'b> {
         self.stack.iter().nth(self.stack.len() - 2)
     }
 
-    pub fn diagnostic(&mut self, kind: DiagnosticKind, severity: Severity, span: Span) {
+    pub fn diagnostic(&mut self, kind: ParserDiagnostic, severity: Severity, span: Span) {
         self.diagnostics.push(Diagnostic::new(kind, severity, span));
     }
 

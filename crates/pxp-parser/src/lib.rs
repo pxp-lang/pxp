@@ -49,11 +49,14 @@ mod expressions;
 mod internal;
 mod macros;
 mod state;
+mod diagnostics;
+
+pub use diagnostics::ParserDiagnostic;
 
 #[derive(Debug)]
 pub struct ParseResult {
     pub ast: Vec<Statement>,
-    pub diagnostics: Vec<Diagnostic>,
+    pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
 }
 
 pub fn parse<'b, B: Sized + AsRef<[u8]>>(
