@@ -1,4 +1,3 @@
-use crate::expect_token;
 use crate::expressions::create;
 use crate::internal::identifiers;
 use crate::internal::utils;
@@ -182,7 +181,6 @@ pub fn nowdoc(state: &mut State) -> Expression {
     state.stream.next();
 
     let string_part = *state.stream.current();
-    expect_token!([TokenKind::StringPart => ()], state, "constant string");
 
     // FIXME: Do we still need this, or can we do it inside of the lexer?
     // let (indentation_type, indentation_amount) = match &state.stream.current().kind {

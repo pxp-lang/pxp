@@ -1,7 +1,7 @@
-use crate::expect_token;
 use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
+use crate::ParserDiagnostic;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::modifiers::VisibilityModifier;
 use pxp_ast::traits::TraitBody;
@@ -9,6 +9,7 @@ use pxp_ast::traits::TraitStatement;
 use pxp_ast::traits::TraitUsage;
 use pxp_ast::traits::TraitUsageAdaptation;
 use pxp_ast::StatementKind;
+use pxp_diagnostics::Severity;
 use pxp_token::Token;
 use pxp_token::TokenKind;
 
@@ -58,7 +59,21 @@ pub fn usage(state: &mut State) -> TraitUsage {
                     _ => (None, identifiers::identifier(state)),
                 };
 
-            expect_token!([
+            while !state.stream.is_eof() && !matches!(state.stream.current().kind, TokenKind::As | TokenKind::Insteadof) {
+                let token = state.stream.current();
+                state.stream.next();
+
+                state.diagnostic(
+                    ParserDiagnostic::ExpectedToken {
+                        expected: vec![TokenKind::As, TokenKind::Insteadof],
+                        found: *token,
+                    },
+                    Severity::Error,
+                    token.span,
+                );
+            }
+
+            match state.stream.current().kind {
                     TokenKind::As => {
                         match state.stream.current() {
                             Token { kind: TokenKind::Public | TokenKind::Protected | TokenKind::Private, span, .. }=> {
@@ -134,8 +149,9 @@ pub fn usage(state: &mut State) -> TraitUsage {
                             method,
                             insteadof,
                         });
-                    }
-                ], state, ["`as`", "`insteadof`"]);
+                },
+                _ => unreachable!()
+            };
 
             utils::skip_semicolon(state);
         }
