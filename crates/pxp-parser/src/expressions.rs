@@ -1,4 +1,3 @@
-use crate::expected_token_err;
 use crate::internal::arrays;
 use crate::internal::attributes;
 use crate::internal::classes;
@@ -1590,7 +1589,18 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                     ))
                 }
                 _ => {
-                    return expected_token_err!(["`{`", "`$`", "an identifier"], state);
+                    state.diagnostic(
+                        ParserDiagnostic::ExpectedToken {
+                            expected: vec![TokenKind::LeftBrace, TokenKind::Dollar, TokenKind::Identifier],
+                            found: *current,
+                        },
+                        Severity::Error,
+                        current.span,
+                    );
+
+                    state.stream.next();
+
+                    ExpressionKind::Missing
                 }
             };
 
@@ -1732,7 +1742,20 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                     )
                 }
                 _ => {
-                    return expected_token_err!(["`{`", "`$`", "an identifier"], state);
+                    let span = state.stream.current().span;
+
+                    state.diagnostic(
+                        ParserDiagnostic::ExpectedToken {
+                            expected: vec![TokenKind::LeftBrace, TokenKind::Dollar, TokenKind::Identifier],
+                            found: *state.stream.current(),
+                        },
+                        Severity::Error,
+                        span,
+                    );
+
+                    state.stream.next();
+
+                    Expression::missing(state.id(), span)
                 }
             };
 

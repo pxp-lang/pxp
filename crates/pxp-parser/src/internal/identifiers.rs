@@ -4,8 +4,6 @@ use pxp_diagnostics::Severity;
 use pxp_syntax::identifier::IdentifierQualification;
 use pxp_token::{Token, TokenKind};
 
-use crate::peek_token;
-
 /// Expect an unqualified identifier such as Foo or Bar for a class, interface, trait, or an enum name.
 pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
@@ -167,12 +165,20 @@ pub fn identifier(state: &mut State) -> SimpleIdentifier {
 
 /// Expect an unqualified or qualified identifier such as Foo, Bar or Foo\Bar.
 pub fn name(state: &mut State) -> SimpleIdentifier {
-    // FIXME: This needs to be error-tolerant.
-    let name = peek_token!([
-        TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
-            state.stream.current()
-        },
-    ], state, "an identifier");
+    let name = match state.stream.current().kind {
+        TokenKind::Identifier | TokenKind::QualifiedIdentifier => *state.stream.current(),
+        _ => {
+            let span = state.stream.current().span;
+
+            state.diagnostic(
+                ParserDiagnostic::ExpectedToken { expected: vec![TokenKind::Identifier, TokenKind::QualifiedIdentifier], found: *state.stream.current() },
+                Severity::Error,
+                span,
+            );
+
+            Token::missing(state.stream.current().span)
+        }
+    };
 
     state.stream.next();
 

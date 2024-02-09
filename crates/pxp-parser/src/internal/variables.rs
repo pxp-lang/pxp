@@ -1,4 +1,3 @@
-use crate::expected_token_err;
 use crate::expressions;
 use crate::internal::utils;
 use crate::state::State;
@@ -9,7 +8,6 @@ use pxp_ast::variables::Variable;
 use pxp_ast::variables::VariableVariable;
 
 use pxp_diagnostics::Severity;
-use pxp_token::Token;
 use pxp_token::TokenKind;
 
 pub fn simple_variable(state: &mut State) -> SimpleVariable {
@@ -69,7 +67,6 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
                 end,
             })
         }
-        // FIXME: figure out why the lexer does this.
         TokenKind::Dollar if state.stream.peek().kind == TokenKind::LeftBrace => {
             let start = current.span;
             state.stream.next();

@@ -187,7 +187,7 @@ impl Parser {
         Ok(ty)
     }
 
-    fn parse_dnf_type(&self, state: &mut State) -> ParseResult<Type> {
+    fn parse_dnf_type(&self, _state: &mut State) -> ParseResult<Type> {
         todo!()
     }
 
@@ -226,14 +226,10 @@ impl Parser {
     }
 
     fn parse_nullable_type(&self, state: &mut State) -> ParseResult<Type> {
-        let start_span = state.current().span;
         state.next();
         state.skip_horizontal_whitespace();
 
         let ty = self.parse_simple_type(state)?;
-        let end_span = state.previous().span;
-
-        let span = Span::new(start_span.start, end_span.end);
 
         Ok(Type::Nullable(Box::new(ty)))
     }
@@ -242,7 +238,6 @@ impl Parser {
         let current = state.current();
         state.next();
         let symbol = state.symbol_table.resolve(current.symbol).unwrap();
-        let span = current.span;
 
         Ok(match &symbol[..] {
             b"int" => Type::Integer,
@@ -264,7 +259,7 @@ impl Parser {
             b"parent" => Type::ParentReference,
             _ => Type::Named(current.symbol),
         })
-    }
+    } 
 
     fn parse_text_symbol(&self, state: &mut State) -> ParseResult<Symbol> {
         let mut symbols = Vec::new();

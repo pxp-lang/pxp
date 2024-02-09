@@ -1,5 +1,4 @@
 use crate::{internal::utils, ParserDiagnostic};
-use crate::peek_token;
 use crate::state::State;
 use pxp_ast::data_type::DataType;
 use pxp_diagnostics::Severity;
@@ -73,7 +72,8 @@ fn dnf(state: &mut State) -> Type {
     // (A|B|..)&C.. or (A&B&..)|C..
     state.stream.next();
     let ty = simple_data_type(state);
-    peek_token!([
+
+    match state.stream.current().kind {
         TokenKind::Pipe => {
             let union = union(state, ty, true);
 
@@ -88,7 +88,16 @@ fn dnf(state: &mut State) -> Type {
 
             union(state, intersection, false)
         },
-    ], state, ["|", "&"])
+        _ => {
+            state.diagnostic(
+                ParserDiagnostic::UnexpectedToken { token: *state.stream.current() },
+                Severity::Error,
+                state.stream.current().span,
+            );
+
+            Type::Missing
+        }
+    }
 }
 
 fn optional_simple_data_type(state: &mut State) -> Option<Type> {

@@ -1,7 +1,6 @@
 use crate::Expression;
 use pxp_span::Span;
 use pxp_symbol::Symbol;
-use pxp_token::Token;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

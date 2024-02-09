@@ -13,7 +13,6 @@ use pxp_ast::functions::ConstructorParameter;
 use pxp_ast::functions::ConstructorParameterList;
 use pxp_ast::functions::FunctionParameter;
 use pxp_ast::functions::FunctionParameterList;
-use pxp_ast::identifiers::SimpleIdentifier;
 
 use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;

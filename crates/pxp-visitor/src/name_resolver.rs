@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use std::collections::HashMap;
 
 use pxp_ast::{identifiers::SimpleIdentifier, NodeId, Statement};

@@ -1,7 +1,6 @@
 use crate::expect_token;
 use crate::internal::identifiers;
 use crate::internal::utils;
-use crate::peek_token;
 use crate::state::State;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::modifiers::VisibilityModifier;
@@ -63,11 +62,12 @@ pub fn usage(state: &mut State) -> TraitUsage {
                     TokenKind::As => {
                         match state.stream.current() {
                             Token { kind: TokenKind::Public | TokenKind::Protected | TokenKind::Private, span, .. }=> {
-                                let visibility = peek_token!([
+                                let visibility = match state.stream.current().kind {
                                     TokenKind::Public => VisibilityModifier::Public(*span),
                                     TokenKind::Protected => VisibilityModifier::Protected(*span),
                                     TokenKind::Private => VisibilityModifier::Private(*span),
-                                ], state, ["`private`", "`protected`", "`public`"]);
+                                    _ => unreachable!(),
+                                };
 
                                 state.stream.next();
 

@@ -64,7 +64,7 @@ fn main() {
                 println!("Exiting...");
                 break;
             }
-            _ => todo!(),
+            _ => unimplemented!(),
         }
     }
 }

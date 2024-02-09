@@ -446,10 +446,6 @@ impl<'a> Lexer<'a> {
                     while let b'a'..=b'z' | b'A'..=b'Z' | b'\x80'..=b'\xFF' | b'_' | b'0'..=b'9' =
                         state.current()
                     {
-                        if this {
-                            this = false;
-                        }
-
                         bytes.push(state.current());
                         this = bytes == b"this";
 

@@ -79,14 +79,6 @@ impl<'a> State<'a> {
         &self.input[self.position.offset..(self.position.offset + n)]
     }
 
-    pub fn n_from_now(&self, n: usize) -> u8 {
-        if self.position.offset + n >= self.input.len() {
-            return self.input[self.position.offset];
-        }
-
-        self.input[self.position.offset + n]
-    }
-
     pub fn push(&mut self, token: Token) {
         self.tokens.push(token);
     }

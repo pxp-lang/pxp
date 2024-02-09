@@ -24,7 +24,6 @@ use pxp_parser::parse;
 use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_syntax::visibility::Visibility;
-use pxp_token::{Token, TokenKind};
 use pxp_type::Type;
 use pxp_visitor::{
     walk_abstract_constructor, walk_abstract_method, walk_backed_enum, walk_braced_namespace,

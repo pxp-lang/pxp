@@ -1,10 +1,10 @@
 use crate::expect_token;
-use crate::expected_token_err;
 use crate::expressions::create;
 use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
+use crate::ParserDiagnostic;
 use pxp_ast::identifiers::Identifier;
 use pxp_ast::literals::Literal;
 use pxp_ast::literals::LiteralKind;
@@ -19,7 +19,7 @@ use pxp_ast::{
     NowdocExpression, NullsafePropertyFetchExpression, PropertyFetchExpression,
     ShellExecExpression,
 };
-use pxp_lexer::error::SyntaxError;
+use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::DocStringIndentationKind;
@@ -184,12 +184,13 @@ pub fn nowdoc(state: &mut State) -> Expression {
     let string_part = *state.stream.current();
     expect_token!([TokenKind::StringPart => ()], state, "constant string");
 
-    let (indentation_type, indentation_amount) = match &state.stream.current().kind {
-        TokenKind::EndDocString(indentation_type, indentation_amount) => {
-            (indentation_type.clone(), *indentation_amount)
-        }
-        _ => unreachable!(),
-    };
+    // FIXME: Do we still need this, or can we do it inside of the lexer?
+    // let (indentation_type, indentation_amount) = match &state.stream.current().kind {
+    //     TokenKind::EndDocString(indentation_type, indentation_amount) => {
+    //         (indentation_type.clone(), *indentation_amount)
+    //     }
+    //     _ => unreachable!(),
+    // };
 
     state.stream.next();
 
@@ -352,7 +353,18 @@ fn part(state: &mut State) -> Option<StringPart> {
                                     },
                                 )
                             } else {
-                                return expected_token_err!("an integer", state);
+                                state.diagnostic(
+                                    ParserDiagnostic::ExpectedToken {
+                                        expected: vec![TokenKind::LiteralInteger],
+                                        found: *literal,
+                                    },
+                                    Severity::Error,
+                                    literal.span,
+                                );
+
+                                state.stream.next();
+
+                                ExpressionKind::Missing
                             }
                         }
                         TokenKind::Identifier => {
@@ -364,10 +376,22 @@ fn part(state: &mut State) -> Option<StringPart> {
                             variables::simple_variable(state),
                         )),
                         _ => {
-                            return expected_token_err!(
-                                ["`-`", "an integer", "an identifier", "a variable"],
-                                state
+                            state.diagnostic(
+                                ParserDiagnostic::ExpectedToken {
+                                    expected: vec![
+                                        TokenKind::LiteralInteger,
+                                        TokenKind::Identifier,
+                                        TokenKind::Variable,
+                                    ],
+                                    found: *current,
+                                },
+                                Severity::Error,
+                                current.span,
                             );
+
+                            state.stream.next();
+
+                            ExpressionKind::Missing
                         }
                     };
                     let index_end_span = state.stream.previous().span;
@@ -436,7 +460,20 @@ fn part(state: &mut State) -> Option<StringPart> {
             }))
         }
         _ => {
-            return expected_token_err!(["`${`", "`{$", "`\"`", "a variable"], state);
+            let span = state.stream.current().span;
+
+            state.diagnostic(
+                ParserDiagnostic::ExpectedToken {
+                    expected: vec![TokenKind::LeftBrace, TokenKind::DollarLeftBrace, TokenKind::DoubleQuote, TokenKind::Variable],
+                    found: *state.stream.current(),
+                },
+                Severity::Error,
+                span
+            );
+
+            state.stream.next();
+
+            None
         }
     }
 }
