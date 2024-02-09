@@ -1,0 +1,71 @@
+[
+    Statement {
+        id: 2,
+        kind: EchoOpeningTag(
+            EchoOpeningTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 0,
+                        line: 1,
+                        column: 0,
+                    },
+                    end: Position {
+                        offset: 3,
+                        line: 1,
+                        column: 3,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 3,
+                line: 1,
+                column: 3,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 3,
+        kind: ClosingTag(
+            ClosingTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 5,
+                        line: 1,
+                        column: 5,
+                    },
+                    end: Position {
+                        offset: 7,
+                        line: 1,
+                        column: 7,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 5,
+                line: 1,
+                column: 5,
+            },
+            end: Position {
+                offset: 7,
+                line: 1,
+                column: 7,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

@@ -2,15 +2,17 @@ use std::path::PathBuf;
 
 #[macro_export]
 macro_rules! snap {
-    ($name:ident, $subject:expr) => {
+    ($snapper:ident, $name:ident, $subject:expr) => {
         #[test]
         fn $name() {
             let subject = $subject;
-            let snapshot = $crate::Snapper::snapshot_path(stringify!($name));
+            let snapshot = $snapper().snapshot_path(stringify!($name));
 
             if !snapshot.exists() {
                 std::fs::create_dir_all(snapshot.parent().unwrap()).unwrap();
                 std::fs::write(&snapshot, subject.to_string()).unwrap();
+
+                println!("Snapshot created: {}", stringify!($name));
             } else {
                 let expected = std::fs::read_to_string(&snapshot).unwrap();
                 assert_eq!(expected, format!("{}", subject));
@@ -19,19 +21,18 @@ macro_rules! snap {
     };
 }
 
-pub struct Snapper;
+pub struct Snapper {
+    directory: PathBuf,
+}
 
 impl Snapper {
-    /// Returns the path to the snapshot directory: $CARGO_MANIFEST_DIR/__snapshots__
-    pub fn snapshot_directory() -> PathBuf {
-        let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        path.push("__snapshots__");
-        path
+    pub fn new(directory: PathBuf) -> Self {
+        Self { directory }
     }
 
     /// Returns the path to a particular snapshot file: $CARGO_MANIFEST_DIR/__snapshots__/$name.snap
-    pub fn snapshot_path(name: &str) -> PathBuf {
-        let mut path = Self::snapshot_directory();
+    pub fn snapshot_path(&self, name: &str) -> PathBuf {
+        let mut path = self.directory.clone();
         path.push(format!("{}.snap", name));
         path
     }
@@ -39,11 +40,17 @@ impl Snapper {
 
 #[cfg(test)]
 mod tests {
+    use crate::Snapper;
+
     use super::snap;
 
-    snap!(it_can_say_hello_world, say_hello("world"));
+    snap!(snapper, it_can_say_hello_world, say_hello("world"));
 
     fn say_hello(name: &str) -> String {
         return format!("Hello, {name}!");
+    }
+
+    fn snapper() -> Snapper {
+        Snapper::new(env!("CARGO_MANIFEST_DIR").into())
     }
 }

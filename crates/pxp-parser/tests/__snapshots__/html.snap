@@ -1,0 +1,43 @@
+[
+    Statement {
+        id: 2,
+        kind: InlineHtml(
+            InlineHtmlStatement {
+                html: Token {
+                    kind: InlineHtml,
+                    span: Span {
+                        start: Position {
+                            offset: 0,
+                            line: 1,
+                            column: 0,
+                        },
+                        end: Position {
+                            offset: 47,
+                            line: 2,
+                            column: 25,
+                        },
+                    },
+                    symbol: Some(
+                        1,
+                    ),
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 47,
+                line: 2,
+                column: 25,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

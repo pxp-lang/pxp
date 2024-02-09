@@ -4,7 +4,7 @@ Snappers is a library that provides a set of utilities for snapshot testing.
 
 The public API of the library is designed to be as simple as possible. You provide a single function that returns some form of "displayable" value (anything that implements `Display`) and when the test executes, it will check to see if the generated output matches the snapshot.
 
-When the test runs for the first time, a snapshot will be generated based on the return value of the function. Snapshot files are stored inside of `$CRATE_ROOT/__snapshots__`.
+When the test runs for the first time, a snapshot will be generated based on the return value of the function. Snapshot directory needs to be configured before use.
 
 ## Usage
 
