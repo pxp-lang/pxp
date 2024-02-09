@@ -1,6 +1,6 @@
-# Snapper
+# Snappers
 
-Snapper is a library that provides a set of utilities for snapshot testing.
+Snappers is a library that provides a set of utilities for snapshot testing.
 
 The public API of the library is designed to be as simple as possible. You provide a single function that returns some form of "displayable" value (anything that implements `Display`) and when the test executes, it will check to see if the generated output matches the snapshot.
 
@@ -9,7 +9,7 @@ When the test runs for the first time, a snapshot will be generated based on the
 ## Usage
 
 ```rs
-use snapper::snap!;
+use snappers::snap!;
 
 snap!(it_can_say_hello_world, say_hello("world"));
 
