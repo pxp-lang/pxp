@@ -35,6 +35,29 @@ snap!(snapper, bitwise_left_shift_assign, process("fixtures/bitwise-left-shift-a
 snap!(snapper, bitwise_right_shift_assign, process("fixtures/bitwise-right-shift-assign.php"));
 snap!(snapper, coalesce_assign, process("fixtures/coalesce-assign.php"));
 
+// Arithmetic
+
+// Bitwise
+
+// Comparison
+
+// Logical
+
+// Literals
+snap!(snapper, int, process("fixtures/int.php"));
+snap!(snapper, float, process("fixtures/float.php"));
+snap!(snapper, string, process("fixtures/string.php"));
+snap!(snapper, null, process("fixtures/null.php"));
+snap!(snapper, bool, process("fixtures/bool.php"));
+snap!(snapper, empty_array, process("fixtures/empty-array.php"));
+snap!(snapper, single_item_array, process("fixtures/single-item-array.php"));
+snap!(snapper, multi_item_array, process("fixtures/multi-item-array.php"));
+snap!(snapper, nested_array, process("fixtures/nested-array.php"));
+snap!(snapper, more_nested_array, process("fixtures/more-nested-array.php"));
+snap!(snapper, array_trailing_comma, process("fixtures/array-trailing-comma.php"));
+snap!(snapper, legacy_array, process("fixtures/legacy-array.php"));
+snap!(snapper, legacy_array_single_item, process("fixtures/legacy-array-single-item.php"));
+
 fn snapper() -> Snapper {
     Snapper::new(
         format!("{}/{}", env!("CARGO_MANIFEST_DIR"), "tests/__snapshots__").into()

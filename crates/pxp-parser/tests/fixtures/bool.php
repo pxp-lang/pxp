@@ -1,0 +1,4 @@
+<?php
+
+true;
+false;

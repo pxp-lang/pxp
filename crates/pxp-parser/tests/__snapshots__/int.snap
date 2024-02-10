@@ -1,0 +1,499 @@
+[
+    Statement {
+        id: 2,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 0,
+                        line: 1,
+                        column: 0,
+                    },
+                    end: Position {
+                        offset: 5,
+                        line: 1,
+                        column: 5,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 5,
+                line: 1,
+                column: 5,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 4,
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    id: 3,
+                    kind: Literal(
+                        Literal {
+                            kind: Integer,
+                            token: Token {
+                                kind: LiteralInteger,
+                                span: Span {
+                                    start: Position {
+                                        offset: 7,
+                                        line: 3,
+                                        column: 1,
+                                    },
+                                    end: Position {
+                                        offset: 8,
+                                        line: 3,
+                                        column: 2,
+                                    },
+                                },
+                                symbol: Some(
+                                    1,
+                                ),
+                            },
+                        },
+                    ),
+                    span: Span {
+                        start: Position {
+                            offset: 7,
+                            line: 3,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 8,
+                            line: 3,
+                            column: 2,
+                        },
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: Position {
+                            offset: 8,
+                            line: 3,
+                            column: 2,
+                        },
+                        end: Position {
+                            offset: 9,
+                            line: 3,
+                            column: 3,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 7,
+                line: 3,
+                column: 1,
+            },
+            end: Position {
+                offset: 9,
+                line: 3,
+                column: 3,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 6,
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    id: 5,
+                    kind: Literal(
+                        Literal {
+                            kind: Integer,
+                            token: Token {
+                                kind: LiteralInteger,
+                                span: Span {
+                                    start: Position {
+                                        offset: 10,
+                                        line: 4,
+                                        column: 1,
+                                    },
+                                    end: Position {
+                                        offset: 14,
+                                        line: 4,
+                                        column: 5,
+                                    },
+                                },
+                                symbol: Some(
+                                    2,
+                                ),
+                            },
+                        },
+                    ),
+                    span: Span {
+                        start: Position {
+                            offset: 10,
+                            line: 4,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 14,
+                            line: 4,
+                            column: 5,
+                        },
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: Position {
+                            offset: 14,
+                            line: 4,
+                            column: 5,
+                        },
+                        end: Position {
+                            offset: 15,
+                            line: 4,
+                            column: 6,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 10,
+                line: 4,
+                column: 1,
+            },
+            end: Position {
+                offset: 15,
+                line: 4,
+                column: 6,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 8,
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    id: 7,
+                    kind: Literal(
+                        Literal {
+                            kind: Integer,
+                            token: Token {
+                                kind: LiteralInteger,
+                                span: Span {
+                                    start: Position {
+                                        offset: 16,
+                                        line: 5,
+                                        column: 1,
+                                    },
+                                    end: Position {
+                                        offset: 21,
+                                        line: 5,
+                                        column: 6,
+                                    },
+                                },
+                                symbol: Some(
+                                    3,
+                                ),
+                            },
+                        },
+                    ),
+                    span: Span {
+                        start: Position {
+                            offset: 16,
+                            line: 5,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 21,
+                            line: 5,
+                            column: 6,
+                        },
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: Position {
+                            offset: 21,
+                            line: 5,
+                            column: 6,
+                        },
+                        end: Position {
+                            offset: 22,
+                            line: 5,
+                            column: 7,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 16,
+                line: 5,
+                column: 1,
+            },
+            end: Position {
+                offset: 22,
+                line: 5,
+                column: 7,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 10,
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    id: 9,
+                    kind: Literal(
+                        Literal {
+                            kind: Integer,
+                            token: Token {
+                                kind: LiteralInteger,
+                                span: Span {
+                                    start: Position {
+                                        offset: 23,
+                                        line: 6,
+                                        column: 1,
+                                    },
+                                    end: Position {
+                                        offset: 27,
+                                        line: 6,
+                                        column: 5,
+                                    },
+                                },
+                                symbol: Some(
+                                    4,
+                                ),
+                            },
+                        },
+                    ),
+                    span: Span {
+                        start: Position {
+                            offset: 23,
+                            line: 6,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 27,
+                            line: 6,
+                            column: 5,
+                        },
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: Position {
+                            offset: 27,
+                            line: 6,
+                            column: 5,
+                        },
+                        end: Position {
+                            offset: 28,
+                            line: 6,
+                            column: 6,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 23,
+                line: 6,
+                column: 1,
+            },
+            end: Position {
+                offset: 28,
+                line: 6,
+                column: 6,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 12,
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    id: 11,
+                    kind: Literal(
+                        Literal {
+                            kind: Integer,
+                            token: Token {
+                                kind: LiteralInteger,
+                                span: Span {
+                                    start: Position {
+                                        offset: 29,
+                                        line: 7,
+                                        column: 1,
+                                    },
+                                    end: Position {
+                                        offset: 39,
+                                        line: 7,
+                                        column: 11,
+                                    },
+                                },
+                                symbol: Some(
+                                    5,
+                                ),
+                            },
+                        },
+                    ),
+                    span: Span {
+                        start: Position {
+                            offset: 29,
+                            line: 7,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 39,
+                            line: 7,
+                            column: 11,
+                        },
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: Position {
+                            offset: 39,
+                            line: 7,
+                            column: 11,
+                        },
+                        end: Position {
+                            offset: 40,
+                            line: 7,
+                            column: 12,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 29,
+                line: 7,
+                column: 1,
+            },
+            end: Position {
+                offset: 40,
+                line: 7,
+                column: 12,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 14,
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    id: 13,
+                    kind: Literal(
+                        Literal {
+                            kind: Integer,
+                            token: Token {
+                                kind: LiteralInteger,
+                                span: Span {
+                                    start: Position {
+                                        offset: 41,
+                                        line: 8,
+                                        column: 1,
+                                    },
+                                    end: Position {
+                                        offset: 50,
+                                        line: 8,
+                                        column: 10,
+                                    },
+                                },
+                                symbol: Some(
+                                    6,
+                                ),
+                            },
+                        },
+                    ),
+                    span: Span {
+                        start: Position {
+                            offset: 41,
+                            line: 8,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 50,
+                            line: 8,
+                            column: 10,
+                        },
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: Position {
+                            offset: 50,
+                            line: 8,
+                            column: 10,
+                        },
+                        end: Position {
+                            offset: 51,
+                            line: 8,
+                            column: 11,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 41,
+                line: 8,
+                column: 1,
+            },
+            end: Position {
+                offset: 51,
+                line: 8,
+                column: 11,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---
