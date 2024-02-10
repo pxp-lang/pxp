@@ -7,8 +7,22 @@ pub enum Severity {
 }
 
 impl Severity {
+    pub fn with_ascii(&self) -> AsciiSeverity {
+        AsciiSeverity::new(self)
+    }
+}
+
+pub struct AsciiSeverity<'a> {
+    severity: &'a Severity,
+}
+
+impl<'a> AsciiSeverity<'a> {
+    pub fn new(severity: &'a Severity) -> Self {
+        Self { severity }
+    }
+
     fn get_ascii_color(&self) -> &'static str {
-        match self {
+        match self.severity {
             Severity::Warning => "\x1b[33;1m",
             Severity::Error => "\x1b[31;1m",
         }
@@ -19,20 +33,22 @@ impl Severity {
     }
 }
 
+impl<'a> Display for AsciiSeverity<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}{}{}", self.get_ascii_color(), self.severity, self.get_ascii_reset())
+    }
+}
+
 impl Display for Severity {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Severity::Warning => write!(
                 f,
-                "{}[warning]{}",
-                self.get_ascii_color(),
-                self.get_ascii_reset()
+                "[warning]",
             ),
             Severity::Error => write!(
                 f,
-                "{}[error]{}",
-                self.get_ascii_color(),
-                self.get_ascii_reset()
+                "[error]",
             ),
         }
     }

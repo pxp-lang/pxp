@@ -1,0 +1,108 @@
+[
+    Statement {
+        id: 2,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 0,
+                        line: 1,
+                        column: 0,
+                    },
+                    end: Position {
+                        offset: 5,
+                        line: 1,
+                        column: 5,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 5,
+                line: 1,
+                column: 5,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 4,
+        kind: Echo(
+            EchoStatement {
+                echo: Span {
+                    start: Position {
+                        offset: 7,
+                        line: 3,
+                        column: 1,
+                    },
+                    end: Position {
+                        offset: 11,
+                        line: 3,
+                        column: 5,
+                    },
+                },
+                values: [
+                    Expression {
+                        id: 3,
+                        kind: Missing,
+                        span: Span {
+                            start: Position {
+                                offset: 11,
+                                line: 3,
+                                column: 5,
+                            },
+                            end: Position {
+                                offset: 12,
+                                line: 3,
+                                column: 6,
+                            },
+                        },
+                        comments: CommentGroup {
+                            comments: [],
+                        },
+                    },
+                ],
+                ending: Missing(
+                    Span {
+                        start: Position {
+                            offset: 11,
+                            line: 3,
+                            column: 5,
+                        },
+                        end: Position {
+                            offset: 12,
+                            line: 3,
+                            column: 6,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 7,
+                line: 3,
+                column: 1,
+            },
+            end: Position {
+                offset: 12,
+                line: 3,
+                column: 6,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---
+[error] unexpected token: ; on line 3
+[error] unexpected end of file on line 3

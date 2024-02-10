@@ -9,6 +9,11 @@ snap!(snapper, tag, process("fixtures/tag.php"));
 snap!(snapper, short_tag, process("fixtures/short-tag.php"));
 snap!(snapper, echo_tag, process("fixtures/echo-tag.php"));
 snap!(snapper, html, process("fixtures/html.php"));
+snap!(snapper, simple_echo, process("fixtures/simple-echo.php"));
+snap!(snapper, multi_echo, process("fixtures/multi-echo.php"));
+snap!(snapper, echo_no_value, process("fixtures/echo-no-value.php"));
+snap!(snapper, echo_single_value_trailing_comma, process("fixtures/echo-single-value-trailing-comma.php"));
+snap!(snapper, echo_missing_semicolon, process("fixtures/echo-missing-semicolon.php"));
 
 fn snapper() -> Snapper {
     Snapper::new(

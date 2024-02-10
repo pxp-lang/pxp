@@ -41,7 +41,7 @@ fn main() {
 
             if !ast.diagnostics.is_empty() && stop_on_errors {
                 ast.diagnostics.iter().for_each(|error| {
-                    print!("{error}");
+                    println!("{}", error);
                 });
 
                 break;
