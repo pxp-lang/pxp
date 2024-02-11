@@ -8,6 +8,8 @@ use pxp_ast::constant::ConstantStatement;
 use pxp_ast::modifiers::ConstantModifierGroup;
 use pxp_token::TokenKind;
 
+use super::data_type::data_type;
+
 pub fn parse(state: &mut State) -> ConstantStatement {
     let comments = state.stream.comments();
     let start = utils::skip(state, TokenKind::Const);
@@ -48,6 +50,12 @@ pub fn classish(state: &mut State, modifiers: ConstantModifierGroup) -> Classish
     let comments = state.stream.comments();
     let start = utils::skip(state, TokenKind::Const);
 
+    let data_type = if state.stream.peek().kind == TokenKind::Identifier {
+        Some(data_type(state))
+    } else {
+        None
+    };
+
     let mut entries = vec![];
 
     loop {
@@ -75,6 +83,7 @@ pub fn classish(state: &mut State, modifiers: ConstantModifierGroup) -> Classish
         attributes,
         modifiers,
         r#const: start,
+        data_type,
         entries,
         semicolon: end,
     }

@@ -1,6 +1,7 @@
 use std::slice::Iter;
 
 use crate::attributes::AttributeGroup;
+use crate::data_type::DataType;
 use crate::identifiers::SimpleIdentifier;
 use crate::modifiers::ConstantModifierGroup;
 
@@ -47,9 +48,9 @@ pub struct ClassishConstant {
     pub attributes: Vec<AttributeGroup>,  // `#[Foo]`
     pub modifiers: ConstantModifierGroup, // `public`
     pub r#const: Span,                    // `const`
-
-    pub entries: Vec<ConstantEntry>, // `FOO = 123`
-    pub semicolon: Span,             // `;`
+    pub data_type: Option<DataType>,
+    pub entries: Vec<ConstantEntry>,      // `FOO = 123`
+    pub semicolon: Span,                  // `;`
 }
 
 impl ClassishConstant {
