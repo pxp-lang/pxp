@@ -72,6 +72,7 @@ snap!(snapper, legacy_array_single_item, process("fixtures/legacy-array-single-i
 snap!(snapper, class_const, process("fixtures/class-const.php"));
 snap!(snapper, multi_class_const, process("fixtures/multi-class-const.php"));
 snap!(snapper, typed_class_const, process("fixtures/typed-class-const.php"));
+snap!(snapper, dynamic_class_const, process("fixtures/dynamic-class-const.php"));
 
 fn snapper() -> Snapper {
     Snapper::new(
