@@ -36,6 +36,16 @@ snap!(snapper, bitwise_right_shift_assign, process("fixtures/bitwise-right-shift
 snap!(snapper, coalesce_assign, process("fixtures/coalesce-assign.php"));
 
 // Arithmetic
+snap!(snapper, add, process("fixtures/add.php"));
+snap!(snapper, sub, process("fixtures/sub.php"));
+snap!(snapper, mul, process("fixtures/mul.php"));
+snap!(snapper, div, process("fixtures/div.php"));
+snap!(snapper, mod_, process("fixtures/mod.php"));
+snap!(snapper, exp, process("fixtures/exp.php"));
+snap!(snapper, post_inc, process("fixtures/post-inc.php"));
+snap!(snapper, post_dec, process("fixtures/post-dec.php"));
+snap!(snapper, pre_inc, process("fixtures/pre-inc.php"));
+snap!(snapper, pre_dec, process("fixtures/pre-dec.php"));
 
 // Bitwise
 
