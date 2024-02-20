@@ -16,15 +16,7 @@ pxp-type = { path = "../pxp-type" }
 pxp-span = { path = "../pxp-span" }
 pxp-bytestring = { path = "../pxp-bytestring" }
 discoverer = "0.2.0"
-rustyline = "13.0.0"
 serde = { version = "1.0.193", features = ["derive"] }
 pxp-syntax = { path = "../pxp-syntax" }
 dirs = "5.0.1"
 bincode = "1.3.3"
-
-[[bin]]
-name = "index"
-path = "bin/index.rs"
-
-[dev-dependencies]
-rustyline = "13.0.0"
