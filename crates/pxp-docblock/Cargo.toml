@@ -11,7 +11,3 @@ pxp-span = { path = "../pxp-span" }
 pxp-symbol = { path = "../pxp-symbol" }
 pxp-type = { path = "../pxp-type" }
 pxp-bytestring = { path = "../pxp-bytestring" }
-
-[[bin]]
-name = "parse-doc"
-path = "bin/parse-doc.rs"
