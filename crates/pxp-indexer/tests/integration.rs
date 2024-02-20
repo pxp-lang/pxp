@@ -17,7 +17,7 @@ fn it_indexes_correctly() {
     let (index, mut symbol_table) = indexer.index(&PathBuf::from(format!(
         "{}/{}",
         env!("CARGO_MANIFEST_DIR"),
-        "example-php"
+        "tests/example-php"
     )));
 
     assert_eq!(index.get_number_of_functions(), 2);
