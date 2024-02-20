@@ -10,8 +10,13 @@ license-file.workspace = true
 pxp-lexer = { path = "../pxp-lexer" }
 pxp-symbol = { path = "../pxp-symbol" }
 pxp-token = { path = "../pxp-token" }
+pxp-parser = { path = "../pxp-parser" }
 discoverer = "0.2.0"
 
 [[bin]]
 name = "tokenise"
 path = "bin/tokenise.rs"
+
+[[bin]]
+name = "parse"
+path = "bin/parse.rs"

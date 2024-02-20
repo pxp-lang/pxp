@@ -13,11 +13,6 @@ pxp-syntax = { path = "../pxp-syntax" }
 pxp-symbol = { path = "../pxp-symbol" }
 pxp-type = { path = "../pxp-type" }
 pxp-diagnostics = { path = "../pxp-diagnostics" }
-discoverer = "0.2.0"
 
 [dev-dependencies]
 snappers = { path = "../snappers" }
-
-[[bin]]
-name = "parse"
-path = "bin/parse.rs"
