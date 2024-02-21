@@ -1,5 +1,5 @@
 [package]
-name = "pxp-docblock"
+name = "pxp-docblock-ast"
 version = "0.1.0"
 edition = "2021"
 license-file.workspace = true
@@ -10,5 +10,3 @@ license-file.workspace = true
 pxp-span = { path = "../pxp-span" }
 pxp-symbol = { path = "../pxp-symbol" }
 pxp-type = { path = "../pxp-type" }
-pxp-bytestring = { path = "../pxp-bytestring" }
-pxp-docblock-ast = { path = "../pxp-docblock-ast" }

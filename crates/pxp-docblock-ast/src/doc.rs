@@ -4,9 +4,7 @@ use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
 
-use self::const_expr::ConstExpr;
-
-pub mod const_expr;
+use crate::const_expr::ConstExpr;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Node {

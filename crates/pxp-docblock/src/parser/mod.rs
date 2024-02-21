@@ -2,10 +2,8 @@ use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
 
-use crate::{
-    ast::{Node, NodeKind, Tag, TagKind, Text},
-    token::{Token, TokenKind},
-};
+use pxp_docblock_ast::{Node, NodeKind, Tag, TagKind, Text};
+use crate::token::{Token, TokenKind};
 
 use self::state::State;
 
