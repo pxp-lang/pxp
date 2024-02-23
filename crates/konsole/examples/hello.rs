@@ -6,7 +6,7 @@ fn main() {
         .command(
             Command::new("hello")
                 .description("Prints a greeting.")
-                .handle(|| {
+                .handle(|_, _| {
                     println!("Hello, world!");
                 })
         )

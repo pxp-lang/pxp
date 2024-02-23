@@ -84,6 +84,9 @@ impl Application {
             }
         };
 
-        
+        if arguments_and_options.contains(&"-h".to_string()) || arguments_and_options.contains(&"--help".to_string()) {
+            command.help();
+            exit(0);
+        }
     }
 }
