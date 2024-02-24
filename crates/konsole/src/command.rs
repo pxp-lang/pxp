@@ -44,6 +44,16 @@ impl Command {
         println!("  {} [options] [--] {}", self.name.bold(), self.arguments.keys().map(|key| format!("<{}>", key)).collect::<Vec<String>>().join(" "));
         println!();
 
+        if !self.arguments.is_empty() {
+            println!("{}", "Arguments:".yellow());
+
+            for (name, _) in &self.arguments {
+                println!("  {}", name.green());
+            }
+
+            println!();
+        }
+
         println!("{}", "Options:".yellow());
         println!("  {} Display this help message.", "-h, --help".green());
     }
