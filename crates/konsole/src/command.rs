@@ -9,7 +9,7 @@ pub type CommandHandler = fn (Input, Output) -> ();
 pub struct Command {
     pub name: String,
     pub description: Option<String>,
-    pub arguments: IndexMap<usize, String>,
+    pub arguments: IndexMap<usize, (String, bool)>,
     pub handler: Option<CommandHandler>,
 }
 
@@ -28,8 +28,8 @@ impl Command {
         self
     }
 
-    pub fn argument(mut self, name: impl Into<String>) -> Self {
-        self.arguments.insert(self.arguments.len(), name.into());
+    pub fn argument(mut self, name: impl Into<String>, optional: bool) -> Self {
+        self.arguments.insert(self.arguments.len(), (name.into(), optional));
         self
     }
 
@@ -47,8 +47,8 @@ impl Command {
         if !self.arguments.is_empty() {
             println!("{}", "Arguments:".yellow());
 
-            for (_, name) in &self.arguments {
-                println!("  {}", name.green());
+            for (_, (name, optional)) in &self.arguments {
+                println!("  {}{}", name.green(), if *optional { " (optional)" } else { "" });
             }
 
             println!();

@@ -13,3 +13,11 @@ indexmap = "2.2.3"
 [[example]]
 name = "hello"
 path = "examples/hello.rs"
+
+[[example]]
+name = "add"
+path = "examples/add.rs"
+
+[[example]]
+name = "optional-argument"
+path = "examples/optional_argument.rs"

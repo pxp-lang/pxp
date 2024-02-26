@@ -92,10 +92,14 @@ impl Application {
         let mut input = Input::new();
         let offset = 0;
 
-        for (i, name) in command.arguments.iter() {
+        for (i, (name, optional)) in command.arguments.iter() {
             let value = match arguments_and_options.get(i + offset) {
                 Some(value) => value,
                 None => {
+                    if *optional {
+                        continue;
+                    }
+
                     output.error(format!(r#"Argument "{}" is required."#, name));
                     exit(1);
                 }
