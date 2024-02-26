@@ -29,8 +29,16 @@ impl Command {
     }
 
     pub fn argument(mut self, name: impl Into<String>, optional: bool) -> Self {
+        if ! optional && self.has_optional_arguments() {
+            panic!("Optional arguments must be added after all required arguments.");
+        }
+
         self.arguments.insert(self.arguments.len(), (name.into(), optional));
         self
+    }
+
+    fn has_optional_arguments(&self) -> bool {
+        self.arguments.values().any(|(_, optional)| *optional)
     }
 
     pub(crate) fn help(&self) {
