@@ -1,6 +1,0 @@
-#include "main/php.h"
-#include "Zend/zend.h"
-#include "Zend/zend_API.h"
-#include "Zend/zend_types.h"
-#include "Zend/zend_compile.h"
-#include "sapi/embed/php_embed.h"
