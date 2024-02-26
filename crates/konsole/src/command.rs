@@ -49,7 +49,7 @@ impl Command {
         }
 
         println!("{}", "Usage:".yellow());
-        println!("  {} [options] [--] {}", self.name.bold(), self.arguments.keys().map(|key| format!("<{}>", key)).collect::<Vec<String>>().join(" "));
+        println!("  {} [options] [--] {}", self.name.bold(), self.arguments.iter().map(|(_, (name, optional))| format!("<{}{}>", name, if *optional { "?" } else { "" })).collect::<Vec<String>>().join(" "));
         println!();
 
         if !self.arguments.is_empty() {
