@@ -1,7 +1,7 @@
 use std::{env, process::exit};
 use colored::*;
 
-use crate::{command::Command, prelude::Output};
+use crate::{command::Command, prelude::{Input, Output}};
 
 #[derive(Debug, Clone)]
 pub struct Application {
@@ -87,6 +87,26 @@ impl Application {
         if arguments_and_options.contains(&"-h".to_string()) || arguments_and_options.contains(&"--help".to_string()) {
             command.help();
             exit(0);
+        }
+
+        let mut input = Input::new();
+        let offset = 0;
+
+        for (i, name) in command.arguments.iter() {
+            let value = match arguments_and_options.get(i + offset) {
+                Some(value) => value,
+                None => {
+                    output.error(format!(r#"Argument "{}" is required."#, name));
+                    exit(1);
+                }
+            };
+
+            input.insert_argument(name, value);
+        }
+
+        if let Some(handler) = &command.handler {
+            handler(input, output);
+            return;
         }
     }
 }

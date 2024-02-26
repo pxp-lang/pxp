@@ -6,7 +6,7 @@ fn main() {
             Command::new("add")
                 .argument("a")
                 .argument("b")
-                .handle(|input, output| {
+                .handle(|input, _| {
                     let a = input.argument::<i32>("a").unwrap();
                     let b = input.argument::<i32>("b").unwrap();
 
