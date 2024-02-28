@@ -75,6 +75,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
 
             match state.stream.current().kind {
                     TokenKind::As => {
+                        state.stream.next();
                         match state.stream.current() {
                             Token { kind: TokenKind::Public | TokenKind::Protected | TokenKind::Private, span, .. }=> {
                                 let visibility = match state.stream.current().kind {
