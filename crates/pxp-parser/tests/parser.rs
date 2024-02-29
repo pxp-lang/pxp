@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use pxp_parser::parse;
+use pxp_parser::{parse, ParseResult};
 use pxp_symbol::SymbolTable;
 use snappers::{snap, Snapper};
 
@@ -74,6 +74,8 @@ snap!(snapper, multi_class_const, process("fixtures/multi-class-const.php"));
 snap!(snapper, typed_class_const, process("fixtures/typed-class-const.php"));
 snap!(snapper, dynamic_class_const, process("fixtures/dynamic-class-const.php"));
 
+snap!(snapper, trait_alias, process("fixtures/trait-alias.php"));
+
 fn snapper() -> Snapper {
     Snapper::new(
         format!("{}/{}", env!("CARGO_MANIFEST_DIR"), "tests/__snapshots__").into()
@@ -81,16 +83,7 @@ fn snapper() -> Snapper {
 }
 
 fn process(string_or_file: &str) -> String {
-    let path = format!("{}/tests/{}", env!("CARGO_MANIFEST_DIR"), string_or_file);
-    let path = PathBuf::from(path);
-    let input = if path.exists() {
-        std::fs::read(path).unwrap()
-    } else {
-        string_or_file.as_bytes().to_vec()
-    };
-
-    let mut symbol_table = SymbolTable::new();
-    let result = parse(&input, &mut symbol_table);
+    let (result, _) = parse_str_or_file(string_or_file);
     let mut output = format!("{:#?}\n---\n", result.ast);
 
     if !result.diagnostics.is_empty() {
@@ -100,4 +93,32 @@ fn process(string_or_file: &str) -> String {
     }
 
     output
+}
+
+fn parse_str_or_file(string_or_file: &str) -> (ParseResult, SymbolTable) {
+    let path = format!("{}/tests/{}", env!("CARGO_MANIFEST_DIR"), string_or_file);
+    let path = PathBuf::from(path);
+    let input = if path.exists() {
+        std::fs::read(path).unwrap()
+    } else {
+        string_or_file.as_bytes().to_vec()
+    };
+
+    let mut symbol_table = SymbolTable::new();
+
+    (parse(&input, &mut symbol_table), symbol_table)
+}
+
+#[test]
+fn test_trait_alias() {
+    let (_, symbol_table) = parse_str_or_file("fixtures/trait-alias.php");
+
+    let alias = symbol_table.find(b"originalTest").unwrap_or(0);
+
+    assert_eq!(7, alias);
+
+    let test = symbol_table.find(b"test").unwrap_or(0);
+    assert_eq!(5, test);
+
+    assert_eq!("test", format!("{}", symbol_table.resolve(5).unwrap()));
 }
