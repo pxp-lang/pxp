@@ -1,0 +1,8 @@
+<?php
+
+function pspell_add_to_session(int $dictionary, string $word): bool
+{
+}
+function pspell_add_to_session(\PSpell\Dictionary $dictionary, string $word): bool
+{
+}

@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @param resource $result
+ * @alias pg_last_oid
+ * @deprecated
+ */
+function pg_getlastoid($result): string|int|false
+{
+}
+/**
+ * @alias pg_last_oid
+ * @deprecated
+ */
+function pg_getlastoid(\PgSql\Result $result): string|int|false
+{
+}

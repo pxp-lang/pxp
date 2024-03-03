@@ -1,0 +1,7 @@
+{    
+    "require": {
+        "nikic/php-parser": "^5.0",
+        "phpstan/php-8-stubs": "^0.3.84",
+        "symfony/var-dumper": "^7.0"
+    }
+}
