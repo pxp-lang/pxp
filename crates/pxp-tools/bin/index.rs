@@ -3,6 +3,7 @@ use std::{env::args, path::PathBuf, process::exit, time::Instant};
 use pxp_indexer::{
     debuggable_entity, try_load_index_from_cache, write_index_to_cache, Index, Indexer,
 };
+use pxp_std_indexes::php_latest_index;
 use pxp_symbol::SymbolTable;
 use rustyline::{error::ReadlineError, DefaultEditor};
 
@@ -16,17 +17,16 @@ fn main() {
 
     let directory = PathBuf::from(args.get(0).unwrap());
 
+    // println!("Loading index for latest PHP version...");
+    // let php_std_index = php_latest_index();
+    // let mut indexer = Indexer::of(php_std_index.0, php_std_index.1);
+
+    let mut indexer = Indexer::new();
+
     println!("Indexing...");
     let start = Instant::now();
 
-    let mut indexer = if let Some(result) = try_load_index_from_cache(&directory) {
-        Indexer::of(result.0, result.1)
-    } else {
-        Indexer::new()
-    };
-
     let (index, symbol_table) = indexer.index(&directory);
-    write_index_to_cache((&index, &symbol_table), &directory);
 
     let duration = start.elapsed();
 

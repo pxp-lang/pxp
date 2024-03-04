@@ -7,3 +7,8 @@ license-file.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+pxp-indexer = { version = "0.1.0", path = "../pxp-indexer" }
+pxp-symbol = { version = "0.1.0", path = "../pxp-symbol" }
+
+[build-dependencies]
+pxp-indexer = { version = "0.1.0", path = "../pxp-indexer" }

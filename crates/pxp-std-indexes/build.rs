@@ -1,4 +1,6 @@
-use std::{path::PathBuf, process::Command};
+use std::{env::var, path::PathBuf, process::Command};
+
+use pxp_indexer::{serialize_index, Indexer};
 
 const VERSIONS: [&str; 4] = ["8.0", "8.1", "8.2", "8.3"];
 
@@ -25,10 +27,16 @@ fn generate_stubs() {
     Command::new("php")
         .arg("./separate-stubs-into-versions.php")
         .current_dir(format!("{}/meta", env!("CARGO_MANIFEST_DIR")))
-        .spawn()
+        .status()
         .expect("Failed to generate stubs.");
 }
 
 fn generate_index_for_version(version: &str) {
-    
+    let stubs_directory = PathBuf::from(format!("{}/stubs/{}", env!("CARGO_MANIFEST_DIR"), version));
+    let mut indexer = Indexer::new();
+
+    let (index, symbol_table) = indexer.index(&stubs_directory);
+    let serialized_index = serialize_index((&index, &symbol_table));
+
+    std::fs::write(format!("{}/{}.index", var("OUT_DIR").unwrap(), version), serialized_index).unwrap();
 }

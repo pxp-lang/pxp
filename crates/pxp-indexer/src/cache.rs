@@ -40,3 +40,11 @@ pub fn write_index_to_cache(result: (&Index, &SymbolTable), directory: &PathBuf)
 
     std::fs::write(cache_file, contents).unwrap();
 }
+
+pub fn serialize_index(result: (&Index, &SymbolTable)) -> Vec<u8> {
+    bincode::serialize(&result).unwrap()
+}
+
+pub fn deserialize_index(contents: &[u8]) -> (Index, SymbolTable) {
+    bincode::deserialize::<(Index, SymbolTable)>(contents).unwrap()
+}

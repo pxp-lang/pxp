@@ -214,7 +214,11 @@ pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
                     state.diagnostic(
                         ParserDiagnostic::AbstractMethodInNonAbstractClass,
                         Severity::Error,
-                        method.modifiers.get_abstract().unwrap().span(),
+                        // Abstract methods don't always have a modifier, some have no body.
+                        match method.modifiers.get_abstract() {
+                            Some(abstract_) => abstract_.span(),
+                            None => method.name.span,
+                        },
                     );
                 }
 
@@ -226,7 +230,10 @@ pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
                     state.diagnostic(
                         ParserDiagnostic::AbstractMethodInNonAbstractClass,
                         Severity::Error,
-                        ctor.modifiers.get_abstract().unwrap().span(),
+                        match ctor.modifiers.get_abstract() {
+                            Some(modifier) => modifier.span(),
+                            None => ctor.name.span,
+                        },
                     );
                 }
 

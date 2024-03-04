@@ -15,6 +15,7 @@ pxp-indexer = { path = "../pxp-indexer" }
 pxp-docblock = { path = "../pxp-docblock" }
 discoverer = "0.2.0"
 rustyline = "13.0.0"
+pxp-std-indexes = { version = "0.1.0", path = "../pxp-std-indexes" }
 
 [[bin]]
 name = "tokenise"
