@@ -68,6 +68,9 @@ snap!(snapper, array_trailing_comma, process("fixtures/array-trailing-comma.php"
 snap!(snapper, legacy_array, process("fixtures/legacy-array.php"));
 snap!(snapper, legacy_array_single_item, process("fixtures/legacy-array-single-item.php"));
 
+// Doc-strings
+snap!(snapper, empty_heredoc, process("fixtures/empty-heredoc.php"));
+
 // Class Constants
 snap!(snapper, class_const, process("fixtures/class-const.php"));
 snap!(snapper, multi_class_const, process("fixtures/multi-class-const.php"));

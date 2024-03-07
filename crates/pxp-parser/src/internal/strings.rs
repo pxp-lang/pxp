@@ -1,3 +1,5 @@
+use std::string;
+
 use crate::expressions::create;
 use crate::internal::identifiers;
 use crate::internal::utils;
@@ -254,6 +256,7 @@ pub fn nowdoc(state: &mut State) -> Expression {
     //     string_part = bytes.into();
     // }
 
+    state.stream.next();
     let end_span = state.stream.previous().span;
 
     Expression::new(
