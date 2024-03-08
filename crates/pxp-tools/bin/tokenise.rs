@@ -15,7 +15,7 @@ fn main() {
 
     let path = args.first().unwrap();
     let path = Path::new(path);
-    let mut symbol_table = SymbolTable::the();
+    let symbol_table = SymbolTable::the();
     let immediate = args.contains(&"--immediate".to_string());
 
     if path.is_dir() {
@@ -28,7 +28,7 @@ fn main() {
             }
 
             let contents = std::fs::read(file).unwrap();
-            let mut lexer = Lexer::new(&contents[..], &mut symbol_table);
+            let mut lexer = Lexer::new(&contents[..], symbol_table);
 
             match if immediate { lexer.tokenize_in_immediate_mode() } else { lexer.tokenize() } {
                 Ok(_) => {
@@ -52,17 +52,17 @@ fn main() {
         }
     } else {
         let contents = std::fs::read(path).unwrap();
-        let mut lexer = Lexer::new(&contents[..], &mut symbol_table);
+        let mut lexer = Lexer::new(&contents[..], symbol_table);
         let tokens = if immediate { lexer.tokenize_in_immediate_mode() } else { lexer.tokenize() }.unwrap();
 
         if args.contains(&"--debug".to_string()) {
-            dbg_tokens(&symbol_table, &tokens);
+            dbg_tokens(&tokens);
         }
     }
 }
 
-fn dbg_tokens(symbol_table: &SymbolTable, tokens: &[Token]) {
+fn dbg_tokens(tokens: &[Token]) {
     for token in tokens.iter() {
-        println!("{}", token.dbg(symbol_table));
+        println!("{}", token.dbg());
     }
 }

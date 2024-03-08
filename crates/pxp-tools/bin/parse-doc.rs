@@ -8,8 +8,8 @@ fn main() {
     let file = args.first().unwrap();
     let content = std::fs::read(file).unwrap();
 
-    let mut symbol_table = SymbolTable::the();
-    let mut lexer = Lexer::new(&mut symbol_table);
+    let symbol_table = SymbolTable::the();
+    let mut lexer = Lexer::new(symbol_table);
 
     let tokens = lexer.tokenize(&content).unwrap();
 
@@ -17,18 +17,18 @@ fn main() {
         println!("Tokens:");
 
         for token in tokens.iter() {
-            println!("{:?}", token.with_symbol_table(&symbol_table));
+            println!("{:?}", token.with_symbol_table(symbol_table));
         }
     }
 
     let parser = Parser::new();
-    let ast = parser.parse(&tokens, &mut symbol_table);
+    let ast = parser.parse(&tokens, symbol_table);
 
     if args.contains(&"--dump-ast".to_string()) {
         println!("AST:");
 
         for node in ast.unwrap().iter() {
-            println!("{:?}", node.with_symbol_table(&symbol_table));
+            println!("{:?}", node.with_symbol_table(symbol_table));
         }
     }
 }

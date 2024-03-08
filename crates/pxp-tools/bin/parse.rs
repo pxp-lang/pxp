@@ -14,7 +14,7 @@ fn main() {
 
     let path = args.first().unwrap();
     let path = Path::new(path);
-    let mut symbol_table = SymbolTable::the();
+    let symbol_table = SymbolTable::the();
 
     if path.is_dir() {
         // let mut errors = Vec::new();
@@ -38,7 +38,7 @@ fn main() {
             }
 
             let contents = std::fs::read(file).unwrap();
-            let ast = parse(&contents, &mut symbol_table);
+            let ast = parse(&contents, symbol_table);
 
             if !ast.diagnostics.is_empty() && stop_on_errors {
                 ast.diagnostics.iter().for_each(|error| {
@@ -68,7 +68,7 @@ fn main() {
         // }
     } else {
         let contents = std::fs::read(path).unwrap();
-        let result = parse(&contents, &mut symbol_table);
+        let result = parse(&contents, symbol_table);
 
         if args.contains(&"--debug".to_string()) {
             dbg!(result.ast);

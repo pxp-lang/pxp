@@ -290,11 +290,11 @@ impl Token {
         }
     }
 
-    pub fn dbg(&self, symbol_table: &SymbolTable) -> String {
+    pub fn dbg(&self) -> String {
         if let Some(symbol) = self.symbol {
             format!(
                 "{} ({:?})",
-                symbol_table.resolve(symbol).unwrap(),
+                symbol,
                 self.kind
             )
         } else {
