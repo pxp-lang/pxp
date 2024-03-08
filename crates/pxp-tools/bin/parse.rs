@@ -14,13 +14,14 @@ fn main() {
 
     let path = args.first().unwrap();
     let path = Path::new(path);
-    let mut symbol_table = SymbolTable::new();
+    let mut symbol_table = SymbolTable::the();
 
     if path.is_dir() {
         // let mut errors = Vec::new();
         let files = discover(&["php"], &[path.to_str().unwrap()]).unwrap();
         let print_filenames = args.contains(&"--print-filenames".to_string());
         let stop_on_errors = args.contains(&"--stop-on-errors".to_string());
+        let no_output = args.contains(&"--no-output".to_string());
 
         for file in files.iter() {
             // Purposefully skip this file because it has a known syntax error.
@@ -47,7 +48,9 @@ fn main() {
                 break;
             }
 
-            print!(".");
+            if !no_output {
+                print!(".");
+            }
         }
 
         println!();

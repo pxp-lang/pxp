@@ -19,7 +19,7 @@ pub struct SimpleVariable {
 
 impl SimpleVariable {
     pub fn missing(span: Span) -> Self {
-        Self { symbol: 0, span }
+        Self { symbol: Symbol(0), span }
     }
 }
 
