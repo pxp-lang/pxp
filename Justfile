@@ -12,6 +12,3 @@ parse-doc +args:
 
 index +args:
     RUSTFLAGS=-Awarnings cargo run -q --package pxp-tools --bin index --release -- {{args}}
-
-@konsole example *args:
-    RUSTFLAGS=-Awarnings cargo run -q --package konsole --example {{example}} --release -- {{args}}
