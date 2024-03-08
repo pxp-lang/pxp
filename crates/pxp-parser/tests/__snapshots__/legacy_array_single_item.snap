@@ -88,7 +88,7 @@
                                                             },
                                                         },
                                                         symbol: Some(
-                                                            2,
+                                                            Symbol("1"),
                                                         ),
                                                     },
                                                 },

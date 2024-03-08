@@ -46,7 +46,7 @@
                                 kind: Variable(
                                     SimpleVariable(
                                         SimpleVariable {
-                                            symbol: 1,
+                                            symbol: Symbol("$a"),
                                             span: Span {
                                                 start: Position {
                                                     offset: 7,
