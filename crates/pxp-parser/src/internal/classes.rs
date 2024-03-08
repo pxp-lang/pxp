@@ -238,7 +238,6 @@ pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
 
     // e.g: public static
     let modifiers = modifiers::property_group(state, modifiers);
-    let property = ClassishMember::Property(properties::parse(state, modifiers));
-
-    property
+    
+    ClassishMember::Property(properties::parse(state, modifiers))
 }

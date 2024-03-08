@@ -1,10 +1,10 @@
-use std::path::PathBuf;
+use std::path::Path;
 
 use pxp_symbol::SymbolTable;
 
 use crate::Index;
 
-pub fn try_load_index_from_cache(directory: &PathBuf) -> Option<(Index, SymbolTable)> {
+pub fn try_load_index_from_cache(directory: &Path) -> Option<(Index, SymbolTable)> {
     // Try to load a serialised version of the index from the system cache directory.
     // If the file doesn't exist, or if it fails to load, return None.
     // Otherwise, return the loaded index.
@@ -28,7 +28,7 @@ pub fn try_load_index_from_cache(directory: &PathBuf) -> Option<(Index, SymbolTa
     }
 }
 
-pub fn write_index_to_cache(result: (&Index, &SymbolTable), directory: &PathBuf) {
+pub fn write_index_to_cache(result: (&Index, &SymbolTable), directory: &Path) {
     let cache_dir = dirs::cache_dir().unwrap().join("pxp-indexer");
     let cache_file = cache_dir.join(directory.file_name().unwrap()).with_extension("index");
 

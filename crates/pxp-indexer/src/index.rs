@@ -144,7 +144,7 @@ impl Index {
                                         f,
                                         "\n        extends {}",
                                         symbol_table
-                                            .resolve(*class.extends.get(0).unwrap())
+                                            .resolve(*class.extends.first().unwrap())
                                             .unwrap()
                                     )?;
                                 }
@@ -289,7 +289,7 @@ impl Index {
                                         )?;
 
                                         if i < class.methods.len() - 1 {
-                                            write!(f, "\n")?;
+                                            writeln!(f)?;
                                         }
                                     }
                                 }
@@ -321,7 +321,7 @@ impl Index {
                     )?;
                 }
 
-                writeln!(f, "")
+                writeln!(f)
             }),
         )
     }

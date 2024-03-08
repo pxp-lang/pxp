@@ -22,6 +22,10 @@ impl<T> CommaSeparated<T> {
     pub fn len(&self) -> usize {
         self.inner.len()
     }
+
+    pub fn is_empty(&self) -> bool {
+        self.inner.is_empty()
+    }
 }
 
 impl<T> IntoIterator for CommaSeparated<T> {

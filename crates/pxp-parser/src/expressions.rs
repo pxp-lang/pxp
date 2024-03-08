@@ -664,10 +664,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let die = state.stream.current().span;
             state.stream.next();
 
-            let argument = match parameters::single_argument(state, false, true) {
-                Some(arg) => Some(Box::new(arg)),
-                None => None,
-            };
+            let argument = parameters::single_argument(state, false, true).map(Box::new);
 
             let end_span = state.stream.previous().span;
 
@@ -684,10 +681,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let exit = state.stream.current().span;
             state.stream.next();
 
-            let argument = match parameters::single_argument(state, false, true) {
-                Some(arg) => Some(Box::new(arg)),
-                None => None,
-            };
+            let argument = parameters::single_argument(state, false, true).map(Box::new);
 
             let end_span = state.stream.previous().span;
 
@@ -1347,7 +1341,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let current = state.stream.current();
 
             let span = current.span;
-            let kind = current.kind.clone().into();
+            let kind = current.kind.into();
 
             state.stream.next();
 
@@ -1371,7 +1365,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let current = state.stream.current();
 
             let span = current.span;
-            let op = current.kind.clone();
+            let op = current.kind;
 
             state.stream.next();
 

@@ -17,7 +17,7 @@ impl<'a> Lexer<'a> {
         Self { symbol_table }
     }
 
-    pub fn tokenize<'b>(&mut self, input: &'b [u8]) -> Result<Vec<Token>, LexerError> {
+    pub fn tokenize(&mut self, input: &[u8]) -> Result<Vec<Token>, LexerError> {
         let mut state = State::new(input);
 
         while !state.is_eof() {

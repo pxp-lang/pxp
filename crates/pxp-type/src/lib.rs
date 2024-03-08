@@ -129,14 +129,14 @@ impl<'a> Debug for TypeWithSymbolTable<'a> {
         match &self.r#type {
             Type::Named(name) => write!(f, "{}", self.symbol_table.resolve(*name).unwrap()),
             Type::Nullable(inner) => {
-                write!(f, "?{:?}", inner.with_symbol_table(&self.symbol_table))
+                write!(f, "?{:?}", inner.with_symbol_table(self.symbol_table))
             }
             Type::Union(inner) => write!(
                 f,
                 "{}",
                 inner
                     .iter()
-                    .map(|t| format!("{:?}", t.with_symbol_table(&self.symbol_table)))
+                    .map(|t| format!("{:?}", t.with_symbol_table(self.symbol_table)))
                     .collect::<Vec<String>>()
                     .join("|")
             ),
@@ -145,7 +145,7 @@ impl<'a> Debug for TypeWithSymbolTable<'a> {
                 "{}",
                 inner
                     .iter()
-                    .map(|t| format!("{:?}", t.with_symbol_table(&self.symbol_table)))
+                    .map(|t| format!("{:?}", t.with_symbol_table(self.symbol_table)))
                     .collect::<Vec<String>>()
                     .join("&")
             ),

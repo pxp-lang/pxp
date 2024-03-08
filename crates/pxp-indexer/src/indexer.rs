@@ -1,7 +1,6 @@
+#![allow(clippy::field_reassign_with_default)]
 use std::{
-    collections::HashMap,
-    fs::read,
-    path::PathBuf,
+    collections::HashMap, fs::read, path::{Path, PathBuf}
 };
 
 use discoverer::discover;
@@ -37,7 +36,7 @@ use crate::{
     Location, MethodEntity, ParameterEntity, PropertyEntity,
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Indexer {
     index: Index,
     symbol_table: SymbolTable,
@@ -76,7 +75,7 @@ impl Indexer {
         }
     }
 
-    pub fn index(&mut self, directory: &PathBuf) -> (Index, SymbolTable) {
+    pub fn index(&mut self, directory: &Path) -> (Index, SymbolTable) {
         let files = discover(
             &["php"],
             &[directory.to_str().unwrap().to_string().as_str()]
@@ -297,8 +296,6 @@ impl Visitor for Indexer {
                 );
 
                 self.index.add_constant(constant);
-            } else {
-                return;
             }
         }
     }
@@ -383,7 +380,7 @@ impl Visitor for Indexer {
         enumeration.short_name = node.name.symbol;
 
         for implements in node.implements.iter() {
-            let name = self.qualify(&implements);
+            let name = self.qualify(implements);
             enumeration.implements.push(name);
         }
 
@@ -441,7 +438,7 @@ impl Visitor for Indexer {
         if let Some(InterfaceExtends { parents, .. }) = &node.extends {
             interface.extends = parents
                 .iter()
-                .map(|p| self.qualify(&p))
+                .map(|p| self.qualify(p))
                 .collect();
         }
 
@@ -460,7 +457,6 @@ impl Visitor for Indexer {
     fn visit_class(&mut self, node: &mut ClassStatement) {
         let mut class = ClassLikeEntity::default();
         class.is_class = true;
-
         class.name = self.qualify(&node.name);
         class.short_name = node.name.symbol;
         class.r#final = node.modifiers.has_final();
@@ -468,13 +464,13 @@ impl Visitor for Indexer {
         class.r#readonly = node.modifiers.has_readonly();
 
         if let Some(ClassExtends { parent, .. }) = &node.extends {
-            class.extends = vec![self.qualify(&parent)];
+            class.extends = vec![self.qualify(parent)];
         }
 
         if let Some(ClassImplements { interfaces, .. }) = &node.implements {
             class.implements = interfaces
                 .iter()
-                .map(|i| self.qualify(&i))
+                .map(|i| self.qualify(i))
                 .collect();
         }
 
@@ -494,11 +490,12 @@ impl Visitor for Indexer {
         let visibility = node.modifiers.visibility();
 
         for entry in node.entries.iter() {
-            let mut entity = ClassishConstantEntity::default();
-
-            entity.name = entry.name.symbol;
-            entity.r#final = r#final;
-            entity.visibility = visibility;
+            let entity = ClassishConstantEntity {
+                name: entry.name.symbol,
+                r#final,
+                visibility,
+                ..Default::default()
+            };
 
             self.scope.current_class_like.constants.push(entity);
         }
@@ -510,38 +507,43 @@ impl Visitor for Indexer {
         let r#type = node.r#type.clone().unwrap_or_default().kind;
 
         for property in node.entries.iter() {
-            let mut entity = PropertyEntity::default();
-            entity.name = property.variable().symbol;
-            entity.visibility = visibility;
-            entity.r#static = r#static;
-            entity.r#type = r#type.clone();
-            entity.default = property.is_initialized();
+            let entity = PropertyEntity {
+                name: property.variable().symbol,
+                visibility,
+                r#static,
+                r#type: r#type.clone(),
+                default: property.is_initialized(),
+            };
 
             self.scope.current_class_like.properties.push(entity);
         }
     }
 
     fn visit_abstract_method(&mut self, node: &mut AbstractMethod) {
-        let mut entity = MethodEntity::default();
-        entity.name = node.name.symbol;
-        entity.visibility = node.modifiers.visibility();
-        entity.r#static = node.modifiers.has_static();
-        entity.r#abstract = false;
-        entity.r#virtual = self.scope.current_class_like.is_interface;
-        entity.r#final = node.modifiers.has_final();
+        let mut entity = MethodEntity {
+            name: node.name.symbol,
+            visibility: node.modifiers.visibility(),
+            r#static: node.modifiers.has_static(),
+            r#abstract: false,
+            r#virtual: self.scope.current_class_like.is_interface,
+            r#final: node.modifiers.has_final(),
+            ..Default::default()
+        };
 
         let mut parameters = Vec::new();
 
         for parameter in node.parameters.iter() {
-            let mut p = ParameterEntity::default();
-            p.name = parameter.name.symbol;
-            p.reference = parameter.ampersand.is_some();
-            p.variadic = parameter.ellipsis.is_some();
-            p.optional = parameter.default.is_some();
-            p.r#type = if let Some(r#type) = &parameter.data_type {
-                r#type.kind.clone()
-            } else {
-                Type::Mixed
+            let p = ParameterEntity {
+                name: parameter.name.symbol,
+                reference: parameter.ampersand.is_some(),
+                variadic: parameter.ellipsis.is_some(),
+                optional: parameter.default.is_some(),
+                r#type: if let Some(r#type) = &parameter.data_type {
+                    r#type.kind.clone()
+                } else {
+                    Type::Mixed
+                },
+                ..Default::default()
             };
 
             parameters.push(p);
@@ -561,25 +563,29 @@ impl Visitor for Indexer {
     }
 
     fn visit_concrete_method(&mut self, node: &mut ConcreteMethod) {
-        let mut entity = MethodEntity::default();
-        entity.name = node.name.symbol;
-        entity.visibility = node.modifiers.visibility();
-        entity.r#static = node.modifiers.has_static();
-        entity.r#abstract = false;
-        entity.r#final = node.modifiers.has_final();
+        let mut entity = MethodEntity {
+            name: node.name.symbol,
+            visibility: node.modifiers.visibility(),
+            r#static: node.modifiers.has_static(),
+            r#abstract: false,
+            r#final: node.modifiers.has_final(),
+            ..Default::default()
+        };
 
         let mut parameters = Vec::new();
 
         for parameter in node.parameters.iter() {
-            let mut p = ParameterEntity::default();
-            p.name = parameter.name.symbol;
-            p.reference = parameter.ampersand.is_some();
-            p.variadic = parameter.ellipsis.is_some();
-            p.optional = parameter.default.is_some();
-            p.r#type = if let Some(r#type) = &parameter.data_type {
-                r#type.kind.clone()
-            } else {
-                Type::Mixed
+            let p = ParameterEntity {
+                name: parameter.name.symbol,
+                reference: parameter.ampersand.is_some(),
+                variadic: parameter.ellipsis.is_some(),
+                optional: parameter.default.is_some(),
+                r#type: if let Some(r#type) = &parameter.data_type {
+                    r#type.kind.clone()
+                } else {
+                    Type::Mixed
+                },
+                ..Default::default()
             };
 
             parameters.push(p);
@@ -599,35 +605,40 @@ impl Visitor for Indexer {
     }
 
     fn visit_concrete_constructor(&mut self, node: &mut ConcreteConstructor) {
-        let mut entity = MethodEntity::default();
-        entity.name = node.name.symbol;
-        entity.visibility = node.modifiers.visibility();
-        entity.r#static = node.modifiers.has_static();
-        entity.r#abstract = false;
-        entity.r#final = node.modifiers.has_final();
+        let mut entity = MethodEntity {
+            name: node.name.symbol,
+            visibility: node.modifiers.visibility(),
+            r#static: node.modifiers.has_static(),
+            r#abstract: false,
+            r#final: node.modifiers.has_final(),   
+            ..Default::default()
+        };
 
         let mut parameters = Vec::new();
 
         for parameter in node.parameters.parameters.iter() {
-            let mut p = ParameterEntity::default();
-            p.name = parameter.name.symbol;
-            p.reference = parameter.ampersand.is_some();
-            p.variadic = parameter.ellipsis.is_some();
-            p.optional = parameter.default.is_some();
-            p.r#type = if let Some(r#type) = &parameter.data_type {
-                r#type.kind.clone()
-            } else {
-                Type::Mixed
+            let p = ParameterEntity {
+                name: parameter.name.symbol,
+                reference: parameter.ampersand.is_some(),
+                variadic: parameter.ellipsis.is_some(),
+                optional: parameter.default.is_some(),
+                r#type: if let Some(r#type) = &parameter.data_type {
+                    r#type.kind.clone()
+                } else {
+                    Type::Mixed
+                },
+                ..Default::default()
             };
 
             // Indicates that this is a promoted property.
             if !parameter.modifiers.is_empty() {
-                let mut property = PropertyEntity::default();
-                property.name = parameter.name.symbol;
-                property.visibility = Visibility::Public;
-                property.r#static = false;
-                property.r#type = p.r#type.clone();
-                property.default = true;
+                let property = PropertyEntity {
+                    name: parameter.name.symbol,
+                    visibility: Visibility::Public,
+                    r#static: false,
+                    r#type: p.r#type.clone(),
+                    default: true,
+                };
 
                 self.scope.current_class_like.properties.push(property);
             }
@@ -644,36 +655,41 @@ impl Visitor for Indexer {
     }
 
     fn visit_abstract_constructor(&mut self, node: &mut AbstractConstructor) {
-        let mut entity = MethodEntity::default();
-        entity.name = node.name.symbol;
-        entity.visibility = node.modifiers.visibility();
-        entity.r#static = node.modifiers.has_static();
-        entity.r#abstract = !self.scope.current_class_like.is_interface;
-        entity.r#virtual = self.scope.current_class_like.is_interface;
-        entity.r#final = node.modifiers.has_final();
+        let mut entity = MethodEntity {
+            name: node.name.symbol,
+            visibility: node.modifiers.visibility(),
+            r#static: node.modifiers.has_static(),
+            r#abstract: !self.scope.current_class_like.is_interface,
+            r#virtual: self.scope.current_class_like.is_interface,
+            r#final: node.modifiers.has_final(),
+            ..Default::default()
+        };
 
         let mut parameters = Vec::new();
 
         for parameter in node.parameters.parameters.iter() {
-            let mut p = ParameterEntity::default();
-            p.name = parameter.name.symbol;
-            p.reference = parameter.ampersand.is_some();
-            p.variadic = parameter.ellipsis.is_some();
-            p.optional = parameter.default.is_some();
-            p.r#type = if let Some(r#type) = &parameter.data_type {
-                r#type.kind.clone()
-            } else {
-                Type::Mixed
+            let p = ParameterEntity {
+                name: parameter.name.symbol,
+                reference: parameter.ampersand.is_some(),
+                variadic: parameter.ellipsis.is_some(),
+                optional: parameter.default.is_some(),
+                r#type: if let Some(r#type) = &parameter.data_type {
+                    r#type.kind.clone()
+                } else {
+                    Type::Mixed
+                },
+                ..Default::default()
             };
 
             // Indicates that this is a promoted property.
             if !parameter.modifiers.is_empty() {
-                let mut property = PropertyEntity::default();
-                property.name = parameter.name.symbol;
-                property.visibility = Visibility::Public;
-                property.r#static = false;
-                property.r#type = p.r#type.clone();
-                property.default = true;
+                let property = PropertyEntity {
+                    name: parameter.name.symbol,
+                    visibility: Visibility::Public,
+                    r#static: false,
+                    r#type: p.r#type.clone(),
+                    default: true,
+                };
 
                 self.scope.current_class_like.properties.push(property);
             }
@@ -695,12 +711,13 @@ impl Visitor for Indexer {
         let r#type = node.r#type.clone().unwrap_or_default();
 
         for property in node.entries.iter() {
-            let mut entity = PropertyEntity::default();
-            entity.name = property.variable().symbol;
-            entity.visibility = visibility;
-            entity.r#static = r#static;
-            entity.r#type = r#type.kind.clone();
-            entity.default = property.is_initialized();
+            let entity = PropertyEntity {
+                name: property.variable().symbol,
+                visibility,
+                r#static,
+                r#type: r#type.kind.clone(),
+                default: property.is_initialized(),
+            };
 
             self.scope.current_class_like.properties.push(entity);
         }
@@ -708,7 +725,7 @@ impl Visitor for Indexer {
 
     fn visit_trait_usage(&mut self, node: &mut TraitUsage) {
         for r#use in node.traits.iter() {
-            let name = self.qualify(&r#use);
+            let name = self.qualify(r#use);
 
             self.scope.current_class_like.uses.push(name);
         }

@@ -88,7 +88,7 @@ pub fn heredoc(state: &mut State) -> Expression {
 
     let (indentation_type, indentation_amount) = match &state.stream.current().kind {
         TokenKind::EndDocString(indentation_type, indentation_amount) => {
-            (indentation_type.clone(), *indentation_amount)
+            (*indentation_type, *indentation_amount)
         }
         _ => unreachable!(),
     };
@@ -272,7 +272,7 @@ fn part(state: &mut State) -> Option<StringPart> {
     match &state.stream.current().kind {
         TokenKind::StringPart => {
             let s = *state.stream.current();
-            let part = if s.span.len() > 0 {
+            let part = if s.span.is_empty() {
                 Some(StringPart::Literal(LiteralStringPart {
                     value: s.symbol.unwrap(),
                 }))

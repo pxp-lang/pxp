@@ -53,5 +53,5 @@ pub fn gather_attributes(state: &mut State) -> bool {
     state.attribute(AttributeGroup { span, members });
 
     // recursive, looking for multiple attribute brackets after each other.
-    gather_attributes(state) || true
+    gather_attributes(state)
 }

@@ -41,7 +41,7 @@ impl SymbolTable {
     }
 
     pub fn must_find(&self, contents: &[u8]) -> Symbol {
-        self.find(contents).expect(&format!("Symbol for {} not found", ByteStr::from(contents)))
+        self.find(contents).unwrap_or_else(|| panic!("Symbol for {} not found", ByteStr::from(contents)))
     }
 
     pub fn resolve(&self, symbol: Symbol) -> Option<ByteStr> {

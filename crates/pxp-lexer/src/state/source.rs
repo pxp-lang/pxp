@@ -10,7 +10,6 @@ pub struct Source<'a> {
 
 impl<'a> Source<'a> {
     pub fn new(input: &'a [u8]) -> Self {
-        let input = input;
         let length = input.len();
 
         Self {

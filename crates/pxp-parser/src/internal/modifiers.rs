@@ -180,7 +180,7 @@ pub fn constant_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Const
 pub fn collect(state: &mut State) -> Vec<(Span, TokenKind)> {
     let mut collected: Vec<(Span, TokenKind)> = vec![];
 
-    let collectable_tokens = vec![
+    let collectable_tokens = [
         TokenKind::Private,
         TokenKind::Protected,
         TokenKind::Public,
@@ -190,7 +190,7 @@ pub fn collect(state: &mut State) -> Vec<(Span, TokenKind)> {
         TokenKind::Readonly,
     ];
 
-    let mut current = state.stream.current().clone();
+    let mut current = *state.stream.current();
     let mut current_kind = current.kind;
     let mut current_span = current.span;
 
@@ -222,7 +222,7 @@ pub fn collect(state: &mut State) -> Vec<(Span, TokenKind)> {
 
         state.stream.next();
 
-        current = state.stream.current().clone();
+        current = *state.stream.current();
         current_kind = current.kind;
         current_span = current.span;
     }

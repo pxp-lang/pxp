@@ -14,7 +14,7 @@ fn main() {
         exit(0);
     }
 
-    let directory = PathBuf::from(args.get(0).unwrap());
+    let directory = PathBuf::from(args.first().unwrap());
 
     println!("Indexing...");
     let start = Instant::now();
@@ -57,7 +57,7 @@ fn main() {
                     let split: Vec<&str> = command.split_whitespace().collect();
                     let (command, args) = (split.first().unwrap(), &split[1..]);
 
-                    process_command(&command, args, &index, &symbol_table);
+                    process_command(command, args, &index, &symbol_table);
                 }
             }
             Err(ReadlineError::Interrupted) => {
@@ -122,7 +122,7 @@ fn process_command(command: &str, args: &[&str], index: &Index, symbol_table: &S
                                             f,
                                             "\n        extends {}",
                                             symbol_table
-                                                .resolve(*class.extends.get(0).unwrap())
+                                                .resolve(*class.extends.first().unwrap())
                                                 .unwrap()
                                         )?;
                                     }
@@ -271,7 +271,7 @@ fn process_command(command: &str, args: &[&str], index: &Index, symbol_table: &S
                                             )?;
 
                                             if i < class.methods.len() - 1 {
-                                                write!(f, "\n")?;
+                                                writeln!(f)?;
                                             }
                                         }
                                     }

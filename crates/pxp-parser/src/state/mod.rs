@@ -80,7 +80,7 @@ impl<'a, 'b> State<'a, 'b> {
     }
 
     pub fn previous_scope(&self) -> Option<&Scope> {
-        self.stack.iter().nth(self.stack.len() - 2)
+        self.stack.get(self.stack.len() - 2)
     }
 
     pub fn diagnostic(&mut self, kind: ParserDiagnostic, severity: Severity, span: Span) {

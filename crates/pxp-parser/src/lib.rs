@@ -59,8 +59,8 @@ pub struct ParseResult {
     pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
 }
 
-pub fn parse<'b, B: Sized + AsRef<[u8]>>(
-    input: &'b B,
+pub fn parse<B: Sized + AsRef<[u8]>>(
+    input: &B,
     symbol_table: &mut SymbolTable,
 ) -> ParseResult {
     let mut lexer = Lexer::new(input, symbol_table);
