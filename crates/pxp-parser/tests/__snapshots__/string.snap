@@ -460,6 +460,9 @@
                                                                 SimpleIdentifier {
                                                                     id: 15,
                                                                     symbol: Symbol("name"),
+                                                                    parts: [
+                                                                        Symbol("name"),
+                                                                    ],
                                                                     qualification: Unqualified,
                                                                     span: Span {
                                                                         start: Position {
@@ -634,6 +637,9 @@
                                                                 SimpleIdentifier {
                                                                     id: 21,
                                                                     symbol: Symbol("name"),
+                                                                    parts: [
+                                                                        Symbol("name"),
+                                                                    ],
                                                                     qualification: Unqualified,
                                                                     span: Span {
                                                                         start: Position {
@@ -808,6 +814,9 @@
                                                                 SimpleIdentifier {
                                                                     id: 27,
                                                                     symbol: Symbol("getName"),
+                                                                    parts: [
+                                                                        Symbol("getName"),
+                                                                    ],
                                                                     qualification: Unqualified,
                                                                     span: Span {
                                                                         start: Position {

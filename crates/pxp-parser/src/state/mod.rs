@@ -25,7 +25,7 @@ pub enum Scope {
 pub struct State<'a, 'b> {
     pub stack: VecDeque<Scope>,
     pub stream: &'a mut TokenStream<'a>,
-    pub symbol_table: &'b SymbolTable,
+    pub symbol_table: &'b mut SymbolTable,
     pub attributes: Vec<AttributeGroup>,
     pub namespace_type: Option<NamespaceType>,
     pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
@@ -33,7 +33,7 @@ pub struct State<'a, 'b> {
 }
 
 impl<'a, 'b> State<'a, 'b> {
-    pub fn new(tokens: &'a mut TokenStream<'a>, symbol_table: &'b SymbolTable) -> Self {
+    pub fn new(tokens: &'a mut TokenStream<'a>, symbol_table: &'b mut SymbolTable) -> Self {
         Self {
             stack: VecDeque::with_capacity(32),
             stream: tokens,

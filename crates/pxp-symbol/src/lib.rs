@@ -86,6 +86,10 @@ impl SymbolTable {
         self.vec.get(symbol.0).map(|s| ByteStr::new(s))
     }
 
+    pub fn must_resolve(&self, symbol: Symbol) -> ByteStr {
+        self.resolve(symbol).unwrap_or_else(|| panic!("Symbol {} not found", symbol))
+    }
+
     pub fn coagulate(&mut self, symbols: &[Symbol], with: Option<&[u8]>) -> Symbol {
         let mut contents = Vec::new();
 

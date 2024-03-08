@@ -39,17 +39,17 @@
             ExpressionStatement {
                 expression: Expression {
                     id: 6,
-                    kind: ConstantFetch(
-                        ConstantFetchExpression {
+                    kind: StaticMethodCall(
+                        StaticMethodCallExpression {
                             target: Expression {
                                 id: 4,
                                 kind: Identifier(
                                     SimpleIdentifier(
                                         SimpleIdentifier {
                                             id: 3,
-                                            symbol: Symbol("Foo"),
+                                            symbol: Symbol("A"),
                                             parts: [
-                                                Symbol("Foo"),
+                                                Symbol("A"),
                                             ],
                                             qualification: Unqualified,
                                             span: Span {
@@ -59,9 +59,9 @@
                                                     column: 1,
                                                 },
                                                 end: Position {
-                                                    offset: 10,
+                                                    offset: 8,
                                                     line: 3,
-                                                    column: 4,
+                                                    column: 2,
                                                 },
                                             },
                                         },
@@ -74,9 +74,9 @@
                                         column: 1,
                                     },
                                     end: Position {
-                                        offset: 10,
+                                        offset: 8,
                                         line: 3,
-                                        column: 4,
+                                        column: 2,
                                     },
                                 },
                                 comments: CommentGroup {
@@ -85,81 +85,80 @@
                             },
                             double_colon: Span {
                                 start: Position {
+                                    offset: 8,
+                                    line: 3,
+                                    column: 2,
+                                },
+                                end: Position {
                                     offset: 10,
                                     line: 3,
                                     column: 4,
                                 },
-                                end: Position {
-                                    offset: 12,
-                                    line: 3,
-                                    column: 6,
-                                },
                             },
-                            constant: DynamicIdentifier(
-                                DynamicIdentifier {
+                            method: SimpleIdentifier(
+                                SimpleIdentifier {
+                                    id: 5,
+                                    symbol: Symbol("foo"),
+                                    parts: [
+                                        Symbol("foo"),
+                                    ],
+                                    qualification: Unqualified,
                                     span: Span {
                                         start: Position {
-                                            offset: 12,
+                                            offset: 10,
                                             line: 3,
-                                            column: 6,
+                                            column: 4,
                                         },
                                         end: Position {
-                                            offset: 18,
+                                            offset: 13,
                                             line: 3,
-                                            column: 12,
-                                        },
-                                    },
-                                    expr: Expression {
-                                        id: 5,
-                                        kind: Variable(
-                                            SimpleVariable(
-                                                SimpleVariable {
-                                                    symbol: Symbol("$foo"),
-                                                    span: Span {
-                                                        start: Position {
-                                                            offset: 13,
-                                                            line: 3,
-                                                            column: 7,
-                                                        },
-                                                        end: Position {
-                                                            offset: 17,
-                                                            line: 3,
-                                                            column: 11,
-                                                        },
-                                                    },
-                                                },
-                                            ),
-                                        ),
-                                        span: Span {
-                                            start: Position {
-                                                offset: 13,
-                                                line: 3,
-                                                column: 7,
-                                            },
-                                            end: Position {
-                                                offset: 17,
-                                                line: 3,
-                                                column: 11,
-                                            },
-                                        },
-                                        comments: CommentGroup {
-                                            comments: [],
+                                            column: 7,
                                         },
                                     },
                                 },
                             ),
+                            arguments: ArgumentList {
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                                left_parenthesis: Span {
+                                    start: Position {
+                                        offset: 13,
+                                        line: 3,
+                                        column: 7,
+                                    },
+                                    end: Position {
+                                        offset: 14,
+                                        line: 3,
+                                        column: 8,
+                                    },
+                                },
+                                arguments: [],
+                                right_parenthesis: Span {
+                                    start: Position {
+                                        offset: 14,
+                                        line: 3,
+                                        column: 8,
+                                    },
+                                    end: Position {
+                                        offset: 15,
+                                        line: 3,
+                                        column: 9,
+                                    },
+                                },
+                            },
                         },
                     ),
                     span: Span {
                         start: Position {
-                            offset: 10,
+                            offset: 8,
                             line: 3,
-                            column: 4,
+                            column: 2,
                         },
                         end: Position {
-                            offset: 18,
+                            offset: 15,
                             line: 3,
-                            column: 12,
+                            column: 9,
                         },
                     },
                     comments: CommentGroup {
@@ -169,14 +168,14 @@
                 ending: Semicolon(
                     Span {
                         start: Position {
-                            offset: 18,
+                            offset: 15,
                             line: 3,
-                            column: 12,
+                            column: 9,
                         },
                         end: Position {
-                            offset: 19,
+                            offset: 16,
                             line: 3,
-                            column: 13,
+                            column: 10,
                         },
                     },
                 ),
@@ -189,9 +188,9 @@
                 column: 1,
             },
             end: Position {
-                offset: 19,
+                offset: 16,
                 line: 3,
-                column: 13,
+                column: 10,
             },
         },
         comments: CommentGroup {

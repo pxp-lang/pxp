@@ -56,6 +56,9 @@
                 name: SimpleIdentifier {
                     id: 3,
                     symbol: Symbol("Foo"),
+                    parts: [
+                        Symbol("Foo"),
+                    ],
                     qualification: Unqualified,
                     span: Span {
                         start: Position {
@@ -129,6 +132,9 @@
                                         name: SimpleIdentifier {
                                             id: 4,
                                             symbol: Symbol("FOO"),
+                                            parts: [
+                                                Symbol("FOO"),
+                                            ],
                                             qualification: Unqualified,
                                             span: Span {
                                                 start: Position {

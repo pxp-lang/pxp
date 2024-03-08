@@ -74,10 +74,9 @@ pub fn parse<B: Sized + AsRef<[u8]>>(
     construct(&tokens, symbol_table)
 }
 
-pub fn construct(tokens: &[Token], symbol_table: &SymbolTable) -> ParseResult {
+pub fn construct(tokens: &[Token], symbol_table: &mut SymbolTable) -> ParseResult {
     let mut stream = TokenStream::new(tokens);
     let mut state = State::new(&mut stream, symbol_table);
-
     let mut ast = Vec::new();
 
     while !state.stream.is_eof() {
