@@ -47,7 +47,7 @@
                                     SimpleIdentifier(
                                         SimpleIdentifier {
                                             id: 3,
-                                            symbol: 1,
+                                            symbol: Symbol("Foo"),
                                             qualification: Unqualified,
                                             span: Span {
                                                 start: Position {
@@ -111,7 +111,7 @@
                                         kind: Variable(
                                             SimpleVariable(
                                                 SimpleVariable {
-                                                    symbol: 2,
+                                                    symbol: Symbol("$foo"),
                                                     span: Span {
                                                         start: Position {
                                                             offset: 13,

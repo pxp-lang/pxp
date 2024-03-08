@@ -92,7 +92,7 @@ fn process(string_or_file: &str) -> String {
         string_or_file.as_bytes().to_vec()
     };
 
-    let mut symbol_table = SymbolTable::new();
+    let mut symbol_table = SymbolTable::the();
     let result = parse(&input, &mut symbol_table);
     let mut output = format!("{:#?}\n---\n", result.ast);
 

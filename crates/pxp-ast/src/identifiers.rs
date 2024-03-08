@@ -12,7 +12,7 @@ pub enum Identifier {
 
 impl Identifier {
     pub fn missing() -> Self {
-        Self::SimpleIdentifier(SimpleIdentifier::new(0, 0, IdentifierQualification::Unqualified, Span::default()))
+        Self::SimpleIdentifier(SimpleIdentifier::new(0, Symbol(0), IdentifierQualification::Unqualified, Span::default()))
     }
 
     pub fn is_simple(&self) -> bool {

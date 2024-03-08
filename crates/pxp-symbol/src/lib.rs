@@ -1,9 +1,30 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::{Debug, Display}, mem::MaybeUninit, sync::Once};
 
 use pxp_bytestring::ByteStr;
 use serde::{Serialize, Deserialize};
 
-pub type Symbol = usize;
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
+pub struct Symbol(pub usize);
+
+impl Debug for Symbol {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(contents) = SymbolTable::the().resolve(*self) {
+            write!(f, "Symbol(\"{}\")", contents)
+        } else {
+            write!(f, "Symbol({})", self.0)
+        }
+    }
+}
+
+impl Display for Symbol {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(contents) = SymbolTable::the().resolve(*self) {
+            write!(f, "{}", contents)
+        } else {
+            write!(f, "Symbol({})", self.0)
+        }
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct SymbolTable {
@@ -11,7 +32,24 @@ pub struct SymbolTable {
     vec: Vec<Vec<u8>>,
 }
 
+fn singleton() -> &'static mut SymbolTable {
+    static mut SINGLETON: MaybeUninit<SymbolTable> = MaybeUninit::uninit();
+    static ONCE: Once = Once::new();
+
+    unsafe {
+        ONCE.call_once(|| {
+            SINGLETON.write(SymbolTable::new());
+        });
+
+        &mut *SINGLETON.as_mut_ptr()
+    }
+}
+
 impl SymbolTable {
+    pub fn the() -> &'static mut Self {
+        singleton()
+    }
+
     pub fn new() -> Self {
         let mut table = Self {
             map: HashMap::new(),
@@ -30,10 +68,10 @@ impl SymbolTable {
 
         let symbol = self.vec.len();
 
-        self.map.insert(contents.to_vec(), symbol);
+        self.map.insert(contents.to_vec(), Symbol(symbol));
         self.vec.push(contents.to_vec());
 
-        symbol
+        Symbol(symbol)
     }
 
     pub fn find(&self, contents: &[u8]) -> Option<Symbol> {
@@ -45,7 +83,7 @@ impl SymbolTable {
     }
 
     pub fn resolve(&self, symbol: Symbol) -> Option<ByteStr> {
-        self.vec.get(symbol).map(|s| ByteStr::new(s))
+        self.vec.get(symbol.0).map(|s| ByteStr::new(s))
     }
 
     pub fn coagulate(&mut self, symbols: &[Symbol], with: Option<&[u8]>) -> Symbol {
@@ -69,6 +107,8 @@ impl SymbolTable {
 mod tests {
     use pxp_bytestring::ByteStr;
 
+    use crate::Symbol;
+
     use super::SymbolTable;
 
     #[test]
@@ -81,7 +121,7 @@ mod tests {
         let mut symbols = SymbolTable::new();
         let sample_text = b"Hello, world!";
 
-        assert_eq!(symbols.intern(sample_text), 1);
+        assert_eq!(symbols.intern(sample_text), Symbol(1));
     }
 
     #[test]

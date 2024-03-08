@@ -74,84 +74,87 @@ pub fn usage(state: &mut State) -> TraitUsage {
             }
 
             match state.stream.current().kind {
-                    TokenKind::As => {
-                        state.stream.next();
-                        match state.stream.current() {
-                            Token { kind: TokenKind::Public | TokenKind::Protected | TokenKind::Private, span, .. }=> {
-                                let visibility = match state.stream.current().kind {
-                                    TokenKind::Public => VisibilityModifier::Public(*span),
-                                    TokenKind::Protected => VisibilityModifier::Protected(*span),
-                                    TokenKind::Private => VisibilityModifier::Private(*span),
-                                    _ => unreachable!(),
-                                };
+                TokenKind::As => {
+                    state.stream.next();
+                    
+                    match state.stream.current() {
+                        Token { kind: TokenKind::Public | TokenKind::Protected | TokenKind::Private, span, .. }=> {
+                            let visibility = match state.stream.current().kind {
+                                TokenKind::Public => VisibilityModifier::Public(*span),
+                                TokenKind::Protected => VisibilityModifier::Protected(*span),
+                                TokenKind::Private => VisibilityModifier::Private(*span),
+                                _ => unreachable!(),
+                            };
 
-                                state.stream.next();
+                            state.stream.next();
 
-                                if state.stream.current().kind == TokenKind::SemiColon {
-                                    adaptations.push(TraitUsageAdaptation::Visibility {
-                                        r#trait,
-                                        method,
-                                        visibility,
-                                    });
-                                } else {
-                                    let alias: SimpleIdentifier = identifiers::name(state);
-                                    adaptations.push(TraitUsageAdaptation::Alias {
-                                        r#trait,
-                                        method,
-                                        alias,
-                                        visibility: Some(visibility),
-                                    });
-                                }
-                            }
-                            _ => {
+                            if state.stream.current().kind == TokenKind::SemiColon {
+                                adaptations.push(TraitUsageAdaptation::Visibility {
+                                    r#trait,
+                                    method,
+                                    visibility,
+                                });
+                            } else {
                                 let alias: SimpleIdentifier = identifiers::name(state);
                                 adaptations.push(TraitUsageAdaptation::Alias {
                                     r#trait,
                                     method,
                                     alias,
-                                    visibility: None,
+                                    visibility: Some(visibility),
                                 });
                             }
                         }
-                    },
-                    TokenKind::Insteadof => {
-                        let mut insteadof = vec![
-                            identifiers::full_type_name(state)
-                        ];
+                        _ => {
+                            let alias: SimpleIdentifier = identifiers::name(state);
+                            adaptations.push(TraitUsageAdaptation::Alias {
+                                r#trait,
+                                method,
+                                alias,
+                                visibility: None,
+                            });
+                        }
+                    }
+                },
+                TokenKind::Insteadof => {
+                    state.stream.next();
 
-                        if state.stream.current().kind == TokenKind::Comma {
-                            if state.stream.peek().kind == TokenKind::SemiColon {
-                                // will fail with unexpected token `,`
-                                // as `insteadof` doesn't allow for trailing commas.
-                                utils::skip_semicolon(state);
-                            }
+                    let mut insteadof = vec![
+                        identifiers::full_type_name(state)
+                    ];
 
-                            state.stream.next();
-
-                            while state.stream.current().kind != TokenKind::SemiColon {
-                                insteadof.push(identifiers::full_type_name(state));
-
-                                if state.stream.current().kind == TokenKind::Comma {
-                                    if state.stream.peek().kind == TokenKind::SemiColon {
-                                        // will fail with unexpected token `,`
-                                        // as `insteadof` doesn't allow for trailing commas.
-                                        utils::skip_semicolon(state);
-                                    } else {
-                                        state.stream.next();
-                                    }
-                                } else {
-                                    break;
-                                }
-                            }
+                    if state.stream.current().kind == TokenKind::Comma {
+                        if state.stream.peek().kind == TokenKind::SemiColon {
+                            // will fail with unexpected token `,`
+                            // as `insteadof` doesn't allow for trailing commas.
+                            utils::skip_semicolon(state);
                         }
 
-                        adaptations.push(TraitUsageAdaptation::Precedence {
-                            r#trait,
-                            method,
-                            insteadof,
-                        });
+                        state.stream.next();
+
+                        while state.stream.current().kind != TokenKind::SemiColon {
+                            insteadof.push(identifiers::full_type_name(state));
+
+                            if state.stream.current().kind == TokenKind::Comma {
+                                if state.stream.peek().kind == TokenKind::SemiColon {
+                                    // will fail with unexpected token `,`
+                                    // as `insteadof` doesn't allow for trailing commas.
+                                    utils::skip_semicolon(state);
+                                } else {
+                                    state.stream.next();
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+
+                    adaptations.push(TraitUsageAdaptation::Precedence {
+                        r#trait,
+                        method,
+                        insteadof,
+                    });
                 },
-                _ => unreachable!()
+                _ => unreachable!("{:?}", state.stream.current())
             };
 
             utils::skip_semicolon(state);

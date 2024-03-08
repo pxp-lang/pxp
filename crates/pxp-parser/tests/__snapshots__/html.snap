@@ -18,7 +18,8 @@
                         },
                     },
                     symbol: Some(
-                        1,
+                        Symbol("<h1>Hello, world!</h1>
+                        <h2>Goodbye, world!</h2>"),
                     ),
                 },
             },

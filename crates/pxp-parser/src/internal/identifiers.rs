@@ -1,6 +1,7 @@
 use crate::{state::State, ParserDiagnostic};
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_diagnostics::Severity;
+use pxp_symbol::Symbol;
 use pxp_syntax::identifier::IdentifierQualification;
 use pxp_token::{Token, TokenKind};
 
@@ -50,7 +51,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(state.id(), 0, IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), Symbol(0), IdentifierQualification::Unqualified, current.span)
         }
     }
 }
@@ -101,7 +102,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(state.id(), 0, IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), Symbol(0), IdentifierQualification::Unqualified, current.span)
         }
     }
 }
@@ -159,7 +160,7 @@ pub fn identifier(state: &mut State) -> SimpleIdentifier {
             current.span,
         );
 
-        SimpleIdentifier::new(state.id(), 0, IdentifierQualification::Unqualified, current.span)
+        SimpleIdentifier::new(state.id(), Symbol(0), IdentifierQualification::Unqualified, current.span)
     }
 }
 
@@ -225,7 +226,7 @@ pub fn full_name(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(state.id(), 0, IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), Symbol(0), IdentifierQualification::Unqualified, current.span)
         }
     }
 }
@@ -278,7 +279,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(state.id(), 0, IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), Symbol(0), IdentifierQualification::Unqualified, current.span)
         }
     }
 }
@@ -324,7 +325,7 @@ pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(state.id(), 0, IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), Symbol(0), IdentifierQualification::Unqualified, current.span)
         }
     }
 }

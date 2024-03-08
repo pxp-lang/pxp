@@ -70,7 +70,7 @@
                                         },
                                     },
                                     symbol: Some(
-                                        2,
+                                        Symbol("Hello, world""),
                                     ),
                                 },
                             },

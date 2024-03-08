@@ -8,7 +8,7 @@ fn main() {
     let file = args.first().unwrap();
     let content = std::fs::read(file).unwrap();
 
-    let mut symbol_table = SymbolTable::new();
+    let mut symbol_table = SymbolTable::the();
     let mut lexer = Lexer::new(&mut symbol_table);
 
     let tokens = lexer.tokenize(&content).unwrap();

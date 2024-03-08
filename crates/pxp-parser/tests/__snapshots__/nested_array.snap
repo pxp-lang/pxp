@@ -95,7 +95,7 @@
                                                                                     },
                                                                                 },
                                                                                 symbol: Some(
-                                                                                    1,
+                                                                                    Symbol("1"),
                                                                                 ),
                                                                             },
                                                                         },

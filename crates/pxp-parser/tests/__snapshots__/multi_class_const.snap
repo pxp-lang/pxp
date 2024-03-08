@@ -55,7 +55,7 @@
                 },
                 name: SimpleIdentifier {
                     id: 3,
-                    symbol: 2,
+                    symbol: Symbol("Foo"),
                     qualification: Unqualified,
                     span: Span {
                         start: Position {
@@ -112,7 +112,7 @@
                                     ConstantEntry {
                                         name: SimpleIdentifier {
                                             id: 4,
-                                            symbol: 4,
+                                            symbol: Symbol("FOO"),
                                             qualification: Unqualified,
                                             span: Span {
                                                 start: Position {
@@ -159,7 +159,7 @@
                                                             },
                                                         },
                                                         symbol: Some(
-                                                            5,
+                                                            Symbol("1"),
                                                         ),
                                                     },
                                                 },
@@ -184,7 +184,7 @@
                                     ConstantEntry {
                                         name: SimpleIdentifier {
                                             id: 6,
-                                            symbol: 6,
+                                            symbol: Symbol("BAR"),
                                             qualification: Unqualified,
                                             span: Span {
                                                 start: Position {
@@ -231,7 +231,7 @@
                                                             },
                                                         },
                                                         symbol: Some(
-                                                            7,
+                                                            Symbol("2"),
                                                         ),
                                                     },
                                                 },

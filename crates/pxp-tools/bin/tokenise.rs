@@ -15,7 +15,7 @@ fn main() {
 
     let path = args.first().unwrap();
     let path = Path::new(path);
-    let mut symbol_table = SymbolTable::new();
+    let mut symbol_table = SymbolTable::the();
     let immediate = args.contains(&"--immediate".to_string());
 
     if path.is_dir() {

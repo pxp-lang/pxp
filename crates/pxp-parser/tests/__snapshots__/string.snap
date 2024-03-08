@@ -57,7 +57,7 @@
                                     },
                                 },
                                 symbol: Some(
-                                    1,
+                                    Symbol("Hello, world""),
                                 ),
                             },
                         },
@@ -134,7 +134,7 @@
                                     },
                                 },
                                 symbol: Some(
-                                    2,
+                                    Symbol("'Hello, world'"),
                                 ),
                             },
                         },
@@ -196,11 +196,6 @@
                     kind: InterpolatedString(
                         InterpolatedStringExpression {
                             parts: [
-                                Literal(
-                                    LiteralStringPart {
-                                        value: 3,
-                                    },
-                                ),
                                 Expression(
                                     ExpressionStringPart {
                                         expression: Expression {
@@ -208,7 +203,7 @@
                                             kind: Variable(
                                                 SimpleVariable(
                                                     SimpleVariable {
-                                                        symbol: 4,
+                                                        symbol: Symbol("$name"),
                                                         span: Span {
                                                             start: Position {
                                                                 offset: 48,
@@ -302,11 +297,6 @@
                     kind: InterpolatedString(
                         InterpolatedStringExpression {
                             parts: [
-                                Literal(
-                                    LiteralStringPart {
-                                        value: 3,
-                                    },
-                                ),
                                 Expression(
                                     ExpressionStringPart {
                                         expression: Expression {
@@ -314,7 +304,7 @@
                                             kind: Variable(
                                                 SimpleVariable(
                                                     SimpleVariable {
-                                                        symbol: 4,
+                                                        symbol: Symbol("$name"),
                                                         span: Span {
                                                             start: Position {
                                                                 offset: 65,
@@ -408,11 +398,6 @@
                     kind: InterpolatedString(
                         InterpolatedStringExpression {
                             parts: [
-                                Literal(
-                                    LiteralStringPart {
-                                        value: 3,
-                                    },
-                                ),
                                 Expression(
                                     ExpressionStringPart {
                                         expression: Expression {
@@ -424,7 +409,7 @@
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
-                                                                    symbol: 5,
+                                                                    symbol: Symbol("$user"),
                                                                     span: Span {
                                                                         start: Position {
                                                                             offset: 82,
@@ -474,7 +459,7 @@
                                                             SimpleIdentifier(
                                                                 SimpleIdentifier {
                                                                     id: 15,
-                                                                    symbol: 6,
+                                                                    symbol: Symbol("name"),
                                                                     qualification: Unqualified,
                                                                     span: Span {
                                                                         start: Position {
@@ -587,11 +572,6 @@
                     kind: InterpolatedString(
                         InterpolatedStringExpression {
                             parts: [
-                                Literal(
-                                    LiteralStringPart {
-                                        value: 3,
-                                    },
-                                ),
                                 Expression(
                                     ExpressionStringPart {
                                         expression: Expression {
@@ -603,7 +583,7 @@
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
-                                                                    symbol: 5,
+                                                                    symbol: Symbol("$user"),
                                                                     span: Span {
                                                                         start: Position {
                                                                             offset: 105,
@@ -653,7 +633,7 @@
                                                             SimpleIdentifier(
                                                                 SimpleIdentifier {
                                                                     id: 21,
-                                                                    symbol: 6,
+                                                                    symbol: Symbol("name"),
                                                                     qualification: Unqualified,
                                                                     span: Span {
                                                                         start: Position {
@@ -766,11 +746,6 @@
                     kind: InterpolatedString(
                         InterpolatedStringExpression {
                             parts: [
-                                Literal(
-                                    LiteralStringPart {
-                                        value: 3,
-                                    },
-                                ),
                                 Expression(
                                     ExpressionStringPart {
                                         expression: Expression {
@@ -782,7 +757,7 @@
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
-                                                                    symbol: 5,
+                                                                    symbol: Symbol("$user"),
                                                                     span: Span {
                                                                         start: Position {
                                                                             offset: 128,
@@ -832,7 +807,7 @@
                                                             SimpleIdentifier(
                                                                 SimpleIdentifier {
                                                                     id: 27,
-                                                                    symbol: 7,
+                                                                    symbol: Symbol("getName"),
                                                                     qualification: Unqualified,
                                                                     span: Span {
                                                                         start: Position {
