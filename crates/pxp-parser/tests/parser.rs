@@ -77,6 +77,11 @@ snap!(snapper, multi_class_const, process("fixtures/multi-class-const.php"));
 snap!(snapper, typed_class_const, process("fixtures/typed-class-const.php"));
 snap!(snapper, dynamic_class_const, process("fixtures/dynamic-class-const.php"));
 
+// Identifier Qualification
+snap!(snapper, unqualified_identifier, process("fixtures/unqualified-identifier.php"));
+snap!(snapper, qualified_identifier, process("fixtures/qualified-identifier.php"));
+snap!(snapper, fully_qualified_identifier, process("fixtures/fully-qualified-identifier.php"));
+
 fn snapper() -> Snapper {
     Snapper::new(
         format!("{}/{}", env!("CARGO_MANIFEST_DIR"), "tests/__snapshots__").into()
