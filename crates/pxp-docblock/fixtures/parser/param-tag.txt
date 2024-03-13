@@ -1,7 +1,0 @@
-/**
- * @param $foo
- * @param string $foo
- * @param $bar This is a description
- * @param &$baz
- * @param ...$bars
- */

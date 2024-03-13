@@ -1,1 +1,0 @@
-@deprecated @extends @implements @method @mixin @param-out @param @property @return @self-out @template @throws @uses @var
