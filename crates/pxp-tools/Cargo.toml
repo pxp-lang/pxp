@@ -12,7 +12,6 @@ pxp-symbol = { path = "../pxp-symbol" }
 pxp-token = { path = "../pxp-token" }
 pxp-parser = { path = "../pxp-parser" }
 pxp-indexer = { path = "../pxp-indexer" }
-pxp-docblock = { path = "../pxp-docblock" }
 discoverer = "0.2.0"
 rustyline = "13.0.0"
 
