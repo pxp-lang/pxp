@@ -51,6 +51,6 @@ mod tests {
     }
 
     fn snapper() -> Snapper {
-        Snapper::new(env!("CARGO_MANIFEST_DIR").into())
+        Snapper::new(format!("{}/__snapshots__", env!("CARGO_MANIFEST_DIR")).into())
     }
 }
