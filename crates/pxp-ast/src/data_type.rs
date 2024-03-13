@@ -1,5 +1,5 @@
 use pxp_span::Span;
-use pxp_type::{Type, TypeWithSymbolTable};
+use pxp_type::Type;
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct DataType {

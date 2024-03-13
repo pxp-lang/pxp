@@ -1,6 +1,6 @@
 use std::fmt::{Debug, Display};
 
-use pxp_symbol::{Symbol, SymbolTable};
+use pxp_symbol::Symbol;
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Hash)]
