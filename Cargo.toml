@@ -5,3 +5,6 @@ resolver = "2"
 [workspace.package]
 license-file = "LICENSE"
 rust-version = "1.76"
+
+[profile.release]
+debug = true
