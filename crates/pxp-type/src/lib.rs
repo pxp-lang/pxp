@@ -63,13 +63,6 @@ impl Type {
     pub fn is_bottom(&self) -> bool {
         matches!(self, Type::Never | Type::Void)
     }
-
-    pub fn with_symbol_table<'a>(&self, symbol_table: &'a SymbolTable) -> TypeWithSymbolTable<'a> {
-        TypeWithSymbolTable {
-            r#type: self.clone(),
-            symbol_table,
-        }
-    }
 }
 
 impl Display for Type {
@@ -115,41 +108,6 @@ impl Display for Type {
             Type::SelfReference => write!(f, "self"),
             Type::ParentReference => write!(f, "parent"),
             Type::Missing => write!(f, "<missing>"),
-        }
-    }
-}
-
-pub struct TypeWithSymbolTable<'a> {
-    r#type: Type,
-    symbol_table: &'a SymbolTable,
-}
-
-impl<'a> Debug for TypeWithSymbolTable<'a> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match &self.r#type {
-            Type::Named(name) => write!(f, "{}", self.symbol_table.resolve(*name).unwrap()),
-            Type::Nullable(inner) => {
-                write!(f, "?{:?}", inner.with_symbol_table(self.symbol_table))
-            }
-            Type::Union(inner) => write!(
-                f,
-                "{}",
-                inner
-                    .iter()
-                    .map(|t| format!("{:?}", t.with_symbol_table(self.symbol_table)))
-                    .collect::<Vec<String>>()
-                    .join("|")
-            ),
-            Type::Intersection(inner) => write!(
-                f,
-                "{}",
-                inner
-                    .iter()
-                    .map(|t| format!("{:?}", t.with_symbol_table(self.symbol_table)))
-                    .collect::<Vec<String>>()
-                    .join("&")
-            ),
-            _ => write!(f, "{}", &self.r#type),
         }
     }
 }

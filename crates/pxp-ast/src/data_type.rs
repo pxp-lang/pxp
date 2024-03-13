@@ -35,8 +35,4 @@ impl DataType {
     pub fn is_bottom(&self) -> bool {
         self.kind.is_bottom()
     }
-
-    pub fn with_symbol_table<'a>(&self, symbol_table: &'a pxp_symbol::SymbolTable) -> TypeWithSymbolTable<'a> {
-        self.kind.with_symbol_table(symbol_table)
-    }
 }
