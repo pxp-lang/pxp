@@ -11,7 +11,6 @@ pxp-lexer = { path = "../pxp-lexer" }
 pxp-symbol = { path = "../pxp-symbol" }
 pxp-token = { path = "../pxp-token" }
 pxp-parser = { path = "../pxp-parser" }
-pxp-indexer = { path = "../pxp-indexer" }
 discoverer = "0.2.0"
 rustyline = "13.0.0"
 
@@ -22,11 +21,3 @@ path = "bin/tokenise.rs"
 [[bin]]
 name = "parse"
 path = "bin/parse.rs"
-
-[[bin]]
-name = "index"
-path = "bin/index.rs"
-
-[[bin]]
-name = "parse-doc"
-path = "bin/parse-doc.rs"
