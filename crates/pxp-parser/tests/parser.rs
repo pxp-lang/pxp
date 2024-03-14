@@ -76,19 +76,19 @@ snap!(snapper, spaceship, process("fixtures/comparison/spaceship.php"));
 // snap!(snapper, logical_xor, process("fixtures/logical-xor.php"));
 
 // Literals
-snap!(snapper, int, process("fixtures/int.php"));
-snap!(snapper, float, process("fixtures/float.php"));
-snap!(snapper, string, process("fixtures/string.php"));
-snap!(snapper, null, process("fixtures/null.php"));
-snap!(snapper, bool, process("fixtures/bool.php"));
-snap!(snapper, empty_array, process("fixtures/empty-array.php"));
-snap!(snapper, single_item_array, process("fixtures/single-item-array.php"));
-snap!(snapper, multi_item_array, process("fixtures/multi-item-array.php"));
-snap!(snapper, nested_array, process("fixtures/nested-array.php"));
-snap!(snapper, more_nested_array, process("fixtures/more-nested-array.php"));
-snap!(snapper, array_trailing_comma, process("fixtures/array-trailing-comma.php"));
-snap!(snapper, legacy_array, process("fixtures/legacy-array.php"));
-snap!(snapper, legacy_array_single_item, process("fixtures/legacy-array-single-item.php"));
+snap!(snapper, int, process("fixtures/literals/int.php"));
+snap!(snapper, float, process("fixtures/literals/float.php"));
+snap!(snapper, string, process("fixtures/literals/string.php"));
+snap!(snapper, null, process("fixtures/literals/null.php"));
+snap!(snapper, bool, process("fixtures/literals/bool.php"));
+snap!(snapper, empty_array, process("fixtures/literals/empty-array.php"));
+snap!(snapper, single_item_array, process("fixtures/literals/single-item-array.php"));
+snap!(snapper, multi_item_array, process("fixtures/literals/multi-item-array.php"));
+snap!(snapper, nested_array, process("fixtures/literals/nested-array.php"));
+snap!(snapper, more_nested_array, process("fixtures/literals/more-nested-array.php"));
+snap!(snapper, array_trailing_comma, process("fixtures/literals/array-trailing-comma.php"));
+snap!(snapper, legacy_array, process("fixtures/literals/legacy-array.php"));
+snap!(snapper, legacy_array_single_item, process("fixtures/literals/legacy-array-single-item.php"));
 
 // Doc-strings
 // snap!(snapper, empty_heredoc, process("fixtures/empty-heredoc.php"));
