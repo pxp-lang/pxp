@@ -92,7 +92,7 @@ snap!(snapper, legacy_array_single_item, process("fixtures/literals/legacy-array
 
 // Doc-strings
 snap!(snapper, empty_heredoc, process("fixtures/docstrings/empty-heredoc.php"));
-// snap!(snapper, simple_heredoc, process("fixtures/simple-heredoc.php"));
+snap!(snapper, simple_heredoc, process("fixtures/docstrings/simple-heredoc.php"));
 // snap!(snapper, heredoc_interpolation, process("fixtures/heredoc-interpolation.php"));
 // snap!(snapper, empty_nowdoc, process("fixtures/empty-nowdoc.php"));
 // snap!(snapper, simple_nowdoc, process("fixtures/simple-nowdoc.php"));
