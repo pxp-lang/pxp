@@ -1,0 +1,135 @@
+[
+    Statement {
+        id: 2,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 0,
+                        line: 1,
+                        column: 0,
+                    },
+                    end: Position {
+                        offset: 5,
+                        line: 1,
+                        column: 5,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 5,
+                line: 1,
+                column: 5,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 4,
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    id: 3,
+                    kind: Nowdoc(
+                        NowdocExpression {
+                            label: Token {
+                                kind: StartDocString(
+                                    Nowdoc,
+                                ),
+                                span: Span {
+                                    start: Position {
+                                        offset: 7,
+                                        line: 3,
+                                        column: 1,
+                                    },
+                                    end: Position {
+                                        offset: 16,
+                                        line: 4,
+                                        column: 1,
+                                    },
+                                },
+                                symbol: Some(
+                                    Symbol("<<<'TXT'
+                                    "),
+                                ),
+                            },
+                            value: Token {
+                                kind: StringPart,
+                                span: Span {
+                                    start: Position {
+                                        offset: 16,
+                                        line: 4,
+                                        column: 1,
+                                    },
+                                    end: Position {
+                                        offset: 46,
+                                        line: 6,
+                                        column: 1,
+                                    },
+                                },
+                                symbol: Some(
+                                    Symbol("Hello, world!
+                                    Hello, {$world}!"),
+                                ),
+                            },
+                        },
+                    ),
+                    span: Span {
+                        start: Position {
+                            offset: 7,
+                            line: 3,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 50,
+                            line: 6,
+                            column: 4,
+                        },
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: Position {
+                            offset: 50,
+                            line: 6,
+                            column: 4,
+                        },
+                        end: Position {
+                            offset: 51,
+                            line: 6,
+                            column: 5,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 7,
+                line: 3,
+                column: 1,
+            },
+            end: Position {
+                offset: 51,
+                line: 6,
+                column: 5,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

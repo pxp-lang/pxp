@@ -5,8 +5,9 @@ macro_rules! snap {
     ($snapper:ident, $name:ident, $subject:expr) => {
         #[test]
         fn $name() {
+            let snapper = $snapper();
             let subject = $subject;
-            let snapshot = $snapper().snapshot_path(stringify!($name));
+            let snapshot = snapper.snapshot_path(stringify!($name));
 
             if !snapshot.exists() {
                 std::fs::create_dir_all(snapshot.parent().unwrap()).unwrap();
@@ -15,7 +16,7 @@ macro_rules! snap {
                 println!("Snapshot created: {}", stringify!($name));
             } else {
                 let expected = std::fs::read_to_string(&snapshot).unwrap();
-                assert_eq!(expected, format!("{}", subject));
+                snapper.assert_eq(expected, format!("{}", subject));
             }
         }
     };
@@ -35,6 +36,10 @@ impl Snapper {
         let mut path = self.directory.clone();
         path.push(format!("{}.snap", name));
         path
+    }
+
+    pub fn assert_eq(&self, expected: String, actual: String) {
+        pretty_assertions::assert_eq!(expected, actual);
     }
 }
 

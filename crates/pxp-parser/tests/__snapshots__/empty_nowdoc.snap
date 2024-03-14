@@ -39,11 +39,47 @@
             ExpressionStatement {
                 expression: Expression {
                     id: 3,
-                    kind: Heredoc(
-                        HeredocExpression {
-                            label: Symbol("<<<TXT
-                            "),
-                            parts: [],
+                    kind: Nowdoc(
+                        NowdocExpression {
+                            label: Token {
+                                kind: StartDocString(
+                                    Nowdoc,
+                                ),
+                                span: Span {
+                                    start: Position {
+                                        offset: 7,
+                                        line: 3,
+                                        column: 1,
+                                    },
+                                    end: Position {
+                                        offset: 16,
+                                        line: 4,
+                                        column: 1,
+                                    },
+                                },
+                                symbol: Some(
+                                    Symbol("<<<'TXT'
+                                    "),
+                                ),
+                            },
+                            value: Token {
+                                kind: StringPart,
+                                span: Span {
+                                    start: Position {
+                                        offset: 16,
+                                        line: 4,
+                                        column: 1,
+                                    },
+                                    end: Position {
+                                        offset: 16,
+                                        line: 5,
+                                        column: 1,
+                                    },
+                                },
+                                symbol: Some(
+                                    Symbol(""),
+                                ),
+                            },
                         },
                     ),
                     span: Span {
@@ -53,7 +89,7 @@
                             column: 1,
                         },
                         end: Position {
-                            offset: 18,
+                            offset: 20,
                             line: 5,
                             column: 4,
                         },
@@ -65,12 +101,12 @@
                 ending: Semicolon(
                     Span {
                         start: Position {
-                            offset: 18,
+                            offset: 20,
                             line: 5,
                             column: 4,
                         },
                         end: Position {
-                            offset: 19,
+                            offset: 21,
                             line: 5,
                             column: 5,
                         },
@@ -85,7 +121,7 @@
                 column: 1,
             },
             end: Position {
-                offset: 19,
+                offset: 21,
                 line: 5,
                 column: 5,
             },
