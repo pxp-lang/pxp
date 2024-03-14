@@ -198,9 +198,9 @@ snap!(snapper, dynamic_class_const, process("fixtures/class-constants/dynamic-cl
 // snap!(snapper, method_with_attributes, process("fixtures/method-with-attributes.php"));
 
 // Identifier Qualification
-snap!(snapper, unqualified_identifier, process("fixtures/unqualified-identifier.php"));
-snap!(snapper, qualified_identifier, process("fixtures/qualified-identifier.php"));
-snap!(snapper, fully_qualified_identifier, process("fixtures/fully-qualified-identifier.php"));
+snap!(snapper, unqualified_identifier, process("fixtures/identifiers/unqualified-identifier.php"));
+snap!(snapper, qualified_identifier, process("fixtures/identifiers/qualified-identifier.php"));
+snap!(snapper, fully_qualified_identifier, process("fixtures/identifiers/fully-qualified-identifier.php"));
 
 fn snapper() -> Snapper {
     Snapper::new(
