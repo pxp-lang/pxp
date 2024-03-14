@@ -95,7 +95,7 @@ snap!(snapper, empty_heredoc, process("fixtures/docstrings/empty-heredoc.php"));
 snap!(snapper, simple_heredoc, process("fixtures/docstrings/simple-heredoc.php"));
 snap!(snapper, heredoc_interpolation, process("fixtures/docstrings/heredoc-interpolation.php"));
 snap!(snapper, empty_nowdoc, process("fixtures/docstrings/empty-nowdoc.php"));
-// snap!(snapper, simple_nowdoc, process("fixtures/simple-nowdoc.php"));
+snap!(snapper, simple_nowdoc, process("fixtures/docstrings/simple-nowdoc.php"));
 
 // Variables
 // snap!(snapper, variable, process("fixtures/variable.php"));
