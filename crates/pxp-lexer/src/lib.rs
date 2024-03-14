@@ -1486,14 +1486,12 @@ impl<'a, 'b> Lexer<'a, 'b> {
             buffer_span.end.offset -= 1;
         }
 
-        if !buffer_span.is_empty() {
-            tokens.push(Token::new_with_symbol(
-                TokenKind::StringPart,
-                buffer_span,
-                self.symbol_table
-                    .intern(self.state.source.span_range(buffer_span)),
-            ));
-        }
+        tokens.push(Token::new_with_symbol(
+            TokenKind::StringPart,
+            buffer_span,
+            self.symbol_table
+                .intern(self.state.source.span_range(buffer_span)),
+        ));
 
         let span = self.state.source.span();
 
