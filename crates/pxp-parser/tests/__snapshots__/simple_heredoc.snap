@@ -43,7 +43,15 @@
                         HeredocExpression {
                             label: Symbol("<<<TXT
                             "),
-                            parts: [],
+                            parts: [
+                                Literal(
+                                    LiteralStringPart {
+                                        value: Symbol("Hello, world!
+                                        
+                                        This is a heredoc string."),
+                                    },
+                                ),
+                            ],
                         },
                     ),
                     span: Span {
