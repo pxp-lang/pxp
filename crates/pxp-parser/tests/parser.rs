@@ -178,11 +178,11 @@ snap!(snapper, legacy_array_single_item, process("fixtures/literals/legacy-array
 // snap!(snapper, global_namespace, process("fixtures/global-namespace.php"));
 
 // Class Constants
-snap!(snapper, class_const, process("fixtures/class-const.php"));
-snap!(snapper, multi_class_const, process("fixtures/multi-class-const.php"));
-snap!(snapper, typed_class_const, process("fixtures/typed-class-const.php"));
-snap!(snapper, dynamic_class_const, process("fixtures/dynamic-class-const.php"));
-// snap!(snapper, class_const_with_attributes, process("fixtures/class-const-with-attributes.php"));
+snap!(snapper, class_const, process("fixtures/class-constants/class-const.php"));
+snap!(snapper, multi_class_const, process("fixtures/class-constants/multi-class-const.php"));
+snap!(snapper, typed_class_const, process("fixtures/class-constants/typed-class-const.php"));
+snap!(snapper, dynamic_class_const, process("fixtures/class-constants/dynamic-class-const.php"));
+// snap!(snapper, class_const_with_attributes, process("fixtures/class-constants/class-const-with-attributes.php"));
 
 // Methods
 // snap!(snapper, method, process("fixtures/method.php"));
