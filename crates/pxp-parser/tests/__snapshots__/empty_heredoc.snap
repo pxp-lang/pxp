@@ -39,49 +39,11 @@
             ExpressionStatement {
                 expression: Expression {
                     id: 3,
-                    kind: Nowdoc(
-                        NowdocExpression {
-                            label: Token {
-                                kind: StartDocString(
-                                    Nowdoc,
-                                ),
-                                span: Span {
-                                    start: Position {
-                                        offset: 7,
-                                        line: 3,
-                                        column: 1,
-                                    },
-                                    end: Position {
-                                        offset: 18,
-                                        line: 4,
-                                        column: 1,
-                                    },
-                                },
-                                symbol: Some(
-                                    Symbol("<<<'REGEX'
-                                    "),
-                                ),
-                            },
-                            value: Token {
-                                kind: StringPart,
-                                span: Span {
-                                    start: Position {
-                                        offset: 18,
-                                        line: 4,
-                                        column: 1,
-                                    },
-                                    end: Position {
-                                        offset: 174,
-                                        line: 7,
-                                        column: 1,
-                                    },
-                                },
-                                symbol: Some(
-                                    Symbol("/<<<[ \t]*(['"]?)([a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*)\1\r?\n
-                                    (?:.*\r?\n)*?
-                                    (?<indentation>\h*)\2(?![a-zA-Z0-9_\x80-\xff])(?<separator>(?:;?[\r\n])?)/x"),
-                                ),
-                            },
+                    kind: Heredoc(
+                        HeredocExpression {
+                            label: Symbol("<<<TXT
+                            "),
+                            parts: [],
                         },
                     ),
                     span: Span {
@@ -91,9 +53,9 @@
                             column: 1,
                         },
                         end: Position {
-                            offset: 180,
-                            line: 7,
-                            column: 6,
+                            offset: 18,
+                            line: 5,
+                            column: 4,
                         },
                     },
                     comments: CommentGroup {
@@ -103,14 +65,14 @@
                 ending: Semicolon(
                     Span {
                         start: Position {
-                            offset: 180,
-                            line: 7,
-                            column: 6,
+                            offset: 18,
+                            line: 5,
+                            column: 4,
                         },
                         end: Position {
-                            offset: 181,
-                            line: 7,
-                            column: 7,
+                            offset: 19,
+                            line: 5,
+                            column: 5,
                         },
                     },
                 ),
@@ -123,9 +85,9 @@
                 column: 1,
             },
             end: Position {
-                offset: 181,
-                line: 7,
-                column: 7,
+                offset: 19,
+                line: 5,
+                column: 5,
             },
         },
         comments: CommentGroup {

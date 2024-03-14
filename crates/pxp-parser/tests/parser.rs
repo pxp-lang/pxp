@@ -91,7 +91,7 @@ snap!(snapper, legacy_array, process("fixtures/literals/legacy-array.php"));
 snap!(snapper, legacy_array_single_item, process("fixtures/literals/legacy-array-single-item.php"));
 
 // Doc-strings
-// snap!(snapper, empty_heredoc, process("fixtures/empty-heredoc.php"));
+snap!(snapper, empty_heredoc, process("fixtures/docstrings/empty-heredoc.php"));
 // snap!(snapper, simple_heredoc, process("fixtures/simple-heredoc.php"));
 // snap!(snapper, heredoc_interpolation, process("fixtures/heredoc-interpolation.php"));
 // snap!(snapper, empty_nowdoc, process("fixtures/empty-nowdoc.php"));
