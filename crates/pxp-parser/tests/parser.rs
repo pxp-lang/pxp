@@ -119,16 +119,16 @@ snap!(snapper, if_statement, process("fixtures/control/if-statement.php"));
 snap!(snapper, if_else_statement, process("fixtures/control/if-else-statement.php"));
 snap!(snapper, if_elseif_else_statement, process("fixtures/control/if-elseif-else-statement.php"));
 snap!(snapper, if_elseif_else_statement_no_else, process("fixtures/control/if-elseif-statement-no-else.php"));
-// snap!(snapper, switch_statement, process("fixtures/switch-statement.php"));
-// snap!(snapper, switch_statement_no_case, process("fixtures/switch-statement-no-case.php"));
-// snap!(snapper, while_statement, process("fixtures/while-statement.php"));
-// snap!(snapper, do_while_statement, process("fixtures/do-while-statement.php"));
-// snap!(snapper, for_statement, process("fixtures/for-statement.php"));
-// snap!(snapper, foreach_statement, process("fixtures/foreach-statement.php"));
-// snap!(snapper, foreach_statement_with_key, process("fixtures/foreach-statement-with-key.php"));
-// snap!(snapper, match_expression, process("fixtures/match-expression.php"));
-// snap!(snapper, match_expression_no_default, process("fixtures/match-expression-no-default.php"));
-// snap!(snapper, match_expression_multiple_cases, process("fixtures/match-expression-multiple-cases.php"));
+snap!(snapper, switch_statement, process("fixtures/control/switch-statement.php"));
+snap!(snapper, switch_statement_no_case, process("fixtures/control/switch-statement-no-case.php"));
+// snap!(snapper, while_statement, process("fixtures/control/while-statement.php"));
+// snap!(snapper, do_while_statement, process("fixtures/control/do-while-statement.php"));
+// snap!(snapper, for_statement, process("fixtures/control/for-statement.php"));
+// snap!(snapper, foreach_statement, process("fixtures/control/foreach-statement.php"));
+// snap!(snapper, foreach_statement_with_key, process("fixtures/control/foreach-statement-with-key.php"));
+// snap!(snapper, match_expression, process("fixtures/control/match-expression.php"));
+// snap!(snapper, match_expression_no_default, process("fixtures/control/match-expression-no-default.php"));
+// snap!(snapper, match_expression_multiple_cases, process("fixtures/control/match-expression-multiple-cases.php"));
 
 // Class
 // snap!(snapper, simple_class, process("fixtures/simple-class.php"));
