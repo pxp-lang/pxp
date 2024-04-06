@@ -126,9 +126,8 @@ snap!(snapper, do_while_statement, process("fixtures/control/do-while-statement.
 snap!(snapper, for_statement, process("fixtures/control/for-statement.php"));
 snap!(snapper, foreach_statement, process("fixtures/control/foreach-statement.php"));
 snap!(snapper, foreach_statement_with_key, process("fixtures/control/foreach-statement-with-key.php"));
-// snap!(snapper, match_expression, process("fixtures/control/match-expression.php"));
-// snap!(snapper, match_expression_no_default, process("fixtures/control/match-expression-no-default.php"));
-// snap!(snapper, match_expression_multiple_cases, process("fixtures/control/match-expression-multiple-cases.php"));
+snap!(snapper, match_expression, process("fixtures/control/match-expression.php"));
+snap!(snapper, match_expression_no_default, process("fixtures/control/match-expression-no-default.php"));
 
 // Class
 // snap!(snapper, simple_class, process("fixtures/simple-class.php"));
