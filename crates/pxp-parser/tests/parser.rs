@@ -115,10 +115,10 @@ snap!(snapper, function_with_parameter_types, process("fixtures/functions/functi
 snap!(snapper, function_with_return_type, process("fixtures/functions/function-with-return-type.php"));
 
 // Control Structures
-// snap!(snapper, if_statement, process("fixtures/if-statement.php"));
-// snap!(snapper, if_else_statement, process("fixtures/if-else-statement.php"));
-// snap!(snapper, if_elseif_else_statement, process("fixtures/if-elseif-else-statement.php"));
-// snap!(snapper, if_elseif_else_statement_no_else, process("fixtures/if-elseif-else-statement-no-else.php"));
+snap!(snapper, if_statement, process("fixtures/control/if-statement.php"));
+snap!(snapper, if_else_statement, process("fixtures/control/if-else-statement.php"));
+snap!(snapper, if_elseif_else_statement, process("fixtures/control/if-elseif-else-statement.php"));
+snap!(snapper, if_elseif_else_statement_no_else, process("fixtures/control/if-elseif-statement-no-else.php"));
 // snap!(snapper, switch_statement, process("fixtures/switch-statement.php"));
 // snap!(snapper, switch_statement_no_case, process("fixtures/switch-statement-no-case.php"));
 // snap!(snapper, while_statement, process("fixtures/while-statement.php"));
