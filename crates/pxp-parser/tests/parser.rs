@@ -123,7 +123,7 @@ snap!(snapper, switch_statement, process("fixtures/control/switch-statement.php"
 snap!(snapper, switch_statement_no_case, process("fixtures/control/switch-statement-no-case.php"));
 snap!(snapper, while_statement, process("fixtures/control/while-statement.php"));
 snap!(snapper, do_while_statement, process("fixtures/control/do-while-statement.php"));
-// snap!(snapper, for_statement, process("fixtures/control/for-statement.php"));
+snap!(snapper, for_statement, process("fixtures/control/for-statement.php"));
 // snap!(snapper, foreach_statement, process("fixtures/control/foreach-statement.php"));
 // snap!(snapper, foreach_statement_with_key, process("fixtures/control/foreach-statement-with-key.php"));
 // snap!(snapper, match_expression, process("fixtures/control/match-expression.php"));

@@ -1,0 +1,568 @@
+[
+    Statement {
+        id: 2,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 0,
+                        line: 1,
+                        column: 0,
+                    },
+                    end: Position {
+                        offset: 5,
+                        line: 1,
+                        column: 5,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 5,
+                line: 1,
+                column: 5,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 14,
+        kind: For(
+            ForStatement {
+                for: Span {
+                    start: Position {
+                        offset: 7,
+                        line: 3,
+                        column: 1,
+                    },
+                    end: Position {
+                        offset: 10,
+                        line: 3,
+                        column: 4,
+                    },
+                },
+                left_parenthesis: Span {
+                    start: Position {
+                        offset: 11,
+                        line: 3,
+                        column: 5,
+                    },
+                    end: Position {
+                        offset: 12,
+                        line: 3,
+                        column: 6,
+                    },
+                },
+                iterator: ForStatementIterator {
+                    initializations: CommaSeparated {
+                        inner: [
+                            Expression {
+                                id: 5,
+                                kind: AssignmentOperation(
+                                    Assign {
+                                        left: Expression {
+                                            id: 3,
+                                            kind: Variable(
+                                                SimpleVariable(
+                                                    SimpleVariable {
+                                                        symbol: Symbol("$i"),
+                                                        span: Span {
+                                                            start: Position {
+                                                                offset: 12,
+                                                                line: 3,
+                                                                column: 6,
+                                                            },
+                                                            end: Position {
+                                                                offset: 14,
+                                                                line: 3,
+                                                                column: 8,
+                                                            },
+                                                        },
+                                                    },
+                                                ),
+                                            ),
+                                            span: Span {
+                                                start: Position {
+                                                    offset: 12,
+                                                    line: 3,
+                                                    column: 6,
+                                                },
+                                                end: Position {
+                                                    offset: 14,
+                                                    line: 3,
+                                                    column: 8,
+                                                },
+                                            },
+                                            comments: CommentGroup {
+                                                comments: [],
+                                            },
+                                        },
+                                        equals: Span {
+                                            start: Position {
+                                                offset: 15,
+                                                line: 3,
+                                                column: 9,
+                                            },
+                                            end: Position {
+                                                offset: 16,
+                                                line: 3,
+                                                column: 10,
+                                            },
+                                        },
+                                        right: Expression {
+                                            id: 4,
+                                            kind: Literal(
+                                                Literal {
+                                                    kind: Integer,
+                                                    token: Token {
+                                                        kind: LiteralInteger,
+                                                        span: Span {
+                                                            start: Position {
+                                                                offset: 17,
+                                                                line: 3,
+                                                                column: 11,
+                                                            },
+                                                            end: Position {
+                                                                offset: 18,
+                                                                line: 3,
+                                                                column: 12,
+                                                            },
+                                                        },
+                                                        symbol: Some(
+                                                            Symbol("0"),
+                                                        ),
+                                                    },
+                                                },
+                                            ),
+                                            span: Span {
+                                                start: Position {
+                                                    offset: 17,
+                                                    line: 3,
+                                                    column: 11,
+                                                },
+                                                end: Position {
+                                                    offset: 18,
+                                                    line: 3,
+                                                    column: 12,
+                                                },
+                                            },
+                                            comments: CommentGroup {
+                                                comments: [],
+                                            },
+                                        },
+                                    },
+                                ),
+                                span: Span {
+                                    start: Position {
+                                        offset: 17,
+                                        line: 3,
+                                        column: 11,
+                                    },
+                                    end: Position {
+                                        offset: 18,
+                                        line: 3,
+                                        column: 12,
+                                    },
+                                },
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                            },
+                        ],
+                        commas: [],
+                    },
+                    initializations_semicolon: Span {
+                        start: Position {
+                            offset: 18,
+                            line: 3,
+                            column: 12,
+                        },
+                        end: Position {
+                            offset: 19,
+                            line: 3,
+                            column: 13,
+                        },
+                    },
+                    conditions: CommaSeparated {
+                        inner: [
+                            Expression {
+                                id: 8,
+                                kind: ComparisonOperation(
+                                    LessThan {
+                                        left: Expression {
+                                            id: 6,
+                                            kind: Variable(
+                                                SimpleVariable(
+                                                    SimpleVariable {
+                                                        symbol: Symbol("$i"),
+                                                        span: Span {
+                                                            start: Position {
+                                                                offset: 20,
+                                                                line: 3,
+                                                                column: 14,
+                                                            },
+                                                            end: Position {
+                                                                offset: 22,
+                                                                line: 3,
+                                                                column: 16,
+                                                            },
+                                                        },
+                                                    },
+                                                ),
+                                            ),
+                                            span: Span {
+                                                start: Position {
+                                                    offset: 20,
+                                                    line: 3,
+                                                    column: 14,
+                                                },
+                                                end: Position {
+                                                    offset: 22,
+                                                    line: 3,
+                                                    column: 16,
+                                                },
+                                            },
+                                            comments: CommentGroup {
+                                                comments: [],
+                                            },
+                                        },
+                                        less_than: Span {
+                                            start: Position {
+                                                offset: 23,
+                                                line: 3,
+                                                column: 17,
+                                            },
+                                            end: Position {
+                                                offset: 24,
+                                                line: 3,
+                                                column: 18,
+                                            },
+                                        },
+                                        right: Expression {
+                                            id: 7,
+                                            kind: Literal(
+                                                Literal {
+                                                    kind: Integer,
+                                                    token: Token {
+                                                        kind: LiteralInteger,
+                                                        span: Span {
+                                                            start: Position {
+                                                                offset: 25,
+                                                                line: 3,
+                                                                column: 19,
+                                                            },
+                                                            end: Position {
+                                                                offset: 27,
+                                                                line: 3,
+                                                                column: 21,
+                                                            },
+                                                        },
+                                                        symbol: Some(
+                                                            Symbol("10"),
+                                                        ),
+                                                    },
+                                                },
+                                            ),
+                                            span: Span {
+                                                start: Position {
+                                                    offset: 25,
+                                                    line: 3,
+                                                    column: 19,
+                                                },
+                                                end: Position {
+                                                    offset: 27,
+                                                    line: 3,
+                                                    column: 21,
+                                                },
+                                            },
+                                            comments: CommentGroup {
+                                                comments: [],
+                                            },
+                                        },
+                                    },
+                                ),
+                                span: Span {
+                                    start: Position {
+                                        offset: 25,
+                                        line: 3,
+                                        column: 19,
+                                    },
+                                    end: Position {
+                                        offset: 27,
+                                        line: 3,
+                                        column: 21,
+                                    },
+                                },
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                            },
+                        ],
+                        commas: [],
+                    },
+                    conditions_semicolon: Span {
+                        start: Position {
+                            offset: 27,
+                            line: 3,
+                            column: 21,
+                        },
+                        end: Position {
+                            offset: 28,
+                            line: 3,
+                            column: 22,
+                        },
+                    },
+                    loop: CommaSeparated {
+                        inner: [
+                            Expression {
+                                id: 10,
+                                kind: ArithmeticOperation(
+                                    PostIncrement {
+                                        left: Expression {
+                                            id: 9,
+                                            kind: Variable(
+                                                SimpleVariable(
+                                                    SimpleVariable {
+                                                        symbol: Symbol("$i"),
+                                                        span: Span {
+                                                            start: Position {
+                                                                offset: 29,
+                                                                line: 3,
+                                                                column: 23,
+                                                            },
+                                                            end: Position {
+                                                                offset: 31,
+                                                                line: 3,
+                                                                column: 25,
+                                                            },
+                                                        },
+                                                    },
+                                                ),
+                                            ),
+                                            span: Span {
+                                                start: Position {
+                                                    offset: 29,
+                                                    line: 3,
+                                                    column: 23,
+                                                },
+                                                end: Position {
+                                                    offset: 31,
+                                                    line: 3,
+                                                    column: 25,
+                                                },
+                                            },
+                                            comments: CommentGroup {
+                                                comments: [],
+                                            },
+                                        },
+                                        increment: Span {
+                                            start: Position {
+                                                offset: 31,
+                                                line: 3,
+                                                column: 25,
+                                            },
+                                            end: Position {
+                                                offset: 33,
+                                                line: 3,
+                                                column: 27,
+                                            },
+                                        },
+                                    },
+                                ),
+                                span: Span {
+                                    start: Position {
+                                        offset: 31,
+                                        line: 3,
+                                        column: 25,
+                                    },
+                                    end: Position {
+                                        offset: 33,
+                                        line: 3,
+                                        column: 27,
+                                    },
+                                },
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                            },
+                        ],
+                        commas: [],
+                    },
+                },
+                right_parenthesis: Span {
+                    start: Position {
+                        offset: 33,
+                        line: 3,
+                        column: 27,
+                    },
+                    end: Position {
+                        offset: 34,
+                        line: 3,
+                        column: 28,
+                    },
+                },
+                body: Statement {
+                    statement: Statement {
+                        id: 13,
+                        kind: Block(
+                            BlockStatement {
+                                left_brace: Span {
+                                    start: Position {
+                                        offset: 35,
+                                        line: 3,
+                                        column: 29,
+                                    },
+                                    end: Position {
+                                        offset: 36,
+                                        line: 3,
+                                        column: 30,
+                                    },
+                                },
+                                statements: [
+                                    Statement {
+                                        id: 12,
+                                        kind: Echo(
+                                            EchoStatement {
+                                                echo: Span {
+                                                    start: Position {
+                                                        offset: 41,
+                                                        line: 4,
+                                                        column: 5,
+                                                    },
+                                                    end: Position {
+                                                        offset: 45,
+                                                        line: 4,
+                                                        column: 9,
+                                                    },
+                                                },
+                                                values: [
+                                                    Expression {
+                                                        id: 11,
+                                                        kind: Variable(
+                                                            SimpleVariable(
+                                                                SimpleVariable {
+                                                                    symbol: Symbol("$i"),
+                                                                    span: Span {
+                                                                        start: Position {
+                                                                            offset: 46,
+                                                                            line: 4,
+                                                                            column: 10,
+                                                                        },
+                                                                        end: Position {
+                                                                            offset: 48,
+                                                                            line: 4,
+                                                                            column: 12,
+                                                                        },
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ),
+                                                        span: Span {
+                                                            start: Position {
+                                                                offset: 46,
+                                                                line: 4,
+                                                                column: 10,
+                                                            },
+                                                            end: Position {
+                                                                offset: 48,
+                                                                line: 4,
+                                                                column: 12,
+                                                            },
+                                                        },
+                                                        comments: CommentGroup {
+                                                            comments: [],
+                                                        },
+                                                    },
+                                                ],
+                                                ending: Semicolon(
+                                                    Span {
+                                                        start: Position {
+                                                            offset: 48,
+                                                            line: 4,
+                                                            column: 12,
+                                                        },
+                                                        end: Position {
+                                                            offset: 49,
+                                                            line: 4,
+                                                            column: 13,
+                                                        },
+                                                    },
+                                                ),
+                                            },
+                                        ),
+                                        span: Span {
+                                            start: Position {
+                                                offset: 41,
+                                                line: 4,
+                                                column: 5,
+                                            },
+                                            end: Position {
+                                                offset: 49,
+                                                line: 4,
+                                                column: 13,
+                                            },
+                                        },
+                                        comments: CommentGroup {
+                                            comments: [],
+                                        },
+                                    },
+                                ],
+                                right_brace: Span {
+                                    start: Position {
+                                        offset: 50,
+                                        line: 5,
+                                        column: 1,
+                                    },
+                                    end: Position {
+                                        offset: 51,
+                                        line: 5,
+                                        column: 2,
+                                    },
+                                },
+                            },
+                        ),
+                        span: Span {
+                            start: Position {
+                                offset: 35,
+                                line: 3,
+                                column: 29,
+                            },
+                            end: Position {
+                                offset: 51,
+                                line: 5,
+                                column: 2,
+                            },
+                        },
+                        comments: CommentGroup {
+                            comments: [],
+                        },
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 7,
+                line: 3,
+                column: 1,
+            },
+            end: Position {
+                offset: 51,
+                line: 5,
+                column: 2,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---
