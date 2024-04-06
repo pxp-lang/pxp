@@ -1,0 +1,597 @@
+[
+    Statement {
+        id: 2,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 0,
+                        line: 1,
+                        column: 0,
+                    },
+                    end: Position {
+                        offset: 5,
+                        line: 1,
+                        column: 5,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 5,
+                line: 1,
+                column: 5,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 4,
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    id: 3,
+                    kind: MagicConstant(
+                        Directory(
+                            Span {
+                                start: Position {
+                                    offset: 7,
+                                    line: 3,
+                                    column: 1,
+                                },
+                                end: Position {
+                                    offset: 14,
+                                    line: 3,
+                                    column: 8,
+                                },
+                            },
+                        ),
+                    ),
+                    span: Span {
+                        start: Position {
+                            offset: 7,
+                            line: 3,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 14,
+                            line: 3,
+                            column: 8,
+                        },
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: Position {
+                            offset: 14,
+                            line: 3,
+                            column: 8,
+                        },
+                        end: Position {
+                            offset: 15,
+                            line: 3,
+                            column: 9,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 7,
+                line: 3,
+                column: 1,
+            },
+            end: Position {
+                offset: 15,
+                line: 3,
+                column: 9,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 6,
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    id: 5,
+                    kind: MagicConstant(
+                        File(
+                            Span {
+                                start: Position {
+                                    offset: 16,
+                                    line: 4,
+                                    column: 1,
+                                },
+                                end: Position {
+                                    offset: 24,
+                                    line: 4,
+                                    column: 9,
+                                },
+                            },
+                        ),
+                    ),
+                    span: Span {
+                        start: Position {
+                            offset: 16,
+                            line: 4,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 24,
+                            line: 4,
+                            column: 9,
+                        },
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: Position {
+                            offset: 24,
+                            line: 4,
+                            column: 9,
+                        },
+                        end: Position {
+                            offset: 25,
+                            line: 4,
+                            column: 10,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 16,
+                line: 4,
+                column: 1,
+            },
+            end: Position {
+                offset: 25,
+                line: 4,
+                column: 10,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 8,
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    id: 7,
+                    kind: MagicConstant(
+                        Line(
+                            Span {
+                                start: Position {
+                                    offset: 26,
+                                    line: 5,
+                                    column: 1,
+                                },
+                                end: Position {
+                                    offset: 34,
+                                    line: 5,
+                                    column: 9,
+                                },
+                            },
+                        ),
+                    ),
+                    span: Span {
+                        start: Position {
+                            offset: 26,
+                            line: 5,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 34,
+                            line: 5,
+                            column: 9,
+                        },
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: Position {
+                            offset: 34,
+                            line: 5,
+                            column: 9,
+                        },
+                        end: Position {
+                            offset: 35,
+                            line: 5,
+                            column: 10,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 26,
+                line: 5,
+                column: 1,
+            },
+            end: Position {
+                offset: 35,
+                line: 5,
+                column: 10,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 10,
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    id: 9,
+                    kind: MagicConstant(
+                        Function(
+                            Span {
+                                start: Position {
+                                    offset: 36,
+                                    line: 6,
+                                    column: 1,
+                                },
+                                end: Position {
+                                    offset: 48,
+                                    line: 6,
+                                    column: 13,
+                                },
+                            },
+                        ),
+                    ),
+                    span: Span {
+                        start: Position {
+                            offset: 36,
+                            line: 6,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 48,
+                            line: 6,
+                            column: 13,
+                        },
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: Position {
+                            offset: 48,
+                            line: 6,
+                            column: 13,
+                        },
+                        end: Position {
+                            offset: 49,
+                            line: 6,
+                            column: 14,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 36,
+                line: 6,
+                column: 1,
+            },
+            end: Position {
+                offset: 49,
+                line: 6,
+                column: 14,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 12,
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    id: 11,
+                    kind: MagicConstant(
+                        Class(
+                            Span {
+                                start: Position {
+                                    offset: 50,
+                                    line: 7,
+                                    column: 1,
+                                },
+                                end: Position {
+                                    offset: 59,
+                                    line: 7,
+                                    column: 10,
+                                },
+                            },
+                        ),
+                    ),
+                    span: Span {
+                        start: Position {
+                            offset: 50,
+                            line: 7,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 59,
+                            line: 7,
+                            column: 10,
+                        },
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: Position {
+                            offset: 59,
+                            line: 7,
+                            column: 10,
+                        },
+                        end: Position {
+                            offset: 60,
+                            line: 7,
+                            column: 11,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 50,
+                line: 7,
+                column: 1,
+            },
+            end: Position {
+                offset: 60,
+                line: 7,
+                column: 11,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 14,
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    id: 13,
+                    kind: MagicConstant(
+                        Trait(
+                            Span {
+                                start: Position {
+                                    offset: 61,
+                                    line: 8,
+                                    column: 1,
+                                },
+                                end: Position {
+                                    offset: 70,
+                                    line: 8,
+                                    column: 10,
+                                },
+                            },
+                        ),
+                    ),
+                    span: Span {
+                        start: Position {
+                            offset: 61,
+                            line: 8,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 70,
+                            line: 8,
+                            column: 10,
+                        },
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: Position {
+                            offset: 70,
+                            line: 8,
+                            column: 10,
+                        },
+                        end: Position {
+                            offset: 71,
+                            line: 8,
+                            column: 11,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 61,
+                line: 8,
+                column: 1,
+            },
+            end: Position {
+                offset: 71,
+                line: 8,
+                column: 11,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 16,
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    id: 15,
+                    kind: MagicConstant(
+                        Method(
+                            Span {
+                                start: Position {
+                                    offset: 72,
+                                    line: 9,
+                                    column: 1,
+                                },
+                                end: Position {
+                                    offset: 82,
+                                    line: 9,
+                                    column: 11,
+                                },
+                            },
+                        ),
+                    ),
+                    span: Span {
+                        start: Position {
+                            offset: 72,
+                            line: 9,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 82,
+                            line: 9,
+                            column: 11,
+                        },
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: Position {
+                            offset: 82,
+                            line: 9,
+                            column: 11,
+                        },
+                        end: Position {
+                            offset: 83,
+                            line: 9,
+                            column: 12,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 72,
+                line: 9,
+                column: 1,
+            },
+            end: Position {
+                offset: 83,
+                line: 9,
+                column: 12,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 18,
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    id: 17,
+                    kind: MagicConstant(
+                        Namespace(
+                            Span {
+                                start: Position {
+                                    offset: 84,
+                                    line: 10,
+                                    column: 1,
+                                },
+                                end: Position {
+                                    offset: 97,
+                                    line: 10,
+                                    column: 14,
+                                },
+                            },
+                        ),
+                    ),
+                    span: Span {
+                        start: Position {
+                            offset: 84,
+                            line: 10,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 97,
+                            line: 10,
+                            column: 14,
+                        },
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: Position {
+                            offset: 97,
+                            line: 10,
+                            column: 14,
+                        },
+                        end: Position {
+                            offset: 98,
+                            line: 10,
+                            column: 15,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 84,
+                line: 10,
+                column: 1,
+            },
+            end: Position {
+                offset: 98,
+                line: 10,
+                column: 15,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

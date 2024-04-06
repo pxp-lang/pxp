@@ -67,13 +67,13 @@ snap!(snapper, greater_than_or_equal, process("fixtures/comparison/greater-than-
 snap!(snapper, spaceship, process("fixtures/comparison/spaceship.php"));
 
 // Logical
-// snap!(snapper, and, process("fixtures/and.php"));
-// snap!(snapper, or, process("fixtures/or.php"));
-// snap!(snapper, xor, process("fixtures/xor.php"));
-// snap!(snapper, not, process("fixtures/not.php"));
-// snap!(snapper, logical_and, process("fixtures/logical-and.php"));
-// snap!(snapper, logical_or, process("fixtures/logical-or.php"));
-// snap!(snapper, logical_xor, process("fixtures/logical-xor.php"));
+snap!(snapper, and, process("fixtures/logical/and.php"));
+snap!(snapper, or, process("fixtures/logical/or.php"));
+snap!(snapper, xor, process("fixtures/logical/xor.php"));
+snap!(snapper, not, process("fixtures/logical/not.php"));
+snap!(snapper, logical_and, process("fixtures/logical/logical-and.php"));
+snap!(snapper, logical_or, process("fixtures/logical/logical-or.php"));
+snap!(snapper, logical_xor, process("fixtures/logical/logical-xor.php"));
 
 // Literals
 snap!(snapper, int, process("fixtures/literals/int.php"));
@@ -98,21 +98,21 @@ snap!(snapper, empty_nowdoc, process("fixtures/docstrings/empty-nowdoc.php"));
 snap!(snapper, simple_nowdoc, process("fixtures/docstrings/simple-nowdoc.php"));
 
 // Variables
-// snap!(snapper, variable, process("fixtures/variable.php"));
-// snap!(snapper, variable_variable, process("fixtures/variable-variable.php"));
-// snap!(snapper, variable_variable_complex, process("fixtures/variable-variable-complex.php"));
+snap!(snapper, variable, process("fixtures/variables/variable.php"));
+snap!(snapper, variable_variable, process("fixtures/variables/variable-variable.php"));
+snap!(snapper, variable_variable_complex, process("fixtures/variables/variable-variable-complex.php"));
 
 // Constants
-// snap!(snapper, constant, process("fixtures/constant.php"));
-// snap!(snapper, magic_constants, process("fixtures/magic-constants.php"));
+snap!(snapper, constant, process("fixtures/constants/constant.php"));
+snap!(snapper, magic_constants, process("fixtures/constants/magic-constants.php"));
 
 // Functions
-// snap!(snapper, simple_function, process("fixtures/simple-function.php"));
-// snap!(snapper, simple_function_call, process("fixtures/simple-function-call.php"));
-// snap!(snapper, simple_function_call_args, process("fixtures/simple-function-call-args.php"));
-// snap!(snapper, simple_function_call_args_trailing_comma, process("fixtures/simple-function-call-args-trailing-comma.php"));
-// snap!(snapper, function_with_parameter_types, process("fixtures/function-with-parameter-types.php"));
-// snap!(snapper, function_with_return_type, process("fixtures/function-with-return-type.php"));
+snap!(snapper, simple_function, process("fixtures/functions/simple-function.php"));
+snap!(snapper, simple_function_call, process("fixtures/functions/simple-function-call.php"));
+snap!(snapper, simple_function_call_args, process("fixtures/functions/simple-function-call-args.php"));
+snap!(snapper, simple_function_call_args_trailing_comma, process("fixtures/functions/simple-function-call-args-trailing-comma.php"));
+snap!(snapper, function_with_parameter_types, process("fixtures/functions/function-with-parameter-types.php"));
+snap!(snapper, function_with_return_type, process("fixtures/functions/function-with-return-type.php"));
 
 // Control Structures
 // snap!(snapper, if_statement, process("fixtures/if-statement.php"));
