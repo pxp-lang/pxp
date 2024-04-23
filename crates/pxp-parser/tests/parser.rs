@@ -179,7 +179,7 @@ snap!(snapper, class_const, process("fixtures/class-constants/class-const.php"))
 snap!(snapper, multi_class_const, process("fixtures/class-constants/multi-class-const.php"));
 snap!(snapper, typed_class_const, process("fixtures/class-constants/typed-class-const.php"));
 snap!(snapper, dynamic_class_const, process("fixtures/class-constants/dynamic-class-const.php"));
-// snap!(snapper, class_const_with_attributes, process("fixtures/class-constants/class-const-with-attributes.php"));
+snap!(snapper, class_const_with_attributes, process("fixtures/class-constants/class-const-with-attributes.php"));
 
 // Methods
 // snap!(snapper, method, process("fixtures/method.php"));
