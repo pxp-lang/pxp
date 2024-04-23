@@ -22,6 +22,7 @@ fn main() {
         let print_filenames = args.contains(&"--print-filenames".to_string());
         let stop_on_errors = args.contains(&"--stop-on-errors".to_string());
         let no_output = args.contains(&"--no-output".to_string());
+        let mut count = 0;
 
         for file in files.iter() {
             // Purposefully skip this file because it has a known syntax error.
@@ -51,8 +52,11 @@ fn main() {
             if !no_output {
                 print!(".");
             }
+
+            count += 1;
         }
 
+        println!("{count} files parsed");
         println!();
 
         // if errors.is_empty() {

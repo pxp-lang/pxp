@@ -11,3 +11,9 @@ The parser takes in a stream of tokens and translates recognisable patterns into
 One of the goals of the parser is to be error-tolerant so that it can be used inside of the language server project. The approach to error tolerance is heavily inspired by the excellent [`microsoft/tolerant-php-parser`](https://github.com/microsoft/tolerant-php-parser) package.
 
 Error tolerance support is entirely subjective and will improve over time. The majority of places it is supported is solely based on language server development and the most common places where tolerance is required for autocomplete.
+
+### Performance
+
+Rudimentary benchmarks show that this parser is ~8 times faster than the most popular PHP parser [nikic/php-parser](https://github.com/nikic/PHP-Parser).
+
+This result is of course expected given that `nikic/php-parser` is written purely in PHP and uses a YACC-style parser generator, whereas the parser provided by this project is handwritten and uses Rust.
