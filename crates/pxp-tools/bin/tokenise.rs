@@ -17,10 +17,12 @@ fn main() {
     let path = Path::new(path);
     let symbol_table = SymbolTable::the();
     let immediate = args.contains(&"--immediate".to_string());
+    let no_output = args.contains(&"--no-output".to_string());
 
     if path.is_dir() {
         let mut errors = Vec::new();
         let files = discover(&["php"], &[path.to_str().unwrap()]).unwrap();
+        let mut count = 0;
 
         for file in files.iter() {
             if file.is_dir() {
@@ -32,15 +34,23 @@ fn main() {
 
             match if immediate { lexer.tokenize_in_immediate_mode() } else { lexer.tokenize() } {
                 Ok(_) => {
-                    print!(".");
+                    if !no_output {
+                        print!(".");
+                    }
                 }
                 Err(err) => {
                     errors.push((path.to_str().unwrap().to_string(), err));
-                    print!("x");
+
+                    if !no_output {
+                        print!("x");
+                    }
                 }
             }
+
+            count += 1;
         }
 
+        println!("{count} files tokenised");
         println!();
 
         if errors.is_empty() {
