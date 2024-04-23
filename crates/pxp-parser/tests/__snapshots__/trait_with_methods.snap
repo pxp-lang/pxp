@@ -1,0 +1,948 @@
+[
+    Statement {
+        id: 2,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 0,
+                        line: 1,
+                        column: 0,
+                    },
+                    end: Position {
+                        offset: 5,
+                        line: 1,
+                        column: 5,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 5,
+                line: 1,
+                column: 5,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 11,
+        kind: Trait(
+            TraitStatement {
+                trait: Span {
+                    start: Position {
+                        offset: 7,
+                        line: 3,
+                        column: 1,
+                    },
+                    end: Position {
+                        offset: 12,
+                        line: 3,
+                        column: 6,
+                    },
+                },
+                name: SimpleIdentifier {
+                    id: 3,
+                    symbol: Symbol("Foo"),
+                    parts: [
+                        Symbol("Foo"),
+                    ],
+                    qualification: Unqualified,
+                    span: Span {
+                        start: Position {
+                            offset: 13,
+                            line: 3,
+                            column: 7,
+                        },
+                        end: Position {
+                            offset: 16,
+                            line: 3,
+                            column: 10,
+                        },
+                    },
+                },
+                attributes: [],
+                body: TraitBody {
+                    left_brace: Span {
+                        start: Position {
+                            offset: 17,
+                            line: 3,
+                            column: 11,
+                        },
+                        end: Position {
+                            offset: 18,
+                            line: 3,
+                            column: 12,
+                        },
+                    },
+                    members: [
+                        ConcreteMethod(
+                            ConcreteMethod {
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                                attributes: [],
+                                modifiers: MethodModifierGroup {
+                                    modifiers: [],
+                                },
+                                function: Span {
+                                    start: Position {
+                                        offset: 23,
+                                        line: 4,
+                                        column: 5,
+                                    },
+                                    end: Position {
+                                        offset: 31,
+                                        line: 4,
+                                        column: 13,
+                                    },
+                                },
+                                ampersand: None,
+                                name: SimpleIdentifier {
+                                    id: 4,
+                                    symbol: Symbol("a"),
+                                    parts: [
+                                        Symbol("a"),
+                                    ],
+                                    qualification: Unqualified,
+                                    span: Span {
+                                        start: Position {
+                                            offset: 32,
+                                            line: 4,
+                                            column: 14,
+                                        },
+                                        end: Position {
+                                            offset: 33,
+                                            line: 4,
+                                            column: 15,
+                                        },
+                                    },
+                                },
+                                parameters: FunctionParameterList {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_parenthesis: Span {
+                                        start: Position {
+                                            offset: 33,
+                                            line: 4,
+                                            column: 15,
+                                        },
+                                        end: Position {
+                                            offset: 34,
+                                            line: 4,
+                                            column: 16,
+                                        },
+                                    },
+                                    parameters: CommaSeparated {
+                                        inner: [],
+                                        commas: [],
+                                    },
+                                    right_parenthesis: Span {
+                                        start: Position {
+                                            offset: 34,
+                                            line: 4,
+                                            column: 16,
+                                        },
+                                        end: Position {
+                                            offset: 35,
+                                            line: 4,
+                                            column: 17,
+                                        },
+                                    },
+                                },
+                                return_type: None,
+                                body: MethodBody {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_brace: Span {
+                                        start: Position {
+                                            offset: 36,
+                                            line: 4,
+                                            column: 18,
+                                        },
+                                        end: Position {
+                                            offset: 37,
+                                            line: 4,
+                                            column: 19,
+                                        },
+                                    },
+                                    statements: [],
+                                    right_brace: Span {
+                                        start: Position {
+                                            offset: 37,
+                                            line: 4,
+                                            column: 19,
+                                        },
+                                        end: Position {
+                                            offset: 38,
+                                            line: 4,
+                                            column: 20,
+                                        },
+                                    },
+                                },
+                            },
+                        ),
+                        ConcreteMethod(
+                            ConcreteMethod {
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                                attributes: [],
+                                modifiers: MethodModifierGroup {
+                                    modifiers: [
+                                        Public(
+                                            Span {
+                                                start: Position {
+                                                    offset: 43,
+                                                    line: 5,
+                                                    column: 5,
+                                                },
+                                                end: Position {
+                                                    offset: 49,
+                                                    line: 5,
+                                                    column: 11,
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                                function: Span {
+                                    start: Position {
+                                        offset: 50,
+                                        line: 5,
+                                        column: 12,
+                                    },
+                                    end: Position {
+                                        offset: 58,
+                                        line: 5,
+                                        column: 20,
+                                    },
+                                },
+                                ampersand: None,
+                                name: SimpleIdentifier {
+                                    id: 5,
+                                    symbol: Symbol("b"),
+                                    parts: [
+                                        Symbol("b"),
+                                    ],
+                                    qualification: Unqualified,
+                                    span: Span {
+                                        start: Position {
+                                            offset: 59,
+                                            line: 5,
+                                            column: 21,
+                                        },
+                                        end: Position {
+                                            offset: 60,
+                                            line: 5,
+                                            column: 22,
+                                        },
+                                    },
+                                },
+                                parameters: FunctionParameterList {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_parenthesis: Span {
+                                        start: Position {
+                                            offset: 60,
+                                            line: 5,
+                                            column: 22,
+                                        },
+                                        end: Position {
+                                            offset: 61,
+                                            line: 5,
+                                            column: 23,
+                                        },
+                                    },
+                                    parameters: CommaSeparated {
+                                        inner: [],
+                                        commas: [],
+                                    },
+                                    right_parenthesis: Span {
+                                        start: Position {
+                                            offset: 61,
+                                            line: 5,
+                                            column: 23,
+                                        },
+                                        end: Position {
+                                            offset: 62,
+                                            line: 5,
+                                            column: 24,
+                                        },
+                                    },
+                                },
+                                return_type: None,
+                                body: MethodBody {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_brace: Span {
+                                        start: Position {
+                                            offset: 63,
+                                            line: 5,
+                                            column: 25,
+                                        },
+                                        end: Position {
+                                            offset: 64,
+                                            line: 5,
+                                            column: 26,
+                                        },
+                                    },
+                                    statements: [],
+                                    right_brace: Span {
+                                        start: Position {
+                                            offset: 64,
+                                            line: 5,
+                                            column: 26,
+                                        },
+                                        end: Position {
+                                            offset: 65,
+                                            line: 5,
+                                            column: 27,
+                                        },
+                                    },
+                                },
+                            },
+                        ),
+                        ConcreteMethod(
+                            ConcreteMethod {
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                                attributes: [],
+                                modifiers: MethodModifierGroup {
+                                    modifiers: [
+                                        Protected(
+                                            Span {
+                                                start: Position {
+                                                    offset: 70,
+                                                    line: 6,
+                                                    column: 5,
+                                                },
+                                                end: Position {
+                                                    offset: 79,
+                                                    line: 6,
+                                                    column: 14,
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                                function: Span {
+                                    start: Position {
+                                        offset: 80,
+                                        line: 6,
+                                        column: 15,
+                                    },
+                                    end: Position {
+                                        offset: 88,
+                                        line: 6,
+                                        column: 23,
+                                    },
+                                },
+                                ampersand: None,
+                                name: SimpleIdentifier {
+                                    id: 6,
+                                    symbol: Symbol("c"),
+                                    parts: [
+                                        Symbol("c"),
+                                    ],
+                                    qualification: Unqualified,
+                                    span: Span {
+                                        start: Position {
+                                            offset: 89,
+                                            line: 6,
+                                            column: 24,
+                                        },
+                                        end: Position {
+                                            offset: 90,
+                                            line: 6,
+                                            column: 25,
+                                        },
+                                    },
+                                },
+                                parameters: FunctionParameterList {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_parenthesis: Span {
+                                        start: Position {
+                                            offset: 90,
+                                            line: 6,
+                                            column: 25,
+                                        },
+                                        end: Position {
+                                            offset: 91,
+                                            line: 6,
+                                            column: 26,
+                                        },
+                                    },
+                                    parameters: CommaSeparated {
+                                        inner: [],
+                                        commas: [],
+                                    },
+                                    right_parenthesis: Span {
+                                        start: Position {
+                                            offset: 91,
+                                            line: 6,
+                                            column: 26,
+                                        },
+                                        end: Position {
+                                            offset: 92,
+                                            line: 6,
+                                            column: 27,
+                                        },
+                                    },
+                                },
+                                return_type: None,
+                                body: MethodBody {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_brace: Span {
+                                        start: Position {
+                                            offset: 93,
+                                            line: 6,
+                                            column: 28,
+                                        },
+                                        end: Position {
+                                            offset: 94,
+                                            line: 6,
+                                            column: 29,
+                                        },
+                                    },
+                                    statements: [],
+                                    right_brace: Span {
+                                        start: Position {
+                                            offset: 94,
+                                            line: 6,
+                                            column: 29,
+                                        },
+                                        end: Position {
+                                            offset: 95,
+                                            line: 6,
+                                            column: 30,
+                                        },
+                                    },
+                                },
+                            },
+                        ),
+                        ConcreteMethod(
+                            ConcreteMethod {
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                                attributes: [],
+                                modifiers: MethodModifierGroup {
+                                    modifiers: [
+                                        Private(
+                                            Span {
+                                                start: Position {
+                                                    offset: 100,
+                                                    line: 7,
+                                                    column: 5,
+                                                },
+                                                end: Position {
+                                                    offset: 107,
+                                                    line: 7,
+                                                    column: 12,
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                                function: Span {
+                                    start: Position {
+                                        offset: 108,
+                                        line: 7,
+                                        column: 13,
+                                    },
+                                    end: Position {
+                                        offset: 116,
+                                        line: 7,
+                                        column: 21,
+                                    },
+                                },
+                                ampersand: None,
+                                name: SimpleIdentifier {
+                                    id: 7,
+                                    symbol: Symbol("d"),
+                                    parts: [
+                                        Symbol("d"),
+                                    ],
+                                    qualification: Unqualified,
+                                    span: Span {
+                                        start: Position {
+                                            offset: 117,
+                                            line: 7,
+                                            column: 22,
+                                        },
+                                        end: Position {
+                                            offset: 118,
+                                            line: 7,
+                                            column: 23,
+                                        },
+                                    },
+                                },
+                                parameters: FunctionParameterList {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_parenthesis: Span {
+                                        start: Position {
+                                            offset: 118,
+                                            line: 7,
+                                            column: 23,
+                                        },
+                                        end: Position {
+                                            offset: 119,
+                                            line: 7,
+                                            column: 24,
+                                        },
+                                    },
+                                    parameters: CommaSeparated {
+                                        inner: [],
+                                        commas: [],
+                                    },
+                                    right_parenthesis: Span {
+                                        start: Position {
+                                            offset: 119,
+                                            line: 7,
+                                            column: 24,
+                                        },
+                                        end: Position {
+                                            offset: 120,
+                                            line: 7,
+                                            column: 25,
+                                        },
+                                    },
+                                },
+                                return_type: None,
+                                body: MethodBody {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_brace: Span {
+                                        start: Position {
+                                            offset: 121,
+                                            line: 7,
+                                            column: 26,
+                                        },
+                                        end: Position {
+                                            offset: 122,
+                                            line: 7,
+                                            column: 27,
+                                        },
+                                    },
+                                    statements: [],
+                                    right_brace: Span {
+                                        start: Position {
+                                            offset: 122,
+                                            line: 7,
+                                            column: 27,
+                                        },
+                                        end: Position {
+                                            offset: 123,
+                                            line: 7,
+                                            column: 28,
+                                        },
+                                    },
+                                },
+                            },
+                        ),
+                        ConcreteMethod(
+                            ConcreteMethod {
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                                attributes: [],
+                                modifiers: MethodModifierGroup {
+                                    modifiers: [
+                                        Final(
+                                            Span {
+                                                start: Position {
+                                                    offset: 128,
+                                                    line: 8,
+                                                    column: 5,
+                                                },
+                                                end: Position {
+                                                    offset: 133,
+                                                    line: 8,
+                                                    column: 10,
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                                function: Span {
+                                    start: Position {
+                                        offset: 134,
+                                        line: 8,
+                                        column: 11,
+                                    },
+                                    end: Position {
+                                        offset: 142,
+                                        line: 8,
+                                        column: 19,
+                                    },
+                                },
+                                ampersand: None,
+                                name: SimpleIdentifier {
+                                    id: 8,
+                                    symbol: Symbol("e"),
+                                    parts: [
+                                        Symbol("e"),
+                                    ],
+                                    qualification: Unqualified,
+                                    span: Span {
+                                        start: Position {
+                                            offset: 143,
+                                            line: 8,
+                                            column: 20,
+                                        },
+                                        end: Position {
+                                            offset: 144,
+                                            line: 8,
+                                            column: 21,
+                                        },
+                                    },
+                                },
+                                parameters: FunctionParameterList {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_parenthesis: Span {
+                                        start: Position {
+                                            offset: 144,
+                                            line: 8,
+                                            column: 21,
+                                        },
+                                        end: Position {
+                                            offset: 145,
+                                            line: 8,
+                                            column: 22,
+                                        },
+                                    },
+                                    parameters: CommaSeparated {
+                                        inner: [],
+                                        commas: [],
+                                    },
+                                    right_parenthesis: Span {
+                                        start: Position {
+                                            offset: 145,
+                                            line: 8,
+                                            column: 22,
+                                        },
+                                        end: Position {
+                                            offset: 146,
+                                            line: 8,
+                                            column: 23,
+                                        },
+                                    },
+                                },
+                                return_type: None,
+                                body: MethodBody {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_brace: Span {
+                                        start: Position {
+                                            offset: 147,
+                                            line: 8,
+                                            column: 24,
+                                        },
+                                        end: Position {
+                                            offset: 148,
+                                            line: 8,
+                                            column: 25,
+                                        },
+                                    },
+                                    statements: [],
+                                    right_brace: Span {
+                                        start: Position {
+                                            offset: 148,
+                                            line: 8,
+                                            column: 25,
+                                        },
+                                        end: Position {
+                                            offset: 149,
+                                            line: 8,
+                                            column: 26,
+                                        },
+                                    },
+                                },
+                            },
+                        ),
+                        AbstractMethod(
+                            AbstractMethod {
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                                attributes: [],
+                                modifiers: MethodModifierGroup {
+                                    modifiers: [
+                                        Abstract(
+                                            Span {
+                                                start: Position {
+                                                    offset: 154,
+                                                    line: 9,
+                                                    column: 5,
+                                                },
+                                                end: Position {
+                                                    offset: 162,
+                                                    line: 9,
+                                                    column: 13,
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                                function: Span {
+                                    start: Position {
+                                        offset: 163,
+                                        line: 9,
+                                        column: 14,
+                                    },
+                                    end: Position {
+                                        offset: 171,
+                                        line: 9,
+                                        column: 22,
+                                    },
+                                },
+                                ampersand: None,
+                                name: SimpleIdentifier {
+                                    id: 9,
+                                    symbol: Symbol("f"),
+                                    parts: [
+                                        Symbol("f"),
+                                    ],
+                                    qualification: Unqualified,
+                                    span: Span {
+                                        start: Position {
+                                            offset: 172,
+                                            line: 9,
+                                            column: 23,
+                                        },
+                                        end: Position {
+                                            offset: 173,
+                                            line: 9,
+                                            column: 24,
+                                        },
+                                    },
+                                },
+                                parameters: FunctionParameterList {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_parenthesis: Span {
+                                        start: Position {
+                                            offset: 173,
+                                            line: 9,
+                                            column: 24,
+                                        },
+                                        end: Position {
+                                            offset: 174,
+                                            line: 9,
+                                            column: 25,
+                                        },
+                                    },
+                                    parameters: CommaSeparated {
+                                        inner: [],
+                                        commas: [],
+                                    },
+                                    right_parenthesis: Span {
+                                        start: Position {
+                                            offset: 174,
+                                            line: 9,
+                                            column: 25,
+                                        },
+                                        end: Position {
+                                            offset: 175,
+                                            line: 9,
+                                            column: 26,
+                                        },
+                                    },
+                                },
+                                return_type: None,
+                                semicolon: Span {
+                                    start: Position {
+                                        offset: 175,
+                                        line: 9,
+                                        column: 26,
+                                    },
+                                    end: Position {
+                                        offset: 176,
+                                        line: 9,
+                                        column: 27,
+                                    },
+                                },
+                            },
+                        ),
+                        ConcreteMethod(
+                            ConcreteMethod {
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                                attributes: [],
+                                modifiers: MethodModifierGroup {
+                                    modifiers: [
+                                        Static(
+                                            Span {
+                                                start: Position {
+                                                    offset: 181,
+                                                    line: 10,
+                                                    column: 5,
+                                                },
+                                                end: Position {
+                                                    offset: 187,
+                                                    line: 10,
+                                                    column: 11,
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                                function: Span {
+                                    start: Position {
+                                        offset: 188,
+                                        line: 10,
+                                        column: 12,
+                                    },
+                                    end: Position {
+                                        offset: 196,
+                                        line: 10,
+                                        column: 20,
+                                    },
+                                },
+                                ampersand: None,
+                                name: SimpleIdentifier {
+                                    id: 10,
+                                    symbol: Symbol("g"),
+                                    parts: [
+                                        Symbol("g"),
+                                    ],
+                                    qualification: Unqualified,
+                                    span: Span {
+                                        start: Position {
+                                            offset: 197,
+                                            line: 10,
+                                            column: 21,
+                                        },
+                                        end: Position {
+                                            offset: 198,
+                                            line: 10,
+                                            column: 22,
+                                        },
+                                    },
+                                },
+                                parameters: FunctionParameterList {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_parenthesis: Span {
+                                        start: Position {
+                                            offset: 198,
+                                            line: 10,
+                                            column: 22,
+                                        },
+                                        end: Position {
+                                            offset: 199,
+                                            line: 10,
+                                            column: 23,
+                                        },
+                                    },
+                                    parameters: CommaSeparated {
+                                        inner: [],
+                                        commas: [],
+                                    },
+                                    right_parenthesis: Span {
+                                        start: Position {
+                                            offset: 199,
+                                            line: 10,
+                                            column: 23,
+                                        },
+                                        end: Position {
+                                            offset: 200,
+                                            line: 10,
+                                            column: 24,
+                                        },
+                                    },
+                                },
+                                return_type: None,
+                                body: MethodBody {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_brace: Span {
+                                        start: Position {
+                                            offset: 201,
+                                            line: 10,
+                                            column: 25,
+                                        },
+                                        end: Position {
+                                            offset: 202,
+                                            line: 10,
+                                            column: 26,
+                                        },
+                                    },
+                                    statements: [],
+                                    right_brace: Span {
+                                        start: Position {
+                                            offset: 202,
+                                            line: 10,
+                                            column: 26,
+                                        },
+                                        end: Position {
+                                            offset: 203,
+                                            line: 10,
+                                            column: 27,
+                                        },
+                                    },
+                                },
+                            },
+                        ),
+                    ],
+                    right_brace: Span {
+                        start: Position {
+                            offset: 204,
+                            line: 11,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 205,
+                            line: 11,
+                            column: 2,
+                        },
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 7,
+                line: 3,
+                column: 1,
+            },
+            end: Position {
+                offset: 205,
+                line: 11,
+                column: 2,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

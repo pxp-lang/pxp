@@ -1,0 +1,159 @@
+[
+    Statement {
+        id: 2,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 0,
+                        line: 1,
+                        column: 0,
+                    },
+                    end: Position {
+                        offset: 5,
+                        line: 1,
+                        column: 5,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 5,
+                line: 1,
+                column: 5,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 5,
+        kind: Trait(
+            TraitStatement {
+                trait: Span {
+                    start: Position {
+                        offset: 7,
+                        line: 3,
+                        column: 1,
+                    },
+                    end: Position {
+                        offset: 12,
+                        line: 3,
+                        column: 6,
+                    },
+                },
+                name: SimpleIdentifier {
+                    id: 3,
+                    symbol: Symbol("Foo"),
+                    parts: [
+                        Symbol("Foo"),
+                    ],
+                    qualification: Unqualified,
+                    span: Span {
+                        start: Position {
+                            offset: 13,
+                            line: 3,
+                            column: 7,
+                        },
+                        end: Position {
+                            offset: 16,
+                            line: 3,
+                            column: 10,
+                        },
+                    },
+                },
+                attributes: [],
+                body: TraitBody {
+                    left_brace: Span {
+                        start: Position {
+                            offset: 17,
+                            line: 3,
+                            column: 11,
+                        },
+                        end: Position {
+                            offset: 18,
+                            line: 3,
+                            column: 12,
+                        },
+                    },
+                    members: [
+                        TraitUsage(
+                            TraitUsage {
+                                use: Span {
+                                    start: Position {
+                                        offset: 23,
+                                        line: 4,
+                                        column: 5,
+                                    },
+                                    end: Position {
+                                        offset: 26,
+                                        line: 4,
+                                        column: 8,
+                                    },
+                                },
+                                traits: [
+                                    SimpleIdentifier {
+                                        id: 4,
+                                        symbol: Symbol("Bar"),
+                                        parts: [
+                                            Symbol("Bar"),
+                                        ],
+                                        qualification: Unqualified,
+                                        span: Span {
+                                            start: Position {
+                                                offset: 27,
+                                                line: 4,
+                                                column: 9,
+                                            },
+                                            end: Position {
+                                                offset: 30,
+                                                line: 4,
+                                                column: 12,
+                                            },
+                                        },
+                                    },
+                                ],
+                                adaptations: [],
+                            },
+                        ),
+                    ],
+                    right_brace: Span {
+                        start: Position {
+                            offset: 32,
+                            line: 5,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 33,
+                            line: 5,
+                            column: 2,
+                        },
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 7,
+                line: 3,
+                column: 1,
+            },
+            end: Position {
+                offset: 33,
+                line: 5,
+                column: 2,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

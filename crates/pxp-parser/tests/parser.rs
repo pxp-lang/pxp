@@ -155,12 +155,10 @@ snap!(snapper, interface_with_methods, process("fixtures/interfaces/interface-wi
 snap!(snapper, interface_with_extends, process("fixtures/interfaces/interface-with-extends.php"));
 
 // Traits
-// snap!(snapper, simple_trait, process("fixtures/simple-trait.php"));
-// snap!(snapper, trait_with_properties, process("fixtures/trait-with-properties.php"));
-// snap!(snapper, trait_with_methods, process("fixtures/trait-with-methods.php"));
-// snap!(snapper, trait_with_abstract_methods, process("fixtures/trait-with-abstract-methods.php"));
-// snap!(snapper, trait_with_static_methods, process("fixtures/trait-with-static-methods.php"));
-// snap!(snapper, trait_with_trait_use, process("fixtures/trait-with-trait-use.php"));
+snap!(snapper, simple_trait, process("fixtures/traits/simple-trait.php"));
+snap!(snapper, trait_with_properties, process("fixtures/traits/trait-with-properties.php"));
+snap!(snapper, trait_with_methods, process("fixtures/traits/trait-with-methods.php"));
+snap!(snapper, trait_with_trait_use, process("fixtures/traits/trait-with-trait-use.php"));
 
 // Enums
 // snap!(snapper, simple_enum, process("fixtures/simple-enum.php"));
