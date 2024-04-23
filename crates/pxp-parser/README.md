@@ -14,6 +14,8 @@ Error tolerance support is entirely subjective and will improve over time. The m
 
 ### Performance
 
-Rudimentary benchmarks show that this parser is ~8 times faster than the most popular PHP parser [nikic/php-parser](https://github.com/nikic/PHP-Parser).
+Rudimentary benchmarks show that this parser is ~8-9 times faster than the most popular PHP parser [nikic/php-parser](https://github.com/nikic/PHP-Parser).
 
-This result is of course expected given that `nikic/php-parser` is written purely in PHP and uses a YACC-style parser generator, whereas the parser provided by this project is handwritten and uses Rust.
+> This result is of course expected given that `nikic/php-parser` is written purely in PHP and uses a YACC-style parser generator, whereas the parser provided by this project is handwritten and uses Rust.
+
+When compared to PHP's own parser (exposed via `ext-ast`), it is about 40% slower which equates to about 600ms. There are definitely parsing-specific optimisations to be made in the PXP parser, but there are also other things such as Rust vs C performance, memory allocations, etc that affect the performance.
