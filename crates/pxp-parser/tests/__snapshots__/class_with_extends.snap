@@ -1,0 +1,159 @@
+[
+    Statement {
+        id: 2,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 0,
+                        line: 1,
+                        column: 0,
+                    },
+                    end: Position {
+                        offset: 5,
+                        line: 1,
+                        column: 5,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 5,
+                line: 1,
+                column: 5,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 5,
+        kind: Class(
+            ClassStatement {
+                attributes: [],
+                modifiers: ClassModifierGroup {
+                    modifiers: [],
+                },
+                class: Span {
+                    start: Position {
+                        offset: 7,
+                        line: 3,
+                        column: 1,
+                    },
+                    end: Position {
+                        offset: 12,
+                        line: 3,
+                        column: 6,
+                    },
+                },
+                name: SimpleIdentifier {
+                    id: 3,
+                    symbol: Symbol("Foo"),
+                    parts: [
+                        Symbol("Foo"),
+                    ],
+                    qualification: Unqualified,
+                    span: Span {
+                        start: Position {
+                            offset: 13,
+                            line: 3,
+                            column: 7,
+                        },
+                        end: Position {
+                            offset: 16,
+                            line: 3,
+                            column: 10,
+                        },
+                    },
+                },
+                extends: Some(
+                    ClassExtends {
+                        extends: Span {
+                            start: Position {
+                                offset: 17,
+                                line: 3,
+                                column: 11,
+                            },
+                            end: Position {
+                                offset: 24,
+                                line: 3,
+                                column: 18,
+                            },
+                        },
+                        parent: SimpleIdentifier {
+                            id: 4,
+                            symbol: Symbol("Bar"),
+                            parts: [
+                                Symbol("Bar"),
+                            ],
+                            qualification: Unqualified,
+                            span: Span {
+                                start: Position {
+                                    offset: 25,
+                                    line: 3,
+                                    column: 19,
+                                },
+                                end: Position {
+                                    offset: 28,
+                                    line: 3,
+                                    column: 22,
+                                },
+                            },
+                        },
+                    },
+                ),
+                implements: None,
+                body: ClassBody {
+                    left_brace: Span {
+                        start: Position {
+                            offset: 29,
+                            line: 3,
+                            column: 23,
+                        },
+                        end: Position {
+                            offset: 30,
+                            line: 3,
+                            column: 24,
+                        },
+                    },
+                    members: [],
+                    right_brace: Span {
+                        start: Position {
+                            offset: 30,
+                            line: 3,
+                            column: 24,
+                        },
+                        end: Position {
+                            offset: 31,
+                            line: 3,
+                            column: 25,
+                        },
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 7,
+                line: 3,
+                column: 1,
+            },
+            end: Position {
+                offset: 31,
+                line: 3,
+                column: 25,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

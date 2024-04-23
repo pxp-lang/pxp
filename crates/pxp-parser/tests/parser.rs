@@ -130,23 +130,23 @@ snap!(snapper, match_expression, process("fixtures/control/match-expression.php"
 snap!(snapper, match_expression_no_default, process("fixtures/control/match-expression-no-default.php"));
 
 // Class
-// snap!(snapper, simple_class, process("fixtures/simple-class.php"));
-// snap!(snapper, class_with_properties, process("fixtures/class-with-properties.php"));
-// snap!(snapper, class_with_methods, process("fixtures/class-with-methods.php"));
-// snap!(snapper, class_with_constants, process("fixtures/class-with-constants.php"));
-// snap!(snapper, class_with_static_properties, process("fixtures/class-with-static-properties.php"));
-// snap!(snapper, class_with_static_methods, process("fixtures/class-with-static-methods.php"));
-// snap!(snapper, class_with_extends, process("fixtures/class-with-extends.php"));
-// snap!(snapper, class_with_implements, process("fixtures/class-with-implements.php"));
-// snap!(snapper, class_with_extends_and_implements, process("fixtures/class-with-extends-and-implements.php"));
-// snap!(snapper, final_class, process("fixtures/final-class.php"));
-// snap!(snapper, abstract_class, process("fixtures/abstract-class.php"));
-// snap!(snapper, readonly_class, process("fixtures/readonly-class.php"));
-// snap!(snapper, class_with_traits, process("fixtures/class-with-traits.php"));
-// snap!(snapper, class_with_traits_and_alias, process("fixtures/class-with-traits-and-alias.php"));
-// snap!(snapper, class_with_traits_and_insteadof, process("fixtures/class-with-traits-and-insteadof.php"));
-// snap!(snapper, class_with_traits_and_visibility, process("fixtures/class-with-traits-and-visibility.php"));
-// snap!(snapper, class_with_attributes, process("fixtures/class-with-attributes.php"));
+snap!(snapper, simple_class, process("fixtures/classes/simple-class.php"));
+snap!(snapper, class_with_properties, process("fixtures/classes/class-with-properties.php"));
+snap!(snapper, class_with_methods, process("fixtures/classes/class-with-methods.php"));
+snap!(snapper, class_with_constants, process("fixtures/classes/class-with-constants.php"));
+snap!(snapper, class_with_static_properties, process("fixtures/classes/class-with-static-properties.php"));
+snap!(snapper, class_with_static_methods, process("fixtures/classes/class-with-static-methods.php"));
+snap!(snapper, class_with_extends, process("fixtures/classes/class-with-extends.php"));
+snap!(snapper, class_with_implements, process("fixtures/classes/class-with-implements.php"));
+snap!(snapper, class_with_extends_and_implements, process("fixtures/classes/class-with-extends-and-implements.php"));
+snap!(snapper, final_class, process("fixtures/classes/final-class.php"));
+snap!(snapper, abstract_class, process("fixtures/classes/abstract-class.php"));
+snap!(snapper, readonly_class, process("fixtures/classes/readonly-class.php"));
+snap!(snapper, class_with_traits, process("fixtures/classes/class-with-traits.php"));
+snap!(snapper, class_with_traits_and_alias, process("fixtures/classes/class-with-traits-and-alias.php"));
+snap!(snapper, class_with_traits_and_insteadof, process("fixtures/classes/class-with-traits-and-insteadof.php"));
+snap!(snapper, class_with_traits_and_visibility, process("fixtures/classes/class-with-traits-and-visibility.php"));
+snap!(snapper, class_with_attributes, process("fixtures/classes/class-with-attributes.php"));
 
 // Interfaces
 // snap!(snapper, simple_interface, process("fixtures/simple-interface.php"));
