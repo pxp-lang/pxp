@@ -182,17 +182,17 @@ snap!(snapper, dynamic_class_const, process("fixtures/class-constants/dynamic-cl
 snap!(snapper, class_const_with_attributes, process("fixtures/class-constants/class-const-with-attributes.php"));
 
 // Methods
-// snap!(snapper, method, process("fixtures/method.php"));
-// snap!(snapper, method_with_visibility, process("fixtures/method-with-visibility.php"));
-// snap!(snapper, method_with_static, process("fixtures/method-with-static.php"));
-// snap!(snapper, method_with_final, process("fixtures/method-with-final.php"));
-// snap!(snapper, method_with_abstract, process("fixtures/method-with-abstract.php"));
-// snap!(snapper, method_with_return_type, process("fixtures/method-with-return-type.php"));
-// snap!(snapper, method_with_parameters, process("fixtures/method-with-parameters.php"));
-// snap!(snapper, method_with_parameters_with_default, process("fixtures/method-with-parameters-with-default.php"));
-// snap!(snapper, method_with_parameters_with_type, process("fixtures/method-with-parameters-with-type.php"));
-// snap!(snapper, method_with_parameters_with_type_and_default, process("fixtures/method-with-parameters-with-type-and-default.php"));
-// snap!(snapper, method_with_attributes, process("fixtures/method-with-attributes.php"));
+snap!(snapper, method, process("fixtures/methods/method.php"));
+snap!(snapper, method_with_visibility, process("fixtures/methods/method-with-visibility.php"));
+snap!(snapper, method_with_static, process("fixtures/methods/method-with-static.php"));
+snap!(snapper, method_with_final, process("fixtures/methods/method-with-final.php"));
+snap!(snapper, method_with_abstract, process("fixtures/methods/method-with-abstract.php"));
+snap!(snapper, method_with_return_type, process("fixtures/methods/method-with-return-type.php"));
+snap!(snapper, method_with_parameters, process("fixtures/methods/method-with-parameters.php"));
+snap!(snapper, method_with_parameters_with_default, process("fixtures/methods/method-with-parameters-with-default.php"));
+snap!(snapper, method_with_parameters_with_type, process("fixtures/methods/method-with-parameters-with-type.php"));
+snap!(snapper, method_with_parameters_with_type_and_default, process("fixtures/methods/method-with-parameters-with-type-and-default.php"));
+snap!(snapper, method_with_attributes, process("fixtures/methods/method-with-attributes.php"));
 
 // Identifier Qualification
 snap!(snapper, unqualified_identifier, process("fixtures/identifiers/unqualified-identifier.php"));
