@@ -64,13 +64,13 @@
                                             column: 7,
                                         },
                                         end: Position {
-                                            offset: 19,
+                                            offset: 18,
                                             line: 3,
-                                            column: 13,
+                                            column: 12,
                                         },
                                     },
                                     symbol: Some(
-                                        Symbol("Hello""),
+                                        Symbol("Hello"),
                                     ),
                                 },
                             },
@@ -82,9 +82,9 @@
                                 column: 7,
                             },
                             end: Position {
-                                offset: 19,
+                                offset: 18,
                                 line: 3,
-                                column: 13,
+                                column: 12,
                             },
                         },
                         comments: CommentGroup {
@@ -105,13 +105,13 @@
                                             column: 16,
                                         },
                                         end: Position {
-                                            offset: 29,
+                                            offset: 28,
                                             line: 3,
-                                            column: 23,
+                                            column: 22,
                                         },
                                     },
                                     symbol: Some(
-                                        Symbol("world!""),
+                                        Symbol("world!"),
                                     ),
                                 },
                             },
@@ -123,9 +123,9 @@
                                 column: 16,
                             },
                             end: Position {
-                                offset: 29,
+                                offset: 28,
                                 line: 3,
-                                column: 23,
+                                column: 22,
                             },
                         },
                         comments: CommentGroup {

@@ -883,7 +883,14 @@ impl<'a, 'b> Lexer<'a, 'b> {
             [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
         };
 
-        let span = self.state.source.span();
+        let mut span = self.state.source.span();
+
+        // FIXME: This is a bit hacky, but it works for now.
+        //        We're doing this so that the closing double quote isn't included in the span.
+        if kind == TokenKind::LiteralDoubleQuotedString {
+            span.end.offset -= 1;
+            span.end.column -= 1;
+        }
 
         Ok(Token::new(
             kind,

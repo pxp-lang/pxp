@@ -64,13 +64,13 @@
                                             column: 7,
                                         },
                                         end: Position {
-                                            offset: 26,
+                                            offset: 25,
                                             line: 3,
-                                            column: 20,
+                                            column: 19,
                                         },
                                     },
                                     symbol: Some(
-                                        Symbol("Hello, world""),
+                                        Symbol("Hello, world"),
                                     ),
                                 },
                             },
@@ -82,9 +82,9 @@
                                 column: 7,
                             },
                             end: Position {
-                                offset: 26,
+                                offset: 25,
                                 line: 3,
-                                column: 20,
+                                column: 19,
                             },
                         },
                         comments: CommentGroup {

@@ -51,13 +51,13 @@
                                         column: 2,
                                     },
                                     end: Position {
-                                        offset: 21,
+                                        offset: 20,
                                         line: 3,
-                                        column: 15,
+                                        column: 14,
                                     },
                                 },
                                 symbol: Some(
-                                    Symbol("Hello, world""),
+                                    Symbol("Hello, world"),
                                 ),
                             },
                         },
@@ -69,9 +69,9 @@
                             column: 2,
                         },
                         end: Position {
-                            offset: 21,
+                            offset: 20,
                             line: 3,
-                            column: 15,
+                            column: 14,
                         },
                     },
                     comments: CommentGroup {
