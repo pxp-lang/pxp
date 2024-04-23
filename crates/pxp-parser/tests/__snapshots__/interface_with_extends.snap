@@ -1,0 +1,193 @@
+[
+    Statement {
+        id: 2,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 0,
+                        line: 1,
+                        column: 0,
+                    },
+                    end: Position {
+                        offset: 5,
+                        line: 1,
+                        column: 5,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 5,
+                line: 1,
+                column: 5,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 6,
+        kind: Interface(
+            InterfaceStatement {
+                attributes: [],
+                interface: Span {
+                    start: Position {
+                        offset: 7,
+                        line: 3,
+                        column: 1,
+                    },
+                    end: Position {
+                        offset: 16,
+                        line: 3,
+                        column: 10,
+                    },
+                },
+                name: SimpleIdentifier {
+                    id: 3,
+                    symbol: Symbol("Foo"),
+                    parts: [
+                        Symbol("Foo"),
+                    ],
+                    qualification: Unqualified,
+                    span: Span {
+                        start: Position {
+                            offset: 17,
+                            line: 3,
+                            column: 11,
+                        },
+                        end: Position {
+                            offset: 20,
+                            line: 3,
+                            column: 14,
+                        },
+                    },
+                },
+                extends: Some(
+                    InterfaceExtends {
+                        extends: Span {
+                            start: Position {
+                                offset: 21,
+                                line: 3,
+                                column: 15,
+                            },
+                            end: Position {
+                                offset: 28,
+                                line: 3,
+                                column: 22,
+                            },
+                        },
+                        parents: CommaSeparated {
+                            inner: [
+                                SimpleIdentifier {
+                                    id: 4,
+                                    symbol: Symbol("Bar"),
+                                    parts: [
+                                        Symbol("Bar"),
+                                    ],
+                                    qualification: Unqualified,
+                                    span: Span {
+                                        start: Position {
+                                            offset: 29,
+                                            line: 3,
+                                            column: 23,
+                                        },
+                                        end: Position {
+                                            offset: 32,
+                                            line: 3,
+                                            column: 26,
+                                        },
+                                    },
+                                },
+                                SimpleIdentifier {
+                                    id: 5,
+                                    symbol: Symbol("Baz"),
+                                    parts: [
+                                        Symbol("Baz"),
+                                    ],
+                                    qualification: Unqualified,
+                                    span: Span {
+                                        start: Position {
+                                            offset: 34,
+                                            line: 3,
+                                            column: 28,
+                                        },
+                                        end: Position {
+                                            offset: 37,
+                                            line: 3,
+                                            column: 31,
+                                        },
+                                    },
+                                },
+                            ],
+                            commas: [
+                                Span {
+                                    start: Position {
+                                        offset: 32,
+                                        line: 3,
+                                        column: 26,
+                                    },
+                                    end: Position {
+                                        offset: 33,
+                                        line: 3,
+                                        column: 27,
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ),
+                body: InterfaceBody {
+                    left_brace: Span {
+                        start: Position {
+                            offset: 38,
+                            line: 3,
+                            column: 32,
+                        },
+                        end: Position {
+                            offset: 39,
+                            line: 3,
+                            column: 33,
+                        },
+                    },
+                    members: [],
+                    right_brace: Span {
+                        start: Position {
+                            offset: 39,
+                            line: 3,
+                            column: 33,
+                        },
+                        end: Position {
+                            offset: 40,
+                            line: 3,
+                            column: 34,
+                        },
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 7,
+                line: 3,
+                column: 1,
+            },
+            end: Position {
+                offset: 40,
+                line: 3,
+                column: 34,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

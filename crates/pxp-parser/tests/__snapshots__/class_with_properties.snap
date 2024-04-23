@@ -1,0 +1,382 @@
+[
+    Statement {
+        id: 2,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 0,
+                        line: 1,
+                        column: 0,
+                    },
+                    end: Position {
+                        offset: 5,
+                        line: 1,
+                        column: 5,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 5,
+                line: 1,
+                column: 5,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 4,
+        kind: Class(
+            ClassStatement {
+                attributes: [],
+                modifiers: ClassModifierGroup {
+                    modifiers: [],
+                },
+                class: Span {
+                    start: Position {
+                        offset: 7,
+                        line: 3,
+                        column: 1,
+                    },
+                    end: Position {
+                        offset: 12,
+                        line: 3,
+                        column: 6,
+                    },
+                },
+                name: SimpleIdentifier {
+                    id: 3,
+                    symbol: Symbol("Foo"),
+                    parts: [
+                        Symbol("Foo"),
+                    ],
+                    qualification: Unqualified,
+                    span: Span {
+                        start: Position {
+                            offset: 13,
+                            line: 3,
+                            column: 7,
+                        },
+                        end: Position {
+                            offset: 16,
+                            line: 3,
+                            column: 10,
+                        },
+                    },
+                },
+                extends: None,
+                implements: None,
+                body: ClassBody {
+                    left_brace: Span {
+                        start: Position {
+                            offset: 17,
+                            line: 3,
+                            column: 11,
+                        },
+                        end: Position {
+                            offset: 18,
+                            line: 3,
+                            column: 12,
+                        },
+                    },
+                    members: [
+                        VariableProperty(
+                            VariableProperty {
+                                attributes: [],
+                                type: None,
+                                entries: [
+                                    Uninitialized {
+                                        variable: SimpleVariable {
+                                            symbol: Symbol("$a"),
+                                            span: Span {
+                                                start: Position {
+                                                    offset: 27,
+                                                    line: 4,
+                                                    column: 9,
+                                                },
+                                                end: Position {
+                                                    offset: 29,
+                                                    line: 4,
+                                                    column: 11,
+                                                },
+                                            },
+                                        },
+                                    },
+                                ],
+                                end: Span {
+                                    start: Position {
+                                        offset: 29,
+                                        line: 4,
+                                        column: 11,
+                                    },
+                                    end: Position {
+                                        offset: 30,
+                                        line: 4,
+                                        column: 12,
+                                    },
+                                },
+                            },
+                        ),
+                        Property(
+                            Property {
+                                attributes: [],
+                                modifiers: PropertyModifierGroup {
+                                    modifiers: [
+                                        Public(
+                                            Span {
+                                                start: Position {
+                                                    offset: 35,
+                                                    line: 5,
+                                                    column: 5,
+                                                },
+                                                end: Position {
+                                                    offset: 41,
+                                                    line: 5,
+                                                    column: 11,
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                                type: None,
+                                entries: [
+                                    Uninitialized {
+                                        variable: SimpleVariable {
+                                            symbol: Symbol("$b"),
+                                            span: Span {
+                                                start: Position {
+                                                    offset: 42,
+                                                    line: 5,
+                                                    column: 12,
+                                                },
+                                                end: Position {
+                                                    offset: 44,
+                                                    line: 5,
+                                                    column: 14,
+                                                },
+                                            },
+                                        },
+                                    },
+                                ],
+                                end: Span {
+                                    start: Position {
+                                        offset: 44,
+                                        line: 5,
+                                        column: 14,
+                                    },
+                                    end: Position {
+                                        offset: 45,
+                                        line: 5,
+                                        column: 15,
+                                    },
+                                },
+                            },
+                        ),
+                        Property(
+                            Property {
+                                attributes: [],
+                                modifiers: PropertyModifierGroup {
+                                    modifiers: [
+                                        Protected(
+                                            Span {
+                                                start: Position {
+                                                    offset: 50,
+                                                    line: 6,
+                                                    column: 5,
+                                                },
+                                                end: Position {
+                                                    offset: 59,
+                                                    line: 6,
+                                                    column: 14,
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                                type: None,
+                                entries: [
+                                    Uninitialized {
+                                        variable: SimpleVariable {
+                                            symbol: Symbol("$c"),
+                                            span: Span {
+                                                start: Position {
+                                                    offset: 60,
+                                                    line: 6,
+                                                    column: 15,
+                                                },
+                                                end: Position {
+                                                    offset: 62,
+                                                    line: 6,
+                                                    column: 17,
+                                                },
+                                            },
+                                        },
+                                    },
+                                ],
+                                end: Span {
+                                    start: Position {
+                                        offset: 62,
+                                        line: 6,
+                                        column: 17,
+                                    },
+                                    end: Position {
+                                        offset: 63,
+                                        line: 6,
+                                        column: 18,
+                                    },
+                                },
+                            },
+                        ),
+                        Property(
+                            Property {
+                                attributes: [],
+                                modifiers: PropertyModifierGroup {
+                                    modifiers: [
+                                        Private(
+                                            Span {
+                                                start: Position {
+                                                    offset: 68,
+                                                    line: 7,
+                                                    column: 5,
+                                                },
+                                                end: Position {
+                                                    offset: 75,
+                                                    line: 7,
+                                                    column: 12,
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                                type: None,
+                                entries: [
+                                    Uninitialized {
+                                        variable: SimpleVariable {
+                                            symbol: Symbol("$d"),
+                                            span: Span {
+                                                start: Position {
+                                                    offset: 76,
+                                                    line: 7,
+                                                    column: 13,
+                                                },
+                                                end: Position {
+                                                    offset: 78,
+                                                    line: 7,
+                                                    column: 15,
+                                                },
+                                            },
+                                        },
+                                    },
+                                ],
+                                end: Span {
+                                    start: Position {
+                                        offset: 78,
+                                        line: 7,
+                                        column: 15,
+                                    },
+                                    end: Position {
+                                        offset: 79,
+                                        line: 7,
+                                        column: 16,
+                                    },
+                                },
+                            },
+                        ),
+                        Property(
+                            Property {
+                                attributes: [],
+                                modifiers: PropertyModifierGroup {
+                                    modifiers: [
+                                        Static(
+                                            Span {
+                                                start: Position {
+                                                    offset: 84,
+                                                    line: 8,
+                                                    column: 5,
+                                                },
+                                                end: Position {
+                                                    offset: 90,
+                                                    line: 8,
+                                                    column: 11,
+                                                },
+                                            },
+                                        ),
+                                    ],
+                                },
+                                type: None,
+                                entries: [
+                                    Uninitialized {
+                                        variable: SimpleVariable {
+                                            symbol: Symbol("$e"),
+                                            span: Span {
+                                                start: Position {
+                                                    offset: 91,
+                                                    line: 8,
+                                                    column: 12,
+                                                },
+                                                end: Position {
+                                                    offset: 93,
+                                                    line: 8,
+                                                    column: 14,
+                                                },
+                                            },
+                                        },
+                                    },
+                                ],
+                                end: Span {
+                                    start: Position {
+                                        offset: 93,
+                                        line: 8,
+                                        column: 14,
+                                    },
+                                    end: Position {
+                                        offset: 94,
+                                        line: 8,
+                                        column: 15,
+                                    },
+                                },
+                            },
+                        ),
+                    ],
+                    right_brace: Span {
+                        start: Position {
+                            offset: 95,
+                            line: 9,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 96,
+                            line: 9,
+                            column: 2,
+                        },
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 7,
+                line: 3,
+                column: 1,
+            },
+            end: Position {
+                offset: 96,
+                line: 9,
+                column: 2,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

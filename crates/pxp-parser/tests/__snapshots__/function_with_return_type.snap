@@ -1,0 +1,190 @@
+[
+    Statement {
+        id: 2,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 0,
+                        line: 1,
+                        column: 0,
+                    },
+                    end: Position {
+                        offset: 5,
+                        line: 1,
+                        column: 5,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 5,
+                line: 1,
+                column: 5,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 4,
+        kind: Function(
+            FunctionStatement {
+                comments: CommentGroup {
+                    comments: [],
+                },
+                attributes: [],
+                function: Span {
+                    start: Position {
+                        offset: 7,
+                        line: 3,
+                        column: 1,
+                    },
+                    end: Position {
+                        offset: 15,
+                        line: 3,
+                        column: 9,
+                    },
+                },
+                ampersand: None,
+                name: SimpleIdentifier {
+                    id: 3,
+                    symbol: Symbol("foo"),
+                    parts: [
+                        Symbol("foo"),
+                    ],
+                    qualification: Unqualified,
+                    span: Span {
+                        start: Position {
+                            offset: 16,
+                            line: 3,
+                            column: 10,
+                        },
+                        end: Position {
+                            offset: 19,
+                            line: 3,
+                            column: 13,
+                        },
+                    },
+                },
+                parameters: FunctionParameterList {
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                    left_parenthesis: Span {
+                        start: Position {
+                            offset: 19,
+                            line: 3,
+                            column: 13,
+                        },
+                        end: Position {
+                            offset: 20,
+                            line: 3,
+                            column: 14,
+                        },
+                    },
+                    parameters: CommaSeparated {
+                        inner: [],
+                        commas: [],
+                    },
+                    right_parenthesis: Span {
+                        start: Position {
+                            offset: 20,
+                            line: 3,
+                            column: 14,
+                        },
+                        end: Position {
+                            offset: 21,
+                            line: 3,
+                            column: 15,
+                        },
+                    },
+                },
+                return_type: Some(
+                    ReturnType {
+                        colon: Span {
+                            start: Position {
+                                offset: 21,
+                                line: 3,
+                                column: 15,
+                            },
+                            end: Position {
+                                offset: 22,
+                                line: 3,
+                                column: 16,
+                            },
+                        },
+                        data_type: DataType {
+                            kind: String,
+                            span: Span {
+                                start: Position {
+                                    offset: 23,
+                                    line: 3,
+                                    column: 17,
+                                },
+                                end: Position {
+                                    offset: 29,
+                                    line: 3,
+                                    column: 23,
+                                },
+                            },
+                        },
+                    },
+                ),
+                body: FunctionBody {
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                    left_brace: Span {
+                        start: Position {
+                            offset: 30,
+                            line: 3,
+                            column: 24,
+                        },
+                        end: Position {
+                            offset: 31,
+                            line: 3,
+                            column: 25,
+                        },
+                    },
+                    statements: [],
+                    right_brace: Span {
+                        start: Position {
+                            offset: 31,
+                            line: 3,
+                            column: 25,
+                        },
+                        end: Position {
+                            offset: 32,
+                            line: 3,
+                            column: 26,
+                        },
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 7,
+                line: 3,
+                column: 1,
+            },
+            end: Position {
+                offset: 32,
+                line: 3,
+                column: 26,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

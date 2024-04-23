@@ -1,0 +1,146 @@
+[
+    Statement {
+        id: 2,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 0,
+                        line: 1,
+                        column: 0,
+                    },
+                    end: Position {
+                        offset: 5,
+                        line: 1,
+                        column: 5,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 5,
+                line: 1,
+                column: 5,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 4,
+        kind: BackedEnum(
+            BackedEnumStatement {
+                attributes: [],
+                enum: Span {
+                    start: Position {
+                        offset: 7,
+                        line: 3,
+                        column: 1,
+                    },
+                    end: Position {
+                        offset: 11,
+                        line: 3,
+                        column: 5,
+                    },
+                },
+                name: SimpleIdentifier {
+                    id: 3,
+                    symbol: Symbol("Foo"),
+                    parts: [
+                        Symbol("Foo"),
+                    ],
+                    qualification: Unqualified,
+                    span: Span {
+                        start: Position {
+                            offset: 12,
+                            line: 3,
+                            column: 6,
+                        },
+                        end: Position {
+                            offset: 15,
+                            line: 3,
+                            column: 9,
+                        },
+                    },
+                },
+                backed_type: String(
+                    Span {
+                        start: Position {
+                            offset: 15,
+                            line: 3,
+                            column: 9,
+                        },
+                        end: Position {
+                            offset: 16,
+                            line: 3,
+                            column: 10,
+                        },
+                    },
+                    Span {
+                        start: Position {
+                            offset: 17,
+                            line: 3,
+                            column: 11,
+                        },
+                        end: Position {
+                            offset: 23,
+                            line: 3,
+                            column: 17,
+                        },
+                    },
+                ),
+                implements: [],
+                body: BackedEnumBody {
+                    left_brace: Span {
+                        start: Position {
+                            offset: 24,
+                            line: 3,
+                            column: 18,
+                        },
+                        end: Position {
+                            offset: 25,
+                            line: 3,
+                            column: 19,
+                        },
+                    },
+                    members: [],
+                    right_brace: Span {
+                        start: Position {
+                            offset: 25,
+                            line: 3,
+                            column: 19,
+                        },
+                        end: Position {
+                            offset: 26,
+                            line: 3,
+                            column: 20,
+                        },
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 7,
+                line: 3,
+                column: 1,
+            },
+            end: Position {
+                offset: 26,
+                line: 3,
+                column: 20,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

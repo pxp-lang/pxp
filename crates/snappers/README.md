@@ -1,21 +1,42 @@
 # Snappers
 
-Snappers is a library that provides a set of utilities for snapshot testing.
-
-The public API of the library is designed to be as simple as possible. You provide a single function that returns some form of "displayable" value (anything that implements `Display`) and when the test executes, it will check to see if the generated output matches the snapshot.
-
-When the test runs for the first time, a snapshot will be generated based on the return value of the function. Snapshot directory needs to be configured before use.
+Simple snapshot testing library for Rust.
 
 ## Usage
 
+Create a `snapper` function that produces a `Snapper` instance.
+
 ```rs
-use snappers::snap!;
+use snapper::Snapper;
 
-snap!(it_can_say_hello_world, say_hello("world"));
-
-fn say_hello(name: &str) -> impl Display {
-    return format!("Hello, {name}!");
+fn snapper() -> Snapper {
+    Snapper::new(
+        // This is the path where generated snapshots will be stored.
+        format!("{}/__snapshot__", env!("CARGO_MANIFEST_DIR")).into()
+    )
 }
 ```
 
-Run `cargo test` like usual and Snapper will generate a snapshot based on the test case name.
+Then generate test cases using the `snap!()` macro, passing through the name of the `snapper` function, the name of the test case (must be a valid Rust function name), as well as the test subject function.
+
+```rs
+#[cfg(test)]
+mod tests {
+    use snapper::{Snapper, snap};
+
+    snap!(snapper, it_can_say_hello_world, say_hello());
+
+    fn say_hello() -> String {
+        return format!("Hello, world!");
+    }
+
+    fn snapper() -> Snapper {
+        Snapper::new(
+            // This is the path where generated snapshots will be stored.
+            format!("{}/__snapshot__", env!("CARGO_MANIFEST_DIR")).into()
+        )
+    }
+}
+```
+
+Now when you run `cargo test`, the snapshot files will be generated and all further test runs will test against the generated snapshot file (if present).

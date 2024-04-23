@@ -1,0 +1,262 @@
+[
+    Statement {
+        id: 2,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 0,
+                        line: 1,
+                        column: 0,
+                    },
+                    end: Position {
+                        offset: 5,
+                        line: 1,
+                        column: 5,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 5,
+                line: 1,
+                column: 5,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 7,
+        kind: Class(
+            ClassStatement {
+                attributes: [
+                    AttributeGroup {
+                        span: Span {
+                            start: Position {
+                                offset: 7,
+                                line: 3,
+                                column: 1,
+                            },
+                            end: Position {
+                                offset: 13,
+                                line: 3,
+                                column: 7,
+                            },
+                        },
+                        members: [
+                            Attribute {
+                                span: Span {
+                                    start: Position {
+                                        offset: 9,
+                                        line: 3,
+                                        column: 3,
+                                    },
+                                    end: Position {
+                                        offset: 13,
+                                        line: 3,
+                                        column: 7,
+                                    },
+                                },
+                                name: SimpleIdentifier {
+                                    id: 3,
+                                    symbol: Symbol("Bar"),
+                                    parts: [
+                                        Symbol("Bar"),
+                                    ],
+                                    qualification: Unqualified,
+                                    span: Span {
+                                        start: Position {
+                                            offset: 9,
+                                            line: 3,
+                                            column: 3,
+                                        },
+                                        end: Position {
+                                            offset: 12,
+                                            line: 3,
+                                            column: 6,
+                                        },
+                                    },
+                                },
+                                arguments: None,
+                            },
+                        ],
+                    },
+                    AttributeGroup {
+                        span: Span {
+                            start: Position {
+                                offset: 14,
+                                line: 4,
+                                column: 1,
+                            },
+                            end: Position {
+                                offset: 25,
+                                line: 4,
+                                column: 12,
+                            },
+                        },
+                        members: [
+                            Attribute {
+                                span: Span {
+                                    start: Position {
+                                        offset: 16,
+                                        line: 4,
+                                        column: 3,
+                                    },
+                                    end: Position {
+                                        offset: 20,
+                                        line: 4,
+                                        column: 7,
+                                    },
+                                },
+                                name: SimpleIdentifier {
+                                    id: 4,
+                                    symbol: Symbol("Baz"),
+                                    parts: [
+                                        Symbol("Baz"),
+                                    ],
+                                    qualification: Unqualified,
+                                    span: Span {
+                                        start: Position {
+                                            offset: 16,
+                                            line: 4,
+                                            column: 3,
+                                        },
+                                        end: Position {
+                                            offset: 19,
+                                            line: 4,
+                                            column: 6,
+                                        },
+                                    },
+                                },
+                                arguments: None,
+                            },
+                            Attribute {
+                                span: Span {
+                                    start: Position {
+                                        offset: 21,
+                                        line: 4,
+                                        column: 8,
+                                    },
+                                    end: Position {
+                                        offset: 25,
+                                        line: 4,
+                                        column: 12,
+                                    },
+                                },
+                                name: SimpleIdentifier {
+                                    id: 5,
+                                    symbol: Symbol("Qux"),
+                                    parts: [
+                                        Symbol("Qux"),
+                                    ],
+                                    qualification: Unqualified,
+                                    span: Span {
+                                        start: Position {
+                                            offset: 21,
+                                            line: 4,
+                                            column: 8,
+                                        },
+                                        end: Position {
+                                            offset: 24,
+                                            line: 4,
+                                            column: 11,
+                                        },
+                                    },
+                                },
+                                arguments: None,
+                            },
+                        ],
+                    },
+                ],
+                modifiers: ClassModifierGroup {
+                    modifiers: [],
+                },
+                class: Span {
+                    start: Position {
+                        offset: 26,
+                        line: 5,
+                        column: 1,
+                    },
+                    end: Position {
+                        offset: 31,
+                        line: 5,
+                        column: 6,
+                    },
+                },
+                name: SimpleIdentifier {
+                    id: 6,
+                    symbol: Symbol("Foo"),
+                    parts: [
+                        Symbol("Foo"),
+                    ],
+                    qualification: Unqualified,
+                    span: Span {
+                        start: Position {
+                            offset: 32,
+                            line: 5,
+                            column: 7,
+                        },
+                        end: Position {
+                            offset: 35,
+                            line: 5,
+                            column: 10,
+                        },
+                    },
+                },
+                extends: None,
+                implements: None,
+                body: ClassBody {
+                    left_brace: Span {
+                        start: Position {
+                            offset: 36,
+                            line: 5,
+                            column: 11,
+                        },
+                        end: Position {
+                            offset: 37,
+                            line: 5,
+                            column: 12,
+                        },
+                    },
+                    members: [],
+                    right_brace: Span {
+                        start: Position {
+                            offset: 43,
+                            line: 7,
+                            column: 1,
+                        },
+                        end: Position {
+                            offset: 44,
+                            line: 7,
+                            column: 2,
+                        },
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 7,
+                line: 3,
+                column: 1,
+            },
+            end: Position {
+                offset: 44,
+                line: 7,
+                column: 2,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

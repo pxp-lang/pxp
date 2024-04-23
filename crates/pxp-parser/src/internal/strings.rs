@@ -272,7 +272,7 @@ fn part(state: &mut State) -> Option<StringPart> {
     match &state.stream.current().kind {
         TokenKind::StringPart => {
             let s = *state.stream.current();
-            let part = if s.span.is_empty() {
+            let part = if !s.span.is_empty() {
                 Some(StringPart::Literal(LiteralStringPart {
                     value: s.symbol.unwrap(),
                 }))
