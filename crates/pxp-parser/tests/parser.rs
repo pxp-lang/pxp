@@ -170,9 +170,9 @@ snap!(snapper, enum_with_implements, process("fixtures/enums/enum-with-implement
 snap!(snapper, enum_with_attributes, process("fixtures/enums/enum-with-attributes.php"));
 
 // Namespaces
-// snap!(snapper, unbraced_namespace, process("fixtures/unbraced-namespace.php"));
-// snap!(snapper, braced_namespace, process("fixtures/braced-namespace.php"));
-// snap!(snapper, global_namespace, process("fixtures/global-namespace.php"));
+snap!(snapper, unbraced_namespace, process("fixtures/namespaces/unbraced-namespace.php"));
+snap!(snapper, braced_namespace, process("fixtures/namespaces/braced-namespace.php"));
+snap!(snapper, global_namespace, process("fixtures/namespaces/global-namespace.php"));
 
 // Class Constants
 snap!(snapper, class_const, process("fixtures/class-constants/class-const.php"));
