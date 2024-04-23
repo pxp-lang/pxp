@@ -161,13 +161,13 @@ snap!(snapper, trait_with_methods, process("fixtures/traits/trait-with-methods.p
 snap!(snapper, trait_with_trait_use, process("fixtures/traits/trait-with-trait-use.php"));
 
 // Enums
-// snap!(snapper, simple_enum, process("fixtures/simple-enum.php"));
-// snap!(snapper, backed_enum_string, process("fixtures/backed-enum-string.php"));
-// snap!(snapper, backed_enum_int, process("fixtures/backed-enum-int.php"));
-// snap!(snapper, enum_with_constants, process("fixtures/enum-with-constants.php"));
-// snap!(snapper, enum_with_methods, process("fixtures/enum-with-methods.php"));
-// snap!(snapper, enum_with_implements, process("fixtures/enum-with-implements.php"));
-// snap!(snapper, enum_with_attributes, process("fixtures/enum-with-attributes.php"));
+snap!(snapper, simple_enum, process("fixtures/enums/simple-enum.php"));
+snap!(snapper, backed_enum_string, process("fixtures/enums/backed-enum-string.php"));
+snap!(snapper, backed_enum_int, process("fixtures/enums/backed-enum-int.php"));
+snap!(snapper, enum_with_constants, process("fixtures/enums/enum-with-constants.php"));
+snap!(snapper, enum_with_methods, process("fixtures/enums/enum-with-methods.php"));
+snap!(snapper, enum_with_implements, process("fixtures/enums/enum-with-implements.php"));
+snap!(snapper, enum_with_attributes, process("fixtures/enums/enum-with-attributes.php"));
 
 // Namespaces
 // snap!(snapper, unbraced_namespace, process("fixtures/unbraced-namespace.php"));
