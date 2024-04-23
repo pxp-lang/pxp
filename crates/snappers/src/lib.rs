@@ -9,7 +9,7 @@ macro_rules! snap {
             let subject = $subject;
             let snapshot = snapper.snapshot_path(stringify!($name));
 
-            if !snapshot.exists() {
+            if !snapshot.exists() || snapper.should_regenerate_snapshots() {
                 std::fs::create_dir_all(snapshot.parent().unwrap()).unwrap();
                 std::fs::write(&snapshot, subject.to_string()).unwrap();
 
@@ -36,6 +36,10 @@ impl Snapper {
         let mut path = self.directory.clone();
         path.push(format!("{}.snap", name));
         path
+    }
+
+    pub fn should_regenerate_snapshots(&self) -> bool {
+        std::env::var("SNAPPERS_REGENERATE").is_ok()
     }
 
     pub fn assert_eq(&self, expected: String, actual: String) {
