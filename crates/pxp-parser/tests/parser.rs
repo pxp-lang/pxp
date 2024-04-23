@@ -149,10 +149,10 @@ snap!(snapper, class_with_traits_and_visibility, process("fixtures/classes/class
 snap!(snapper, class_with_attributes, process("fixtures/classes/class-with-attributes.php"));
 
 // Interfaces
-// snap!(snapper, simple_interface, process("fixtures/simple-interface.php"));
-// snap!(snapper, interface_with_constants, process("fixtures/interface-with-constants.php"));
-// snap!(snapper, interface_with_methods, process("fixtures/interface-with-methods.php"));
-// snap!(snapper, interface_with_extends, process("fixtures/interface-with-extends.php"));
+snap!(snapper, simple_interface, process("fixtures/interfaces/simple-interface.php"));
+snap!(snapper, interface_with_constants, process("fixtures/interfaces/interface-with-constants.php"));
+snap!(snapper, interface_with_methods, process("fixtures/interfaces/interface-with-methods.php"));
+snap!(snapper, interface_with_extends, process("fixtures/interfaces/interface-with-extends.php"));
 
 // Traits
 // snap!(snapper, simple_trait, process("fixtures/simple-trait.php"));
