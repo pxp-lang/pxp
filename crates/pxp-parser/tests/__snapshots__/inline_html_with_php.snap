@@ -1,0 +1,208 @@
+[
+    Statement {
+        id: 2,
+        kind: InlineHtml(
+            InlineHtmlStatement {
+                html: Token {
+                    kind: InlineHtml,
+                    span: Span {
+                        start: Position {
+                            offset: 0,
+                            line: 1,
+                            column: 0,
+                        },
+                        end: Position {
+                            offset: 4,
+                            line: 1,
+                            column: 4,
+                        },
+                    },
+                    symbol: Some(
+                        Symbol("<h1>"),
+                    ),
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 0,
+                line: 1,
+                column: 0,
+            },
+            end: Position {
+                offset: 4,
+                line: 1,
+                column: 4,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 3,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: Position {
+                        offset: 4,
+                        line: 1,
+                        column: 4,
+                    },
+                    end: Position {
+                        offset: 9,
+                        line: 1,
+                        column: 9,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 4,
+                line: 1,
+                column: 4,
+            },
+            end: Position {
+                offset: 9,
+                line: 1,
+                column: 9,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 5,
+        kind: Echo(
+            EchoStatement {
+                echo: Span {
+                    start: Position {
+                        offset: 10,
+                        line: 1,
+                        column: 10,
+                    },
+                    end: Position {
+                        offset: 14,
+                        line: 1,
+                        column: 14,
+                    },
+                },
+                values: [
+                    Expression {
+                        id: 4,
+                        kind: Literal(
+                            Literal {
+                                kind: String,
+                                token: Token {
+                                    kind: LiteralDoubleQuotedString,
+                                    span: Span {
+                                        start: Position {
+                                            offset: 16,
+                                            line: 1,
+                                            column: 16,
+                                        },
+                                        end: Position {
+                                            offset: 29,
+                                            line: 1,
+                                            column: 29,
+                                        },
+                                    },
+                                    symbol: Some(
+                                        Symbol("Hello, world!"),
+                                    ),
+                                },
+                            },
+                        ),
+                        span: Span {
+                            start: Position {
+                                offset: 16,
+                                line: 1,
+                                column: 16,
+                            },
+                            end: Position {
+                                offset: 29,
+                                line: 1,
+                                column: 29,
+                            },
+                        },
+                        comments: CommentGroup {
+                            comments: [],
+                        },
+                    },
+                ],
+                ending: CloseTag(
+                    Span {
+                        start: Position {
+                            offset: 31,
+                            line: 1,
+                            column: 31,
+                        },
+                        end: Position {
+                            offset: 33,
+                            line: 1,
+                            column: 33,
+                        },
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 10,
+                line: 1,
+                column: 10,
+            },
+            end: Position {
+                offset: 33,
+                line: 1,
+                column: 33,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 6,
+        kind: InlineHtml(
+            InlineHtmlStatement {
+                html: Token {
+                    kind: InlineHtml,
+                    span: Span {
+                        start: Position {
+                            offset: 33,
+                            line: 1,
+                            column: 33,
+                        },
+                        end: Position {
+                            offset: 38,
+                            line: 1,
+                            column: 38,
+                        },
+                    },
+                    symbol: Some(
+                        Symbol("</h1>"),
+                    ),
+                },
+            },
+        ),
+        span: Span {
+            start: Position {
+                offset: 33,
+                line: 1,
+                column: 33,
+            },
+            end: Position {
+                offset: 38,
+                line: 1,
+                column: 38,
+            },
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

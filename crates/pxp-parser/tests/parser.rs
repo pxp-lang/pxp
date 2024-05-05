@@ -4,12 +4,11 @@ use pxp_parser::parse;
 use pxp_symbol::SymbolTable;
 use snappers::{snap, Snapper};
 
-// Tags & Inline HTML
+// Tags
 snap!(snapper, empty_file, process("fixtures/tags/empty-file.php"));
 snap!(snapper, tag, process("fixtures/tags/tag.php"));
 snap!(snapper, short_tag, process("fixtures/tags/short-tag.php"));
 snap!(snapper, echo_tag, process("fixtures/tags/echo-tag.php"));
-snap!(snapper, html, process("fixtures/tags/html.php"));
 
 // Echo
 snap!(snapper, simple_echo, process("fixtures/echo/simple-echo.php"));
@@ -198,6 +197,10 @@ snap!(snapper, method_with_attributes, process("fixtures/methods/method-with-att
 snap!(snapper, unqualified_identifier, process("fixtures/identifiers/unqualified-identifier.php"));
 snap!(snapper, qualified_identifier, process("fixtures/identifiers/qualified-identifier.php"));
 snap!(snapper, fully_qualified_identifier, process("fixtures/identifiers/fully-qualified-identifier.php"));
+
+// Inline HTML
+snap!(snapper, html, process("fixtures/tags/html.php"));
+snap!(snapper, inline_html_with_php, process("fixtures/html/inline-html-with-php.php"));
 
 fn snapper() -> Snapper {
     Snapper::new(
