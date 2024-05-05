@@ -154,6 +154,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
             if self.state.source.at_case_insensitive(b"<?php", 5) {
                 let inline_span = self.state.source.span();
 
+                self.state.source.start_token();
                 self.state.source.read_and_skip(5);
                 let tag_span = self.state.source.span();
 
