@@ -1,14 +1,23 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+use pxp_visitor::VisitorMut;
+
+#[derive(Debug)]
+pub struct NameResolvingVisitor {
+    context: NameResolvingContext,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+impl NameResolvingVisitor {
+    pub fn new() -> Self {
+        NameResolvingVisitor {
+            context: NameResolvingContext {},
+        }
     }
+}
+
+#[derive(Debug)]
+struct NameResolvingContext {
+
+}
+
+impl VisitorMut for NameResolvingVisitor {
+
 }
