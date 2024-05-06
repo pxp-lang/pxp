@@ -62,7 +62,7 @@ use pxp_span::Span;
 use pxp_syntax::comments::Comment;
 use pxp_type::Type;
 
-pub trait Visitor {
+pub trait VisitorMut {
     fn visit(&mut self, node: &mut [Statement]) {
         walk(self, node);
     }

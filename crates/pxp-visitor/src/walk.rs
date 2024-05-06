@@ -55,15 +55,15 @@ use pxp_ast::{
 };
 use pxp_type::Type;
 
-use crate::Visitor;
+use crate::VisitorMut;
 
-pub fn walk<V: Visitor + ?Sized>(visitor: &mut V, program: &mut [Statement]) {
+pub fn walk<V: VisitorMut + ?Sized>(visitor: &mut V, program: &mut [Statement]) {
     for statement in program.iter_mut() {
         visitor.visit_statement(statement);
     }
 }
 
-pub fn walk_statement<V: Visitor + ?Sized>(visitor: &mut V, statement: &mut Statement) {
+pub fn walk_statement<V: VisitorMut + ?Sized>(visitor: &mut V, statement: &mut Statement) {
     match &mut statement.kind {
         StatementKind::FullOpeningTag(stmt) => visitor.visit_full_opening_tag(stmt),
         StatementKind::ShortOpeningTag(stmt) => visitor.visit_short_opening_tag(stmt),
@@ -104,7 +104,7 @@ pub fn walk_statement<V: Visitor + ?Sized>(visitor: &mut V, statement: &mut Stat
     };
 }
 
-pub fn walk_expression<V: Visitor + ?Sized>(visitor: &mut V, expression: &mut Expression) {
+pub fn walk_expression<V: VisitorMut + ?Sized>(visitor: &mut V, expression: &mut Expression) {
     match &mut expression.kind {
         ExpressionKind::Missing => visitor.visit_missing_expr(),
         ExpressionKind::Eval(expr) => visitor.visit_eval(expr),
@@ -190,7 +190,7 @@ macro_rules! walk {
         $($label:ident: $node:ty => $body:block )+
     ) => {
         $(
-            pub fn $label<V: Visitor + ?Sized>($v: &mut V, $n: &mut $node) $body
+            pub fn $label<V: VisitorMut + ?Sized>($v: &mut V, $n: &mut $node) $body
         )+
     }
 }
