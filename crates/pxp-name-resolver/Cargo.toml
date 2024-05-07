@@ -9,4 +9,5 @@ rust-version.workspace = true
 
 [dependencies]
 pxp-ast = { version = "0.1.0", path = "../pxp-ast" }
+pxp-symbol = { version = "0.1.0", path = "../pxp-symbol" }
 pxp-visitor = { version = "0.1.0", path = "../pxp-visitor" }

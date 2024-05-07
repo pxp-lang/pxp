@@ -65,7 +65,7 @@ pub mod data_type;
 pub type Block = Vec<Statement>;
 pub type NodeId = usize;
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Copy)]
 
 pub enum UseKind {
     Normal,
@@ -139,7 +139,6 @@ pub struct EchoStatement {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-
 pub struct ReturnStatement {
     pub r#return: Span,
     pub value: Option<Expression>,
@@ -147,14 +146,12 @@ pub struct ReturnStatement {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-
 pub struct UseStatement {
     pub kind: UseKind,
     pub uses: Vec<Use>,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-
 pub struct GroupUseStatement {
     pub prefix: SimpleIdentifier,
     pub kind: UseKind,

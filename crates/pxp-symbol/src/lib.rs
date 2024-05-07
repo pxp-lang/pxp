@@ -6,6 +6,12 @@ use serde::{Serialize, Deserialize};
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
 pub struct Symbol(pub usize);
 
+impl Symbol {
+    pub fn is_missing(&self) -> bool {
+        self.0 == 0
+    }
+}
+
 impl Debug for Symbol {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if let Some(contents) = SymbolTable::the().resolve(*self) {
