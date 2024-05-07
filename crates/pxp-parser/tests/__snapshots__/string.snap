@@ -478,7 +478,6 @@
                                                                     parts: [
                                                                         Symbol("name"),
                                                                     ],
-                                                                    qualification: Unqualified,
                                                                     span: Span {
                                                                         start: Position {
                                                                             offset: 89,
@@ -660,7 +659,6 @@
                                                                     parts: [
                                                                         Symbol("name"),
                                                                     ],
-                                                                    qualification: Unqualified,
                                                                     span: Span {
                                                                         start: Position {
                                                                             offset: 112,
@@ -842,7 +840,6 @@
                                                                     parts: [
                                                                         Symbol("getName"),
                                                                     ],
-                                                                    qualification: Unqualified,
                                                                     span: Span {
                                                                         start: Position {
                                                                             offset: 135,

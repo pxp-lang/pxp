@@ -51,7 +51,6 @@
                                             parts: [
                                                 Symbol("foo"),
                                             ],
-                                            qualification: Unqualified,
                                             span: Span {
                                                 start: Position {
                                                     offset: 7,

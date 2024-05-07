@@ -56,7 +56,6 @@
                     parts: [
                         Symbol("Foo"),
                     ],
-                    qualification: Unqualified,
                     span: Span {
                         start: Position {
                             offset: 17,
@@ -115,7 +114,6 @@
                                             parts: [
                                                 Symbol("A"),
                                             ],
-                                            qualification: Unqualified,
                                             span: Span {
                                                 start: Position {
                                                     offset: 33,
@@ -243,7 +241,6 @@
                                             parts: [
                                                 Symbol("B"),
                                             ],
-                                            qualification: Unqualified,
                                             span: Span {
                                                 start: Position {
                                                     offset: 57,

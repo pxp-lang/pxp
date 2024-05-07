@@ -56,7 +56,6 @@
                     parts: [
                         Symbol("Foo"),
                     ],
-                    qualification: Unqualified,
                     span: Span {
                         start: Position {
                             offset: 12,
@@ -116,7 +115,6 @@
                                                 parts: [
                                                     Symbol("A"),
                                                 ],
-                                                qualification: Unqualified,
                                                 span: Span {
                                                     start: Position {
                                                         offset: 28,
@@ -246,7 +244,6 @@
                                                 parts: [
                                                     Symbol("B"),
                                                 ],
-                                                qualification: Unqualified,
                                                 span: Span {
                                                     start: Position {
                                                         offset: 52,
@@ -376,7 +373,6 @@
                                                 parts: [
                                                     Symbol("C"),
                                                 ],
-                                                qualification: Unqualified,
                                                 span: Span {
                                                     start: Position {
                                                         offset: 79,
@@ -506,7 +502,6 @@
                                                 parts: [
                                                     Symbol("D"),
                                                 ],
-                                                qualification: Unqualified,
                                                 span: Span {
                                                     start: Position {
                                                         offset: 104,

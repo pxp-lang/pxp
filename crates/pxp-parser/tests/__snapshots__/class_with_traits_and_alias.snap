@@ -59,7 +59,6 @@
                     parts: [
                         Symbol("Foo"),
                     ],
-                    qualification: Unqualified,
                     span: Span {
                         start: Position {
                             offset: 13,
@@ -110,7 +109,6 @@
                                         parts: [
                                             Symbol("Bar"),
                                         ],
-                                        qualification: Unqualified,
                                         span: Span {
                                             start: Position {
                                                 offset: 27,
@@ -134,7 +132,6 @@
                                                 parts: [
                                                     Symbol("Bar"),
                                                 ],
-                                                qualification: Unqualified,
                                                 span: Span {
                                                     start: Position {
                                                         offset: 41,
@@ -155,7 +152,6 @@
                                             parts: [
                                                 Symbol("a"),
                                             ],
-                                            qualification: Unqualified,
                                             span: Span {
                                                 start: Position {
                                                     offset: 46,
@@ -175,7 +171,6 @@
                                             parts: [
                                                 Symbol("b"),
                                             ],
-                                            qualification: Unqualified,
                                             span: Span {
                                                 start: Position {
                                                     offset: 51,

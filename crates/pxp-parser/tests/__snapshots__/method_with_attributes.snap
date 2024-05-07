@@ -59,7 +59,6 @@
                     parts: [
                         Symbol("A"),
                     ],
-                    qualification: Unqualified,
                     span: Span {
                         start: Position {
                             offset: 13,
@@ -128,7 +127,6 @@
                                                     parts: [
                                                         Symbol("B"),
                                                     ],
-                                                    qualification: Unqualified,
                                                     span: Span {
                                                         start: Position {
                                                             offset: 23,
@@ -179,7 +177,6 @@
                                                     parts: [
                                                         Symbol("C"),
                                                     ],
-                                                    qualification: Unqualified,
                                                     span: Span {
                                                         start: Position {
                                                             offset: 32,
@@ -214,7 +211,6 @@
                                                     parts: [
                                                         Symbol("D"),
                                                     ],
-                                                    qualification: Unqualified,
                                                     span: Span {
                                                         start: Position {
                                                             offset: 35,
@@ -351,7 +347,6 @@
                                     parts: [
                                         Symbol("a"),
                                     ],
-                                    qualification: Unqualified,
                                     span: Span {
                                         start: Position {
                                             offset: 67,
