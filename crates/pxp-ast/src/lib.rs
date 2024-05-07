@@ -53,6 +53,7 @@ pub mod interfaces;
 pub mod literals;
 pub mod loops;
 pub mod modifiers;
+pub mod name;
 pub mod namespaces;
 pub mod operators;
 pub mod properties;

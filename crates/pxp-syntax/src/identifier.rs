@@ -1,13 +1,13 @@
 use pxp_token::TokenKind;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum IdentifierQualification {
+pub enum NameQualification {
     FullyQualified,
     Qualified,
     Unqualified,
 }
 
-impl IdentifierQualification {
+impl NameQualification {
     pub fn is_fully_qualified(&self) -> bool {
         matches!(self, Self::FullyQualified)
     }
@@ -21,7 +21,7 @@ impl IdentifierQualification {
     }
 }
 
-impl From<TokenKind> for IdentifierQualification {
+impl From<TokenKind> for NameQualification {
     fn from(value: TokenKind) -> Self {
         match value {
             TokenKind::Identifier => Self::Unqualified,
