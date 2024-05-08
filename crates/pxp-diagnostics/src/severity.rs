@@ -2,6 +2,8 @@ use std::fmt::Display;
 
 #[derive(Debug)]
 pub enum Severity {
+    Hint,
+    Information,
     Warning,
     Error,
 }
@@ -23,6 +25,8 @@ impl<'a> AsciiSeverity<'a> {
 
     fn get_ascii_color(&self) -> &'static str {
         match self.severity {
+            Severity::Hint => "\x1b[36;1m",
+            Severity::Information => "\x1b[32;1m",
             Severity::Warning => "\x1b[33;1m",
             Severity::Error => "\x1b[31;1m",
         }
@@ -42,6 +46,14 @@ impl<'a> Display for AsciiSeverity<'a> {
 impl Display for Severity {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            Severity::Hint => write!(
+                f,
+                "[hint]",
+            ),
+            Severity::Information => write!(
+                f,
+                "[info]",
+            ),
             Severity::Warning => write!(
                 f,
                 "[warning]",
