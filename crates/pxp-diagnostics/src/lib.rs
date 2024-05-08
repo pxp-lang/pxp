@@ -26,8 +26,8 @@ impl<K: Display> Display for Diagnostic<K> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "{} {} on line {}",
-            self.severity, self.kind, self.span.start.line
+            "{} {}",
+            self.severity, self.kind
         )
     }
 }

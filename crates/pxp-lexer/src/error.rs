@@ -40,63 +40,53 @@ impl SyntaxError {
 impl Display for SyntaxError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::UnexpectedEndOfFile(span) => write!(
+            Self::UnexpectedEndOfFile(_) => write!(
                 f,
-                "Syntax Error: unexpected end of file on line {} column {}",
-                span.start.line, span.start.column
+                "Syntax Error: unexpected end of file",
             ),
-            Self::UnexpectedError(span) => write!(
+            Self::UnexpectedError(_) => write!(
                 f,
-                "Syntax Error: unexpected error on line {} column {}",
-                span.start.line, span.start.column
+                "Syntax Error: unexpected error",
+                
             ),
-            Self::UnexpectedCharacter(char, span) => write!(
+            Self::UnexpectedCharacter(char, _) => write!(
                 f,
-                "Syntax Error: unexpected character `{:?}` on line {} column {}",
-                *char as char, span.start.line, span.start.column
+                "Syntax Error: unexpected character `{:?}`",
+                *char as char, 
             ),
-            Self::InvalidHaltCompiler(span) => write!(
+            Self::InvalidHaltCompiler(_) => write!(
                 f,
-                "Syntax Error: invalid halt compiler on line {} column {}",
-                span.start.line, span.start.column
+                "Syntax Error: invalid halt compiler",
             ),
-            Self::InvalidOctalEscape(span) => write!(
+            Self::InvalidOctalEscape(_) => write!(
                 f,
-                "Syntax Error: invalid octal escape on line {} column {}",
-                span.start.line, span.start.column
+                "Syntax Error: invalid octal escape",
             ),
-            Self::InvalidOctalLiteral(span) => write!(
+            Self::InvalidOctalLiteral(_) => write!(
                 f,
-                "Syntax Error: invalid octal literal on line {} column {}",
-                span.start.line, span.start.column
+                "Syntax Error: invalid octal literal",
             ),
-            Self::InvalidUnicodeEscape(span) => write!(
+            Self::InvalidUnicodeEscape(_) => write!(
                 f,
-                "Syntax Error: invalid unicode escape on line {} column {}",
-                span.start.line, span.start.column
+                "Syntax Error: invalid unicode escape",
             ),
-            Self::UnpredictableState(span) => write!(
+            Self::UnpredictableState(_) => write!(
                 f,
-                "Syntax Error: Reached an unpredictable state on line {} column {}",
-                span.start.line, span.start.column
+                "Syntax Error: Reached an unpredictable state",
             ),
-            Self::InvalidDocIndentation(span) => write!(
+            Self::InvalidDocIndentation(_) => write!(
                 f,
-                "Syntax Error: Invalid indentation - cannot use tabs and spaces on line {}",
-                span.start.line
+                "Syntax Error: Invalid indentation - cannot use tabs and spaces",
             ),
-            Self::InvalidDocBodyIndentationLevel(expected, span) => write!(
+            Self::InvalidDocBodyIndentationLevel(expected, _) => write!(
                 f,
-                "Syntax Error: Invalid body indentation level - expecting an indentation level of at least {} on line {}",
+                "Syntax Error: Invalid body indentation level - expecting an indentation level of at least {}",
                 expected,
-                span.start.line
             ),
-            Self::UnrecognisedToken(token, span) => write!(
+            Self::UnrecognisedToken(token, _) => write!(
                 f,
-                "Syntax Error: Unrecognised token {} on line {} column {}",
+                "Syntax Error: Unrecognised token {}",
                 token,
-                span.start.line,
-                span.start.column
             )
         }
     }

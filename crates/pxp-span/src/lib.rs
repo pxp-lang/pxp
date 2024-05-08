@@ -2,17 +2,17 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Default, Serialize, Deserialize, Hash)]
 pub struct Span {
-    pub start: Position,
-    pub end: Position,
+    pub start: ByteOffset,
+    pub end: ByteOffset,
 }
 
 impl Span {
-    pub fn new(start: Position, end: Position) -> Self {
+    pub fn new(start: ByteOffset, end: ByteOffset) -> Self {
         Self { start, end }
     }
 
     pub fn len(&self) -> usize {
-        self.end.offset - self.start.offset
+        self.end - self.start
     }
 
     pub fn is_empty(&self) -> bool {
@@ -20,19 +20,4 @@ impl Span {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Default, Serialize, Deserialize, Hash)]
-pub struct Position {
-    pub offset: usize,
-    pub line: usize,
-    pub column: usize,
-}
-
-impl Position {
-    pub fn new(offset: usize, line: usize, column: usize) -> Self {
-        Self {
-            offset,
-            line,
-            column,
-        }
-    }
-}
+pub type ByteOffset = usize;

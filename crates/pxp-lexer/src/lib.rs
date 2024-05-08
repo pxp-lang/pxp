@@ -874,10 +874,9 @@ impl<'a, 'b> Lexer<'a, 'b> {
                 }
             }
             [b, ..] => unimplemented!(
-                "<scripting> char: {}, line: {}, col: {}",
+                "<scripting> {} at offset: {}",
                 *b as char,
-                self.state.source.span().start.line,
-                self.state.source.span().start.column
+                self.state.source.offset(),
             ),
             // We should never reach this point since we have the empty checks surrounding
             // the call to this function, but it's better to be safe than sorry.
@@ -889,8 +888,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
         // FIXME: This is a bit hacky, but it works for now.
         //        We're doing this so that the closing double quote isn't included in the span.
         if kind == TokenKind::LiteralDoubleQuotedString {
-            span.end.offset -= 1;
-            span.end.column -= 1;
+            span.end -= 1;
         }
 
         Ok(Token::new(
@@ -1358,7 +1356,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
 
         // Any trailing line breaks should be removed from the final heredoc.
         if buffer.last() == Some(&b'\n') {
-            buffer_span.end.offset -= 1;
+            buffer_span.end -= 1;
         }
 
         if !buffer_span.is_empty() {
@@ -1491,7 +1489,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
 
         // Any trailing line breaks should be removed from the final heredoc.
         if buffer.last() == Some(&b'\n') {
-            buffer_span.end.offset -= 1;
+            buffer_span.end -= 1;
         }
 
         tokens.push(Token::new_with_symbol(
