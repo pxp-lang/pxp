@@ -12,6 +12,6 @@ For more information about the tokens themselves, consult the [Token](/crates/px
 
 ## Performance
 
-Rudimentary benchmarks suggest that this crate is ~25% faster than PHP's internal lexer, provided by the `token_get_all()` or `PhpToken::tokenize()` method.
+Rudimentary benchmarks suggest that this crate is ~40% faster than PHP's internal lexer, executed using the `token_get_all()` function or `PhpToken::tokenize()` method.
 
 This benchmark isn't incredibly fair, since our lexer doesn't produce an identical set of tokens, but the performance difference is still good.
