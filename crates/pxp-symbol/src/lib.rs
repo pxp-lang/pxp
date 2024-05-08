@@ -4,7 +4,7 @@ use pxp_bytestring::ByteStr;
 use serde::{Serialize, Deserialize};
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
-pub struct Symbol(pub usize);
+pub struct Symbol(pub u32);
 
 impl Debug for Symbol {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -66,7 +66,7 @@ impl SymbolTable {
             return *symbol;
         }
 
-        let symbol = self.vec.len();
+        let symbol = self.vec.len() as u32;
 
         self.map.insert(contents.to_vec(), Symbol(symbol));
         self.vec.push(contents.to_vec());
@@ -83,7 +83,7 @@ impl SymbolTable {
     }
 
     pub fn resolve(&self, symbol: Symbol) -> Option<ByteStr> {
-        self.vec.get(symbol.0).map(|s| ByteStr::new(s))
+        self.vec.get(symbol.0 as usize).map(|s| ByteStr::new(s))
     }
 
     pub fn must_resolve(&self, symbol: Symbol) -> ByteStr {
