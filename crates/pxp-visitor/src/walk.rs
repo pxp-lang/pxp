@@ -1799,10 +1799,10 @@ walk! {
     walk_while_statement_body: WhileStatementBody => {
         match node {
             WhileStatementBody::Statement { statement } => {
-                visitor.visit_statement(&statement);
+                visitor.visit_statement(statement);
             },
             WhileStatementBody::Block { statements, .. } => {
-                visitor.visit(&statements)
+                visitor.visit(statements)
             }
         }
     }
@@ -1829,10 +1829,10 @@ walk! {
     walk_for_statement_body: ForStatementBody => {
         match node {
             ForStatementBody::Statement { statement } => {
-                visitor.visit_statement(&statement);
+                visitor.visit_statement(statement);
             },
             ForStatementBody::Block { statements, .. } => {
-                visitor.visit(&statements)
+                visitor.visit(statements)
             }
         }
     }
@@ -1845,13 +1845,13 @@ walk! {
     walk_foreach_statement_iterator: ForeachStatementIterator => {
         match node {
             ForeachStatementIterator::Value { expression, value, .. } => {
-                visitor.visit_expression(&expression);
-                visitor.visit_expression(&value);
+                visitor.visit_expression(expression);
+                visitor.visit_expression(value);
             },
             ForeachStatementIterator::KeyAndValue { expression, key, value, .. } => {
-                visitor.visit_expression(&expression);
-                visitor.visit_expression(&key);
-                visitor.visit_expression(&value);
+                visitor.visit_expression(expression);
+                visitor.visit_expression(key);
+                visitor.visit_expression(value);
             },
         }
     }
@@ -1859,10 +1859,10 @@ walk! {
     walk_foreach_statement_body: ForeachStatementBody => {
         match node {
             ForeachStatementBody::Statement { statement } => {
-                visitor.visit_statement(&statement)
+                visitor.visit_statement(statement)
             },
             ForeachStatementBody::Block { statements, .. } => {
-                visitor.visit(&statements)
+                visitor.visit(statements)
             }
         }
     }
@@ -1875,25 +1875,25 @@ walk! {
     walk_if_statement_body: IfStatementBody => {
         match node {
             IfStatementBody::Statement { statement, elseifs, r#else } => {
-                visitor.visit_statement(&statement);
+                visitor.visit_statement(statement);
 
                 for r#elseif in elseifs.iter() {
                     visitor.visit_if_statement_elseif(r#elseif);
                 }
 
                 if let Some(r#else) = r#else {
-                    visitor.visit_if_statement_else(&r#else);
+                    visitor.visit_if_statement_else(r#else);
                 }
             },
             IfStatementBody::Block { statements, elseifs, r#else, .. } => {
-                visitor.visit(&statements);
+                visitor.visit(statements);
 
                 for r#elseif in elseifs.iter() {
                     visitor.visit_if_statement_elseif_block(r#elseif);
                 }
 
                 if let Some(r#else) = r#else {
-                    visitor.visit_if_statement_else_block(&r#else);
+                    visitor.visit_if_statement_else_block(r#else);
                 }
             },
         }
@@ -1935,8 +1935,8 @@ walk! {
 
     walk_level: Level => {
         match node {
-            Level::Literal(literal) => visitor.visit_literal(&literal),
-            Level::Parenthesized { level, .. } => visitor.visit_level(&level),
+            Level::Literal(literal) => visitor.visit_literal(literal),
+            Level::Parenthesized { level, .. } => visitor.visit_level(level),
         }
     }
 
@@ -2028,28 +2028,28 @@ walk! {
     walk_classish_member: ClassishMember => {
         match node {
             ClassishMember::Constant(constant) => {
-                visitor.visit_classish_constant(&constant);
+                visitor.visit_classish_constant(constant);
             },
             ClassishMember::TraitUsage(usage) => {
-                visitor.visit_trait_usage(&usage);
+                visitor.visit_trait_usage(usage);
             },
             ClassishMember::Property(property) => {
-                visitor.visit_property(&property);
+                visitor.visit_property(property);
             },
             ClassishMember::VariableProperty(property) => {
-                visitor.visit_variable_property(&property);
+                visitor.visit_variable_property(property);
             },
             ClassishMember::AbstractMethod(method) => {
-                visitor.visit_abstract_method(&method);
+                visitor.visit_abstract_method(method);
             },
             ClassishMember::AbstractConstructor(method) => {
-                visitor.visit_abstract_constructor(&method);
+                visitor.visit_abstract_constructor(method);
             },
             ClassishMember::ConcreteMethod(method) => {
-                visitor.visit_concrete_method(&method);
+                visitor.visit_concrete_method(method);
             },
             ClassishMember::ConcreteConstructor(method) => {
-                visitor.visit_concrete_constructor(&method);
+                visitor.visit_concrete_constructor(method);
             },
         }
     }
@@ -2077,11 +2077,11 @@ walk! {
         match node {
             TraitUsageAdaptation::Alias { r#trait, method, alias, visibility } => {
                 if let Some(r#trait) = r#trait {
-                    visitor.visit_simple_identifier(&r#trait);
+                    visitor.visit_simple_identifier(r#trait);
                 }
 
-                visitor.visit_simple_identifier(&method);
-                visitor.visit_simple_identifier(&alias);
+                visitor.visit_simple_identifier(method);
+                visitor.visit_simple_identifier(alias);
 
                 if let Some(_visibility) = visibility {
                     // FIXME: Visit visibility here.
@@ -2090,18 +2090,18 @@ walk! {
             },
             TraitUsageAdaptation::Visibility { r#trait, method, visibility: _visibility } => {
                 if let Some(r#trait) = r#trait {
-                    visitor.visit_simple_identifier(&r#trait);
+                    visitor.visit_simple_identifier(r#trait);
                 }
 
-                visitor.visit_simple_identifier(&method);
+                visitor.visit_simple_identifier(method);
                 // FIXME: Visit visibility here.
             },
             TraitUsageAdaptation::Precedence { r#trait, method, insteadof } => {
                 if let Some(r#trait) = r#trait {
-                    visitor.visit_simple_identifier(&r#trait);
+                    visitor.visit_simple_identifier(r#trait);
                 }
 
-                visitor.visit_simple_identifier(&method);
+                visitor.visit_simple_identifier(method);
 
                 for insteadof in insteadof.iter() {
                     visitor.visit_simple_identifier(insteadof);
@@ -2126,11 +2126,11 @@ walk! {
     walk_property_entry: PropertyEntry => {
         match node {
             PropertyEntry::Uninitialized { variable } => {
-                visitor.visit_simple_variable(&variable);
+                visitor.visit_simple_variable(variable);
             },
             PropertyEntry::Initialized { variable, value, .. } => {
-                visitor.visit_simple_variable(&variable);
-                visitor.visit_expression(&value);
+                visitor.visit_simple_variable(variable);
+                visitor.visit_expression(value);
             },
         }
     }
@@ -2262,10 +2262,10 @@ walk! {
     walk_namespace: NamespaceStatement => {
         match node {
             NamespaceStatement::Unbraced(node) => {
-                visitor.visit_unbraced_namespace(&node);
+                visitor.visit_unbraced_namespace(node);
             },
             NamespaceStatement::Braced(node) => {
-                visitor.visit_braced_namespace(&node);
+                visitor.visit_braced_namespace(node);
             },
         }
     }
@@ -2346,10 +2346,10 @@ walk! {
     walk_unit_enum_member: UnitEnumMember => {
         match node {
             UnitEnumMember::Case(node) => {
-                visitor.visit_unit_enum_case(&node);
+                visitor.visit_unit_enum_case(node);
             }
             UnitEnumMember::Classish(node) => {
-                visitor.visit_classish_member(&node);
+                visitor.visit_classish_member(node);
             }
         }
     }
@@ -2377,10 +2377,10 @@ walk! {
     walk_backed_enum_member: BackedEnumMember => {
         match node {
             BackedEnumMember::Case(node) => {
-                visitor.visit_backed_enum_case(&node);
+                visitor.visit_backed_enum_case(node);
             }
             BackedEnumMember::Classish(node) => {
-                visitor.visit_classish_member(&node);
+                visitor.visit_classish_member(node);
             }
         }
     }
@@ -2409,13 +2409,13 @@ walk! {
         match node {
             DeclareBody::Noop { .. } => {},
             DeclareBody::Braced { statements, .. } => {
-                visitor.visit(&statements);
+                visitor.visit(statements);
             },
             DeclareBody::Expression { expression, .. } => {
-                visitor.visit_expression(&expression);
+                visitor.visit_expression(expression);
             },
             DeclareBody::Block { statements, .. } => {
-                visitor.visit(&statements);
+                visitor.visit(statements);
             },
         }
     }
@@ -2493,75 +2493,75 @@ walk! {
                 right,
                 ..
             } => {
-                visitor.visit_expression(&left);
-                visitor.visit_expression(&right);
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
             },
             ArithmeticOperationExpression::Subtraction {
                 left,
                 right,
                 ..
             } => {
-                visitor.visit_expression(&left);
-                visitor.visit_expression(&right);
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
             },
             ArithmeticOperationExpression::Multiplication {
                 left,
                 right,
                 ..
             } => {
-                visitor.visit_expression(&left);
-                visitor.visit_expression(&right);
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
             },
             ArithmeticOperationExpression::Division {
                 left,
                 right,
                 ..
             } => {
-                visitor.visit_expression(&left);
-                visitor.visit_expression(&right);
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
             },
             ArithmeticOperationExpression::Modulo {
                 left, right, ..
             }  => {
-                visitor.visit_expression(&left);
-                visitor.visit_expression(&right);
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
             },
             ArithmeticOperationExpression::Exponentiation {
                 left, right, ..
             } => {
-                visitor.visit_expression(&left);
-                visitor.visit_expression(&right);
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
             },
             ArithmeticOperationExpression::Negative {
                 right, ..
             } => {
-                visitor.visit_expression(&right);
+                visitor.visit_expression(right);
             },
             ArithmeticOperationExpression::Positive {
                 right,
                 ..
             } => {
-                visitor.visit_expression(&right);
+                visitor.visit_expression(right);
             },
             ArithmeticOperationExpression::PreIncrement {
                 right, ..
             } => {
-                visitor.visit_expression(&right);
+                visitor.visit_expression(right);
             },
             ArithmeticOperationExpression::PostIncrement {
                 left, ..
             } => {
-                visitor.visit_expression(&left);
+                visitor.visit_expression(left);
             },
             ArithmeticOperationExpression::PreDecrement {
                 right, ..
             } => {
-                visitor.visit_expression(&right);
+                visitor.visit_expression(right);
             },
             ArithmeticOperationExpression::PostDecrement {
                 left, ..
             } => {
-                visitor.visit_expression(&left);
+                visitor.visit_expression(left);
             },
         }
     }
@@ -2638,8 +2638,8 @@ walk! {
                 right,
                 ..
             } => {
-                visitor.visit_expression(&left);
-                visitor.visit_expression(&right);
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
             }
         }
     }
@@ -2671,14 +2671,14 @@ walk! {
                 right,
                 ..
             } => {
-                visitor.visit_expression(&left);
-                visitor.visit_expression(&right);
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
             },
             BitwiseOperationExpression::Not {
                 right,
                 ..
             } => {
-                visitor.visit_expression(&right);
+                visitor.visit_expression(right);
             },
         }
     }
@@ -2735,8 +2735,8 @@ walk! {
                 right,
                 ..
             } => {
-                visitor.visit_expression(&left);
-                visitor.visit_expression(&right);
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
             }
         }
     }
@@ -2768,14 +2768,14 @@ walk! {
                 right,
                 ..
             } => {
-                visitor.visit_expression(&left);
-                visitor.visit_expression(&right);
+                visitor.visit_expression(left);
+                visitor.visit_expression(right);
             },
             LogicalOperationExpression::Not {
                 right,
                 ..
             } => {
-                visitor.visit_expression(&right);
+                visitor.visit_expression(right);
             },
         }
     }
@@ -2805,10 +2805,10 @@ walk! {
     walk_identifier: Identifier => {
         match node {
             Identifier::SimpleIdentifier(node) => {
-                visitor.visit_simple_identifier(&node);
+                visitor.visit_simple_identifier(node);
             },
             Identifier::DynamicIdentifier(node) => {
-                visitor.visit_dynamic_identifier(&node);
+                visitor.visit_dynamic_identifier(node);
             },
         }
     }
@@ -2820,13 +2820,13 @@ walk! {
     walk_variable: Variable => {
         match node {
             Variable::SimpleVariable(node) => {
-                visitor.visit_simple_variable(&node);
+                visitor.visit_simple_variable(node);
             },
             Variable::VariableVariable(node) => {
-                visitor.visit_variable_variable(&node);
+                visitor.visit_variable_variable(node);
             },
             Variable::BracedVariableVariable(node) => {
-                visitor.visit_braced_variable_variable(&node);
+                visitor.visit_braced_variable_variable(node);
             }
         }
     }
@@ -2929,32 +2929,32 @@ walk! {
             ArrayItem::Value {
                 value
             } => {
-                visitor.visit_expression(&value);
+                visitor.visit_expression(value);
             },
             ArrayItem::ReferencedValue {
                 value, ..
             } => {
-                visitor.visit_expression(&value);
+                visitor.visit_expression(value);
             },
             ArrayItem::SpreadValue {
                 value, ..
             } => {
-                visitor.visit_expression(&value);
+                visitor.visit_expression(value);
             },
             ArrayItem::KeyValue {
                 key,
                 value,
                 ..
             } => {
-                visitor.visit_expression(&key);
-                visitor.visit_expression(&value);
+                visitor.visit_expression(key);
+                visitor.visit_expression(value);
             },
             ArrayItem::ReferencedKeyValue {
                 key,
                 value, ..
             } => {
-                visitor.visit_expression(&key);
-                visitor.visit_expression(&value);
+                visitor.visit_expression(key);
+                visitor.visit_expression(value);
             },
         }
     }
@@ -2983,15 +2983,15 @@ walk! {
             ListEntry::Value {
                 value
             } => {
-                visitor.visit_expression(&value);
+                visitor.visit_expression(value);
             },
             ListEntry::KeyValue {
                 key,
                 value,
                 ..
             } => {
-                visitor.visit_expression(&key);
-                visitor.visit_expression(&value);
+                visitor.visit_expression(key);
+                visitor.visit_expression(value);
             },
         }
     }
@@ -3032,10 +3032,10 @@ walk! {
     walk_string_part: StringPart => {
         match node {
             StringPart::Literal(node) => {
-                visitor.visit_literal_string_part(&node);
+                visitor.visit_literal_string_part(node);
             },
             StringPart::Expression(node) => {
-                visitor.visit_expression_string_part(&node);
+                visitor.visit_expression_string_part(node);
             }
         }
     }
@@ -3161,7 +3161,7 @@ walk! {
     walk_type: Type => {
         match node {
             Type::Nullable(ty) => {
-                visitor.visit_type(&ty);
+                visitor.visit_type(ty);
             },
             Type::Union(tys) |
             Type::Intersection(tys) => {
