@@ -63,7 +63,7 @@ pub mod variables;
 pub mod data_type;
 
 pub type Block = Vec<Statement>;
-pub type NodeId = usize;
+pub type NodeId = u32;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 

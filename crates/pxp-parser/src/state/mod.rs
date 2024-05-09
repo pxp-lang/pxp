@@ -47,7 +47,7 @@ impl<'a, 'b> State<'a, 'b> {
     }
 
     #[inline(always)]
-    pub fn id(&mut self) -> usize {
+    pub fn id(&mut self) -> u32 {
         self.id += 1;
         self.id
     }
