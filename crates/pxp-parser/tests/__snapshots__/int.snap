@@ -4,30 +4,14 @@
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
-                    start: Position {
-                        offset: 0,
-                        line: 1,
-                        column: 0,
-                    },
-                    end: Position {
-                        offset: 5,
-                        line: 1,
-                        column: 5,
-                    },
+                    start: 0,
+                    end: 5,
                 },
             },
         ),
         span: Span {
-            start: Position {
-                offset: 0,
-                line: 1,
-                column: 0,
-            },
-            end: Position {
-                offset: 5,
-                line: 1,
-                column: 5,
-            },
+            start: 0,
+            end: 5,
         },
         comments: CommentGroup {
             comments: [],
@@ -45,16 +29,8 @@
                             token: Token {
                                 kind: LiteralInteger,
                                 span: Span {
-                                    start: Position {
-                                        offset: 7,
-                                        line: 3,
-                                        column: 1,
-                                    },
-                                    end: Position {
-                                        offset: 8,
-                                        line: 3,
-                                        column: 2,
-                                    },
+                                    start: 7,
+                                    end: 8,
                                 },
                                 symbol: Some(
                                     Symbol("1"),
@@ -63,16 +39,8 @@
                         },
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 7,
-                            line: 3,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 8,
-                            line: 3,
-                            column: 2,
-                        },
+                        start: 7,
+                        end: 8,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -80,31 +48,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 8,
-                            line: 3,
-                            column: 2,
-                        },
-                        end: Position {
-                            offset: 9,
-                            line: 3,
-                            column: 3,
-                        },
+                        start: 8,
+                        end: 9,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 7,
-                line: 3,
-                column: 1,
-            },
-            end: Position {
-                offset: 9,
-                line: 3,
-                column: 3,
-            },
+            start: 7,
+            end: 9,
         },
         comments: CommentGroup {
             comments: [],
@@ -122,16 +74,8 @@
                             token: Token {
                                 kind: LiteralInteger,
                                 span: Span {
-                                    start: Position {
-                                        offset: 10,
-                                        line: 4,
-                                        column: 1,
-                                    },
-                                    end: Position {
-                                        offset: 14,
-                                        line: 4,
-                                        column: 5,
-                                    },
+                                    start: 10,
+                                    end: 14,
                                 },
                                 symbol: Some(
                                     Symbol("0123"),
@@ -140,16 +84,8 @@
                         },
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 10,
-                            line: 4,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 14,
-                            line: 4,
-                            column: 5,
-                        },
+                        start: 10,
+                        end: 14,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -157,31 +93,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 14,
-                            line: 4,
-                            column: 5,
-                        },
-                        end: Position {
-                            offset: 15,
-                            line: 4,
-                            column: 6,
-                        },
+                        start: 14,
+                        end: 15,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 10,
-                line: 4,
-                column: 1,
-            },
-            end: Position {
-                offset: 15,
-                line: 4,
-                column: 6,
-            },
+            start: 10,
+            end: 15,
         },
         comments: CommentGroup {
             comments: [],
@@ -199,16 +119,8 @@
                             token: Token {
                                 kind: LiteralInteger,
                                 span: Span {
-                                    start: Position {
-                                        offset: 16,
-                                        line: 5,
-                                        column: 1,
-                                    },
-                                    end: Position {
-                                        offset: 21,
-                                        line: 5,
-                                        column: 6,
-                                    },
+                                    start: 16,
+                                    end: 21,
                                 },
                                 symbol: Some(
                                     Symbol("0o123"),
@@ -217,16 +129,8 @@
                         },
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 16,
-                            line: 5,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 21,
-                            line: 5,
-                            column: 6,
-                        },
+                        start: 16,
+                        end: 21,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -234,31 +138,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 21,
-                            line: 5,
-                            column: 6,
-                        },
-                        end: Position {
-                            offset: 22,
-                            line: 5,
-                            column: 7,
-                        },
+                        start: 21,
+                        end: 22,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 16,
-                line: 5,
-                column: 1,
-            },
-            end: Position {
-                offset: 22,
-                line: 5,
-                column: 7,
-            },
+            start: 16,
+            end: 22,
         },
         comments: CommentGroup {
             comments: [],
@@ -276,16 +164,8 @@
                             token: Token {
                                 kind: LiteralInteger,
                                 span: Span {
-                                    start: Position {
-                                        offset: 23,
-                                        line: 6,
-                                        column: 1,
-                                    },
-                                    end: Position {
-                                        offset: 27,
-                                        line: 6,
-                                        column: 5,
-                                    },
+                                    start: 23,
+                                    end: 27,
                                 },
                                 symbol: Some(
                                     Symbol("0x1A"),
@@ -294,16 +174,8 @@
                         },
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 23,
-                            line: 6,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 27,
-                            line: 6,
-                            column: 5,
-                        },
+                        start: 23,
+                        end: 27,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -311,31 +183,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 27,
-                            line: 6,
-                            column: 5,
-                        },
-                        end: Position {
-                            offset: 28,
-                            line: 6,
-                            column: 6,
-                        },
+                        start: 27,
+                        end: 28,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 23,
-                line: 6,
-                column: 1,
-            },
-            end: Position {
-                offset: 28,
-                line: 6,
-                column: 6,
-            },
+            start: 23,
+            end: 28,
         },
         comments: CommentGroup {
             comments: [],
@@ -353,16 +209,8 @@
                             token: Token {
                                 kind: LiteralInteger,
                                 span: Span {
-                                    start: Position {
-                                        offset: 29,
-                                        line: 7,
-                                        column: 1,
-                                    },
-                                    end: Position {
-                                        offset: 39,
-                                        line: 7,
-                                        column: 11,
-                                    },
+                                    start: 29,
+                                    end: 39,
                                 },
                                 symbol: Some(
                                     Symbol("0b11111111"),
@@ -371,16 +219,8 @@
                         },
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 29,
-                            line: 7,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 39,
-                            line: 7,
-                            column: 11,
-                        },
+                        start: 29,
+                        end: 39,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -388,31 +228,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 39,
-                            line: 7,
-                            column: 11,
-                        },
-                        end: Position {
-                            offset: 40,
-                            line: 7,
-                            column: 12,
-                        },
+                        start: 39,
+                        end: 40,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 29,
-                line: 7,
-                column: 1,
-            },
-            end: Position {
-                offset: 40,
-                line: 7,
-                column: 12,
-            },
+            start: 29,
+            end: 40,
         },
         comments: CommentGroup {
             comments: [],
@@ -430,16 +254,8 @@
                             token: Token {
                                 kind: LiteralInteger,
                                 span: Span {
-                                    start: Position {
-                                        offset: 41,
-                                        line: 8,
-                                        column: 1,
-                                    },
-                                    end: Position {
-                                        offset: 50,
-                                        line: 8,
-                                        column: 10,
-                                    },
+                                    start: 41,
+                                    end: 50,
                                 },
                                 symbol: Some(
                                     Symbol("1_234_567"),
@@ -448,16 +264,8 @@
                         },
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 41,
-                            line: 8,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 50,
-                            line: 8,
-                            column: 10,
-                        },
+                        start: 41,
+                        end: 50,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -465,31 +273,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 50,
-                            line: 8,
-                            column: 10,
-                        },
-                        end: Position {
-                            offset: 51,
-                            line: 8,
-                            column: 11,
-                        },
+                        start: 50,
+                        end: 51,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 41,
-                line: 8,
-                column: 1,
-            },
-            end: Position {
-                offset: 51,
-                line: 8,
-                column: 11,
-            },
+            start: 41,
+            end: 51,
         },
         comments: CommentGroup {
             comments: [],

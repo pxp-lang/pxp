@@ -6,7 +6,6 @@ use crate::state::State;
 use pxp_bytestring::ByteString;
 use pxp_symbol::SymbolTable;
 use pxp_token::DocStringIndentationKind;
-use pxp_token::DocStringKind;
 use pxp_token::OpenTagKind;
 use pxp_token::Token;
 use pxp_token::TokenKind;
@@ -88,8 +87,9 @@ impl<'a, 'b> Lexer<'a, 'b> {
                     let label = label.clone();
 
                     match kind {
-                        DocStringKind::Heredoc => self.heredoc(&mut tokens, label)?,
-                        DocStringKind::Nowdoc => self.nowdoc(&mut tokens, label)?,
+                        TokenKind::StartHeredoc => self.heredoc(&mut tokens, label)?,
+                        TokenKind::StartNowdoc => self.nowdoc(&mut tokens, label)?,
+                        _ => unreachable!(),
                     }
                 }
                 // LookingForProperty is entered inside double quotes,
@@ -487,18 +487,18 @@ impl<'a, 'b> Lexer<'a, 'b> {
                 let mut buffer = b"<<<".to_vec();
                 buffer.extend(self.read_and_skip_whitespace());
 
-                let doc_string_kind = match self.state.source.read(1) {
+                let kind = match self.state.source.read(1) {
                     [b'\''] => {
                         buffer.push(b'\'');
                         self.state.source.next();
-                        DocStringKind::Nowdoc
+                        TokenKind::StartNowdoc
                     }
                     [b'"'] => {
                         buffer.push(b'"');
                         self.state.source.next();
-                        DocStringKind::Heredoc
+                        TokenKind::StartHeredoc
                     }
-                    [_, ..] => DocStringKind::Heredoc,
+                    [_, ..] => TokenKind::StartHeredoc,
                     [] => {
                         return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span()));
                     }
@@ -519,7 +519,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
 
                 buffer.extend_from_slice(&label);
 
-                if doc_string_kind == DocStringKind::Nowdoc {
+                if kind == TokenKind::StartNowdoc {
                     match self.state.source.current() {
                         Some(b'\'') => {
                             buffer.push(b'\'');
@@ -547,13 +547,13 @@ impl<'a, 'b> Lexer<'a, 'b> {
 
                 self.state.source.next();
                 self.state.replace(StackFrame::DocString(
-                    doc_string_kind,
+                    kind,
                     label.clone(),
                     DocStringIndentationKind::None,
                     0,
                 ));
 
-                (TokenKind::StartDocString(doc_string_kind), true)
+                (kind, true)
             }
             [b'*', b'*', ..] => {
                 self.state.source.skip(2);
@@ -1952,7 +1952,7 @@ enum NumberKind {
 mod tests {
     use super::Lexer;
     use pxp_symbol::SymbolTable;
-    use pxp_token::{DocStringIndentationKind, DocStringKind, OpenTagKind, Token, TokenKind};
+    use pxp_token::{DocStringIndentationKind, OpenTagKind, Token, TokenKind};
 
     #[test]
     fn it_can_tokenize_keywords() {
@@ -2205,7 +2205,7 @@ mod tests {
             &tokens,
             &[
                 TokenKind::OpenTag(OpenTagKind::Full),
-                TokenKind::StartDocString(DocStringKind::Heredoc),
+                TokenKind::StartHeredoc,
                 TokenKind::StringPart,
                 TokenKind::EndDocString(DocStringIndentationKind::Space, 4),
                 TokenKind::Eof,
@@ -2224,7 +2224,7 @@ mod tests {
             &tokens,
             &[
                 TokenKind::OpenTag(OpenTagKind::Full),
-                TokenKind::StartDocString(DocStringKind::Nowdoc),
+                TokenKind::StartNowdoc,
                 TokenKind::StringPart,
                 TokenKind::EndDocString(DocStringIndentationKind::Space, 4),
                 TokenKind::Eof,

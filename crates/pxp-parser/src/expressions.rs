@@ -39,7 +39,6 @@ use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
 use pxp_syntax::identifier::IdentifierQualification;
-use pxp_token::DocStringKind;
 use pxp_token::TokenKind;
 
 use pxp_ast::BoolExpression;
@@ -990,9 +989,9 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
 
         (TokenKind::StringPart, _) => strings::interpolated(state),
 
-        (TokenKind::StartDocString(DocStringKind::Heredoc), _) => strings::heredoc(state),
+        (TokenKind::StartHeredoc, _) => strings::heredoc(state),
 
-        (TokenKind::StartDocString(DocStringKind::Nowdoc), _) => strings::nowdoc(state),
+        (TokenKind::StartNowdoc, _) => strings::nowdoc(state),
 
         (TokenKind::Backtick, _) => strings::shell_exec(state),
 

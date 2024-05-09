@@ -4,30 +4,14 @@
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
-                    start: Position {
-                        offset: 0,
-                        line: 1,
-                        column: 0,
-                    },
-                    end: Position {
-                        offset: 5,
-                        line: 1,
-                        column: 5,
-                    },
+                    start: 0,
+                    end: 5,
                 },
             },
         ),
         span: Span {
-            start: Position {
-                offset: 0,
-                line: 1,
-                column: 0,
-            },
-            end: Position {
-                offset: 5,
-                line: 1,
-                column: 5,
-            },
+            start: 0,
+            end: 5,
         },
         comments: CommentGroup {
             comments: [],
@@ -42,16 +26,8 @@
                     modifiers: [],
                 },
                 class: Span {
-                    start: Position {
-                        offset: 7,
-                        line: 3,
-                        column: 1,
-                    },
-                    end: Position {
-                        offset: 12,
-                        line: 3,
-                        column: 6,
-                    },
+                    start: 7,
+                    end: 12,
                 },
                 name: SimpleIdentifier {
                     id: 3,
@@ -61,47 +37,23 @@
                     ],
                     qualification: Unqualified,
                     span: Span {
-                        start: Position {
-                            offset: 13,
-                            line: 3,
-                            column: 7,
-                        },
-                        end: Position {
-                            offset: 16,
-                            line: 3,
-                            column: 10,
-                        },
+                        start: 13,
+                        end: 16,
                     },
                 },
                 extends: None,
                 implements: None,
                 body: ClassBody {
                     left_brace: Span {
-                        start: Position {
-                            offset: 17,
-                            line: 4,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 18,
-                            line: 4,
-                            column: 2,
-                        },
+                        start: 17,
+                        end: 18,
                     },
                     members: [
                         TraitUsage(
                             TraitUsage {
                                 use: Span {
-                                    start: Position {
-                                        offset: 23,
-                                        line: 5,
-                                        column: 5,
-                                    },
-                                    end: Position {
-                                        offset: 26,
-                                        line: 5,
-                                        column: 8,
-                                    },
+                                    start: 23,
+                                    end: 26,
                                 },
                                 traits: [
                                     SimpleIdentifier {
@@ -112,16 +64,8 @@
                                         ],
                                         qualification: Unqualified,
                                         span: Span {
-                                            start: Position {
-                                                offset: 27,
-                                                line: 5,
-                                                column: 9,
-                                            },
-                                            end: Position {
-                                                offset: 30,
-                                                line: 5,
-                                                column: 12,
-                                            },
+                                            start: 27,
+                                            end: 30,
                                         },
                                     },
                                     SimpleIdentifier {
@@ -132,16 +76,8 @@
                                         ],
                                         qualification: Unqualified,
                                         span: Span {
-                                            start: Position {
-                                                offset: 32,
-                                                line: 5,
-                                                column: 14,
-                                            },
-                                            end: Position {
-                                                offset: 35,
-                                                line: 5,
-                                                column: 17,
-                                            },
+                                            start: 32,
+                                            end: 35,
                                         },
                                     },
                                 ],
@@ -156,16 +92,8 @@
                                                 ],
                                                 qualification: Unqualified,
                                                 span: Span {
-                                                    start: Position {
-                                                        offset: 46,
-                                                        line: 6,
-                                                        column: 9,
-                                                    },
-                                                    end: Position {
-                                                        offset: 49,
-                                                        line: 6,
-                                                        column: 12,
-                                                    },
+                                                    start: 46,
+                                                    end: 49,
                                                 },
                                             },
                                         ),
@@ -177,16 +105,8 @@
                                             ],
                                             qualification: Unqualified,
                                             span: Span {
-                                                start: Position {
-                                                    offset: 51,
-                                                    line: 6,
-                                                    column: 14,
-                                                },
-                                                end: Position {
-                                                    offset: 52,
-                                                    line: 6,
-                                                    column: 15,
-                                                },
+                                                start: 51,
+                                                end: 52,
                                             },
                                         },
                                         insteadof: [
@@ -198,16 +118,8 @@
                                                 ],
                                                 qualification: Unqualified,
                                                 span: Span {
-                                                    start: Position {
-                                                        offset: 63,
-                                                        line: 6,
-                                                        column: 26,
-                                                    },
-                                                    end: Position {
-                                                        offset: 66,
-                                                        line: 6,
-                                                        column: 29,
-                                                    },
+                                                    start: 63,
+                                                    end: 66,
                                                 },
                                             },
                                         ],
@@ -217,31 +129,15 @@
                         ),
                     ],
                     right_brace: Span {
-                        start: Position {
-                            offset: 74,
-                            line: 8,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 75,
-                            line: 8,
-                            column: 2,
-                        },
+                        start: 74,
+                        end: 75,
                     },
                 },
             },
         ),
         span: Span {
-            start: Position {
-                offset: 7,
-                line: 3,
-                column: 1,
-            },
-            end: Position {
-                offset: 75,
-                line: 8,
-                column: 2,
-            },
+            start: 7,
+            end: 75,
         },
         comments: CommentGroup {
             comments: [],

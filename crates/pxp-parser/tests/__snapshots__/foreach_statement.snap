@@ -4,30 +4,14 @@
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
-                    start: Position {
-                        offset: 0,
-                        line: 1,
-                        column: 0,
-                    },
-                    end: Position {
-                        offset: 5,
-                        line: 1,
-                        column: 5,
-                    },
+                    start: 0,
+                    end: 5,
                 },
             },
         ),
         span: Span {
-            start: Position {
-                offset: 0,
-                line: 1,
-                column: 0,
-            },
-            end: Position {
-                offset: 5,
-                line: 1,
-                column: 5,
-            },
+            start: 0,
+            end: 5,
         },
         comments: CommentGroup {
             comments: [],
@@ -38,28 +22,12 @@
         kind: Foreach(
             ForeachStatement {
                 foreach: Span {
-                    start: Position {
-                        offset: 7,
-                        line: 3,
-                        column: 1,
-                    },
-                    end: Position {
-                        offset: 14,
-                        line: 3,
-                        column: 8,
-                    },
+                    start: 7,
+                    end: 14,
                 },
                 left_parenthesis: Span {
-                    start: Position {
-                        offset: 15,
-                        line: 3,
-                        column: 9,
-                    },
-                    end: Position {
-                        offset: 16,
-                        line: 3,
-                        column: 10,
-                    },
+                    start: 15,
+                    end: 16,
                 },
                 iterator: Value {
                     expression: Expression {
@@ -69,47 +37,23 @@
                                 SimpleVariable {
                                     symbol: Symbol("$array"),
                                     span: Span {
-                                        start: Position {
-                                            offset: 16,
-                                            line: 3,
-                                            column: 10,
-                                        },
-                                        end: Position {
-                                            offset: 22,
-                                            line: 3,
-                                            column: 16,
-                                        },
+                                        start: 16,
+                                        end: 22,
                                     },
                                 },
                             ),
                         ),
                         span: Span {
-                            start: Position {
-                                offset: 16,
-                                line: 3,
-                                column: 10,
-                            },
-                            end: Position {
-                                offset: 22,
-                                line: 3,
-                                column: 16,
-                            },
+                            start: 16,
+                            end: 22,
                         },
                         comments: CommentGroup {
                             comments: [],
                         },
                     },
                     as: Span {
-                        start: Position {
-                            offset: 23,
-                            line: 3,
-                            column: 17,
-                        },
-                        end: Position {
-                            offset: 25,
-                            line: 3,
-                            column: 19,
-                        },
+                        start: 23,
+                        end: 25,
                     },
                     ampersand: None,
                     value: Expression {
@@ -119,31 +63,15 @@
                                 SimpleVariable {
                                     symbol: Symbol("$value"),
                                     span: Span {
-                                        start: Position {
-                                            offset: 26,
-                                            line: 3,
-                                            column: 20,
-                                        },
-                                        end: Position {
-                                            offset: 32,
-                                            line: 3,
-                                            column: 26,
-                                        },
+                                        start: 26,
+                                        end: 32,
                                     },
                                 },
                             ),
                         ),
                         span: Span {
-                            start: Position {
-                                offset: 26,
-                                line: 3,
-                                column: 20,
-                            },
-                            end: Position {
-                                offset: 32,
-                                line: 3,
-                                column: 26,
-                            },
+                            start: 26,
+                            end: 32,
                         },
                         comments: CommentGroup {
                             comments: [],
@@ -151,16 +79,8 @@
                     },
                 },
                 right_parenthesis: Span {
-                    start: Position {
-                        offset: 32,
-                        line: 3,
-                        column: 26,
-                    },
-                    end: Position {
-                        offset: 33,
-                        line: 3,
-                        column: 27,
-                    },
+                    start: 32,
+                    end: 33,
                 },
                 body: Statement {
                     statement: Statement {
@@ -168,43 +88,19 @@
                         kind: Block(
                             BlockStatement {
                                 left_brace: Span {
-                                    start: Position {
-                                        offset: 34,
-                                        line: 3,
-                                        column: 28,
-                                    },
-                                    end: Position {
-                                        offset: 35,
-                                        line: 3,
-                                        column: 29,
-                                    },
+                                    start: 34,
+                                    end: 35,
                                 },
                                 statements: [],
                                 right_brace: Span {
-                                    start: Position {
-                                        offset: 43,
-                                        line: 5,
-                                        column: 1,
-                                    },
-                                    end: Position {
-                                        offset: 44,
-                                        line: 5,
-                                        column: 2,
-                                    },
+                                    start: 43,
+                                    end: 44,
                                 },
                             },
                         ),
                         span: Span {
-                            start: Position {
-                                offset: 34,
-                                line: 3,
-                                column: 28,
-                            },
-                            end: Position {
-                                offset: 44,
-                                line: 5,
-                                column: 2,
-                            },
+                            start: 34,
+                            end: 44,
                         },
                         comments: CommentGroup {
                             comments: [],
@@ -214,16 +110,8 @@
             },
         ),
         span: Span {
-            start: Position {
-                offset: 7,
-                line: 3,
-                column: 1,
-            },
-            end: Position {
-                offset: 44,
-                line: 5,
-                column: 2,
-            },
+            start: 7,
+            end: 44,
         },
         comments: CommentGroup {
             comments: [],

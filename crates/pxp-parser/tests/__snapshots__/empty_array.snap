@@ -4,30 +4,14 @@
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
-                    start: Position {
-                        offset: 0,
-                        line: 1,
-                        column: 0,
-                    },
-                    end: Position {
-                        offset: 5,
-                        line: 1,
-                        column: 5,
-                    },
+                    start: 0,
+                    end: 5,
                 },
             },
         ),
         span: Span {
-            start: Position {
-                offset: 0,
-                line: 1,
-                column: 0,
-            },
-            end: Position {
-                offset: 5,
-                line: 1,
-                column: 5,
-            },
+            start: 0,
+            end: 5,
         },
         comments: CommentGroup {
             comments: [],
@@ -42,46 +26,22 @@
                     kind: ShortArray(
                         ShortArrayExpression {
                             start: Span {
-                                start: Position {
-                                    offset: 7,
-                                    line: 3,
-                                    column: 1,
-                                },
-                                end: Position {
-                                    offset: 8,
-                                    line: 3,
-                                    column: 2,
-                                },
+                                start: 7,
+                                end: 8,
                             },
                             items: CommaSeparated {
                                 inner: [],
                                 commas: [],
                             },
                             end: Span {
-                                start: Position {
-                                    offset: 8,
-                                    line: 3,
-                                    column: 2,
-                                },
-                                end: Position {
-                                    offset: 9,
-                                    line: 3,
-                                    column: 3,
-                                },
+                                start: 8,
+                                end: 9,
                             },
                         },
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 7,
-                            line: 3,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 10,
-                            line: 3,
-                            column: 4,
-                        },
+                        start: 7,
+                        end: 10,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -89,31 +49,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 9,
-                            line: 3,
-                            column: 3,
-                        },
-                        end: Position {
-                            offset: 10,
-                            line: 3,
-                            column: 4,
-                        },
+                        start: 9,
+                        end: 10,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 7,
-                line: 3,
-                column: 1,
-            },
-            end: Position {
-                offset: 10,
-                line: 3,
-                column: 4,
-            },
+            start: 7,
+            end: 10,
         },
         comments: CommentGroup {
             comments: [],

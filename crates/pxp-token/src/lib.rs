@@ -11,13 +11,6 @@ pub enum OpenTagKind {
     Echo,  // `<?=`
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-
-pub enum DocStringKind {
-    Heredoc,
-    Nowdoc,
-}
-
 pub type DocStringIndentationAmount = usize;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -58,7 +51,8 @@ pub enum TokenKind {
     Self_,
     Parent,
     Backtick,
-    StartDocString(DocStringKind),
+    StartHeredoc,
+    StartNowdoc,
     EndDocString(DocStringIndentationKind, usize),
     From,
     Print,
@@ -311,7 +305,8 @@ impl Display for TokenKind {
             Self::Self_ => "self",
             Self::Parent => "parent",
             Self::Backtick => "`",
-            Self::StartDocString(_) => todo!(),
+            Self::StartHeredoc => "<<<",
+            Self::StartNowdoc => "<<<",
             Self::EndDocString(..) => todo!(),
             Self::BangEquals => "!=",
             Self::From => "from",

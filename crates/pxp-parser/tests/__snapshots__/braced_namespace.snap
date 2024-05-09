@@ -4,30 +4,14 @@
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
-                    start: Position {
-                        offset: 0,
-                        line: 1,
-                        column: 0,
-                    },
-                    end: Position {
-                        offset: 5,
-                        line: 1,
-                        column: 5,
-                    },
+                    start: 0,
+                    end: 5,
                 },
             },
         ),
         span: Span {
-            start: Position {
-                offset: 0,
-                line: 1,
-                column: 0,
-            },
-            end: Position {
-                offset: 5,
-                line: 1,
-                column: 5,
-            },
+            start: 0,
+            end: 5,
         },
         comments: CommentGroup {
             comments: [],
@@ -39,16 +23,8 @@
             Braced(
                 BracedNamespace {
                     namespace: Span {
-                        start: Position {
-                            offset: 7,
-                            line: 3,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 16,
-                            line: 3,
-                            column: 10,
-                        },
+                        start: 7,
+                        end: 16,
                     },
                     name: Some(
                         SimpleIdentifier {
@@ -59,43 +35,19 @@
                             ],
                             qualification: Unqualified,
                             span: Span {
-                                start: Position {
-                                    offset: 17,
-                                    line: 3,
-                                    column: 11,
-                                },
-                                end: Position {
-                                    offset: 20,
-                                    line: 3,
-                                    column: 14,
-                                },
+                                start: 17,
+                                end: 20,
                             },
                         },
                     ),
                     body: BracedNamespaceBody {
                         start: Span {
-                            start: Position {
-                                offset: 21,
-                                line: 3,
-                                column: 15,
-                            },
-                            end: Position {
-                                offset: 22,
-                                line: 3,
-                                column: 16,
-                            },
+                            start: 21,
+                            end: 22,
                         },
                         end: Span {
-                            start: Position {
-                                offset: 28,
-                                line: 5,
-                                column: 1,
-                            },
-                            end: Position {
-                                offset: 29,
-                                line: 5,
-                                column: 2,
-                            },
+                            start: 28,
+                            end: 29,
                         },
                         statements: [],
                     },
@@ -103,16 +55,8 @@
             ),
         ),
         span: Span {
-            start: Position {
-                offset: 7,
-                line: 3,
-                column: 1,
-            },
-            end: Position {
-                offset: 29,
-                line: 5,
-                column: 2,
-            },
+            start: 7,
+            end: 29,
         },
         comments: CommentGroup {
             comments: [],

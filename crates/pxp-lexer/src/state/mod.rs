@@ -6,7 +6,7 @@ use crate::state::source::Source;
 use pxp_bytestring::ByteString;
 use pxp_token::DocStringIndentationAmount;
 use pxp_token::DocStringIndentationKind;
-use pxp_token::DocStringKind;
+use pxp_token::TokenKind;
 
 pub mod source;
 
@@ -18,7 +18,7 @@ pub enum StackFrame {
     DoubleQuote,
     ShellExec,
     DocString(
-        DocStringKind,
+        TokenKind,
         ByteString,
         DocStringIndentationKind,
         DocStringIndentationAmount,

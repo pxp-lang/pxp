@@ -4,30 +4,14 @@
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
-                    start: Position {
-                        offset: 0,
-                        line: 1,
-                        column: 0,
-                    },
-                    end: Position {
-                        offset: 5,
-                        line: 1,
-                        column: 5,
-                    },
+                    start: 0,
+                    end: 5,
                 },
             },
         ),
         span: Span {
-            start: Position {
-                offset: 0,
-                line: 1,
-                column: 0,
-            },
-            end: Position {
-                offset: 5,
-                line: 1,
-                column: 5,
-            },
+            start: 0,
+            end: 5,
         },
         comments: CommentGroup {
             comments: [],
@@ -42,16 +26,8 @@
                 },
                 attributes: [],
                 function: Span {
-                    start: Position {
-                        offset: 7,
-                        line: 3,
-                        column: 1,
-                    },
-                    end: Position {
-                        offset: 15,
-                        line: 3,
-                        column: 9,
-                    },
+                    start: 7,
+                    end: 15,
                 },
                 ampersand: None,
                 name: SimpleIdentifier {
@@ -62,16 +38,8 @@
                     ],
                     qualification: Unqualified,
                     span: Span {
-                        start: Position {
-                            offset: 16,
-                            line: 3,
-                            column: 10,
-                        },
-                        end: Position {
-                            offset: 19,
-                            line: 3,
-                            column: 13,
-                        },
+                        start: 16,
+                        end: 19,
                     },
                 },
                 parameters: FunctionParameterList {
@@ -79,32 +47,16 @@
                         comments: [],
                     },
                     left_parenthesis: Span {
-                        start: Position {
-                            offset: 19,
-                            line: 3,
-                            column: 13,
-                        },
-                        end: Position {
-                            offset: 20,
-                            line: 3,
-                            column: 14,
-                        },
+                        start: 19,
+                        end: 20,
                     },
                     parameters: CommaSeparated {
                         inner: [],
                         commas: [],
                     },
                     right_parenthesis: Span {
-                        start: Position {
-                            offset: 20,
-                            line: 3,
-                            column: 14,
-                        },
-                        end: Position {
-                            offset: 21,
-                            line: 3,
-                            column: 15,
-                        },
+                        start: 20,
+                        end: 21,
                     },
                 },
                 return_type: None,
@@ -113,44 +65,20 @@
                         comments: [],
                     },
                     left_brace: Span {
-                        start: Position {
-                            offset: 22,
-                            line: 3,
-                            column: 16,
-                        },
-                        end: Position {
-                            offset: 23,
-                            line: 3,
-                            column: 17,
-                        },
+                        start: 22,
+                        end: 23,
                     },
                     statements: [],
                     right_brace: Span {
-                        start: Position {
-                            offset: 23,
-                            line: 3,
-                            column: 17,
-                        },
-                        end: Position {
-                            offset: 24,
-                            line: 3,
-                            column: 18,
-                        },
+                        start: 23,
+                        end: 24,
                     },
                 },
             },
         ),
         span: Span {
-            start: Position {
-                offset: 7,
-                line: 3,
-                column: 1,
-            },
-            end: Position {
-                offset: 24,
-                line: 3,
-                column: 18,
-            },
+            start: 7,
+            end: 24,
         },
         comments: CommentGroup {
             comments: [],

@@ -4,30 +4,14 @@
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
-                    start: Position {
-                        offset: 0,
-                        line: 1,
-                        column: 0,
-                    },
-                    end: Position {
-                        offset: 5,
-                        line: 1,
-                        column: 5,
-                    },
+                    start: 0,
+                    end: 5,
                 },
             },
         ),
         span: Span {
-            start: Position {
-                offset: 0,
-                line: 1,
-                column: 0,
-            },
-            end: Position {
-                offset: 5,
-                line: 1,
-                column: 5,
-            },
+            start: 0,
+            end: 5,
         },
         comments: CommentGroup {
             comments: [],
@@ -42,20 +26,10 @@
                     kind: Nowdoc(
                         NowdocExpression {
                             label: Token {
-                                kind: StartDocString(
-                                    Nowdoc,
-                                ),
+                                kind: StartNowdoc,
                                 span: Span {
-                                    start: Position {
-                                        offset: 7,
-                                        line: 3,
-                                        column: 1,
-                                    },
-                                    end: Position {
-                                        offset: 16,
-                                        line: 4,
-                                        column: 1,
-                                    },
+                                    start: 7,
+                                    end: 16,
                                 },
                                 symbol: Some(
                                     Symbol("<<<'TXT'
@@ -65,16 +39,8 @@
                             value: Token {
                                 kind: StringPart,
                                 span: Span {
-                                    start: Position {
-                                        offset: 16,
-                                        line: 4,
-                                        column: 1,
-                                    },
-                                    end: Position {
-                                        offset: 16,
-                                        line: 5,
-                                        column: 1,
-                                    },
+                                    start: 16,
+                                    end: 16,
                                 },
                                 symbol: Some(
                                     Symbol(""),
@@ -83,16 +49,8 @@
                         },
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 7,
-                            line: 3,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 20,
-                            line: 5,
-                            column: 4,
-                        },
+                        start: 7,
+                        end: 20,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -100,31 +58,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 20,
-                            line: 5,
-                            column: 4,
-                        },
-                        end: Position {
-                            offset: 21,
-                            line: 5,
-                            column: 5,
-                        },
+                        start: 20,
+                        end: 21,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 7,
-                line: 3,
-                column: 1,
-            },
-            end: Position {
-                offset: 21,
-                line: 5,
-                column: 5,
-            },
+            start: 7,
+            end: 21,
         },
         comments: CommentGroup {
             comments: [],

@@ -4,30 +4,14 @@
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
-                    start: Position {
-                        offset: 0,
-                        line: 1,
-                        column: 0,
-                    },
-                    end: Position {
-                        offset: 5,
-                        line: 1,
-                        column: 5,
-                    },
+                    start: 0,
+                    end: 5,
                 },
             },
         ),
         span: Span {
-            start: Position {
-                offset: 0,
-                line: 1,
-                column: 0,
-            },
-            end: Position {
-                offset: 5,
-                line: 1,
-                column: 5,
-            },
+            start: 0,
+            end: 5,
         },
         comments: CommentGroup {
             comments: [],
@@ -42,30 +26,14 @@
                     kind: MagicConstant(
                         Directory(
                             Span {
-                                start: Position {
-                                    offset: 7,
-                                    line: 3,
-                                    column: 1,
-                                },
-                                end: Position {
-                                    offset: 14,
-                                    line: 3,
-                                    column: 8,
-                                },
+                                start: 7,
+                                end: 14,
                             },
                         ),
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 7,
-                            line: 3,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 14,
-                            line: 3,
-                            column: 8,
-                        },
+                        start: 7,
+                        end: 14,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -73,31 +41,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 14,
-                            line: 3,
-                            column: 8,
-                        },
-                        end: Position {
-                            offset: 15,
-                            line: 3,
-                            column: 9,
-                        },
+                        start: 14,
+                        end: 15,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 7,
-                line: 3,
-                column: 1,
-            },
-            end: Position {
-                offset: 15,
-                line: 3,
-                column: 9,
-            },
+            start: 7,
+            end: 15,
         },
         comments: CommentGroup {
             comments: [],
@@ -112,30 +64,14 @@
                     kind: MagicConstant(
                         File(
                             Span {
-                                start: Position {
-                                    offset: 16,
-                                    line: 4,
-                                    column: 1,
-                                },
-                                end: Position {
-                                    offset: 24,
-                                    line: 4,
-                                    column: 9,
-                                },
+                                start: 16,
+                                end: 24,
                             },
                         ),
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 16,
-                            line: 4,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 24,
-                            line: 4,
-                            column: 9,
-                        },
+                        start: 16,
+                        end: 24,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -143,31 +79,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 24,
-                            line: 4,
-                            column: 9,
-                        },
-                        end: Position {
-                            offset: 25,
-                            line: 4,
-                            column: 10,
-                        },
+                        start: 24,
+                        end: 25,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 16,
-                line: 4,
-                column: 1,
-            },
-            end: Position {
-                offset: 25,
-                line: 4,
-                column: 10,
-            },
+            start: 16,
+            end: 25,
         },
         comments: CommentGroup {
             comments: [],
@@ -182,30 +102,14 @@
                     kind: MagicConstant(
                         Line(
                             Span {
-                                start: Position {
-                                    offset: 26,
-                                    line: 5,
-                                    column: 1,
-                                },
-                                end: Position {
-                                    offset: 34,
-                                    line: 5,
-                                    column: 9,
-                                },
+                                start: 26,
+                                end: 34,
                             },
                         ),
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 26,
-                            line: 5,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 34,
-                            line: 5,
-                            column: 9,
-                        },
+                        start: 26,
+                        end: 34,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -213,31 +117,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 34,
-                            line: 5,
-                            column: 9,
-                        },
-                        end: Position {
-                            offset: 35,
-                            line: 5,
-                            column: 10,
-                        },
+                        start: 34,
+                        end: 35,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 26,
-                line: 5,
-                column: 1,
-            },
-            end: Position {
-                offset: 35,
-                line: 5,
-                column: 10,
-            },
+            start: 26,
+            end: 35,
         },
         comments: CommentGroup {
             comments: [],
@@ -252,30 +140,14 @@
                     kind: MagicConstant(
                         Function(
                             Span {
-                                start: Position {
-                                    offset: 36,
-                                    line: 6,
-                                    column: 1,
-                                },
-                                end: Position {
-                                    offset: 48,
-                                    line: 6,
-                                    column: 13,
-                                },
+                                start: 36,
+                                end: 48,
                             },
                         ),
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 36,
-                            line: 6,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 48,
-                            line: 6,
-                            column: 13,
-                        },
+                        start: 36,
+                        end: 48,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -283,31 +155,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 48,
-                            line: 6,
-                            column: 13,
-                        },
-                        end: Position {
-                            offset: 49,
-                            line: 6,
-                            column: 14,
-                        },
+                        start: 48,
+                        end: 49,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 36,
-                line: 6,
-                column: 1,
-            },
-            end: Position {
-                offset: 49,
-                line: 6,
-                column: 14,
-            },
+            start: 36,
+            end: 49,
         },
         comments: CommentGroup {
             comments: [],
@@ -322,30 +178,14 @@
                     kind: MagicConstant(
                         Class(
                             Span {
-                                start: Position {
-                                    offset: 50,
-                                    line: 7,
-                                    column: 1,
-                                },
-                                end: Position {
-                                    offset: 59,
-                                    line: 7,
-                                    column: 10,
-                                },
+                                start: 50,
+                                end: 59,
                             },
                         ),
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 50,
-                            line: 7,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 59,
-                            line: 7,
-                            column: 10,
-                        },
+                        start: 50,
+                        end: 59,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -353,31 +193,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 59,
-                            line: 7,
-                            column: 10,
-                        },
-                        end: Position {
-                            offset: 60,
-                            line: 7,
-                            column: 11,
-                        },
+                        start: 59,
+                        end: 60,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 50,
-                line: 7,
-                column: 1,
-            },
-            end: Position {
-                offset: 60,
-                line: 7,
-                column: 11,
-            },
+            start: 50,
+            end: 60,
         },
         comments: CommentGroup {
             comments: [],
@@ -392,30 +216,14 @@
                     kind: MagicConstant(
                         Trait(
                             Span {
-                                start: Position {
-                                    offset: 61,
-                                    line: 8,
-                                    column: 1,
-                                },
-                                end: Position {
-                                    offset: 70,
-                                    line: 8,
-                                    column: 10,
-                                },
+                                start: 61,
+                                end: 70,
                             },
                         ),
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 61,
-                            line: 8,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 70,
-                            line: 8,
-                            column: 10,
-                        },
+                        start: 61,
+                        end: 70,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -423,31 +231,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 70,
-                            line: 8,
-                            column: 10,
-                        },
-                        end: Position {
-                            offset: 71,
-                            line: 8,
-                            column: 11,
-                        },
+                        start: 70,
+                        end: 71,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 61,
-                line: 8,
-                column: 1,
-            },
-            end: Position {
-                offset: 71,
-                line: 8,
-                column: 11,
-            },
+            start: 61,
+            end: 71,
         },
         comments: CommentGroup {
             comments: [],
@@ -462,30 +254,14 @@
                     kind: MagicConstant(
                         Method(
                             Span {
-                                start: Position {
-                                    offset: 72,
-                                    line: 9,
-                                    column: 1,
-                                },
-                                end: Position {
-                                    offset: 82,
-                                    line: 9,
-                                    column: 11,
-                                },
+                                start: 72,
+                                end: 82,
                             },
                         ),
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 72,
-                            line: 9,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 82,
-                            line: 9,
-                            column: 11,
-                        },
+                        start: 72,
+                        end: 82,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -493,31 +269,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 82,
-                            line: 9,
-                            column: 11,
-                        },
-                        end: Position {
-                            offset: 83,
-                            line: 9,
-                            column: 12,
-                        },
+                        start: 82,
+                        end: 83,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 72,
-                line: 9,
-                column: 1,
-            },
-            end: Position {
-                offset: 83,
-                line: 9,
-                column: 12,
-            },
+            start: 72,
+            end: 83,
         },
         comments: CommentGroup {
             comments: [],
@@ -532,30 +292,14 @@
                     kind: MagicConstant(
                         Namespace(
                             Span {
-                                start: Position {
-                                    offset: 84,
-                                    line: 10,
-                                    column: 1,
-                                },
-                                end: Position {
-                                    offset: 97,
-                                    line: 10,
-                                    column: 14,
-                                },
+                                start: 84,
+                                end: 97,
                             },
                         ),
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 84,
-                            line: 10,
-                            column: 1,
-                        },
-                        end: Position {
-                            offset: 97,
-                            line: 10,
-                            column: 14,
-                        },
+                        start: 84,
+                        end: 97,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -563,31 +307,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 97,
-                            line: 10,
-                            column: 14,
-                        },
-                        end: Position {
-                            offset: 98,
-                            line: 10,
-                            column: 15,
-                        },
+                        start: 97,
+                        end: 98,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 84,
-                line: 10,
-                column: 1,
-            },
-            end: Position {
-                offset: 98,
-                line: 10,
-                column: 15,
-            },
+            start: 84,
+            end: 98,
         },
         comments: CommentGroup {
             comments: [],

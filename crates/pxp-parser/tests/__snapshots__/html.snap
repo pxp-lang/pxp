@@ -6,16 +6,8 @@
                 html: Token {
                     kind: InlineHtml,
                     span: Span {
-                        start: Position {
-                            offset: 0,
-                            line: 1,
-                            column: 0,
-                        },
-                        end: Position {
-                            offset: 47,
-                            line: 2,
-                            column: 25,
-                        },
+                        start: 0,
+                        end: 47,
                     },
                     symbol: Some(
                         Symbol("<h1>Hello, world!</h1>
@@ -25,16 +17,8 @@
             },
         ),
         span: Span {
-            start: Position {
-                offset: 0,
-                line: 1,
-                column: 0,
-            },
-            end: Position {
-                offset: 47,
-                line: 2,
-                column: 25,
-            },
+            start: 0,
+            end: 47,
         },
         comments: CommentGroup {
             comments: [],

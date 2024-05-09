@@ -4,30 +4,14 @@
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
-                    start: Position {
-                        offset: 0,
-                        line: 1,
-                        column: 0,
-                    },
-                    end: Position {
-                        offset: 5,
-                        line: 1,
-                        column: 5,
-                    },
+                    start: 0,
+                    end: 5,
                 },
             },
         ),
         span: Span {
-            start: Position {
-                offset: 0,
-                line: 1,
-                column: 0,
-            },
-            end: Position {
-                offset: 5,
-                line: 1,
-                column: 5,
-            },
+            start: 0,
+            end: 5,
         },
         comments: CommentGroup {
             comments: [],
@@ -53,47 +37,23 @@
                                             ],
                                             qualification: Unqualified,
                                             span: Span {
-                                                start: Position {
-                                                    offset: 7,
-                                                    line: 3,
-                                                    column: 1,
-                                                },
-                                                end: Position {
-                                                    offset: 8,
-                                                    line: 3,
-                                                    column: 2,
-                                                },
+                                                start: 7,
+                                                end: 8,
                                             },
                                         },
                                     ),
                                 ),
                                 span: Span {
-                                    start: Position {
-                                        offset: 7,
-                                        line: 3,
-                                        column: 1,
-                                    },
-                                    end: Position {
-                                        offset: 8,
-                                        line: 3,
-                                        column: 2,
-                                    },
+                                    start: 7,
+                                    end: 8,
                                 },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
                             },
                             double_colon: Span {
-                                start: Position {
-                                    offset: 8,
-                                    line: 3,
-                                    column: 2,
-                                },
-                                end: Position {
-                                    offset: 10,
-                                    line: 3,
-                                    column: 4,
-                                },
+                                start: 8,
+                                end: 10,
                             },
                             method: SimpleIdentifier(
                                 SimpleIdentifier {
@@ -104,16 +64,8 @@
                                     ],
                                     qualification: Unqualified,
                                     span: Span {
-                                        start: Position {
-                                            offset: 10,
-                                            line: 3,
-                                            column: 4,
-                                        },
-                                        end: Position {
-                                            offset: 13,
-                                            line: 3,
-                                            column: 7,
-                                        },
+                                        start: 10,
+                                        end: 13,
                                     },
                                 },
                             ),
@@ -122,44 +74,20 @@
                                     comments: [],
                                 },
                                 left_parenthesis: Span {
-                                    start: Position {
-                                        offset: 13,
-                                        line: 3,
-                                        column: 7,
-                                    },
-                                    end: Position {
-                                        offset: 14,
-                                        line: 3,
-                                        column: 8,
-                                    },
+                                    start: 13,
+                                    end: 14,
                                 },
                                 arguments: [],
                                 right_parenthesis: Span {
-                                    start: Position {
-                                        offset: 14,
-                                        line: 3,
-                                        column: 8,
-                                    },
-                                    end: Position {
-                                        offset: 15,
-                                        line: 3,
-                                        column: 9,
-                                    },
+                                    start: 14,
+                                    end: 15,
                                 },
                             },
                         },
                     ),
                     span: Span {
-                        start: Position {
-                            offset: 8,
-                            line: 3,
-                            column: 2,
-                        },
-                        end: Position {
-                            offset: 15,
-                            line: 3,
-                            column: 9,
-                        },
+                        start: 8,
+                        end: 15,
                     },
                     comments: CommentGroup {
                         comments: [],
@@ -167,31 +95,15 @@
                 },
                 ending: Semicolon(
                     Span {
-                        start: Position {
-                            offset: 15,
-                            line: 3,
-                            column: 9,
-                        },
-                        end: Position {
-                            offset: 16,
-                            line: 3,
-                            column: 10,
-                        },
+                        start: 15,
+                        end: 16,
                     },
                 ),
             },
         ),
         span: Span {
-            start: Position {
-                offset: 7,
-                line: 3,
-                column: 1,
-            },
-            end: Position {
-                offset: 16,
-                line: 3,
-                column: 10,
-            },
+            start: 7,
+            end: 16,
         },
         comments: CommentGroup {
             comments: [],
