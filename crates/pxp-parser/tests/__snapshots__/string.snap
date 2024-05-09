@@ -291,10 +291,6 @@
                                                                 SimpleIdentifier {
                                                                     id: 15,
                                                                     symbol: Symbol("name"),
-                                                                    parts: [
-                                                                        Symbol("name"),
-                                                                    ],
-                                                                    qualification: Unqualified,
                                                                     span: Span {
                                                                         start: 89,
                                                                         end: 93,
@@ -401,10 +397,6 @@
                                                                 SimpleIdentifier {
                                                                     id: 21,
                                                                     symbol: Symbol("name"),
-                                                                    parts: [
-                                                                        Symbol("name"),
-                                                                    ],
-                                                                    qualification: Unqualified,
                                                                     span: Span {
                                                                         start: 112,
                                                                         end: 116,
@@ -511,10 +503,6 @@
                                                                 SimpleIdentifier {
                                                                     id: 27,
                                                                     symbol: Symbol("getName"),
-                                                                    parts: [
-                                                                        Symbol("getName"),
-                                                                    ],
-                                                                    qualification: Unqualified,
                                                                     span: Span {
                                                                         start: 135,
                                                                         end: 142,

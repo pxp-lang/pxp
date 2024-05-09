@@ -1,7 +1,6 @@
 use crate::{Expression, NodeId};
 use pxp_span::Span;
 use pxp_symbol::Symbol;
-use pxp_syntax::identifier::IdentifierQualification;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -12,7 +11,7 @@ pub enum Identifier {
 
 impl Identifier {
     pub fn missing() -> Self {
-        Self::SimpleIdentifier(SimpleIdentifier::new(0, Symbol(0), Vec::from([Symbol(0)]), IdentifierQualification::Unqualified, Span::default()))
+        Self::SimpleIdentifier(SimpleIdentifier::new(0, Symbol(0), Span::default()))
     }
 
     pub fn is_simple(&self) -> bool {
@@ -35,34 +34,12 @@ impl Identifier {
 pub struct SimpleIdentifier {
     pub id: NodeId,
     pub symbol: Symbol,
-    pub parts: Vec<Symbol>,
-    pub qualification: IdentifierQualification,
     pub span: Span,
 }
 
 impl SimpleIdentifier {
-    pub fn new(id: NodeId, symbol: Symbol, parts: Vec<Symbol>, qualification: IdentifierQualification, span: Span) -> Self {
-        Self { id, symbol, parts, qualification, span }
-    }
-
-    pub fn get_first_part(&self) -> Symbol {
-        self.parts.first().copied().unwrap_or(self.symbol)
-    }
-
-    pub fn get_last_part(&self) -> Symbol {
-        self.parts.last().copied().unwrap_or(self.symbol)
-    }
-
-    pub fn is_fully_qualified(&self) -> bool {
-        self.qualification.is_fully_qualified()
-    }
-
-    pub fn is_qualified(&self) -> bool {
-        self.qualification.is_qualified()
-    }
-
-    pub fn is_unqualified(&self) -> bool {
-        self.qualification.is_unqualified()
+    pub fn new(id: NodeId, symbol: Symbol, span: Span) -> Self {
+        Self { id, symbol, span }
     }
 }
 

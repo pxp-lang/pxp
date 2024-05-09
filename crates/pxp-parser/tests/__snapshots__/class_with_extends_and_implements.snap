@@ -32,10 +32,6 @@
                 name: SimpleIdentifier {
                     id: 3,
                     symbol: Symbol("Foo"),
-                    parts: [
-                        Symbol("Foo"),
-                    ],
-                    qualification: Unqualified,
                     span: Span {
                         start: 13,
                         end: 16,
@@ -50,10 +46,6 @@
                         parent: SimpleIdentifier {
                             id: 4,
                             symbol: Symbol("Bar"),
-                            parts: [
-                                Symbol("Bar"),
-                            ],
-                            qualification: Unqualified,
                             span: Span {
                                 start: 25,
                                 end: 28,
@@ -72,10 +64,6 @@
                                 SimpleIdentifier {
                                     id: 5,
                                     symbol: Symbol("Baz"),
-                                    parts: [
-                                        Symbol("Baz"),
-                                    ],
-                                    qualification: Unqualified,
                                     span: Span {
                                         start: 40,
                                         end: 43,
@@ -84,10 +72,6 @@
                                 SimpleIdentifier {
                                     id: 6,
                                     symbol: Symbol("Qux"),
-                                    parts: [
-                                        Symbol("Qux"),
-                                    ],
-                                    qualification: Unqualified,
                                     span: Span {
                                         start: 45,
                                         end: 48,

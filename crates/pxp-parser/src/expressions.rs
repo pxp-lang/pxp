@@ -38,7 +38,6 @@ use pxp_ast::{
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
-use pxp_syntax::identifier::IdentifierQualification;
 use pxp_token::TokenKind;
 
 use pxp_ast::BoolExpression;
@@ -233,7 +232,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                         right: Box::new(Expression::new(
                             state.id(),
                             ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                                SimpleIdentifier::new(state.id(), op.symbol.unwrap(), vec![op.symbol.unwrap()], IdentifierQualification::Unqualified, op.span),
+                                SimpleIdentifier::new(state.id(), op.symbol.unwrap(), op.span),
                             )),
                             Span::new(start_span.start, enum_span.end),
                             CommentGroup::default(),
@@ -250,7 +249,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                         right: Box::new(Expression::new(
                             state.id(),
                             ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                                SimpleIdentifier::new(state.id(), op.symbol.unwrap(), vec![op.symbol.unwrap()], IdentifierQualification::Unqualified, op.span),
+                                SimpleIdentifier::new(state.id(), op.symbol.unwrap(), op.span),
                             )),
                             Span::new(start_span.start, from_span.end),
                             CommentGroup::default(),
@@ -1129,7 +1128,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                     Expression::new(
                         state.id(),
                         ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, token.span),
+                            SimpleIdentifier::new(state.id(), symbol, token.span),
                         )),
                         span,
                         CommentGroup::default(),
@@ -1146,7 +1145,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                     Expression::new(
                         state.id(),
                         ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, token.span)
+                            SimpleIdentifier::new(state.id(), symbol, token.span)
                         )),
                         span,
                         CommentGroup::default(),
@@ -1584,7 +1583,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                     let symbol = current.symbol.unwrap();
 
                     ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                        SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+                        SimpleIdentifier::new(state.id(), symbol, current.span)
                     ))
                 }
                 _ => {

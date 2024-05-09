@@ -32,10 +32,6 @@
                                         SimpleIdentifier {
                                             id: 3,
                                             symbol: Symbol("A"),
-                                            parts: [
-                                                Symbol("A"),
-                                            ],
-                                            qualification: Unqualified,
                                             span: Span {
                                                 start: 7,
                                                 end: 8,
@@ -59,10 +55,6 @@
                                 SimpleIdentifier {
                                     id: 5,
                                     symbol: Symbol("foo"),
-                                    parts: [
-                                        Symbol("foo"),
-                                    ],
-                                    qualification: Unqualified,
                                     span: Span {
                                         start: 10,
                                         end: 13,

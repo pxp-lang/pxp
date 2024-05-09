@@ -2,7 +2,6 @@ use crate::{state::State, ParserDiagnostic};
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_diagnostics::Severity;
 use pxp_symbol::Symbol;
-use pxp_syntax::identifier::IdentifierQualification;
 use pxp_token::{Token, TokenKind};
 
 /// Expect an unqualified identifier such as Foo or Bar for a class, interface, trait, or an enum name.
@@ -14,14 +13,14 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], current.kind.into(), current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         TokenKind::Enum | TokenKind::From => {
             state.stream.next();
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
             state.diagnostic(
@@ -34,7 +33,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
@@ -47,7 +46,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         _ => {
             state.diagnostic(
@@ -59,7 +58,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(state.id(), Symbol(0), vec![Symbol(0)], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), Symbol(0), current.span)
         }
     }
 }
@@ -73,14 +72,14 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         TokenKind::Enum | TokenKind::From => {
             state.stream.next();
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
             state.diagnostic(
@@ -93,7 +92,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
@@ -106,7 +105,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         _ => {
             state.diagnostic(
@@ -118,7 +117,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(state.id(), Symbol(0), vec![Symbol(0)], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), Symbol(0), current.span)
         }
     }
 }
@@ -136,7 +135,7 @@ pub fn constant_identifier(state: &mut State) -> SimpleIdentifier {
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
@@ -149,7 +148,7 @@ pub fn constant_identifier(state: &mut State) -> SimpleIdentifier {
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         _ => {
             state.diagnostic(
@@ -163,7 +162,7 @@ pub fn constant_identifier(state: &mut State) -> SimpleIdentifier {
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
     }
 }
@@ -176,7 +175,7 @@ pub fn identifier(state: &mut State) -> SimpleIdentifier {
 
         let symbol = current.symbol.unwrap();
 
-        SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+        SimpleIdentifier::new(state.id(), symbol, current.span)
     } else {
         state.diagnostic(
             ParserDiagnostic::UnexpectedToken { token: *current },
@@ -184,7 +183,7 @@ pub fn identifier(state: &mut State) -> SimpleIdentifier {
             current.span,
         );
 
-        SimpleIdentifier::new(state.id(), Symbol(0), vec![Symbol(0)], IdentifierQualification::Unqualified, current.span)
+        SimpleIdentifier::new(state.id(), Symbol(0), current.span)
     }
 }
 
@@ -207,25 +206,7 @@ pub fn name(state: &mut State) -> SimpleIdentifier {
 
     state.stream.next();
 
-    let symbol = name.symbol.unwrap();
-    let parts = if name.kind == TokenKind::QualifiedIdentifier {
-        let bytestring = state.symbol_table.must_resolve(symbol).to_bytestring();
-        let mut parts = Vec::new();
-
-        for part in bytestring.split(|&c| c == b'\\') {
-            if part.is_empty() {
-                continue;
-            }
-            
-            parts.push(state.symbol_table.intern(part));
-        }
-
-        parts
-    } else {
-        vec![symbol]
-    };
-
-    SimpleIdentifier::new(state.id(), name.symbol.unwrap(), parts, if name.kind == TokenKind::Identifier { IdentifierQualification::Unqualified } else { IdentifierQualification::Qualified }, name.span)
+    SimpleIdentifier::new(state.id(), name.symbol.unwrap(), name.span)
 }
 
 /// Expect an optional unqualified or qualified identifier such as Foo, Bar or Foo\Bar.
@@ -237,31 +218,15 @@ pub fn optional_name(state: &mut State) -> Option<SimpleIdentifier> {
             state.stream.next();
 
             let symbol = current.symbol.unwrap();
-            let parts = if current.kind == TokenKind::QualifiedIdentifier {
-                let bytestring = state.symbol_table.must_resolve(symbol).to_bytestring();
-                let mut parts = Vec::new();
 
-                for part in bytestring.split(|&c| c == b'\\') {
-                    if part.is_empty() {
-                        continue;
-                    }
-
-                    parts.push(state.symbol_table.intern(part));
-                }
-
-                parts
-            } else {
-                vec![symbol]
-            };
-
-            Some(SimpleIdentifier::new(state.id(), symbol, parts, current.kind.into(), current.span))
+            Some(SimpleIdentifier::new(state.id(), symbol, current.span))
         }
         t if is_reserved_identifier(t) => {
             state.stream.next();
 
             let symbol = current.symbol.unwrap();
 
-            Some(SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span))
+            Some(SimpleIdentifier::new(state.id(), symbol, current.span))
         }
         _ => None,
     }
@@ -277,24 +242,8 @@ pub fn full_name(state: &mut State) -> SimpleIdentifier {
             state.stream.next();
 
             let symbol = current.symbol.unwrap();
-            let parts = if current.kind != TokenKind::Identifier {
-                let bytestring = state.symbol_table.must_resolve(symbol).to_bytestring();
-                let mut parts = Vec::new();
 
-                for part in bytestring.split(|&c| c == b'\\') {
-                    if part.is_empty() {
-                        continue;
-                    }
-
-                    parts.push(state.symbol_table.intern(part));
-                }
-
-                parts
-            } else {
-                vec![symbol]
-            };
-
-            SimpleIdentifier::new(state.id(), symbol, parts, current.kind.into(), current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         _ => {
             state.diagnostic(
@@ -306,7 +255,7 @@ pub fn full_name(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(state.id(), Symbol(0), vec![Symbol(0)], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), Symbol(0), current.span)
         }
     }
 }
@@ -321,31 +270,15 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
             state.stream.next();
 
             let symbol = current.symbol.unwrap();
-            let parts = if current.kind != TokenKind::Identifier {
-                let bytestring = state.symbol_table.must_resolve(symbol).to_bytestring();
-                let mut parts = Vec::new();
 
-                for part in bytestring.split(|&c| c == b'\\') {
-                    if part.is_empty() {
-                        continue;
-                    }
-
-                    parts.push(state.symbol_table.intern(part));
-                }
-
-                parts
-            } else {
-                vec![symbol]
-            };
-
-            SimpleIdentifier::new(state.id(), symbol, parts, current.kind.into(), current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         TokenKind::Enum | TokenKind::From => {
             state.stream.next();
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
             state.diagnostic(
@@ -358,7 +291,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
@@ -371,7 +304,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         _ => {
             state.diagnostic(
@@ -383,7 +316,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(state.id(), Symbol(0), vec![Symbol(0)], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), Symbol(0), current.span)
         }
     }
 }
@@ -398,24 +331,8 @@ pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
             state.stream.next();
 
             let symbol = current.symbol.unwrap();
-            let parts = if current.kind != TokenKind::Identifier {
-                let bytestring = state.symbol_table.must_resolve(symbol).to_bytestring();
-                let mut parts = Vec::new();
 
-                for part in bytestring.split(|&c| c == b'\\') {
-                    if part.is_empty() {
-                        continue;
-                    }
-
-                    parts.push(state.symbol_table.intern(part));
-                }
-
-                parts
-            } else {
-                vec![symbol]
-            };
-
-            SimpleIdentifier::new(state.id(), symbol, parts, current.kind.into(), current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         TokenKind::Enum
         | TokenKind::From
@@ -426,7 +343,7 @@ pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
@@ -439,7 +356,7 @@ pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         _ => {
             state.diagnostic(
@@ -451,7 +368,7 @@ pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(state.id(), Symbol(0), vec![Symbol(0)], IdentifierQualification::Unqualified, current.span)
+            SimpleIdentifier::new(state.id(), Symbol(0), current.span)
         }
     }
 }
@@ -464,7 +381,7 @@ pub fn identifier_maybe_reserved(state: &mut State) -> SimpleIdentifier {
 
         let symbol = current.symbol.unwrap();
 
-        SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+        SimpleIdentifier::new(state.id(), symbol, current.span)
     } else {
         identifier(state)
     }
@@ -478,7 +395,7 @@ pub fn identifier_maybe_soft_reserved(state: &mut State) -> SimpleIdentifier {
 
         let symbol = current.symbol.unwrap();
 
-        SimpleIdentifier::new(state.id(), symbol, vec![symbol], IdentifierQualification::Unqualified, current.span)
+        SimpleIdentifier::new(state.id(), symbol, current.span)
     } else {
         identifier(state)
     }
