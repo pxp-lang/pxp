@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,19 +17,15 @@
         },
     },
     Statement {
-        id: 9,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 8,
                     kind: FunctionCall(
                         FunctionCallExpression {
                             target: Expression {
-                                id: 4,
                                 kind: Identifier(
                                     SimpleIdentifier(
                                         SimpleIdentifier {
-                                            id: 3,
                                             symbol: Symbol("foo"),
                                             span: Span {
                                                 start: 7,
@@ -63,7 +58,6 @@
                                             },
                                             ellipsis: None,
                                             value: Expression {
-                                                id: 5,
                                                 kind: Literal(
                                                     Literal {
                                                         kind: Integer,
@@ -96,7 +90,6 @@
                                             },
                                             ellipsis: None,
                                             value: Expression {
-                                                id: 6,
                                                 kind: Literal(
                                                     Literal {
                                                         kind: Integer,
@@ -129,7 +122,6 @@
                                             },
                                             ellipsis: None,
                                             value: Expression {
-                                                id: 7,
                                                 kind: Literal(
                                                     Literal {
                                                         kind: Integer,

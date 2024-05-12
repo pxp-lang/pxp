@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 4,
         kind: Class(
             ClassStatement {
                 attributes: [],
@@ -37,7 +35,6 @@
                     end: 21,
                 },
                 name: SimpleIdentifier {
-                    id: 3,
                     symbol: Symbol("Foo"),
                     span: Span {
                         start: 22,

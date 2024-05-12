@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 9,
         kind: Class(
             ClassStatement {
                 attributes: [],
@@ -30,7 +28,6 @@
                     end: 12,
                 },
                 name: SimpleIdentifier {
-                    id: 3,
                     symbol: Symbol("A"),
                     span: Span {
                         start: 13,
@@ -63,7 +60,6 @@
                                                     end: 25,
                                                 },
                                                 name: SimpleIdentifier {
-                                                    id: 4,
                                                     symbol: Symbol("B"),
                                                     span: Span {
                                                         start: 23,
@@ -86,7 +82,6 @@
                                                     end: 34,
                                                 },
                                                 name: SimpleIdentifier {
-                                                    id: 5,
                                                     symbol: Symbol("C"),
                                                     span: Span {
                                                         start: 32,
@@ -101,7 +96,6 @@
                                                     end: 46,
                                                 },
                                                 name: SimpleIdentifier {
-                                                    id: 6,
                                                     symbol: Symbol("D"),
                                                     span: Span {
                                                         start: 35,
@@ -125,7 +119,6 @@
                                                                     },
                                                                     ellipsis: None,
                                                                     value: Expression {
-                                                                        id: 7,
                                                                         kind: Literal(
                                                                             Literal {
                                                                                 kind: String,
@@ -178,7 +171,6 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
-                                    id: 8,
                                     symbol: Symbol("a"),
                                     span: Span {
                                         start: 67,

@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,11 +17,9 @@
         },
     },
     Statement {
-        id: 7,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 6,
                     kind: ShortArray(
                         ShortArrayExpression {
                             start: Span {
@@ -33,7 +30,6 @@
                                 inner: [
                                     Value {
                                         value: Expression {
-                                            id: 3,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,
@@ -60,7 +56,6 @@
                                     },
                                     Value {
                                         value: Expression {
-                                            id: 4,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,
@@ -87,7 +82,6 @@
                                     },
                                     Value {
                                         value: Expression {
-                                            id: 5,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,

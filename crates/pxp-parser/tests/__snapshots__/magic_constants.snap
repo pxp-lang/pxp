@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,11 +17,9 @@
         },
     },
     Statement {
-        id: 4,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 3,
                     kind: MagicConstant(
                         Directory(
                             Span {
@@ -56,11 +53,9 @@
         },
     },
     Statement {
-        id: 6,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 5,
                     kind: MagicConstant(
                         File(
                             Span {
@@ -94,11 +89,9 @@
         },
     },
     Statement {
-        id: 8,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 7,
                     kind: MagicConstant(
                         Line(
                             Span {
@@ -132,11 +125,9 @@
         },
     },
     Statement {
-        id: 10,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 9,
                     kind: MagicConstant(
                         Function(
                             Span {
@@ -170,11 +161,9 @@
         },
     },
     Statement {
-        id: 12,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 11,
                     kind: MagicConstant(
                         Class(
                             Span {
@@ -208,11 +197,9 @@
         },
     },
     Statement {
-        id: 14,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 13,
                     kind: MagicConstant(
                         Trait(
                             Span {
@@ -246,11 +233,9 @@
         },
     },
     Statement {
-        id: 16,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 15,
                     kind: MagicConstant(
                         Method(
                             Span {
@@ -284,11 +269,9 @@
         },
     },
     Statement {
-        id: 18,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 17,
                     kind: MagicConstant(
                         Namespace(
                             Span {

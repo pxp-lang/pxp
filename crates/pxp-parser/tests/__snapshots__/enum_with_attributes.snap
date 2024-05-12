@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 5,
         kind: UnitEnum(
             UnitEnumStatement {
                 attributes: [
@@ -34,7 +32,6 @@
                                     end: 13,
                                 },
                                 name: SimpleIdentifier {
-                                    id: 3,
                                     symbol: Symbol("Bar"),
                                     span: Span {
                                         start: 9,
@@ -51,7 +48,6 @@
                     end: 18,
                 },
                 name: SimpleIdentifier {
-                    id: 4,
                     symbol: Symbol("Foo"),
                     span: Span {
                         start: 19,

@@ -112,7 +112,6 @@ pub fn list_expression(state: &mut State) -> Expression {
     let end_span = state.stream.current().span;
 
     Expression::new(
-        state.id(),
         kind,
         Span::new(start_span.start, end_span.end),
         CommentGroup::default(),
@@ -140,7 +139,6 @@ pub fn short_array_expression(state: &mut State) -> Expression {
     let end_span = state.stream.current().span;
 
     Expression::new(
-        state.id(),
         kind,
         Span::new(start_span.start, end_span.end),
         CommentGroup::default(),
@@ -158,7 +156,6 @@ pub fn array_expression(state: &mut State) -> Expression {
     let end_span = state.stream.current().span;
 
     Expression::new(
-        state.id(),
         kind,
         Span::new(start_span.start, end_span.end),
         CommentGroup::default(),

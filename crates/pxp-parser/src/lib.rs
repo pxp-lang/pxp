@@ -116,7 +116,6 @@ fn top_level_statement(state: &mut State) -> Statement {
             };
 
             Statement::new(
-                state.id(),
                 kind,
                 Span::new(start_span.start, state.stream.previous().span.end),
                 comments,
@@ -165,7 +164,6 @@ fn statement(state: &mut State) -> Statement {
                             StatementKind::Expression(ExpressionStatement { expression, ending });
 
                         return Statement::new(
-                            state.id(),
                             kind,
                             Span::new(start_span.start, ending_span.end),
                             comments,
@@ -237,7 +235,6 @@ fn statement(state: &mut State) -> Statement {
                             StatementKind::Expression(ExpressionStatement { expression, ending });
 
                         return Statement::new(
-                            state.id(),
                             kind,
                             Span::new(start_span.start, ending_span.end),
                             comments,
@@ -465,7 +462,6 @@ fn statement(state: &mut State) -> Statement {
     };
 
     Statement::new(
-        state.id(),
         statement,
         Span::new(start_span.start, state.stream.previous().span.end),
         comments,

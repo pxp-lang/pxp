@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 14,
         kind: For(
             ForStatement {
                 for: Span {
@@ -33,11 +31,9 @@
                     initializations: CommaSeparated {
                         inner: [
                             Expression {
-                                id: 5,
                                 kind: AssignmentOperation(
                                     Assign {
                                         left: Expression {
-                                            id: 3,
                                             kind: Variable(
                                                 SimpleVariable(
                                                     SimpleVariable {
@@ -62,7 +58,6 @@
                                             end: 16,
                                         },
                                         right: Expression {
-                                            id: 4,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,
@@ -106,11 +101,9 @@
                     conditions: CommaSeparated {
                         inner: [
                             Expression {
-                                id: 8,
                                 kind: ComparisonOperation(
                                     LessThan {
                                         left: Expression {
-                                            id: 6,
                                             kind: Variable(
                                                 SimpleVariable(
                                                     SimpleVariable {
@@ -135,7 +128,6 @@
                                             end: 24,
                                         },
                                         right: Expression {
-                                            id: 7,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,
@@ -179,11 +171,9 @@
                     loop: CommaSeparated {
                         inner: [
                             Expression {
-                                id: 10,
                                 kind: ArithmeticOperation(
                                     PostIncrement {
                                         left: Expression {
-                                            id: 9,
                                             kind: Variable(
                                                 SimpleVariable(
                                                     SimpleVariable {
@@ -227,7 +217,6 @@
                 },
                 body: Statement {
                     statement: Statement {
-                        id: 13,
                         kind: Block(
                             BlockStatement {
                                 left_brace: Span {
@@ -236,7 +225,6 @@
                                 },
                                 statements: [
                                     Statement {
-                                        id: 12,
                                         kind: Echo(
                                             EchoStatement {
                                                 echo: Span {
@@ -245,7 +233,6 @@
                                                 },
                                                 values: [
                                                     Expression {
-                                                        id: 11,
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {

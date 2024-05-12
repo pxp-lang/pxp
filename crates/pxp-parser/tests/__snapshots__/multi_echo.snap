@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 5,
         kind: Echo(
             EchoStatement {
                 echo: Span {
@@ -27,7 +25,6 @@
                 },
                 values: [
                     Expression {
-                        id: 3,
                         kind: Literal(
                             Literal {
                                 kind: String,
@@ -52,7 +49,6 @@
                         },
                     },
                     Expression {
-                        id: 4,
                         kind: Literal(
                             Literal {
                                 kind: String,

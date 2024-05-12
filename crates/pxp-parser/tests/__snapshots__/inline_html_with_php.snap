@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: InlineHtml(
             InlineHtmlStatement {
                 html: Token {
@@ -24,7 +23,6 @@
         },
     },
     Statement {
-        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -42,7 +40,6 @@
         },
     },
     Statement {
-        id: 5,
         kind: Echo(
             EchoStatement {
                 echo: Span {
@@ -51,7 +48,6 @@
                 },
                 values: [
                     Expression {
-                        id: 4,
                         kind: Literal(
                             Literal {
                                 kind: String,
@@ -93,7 +89,6 @@
         },
     },
     Statement {
-        id: 6,
         kind: InlineHtml(
             InlineHtmlStatement {
                 html: Token {

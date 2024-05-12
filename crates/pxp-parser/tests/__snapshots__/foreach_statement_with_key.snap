@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 7,
         kind: Foreach(
             ForeachStatement {
                 foreach: Span {
@@ -31,7 +29,6 @@
                 },
                 iterator: KeyAndValue {
                     expression: Expression {
-                        id: 3,
                         kind: Variable(
                             SimpleVariable(
                                 SimpleVariable {
@@ -57,7 +54,6 @@
                     },
                     ampersand: None,
                     key: Expression {
-                        id: 4,
                         kind: Variable(
                             SimpleVariable(
                                 SimpleVariable {
@@ -82,7 +78,6 @@
                         end: 33,
                     },
                     value: Expression {
-                        id: 5,
                         kind: Variable(
                             SimpleVariable(
                                 SimpleVariable {
@@ -109,7 +104,6 @@
                 },
                 body: Statement {
                     statement: Statement {
-                        id: 6,
                         kind: Block(
                             BlockStatement {
                                 left_brace: Span {

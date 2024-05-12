@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 14,
         kind: Class(
             ClassStatement {
                 attributes: [],
@@ -30,7 +28,6 @@
                     end: 12,
                 },
                 name: SimpleIdentifier {
-                    id: 3,
                     symbol: Symbol("Foo"),
                     span: Span {
                         start: 13,
@@ -62,7 +59,6 @@
                                 entries: [
                                     ConstantEntry {
                                         name: SimpleIdentifier {
-                                            id: 4,
                                             symbol: Symbol("A"),
                                             span: Span {
                                                 start: 29,
@@ -74,7 +70,6 @@
                                             end: 32,
                                         },
                                         value: Expression {
-                                            id: 5,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,
@@ -130,7 +125,6 @@
                                 entries: [
                                     ConstantEntry {
                                         name: SimpleIdentifier {
-                                            id: 6,
                                             symbol: Symbol("B"),
                                             span: Span {
                                                 start: 53,
@@ -142,7 +136,6 @@
                                             end: 56,
                                         },
                                         value: Expression {
-                                            id: 7,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,
@@ -198,7 +191,6 @@
                                 entries: [
                                     ConstantEntry {
                                         name: SimpleIdentifier {
-                                            id: 8,
                                             symbol: Symbol("C"),
                                             span: Span {
                                                 start: 80,
@@ -210,7 +202,6 @@
                                             end: 83,
                                         },
                                         value: Expression {
-                                            id: 9,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,
@@ -266,7 +257,6 @@
                                 entries: [
                                     ConstantEntry {
                                         name: SimpleIdentifier {
-                                            id: 10,
                                             symbol: Symbol("D"),
                                             span: Span {
                                                 start: 105,
@@ -278,7 +268,6 @@
                                             end: 108,
                                         },
                                         value: Expression {
-                                            id: 11,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,
@@ -327,7 +316,6 @@
                                 entries: [
                                     ConstantEntry {
                                         name: SimpleIdentifier {
-                                            id: 12,
                                             symbol: Symbol("E"),
                                             span: Span {
                                                 start: 122,
@@ -339,7 +327,6 @@
                                             end: 125,
                                         },
                                         value: Expression {
-                                            id: 13,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,

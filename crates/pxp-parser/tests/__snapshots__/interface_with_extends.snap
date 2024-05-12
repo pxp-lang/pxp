@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 6,
         kind: Interface(
             InterfaceStatement {
                 attributes: [],
@@ -27,7 +25,6 @@
                     end: 16,
                 },
                 name: SimpleIdentifier {
-                    id: 3,
                     symbol: Symbol("Foo"),
                     span: Span {
                         start: 17,
@@ -43,7 +40,6 @@
                         parents: CommaSeparated {
                             inner: [
                                 SimpleIdentifier {
-                                    id: 4,
                                     symbol: Symbol("Bar"),
                                     span: Span {
                                         start: 29,
@@ -51,7 +47,6 @@
                                     },
                                 },
                                 SimpleIdentifier {
-                                    id: 5,
                                     symbol: Symbol("Baz"),
                                     span: Span {
                                         start: 34,

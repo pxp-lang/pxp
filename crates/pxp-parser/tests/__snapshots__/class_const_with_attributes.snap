@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 7,
         kind: Class(
             ClassStatement {
                 attributes: [],
@@ -30,7 +28,6 @@
                     end: 12,
                 },
                 name: SimpleIdentifier {
-                    id: 3,
                     symbol: Symbol("Foo"),
                     span: Span {
                         start: 13,
@@ -63,7 +60,6 @@
                                                     end: 29,
                                                 },
                                                 name: SimpleIdentifier {
-                                                    id: 4,
                                                     symbol: Symbol("Baz"),
                                                     span: Span {
                                                         start: 25,
@@ -86,7 +82,6 @@
                                 entries: [
                                     ConstantEntry {
                                         name: SimpleIdentifier {
-                                            id: 5,
                                             symbol: Symbol("A"),
                                             span: Span {
                                                 start: 40,
@@ -98,7 +93,6 @@
                                             end: 43,
                                         },
                                         value: Expression {
-                                            id: 6,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,

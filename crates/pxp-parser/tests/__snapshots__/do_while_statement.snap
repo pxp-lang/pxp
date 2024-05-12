@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 7,
         kind: DoWhile(
             DoWhileStatement {
                 do: Span {
@@ -26,7 +24,6 @@
                     end: 9,
                 },
                 body: Statement {
-                    id: 5,
                     kind: Block(
                         BlockStatement {
                             left_brace: Span {
@@ -35,7 +32,6 @@
                             },
                             statements: [
                                 Statement {
-                                    id: 4,
                                     kind: Echo(
                                         EchoStatement {
                                             echo: Span {
@@ -44,7 +40,6 @@
                                             },
                                             values: [
                                                 Expression {
-                                                    id: 3,
                                                     kind: Variable(
                                                         SimpleVariable(
                                                             SimpleVariable {
@@ -105,7 +100,6 @@
                     end: 34,
                 },
                 condition: Expression {
-                    id: 6,
                     kind: Variable(
                         SimpleVariable(
                             SimpleVariable {

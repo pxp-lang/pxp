@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 10,
         kind: Switch(
             SwitchStatement {
                 switch: Span {
@@ -30,7 +28,6 @@
                     end: 15,
                 },
                 condition: Expression {
-                    id: 3,
                     kind: Variable(
                         SimpleVariable(
                             SimpleVariable {
@@ -58,7 +55,6 @@
                     Case {
                         condition: Some(
                             Expression {
-                                id: 4,
                                 kind: Literal(
                                     Literal {
                                         kind: String,
@@ -85,7 +81,6 @@
                         ),
                         body: [
                             Statement {
-                                id: 5,
                                 kind: Break(
                                     BreakStatement {
                                         break: Span {
@@ -114,7 +109,6 @@
                     Case {
                         condition: Some(
                             Expression {
-                                id: 6,
                                 kind: Literal(
                                     Literal {
                                         kind: String,
@@ -144,7 +138,6 @@
                     Case {
                         condition: Some(
                             Expression {
-                                id: 7,
                                 kind: Literal(
                                     Literal {
                                         kind: String,
@@ -171,7 +164,6 @@
                         ),
                         body: [
                             Statement {
-                                id: 8,
                                 kind: Break(
                                     BreakStatement {
                                         break: Span {
@@ -201,7 +193,6 @@
                         condition: None,
                         body: [
                             Statement {
-                                id: 9,
                                 kind: Break(
                                     BreakStatement {
                                         break: Span {

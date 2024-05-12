@@ -115,7 +115,6 @@ pub fn anonymous_function(state: &mut State) -> Expression {
     let end_span = body.right_brace;
 
     Expression::new(
-        state.id(),
         ExpressionKind::Closure(ClosureExpression {
             comments,
             attributes,
@@ -172,7 +171,6 @@ pub fn arrow_function(state: &mut State) -> Expression {
     let end_span = body.span;
 
     Expression::new(
-        state.id(),
         ExpressionKind::ArrowFunction(ArrowFunctionExpression {
             comments,
             attributes,

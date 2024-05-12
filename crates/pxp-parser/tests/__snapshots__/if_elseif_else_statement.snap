@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 8,
         kind: If(
             IfStatement {
                 if: Span {
@@ -30,7 +28,6 @@
                     end: 11,
                 },
                 condition: Expression {
-                    id: 3,
                     kind: Variable(
                         SimpleVariable(
                             SimpleVariable {
@@ -56,7 +53,6 @@
                 },
                 body: Statement {
                     statement: Statement {
-                        id: 4,
                         kind: Block(
                             BlockStatement {
                                 left_brace: Span {
@@ -89,7 +85,6 @@
                                 end: 28,
                             },
                             condition: Expression {
-                                id: 5,
                                 kind: Variable(
                                     SimpleVariable(
                                         SimpleVariable {
@@ -114,7 +109,6 @@
                                 end: 31,
                             },
                             statement: Statement {
-                                id: 6,
                                 kind: Block(
                                     BlockStatement {
                                         left_brace: Span {
@@ -145,7 +139,6 @@
                                 end: 41,
                             },
                             statement: Statement {
-                                id: 7,
                                 kind: Block(
                                     BlockStatement {
                                         left_brace: Span {

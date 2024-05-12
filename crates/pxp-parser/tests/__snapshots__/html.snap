@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: InlineHtml(
             InlineHtmlStatement {
                 html: Token {

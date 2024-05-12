@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,15 +17,12 @@
         },
     },
     Statement {
-        id: 8,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 7,
                     kind: AssignmentOperation(
                         Assign {
                             left: Expression {
-                                id: 3,
                                 kind: Variable(
                                     SimpleVariable(
                                         SimpleVariable {
@@ -51,11 +47,9 @@
                                 end: 11,
                             },
                             right: Expression {
-                                id: 6,
                                 kind: BitwiseOperation(
                                     Or {
                                         left: Expression {
-                                            id: 4,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,
@@ -84,7 +78,6 @@
                                             end: 15,
                                         },
                                         right: Expression {
-                                            id: 5,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,

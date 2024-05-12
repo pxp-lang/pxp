@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 8,
         kind: Interface(
             InterfaceStatement {
                 attributes: [],
@@ -27,7 +25,6 @@
                     end: 16,
                 },
                 name: SimpleIdentifier {
-                    id: 3,
                     symbol: Symbol("Foo"),
                     span: Span {
                         start: 17,
@@ -58,7 +55,6 @@
                                 entries: [
                                     ConstantEntry {
                                         name: SimpleIdentifier {
-                                            id: 4,
                                             symbol: Symbol("A"),
                                             span: Span {
                                                 start: 33,
@@ -70,7 +66,6 @@
                                             end: 36,
                                         },
                                         value: Expression {
-                                            id: 5,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,
@@ -126,7 +121,6 @@
                                 entries: [
                                     ConstantEntry {
                                         name: SimpleIdentifier {
-                                            id: 6,
                                             symbol: Symbol("B"),
                                             span: Span {
                                                 start: 57,
@@ -138,7 +132,6 @@
                                             end: 60,
                                         },
                                         value: Expression {
-                                            id: 7,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,

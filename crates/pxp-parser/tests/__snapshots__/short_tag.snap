@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: ShortOpeningTag(
             ShortOpeningTagStatement {
                 span: Span {

@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,11 +17,9 @@
         },
     },
     Statement {
-        id: 7,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 6,
                     kind: Match(
                         MatchExpression {
                             keyword: Span {
@@ -34,7 +31,6 @@
                                 end: 14,
                             },
                             condition: Expression {
-                                id: 3,
                                 kind: Variable(
                                     SimpleVariable(
                                         SimpleVariable {
@@ -67,7 +63,6 @@
                                 MatchArm {
                                     conditions: [
                                         Expression {
-                                            id: 4,
                                             kind: Literal(
                                                 Literal {
                                                     kind: Integer,
@@ -97,7 +92,6 @@
                                         end: 30,
                                     },
                                     body: Expression {
-                                        id: 5,
                                         kind: Literal(
                                             Literal {
                                                 kind: String,

@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: EchoOpeningTag(
             EchoOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 3,
         kind: ClosingTag(
             ClosingTagStatement {
                 span: Span {

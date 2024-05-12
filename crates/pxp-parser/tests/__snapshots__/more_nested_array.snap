@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,11 +17,9 @@
         },
     },
     Statement {
-        id: 40,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 39,
                     kind: ShortArray(
                         ShortArrayExpression {
                             start: Span {
@@ -33,7 +30,6 @@
                                 inner: [
                                     Value {
                                         value: Expression {
-                                            id: 8,
                                             kind: ShortArray(
                                                 ShortArrayExpression {
                                                     start: Span {
@@ -44,7 +40,6 @@
                                                         inner: [
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 3,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -71,7 +66,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 4,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -98,7 +92,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 5,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -125,7 +118,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 6,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -152,7 +144,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 7,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -214,7 +205,6 @@
                                     },
                                     Value {
                                         value: Expression {
-                                            id: 14,
                                             kind: ShortArray(
                                                 ShortArrayExpression {
                                                     start: Span {
@@ -225,7 +215,6 @@
                                                         inner: [
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 9,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -252,7 +241,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 10,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -279,7 +267,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 11,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -306,7 +293,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 12,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -333,7 +319,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 13,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -395,7 +380,6 @@
                                     },
                                     Value {
                                         value: Expression {
-                                            id: 20,
                                             kind: ShortArray(
                                                 ShortArrayExpression {
                                                     start: Span {
@@ -406,7 +390,6 @@
                                                         inner: [
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 15,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -433,7 +416,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 16,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -460,7 +442,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 17,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -487,7 +468,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 18,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -514,7 +494,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 19,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -576,7 +555,6 @@
                                     },
                                     Value {
                                         value: Expression {
-                                            id: 26,
                                             kind: ShortArray(
                                                 ShortArrayExpression {
                                                     start: Span {
@@ -587,7 +565,6 @@
                                                         inner: [
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 21,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -614,7 +591,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 22,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -641,7 +617,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 23,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -668,7 +643,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 24,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -695,7 +669,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 25,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -757,7 +730,6 @@
                                     },
                                     Value {
                                         value: Expression {
-                                            id: 32,
                                             kind: ShortArray(
                                                 ShortArrayExpression {
                                                     start: Span {
@@ -768,7 +740,6 @@
                                                         inner: [
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 27,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -795,7 +766,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 28,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -822,7 +792,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 29,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -849,7 +818,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 30,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -876,7 +844,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 31,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -938,7 +905,6 @@
                                     },
                                     Value {
                                         value: Expression {
-                                            id: 38,
                                             kind: ShortArray(
                                                 ShortArrayExpression {
                                                     start: Span {
@@ -949,7 +915,6 @@
                                                         inner: [
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 33,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -976,7 +941,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 34,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -1003,7 +967,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 35,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -1030,7 +993,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 36,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,
@@ -1057,7 +1019,6 @@
                                                             },
                                                             Value {
                                                                 value: Expression {
-                                                                    id: 37,
                                                                     kind: Literal(
                                                                         Literal {
                                                                             kind: Integer,

@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,11 +17,9 @@
         },
     },
     Statement {
-        id: 4,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 3,
                     kind: Literal(
                         Literal {
                             kind: Integer,
@@ -63,11 +60,9 @@
         },
     },
     Statement {
-        id: 6,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 5,
                     kind: Literal(
                         Literal {
                             kind: Integer,
@@ -108,11 +103,9 @@
         },
     },
     Statement {
-        id: 8,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 7,
                     kind: Literal(
                         Literal {
                             kind: Integer,
@@ -153,11 +146,9 @@
         },
     },
     Statement {
-        id: 10,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 9,
                     kind: Literal(
                         Literal {
                             kind: Integer,
@@ -198,11 +189,9 @@
         },
     },
     Statement {
-        id: 12,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 11,
                     kind: Literal(
                         Literal {
                             kind: Integer,
@@ -243,11 +232,9 @@
         },
     },
     Statement {
-        id: 14,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 13,
                     kind: Literal(
                         Literal {
                             kind: Integer,

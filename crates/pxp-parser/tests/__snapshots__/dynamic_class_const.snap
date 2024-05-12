@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,19 +17,15 @@
         },
     },
     Statement {
-        id: 7,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 6,
                     kind: ConstantFetch(
                         ConstantFetchExpression {
                             target: Expression {
-                                id: 4,
                                 kind: Identifier(
                                     SimpleIdentifier(
                                         SimpleIdentifier {
-                                            id: 3,
                                             symbol: Symbol("Foo"),
                                             span: Span {
                                                 start: 7,
@@ -58,7 +53,6 @@
                                         end: 18,
                                     },
                                     expr: Expression {
-                                        id: 5,
                                         kind: Variable(
                                             SimpleVariable(
                                                 SimpleVariable {

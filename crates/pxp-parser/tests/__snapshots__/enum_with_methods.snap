@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 8,
         kind: UnitEnum(
             UnitEnumStatement {
                 attributes: [],
@@ -27,7 +25,6 @@
                     end: 11,
                 },
                 name: SimpleIdentifier {
-                    id: 3,
                     symbol: Symbol("Foo"),
                     span: Span {
                         start: 12,
@@ -64,7 +61,6 @@
                                     },
                                     ampersand: None,
                                     name: SimpleIdentifier {
-                                        id: 4,
                                         symbol: Symbol("a"),
                                         span: Span {
                                             start: 38,
@@ -129,7 +125,6 @@
                                     },
                                     ampersand: None,
                                     name: SimpleIdentifier {
-                                        id: 5,
                                         symbol: Symbol("b"),
                                         span: Span {
                                             start: 68,
@@ -194,7 +189,6 @@
                                     },
                                     ampersand: None,
                                     name: SimpleIdentifier {
-                                        id: 6,
                                         symbol: Symbol("c"),
                                         span: Span {
                                             start: 96,
@@ -259,7 +253,6 @@
                                     },
                                     ampersand: None,
                                     name: SimpleIdentifier {
-                                        id: 7,
                                         symbol: Symbol("d"),
                                         span: Span {
                                             start: 123,

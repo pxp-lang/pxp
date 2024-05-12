@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,11 +17,9 @@
         },
     },
     Statement {
-        id: 18,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 17,
                     kind: Heredoc(
                         HeredocExpression {
                             label: Symbol("<<<TXT
@@ -36,7 +33,6 @@
                                 Expression(
                                     ExpressionStringPart {
                                         expression: Expression {
-                                            id: 4,
                                             kind: Variable(
                                                 SimpleVariable(
                                                     SimpleVariable {
@@ -67,7 +63,6 @@
                                 Expression(
                                     ExpressionStringPart {
                                         expression: Expression {
-                                            id: 5,
                                             kind: Variable(
                                                 SimpleVariable(
                                                     SimpleVariable {
@@ -98,11 +93,9 @@
                                 Expression(
                                     ExpressionStringPart {
                                         expression: Expression {
-                                            id: 9,
                                             kind: PropertyFetch(
                                                 PropertyFetchExpression {
                                                     target: Expression {
-                                                        id: 6,
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
@@ -127,11 +120,9 @@
                                                         end: 62,
                                                     },
                                                     property: Expression {
-                                                        id: 8,
                                                         kind: Identifier(
                                                             SimpleIdentifier(
                                                                 SimpleIdentifier {
-                                                                    id: 7,
                                                                     symbol: Symbol("name"),
                                                                     span: Span {
                                                                         start: 62,
@@ -169,11 +160,9 @@
                                 Expression(
                                     ExpressionStringPart {
                                         expression: Expression {
-                                            id: 13,
                                             kind: MethodCall(
                                                 MethodCallExpression {
                                                     target: Expression {
-                                                        id: 10,
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
@@ -198,11 +187,9 @@
                                                         end: 85,
                                                     },
                                                     method: Expression {
-                                                        id: 12,
                                                         kind: Identifier(
                                                             SimpleIdentifier(
                                                                 SimpleIdentifier {
-                                                                    id: 11,
                                                                     symbol: Symbol("name"),
                                                                     span: Span {
                                                                         start: 85,
@@ -254,11 +241,9 @@
                                 Expression(
                                     ExpressionStringPart {
                                         expression: Expression {
-                                            id: 16,
                                             kind: ArrayIndex(
                                                 ArrayIndexExpression {
                                                     array: Expression {
-                                                        id: 14,
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
@@ -284,7 +269,6 @@
                                                     },
                                                     index: Some(
                                                         Expression {
-                                                            id: 15,
                                                             kind: Literal(
                                                                 Literal {
                                                                     kind: Integer,

@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 4,
         kind: Switch(
             SwitchStatement {
                 switch: Span {
@@ -30,7 +28,6 @@
                     end: 15,
                 },
                 condition: Expression {
-                    id: 3,
                     kind: Variable(
                         SimpleVariable(
                             SimpleVariable {

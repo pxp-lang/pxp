@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,7 +17,6 @@
         },
     },
     Statement {
-        id: 5,
         kind: Constant(
             ConstantStatement {
                 comments: CommentGroup {
@@ -31,7 +29,6 @@
                 entries: [
                     ConstantEntry {
                         name: SimpleIdentifier {
-                            id: 3,
                             symbol: Symbol("FOO"),
                             span: Span {
                                 start: 13,
@@ -43,7 +40,6 @@
                             end: 18,
                         },
                         value: Expression {
-                            id: 4,
                             kind: Literal(
                                 Literal {
                                     kind: Integer,

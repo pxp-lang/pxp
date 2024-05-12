@@ -1,6 +1,5 @@
 [
     Statement {
-        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
                 span: Span {
@@ -18,11 +17,9 @@
         },
     },
     Statement {
-        id: 4,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 3,
                     kind: Literal(
                         Literal {
                             kind: String,
@@ -63,11 +60,9 @@
         },
     },
     Statement {
-        id: 6,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 5,
                     kind: Literal(
                         Literal {
                             kind: String,
@@ -108,11 +103,9 @@
         },
     },
     Statement {
-        id: 9,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 8,
                     kind: InterpolatedString(
                         InterpolatedStringExpression {
                             parts: [
@@ -124,7 +117,6 @@
                                 Expression(
                                     ExpressionStringPart {
                                         expression: Expression {
-                                            id: 7,
                                             kind: Variable(
                                                 SimpleVariable(
                                                     SimpleVariable {
@@ -174,11 +166,9 @@
         },
     },
     Statement {
-        id: 13,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 12,
                     kind: InterpolatedString(
                         InterpolatedStringExpression {
                             parts: [
@@ -190,7 +180,6 @@
                                 Expression(
                                     ExpressionStringPart {
                                         expression: Expression {
-                                            id: 11,
                                             kind: Variable(
                                                 SimpleVariable(
                                                     SimpleVariable {
@@ -240,11 +229,9 @@
         },
     },
     Statement {
-        id: 19,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 18,
                     kind: InterpolatedString(
                         InterpolatedStringExpression {
                             parts: [
@@ -256,11 +243,9 @@
                                 Expression(
                                     ExpressionStringPart {
                                         expression: Expression {
-                                            id: 17,
                                             kind: PropertyFetch(
                                                 PropertyFetchExpression {
                                                     target: Expression {
-                                                        id: 14,
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
@@ -285,11 +270,9 @@
                                                         end: 89,
                                                     },
                                                     property: Expression {
-                                                        id: 16,
                                                         kind: Identifier(
                                                             SimpleIdentifier(
                                                                 SimpleIdentifier {
-                                                                    id: 15,
                                                                     symbol: Symbol("name"),
                                                                     span: Span {
                                                                         start: 89,
@@ -346,11 +329,9 @@
         },
     },
     Statement {
-        id: 25,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 24,
                     kind: InterpolatedString(
                         InterpolatedStringExpression {
                             parts: [
@@ -362,11 +343,9 @@
                                 Expression(
                                     ExpressionStringPart {
                                         expression: Expression {
-                                            id: 23,
                                             kind: PropertyFetch(
                                                 PropertyFetchExpression {
                                                     target: Expression {
-                                                        id: 20,
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
@@ -391,11 +370,9 @@
                                                         end: 112,
                                                     },
                                                     property: Expression {
-                                                        id: 22,
                                                         kind: Identifier(
                                                             SimpleIdentifier(
                                                                 SimpleIdentifier {
-                                                                    id: 21,
                                                                     symbol: Symbol("name"),
                                                                     span: Span {
                                                                         start: 112,
@@ -452,11 +429,9 @@
         },
     },
     Statement {
-        id: 31,
         kind: Expression(
             ExpressionStatement {
                 expression: Expression {
-                    id: 30,
                     kind: InterpolatedString(
                         InterpolatedStringExpression {
                             parts: [
@@ -468,11 +443,9 @@
                                 Expression(
                                     ExpressionStringPart {
                                         expression: Expression {
-                                            id: 29,
                                             kind: MethodCall(
                                                 MethodCallExpression {
                                                     target: Expression {
-                                                        id: 26,
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
@@ -497,11 +470,9 @@
                                                         end: 135,
                                                     },
                                                     method: Expression {
-                                                        id: 28,
                                                         kind: Identifier(
                                                             SimpleIdentifier(
                                                                 SimpleIdentifier {
-                                                                    id: 27,
                                                                     symbol: Symbol("getName"),
                                                                     span: Span {
                                                                         start: 135,
