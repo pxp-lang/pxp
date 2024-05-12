@@ -14,6 +14,14 @@ impl Symbol {
         Self { id, len }
     }
 
+    pub const fn len(&self) -> usize {
+        self.len as usize
+    }
+
+    pub const fn is_empty(&self) -> bool {
+        self.len == 0
+    }
+
     #[inline]
     pub fn missing() -> Self {
         Self::new(0, 0)
