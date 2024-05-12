@@ -11,7 +11,7 @@ pub enum Identifier {
 
 impl Identifier {
     pub fn missing() -> Self {
-        Self::SimpleIdentifier(SimpleIdentifier::new(0, Symbol(0), Span::default()))
+        Self::SimpleIdentifier(SimpleIdentifier::new(0, Symbol::missing(), Span::default()))
     }
 
     pub fn is_simple(&self) -> bool {

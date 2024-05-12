@@ -4,14 +4,33 @@ use pxp_bytestring::ByteStr;
 use serde::{Serialize, Deserialize};
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
-pub struct Symbol(pub u32);
+pub struct Symbol {
+    pub id: u32,
+    pub len: u32,
+}
+
+impl Symbol {
+    pub fn new(id: u32, len: u32) -> Self {
+        Self { id, len }
+    }
+
+    #[inline]
+    pub fn missing() -> Self {
+        Self::new(0, 0)
+    }
+
+    #[inline]
+    pub const fn is_missing(&self) -> bool {
+        self.id == 0
+    }
+}
 
 impl Debug for Symbol {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         if let Some(contents) = SymbolTable::the().resolve(*self) {
             write!(f, "Symbol(\"{}\")", contents)
         } else {
-            write!(f, "Symbol({})", self.0)
+            write!(f, "Symbol({})", self.id)
         }
     }
 }
@@ -21,7 +40,7 @@ impl Display for Symbol {
         if let Some(contents) = SymbolTable::the().resolve(*self) {
             write!(f, "{}", contents)
         } else {
-            write!(f, "Symbol({})", self.0)
+            write!(f, "Symbol({})", self.id)
         }
     }
 }
@@ -68,10 +87,10 @@ impl SymbolTable {
 
         let symbol = self.vec.len() as u32;
 
-        self.map.insert(contents.to_vec(), Symbol(symbol));
+        self.map.insert(contents.to_vec(), Symbol::new(symbol, contents.len() as u32));
         self.vec.push(contents.to_vec());
 
-        Symbol(symbol)
+        Symbol::new(symbol, contents.len() as u32)
     }
 
     pub fn find(&self, contents: &[u8]) -> Option<Symbol> {
@@ -83,7 +102,7 @@ impl SymbolTable {
     }
 
     pub fn resolve(&self, symbol: Symbol) -> Option<ByteStr> {
-        self.vec.get(symbol.0 as usize).map(|s| ByteStr::new(s))
+        self.vec.get(symbol.id as usize).map(|s| ByteStr::new(s))
     }
 
     pub fn must_resolve(&self, symbol: Symbol) -> ByteStr {
@@ -125,7 +144,10 @@ mod tests {
         let mut symbols = SymbolTable::new();
         let sample_text = b"Hello, world!";
 
-        assert_eq!(symbols.intern(sample_text), Symbol(1));
+        assert_eq!(symbols.intern(sample_text), Symbol {
+            id: 1,
+            len: 13,
+        });
     }
 
     #[test]

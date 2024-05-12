@@ -58,7 +58,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(state.id(), Symbol(0), current.span)
+            SimpleIdentifier::new(state.id(), Symbol::missing(), current.span)
         }
     }
 }
@@ -117,7 +117,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(state.id(), Symbol(0), current.span)
+            SimpleIdentifier::new(state.id(), Symbol::missing(), current.span)
         }
     }
 }
@@ -183,7 +183,7 @@ pub fn identifier(state: &mut State) -> SimpleIdentifier {
             current.span,
         );
 
-        SimpleIdentifier::new(state.id(), Symbol(0), current.span)
+        SimpleIdentifier::new(state.id(), Symbol::missing(), current.span)
     }
 }
 
@@ -255,7 +255,7 @@ pub fn full_name(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(state.id(), Symbol(0), current.span)
+            SimpleIdentifier::new(state.id(), Symbol::missing(), current.span)
         }
     }
 }
@@ -316,7 +316,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(state.id(), Symbol(0), current.span)
+            SimpleIdentifier::new(state.id(), Symbol::missing(), current.span)
         }
     }
 }
@@ -368,7 +368,7 @@ pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            SimpleIdentifier::new(state.id(), Symbol(0), current.span)
+            SimpleIdentifier::new(state.id(), Symbol::missing(), current.span)
         }
     }
 }
