@@ -1,11 +1,13 @@
 use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
+use crate::ParserDiagnostic;
 use pxp_ast::GroupUseStatement;
 use pxp_ast::StatementKind;
 use pxp_ast::Use;
 use pxp_ast::UseKind;
 use pxp_ast::UseStatement;
+use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;
 
 pub fn use_statement(state: &mut State) -> StatementKind {
@@ -31,11 +33,7 @@ pub fn use_statement(state: &mut State) -> StatementKind {
             let use_kind = match state.stream.current().kind {
                 TokenKind::Function => {
                     if kind != UseKind::Normal {
-                        todo!("tolerant mode")
-                        // return Err(error::unexpected_token(
-                        //     vec!["an identifier".to_string()],
-                        //     state.stream.current(),
-                        // ));
+                        state.diagnostic(ParserDiagnostic::MixedImportTypes, Severity::Error, state.stream.current().span);
                     }
 
                     state.stream.next();
@@ -43,11 +41,7 @@ pub fn use_statement(state: &mut State) -> StatementKind {
                 }
                 TokenKind::Const => {
                     if kind != UseKind::Normal {
-                        todo!("tolerant mode")
-                        // return Err(error::unexpected_token(
-                        //     vec!["an identifier".to_string()],
-                        //     state.stream.current(),
-                        // ));
+                        state.diagnostic(ParserDiagnostic::MixedImportTypes, Severity::Error, state.stream.current().span);
                     }
 
                     state.stream.next();

@@ -307,7 +307,7 @@ impl Display for TokenKind {
             Self::Backtick => "`",
             Self::StartHeredoc => "<<<",
             Self::StartNowdoc => "<<<",
-            Self::EndDocString(..) => todo!(),
+            Self::EndDocString(..) => "EndDocString",
             Self::BangEquals => "!=",
             Self::From => "from",
             Self::Print => "print",

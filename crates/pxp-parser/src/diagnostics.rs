@@ -52,6 +52,7 @@ pub enum ParserDiagnostic {
     UnexpectedEndOfFileExpected {
         expected: Vec<TokenKind>,
     },
+    MixedImportTypes,
 }
 
 impl Display for ParserDiagnostic {
@@ -189,7 +190,8 @@ impl Display for ParserDiagnostic {
                             .join(", ")
                     )
                 }
-            }
+            },
+            ParserDiagnostic::MixedImportTypes => write!(f, "cannot mix import types"),
         }
     }
 }
