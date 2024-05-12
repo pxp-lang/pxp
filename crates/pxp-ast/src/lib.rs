@@ -49,6 +49,7 @@ pub mod enums;
 pub mod functions;
 pub mod goto;
 pub mod identifiers;
+pub mod name;
 pub mod interfaces;
 pub mod literals;
 pub mod loops;
