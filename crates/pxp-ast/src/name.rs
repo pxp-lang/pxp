@@ -8,6 +8,36 @@ pub struct Name {
     pub span: Span,
 }
 
+impl Name {
+    pub fn new(kind: NameKind, span: Span) -> Self {
+        Self { kind, span }
+    }
+
+    pub fn resolved(symbol: Symbol, original: Symbol, span: Span) -> Self {
+        Self::new(NameKind::Resolved(ResolvedName { resolved: symbol, original }), span)
+    }
+
+    pub fn unresolved(symbol: Symbol, qualification: NameQualification, span: Span) -> Self {
+        Self::new(NameKind::Unresolved(UnresolvedName { symbol, qualification }), span)
+    }
+
+    pub fn special(kind: SpecialNameKind, symbol: Symbol, span: Span) -> Self {
+        Self::new(NameKind::Special(SpecialName { kind, symbol }), span)
+    }
+
+    pub fn is_special(&self) -> bool {
+        matches!(self.kind, NameKind::Special(_))
+    }
+
+    pub fn is_unresolved(&self) -> bool {
+        matches!(self.kind, NameKind::Unresolved(_))
+    }
+
+    pub fn is_resolved(&self) -> bool {
+        matches!(self.kind, NameKind::Resolved(_))
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
 pub enum NameKind {
     Special(SpecialName),
