@@ -6,6 +6,7 @@ use crate::state::Scope;
 use crate::state::State;
 use crate::ParserDiagnostic;
 use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_ast::name::Name;
 use pxp_ast::namespaces::BracedNamespace;
 use pxp_ast::namespaces::BracedNamespaceBody;
 use pxp_ast::namespaces::NamespaceStatement;
@@ -63,7 +64,7 @@ pub fn namespace(state: &mut State) -> StatementKind {
 fn unbraced_namespace(state: &mut State, start: Span, name: SimpleIdentifier) -> StatementKind {
     let end = utils::skip_semicolon(state);
 
-    let statements = scoped!(state, Scope::Namespace(name.clone()), {
+    let statements = scoped!(state, Scope::Namespace(name.symbol), {
         let mut statements = Block::new();
 
         while state.stream.current().kind != TokenKind::Namespace && !state.stream.is_eof() {
@@ -84,7 +85,7 @@ fn unbraced_namespace(state: &mut State, start: Span, name: SimpleIdentifier) ->
     StatementKind::Namespace(NamespaceStatement::Unbraced(UnbracedNamespace {
         start,
         end,
-        name,
+        name: Name::resolved(name.symbol, name.symbol, name.span),
         statements,
     }))
 }
@@ -94,7 +95,7 @@ fn braced_namespace(
     span: Span,
     name: Option<SimpleIdentifier>,
 ) -> StatementKind {
-    let body = scoped!(state, Scope::BracedNamespace(name.clone()), {
+    let body = scoped!(state, Scope::BracedNamespace(name.as_ref().map(|n| n.symbol)), {
         let start = utils::skip_left_brace(state);
 
         let mut statements = Block::new();
@@ -113,7 +114,7 @@ fn braced_namespace(
 
     StatementKind::Namespace(NamespaceStatement::Braced(BracedNamespace {
         namespace: span,
-        name,
+        name: name.map(|n| Name::resolved(n.symbol, n.symbol, n.span)),
         body,
     }))
 }

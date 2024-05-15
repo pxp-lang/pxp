@@ -5,7 +5,7 @@ use pxp_ast::attributes::AttributeGroup;
 use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::stream::TokenStream;
 use pxp_span::Span;
-use pxp_symbol::SymbolTable;
+use pxp_symbol::{Symbol, SymbolTable};
 
 use crate::ParserDiagnostic;
 
@@ -17,8 +17,8 @@ pub enum NamespaceType {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Scope {
-    Namespace(SimpleIdentifier),
-    BracedNamespace(Option<SimpleIdentifier>),
+    Namespace(Symbol),
+    BracedNamespace(Option<Symbol>),
 }
 
 #[derive(Debug)]
@@ -28,6 +28,7 @@ pub struct State<'a, 'b> {
     pub symbol_table: &'b mut SymbolTable,
     pub attributes: Vec<AttributeGroup>,
     pub namespace_type: Option<NamespaceType>,
+    pub namespace: Option<Symbol>,
     pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
 }
 
@@ -40,6 +41,7 @@ impl<'a, 'b> State<'a, 'b> {
             namespace_type: None,
             attributes: vec![],
             diagnostics: vec![],
+            namespace: None,
         }
     }
 

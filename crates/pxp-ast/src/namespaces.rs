@@ -1,5 +1,6 @@
 use crate::identifiers::SimpleIdentifier;
 
+use crate::name::Name;
 use crate::Statement;
 use pxp_span::Span;
 
@@ -7,7 +8,7 @@ use pxp_span::Span;
 
 pub struct UnbracedNamespace {
     pub start: Span,                // `namespace`
-    pub name: SimpleIdentifier,     // `Foo`
+    pub name: Name,                 // `Foo`
     pub end: Span,                  // `;`
     pub statements: Vec<Statement>, // `*statements*`
 }
@@ -16,7 +17,7 @@ pub struct UnbracedNamespace {
 
 pub struct BracedNamespace {
     pub namespace: Span,                // `namespace`
-    pub name: Option<SimpleIdentifier>, // `Foo`
+    pub name: Option<Name>, // `Foo`
     pub body: BracedNamespaceBody,      // `{ *statements* }`
 }
 
