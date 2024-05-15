@@ -1,6 +1,6 @@
-use std::collections::VecDeque;
+use std::collections::{HashMap, VecDeque};
 
-use pxp_ast::attributes::AttributeGroup;
+use pxp_ast::{attributes::AttributeGroup, UseKind};
 use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::stream::TokenStream;
 use pxp_span::Span;
@@ -29,10 +29,16 @@ pub struct State<'a, 'b> {
     pub namespace_type: Option<NamespaceType>,
     pub namespace: Option<Symbol>,
     pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
+    pub imports: HashMap<UseKind, HashMap<Symbol, Symbol>>,
 }
 
 impl<'a, 'b> State<'a, 'b> {
     pub fn new(tokens: &'a mut TokenStream<'a>, symbol_table: &'b mut SymbolTable) -> Self {
+        let mut imports = HashMap::new();
+        imports.insert(UseKind::Normal, HashMap::new());
+        imports.insert(UseKind::Function, HashMap::new());
+        imports.insert(UseKind::Const, HashMap::new());
+
         Self {
             stack: VecDeque::with_capacity(32),
             stream: tokens,
@@ -41,6 +47,7 @@ impl<'a, 'b> State<'a, 'b> {
             attributes: vec![],
             diagnostics: vec![],
             namespace: None,
+            imports,
         }
     }
 
