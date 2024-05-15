@@ -852,13 +852,13 @@ walk_mut! {
     }
 
     walk_unbraced_namespace: UnbracedNamespace => {
-        visitor.visit_simple_identifier(&mut node.name);
+        visitor.visit_name(&mut node.name);
         visitor.visit(&mut node.statements);
     }
 
     walk_braced_namespace: BracedNamespace => {
         if let Some(name) = &mut node.name {
-            visitor.visit_simple_identifier(name);
+            visitor.visit_name(name);
         }
 
         visitor.visit(&mut node.body.statements);
@@ -2271,13 +2271,13 @@ walk! {
     }
 
     walk_unbraced_namespace: UnbracedNamespace => {
-        visitor.visit_simple_identifier(&node.name);
+        visitor.visit_name(&node.name);
         visitor.visit(&node.statements);
     }
 
     walk_braced_namespace: BracedNamespace => {
         if let Some(name) = &node.name {
-            visitor.visit_simple_identifier(name);
+            visitor.visit_name(name);
         }
 
         visitor.visit(&node.body.statements);
