@@ -24,8 +24,13 @@
                         start: 7,
                         end: 16,
                     },
-                    name: SimpleIdentifier {
-                        symbol: Symbol("Foo"),
+                    name: Name {
+                        kind: Resolved(
+                            ResolvedName {
+                                resolved: Symbol("Foo"),
+                                original: Symbol("Foo"),
+                            },
+                        ),
                         span: Span {
                             start: 17,
                             end: 20,
