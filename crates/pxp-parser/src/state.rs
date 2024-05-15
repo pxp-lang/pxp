@@ -1,6 +1,5 @@
 use std::collections::VecDeque;
 
-use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::attributes::AttributeGroup;
 use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::stream::TokenStream;

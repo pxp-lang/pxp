@@ -1,5 +1,3 @@
-use crate::identifiers::SimpleIdentifier;
-
 use crate::name::Name;
 use crate::Statement;
 use pxp_span::Span;
