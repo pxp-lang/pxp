@@ -9,6 +9,7 @@ use crate::functions::ConcreteMethod;
 use crate::identifiers::SimpleIdentifier;
 use crate::modifiers::ClassModifierGroup;
 
+use crate::name::Name;
 use crate::properties::Property;
 use crate::properties::VariableProperty;
 use crate::traits::TraitUsage;
@@ -41,11 +42,10 @@ impl IntoIterator for ClassBody {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ClassStatement {
-    pub attributes: Vec<AttributeGroup>, // `#[Qux]`
-
+    pub attributes: Vec<AttributeGroup>,     // `#[Qux]`
     pub modifiers: ClassModifierGroup,       // `abstract`, `final`
     pub class: Span,                         // `class`
-    pub name: SimpleIdentifier,              // `Foo`
+    pub name: Name,                          // `Foo`
     pub extends: Option<ClassExtends>,       // `extends Foo`
     pub implements: Option<ClassImplements>, // `implements Bar, Baz`
     pub body: ClassBody,                     // `{ ... }`

@@ -577,7 +577,7 @@ walk_mut! {
     walk_class: ClassStatement => {
         // FIXME: Walk attributes here.
         // FIXME: Walk modifiers here.
-        visitor.visit_simple_identifier(&mut node.name);
+        visitor.visit_name(&mut node.name);
 
         if let Some(extends) = &mut node.extends {
             visitor.visit_class_extends(extends);
@@ -1996,7 +1996,7 @@ walk! {
     walk_class: ClassStatement => {
         // FIXME: Walk attributes here.
         // FIXME: Walk modifiers here.
-        visitor.visit_simple_identifier(&node.name);
+        visitor.visit_name(&node.name);
 
         if let Some(extends) = &node.extends {
             visitor.visit_class_extends(extends);

@@ -202,6 +202,9 @@ snap!(snapper, fully_qualified_identifier, process("fixtures/identifiers/fully-q
 snap!(snapper, html, process("fixtures/tags/html.php"));
 snap!(snapper, inline_html_with_php, process("fixtures/html/inline-html-with-php.php"));
 
+// Name Resolving
+snap!(snapper, class_in_namespace, process("fixtures/name-resolving/class-in-namespace.php"));
+
 fn snapper() -> Snapper {
     Snapper::new(
         format!("{}/{}", env!("CARGO_MANIFEST_DIR"), "tests/__snapshots__").into()

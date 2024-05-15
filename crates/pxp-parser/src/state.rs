@@ -71,6 +71,18 @@ impl<'a, 'b> State<'a, 'b> {
         self.stack.iter().next()
     }
 
+    pub fn join_with_namespace(&mut self, name: Symbol) -> Symbol {
+        match self.namespace() {
+            Some(Scope::Namespace(namespace)) => {
+                self.symbol_table.coagulate(&[*namespace, name], Some(b"\\"))
+            },
+            Some(Scope::BracedNamespace(Some(namespace))) => {
+                self.symbol_table.coagulate(&[*namespace, name], Some(b"\\"))
+            },
+            _ => name,
+        }
+    }
+
     pub fn previous_scope(&self) -> Option<&Scope> {
         self.stack.get(self.stack.len() - 2)
     }
