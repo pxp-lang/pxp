@@ -78,6 +78,30 @@ impl<'a, 'b> State<'a, 'b> {
         self.stack.iter().next()
     }
 
+    pub fn add_prefixed_import(&mut self, kind: &UseKind, prefix: Symbol, name: Symbol, alias: Option<Symbol>) {
+        let coagulated = self.symbol_table.coagulate(&[prefix, name], Some(b"\\"));
+
+        self.add_import(kind, coagulated, alias);
+    }
+
+    pub fn add_import(&mut self, kind: &UseKind, name: Symbol, alias: Option<Symbol>) {
+        // We first need to check if the alias has been provided, and if not, create a new
+        // symbol using the last part of the name.
+        let alias = match alias {
+            Some(alias) => alias,
+            None => {
+                let bytestring = self.symbol_table.resolve(name).unwrap().to_bytestring();
+                let parts = bytestring.split(|c| *c == b'\\').collect::<Vec<_>>();
+                let last = parts.last().unwrap();
+
+                self.symbol_table.intern(last)
+            }
+        };
+
+        // Then we can insert the import into the hashmap.
+        self.imports.get_mut(kind).unwrap().insert(alias, name);
+    }
+
     pub fn join_with_namespace(&mut self, name: Symbol) -> Symbol {
         match self.namespace() {
             Some(Scope::Namespace(namespace)) => {

@@ -65,7 +65,7 @@ pub mod data_type;
 
 pub type Block = Vec<Statement>;
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Copy)]
 
 pub enum UseKind {
     Normal,

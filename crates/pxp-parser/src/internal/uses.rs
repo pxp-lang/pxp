@@ -27,7 +27,10 @@ pub fn use_statement(state: &mut State) -> StatementKind {
 
     if state.stream.peek().kind == TokenKind::LeftBrace {
         let prefix = identifiers::full_name(state);
+        let prefix_symbol = prefix.symbol;
+
         state.stream.next();
+        
         let mut uses = Vec::new();
         while state.stream.current().kind != TokenKind::RightBrace {
             let use_kind = match state.stream.current().kind {
@@ -57,11 +60,17 @@ pub fn use_statement(state: &mut State) -> StatementKind {
                 alias = Some(identifiers::type_identifier(state));
             }
 
+            let symbol = name.symbol;
+            let alias_symbol = alias.as_ref().map(|a| a.symbol);
+            let import_kind = use_kind.unwrap_or(kind);
+
             uses.push(Use {
                 name,
                 kind: use_kind,
                 alias,
             });
+
+            state.add_prefixed_import(&import_kind, prefix_symbol, symbol, alias_symbol);
 
             if state.stream.current().kind == TokenKind::Comma {
                 state.stream.next();
@@ -83,11 +92,16 @@ pub fn use_statement(state: &mut State) -> StatementKind {
                 alias = Some(identifiers::type_identifier(state));
             }
 
+            let symbol = name.symbol;
+            let alias_symbol = alias.as_ref().map(|a| a.symbol);
+
             uses.push(Use {
                 name,
                 kind: None,
                 alias,
             });
+
+            state.add_import(&kind, symbol, alias_symbol);
 
             if state.stream.current().kind == TokenKind::Comma {
                 state.stream.next();
