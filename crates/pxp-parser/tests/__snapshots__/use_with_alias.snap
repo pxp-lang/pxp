@@ -1,0 +1,60 @@
+[
+    Statement {
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Use(
+            UseStatement {
+                kind: Normal,
+                uses: [
+                    Use {
+                        name: Name {
+                            kind: Resolved(
+                                ResolvedName {
+                                    resolved: Symbol("Foo"),
+                                    original: Symbol("Foo"),
+                                },
+                            ),
+                            span: Span {
+                                start: 11,
+                                end: 14,
+                            },
+                        },
+                        alias: Some(
+                            SimpleIdentifier {
+                                symbol: Symbol("Bar"),
+                                span: Span {
+                                    start: 18,
+                                    end: 21,
+                                },
+                            },
+                        ),
+                        kind: None,
+                    },
+                ],
+            },
+        ),
+        span: Span {
+            start: 7,
+            end: 22,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

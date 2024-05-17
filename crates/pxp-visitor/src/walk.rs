@@ -871,7 +871,7 @@ walk_mut! {
     }
 
     walk_use_use: Use => {
-        visitor.visit_simple_identifier(&mut node.name);
+        visitor.visit_name(&mut node.name);
 
         if let Some(alias) = &mut node.alias {
             visitor.visit_simple_identifier(alias);
@@ -2290,7 +2290,7 @@ walk! {
     }
 
     walk_use_use: Use => {
-        visitor.visit_simple_identifier(&node.name);
+        visitor.visit_name(&node.name);
 
         if let Some(alias) = &node.alias {
             visitor.visit_simple_identifier(alias);

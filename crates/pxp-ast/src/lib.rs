@@ -34,6 +34,7 @@ use crate::traits::TraitStatement;
 use crate::try_block::TryStatement;
 use crate::utils::CommaSeparated;
 use crate::variables::Variable;
+use name::Name;
 use pxp_span::Span;
 use pxp_symbol::Symbol;
 use pxp_syntax::comments::{Comment, CommentGroup};
@@ -314,7 +315,7 @@ pub struct Case {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct Use {
-    pub name: SimpleIdentifier,
+    pub name: Name,
     pub alias: Option<SimpleIdentifier>,
     pub kind: Option<UseKind>,
 }

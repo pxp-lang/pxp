@@ -205,6 +205,13 @@ snap!(snapper, inline_html_with_php, process("fixtures/html/inline-html-with-php
 // Name Resolving
 snap!(snapper, class_in_namespace, process("fixtures/name-resolving/class-in-namespace.php"));
 
+// Uses
+snap!(snapper, simple_use, process("fixtures/uses/simple-use.php"));
+snap!(snapper, qualified_use, process("fixtures/uses/qualified-use.php"));
+snap!(snapper, use_with_alias, process("fixtures/uses/use-with-alias.php"));
+snap!(snapper, group_use, process("fixtures/uses/group-use.php"));
+snap!(snapper, group_use_multiple_types, process("fixtures/uses/group-use-multiple-types.php"));
+
 fn snapper() -> Snapper {
     Snapper::new(
         format!("{}/{}", env!("CARGO_MANIFEST_DIR"), "tests/__snapshots__").into()

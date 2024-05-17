@@ -5,7 +5,7 @@ use pxp_token::TokenKind;
 
 use crate::{state::State, ParserDiagnostic};
 
-use super::identifiers::is_reserved_identifier;
+use super::identifiers::{full_type_name, is_reserved_identifier};
 
 pub fn type_name(state: &mut State) -> Name {
     let current = state.stream.current();
@@ -60,4 +60,15 @@ pub fn type_name(state: &mut State) -> Name {
             Name::resolved(Symbol::missing(), Symbol::missing(), current.span)
         }
     }
+}
+
+// Names inside of a `use` statement are always resolved.
+pub fn use_name(state: &mut State) -> Name {
+    let identifier = full_type_name(state);
+
+    if identifier.symbol.is_missing() {
+        return Name::missing(identifier.span);
+    }
+
+    Name::resolved(identifier.symbol, identifier.symbol, identifier.span)
 }

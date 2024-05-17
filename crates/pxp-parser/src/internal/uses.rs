@@ -2,6 +2,7 @@ use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
 use crate::ParserDiagnostic;
+use pxp_ast::name::Name;
 use pxp_ast::GroupUseStatement;
 use pxp_ast::StatementKind;
 use pxp_ast::Use;
@@ -9,6 +10,8 @@ use pxp_ast::UseKind;
 use pxp_ast::UseStatement;
 use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;
+
+use super::names;
 
 pub fn use_statement(state: &mut State) -> StatementKind {
     state.stream.next();
@@ -65,7 +68,7 @@ pub fn use_statement(state: &mut State) -> StatementKind {
             let import_kind = use_kind.unwrap_or(kind);
 
             uses.push(Use {
-                name,
+                name: Name::resolved(state.symbol_table.coagulate(&[prefix.symbol, name.symbol], Some(b"\\")), name.symbol, name.span),
                 kind: use_kind,
                 alias,
             });
@@ -85,14 +88,14 @@ pub fn use_statement(state: &mut State) -> StatementKind {
     } else {
         let mut uses = Vec::new();
         while !state.stream.is_eof() {
-            let name = identifiers::full_type_name(state);
+            let name = names::use_name(state);
             let mut alias = None;
             if state.stream.current().kind == TokenKind::As {
                 state.stream.next();
                 alias = Some(identifiers::type_identifier(state));
             }
 
-            let symbol = name.symbol;
+            let symbol = name;
             let alias_symbol = alias.as_ref().map(|a| a.symbol);
 
             uses.push(Use {
@@ -101,7 +104,7 @@ pub fn use_statement(state: &mut State) -> StatementKind {
                 alias,
             });
 
-            state.add_import(&kind, symbol, alias_symbol);
+            state.add_import(&kind, name.symbol(), alias_symbol);
 
             if state.stream.current().kind == TokenKind::Comma {
                 state.stream.next();
