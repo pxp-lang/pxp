@@ -10,7 +10,7 @@ use pxp_span::Span;
 
 pub struct InterfaceExtends {
     pub extends: Span,                             // `extends`
-    pub parents: CommaSeparated<SimpleIdentifier>, // `Foo`, `Bar`
+    pub parents: CommaSeparated<Name>, // `Foo`, `Bar`
 }
 #[derive(Debug, PartialEq, Eq, Clone)]
 

@@ -5,7 +5,9 @@ use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::interfaces::InterfaceBody;
 use pxp_ast::interfaces::InterfaceExtends;
 use pxp_ast::interfaces::InterfaceStatement;
+use pxp_ast::name::Name;
 use pxp_ast::StatementKind;
+use pxp_ast::UseKind;
 use pxp_token::TokenKind;
 
 use super::classes::member;
@@ -23,8 +25,8 @@ pub fn parse(state: &mut State) -> StatementKind {
         state.stream.next();
 
         let parents =
-            utils::at_least_one_comma_separated_no_trailing::<SimpleIdentifier>(state, &|state| {
-                identifiers::full_type_name(state)
+            utils::at_least_one_comma_separated_no_trailing::<Name>(state, &|state| {
+                names::full_name(state, UseKind::Normal)
             });
 
         Some(InterfaceExtends {

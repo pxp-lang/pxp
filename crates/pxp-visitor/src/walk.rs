@@ -801,7 +801,7 @@ walk_mut! {
 
     walk_interface_extends: InterfaceExtends => {
         for parent in node.parents.iter_mut() {
-            visitor.visit_simple_identifier(parent);
+            visitor.visit_name(parent);
         }
     }
 
@@ -2220,7 +2220,7 @@ walk! {
 
     walk_interface_extends: InterfaceExtends => {
         for parent in node.parents.iter() {
-            visitor.visit_simple_identifier(parent);
+            visitor.visit_name(parent);
         }
     }
 

@@ -44,15 +44,25 @@
                         },
                         parents: CommaSeparated {
                             inner: [
-                                SimpleIdentifier {
-                                    symbol: Symbol("Bar"),
+                                Name {
+                                    kind: Unresolved(
+                                        UnresolvedName {
+                                            symbol: Symbol("Bar"),
+                                            qualification: Unqualified,
+                                        },
+                                    ),
                                     span: Span {
                                         start: 29,
                                         end: 32,
                                     },
                                 },
-                                SimpleIdentifier {
-                                    symbol: Symbol("Baz"),
+                                Name {
+                                    kind: Unresolved(
+                                        UnresolvedName {
+                                            symbol: Symbol("Baz"),
+                                            qualification: Unqualified,
+                                        },
+                                    ),
                                     span: Span {
                                         start: 34,
                                         end: 37,

@@ -1,0 +1,191 @@
+[
+    Statement {
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Use(
+            UseStatement {
+                kind: Normal,
+                uses: [
+                    Use {
+                        name: Name {
+                            kind: Resolved(
+                                ResolvedName {
+                                    resolved: Symbol("Foo\Baz"),
+                                    original: Symbol("Foo\Baz"),
+                                },
+                            ),
+                            span: Span {
+                                start: 11,
+                                end: 18,
+                            },
+                        },
+                        alias: None,
+                        kind: None,
+                    },
+                ],
+            },
+        ),
+        span: Span {
+            start: 7,
+            end: 19,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Use(
+            UseStatement {
+                kind: Normal,
+                uses: [
+                    Use {
+                        name: Name {
+                            kind: Resolved(
+                                ResolvedName {
+                                    resolved: Symbol("Baz\Bar"),
+                                    original: Symbol("Baz\Bar"),
+                                },
+                            ),
+                            span: Span {
+                                start: 24,
+                                end: 31,
+                            },
+                        },
+                        alias: Some(
+                            SimpleIdentifier {
+                                symbol: Symbol("Qux"),
+                                span: Span {
+                                    start: 35,
+                                    end: 38,
+                                },
+                            },
+                        ),
+                        kind: None,
+                    },
+                ],
+            },
+        ),
+        span: Span {
+            start: 20,
+            end: 39,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Interface(
+            InterfaceStatement {
+                attributes: [],
+                interface: Span {
+                    start: 41,
+                    end: 50,
+                },
+                name: Name {
+                    kind: Resolved(
+                        ResolvedName {
+                            resolved: Symbol("Foo"),
+                            original: Symbol("Foo"),
+                        },
+                    ),
+                    span: Span {
+                        start: 51,
+                        end: 54,
+                    },
+                },
+                extends: Some(
+                    InterfaceExtends {
+                        extends: Span {
+                            start: 55,
+                            end: 62,
+                        },
+                        parents: CommaSeparated {
+                            inner: [
+                                Name {
+                                    kind: Unresolved(
+                                        UnresolvedName {
+                                            symbol: Symbol("Bar"),
+                                            qualification: Unqualified,
+                                        },
+                                    ),
+                                    span: Span {
+                                        start: 63,
+                                        end: 66,
+                                    },
+                                },
+                                Name {
+                                    kind: Resolved(
+                                        ResolvedName {
+                                            resolved: Symbol("Foo\Baz"),
+                                            original: Symbol("Baz"),
+                                        },
+                                    ),
+                                    span: Span {
+                                        start: 68,
+                                        end: 71,
+                                    },
+                                },
+                                Name {
+                                    kind: Resolved(
+                                        ResolvedName {
+                                            resolved: Symbol("Baz\Bar\Test"),
+                                            original: Symbol("Qux\Test"),
+                                        },
+                                    ),
+                                    span: Span {
+                                        start: 73,
+                                        end: 81,
+                                    },
+                                },
+                            ],
+                            commas: [
+                                Span {
+                                    start: 66,
+                                    end: 67,
+                                },
+                                Span {
+                                    start: 71,
+                                    end: 72,
+                                },
+                            ],
+                        },
+                    },
+                ),
+                body: InterfaceBody {
+                    left_brace: Span {
+                        start: 82,
+                        end: 83,
+                    },
+                    members: [],
+                    right_brace: Span {
+                        start: 85,
+                        end: 86,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: 41,
+            end: 86,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

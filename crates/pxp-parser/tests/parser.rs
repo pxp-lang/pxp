@@ -210,6 +210,7 @@ snap!(snapper, enum_in_namespace, process("fixtures/name-resolving/enum-in-names
 snap!(snapper, class_extends, process("fixtures/name-resolving/class-extends.php"));
 snap!(snapper, class_extends_aliased, process("fixtures/name-resolving/class-extends-aliased.php"));
 snap!(snapper, class_extends_qualified_aliased, process("fixtures/name-resolving/class-extends-qualified-aliased.php"));
+snap!(snapper, interface_extends, process("fixtures/name-resolving/interface-extends.php"));
 
 // Uses
 snap!(snapper, simple_use, process("fixtures/uses/simple-use.php"));
