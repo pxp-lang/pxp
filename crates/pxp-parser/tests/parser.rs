@@ -207,6 +207,9 @@ snap!(snapper, class_in_namespace, process("fixtures/name-resolving/class-in-nam
 snap!(snapper, trait_in_namespace, process("fixtures/name-resolving/trait-in-namespace.php"));
 snap!(snapper, interface_in_namespace, process("fixtures/name-resolving/interface-in-namespace.php"));
 snap!(snapper, enum_in_namespace, process("fixtures/name-resolving/enum-in-namespace.php"));
+snap!(snapper, class_extends, process("fixtures/name-resolving/class-extends.php"));
+snap!(snapper, class_extends_aliased, process("fixtures/name-resolving/class-extends-aliased.php"));
+snap!(snapper, class_extends_qualified_aliased, process("fixtures/name-resolving/class-extends-qualified-aliased.php"));
 
 // Uses
 snap!(snapper, simple_use, process("fixtures/uses/simple-use.php"));

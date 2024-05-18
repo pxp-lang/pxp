@@ -1,0 +1,125 @@
+[
+    Statement {
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Use(
+            UseStatement {
+                kind: Normal,
+                uses: [
+                    Use {
+                        name: Name {
+                            kind: Resolved(
+                                ResolvedName {
+                                    resolved: Symbol("Foo\Baz"),
+                                    original: Symbol("Foo\Baz"),
+                                },
+                            ),
+                            span: Span {
+                                start: 11,
+                                end: 18,
+                            },
+                        },
+                        alias: Some(
+                            SimpleIdentifier {
+                                symbol: Symbol("Qux"),
+                                span: Span {
+                                    start: 22,
+                                    end: 25,
+                                },
+                            },
+                        ),
+                        kind: None,
+                    },
+                ],
+            },
+        ),
+        span: Span {
+            start: 7,
+            end: 26,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Class(
+            ClassStatement {
+                attributes: [],
+                modifiers: ClassModifierGroup {
+                    modifiers: [],
+                },
+                class: Span {
+                    start: 28,
+                    end: 33,
+                },
+                name: Name {
+                    kind: Resolved(
+                        ResolvedName {
+                            resolved: Symbol("Bar"),
+                            original: Symbol("Bar"),
+                        },
+                    ),
+                    span: Span {
+                        start: 34,
+                        end: 37,
+                    },
+                },
+                extends: Some(
+                    ClassExtends {
+                        extends: Span {
+                            start: 38,
+                            end: 45,
+                        },
+                        parent: Name {
+                            kind: Resolved(
+                                ResolvedName {
+                                    resolved: Symbol("Foo\Baz"),
+                                    original: Symbol("Qux"),
+                                },
+                            ),
+                            span: Span {
+                                start: 46,
+                                end: 49,
+                            },
+                        },
+                    },
+                ),
+                implements: None,
+                body: ClassBody {
+                    left_brace: Span {
+                        start: 50,
+                        end: 51,
+                    },
+                    members: [],
+                    right_brace: Span {
+                        start: 51,
+                        end: 52,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: 28,
+            end: 52,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

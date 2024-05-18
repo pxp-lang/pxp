@@ -591,7 +591,7 @@ walk_mut! {
     }
 
     walk_class_extends: ClassExtends => {
-        visitor.visit_simple_identifier(&mut node.parent);
+        visitor.visit_name(&mut node.parent);
     }
 
     walk_class_implements: ClassImplements => {
@@ -2010,7 +2010,7 @@ walk! {
     }
 
     walk_class_extends: ClassExtends => {
-        visitor.visit_simple_identifier(&node.parent);
+        visitor.visit_name(&node.parent);
     }
 
     walk_class_implements: ClassImplements => {

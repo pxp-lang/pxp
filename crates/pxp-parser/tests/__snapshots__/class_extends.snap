@@ -17,6 +17,38 @@
         },
     },
     Statement {
+        kind: Use(
+            UseStatement {
+                kind: Normal,
+                uses: [
+                    Use {
+                        name: Name {
+                            kind: Resolved(
+                                ResolvedName {
+                                    resolved: Symbol("Foo\Baz"),
+                                    original: Symbol("Foo\Baz"),
+                                },
+                            ),
+                            span: Span {
+                                start: 11,
+                                end: 18,
+                            },
+                        },
+                        alias: None,
+                        kind: None,
+                    },
+                ],
+            },
+        ),
+        span: Span {
+            start: 7,
+            end: 19,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
         kind: Class(
             ClassStatement {
                 attributes: [],
@@ -24,8 +56,8 @@
                     modifiers: [],
                 },
                 class: Span {
-                    start: 7,
-                    end: 12,
+                    start: 21,
+                    end: 26,
                 },
                 name: Name {
                     kind: Resolved(
@@ -35,26 +67,26 @@
                         },
                     ),
                     span: Span {
-                        start: 13,
-                        end: 16,
+                        start: 27,
+                        end: 30,
                     },
                 },
                 extends: Some(
                     ClassExtends {
                         extends: Span {
-                            start: 17,
-                            end: 24,
+                            start: 31,
+                            end: 38,
                         },
                         parent: Name {
-                            kind: Unresolved(
-                                UnresolvedName {
-                                    symbol: Symbol("Bar"),
-                                    qualification: Unqualified,
+                            kind: Resolved(
+                                ResolvedName {
+                                    resolved: Symbol("Foo\Baz"),
+                                    original: Symbol("Baz"),
                                 },
                             ),
                             span: Span {
-                                start: 25,
-                                end: 28,
+                                start: 39,
+                                end: 42,
                             },
                         },
                     },
@@ -62,20 +94,20 @@
                 implements: None,
                 body: ClassBody {
                     left_brace: Span {
-                        start: 29,
-                        end: 30,
+                        start: 43,
+                        end: 44,
                     },
                     members: [],
                     right_brace: Span {
-                        start: 30,
-                        end: 31,
+                        start: 52,
+                        end: 53,
                     },
                 },
             },
         ),
         span: Span {
-            start: 7,
-            end: 31,
+            start: 21,
+            end: 53,
         },
         comments: CommentGroup {
             comments: [],

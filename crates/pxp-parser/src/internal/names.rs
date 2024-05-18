@@ -1,11 +1,43 @@
-use pxp_ast::name::Name;
+use pxp_ast::{name::Name, UseKind};
 use pxp_diagnostics::Severity;
 use pxp_symbol::Symbol;
 use pxp_token::TokenKind;
 
 use crate::{state::State, ParserDiagnostic};
 
-use super::identifiers::{full_type_name, is_reserved_identifier};
+use super::identifiers::{self, full_type_name, is_reserved_identifier};
+
+pub fn full_name(state: &mut State, kind: UseKind) -> Name {
+    let current = state.stream.current();
+
+    match &current.kind {
+        TokenKind::FullyQualifiedIdentifier => {
+            state.stream.next();
+
+            let symbol = current.symbol.unwrap();
+
+            Name::resolved(symbol, symbol, current.span)
+        },
+        TokenKind::Identifier
+        | TokenKind::QualifiedIdentifier => {
+            state.stream.next();
+
+            state.maybe_resolve_identifier(*current, kind)
+        }
+        _ => {
+            state.diagnostic(
+                ParserDiagnostic::ExpectedToken {
+                    expected: vec![TokenKind::Identifier],
+                    found: *current,
+                },
+                Severity::Error,
+                current.span,
+            );
+
+            Name::missing(current.span)
+        }
+    }
+}
 
 pub fn type_name(state: &mut State) -> Name {
     let current = state.stream.current();
@@ -64,7 +96,7 @@ pub fn type_name(state: &mut State) -> Name {
 
 // Names inside of a `use` statement are always resolved.
 pub fn use_name(state: &mut State) -> Name {
-    let identifier = full_type_name(state);
+    let identifier = identifiers::full_type_name(state);
 
     if identifier.symbol.is_missing() {
         return Name::missing(identifier.span);

@@ -1,10 +1,12 @@
 use std::collections::{HashMap, VecDeque};
 
-use pxp_ast::{attributes::AttributeGroup, UseKind};
+use pxp_ast::{attributes::AttributeGroup, name::Name, UseKind};
+use pxp_bytestring::ByteString;
 use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::stream::TokenStream;
 use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
+use pxp_token::{Token, TokenKind};
 
 use crate::ParserDiagnostic;
 
@@ -76,6 +78,43 @@ impl<'a, 'b> State<'a, 'b> {
 
     pub fn namespace(&self) -> Option<&Scope> {
         self.stack.iter().next()
+    }
+
+    pub fn maybe_resolve_identifier(&mut self, token: Token, kind: UseKind) -> Name {
+        let symbol = token.symbol.unwrap();
+        let part = match &token.kind {
+            TokenKind::Identifier => token.symbol.unwrap(),
+            TokenKind::QualifiedIdentifier => {
+                let bytestring = self.symbol_table.resolve(token.symbol.unwrap()).unwrap().to_bytestring();
+                let parts = bytestring.split(|c| *c == b'\\').collect::<Vec<_>>();
+
+                self.symbol_table.intern(parts.first().unwrap())
+            },
+            _ => unreachable!(),
+        };
+
+        let map = self.imports.get(&kind).unwrap();
+
+        if let Some(imported) = map.get(&part) {
+            match &token.kind {
+                TokenKind::Identifier => {
+                    Name::resolved(*imported, symbol, token.span)
+                },
+                TokenKind::QualifiedIdentifier => {
+                    // Qualified identifiers might be aliased, so we need to take the full un-aliased import and
+                    // concatenate that with everything after the first part of the qualified identifier.
+                    let bytestring = self.symbol_table.resolve(symbol).unwrap().to_bytestring();
+                    let parts = bytestring.splitn(2, |c| *c == b'\\').collect::<Vec<_>>();
+                    let rest = self.symbol_table.intern(parts[1]);
+                    let coagulated = self.symbol_table.coagulate(&[*imported, rest], Some(b"\\"));
+
+                    Name::resolved(coagulated, symbol, token.span)
+                },
+                _ => unreachable!()
+            }
+        } else {
+            Name::unresolved(symbol, token.kind.into(), token.span)
+        }
     }
 
     pub fn add_prefixed_import(&mut self, kind: &UseKind, prefix: Symbol, name: Symbol, alias: Option<Symbol>) {

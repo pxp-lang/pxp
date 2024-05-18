@@ -45,8 +45,13 @@
                             start: 17,
                             end: 24,
                         },
-                        parent: SimpleIdentifier {
-                            symbol: Symbol("Bar"),
+                        parent: Name {
+                            kind: Unresolved(
+                                UnresolvedName {
+                                    symbol: Symbol("Bar"),
+                                    qualification: Unqualified,
+                                },
+                            ),
                             span: Span {
                                 start: 25,
                                 end: 28,

@@ -20,6 +20,7 @@ use pxp_ast::classes::ClassishMember;
 use pxp_ast::identifiers::SimpleIdentifier;
 use pxp_ast::Expression;
 use pxp_ast::StatementKind;
+use pxp_ast::UseKind;
 use pxp_ast::{ExpressionKind, NewExpression};
 
 use pxp_diagnostics::Severity;
@@ -41,7 +42,7 @@ pub fn parse(state: &mut State) -> StatementKind {
         let span = current.span;
 
         state.stream.next();
-        let parent = identifiers::full_type_name(state);
+        let parent = names::full_name(state, UseKind::Normal);
 
         Some(ClassExtends {
             extends: span,
@@ -124,7 +125,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
         state.stream.next();
 
         let extends = current.span;
-        let parent = identifiers::full_name(state);
+        let parent = names::full_name(state, UseKind::Normal);
 
         Some(ClassExtends { extends, parent })
     } else {

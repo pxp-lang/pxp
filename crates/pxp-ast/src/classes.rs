@@ -87,8 +87,8 @@ pub struct AnonymousClassExpression {
 #[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct ClassExtends {
-    pub extends: Span,            // `extends`
-    pub parent: SimpleIdentifier, // `Foo`
+    pub extends: Span, // `extends`
+    pub parent: Name,  // `Foo`
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
