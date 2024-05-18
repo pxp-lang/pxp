@@ -63,7 +63,13 @@ fn main() {
     } else {
         let contents = std::fs::read(path).unwrap();
         let mut lexer = Lexer::new(&contents[..], symbol_table);
-        let tokens = if immediate { lexer.tokenize_in_immediate_mode() } else { lexer.tokenize() }.unwrap();
+        let tokens = match if immediate { lexer.tokenize_in_immediate_mode() } else { lexer.tokenize() } {
+            Ok(tokens) => tokens,
+            Err(err) => {
+                eprintln!("{}", err);
+                exit(1);
+            }
+        };
 
         if args.contains(&"--debug".to_string()) {
             dbg_tokens(&tokens);

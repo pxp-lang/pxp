@@ -1133,6 +1133,9 @@ impl<'a, 'b> Lexer<'a, 'b> {
 
         let (kind, with_symbol) = loop {
             match self.state.source.read(3) {
+                [b'\\', b'"' | b'\\' | b'$', ..] => {
+                    self.state.source.skip(2);
+                },
                 [b'$', b'{', ..] => {
                     buffer_span = Some(self.state.source.span());
                     self.state.source.start_token();
@@ -2142,6 +2145,26 @@ mod tests {
                 TokenKind::FullyQualifiedIdentifier,
                 TokenKind::QualifiedIdentifier,
                 TokenKind::Eof
+            ]
+        );
+    }
+
+    #[test]
+    fn it_can_tokenize_heredocs_with_escapes() {
+        let tokens = tokenise("<?php <<<EOD\n\\$foo\nEOD;")
+            .iter()
+            .map(|t| t.kind)
+            .collect::<Vec<_>>();
+
+        assert_eq!(
+            &tokens,
+            &[
+                TokenKind::OpenTag(OpenTagKind::Full),
+                TokenKind::StartHeredoc,
+                TokenKind::StringPart,
+                TokenKind::EndDocString(DocStringIndentationKind::None, 0),
+                TokenKind::SemiColon,
+                TokenKind::Eof,
             ]
         );
     }

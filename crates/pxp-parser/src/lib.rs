@@ -25,6 +25,7 @@ use pxp_ast::variables::Variable;
 use pxp_ast::Statement;
 use pxp_ast::{StatementKind, StaticVar};
 use pxp_diagnostics::Diagnostic;
+use pxp_lexer::error::SyntaxError;
 use pxp_lexer::stream::TokenStream;
 use pxp_lexer::Lexer;
 use pxp_span::Span;
@@ -66,8 +67,8 @@ pub fn parse<B: Sized + AsRef<[u8]>>(
     let mut lexer = Lexer::new(input, symbol_table);
     let tokens = match lexer.tokenize() {
         Ok(tokens) => tokens,
-        Err(_) => {
-            todo!("tolerant mode")
+        Err(error) => {
+            todo!("{:?}", error);
         }
     };
 

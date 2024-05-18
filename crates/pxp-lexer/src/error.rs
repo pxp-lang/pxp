@@ -86,7 +86,7 @@ impl Display for SyntaxError {
             Self::UnrecognisedToken(token, _) => write!(
                 f,
                 "Syntax Error: Unrecognised token {}",
-                token,
+                *token as char,
             )
         }
     }
