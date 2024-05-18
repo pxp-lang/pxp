@@ -206,6 +206,7 @@ snap!(snapper, inline_html_with_php, process("fixtures/html/inline-html-with-php
 snap!(snapper, class_in_namespace, process("fixtures/name-resolving/class-in-namespace.php"));
 snap!(snapper, trait_in_namespace, process("fixtures/name-resolving/trait-in-namespace.php"));
 snap!(snapper, interface_in_namespace, process("fixtures/name-resolving/interface-in-namespace.php"));
+snap!(snapper, enum_in_namespace, process("fixtures/name-resolving/enum-in-namespace.php"));
 
 // Uses
 snap!(snapper, simple_use, process("fixtures/uses/simple-use.php"));

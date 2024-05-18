@@ -913,7 +913,7 @@ walk_mut! {
     walk_unit_enum: UnitEnumStatement => {
         // FIXME: Walk attributes here.
 
-        visitor.visit_simple_identifier(&mut node.name);
+        visitor.visit_name(&mut node.name);
 
         for implements in node.implements.iter_mut() {
             visitor.visit_simple_identifier(implements);
@@ -944,7 +944,7 @@ walk_mut! {
     walk_backed_enum: BackedEnumStatement => {
         // FIXME: Walk attributes here.
 
-        visitor.visit_simple_identifier(&mut node.name);
+        visitor.visit_name(&mut node.name);
 
         for implements in node.implements.iter_mut() {
             visitor.visit_simple_identifier(implements);
@@ -2332,7 +2332,7 @@ walk! {
     walk_unit_enum: UnitEnumStatement => {
         // FIXME: Walk attributes here.
 
-        visitor.visit_simple_identifier(&node.name);
+        visitor.visit_name(&node.name);
 
         for implements in node.implements.iter() {
             visitor.visit_simple_identifier(implements);
@@ -2363,7 +2363,7 @@ walk! {
     walk_backed_enum: BackedEnumStatement => {
         // FIXME: Walk attributes here.
 
-        visitor.visit_simple_identifier(&node.name);
+        visitor.visit_name(&node.name);
 
         for implements in node.implements.iter() {
             visitor.visit_simple_identifier(implements);

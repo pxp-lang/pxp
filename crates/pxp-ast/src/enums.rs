@@ -3,6 +3,7 @@ use crate::classes::ClassishMember;
 
 use crate::identifiers::SimpleIdentifier;
 
+use crate::name::Name;
 use crate::Expression;
 use pxp_span::Span;
 use pxp_syntax::backed_enum_type::BackedEnumType;
@@ -36,7 +37,7 @@ pub struct UnitEnumBody {
 pub struct UnitEnumStatement {
     pub attributes: Vec<AttributeGroup>,   // `#[Foo]`
     pub r#enum: Span,                      // `enum`
-    pub name: SimpleIdentifier,            // `Foo`
+    pub name: Name,            // `Foo`
     pub implements: Vec<SimpleIdentifier>, // `implements Bar`
     pub body: UnitEnumBody,                // `{ ... }`
 }
@@ -72,7 +73,7 @@ pub struct BackedEnumBody {
 pub struct BackedEnumStatement {
     pub attributes: Vec<AttributeGroup>,   // `#[Foo]`
     pub r#enum: Span,                      // `enum`
-    pub name: SimpleIdentifier,            // `Foo`
+    pub name: Name,            // `Foo`
     pub backed_type: BackedEnumType,       // `: string`
     pub implements: Vec<SimpleIdentifier>, // `implements Bar`
     pub body: BackedEnumBody,              // `{ ... }`

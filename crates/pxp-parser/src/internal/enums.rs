@@ -20,11 +20,12 @@ use pxp_syntax::backed_enum_type::BackedEnumType;
 use pxp_token::TokenKind;
 
 use super::classes::member;
+use super::names;
 
 pub fn parse(state: &mut State) -> StatementKind {
     let span = utils::skip(state, TokenKind::Enum);
 
-    let name = identifiers::type_identifier(state);
+    let name = names::type_name(state);
 
     let backed_type: Option<BackedEnumType> = if state.stream.current().kind == TokenKind::Colon {
         let span = utils::skip_colon(state);
