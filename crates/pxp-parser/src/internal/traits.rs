@@ -14,6 +14,7 @@ use pxp_token::Token;
 use pxp_token::TokenKind;
 
 use super::classes::member;
+use super::names;
 
 pub fn usage(state: &mut State) -> TraitUsage {
     let span = utils::skip(state, TokenKind::Use);
@@ -174,7 +175,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
 
 pub fn parse(state: &mut State) -> StatementKind {
     let span = utils::skip(state, TokenKind::Trait);
-    let name = identifiers::type_identifier(state);
+    let name = names::type_name(state);
     let attributes = state.get_attributes();
 
     let body = TraitBody {

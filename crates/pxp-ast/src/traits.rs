@@ -2,6 +2,7 @@ use crate::attributes::AttributeGroup;
 use crate::classes::ClassishMember;
 use crate::identifiers::SimpleIdentifier;
 use crate::modifiers::VisibilityModifier;
+use crate::name::Name;
 
 use pxp_span::Span;
 
@@ -16,7 +17,7 @@ pub struct TraitBody {
 
 pub struct TraitStatement {
     pub r#trait: Span,
-    pub name: SimpleIdentifier,
+    pub name: Name,
     pub attributes: Vec<AttributeGroup>,
     pub body: TraitBody,
 }

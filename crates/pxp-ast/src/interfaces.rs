@@ -2,6 +2,7 @@ use crate::attributes::AttributeGroup;
 use crate::classes::ClassishMember;
 use crate::identifiers::SimpleIdentifier;
 
+use crate::name::Name;
 use crate::utils::CommaSeparated;
 use pxp_span::Span;
 
@@ -24,7 +25,7 @@ pub struct InterfaceBody {
 pub struct InterfaceStatement {
     pub attributes: Vec<AttributeGroup>,   // `#[Foo]`
     pub interface: Span,                   // `interface`
-    pub name: SimpleIdentifier,            // `Foo`
+    pub name: Name,                        // `Foo`
     pub extends: Option<InterfaceExtends>, // `extends Bar`
     pub body: InterfaceBody,               // `{ ... }`
 }

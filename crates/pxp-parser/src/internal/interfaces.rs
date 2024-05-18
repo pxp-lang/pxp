@@ -9,11 +9,12 @@ use pxp_ast::StatementKind;
 use pxp_token::TokenKind;
 
 use super::classes::member;
+use super::names;
 
 pub fn parse(state: &mut State) -> StatementKind {
     let span = utils::skip(state, TokenKind::Interface);
 
-    let name = identifiers::type_identifier(state);
+    let name = names::type_name(state);
 
     let current = state.stream.current();
     let extends = if current.kind == TokenKind::Extends {

@@ -790,7 +790,7 @@ walk_mut! {
     walk_interface: InterfaceStatement => {
         // FIXME: Walk attributes here.
 
-        visitor.visit_simple_identifier(&mut node.name);
+        visitor.visit_name(&mut node.name);
 
         if let Some(extends) = &mut node.extends {
             visitor.visit_interface_extends(extends);
@@ -814,7 +814,7 @@ walk_mut! {
     walk_trait: TraitStatement => {
         // FIXME: Walk attributes here.
 
-        visitor.visit_simple_identifier(&mut node.name);
+        visitor.visit_name(&mut node.name);
         visitor.visit_trait_body(&mut node.body);
     }
 
@@ -2209,7 +2209,7 @@ walk! {
     walk_interface: InterfaceStatement => {
         // FIXME: Walk attributes here.
 
-        visitor.visit_simple_identifier(&node.name);
+        visitor.visit_name(&node.name);
 
         if let Some(extends) = &node.extends {
             visitor.visit_interface_extends(extends);
@@ -2233,7 +2233,7 @@ walk! {
     walk_trait: TraitStatement => {
         // FIXME: Walk attributes here.
 
-        visitor.visit_simple_identifier(&node.name);
+        visitor.visit_name(&node.name);
         visitor.visit_trait_body(&node.body);
     }
 
