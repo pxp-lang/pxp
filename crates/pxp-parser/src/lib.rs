@@ -25,7 +25,6 @@ use pxp_ast::variables::Variable;
 use pxp_ast::Statement;
 use pxp_ast::{StatementKind, StaticVar};
 use pxp_diagnostics::Diagnostic;
-use pxp_lexer::error::SyntaxError;
 use pxp_lexer::stream::TokenStream;
 use pxp_lexer::Lexer;
 use pxp_span::Span;

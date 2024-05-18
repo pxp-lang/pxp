@@ -95,7 +95,6 @@ pub fn use_statement(state: &mut State) -> StatementKind {
                 alias = Some(identifiers::type_identifier(state));
             }
 
-            let symbol = name;
             let alias_symbol = alias.as_ref().map(|a| a.symbol);
 
             uses.push(Use {
