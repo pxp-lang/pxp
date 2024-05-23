@@ -4,10 +4,7 @@ use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
 use crate::ParserDiagnostic;
-use pxp_ast::modifiers::PropertyModifierGroup;
-use pxp_ast::properties::Property;
-use pxp_ast::properties::PropertyEntry;
-use pxp_ast::properties::VariableProperty;
+use pxp_ast::*;
 
 use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;

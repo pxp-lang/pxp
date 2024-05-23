@@ -7,12 +7,7 @@ use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
 use crate::ParserDiagnostic;
-use pxp_ast::arguments::{Argument, SingleArgument};
-use pxp_ast::arguments::{ArgumentList, NamedArgument, PositionalArgument};
-use pxp_ast::functions::ConstructorParameter;
-use pxp_ast::functions::ConstructorParameterList;
-use pxp_ast::functions::FunctionParameter;
-use pxp_ast::functions::FunctionParameterList;
+use pxp_ast::*;
 
 use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;

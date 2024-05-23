@@ -1,5 +1,5 @@
 use crate::{state::State, ParserDiagnostic};
-use pxp_ast::identifiers::SimpleIdentifier;
+use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_symbol::Symbol;
 use pxp_token::{Token, TokenKind};

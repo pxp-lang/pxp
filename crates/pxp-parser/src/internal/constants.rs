@@ -2,10 +2,7 @@ use crate::expressions;
 use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
-use pxp_ast::constant::ClassishConstant;
-use pxp_ast::constant::ConstantEntry;
-use pxp_ast::constant::ConstantStatement;
-use pxp_ast::modifiers::ConstantModifierGroup;
+use pxp_ast::*;
 use pxp_token::TokenKind;
 
 use super::data_type::data_type;

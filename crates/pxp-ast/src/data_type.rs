@@ -1,11 +1,7 @@
 use pxp_span::Span;
 use pxp_type::Type;
 
-#[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub struct DataType {
-    pub kind: Type,
-    pub span: Span,
-}
+use crate::DataType;
 
 impl DataType {
     pub fn new(kind: Type, span: Span) -> Self {

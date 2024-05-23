@@ -2,10 +2,7 @@ use crate::expressions;
 use crate::internal::utils;
 use crate::state::State;
 use crate::ParserDiagnostic;
-use pxp_ast::variables::BracedVariableVariable;
-use pxp_ast::variables::SimpleVariable;
-use pxp_ast::variables::Variable;
-use pxp_ast::variables::VariableVariable;
+use pxp_ast::*;
 
 use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;

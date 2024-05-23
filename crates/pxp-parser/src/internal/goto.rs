@@ -1,8 +1,7 @@
 use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
-use pxp_ast::goto::GotoStatement;
-use pxp_ast::goto::LabelStatement;
+use pxp_ast::*;
 use pxp_ast::StatementKind;
 use pxp_token::TokenKind;
 

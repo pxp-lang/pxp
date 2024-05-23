@@ -2,8 +2,7 @@ use crate::internal::identifiers;
 use crate::internal::parameters;
 use crate::internal::utils;
 use crate::state::State;
-use pxp_ast::attributes::Attribute;
-use pxp_ast::attributes::AttributeGroup;
+use pxp_ast::*;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 

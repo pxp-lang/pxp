@@ -1,12 +1,7 @@
 use pxp_span::Span;
 use pxp_token::Token;
 
-#[derive(Debug, PartialEq, Eq, Clone)]
-
-pub struct Literal {
-    pub kind: LiteralKind,
-    pub token: Token,
-}
+use crate::{Literal, LiteralKind};
 
 impl Literal {
     pub fn new(kind: LiteralKind, token: Token) -> Literal {
@@ -19,12 +14,4 @@ impl Literal {
             token: Token::missing(span),
         }
     }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub enum LiteralKind {
-    Integer,
-    Float,
-    String,
-    Missing,
 }

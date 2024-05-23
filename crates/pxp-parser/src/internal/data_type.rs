@@ -1,6 +1,6 @@
 use crate::{internal::utils, ParserDiagnostic};
 use crate::state::State;
-use pxp_ast::data_type::DataType;
+use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;

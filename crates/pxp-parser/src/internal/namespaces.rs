@@ -5,12 +5,7 @@ use crate::state::NamespaceType;
 use crate::state::Scope;
 use crate::state::State;
 use crate::ParserDiagnostic;
-use pxp_ast::identifiers::SimpleIdentifier;
-use pxp_ast::name::Name;
-use pxp_ast::namespaces::BracedNamespace;
-use pxp_ast::namespaces::BracedNamespaceBody;
-use pxp_ast::namespaces::NamespaceStatement;
-use pxp_ast::namespaces::UnbracedNamespace;
+use pxp_ast::*;
 use pxp_ast::Block;
 use pxp_ast::StatementKind;
 

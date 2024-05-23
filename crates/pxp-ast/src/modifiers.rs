@@ -1,22 +1,7 @@
 use pxp_span::Span;
 use pxp_syntax::visibility::Visibility;
 
-#[derive(Debug, PartialEq, Eq, Clone)]
-
-pub enum VisibilityModifier {
-    Public(Span),
-    Protected(Span),
-    Private(Span),
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-
-pub enum PromotedPropertyModifier {
-    Public(Span),
-    Protected(Span),
-    Private(Span),
-    Readonly(Span),
-}
+use crate::{ClassModifier, ClassModifierGroup, ConstantModifier, ConstantModifierGroup, MethodModifier, MethodModifierGroup, PromotedPropertyModifier, PromotedPropertyModifierGroup, PropertyModifier, PropertyModifierGroup};
 
 impl PromotedPropertyModifier {
     pub fn span(&self) -> Span {
@@ -38,12 +23,6 @@ impl std::fmt::Display for PromotedPropertyModifier {
             PromotedPropertyModifier::Readonly(_) => write!(f, "readonly"),
         }
     }
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-#[repr(transparent)]
-pub struct PromotedPropertyModifierGroup {
-    pub modifiers: Vec<PromotedPropertyModifier>,
 }
 
 impl PromotedPropertyModifierGroup {
@@ -76,16 +55,6 @@ impl PromotedPropertyModifierGroup {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
-
-pub enum PropertyModifier {
-    Public(Span),
-    Protected(Span),
-    Private(Span),
-    Static(Span),
-    Readonly(Span),
-}
-
 impl PropertyModifier {
     pub fn span(&self) -> Span {
         match self {
@@ -96,12 +65,6 @@ impl PropertyModifier {
             PropertyModifier::Readonly(span) => *span,
         }
     }
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-#[repr(transparent)]
-pub struct PropertyModifierGroup {
-    pub modifiers: Vec<PropertyModifier>,
 }
 
 impl PropertyModifierGroup {
@@ -146,17 +109,6 @@ impl PropertyModifierGroup {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
-
-pub enum MethodModifier {
-    Final(Span),
-    Static(Span),
-    Abstract(Span),
-    Public(Span),
-    Protected(Span),
-    Private(Span),
-}
-
 impl MethodModifier {
     pub fn span(&self) -> Span {
         match self {
@@ -168,12 +120,6 @@ impl MethodModifier {
             MethodModifier::Private(span) => *span,
         }
     }
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-#[repr(transparent)]
-pub struct MethodModifierGroup {
-    pub modifiers: Vec<MethodModifier>,
 }
 
 impl MethodModifierGroup {
@@ -218,19 +164,6 @@ impl MethodModifierGroup {
     }
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
-
-pub enum ClassModifier {
-    Final(Span),
-    Abstract(Span),
-    Readonly(Span),
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct ClassModifierGroup {
-    pub modifiers: Vec<ClassModifier>,
-}
-
 impl ClassModifierGroup {
     pub fn is_empty(&self) -> bool {
         self.modifiers.is_empty()
@@ -253,21 +186,6 @@ impl ClassModifierGroup {
             .iter()
             .any(|modifier| matches!(modifier, ClassModifier::Abstract { .. }))
     }
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-
-pub enum ConstantModifier {
-    Final(Span),
-    Public(Span),
-    Protected(Span),
-    Private(Span),
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-#[repr(transparent)]
-pub struct ConstantModifierGroup {
-    pub modifiers: Vec<ConstantModifier>,
 }
 
 impl ConstantModifierGroup {

@@ -1,15 +1,6 @@
 use crate::state::State;
 use crate::ParserDiagnostic;
-use pxp_ast::modifiers::ClassModifier;
-use pxp_ast::modifiers::ClassModifierGroup;
-use pxp_ast::modifiers::ConstantModifier;
-use pxp_ast::modifiers::ConstantModifierGroup;
-use pxp_ast::modifiers::MethodModifier;
-use pxp_ast::modifiers::MethodModifierGroup;
-use pxp_ast::modifiers::PromotedPropertyModifier;
-use pxp_ast::modifiers::PromotedPropertyModifierGroup;
-use pxp_ast::modifiers::PropertyModifier;
-use pxp_ast::modifiers::PropertyModifierGroup;
+use pxp_ast::*;
 
 use pxp_diagnostics::Severity;
 use pxp_span::Span;

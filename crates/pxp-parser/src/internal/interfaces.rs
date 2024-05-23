@@ -1,11 +1,6 @@
-use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
-use pxp_ast::identifiers::SimpleIdentifier;
-use pxp_ast::interfaces::InterfaceBody;
-use pxp_ast::interfaces::InterfaceExtends;
-use pxp_ast::interfaces::InterfaceStatement;
-use pxp_ast::name::Name;
+use pxp_ast::*;
 use pxp_ast::StatementKind;
 use pxp_ast::UseKind;
 use pxp_token::TokenKind;

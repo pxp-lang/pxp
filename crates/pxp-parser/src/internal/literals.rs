@@ -1,4 +1,4 @@
-use pxp_ast::literals::{Literal, LiteralKind};
+use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;
 

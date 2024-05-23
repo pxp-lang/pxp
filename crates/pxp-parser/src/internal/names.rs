@@ -1,11 +1,11 @@
-use pxp_ast::{name::Name, UseKind};
+use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_symbol::Symbol;
 use pxp_token::TokenKind;
 
 use crate::{state::State, ParserDiagnostic};
 
-use super::identifiers::{self, full_type_name, is_reserved_identifier};
+use super::identifiers::{self, is_reserved_identifier};
 
 pub fn full_name(state: &mut State, kind: UseKind) -> Name {
     let current = state.stream.current();

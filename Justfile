@@ -7,6 +7,9 @@ tokenise +args:
 parse +args:
     RUSTFLAGS=-Awarnings cargo run -q --package pxp-tools --bin parse --release -- {{args}}
 
+generate-ast:
+    php ./meta/scripts/generate-ast.php
+
 bench-parser:
     cargo build --release --bin parse
     hyperfine --warmup=1 --runs=1 \

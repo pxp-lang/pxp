@@ -3,10 +3,7 @@ use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
 use crate::ParserDiagnostic;
-use pxp_ast::try_block::CatchBlock;
-use pxp_ast::try_block::CatchType;
-use pxp_ast::try_block::FinallyBlock;
-use pxp_ast::try_block::TryStatement;
+use pxp_ast::*;
 use pxp_ast::StatementKind;
 
 use pxp_diagnostics::Severity;

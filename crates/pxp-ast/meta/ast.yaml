@@ -1,0 +1,1440 @@
+Block: Vec<Statement>
+
+Statement:
+  kind: StatementKind
+  span: Span
+  comments: CommentGroup
+
+StatementKind:
+  as: Enum
+  FullOpeningTag: FullOpeningTagStatement
+  ShortOpeningTag: ShortOpeningTagStatement
+  EchoOpeningTag: EchoOpeningTagStatement
+  ClosingTag: ClosingTagStatement
+  InlineHtml: InlineHtmlStatement
+  Label: LabelStatement
+  Goto: GotoStatement
+  HaltCompiler: HaltCompilerStatement
+  Static: StaticStatement
+  DoWhile: DoWhileStatement
+  While: WhileStatement
+  For: ForStatement
+  Foreach: ForeachStatement
+  Break: BreakStatement
+  Continue: ContinueStatement
+  Constant: ConstantStatement
+  Function: FunctionStatement
+  Class: ClassStatement
+  Trait: TraitStatement
+  Interface: InterfaceStatement
+  If: IfStatement
+  Switch: SwitchStatement
+  Echo: EchoStatement
+  Expression: ExpressionStatement
+  Return: ReturnStatement
+  Namespace: NamespaceStatement
+  Use: UseStatement
+  GroupUse: GroupUseStatement
+  Comment: Comment
+  Try: TryStatement
+  UnitEnum: UnitEnumStatement
+  BackedEnum: BackedEnumStatement
+  Block: BlockStatement
+  Global: GlobalStatement
+  Declare: DeclareStatement
+  Noop: Span
+
+Expression:
+  kind: ExpressionKind
+  span: Span
+  comments: CommentGroup
+
+ExpressionKind:
+  as: Enum
+  Missing: ""
+  Eval: EvalExpression
+  Empty: EmptyExpression
+  Die: DieExpression
+  Exit: ExitExpression
+  Isset: IssetExpression
+  Unset: UnsetExpression
+  Print: PrintExpression
+  Literal: Literal
+  ArithmeticOperation: ArithmeticOperationExpression
+  AssignmentOperation: AssignmentOperationExpression
+  BitwiseOperation: BitwiseOperationExpression
+  ComparisonOperation: ComparisonOperationExpression
+  LogicalOperation: LogicalOperationExpression
+  Concat: ConcatExpression
+  Instanceof: InstanceofExpression
+  Reference: ReferenceExpression
+  Parenthesized: ParenthesizedExpression
+  ErrorSuppress: ErrorSuppressExpression
+  Identifier: Identifier
+  Variable: Variable
+  Include: IncludeExpression
+  IncludeOnce: IncludeOnceExpression
+  Require: RequireExpression
+  RequireOnce: RequireOnceExpression
+  FunctionCall: FunctionCallExpression
+  FunctionClosureCreation: FunctionClosureCreationExpression
+  MethodCall: MethodCallExpression
+  MethodClosureCreation: MethodClosureCreationExpression
+  NullsafeMethodCall: NullsafeMethodCallExpression
+  StaticMethodCall: StaticMethodCallExpression
+  StaticVariableMethodCall: StaticVariableMethodCallExpression
+  StaticMethodClosureCreation: StaticMethodClosureCreationExpression
+  StaticVariableMethodClosureCreation: StaticVariableMethodClosureCreationExpression
+  PropertyFetch: PropertyFetchExpression
+  NullsafePropertyFetch: NullsafePropertyFetchExpression
+  StaticPropertyFetch: StaticPropertyFetchExpression
+  ConstantFetch: ConstantFetchExpression
+  Static: ""
+  Self_: ""
+  Parent: ""
+  ShortArray: ShortArrayExpression
+  Array: ArrayExpression
+  List: ListExpression
+  Closure: ClosureExpression
+  ArrowFunction: ArrowFunctionExpression
+  New: NewExpression
+  InterpolatedString: InterpolatedStringExpression
+  Heredoc: HeredocExpression
+  Nowdoc: NowdocExpression
+  ShellExec: ShellExecExpression
+  AnonymousClass: AnonymousClassExpression
+  Bool: BoolExpression
+  ArrayIndex: ArrayIndexExpression
+  "Null": ""
+  MagicConstant: MagicConstantExpression
+  ShortTernary: ShortTernaryExpression
+  Ternary: TernaryExpression
+  Coalesce: CoalesceExpression
+  Clone: CloneExpression
+  Match: MatchExpression
+  Throw: ThrowExpression
+  Yield: YieldExpression
+  YieldFrom: YieldFromExpression
+  Cast: CastExpression
+  Noop: ""
+
+InlineHtmlStatement:
+  html: Token
+
+FullOpeningTagStatement:
+  span: Span
+
+ShortOpeningTagStatement:
+  span: Span
+
+EchoOpeningTagStatement:
+  span: Span
+
+ClosingTagStatement:
+  span: Span
+
+ExpressionStatement:
+  expression: Expression
+  ending: Ending
+
+GlobalStatement:
+  global: Span
+  variables: Vec<Variable>
+
+BlockStatement:
+  left_brace: Span
+  statements: Vec<Statement>
+  right_brace: Span
+
+CastKind:
+  as: Enum
+  Int: ''
+  Bool: ''
+  Float: ''
+  String: ''
+  Array: ''
+  Object: ''
+  Unset: ''
+
+Case:
+  condition: Option<Expression>
+  body: Block
+
+Use:
+  name: Name
+  alias: Option<SimpleIdentifier>
+  kind: Option<UseKind>
+
+UseKind:
+  as: Enum
+  derive: Hash, Copy
+  Normal: ''
+  Function: ''
+  Const: ''
+
+EvalExpression:
+  eval: Span
+  argument: Box<SingleArgument>
+
+EmptyExpression:
+  empty: Span
+  argument: Box<SingleArgument>
+
+DieExpression:
+  die: Span
+  argument: Option<Box<SingleArgument>>
+
+ExitExpression:
+  exit: Span
+  argument: Option<Box<SingleArgument>>
+
+IssetExpression:
+  isset: Span
+  arguments: ArgumentList
+
+UnsetExpression:
+  unset: Span
+  arguments: ArgumentList
+
+PrintExpression:
+  print: Span
+  value: Option<Box<Expression>>
+  argument: Option<Box<SingleArgument>>
+
+ConcatExpression:
+  left: Box<Expression>
+  dot: Span
+  right: Box<Expression>
+
+InstanceofExpression:
+  left: Box<Expression>
+  instanceof: Span
+  right: Box<Expression>
+
+ReferenceExpression:
+  ampersand: Span
+  right: Box<Expression>
+
+ParenthesizedExpression:
+  start: Span
+  expr: Box<Expression>
+  end: Span
+
+ErrorSuppressExpression:
+  at: Span
+  expr: Box<Expression>
+
+IncludeExpression:
+  include: Span
+  path: Box<Expression>
+
+IncludeOnceExpression:
+  include_once: Span
+  path: Box<Expression>
+
+RequireExpression:
+  require: Span
+  path: Box<Expression>
+
+RequireOnceExpression:
+  require_once: Span
+  path: Box<Expression>
+
+FunctionCallExpression:
+  target: Box<Expression>
+  arguments: ArgumentList
+
+FunctionClosureCreationExpression:
+  target: Box<Expression>
+  placeholder: ArgumentPlaceholder
+
+MethodCallExpression:
+  target: Box<Expression>
+  arrow: Span
+  method: Box<Expression>
+  arguments: ArgumentList
+
+MethodClosureCreationExpression:
+  target: Box<Expression>
+  arrow: Span
+  method: Box<Expression>
+  placeholder: ArgumentPlaceholder
+
+NullsafeMethodCallExpression:
+  target: Box<Expression>
+  question_arrow: Span
+  method: Box<Expression>
+  arguments: ArgumentList
+
+StaticMethodCallExpression:
+  target: Box<Expression>
+  double_colon: Span
+  method: Identifier
+  arguments: ArgumentList
+
+StaticVariableMethodCallExpression:
+  target: Box<Expression>
+  double_colon: Span
+  method: Variable
+  arguments: ArgumentList
+
+StaticMethodClosureCreationExpression:
+  target: Box<Expression>
+  double_colon: Span
+  method: Identifier
+  placeholder: ArgumentPlaceholder
+
+StaticVariableMethodClosureCreationExpression:
+  target: Box<Expression>
+  double_colon: Span
+  method: Variable
+  placeholder: ArgumentPlaceholder
+
+PropertyFetchExpression:
+  target: Box<Expression>
+  arrow: Span
+  property: Box<Expression>
+
+NullsafePropertyFetchExpression:
+  target: Box<Expression>
+  question_arrow: Span
+  property: Box<Expression>
+
+StaticPropertyFetchExpression:
+  target: Box<Expression>
+  double_colon: Span
+  property: Variable
+
+ConstantFetchExpression:
+  target: Box<Expression>
+  double_colon: Span
+  constant: Identifier
+
+ShortArrayExpression:
+  start: Span
+  items: CommaSeparated<ArrayItem>
+  end: Span
+
+ArrayExpression:
+  array: Span
+  start: Span
+  items: CommaSeparated<ArrayItem>
+  end: Span
+
+ListExpression:
+  list: Span
+  start: Span
+  items: Vec<ListEntry>
+  end: Span
+
+NewExpression:
+  new: Span
+  target: Box<Expression>
+  arguments: Option<ArgumentList>
+
+InterpolatedStringExpression:
+  parts: Vec<StringPart>
+
+HeredocExpression:
+  label: Symbol
+  parts: Vec<StringPart>
+
+NowdocExpression:
+  label: Token
+  value: Token
+
+ShellExecExpression:
+  parts: Vec<StringPart>
+
+BoolExpression:
+  value: bool
+
+ArrayIndexExpression:
+  array: Box<Expression>
+  left_bracket: Span
+  index: Option<Box<Expression>>
+  right_bracket: Span
+
+ShortTernaryExpression:
+  condition: Box<Expression>
+  question_colon: Span
+  r#else: Box<Expression>
+
+TernaryExpression:
+  condition: Box<Expression>
+  question: Span
+  then: Box<Expression>
+  colon: Span
+  r#else: Box<Expression>
+
+CoalesceExpression:
+  lhs: Box<Expression>
+  double_question: Span
+  rhs: Box<Expression>
+
+CloneExpression:
+  target: Box<Expression>
+
+MatchExpression:
+  keyword: Span
+  left_parenthesis: Span
+  condition: Box<Expression>
+  right_parenthesis: Span
+  left_brace: Span
+  default: Option<Box<DefaultMatchArm>>
+  arms: Vec<MatchArm>
+  right_brace: Span
+
+ThrowExpression:
+  value: Box<Expression>
+
+YieldExpression:
+  key: Option<Box<Expression>>
+  value: Option<Box<Expression>>
+
+YieldFromExpression:
+  value: Box<Expression>
+
+CastExpression:
+  cast: Span
+  kind: CastKind
+  value: Box<Expression>
+
+DefaultMatchArm:
+  keyword: Span
+  double_arrow: Span
+  body: Expression
+
+MatchArm:
+  conditions: Vec<Expression>
+  arrow: Span
+  body: Expression
+
+MagicConstantExpression:
+  as: Enum
+  Directory: Span
+  File: Span
+  Line: Span
+  Function: Span
+  Class: Span
+  Method: Span
+  Namespace: Span
+  Trait: Span
+  CompilerHaltOffset: Span
+
+StringPart:
+  as: Enum
+  Literal: LiteralStringPart
+  Expression: ExpressionStringPart
+
+LiteralStringPart:
+  value: Symbol
+
+ExpressionStringPart:
+  expression: Box<Expression>
+
+ArrayItem:
+  as: Enum
+  Skipped: ""
+  Value:
+    value: Expression
+  ReferencedValue:
+    ampersand: Span
+    value: Expression
+  SpreadValue:
+    ellipsis: Span
+    value: Expression
+  KeyValue:
+    key: Expression
+    double_arrow: Span
+    value: Expression
+  ReferencedKeyValue:
+    key: Expression
+    double_arrow: Span
+    ampersand: Span
+    value: Expression
+
+ListEntry:
+  as: Enum
+  Skipped: ""
+  Value:
+    value: Expression
+  KeyValue:
+    key: Expression
+    double_arrow: Span
+    value: Expression
+
+PositionalArgument:
+  comments: CommentGroup
+  ellipsis: Option<Span>
+  value: Expression
+
+NamedArgument:
+  comments: CommentGroup
+  name: SimpleIdentifier
+  colon: Span
+  ellipsis: Option<Span>
+  value: Expression
+
+Argument:
+  as: Enum
+  Positional: PositionalArgument
+  Named: NamedArgument
+
+ArgumentList:
+  comments: CommentGroup
+  left_parenthesis: Span
+  arguments: Vec<Argument>
+  right_parenthesis: Span
+
+SingleArgument:
+  comments: CommentGroup
+  left_parenthesis: Span
+  argument: Option<Argument>
+  right_parenthesis: Span
+
+ArgumentPlaceholder:
+  comments: CommentGroup
+  left_parenthesis: Span
+  ellipsis: Span
+  right_parenthesis: Span
+
+Attribute:
+  span: Span
+  name: SimpleIdentifier
+  arguments: Option<ArgumentList>
+
+AttributeGroup:
+  span: Span
+  members: Vec<Attribute>
+
+ClassBody:
+  left_brace: Span
+  members: Vec<ClassishMember>
+  right_brace: Span
+
+ClassStatement:
+  attributes: Vec<AttributeGroup>
+  modifiers: ClassModifierGroup
+  class: Span
+  name: Name
+  extends: Option<ClassExtends>
+  implements: Option<ClassImplements>
+  body: ClassBody
+
+AnonymousClassBody:
+  left_brace: Span
+  members: Vec<ClassishMember>
+  right_brace: Span
+
+AnonymousClassExpression:
+  attributes: Vec<AttributeGroup>
+  class: Span
+  extends: Option<ClassExtends>
+  implements: Option<ClassImplements>
+  body: AnonymousClassBody
+
+ClassExtends:
+  extends: Span
+  parent: Name
+
+ClassImplements:
+  implements: Span
+  interfaces: CommaSeparated<SimpleIdentifier>
+
+ClassishMember:
+  as: Enum
+  Constant: ClassishConstant
+  TraitUsage: TraitUsage
+  Property: Property
+  VariableProperty: VariableProperty
+  AbstractMethod: AbstractMethod
+  AbstractConstructor: AbstractConstructor
+  ConcreteMethod: ConcreteMethod
+  ConcreteConstructor: ConcreteConstructor
+
+ConstantEntry:
+  name: SimpleIdentifier
+  equals: Span
+  value: Expression
+
+ConstantStatement:
+  comments: CommentGroup
+  r#const: Span
+  entries: Vec<ConstantEntry>
+  semicolon: Span
+
+ClassishConstant:
+  comments: CommentGroup
+  attributes: Vec<AttributeGroup>
+  modifiers: ConstantModifierGroup
+  r#const: Span
+  data_type: Option<DataType>
+  entries: Vec<ConstantEntry>
+  semicolon: Span
+
+IfStatement:
+  r#if: Span
+  left_parenthesis: Span
+  condition: Expression
+  right_parenthesis: Span
+  body: IfStatementBody
+
+IfStatementBody:
+  as: Enum
+  Statement:
+    statement: Box<Statement>
+    elseifs: Vec<IfStatementElseIf>
+    r#else: Option<IfStatementElse>
+  Block:
+    colon: Span
+    statements: Vec<Statement>
+    elseifs: Vec<IfStatementElseIfBlock>
+    r#else: Option<IfStatementElseBlock>
+    endif: Span
+    ending: Ending
+
+IfStatementElseIf:
+  elseif: Span
+  left_parenthesis: Span
+  condition: Expression
+  right_parenthesis: Span
+  statement: Box<Statement>
+
+IfStatementElse:
+  r#else: Span
+  statement: Box<Statement>
+
+IfStatementElseIfBlock:
+  elseif: Span
+  left_parenthesis: Span
+  condition: Expression
+  right_parenthesis: Span
+  colon: Span
+  statements: Vec<Statement>
+
+IfStatementElseBlock:
+  r#else: Span
+  colon: Span
+  statements: Vec<Statement>
+
+DataType:
+  kind: Type
+  span: Span
+
+DeclareEntry:
+  key: SimpleIdentifier
+  equals: Span
+  value: Literal
+
+DeclareEntryGroup:
+  left_parenthesis: Span
+  right_parenthesis: Span
+  entries: Vec<DeclareEntry>
+
+DeclareBody:
+  as: Enum
+  Noop:
+    semicolon: Span
+  Braced:
+    left_brace: Span
+    statements: Vec<Statement>
+    right_brace: Span
+  Expression:
+    expression: Expression
+    semicolon: Span
+  Block:
+    colon: Span
+    statements: Vec<Statement>
+    end: (Span, Span)
+
+DeclareStatement:
+  declare: Span
+  entries: DeclareEntryGroup
+  body: DeclareBody
+
+UnitEnumCase:
+  attributes: Vec<AttributeGroup>
+  start: Span
+  name: SimpleIdentifier
+  end: Span
+
+UnitEnumMember:
+  as: Enum
+  Case: UnitEnumCase
+  Classish: ClassishMember
+
+UnitEnumBody:
+  left_brace: Span
+  members: Vec<UnitEnumMember>
+  right_brace: Span
+
+UnitEnumStatement:
+  attributes: Vec<AttributeGroup>
+  r#enum: Span
+  name: Name
+  implements: Vec<SimpleIdentifier>
+  body: UnitEnumBody
+
+BackedEnumCase:
+  attributes: Vec<AttributeGroup>
+  case: Span
+  name: SimpleIdentifier
+  equals: Span
+  value: Expression
+  semicolon: Span
+
+BackedEnumMember:
+  as: Enum
+  Case: BackedEnumCase
+  Classish: ClassishMember
+
+BackedEnumBody:
+  left_brace: Span
+  members: Vec<BackedEnumMember>
+  right_brace: Span
+
+BackedEnumStatement:
+  attributes: Vec<AttributeGroup>
+  r#enum: Span
+  name: Name
+  backed_type: BackedEnumType
+  implements: Vec<SimpleIdentifier>
+  body: BackedEnumBody
+
+ReturnType:
+  colon: Span
+  data_type: DataType
+
+FunctionParameter:
+  comments: CommentGroup
+  name: SimpleVariable
+  attributes: Vec<AttributeGroup>
+  data_type: Option<DataType>
+  ellipsis: Option<Span>
+  default: Option<Expression>
+  ampersand: Option<Span>
+
+FunctionParameterList:
+  comments: CommentGroup
+  left_parenthesis: Span
+  parameters: CommaSeparated<FunctionParameter>
+  right_parenthesis: Span
+
+FunctionBody:
+  comments: CommentGroup
+  left_brace: Span
+  statements: Vec<Statement>
+  right_brace: Span
+
+FunctionStatement:
+  comments: CommentGroup
+  attributes: Vec<AttributeGroup>
+  function: Span
+  ampersand: Option<Span>
+  name: SimpleIdentifier
+  parameters: FunctionParameterList
+  return_type: Option<ReturnType>
+  body: FunctionBody
+
+ClosureUseVariable:
+  comments: CommentGroup
+  ampersand: Option<Span>
+  variable: SimpleVariable
+
+ClosureUse:
+  comments: CommentGroup
+  r#use: Span
+  left_parenthesis: Span
+  variables: CommaSeparated<ClosureUseVariable>
+  right_parenthesis: Span
+
+ClosureExpression:
+  comments: CommentGroup
+  attributes: Vec<AttributeGroup>
+  r#static: Option<Span>
+  function: Span
+  ampersand: Option<Span>
+  parameters: FunctionParameterList
+  uses: Option<ClosureUse>
+  return_type: Option<ReturnType>
+  body: FunctionBody
+
+ArrowFunctionExpression:
+  comments: CommentGroup
+  r#static: Option<Span>
+  ampersand: Option<Span>
+  r#fn: Span
+  attributes: Vec<AttributeGroup>
+  parameters: FunctionParameterList
+  return_type: Option<ReturnType>
+  double_arrow: Span
+  body: Box<Expression>
+
+ConstructorParameter:
+  attributes: Vec<AttributeGroup>
+  comments: CommentGroup
+  ampersand: Option<Span>
+  name: SimpleVariable
+  data_type: Option<DataType>
+  ellipsis: Option<Span>
+  default: Option<Expression>
+  modifiers: PromotedPropertyModifierGroup
+
+ConstructorParameterList:
+  comments: CommentGroup
+  left_parenthesis: Span
+  parameters: CommaSeparated<ConstructorParameter>
+  right_parenthesis: Span
+
+AbstractConstructor:
+  comments: CommentGroup
+  attributes: Vec<AttributeGroup>
+  modifiers: MethodModifierGroup
+  function: Span
+  ampersand: Option<Span>
+  name: SimpleIdentifier
+  parameters: ConstructorParameterList
+  semicolon: Span
+
+ConcreteConstructor:
+  comments: CommentGroup
+  attributes: Vec<AttributeGroup>
+  modifiers: MethodModifierGroup
+  function: Span
+  ampersand: Option<Span>
+  name: SimpleIdentifier
+  parameters: ConstructorParameterList
+  body: MethodBody
+
+AbstractMethod:
+  comments: CommentGroup
+  attributes: Vec<AttributeGroup>
+  modifiers: MethodModifierGroup
+  function: Span
+  ampersand: Option<Span>
+  name: SimpleIdentifier
+  parameters: FunctionParameterList
+  return_type: Option<ReturnType>
+  semicolon: Span
+
+ConcreteMethod:
+  comments: CommentGroup
+  attributes: Vec<AttributeGroup>
+  modifiers: MethodModifierGroup
+  function: Span
+  ampersand: Option<Span>
+  name: SimpleIdentifier
+  parameters: FunctionParameterList
+  return_type: Option<ReturnType>
+  body: MethodBody
+
+MethodBody:
+  comments: CommentGroup
+  left_brace: Span
+  statements: Vec<Statement>
+  right_brace: Span
+
+LabelStatement:
+  comments: CommentGroup
+  label: SimpleIdentifier
+  colon: Span
+
+GotoStatement:
+  comments: CommentGroup
+  keyword: Span
+  label: SimpleIdentifier
+  semicolon: Span
+
+Identifier:
+  as: Enum
+  SimpleIdentifier: SimpleIdentifier
+  DynamicIdentifier: DynamicIdentifier
+
+SimpleIdentifier:
+  symbol: Symbol
+  span: Span
+
+DynamicIdentifier:
+  span: Span
+  expr: Box<Expression>
+
+InterfaceExtends:
+  extends: Span
+  parents: CommaSeparated<Name>
+
+InterfaceBody:
+  left_brace: Span
+  members: Vec<ClassishMember>
+  right_brace: Span
+
+InterfaceStatement:
+  attributes: Vec<AttributeGroup>
+  interface: Span
+  name: Name
+  extends: Option<InterfaceExtends>
+  body: InterfaceBody
+
+Literal:
+  kind: LiteralKind
+  token: Token
+
+LiteralKind:
+  as: Enum
+  Integer: ""
+  Float: ""
+  String: ""
+  Missing: ""
+
+ForeachStatement:
+  foreach: Span
+  left_parenthesis: Span
+  iterator: ForeachStatementIterator
+  right_parenthesis: Span
+  body: ForeachStatementBody
+
+ForeachStatementIterator:
+  as: Enum
+  Value:
+    expression: Expression
+    r#as: Span
+    ampersand: Option<Span>
+    value: Expression
+  KeyAndValue:
+    expression: Expression
+    r#as: Span
+    ampersand: Option<Span>
+    key: Expression
+    double_arrow: Span
+    value: Expression
+
+ForeachStatementBody:
+  as: Enum
+  Statement:
+    statement: Box<Statement>
+  Block:
+    colon: Span
+    statements: Vec<Statement>
+    endforeach: Span
+    ending: Ending
+
+ForStatement:
+  r#for: Span
+  left_parenthesis: Span
+  iterator: ForStatementIterator
+  right_parenthesis: Span
+  body: ForStatementBody
+
+ForStatementIterator:
+  initializations: CommaSeparated<Expression>
+  initializations_semicolon: Span
+  conditions: CommaSeparated<Expression>
+  conditions_semicolon: Span
+  r#loop: CommaSeparated<Expression>
+
+ForStatementBody:
+  as: Enum
+  Statement:
+    statement: Box<Statement>
+  Block:
+    colon: Span
+    statements: Vec<Statement>
+    endfor: Span
+    ending: Ending
+
+DoWhileStatement:
+  r#do: Span
+  body: Box<Statement>
+  r#while: Span
+  left_parenthesis: Span
+  condition: Expression
+  right_parenthesis: Span
+  semicolon: Span
+
+WhileStatement:
+  r#while: Span
+  left_parenthesis: Span
+  condition: Expression
+  right_parenthesis: Span
+  body: WhileStatementBody
+
+WhileStatementBody:
+  as: Enum
+  Statement:
+    statement: Box<Statement>
+  Block:
+    colon: Span
+    statements: Vec<Statement>
+    endwhile: Span
+    ending: Ending
+
+Level:
+  as: Enum
+  Literal: Literal
+  Parenthesized:
+    left_parenthesis: Span
+    level: Box<Level>
+    right_parenthesis: Span
+
+BreakStatement:
+  r#break: Span
+  level: Option<Level>
+  ending: Ending
+
+ContinueStatement:
+  r#continue: Span
+  level: Option<Level>
+  ending: Ending
+
+VisibilityModifier:
+  as: Enum
+  Public: Span
+  Protected: Span
+  Private: Span
+
+PromotedPropertyModifier:
+  as: Enum
+  Public: Span
+  Protected: Span
+  Private: Span
+  Readonly: Span
+
+PromotedPropertyModifierGroup:
+  modifiers: Vec<PromotedPropertyModifier>
+
+PropertyModifier:
+  as: Enum
+  Public: Span
+  Protected: Span
+  Private: Span
+  Static: Span
+  Readonly: Span
+
+PropertyModifierGroup:
+  modifiers: Vec<PropertyModifier>
+
+MethodModifier:
+  as: Enum
+  Public: Span
+  Protected: Span
+  Private: Span
+  Static: Span
+  Abstract: Span
+  Final: Span
+
+MethodModifierGroup:
+  modifiers: Vec<MethodModifier>
+
+ClassModifier:
+  as: Enum
+  Abstract: Span
+  Final: Span
+  Readonly: Span
+
+ClassModifierGroup:
+  modifiers: Vec<ClassModifier>
+
+ConstantModifier:
+  as: Enum
+  Public: Span
+  Protected: Span
+  Private: Span
+  Final: Span
+
+ConstantModifierGroup:
+  modifiers: Vec<ConstantModifier>
+
+UnbracedNamespace:
+  start: Span
+  name: Name
+  end: Span
+  statements: Vec<Statement>
+
+BracedNamespace:
+  namespace: Span
+  name: Option<Name>
+  body: BracedNamespaceBody
+
+BracedNamespaceBody:
+  start: Span
+  end: Span
+  statements: Vec<Statement>
+
+NamespaceStatement:
+  as: Enum
+  Unbraced: UnbracedNamespace
+  Braced: BracedNamespace
+
+ArithmeticOperationExpression:
+  as: Enum
+  Addition:
+    left: Box<Expression>
+    plus: Span
+    right: Box<Expression>
+  Subtraction:
+    left: Box<Expression>
+    minus: Span
+    right: Box<Expression>
+  Multiplication:
+    left: Box<Expression>
+    asterisk: Span
+    right: Box<Expression>
+  Division:
+    left: Box<Expression>
+    slash: Span
+    right: Box<Expression>
+  Modulo:
+    left: Box<Expression>
+    percent: Span
+    right: Box<Expression>
+  Exponentiation:
+    left: Box<Expression>
+    pow: Span
+    right: Box<Expression>
+  Negative:
+    minus: Span
+    right: Box<Expression>
+  Positive:
+    plus: Span
+    right: Box<Expression>
+  PreIncrement:
+    increment: Span
+    right: Box<Expression>
+  PostIncrement:
+    left: Box<Expression>
+    increment: Span
+  PreDecrement:
+    decrement: Span
+    right: Box<Expression>
+  PostDecrement:
+    left: Box<Expression>
+    decrement: Span
+
+AssignmentOperationExpression:
+  as: Enum
+  Assign:
+    left: Box<Expression>
+    equals: Span
+    right: Box<Expression>
+  Addition:
+    left: Box<Expression>
+    plus_equals: Span
+    right: Box<Expression>
+  Subtraction:
+    left: Box<Expression>
+    minus_equals: Span
+    right: Box<Expression>
+  Multiplication:
+    left: Box<Expression>
+    asterisk_equals: Span
+    right: Box<Expression>
+  Division:
+    left: Box<Expression>
+    slash_equals: Span
+    right: Box<Expression>
+  Modulo:
+    left: Box<Expression>
+    percent_equals: Span
+    right: Box<Expression>
+  Exponentiation:
+    left: Box<Expression>
+    pow_equals: Span
+    right: Box<Expression>
+  Concat:
+    left: Box<Expression>
+    dot_equals: Span
+    right: Box<Expression>
+  BitwiseAnd:
+    left: Box<Expression>
+    ampersand_equals: Span
+    right: Box<Expression>
+  BitwiseOr:
+    left: Box<Expression>
+    pipe_equals: Span
+    right: Box<Expression>
+  BitwiseXor:
+    left: Box<Expression>
+    caret_equals: Span
+    right: Box<Expression>
+  LeftShift:
+    left: Box<Expression>
+    left_shift_equals: Span
+    right: Box<Expression>
+  RightShift:
+    left: Box<Expression>
+    right_shift_equals: Span
+    right: Box<Expression>
+  Coalesce:
+    left: Box<Expression>
+    coalesce_equals: Span
+    right: Box<Expression>
+
+BitwiseOperationExpression:
+  as: Enum
+  And:
+    left: Box<Expression>
+    and: Span
+    right: Box<Expression>
+  Or:
+    left: Box<Expression>
+    or: Span
+    right: Box<Expression>
+  Xor:
+    left: Box<Expression>
+    xor: Span
+    right: Box<Expression>
+  LeftShift:
+    left: Box<Expression>
+    left_shift: Span
+    right: Box<Expression>
+  RightShift:
+    left: Box<Expression>
+    right_shift: Span
+    right: Box<Expression>
+  Not:
+    not: Span
+    right: Box<Expression>
+
+ComparisonOperationExpression:
+  as: Enum
+  Equal:
+    left: Box<Expression>
+    double_equals: Span
+    right: Box<Expression>
+  Identical:
+    left: Box<Expression>
+    triple_equals: Span
+    right: Box<Expression>
+  NotEqual:
+    left: Box<Expression>
+    bang_equals: Span
+    right: Box<Expression>
+  AngledNotEqual:
+    left: Box<Expression>
+    angled_left_right: Span
+    right: Box<Expression>
+  NotIdentical:
+    left: Box<Expression>
+    bang_double_equals: Span
+    right: Box<Expression>
+  LessThan:
+    left: Box<Expression>
+    less_than: Span
+    right: Box<Expression>
+  GreaterThan:
+    left: Box<Expression>
+    greater_than: Span
+    right: Box<Expression>
+  LessThanOrEqual:
+    left: Box<Expression>
+    less_than_equals: Span
+    right: Box<Expression>
+  GreaterThanOrEqual:
+    left: Box<Expression>
+    greater_than_equals: Span
+    right: Box<Expression>
+  Spaceship:
+    left: Box<Expression>
+    spaceship: Span
+    right: Box<Expression>
+
+LogicalOperationExpression:
+  as: Enum
+  And:
+    left: Box<Expression>
+    double_ampersand: Span
+    right: Box<Expression>
+  Or:
+    left: Box<Expression>
+    double_pipe: Span
+    right: Box<Expression>
+  Not:
+    bang: Span
+    right: Box<Expression>
+  LogicalAnd:
+    left: Box<Expression>
+    and: Span
+    right: Box<Expression>
+  LogicalOr:
+    left: Box<Expression>
+    or: Span
+    right: Box<Expression>
+  LogicalXor:
+    left: Box<Expression>
+    xor: Span
+    right: Box<Expression>
+
+Name:
+  derive: Copy
+  kind: NameKind
+  span: Span
+
+NameKind:
+  as: Enum
+  derive: Copy
+  Special: SpecialName
+  Unresolved: UnresolvedName
+  Resolved: ResolvedName
+
+SpecialName:
+  derive: Copy
+  kind: SpecialNameKind
+  symbol: Symbol
+
+SpecialNameKind:
+  as: Enum
+  derive: Copy
+  Self_: ""
+  Parent: ""
+  Static: ""
+
+UnresolvedName:
+  derive: Copy
+  symbol: Symbol
+  qualification: NameQualification
+
+ResolvedName:
+  derive: Copy
+  resolved: Symbol
+  original: Symbol
+
+Property:
+  attributes: Vec<AttributeGroup>
+  modifiers: PropertyModifierGroup
+  r#type: Option<DataType>
+  entries: Vec<PropertyEntry>
+  end: Span
+
+VariableProperty:
+  attributes: Vec<AttributeGroup>
+  r#type: Option<DataType>
+  entries: Vec<PropertyEntry>
+  end: Span
+
+PropertyEntry:
+  as: Enum
+  Uninitialized:
+    variable: SimpleVariable
+  Initialized:
+    variable: SimpleVariable
+    equals: Span
+    value: Expression
+
+TraitBody:
+  left_brace: Span
+  members: Vec<ClassishMember>
+  right_brace: Span
+
+TraitStatement:
+  r#trait: Span
+  name: Name
+  attributes: Vec<AttributeGroup>
+  body: TraitBody
+
+TraitUsage:
+  r#use: Span
+  traits: Vec<SimpleIdentifier>
+  adaptations: Vec<TraitUsageAdaptation>
+
+TraitUsageAdaptation:
+  as: Enum
+  Alias:
+    r#trait: Option<SimpleIdentifier>
+    method: SimpleIdentifier
+    alias: SimpleIdentifier
+    visibility: Option<VisibilityModifier>
+  Visibility:
+    r#trait: Option<SimpleIdentifier>
+    method: SimpleIdentifier
+    visibility: VisibilityModifier
+  Precedence:
+    r#trait: Option<SimpleIdentifier>
+    method: SimpleIdentifier
+    insteadof: Vec<SimpleIdentifier>
+
+CatchType:
+  as: Enum
+  Identifier:
+    identifier: SimpleIdentifier
+  Union:
+    identifiers: Vec<SimpleIdentifier>
+
+TryStatement:
+  start: Span
+  end: Span
+  body: Block
+  catches: Vec<CatchBlock>
+  finally: Option<FinallyBlock>
+
+CatchBlock:
+  start: Span
+  end: Span
+  types: CatchType
+  var: Option<SimpleVariable>
+  body: Block
+
+FinallyBlock:
+  start: Span
+  end: Span
+  body: Block
+
+Variable:
+  as: Enum
+  SimpleVariable: SimpleVariable
+  VariableVariable: VariableVariable
+  BracedVariableVariable: BracedVariableVariable
+
+SimpleVariable:
+  symbol: Symbol
+  span: Span
+
+VariableVariable:
+  span: Span
+  variable: Box<Variable>
+
+BracedVariableVariable:
+  start: Span
+  variable: Box<Expression>
+  end: Span
+
+Ending:
+  as: Enum
+  Missing: Span
+  Semicolon: Span
+  CloseTag: Span
+
+StaticStatement:
+  vars: Vec<StaticVar>
+
+SwitchStatement:
+  switch: Span
+  left_parenthesis: Span
+  condition: Expression
+  right_parenthesis: Span
+  cases: Vec<Case>
+
+EchoStatement:
+  echo: Span
+  values: Vec<Expression>
+  ending: Ending
+
+ReturnStatement:
+  r#return: Span
+  value: Option<Expression>
+  ending: Ending
+
+UseStatement:
+  kind: UseKind
+  uses: Vec<Use>
+
+GroupUseStatement:
+  prefix: SimpleIdentifier
+  kind: UseKind
+  uses: Vec<Use>
+
+HaltCompilerStatement:
+  content: Option<Token>
+
+StaticVar:
+  var: Variable
+  default: Option<Expression>

@@ -2,11 +2,7 @@ use pxp_span::Span;
 use pxp_symbol::Symbol;
 use pxp_syntax::name::NameQualification;
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
-pub struct Name {
-    pub kind: NameKind,
-    pub span: Span,
-}
+use crate::{Name, NameKind, ResolvedName, SpecialName, SpecialNameKind, UnresolvedName};
 
 impl Name {
     pub fn new(kind: NameKind, span: Span) -> Self {
@@ -30,7 +26,7 @@ impl Name {
     }
 
     pub fn symbol(&self) -> Symbol {
-        match self.kind {
+        match &self.kind {
             NameKind::Special(s) => s.symbol,
             NameKind::Unresolved(u) => u.symbol,
             NameKind::Resolved(r) => r.resolved,
@@ -48,36 +44,4 @@ impl Name {
     pub fn is_resolved(&self) -> bool {
         matches!(self.kind, NameKind::Resolved(_))
     }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
-pub enum NameKind {
-    Special(SpecialName),
-    Unresolved(UnresolvedName),
-    Resolved(ResolvedName),
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
-pub struct SpecialName {
-    pub kind: SpecialNameKind,
-    pub symbol: Symbol,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
-pub enum SpecialNameKind {
-    Self_,
-    Static,
-    Parent,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
-pub struct UnresolvedName {
-    pub symbol: Symbol,
-    pub qualification: NameQualification,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Copy)]
-pub struct ResolvedName {
-    pub resolved: Symbol,
-    pub original: Symbol,
 }

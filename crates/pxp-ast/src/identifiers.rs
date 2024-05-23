@@ -1,13 +1,7 @@
-use crate::Expression;
 use pxp_span::Span;
 use pxp_symbol::Symbol;
 
-#[derive(Debug, PartialEq, Eq, Clone)]
-
-pub enum Identifier {
-    SimpleIdentifier(SimpleIdentifier),
-    DynamicIdentifier(DynamicIdentifier),
-}
+use crate::{Identifier, SimpleIdentifier};
 
 impl Identifier {
     pub fn missing() -> Self {
@@ -29,22 +23,8 @@ impl Identifier {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
-
-pub struct SimpleIdentifier {
-    pub symbol: Symbol,
-    pub span: Span,
-}
-
 impl SimpleIdentifier {
     pub fn new(symbol: Symbol, span: Span) -> Self {
         Self { symbol, span }
     }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-
-pub struct DynamicIdentifier {
-    pub span: Span,
-    pub expr: Box<Expression>,
 }
