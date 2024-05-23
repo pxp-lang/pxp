@@ -10,6 +10,9 @@ parse +args:
 generate-ast:
     php ./meta/scripts/generate-ast.php
 
+generate-visitor:
+    php ./meta/scripts/generate-visitor.php
+
 bench-parser:
     cargo build --release --bin parse
     hyperfine --warmup=1 --runs=1 \
