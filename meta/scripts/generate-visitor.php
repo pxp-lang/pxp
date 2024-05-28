@@ -21,14 +21,6 @@ class VisitorMut
             walk_mut(self, node);
         }
 
-        fn visit_statement(&mut self, node: &mut Statement) {
-            walk_statement_mut(self, node);
-        }
-
-        fn visit_expression(&mut self, node: &mut Expression) {
-            walk_expression_mut(self, node);
-        }
-
         %s
     }
     EOF;
@@ -39,6 +31,12 @@ class VisitorMut
 
     use crate::visitor_mut::VisitorMut;
     use pxp_ast::*;
+
+    pub fn walk_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut [Statement]) {
+        for statement in node {
+            visitor.visit_statement(statement);
+        }
+    }
 
     %s
     EOF;
@@ -65,14 +63,6 @@ class Visitor
             walk(self, node);
         }
 
-        fn visit_statement(&mut self, node: &Statement) {
-            walk_statement(self, node);
-        }
-
-        fn visit_expression(&mut self, node: &Expression) {
-            walk_expression(self, node);
-        }
-
         %s
     }
     EOF;
@@ -84,6 +74,12 @@ class Visitor
     use crate::visitor::Visitor;
     use pxp_ast::*;
 
+    pub fn walk<V: Visitor + ?Sized>(visitor: &mut V, node: &[Statement]) {
+        for statement in node {
+            visitor.visit_statement(statement);
+        }
+    }
+
     %s
     EOF;
 
@@ -91,8 +87,6 @@ class Visitor
     const WALKERS = "walk.rs";
     const NODE = "&";
 }
-
-const SPECIAL_NODES = ['Statement', 'Expression', 'StatementKind', 'ExpressionKind'];
 
 function main() {
     $yaml = Yaml::parseFile(__DIR__ . '/../../crates/pxp-ast/meta/ast.yaml');
@@ -124,13 +118,9 @@ function generate_walkers(array $yaml, string $trait): array
             continue;
         }
 
-        if (in_array($type, SPECIAL_NODES, true)) {
-            continue;
-        }
-
         $function = sprintf("pub fn %s<V: %s + ?Sized>(visitor: &mut V, node: %s%s) {\n", type_name_to_walk_method($type), class_basename($trait), $trait::NODE, strip_type_to_root($type));
 
-        $function .= "}\n";
+        $function .= "}";
 
         $walkers[] = $function;
     }
@@ -145,11 +135,6 @@ function generate_methods(array $yaml, string $trait): array
     foreach ($yaml as $type => $fields) {
         // Type alias.
         if (is_string($fields)) {
-            continue;
-        }
-
-        // Skip special nodes. The visitor methods are hardcoded.
-        if (in_array($type, SPECIAL_NODES, true)) {
             continue;
         }
 
