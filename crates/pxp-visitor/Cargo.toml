@@ -13,3 +13,6 @@ pxp-span = { path = "../pxp-span" }
 pxp-type = { path = "../pxp-type" }
 pxp-symbol = { path = "../pxp-symbol" }
 paste = "1.0.14"
+
+[build-dependencies]
+pxp-build = { version = "0.1.0", path = "../pxp-build" }

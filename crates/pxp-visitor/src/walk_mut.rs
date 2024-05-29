@@ -2,20 +2,20 @@
 // Do not modify this file directly.
 #![allow(unused)]
 
-use crate::visitor::Visitor;
+use crate::visitor_mut::VisitorMut;
 use pxp_ast::*;
 
-pub fn walk<V: Visitor + ?Sized>(visitor: &mut V, node: &[Statement]) {
+pub fn walk_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut [Statement]) {
     for statement in node {
         visitor.visit_statement(statement);
     }
 }
 
-pub fn walk_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &Statement) {
-    visitor.visit_statement_kind(&node.kind);
+pub fn walk_statement_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Statement) {
+    visitor.visit_statement_kind(&mut node.kind);
 }
 
-pub fn walk_statement_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &StatementKind) {
+pub fn walk_statement_kind_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut StatementKind) {
     match node {
         StatementKind::FullOpeningTag(inner) => visitor.visit_full_opening_tag_statement(inner),
         StatementKind::ShortOpeningTag(inner) => visitor.visit_short_opening_tag_statement(inner),
@@ -55,11 +55,14 @@ pub fn walk_statement_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &Statemen
     }
 }
 
-pub fn walk_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &Expression) {
-    visitor.visit_expression_kind(&node.kind);
+pub fn walk_expression_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Expression) {
+    visitor.visit_expression_kind(&mut node.kind);
 }
 
-pub fn walk_expression_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &ExpressionKind) {
+pub fn walk_expression_kind_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ExpressionKind,
+) {
     match node {
         ExpressionKind::Missing => {}
         ExpressionKind::Eval(inner) => visitor.visit_eval_expression(inner),
@@ -161,24 +164,33 @@ pub fn walk_expression_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &Express
     }
 }
 
-pub fn walk_expression_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &ExpressionStatement) {
-    visitor.visit_expression(&node.expression);
-    visitor.visit_ending(&node.ending);
+pub fn walk_expression_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ExpressionStatement,
+) {
+    visitor.visit_expression(&mut node.expression);
+    visitor.visit_ending(&mut node.ending);
 }
 
-pub fn walk_global_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &GlobalStatement) {
-    for item in &node.variables {
+pub fn walk_global_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut GlobalStatement,
+) {
+    for item in &mut node.variables {
         visitor.visit_variable(item);
     }
 }
 
-pub fn walk_block_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &BlockStatement) {
-    for item in &node.statements {
+pub fn walk_block_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut BlockStatement,
+) {
+    for item in &mut node.statements {
         visitor.visit_statement(item);
     }
 }
 
-pub fn walk_cast_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &CastKind) {
+pub fn walk_cast_kind_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut CastKind) {
     match node {
         CastKind::Int => {}
         CastKind::Bool => {}
@@ -190,24 +202,24 @@ pub fn walk_cast_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &CastKind) {
     }
 }
 
-pub fn walk_case<V: Visitor + ?Sized>(visitor: &mut V, node: &Case) {
-    if let Some(item) = &node.condition {
+pub fn walk_case_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Case) {
+    if let Some(item) = &mut node.condition {
         visitor.visit_expression(item);
     }
-    visitor.visit(&node.body);
+    visitor.visit(&mut node.body);
 }
 
-pub fn walk_use<V: Visitor + ?Sized>(visitor: &mut V, node: &Use) {
-    visitor.visit_name(&node.name);
-    if let Some(item) = &node.alias {
+pub fn walk_use_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Use) {
+    visitor.visit_name(&mut node.name);
+    if let Some(item) = &mut node.alias {
         visitor.visit_simple_identifier(item);
     }
-    if let Some(item) = &node.kind {
+    if let Some(item) = &mut node.kind {
         visitor.visit_use_kind(item);
     }
 }
 
-pub fn walk_use_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &UseKind) {
+pub fn walk_use_kind_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut UseKind) {
     match node {
         UseKind::Normal => {}
         UseKind::Function => {}
@@ -215,353 +227,416 @@ pub fn walk_use_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &UseKind) {
     }
 }
 
-pub fn walk_eval_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &EvalExpression) {
-    visitor.visit_single_argument(&node.argument);
+pub fn walk_eval_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut EvalExpression,
+) {
+    visitor.visit_single_argument(&mut node.argument);
 }
 
-pub fn walk_empty_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &EmptyExpression) {
-    visitor.visit_single_argument(&node.argument);
+pub fn walk_empty_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut EmptyExpression,
+) {
+    visitor.visit_single_argument(&mut node.argument);
 }
 
-pub fn walk_die_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &DieExpression) {
-    if let Some(item) = &node.argument {
+pub fn walk_die_expression_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut DieExpression) {
+    if let Some(item) = &mut node.argument {
         visitor.visit_single_argument(item);
     }
 }
 
-pub fn walk_exit_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &ExitExpression) {
-    if let Some(item) = &node.argument {
+pub fn walk_exit_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ExitExpression,
+) {
+    if let Some(item) = &mut node.argument {
         visitor.visit_single_argument(item);
     }
 }
 
-pub fn walk_isset_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &IssetExpression) {
-    visitor.visit_argument_list(&node.arguments);
+pub fn walk_isset_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut IssetExpression,
+) {
+    visitor.visit_argument_list(&mut node.arguments);
 }
 
-pub fn walk_unset_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &UnsetExpression) {
-    visitor.visit_argument_list(&node.arguments);
+pub fn walk_unset_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut UnsetExpression,
+) {
+    visitor.visit_argument_list(&mut node.arguments);
 }
 
-pub fn walk_print_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &PrintExpression) {
-    if let Some(item) = &node.value {
+pub fn walk_print_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut PrintExpression,
+) {
+    if let Some(item) = &mut node.value {
         visitor.visit_expression(item);
     }
-    if let Some(item) = &node.argument {
+    if let Some(item) = &mut node.argument {
         visitor.visit_single_argument(item);
     }
 }
 
-pub fn walk_concat_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &ConcatExpression) {
-    visitor.visit_expression(&node.left);
-    visitor.visit_expression(&node.right);
-}
-
-pub fn walk_instanceof_expression<V: Visitor + ?Sized>(
+pub fn walk_concat_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &InstanceofExpression,
+    node: &mut ConcatExpression,
 ) {
-    visitor.visit_expression(&node.left);
-    visitor.visit_expression(&node.right);
+    visitor.visit_expression(&mut node.left);
+    visitor.visit_expression(&mut node.right);
 }
 
-pub fn walk_reference_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &ReferenceExpression) {
-    visitor.visit_expression(&node.right);
-}
-
-pub fn walk_parenthesized_expression<V: Visitor + ?Sized>(
+pub fn walk_instanceof_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ParenthesizedExpression,
+    node: &mut InstanceofExpression,
 ) {
-    visitor.visit_expression(&node.expr);
+    visitor.visit_expression(&mut node.left);
+    visitor.visit_expression(&mut node.right);
 }
 
-pub fn walk_error_suppress_expression<V: Visitor + ?Sized>(
+pub fn walk_reference_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ErrorSuppressExpression,
+    node: &mut ReferenceExpression,
 ) {
-    visitor.visit_expression(&node.expr);
+    visitor.visit_expression(&mut node.right);
 }
 
-pub fn walk_include_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &IncludeExpression) {
-    visitor.visit_expression(&node.path);
-}
-
-pub fn walk_include_once_expression<V: Visitor + ?Sized>(
+pub fn walk_parenthesized_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &IncludeOnceExpression,
+    node: &mut ParenthesizedExpression,
 ) {
-    visitor.visit_expression(&node.path);
+    visitor.visit_expression(&mut node.expr);
 }
 
-pub fn walk_require_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &RequireExpression) {
-    visitor.visit_expression(&node.path);
-}
-
-pub fn walk_require_once_expression<V: Visitor + ?Sized>(
+pub fn walk_error_suppress_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &RequireOnceExpression,
+    node: &mut ErrorSuppressExpression,
 ) {
-    visitor.visit_expression(&node.path);
+    visitor.visit_expression(&mut node.expr);
 }
 
-pub fn walk_function_call_expression<V: Visitor + ?Sized>(
+pub fn walk_include_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &FunctionCallExpression,
+    node: &mut IncludeExpression,
 ) {
-    visitor.visit_expression(&node.target);
-    visitor.visit_argument_list(&node.arguments);
+    visitor.visit_expression(&mut node.path);
 }
 
-pub fn walk_function_closure_creation_expression<V: Visitor + ?Sized>(
+pub fn walk_include_once_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &FunctionClosureCreationExpression,
+    node: &mut IncludeOnceExpression,
 ) {
-    visitor.visit_expression(&node.target);
-    visitor.visit_argument_placeholder(&node.placeholder);
+    visitor.visit_expression(&mut node.path);
 }
 
-pub fn walk_method_call_expression<V: Visitor + ?Sized>(
+pub fn walk_require_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &MethodCallExpression,
+    node: &mut RequireExpression,
 ) {
-    visitor.visit_expression(&node.target);
-    visitor.visit_expression(&node.method);
-    visitor.visit_argument_list(&node.arguments);
+    visitor.visit_expression(&mut node.path);
 }
 
-pub fn walk_method_closure_creation_expression<V: Visitor + ?Sized>(
+pub fn walk_require_once_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &MethodClosureCreationExpression,
+    node: &mut RequireOnceExpression,
 ) {
-    visitor.visit_expression(&node.target);
-    visitor.visit_expression(&node.method);
-    visitor.visit_argument_placeholder(&node.placeholder);
+    visitor.visit_expression(&mut node.path);
 }
 
-pub fn walk_nullsafe_method_call_expression<V: Visitor + ?Sized>(
+pub fn walk_function_call_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &NullsafeMethodCallExpression,
+    node: &mut FunctionCallExpression,
 ) {
-    visitor.visit_expression(&node.target);
-    visitor.visit_expression(&node.method);
-    visitor.visit_argument_list(&node.arguments);
+    visitor.visit_expression(&mut node.target);
+    visitor.visit_argument_list(&mut node.arguments);
 }
 
-pub fn walk_static_method_call_expression<V: Visitor + ?Sized>(
+pub fn walk_function_closure_creation_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &StaticMethodCallExpression,
+    node: &mut FunctionClosureCreationExpression,
 ) {
-    visitor.visit_expression(&node.target);
-    visitor.visit_identifier(&node.method);
-    visitor.visit_argument_list(&node.arguments);
+    visitor.visit_expression(&mut node.target);
+    visitor.visit_argument_placeholder(&mut node.placeholder);
 }
 
-pub fn walk_static_variable_method_call_expression<V: Visitor + ?Sized>(
+pub fn walk_method_call_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &StaticVariableMethodCallExpression,
+    node: &mut MethodCallExpression,
 ) {
-    visitor.visit_expression(&node.target);
-    visitor.visit_variable(&node.method);
-    visitor.visit_argument_list(&node.arguments);
+    visitor.visit_expression(&mut node.target);
+    visitor.visit_expression(&mut node.method);
+    visitor.visit_argument_list(&mut node.arguments);
 }
 
-pub fn walk_static_method_closure_creation_expression<V: Visitor + ?Sized>(
+pub fn walk_method_closure_creation_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &StaticMethodClosureCreationExpression,
+    node: &mut MethodClosureCreationExpression,
 ) {
-    visitor.visit_expression(&node.target);
-    visitor.visit_identifier(&node.method);
-    visitor.visit_argument_placeholder(&node.placeholder);
+    visitor.visit_expression(&mut node.target);
+    visitor.visit_expression(&mut node.method);
+    visitor.visit_argument_placeholder(&mut node.placeholder);
 }
 
-pub fn walk_static_variable_method_closure_creation_expression<V: Visitor + ?Sized>(
+pub fn walk_nullsafe_method_call_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &StaticVariableMethodClosureCreationExpression,
+    node: &mut NullsafeMethodCallExpression,
 ) {
-    visitor.visit_expression(&node.target);
-    visitor.visit_variable(&node.method);
-    visitor.visit_argument_placeholder(&node.placeholder);
+    visitor.visit_expression(&mut node.target);
+    visitor.visit_expression(&mut node.method);
+    visitor.visit_argument_list(&mut node.arguments);
 }
 
-pub fn walk_property_fetch_expression<V: Visitor + ?Sized>(
+pub fn walk_static_method_call_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &PropertyFetchExpression,
+    node: &mut StaticMethodCallExpression,
 ) {
-    visitor.visit_expression(&node.target);
-    visitor.visit_expression(&node.property);
+    visitor.visit_expression(&mut node.target);
+    visitor.visit_identifier(&mut node.method);
+    visitor.visit_argument_list(&mut node.arguments);
 }
 
-pub fn walk_nullsafe_property_fetch_expression<V: Visitor + ?Sized>(
+pub fn walk_static_variable_method_call_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &NullsafePropertyFetchExpression,
+    node: &mut StaticVariableMethodCallExpression,
 ) {
-    visitor.visit_expression(&node.target);
-    visitor.visit_expression(&node.property);
+    visitor.visit_expression(&mut node.target);
+    visitor.visit_variable(&mut node.method);
+    visitor.visit_argument_list(&mut node.arguments);
 }
 
-pub fn walk_static_property_fetch_expression<V: Visitor + ?Sized>(
+pub fn walk_static_method_closure_creation_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &StaticPropertyFetchExpression,
+    node: &mut StaticMethodClosureCreationExpression,
 ) {
-    visitor.visit_expression(&node.target);
-    visitor.visit_variable(&node.property);
+    visitor.visit_expression(&mut node.target);
+    visitor.visit_identifier(&mut node.method);
+    visitor.visit_argument_placeholder(&mut node.placeholder);
 }
 
-pub fn walk_constant_fetch_expression<V: Visitor + ?Sized>(
+pub fn walk_static_variable_method_closure_creation_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ConstantFetchExpression,
+    node: &mut StaticVariableMethodClosureCreationExpression,
 ) {
-    visitor.visit_expression(&node.target);
-    visitor.visit_identifier(&node.constant);
+    visitor.visit_expression(&mut node.target);
+    visitor.visit_variable(&mut node.method);
+    visitor.visit_argument_placeholder(&mut node.placeholder);
 }
 
-pub fn walk_short_array_expression<V: Visitor + ?Sized>(
+pub fn walk_property_fetch_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ShortArrayExpression,
+    node: &mut PropertyFetchExpression,
 ) {
-    for item in &node.items.inner {
+    visitor.visit_expression(&mut node.target);
+    visitor.visit_expression(&mut node.property);
+}
+
+pub fn walk_nullsafe_property_fetch_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut NullsafePropertyFetchExpression,
+) {
+    visitor.visit_expression(&mut node.target);
+    visitor.visit_expression(&mut node.property);
+}
+
+pub fn walk_static_property_fetch_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut StaticPropertyFetchExpression,
+) {
+    visitor.visit_expression(&mut node.target);
+    visitor.visit_variable(&mut node.property);
+}
+
+pub fn walk_constant_fetch_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ConstantFetchExpression,
+) {
+    visitor.visit_expression(&mut node.target);
+    visitor.visit_identifier(&mut node.constant);
+}
+
+pub fn walk_short_array_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ShortArrayExpression,
+) {
+    for item in &mut node.items.inner {
         visitor.visit_array_item(item);
     }
 }
 
-pub fn walk_array_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &ArrayExpression) {
-    for item in &node.items.inner {
+pub fn walk_array_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ArrayExpression,
+) {
+    for item in &mut node.items.inner {
         visitor.visit_array_item(item);
     }
 }
 
-pub fn walk_list_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &ListExpression) {
-    for item in &node.items {
+pub fn walk_list_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ListExpression,
+) {
+    for item in &mut node.items {
         visitor.visit_list_entry(item);
     }
 }
 
-pub fn walk_new_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &NewExpression) {
-    visitor.visit_expression(&node.target);
-    if let Some(item) = &node.arguments {
+pub fn walk_new_expression_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut NewExpression) {
+    visitor.visit_expression(&mut node.target);
+    if let Some(item) = &mut node.arguments {
         visitor.visit_argument_list(item);
     }
 }
 
-pub fn walk_interpolated_string_expression<V: Visitor + ?Sized>(
+pub fn walk_interpolated_string_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &InterpolatedStringExpression,
+    node: &mut InterpolatedStringExpression,
 ) {
-    for item in &node.parts {
+    for item in &mut node.parts {
         visitor.visit_string_part(item);
     }
 }
 
-pub fn walk_heredoc_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &HeredocExpression) {
-    for item in &node.parts {
+pub fn walk_heredoc_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut HeredocExpression,
+) {
+    for item in &mut node.parts {
         visitor.visit_string_part(item);
     }
 }
 
-pub fn walk_shell_exec_expression<V: Visitor + ?Sized>(
+pub fn walk_shell_exec_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ShellExecExpression,
+    node: &mut ShellExecExpression,
 ) {
-    for item in &node.parts {
+    for item in &mut node.parts {
         visitor.visit_string_part(item);
     }
 }
 
-pub fn walk_array_index_expression<V: Visitor + ?Sized>(
+pub fn walk_array_index_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ArrayIndexExpression,
+    node: &mut ArrayIndexExpression,
 ) {
-    visitor.visit_expression(&node.array);
-    if let Some(item) = &node.index {
+    visitor.visit_expression(&mut node.array);
+    if let Some(item) = &mut node.index {
         visitor.visit_expression(item);
     }
 }
 
-pub fn walk_short_ternary_expression<V: Visitor + ?Sized>(
+pub fn walk_short_ternary_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ShortTernaryExpression,
+    node: &mut ShortTernaryExpression,
 ) {
-    visitor.visit_expression(&node.condition);
-    visitor.visit_expression(&node.r#else);
+    visitor.visit_expression(&mut node.condition);
+    visitor.visit_expression(&mut node.r#else);
 }
 
-pub fn walk_ternary_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &TernaryExpression) {
-    visitor.visit_expression(&node.condition);
-    visitor.visit_expression(&node.then);
-    visitor.visit_expression(&node.r#else);
+pub fn walk_ternary_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut TernaryExpression,
+) {
+    visitor.visit_expression(&mut node.condition);
+    visitor.visit_expression(&mut node.then);
+    visitor.visit_expression(&mut node.r#else);
 }
 
-pub fn walk_coalesce_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &CoalesceExpression) {
-    visitor.visit_expression(&node.lhs);
-    visitor.visit_expression(&node.rhs);
+pub fn walk_coalesce_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut CoalesceExpression,
+) {
+    visitor.visit_expression(&mut node.lhs);
+    visitor.visit_expression(&mut node.rhs);
 }
 
-pub fn walk_clone_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &CloneExpression) {
-    visitor.visit_expression(&node.target);
+pub fn walk_clone_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut CloneExpression,
+) {
+    visitor.visit_expression(&mut node.target);
 }
 
-pub fn walk_match_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &MatchExpression) {
-    visitor.visit_expression(&node.condition);
-    if let Some(item) = &node.default {
+pub fn walk_match_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut MatchExpression,
+) {
+    visitor.visit_expression(&mut node.condition);
+    if let Some(item) = &mut node.default {
         visitor.visit_default_match_arm(item);
     }
-    for item in &node.arms {
+    for item in &mut node.arms {
         visitor.visit_match_arm(item);
     }
 }
 
-pub fn walk_throw_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &ThrowExpression) {
-    visitor.visit_expression(&node.value);
-}
-
-pub fn walk_yield_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &YieldExpression) {
-    if let Some(item) = &node.key {
-        visitor.visit_expression(item);
-    }
-    if let Some(item) = &node.value {
-        visitor.visit_expression(item);
-    }
-}
-
-pub fn walk_yield_from_expression<V: Visitor + ?Sized>(
+pub fn walk_throw_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &YieldFromExpression,
+    node: &mut ThrowExpression,
 ) {
-    visitor.visit_expression(&node.value);
+    visitor.visit_expression(&mut node.value);
 }
 
-pub fn walk_cast_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &CastExpression) {
-    visitor.visit_cast_kind(&node.kind);
-    visitor.visit_expression(&node.value);
-}
-
-pub fn walk_default_match_arm<V: Visitor + ?Sized>(visitor: &mut V, node: &DefaultMatchArm) {
-    visitor.visit_expression(&node.body);
-}
-
-pub fn walk_match_arm<V: Visitor + ?Sized>(visitor: &mut V, node: &MatchArm) {
-    for item in &node.conditions {
+pub fn walk_yield_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut YieldExpression,
+) {
+    if let Some(item) = &mut node.key {
         visitor.visit_expression(item);
     }
-    visitor.visit_expression(&node.body);
+    if let Some(item) = &mut node.value {
+        visitor.visit_expression(item);
+    }
 }
 
-pub fn walk_string_part<V: Visitor + ?Sized>(visitor: &mut V, node: &StringPart) {
+pub fn walk_yield_from_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut YieldFromExpression,
+) {
+    visitor.visit_expression(&mut node.value);
+}
+
+pub fn walk_cast_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut CastExpression,
+) {
+    visitor.visit_cast_kind(&mut node.kind);
+    visitor.visit_expression(&mut node.value);
+}
+
+pub fn walk_default_match_arm_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut DefaultMatchArm,
+) {
+    visitor.visit_expression(&mut node.body);
+}
+
+pub fn walk_match_arm_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut MatchArm) {
+    for item in &mut node.conditions {
+        visitor.visit_expression(item);
+    }
+    visitor.visit_expression(&mut node.body);
+}
+
+pub fn walk_string_part_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut StringPart) {
     match node {
         StringPart::Literal(inner) => visitor.visit_literal_string_part(inner),
         StringPart::Expression(inner) => visitor.visit_expression_string_part(inner),
     }
 }
 
-pub fn walk_expression_string_part<V: Visitor + ?Sized>(
+pub fn walk_expression_string_part_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ExpressionStringPart,
+    node: &mut ExpressionStringPart,
 ) {
-    visitor.visit_expression(&node.expression);
+    visitor.visit_expression(&mut node.expression);
 }
 
-pub fn walk_array_item<V: Visitor + ?Sized>(visitor: &mut V, node: &ArrayItem) {
+pub fn walk_array_item_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut ArrayItem) {
     match node {
         ArrayItem::Skipped => {}
         ArrayItem::Value { value } => {
@@ -593,7 +668,7 @@ pub fn walk_array_item<V: Visitor + ?Sized>(visitor: &mut V, node: &ArrayItem) {
     }
 }
 
-pub fn walk_list_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &ListEntry) {
+pub fn walk_list_entry_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut ListEntry) {
     match node {
         ListEntry::Skipped => {}
         ListEntry::Value { value } => {
@@ -610,101 +685,122 @@ pub fn walk_list_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &ListEntry) {
     }
 }
 
-pub fn walk_positional_argument<V: Visitor + ?Sized>(visitor: &mut V, node: &PositionalArgument) {
-    visitor.visit_expression(&node.value);
+pub fn walk_positional_argument_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut PositionalArgument,
+) {
+    visitor.visit_expression(&mut node.value);
 }
 
-pub fn walk_named_argument<V: Visitor + ?Sized>(visitor: &mut V, node: &NamedArgument) {
-    visitor.visit_simple_identifier(&node.name);
-    visitor.visit_expression(&node.value);
+pub fn walk_named_argument_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut NamedArgument) {
+    visitor.visit_simple_identifier(&mut node.name);
+    visitor.visit_expression(&mut node.value);
 }
 
-pub fn walk_argument<V: Visitor + ?Sized>(visitor: &mut V, node: &Argument) {
+pub fn walk_argument_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Argument) {
     match node {
         Argument::Positional(inner) => visitor.visit_positional_argument(inner),
         Argument::Named(inner) => visitor.visit_named_argument(inner),
     }
 }
 
-pub fn walk_argument_list<V: Visitor + ?Sized>(visitor: &mut V, node: &ArgumentList) {
-    for item in &node.arguments {
+pub fn walk_argument_list_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut ArgumentList) {
+    for item in &mut node.arguments {
         visitor.visit_argument(item);
     }
 }
 
-pub fn walk_single_argument<V: Visitor + ?Sized>(visitor: &mut V, node: &SingleArgument) {
-    if let Some(item) = &node.argument {
+pub fn walk_single_argument_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut SingleArgument,
+) {
+    if let Some(item) = &mut node.argument {
         visitor.visit_argument(item);
     }
 }
 
-pub fn walk_attribute<V: Visitor + ?Sized>(visitor: &mut V, node: &Attribute) {
-    visitor.visit_simple_identifier(&node.name);
-    if let Some(item) = &node.arguments {
+pub fn walk_attribute_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Attribute) {
+    visitor.visit_simple_identifier(&mut node.name);
+    if let Some(item) = &mut node.arguments {
         visitor.visit_argument_list(item);
     }
 }
 
-pub fn walk_attribute_group<V: Visitor + ?Sized>(visitor: &mut V, node: &AttributeGroup) {
-    for item in &node.members {
+pub fn walk_attribute_group_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut AttributeGroup,
+) {
+    for item in &mut node.members {
         visitor.visit_attribute(item);
     }
 }
 
-pub fn walk_class_body<V: Visitor + ?Sized>(visitor: &mut V, node: &ClassBody) {
-    for item in &node.members {
+pub fn walk_class_body_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut ClassBody) {
+    for item in &mut node.members {
         visitor.visit_classish_member(item);
     }
 }
 
-pub fn walk_class_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &ClassStatement) {
-    for item in &node.attributes {
-        visitor.visit_attribute_group(item);
-    }
-    visitor.visit_class_modifier_group(&node.modifiers);
-    visitor.visit_name(&node.name);
-    if let Some(item) = &node.extends {
-        visitor.visit_class_extends(item);
-    }
-    if let Some(item) = &node.implements {
-        visitor.visit_class_implements(item);
-    }
-    visitor.visit_class_body(&node.body);
-}
-
-pub fn walk_anonymous_class_body<V: Visitor + ?Sized>(visitor: &mut V, node: &AnonymousClassBody) {
-    for item in &node.members {
-        visitor.visit_classish_member(item);
-    }
-}
-
-pub fn walk_anonymous_class_expression<V: Visitor + ?Sized>(
+pub fn walk_class_statement_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &AnonymousClassExpression,
+    node: &mut ClassStatement,
 ) {
-    for item in &node.attributes {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    if let Some(item) = &node.extends {
+    visitor.visit_class_modifier_group(&mut node.modifiers);
+    visitor.visit_name(&mut node.name);
+    if let Some(item) = &mut node.extends {
         visitor.visit_class_extends(item);
     }
-    if let Some(item) = &node.implements {
+    if let Some(item) = &mut node.implements {
         visitor.visit_class_implements(item);
     }
-    visitor.visit_anonymous_class_body(&node.body);
+    visitor.visit_class_body(&mut node.body);
 }
 
-pub fn walk_class_extends<V: Visitor + ?Sized>(visitor: &mut V, node: &ClassExtends) {
-    visitor.visit_name(&node.parent);
+pub fn walk_anonymous_class_body_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut AnonymousClassBody,
+) {
+    for item in &mut node.members {
+        visitor.visit_classish_member(item);
+    }
 }
 
-pub fn walk_class_implements<V: Visitor + ?Sized>(visitor: &mut V, node: &ClassImplements) {
-    for item in &node.interfaces.inner {
+pub fn walk_anonymous_class_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut AnonymousClassExpression,
+) {
+    for item in &mut node.attributes {
+        visitor.visit_attribute_group(item);
+    }
+    if let Some(item) = &mut node.extends {
+        visitor.visit_class_extends(item);
+    }
+    if let Some(item) = &mut node.implements {
+        visitor.visit_class_implements(item);
+    }
+    visitor.visit_anonymous_class_body(&mut node.body);
+}
+
+pub fn walk_class_extends_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut ClassExtends) {
+    visitor.visit_name(&mut node.parent);
+}
+
+pub fn walk_class_implements_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ClassImplements,
+) {
+    for item in &mut node.interfaces.inner {
         visitor.visit_simple_identifier(item);
     }
 }
 
-pub fn walk_classish_member<V: Visitor + ?Sized>(visitor: &mut V, node: &ClassishMember) {
+pub fn walk_classish_member_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ClassishMember,
+) {
     match node {
         ClassishMember::Constant(inner) => visitor.visit_classish_constant(inner),
         ClassishMember::TraitUsage(inner) => visitor.visit_trait_usage(inner),
@@ -717,36 +813,45 @@ pub fn walk_classish_member<V: Visitor + ?Sized>(visitor: &mut V, node: &Classis
     }
 }
 
-pub fn walk_constant_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &ConstantEntry) {
-    visitor.visit_simple_identifier(&node.name);
-    visitor.visit_expression(&node.value);
+pub fn walk_constant_entry_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut ConstantEntry) {
+    visitor.visit_simple_identifier(&mut node.name);
+    visitor.visit_expression(&mut node.value);
 }
 
-pub fn walk_constant_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &ConstantStatement) {
-    for item in &node.entries {
+pub fn walk_constant_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ConstantStatement,
+) {
+    for item in &mut node.entries {
         visitor.visit_constant_entry(item);
     }
 }
 
-pub fn walk_classish_constant<V: Visitor + ?Sized>(visitor: &mut V, node: &ClassishConstant) {
-    for item in &node.attributes {
+pub fn walk_classish_constant_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ClassishConstant,
+) {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_constant_modifier_group(&node.modifiers);
-    if let Some(item) = &node.data_type {
+    visitor.visit_constant_modifier_group(&mut node.modifiers);
+    if let Some(item) = &mut node.data_type {
         visitor.visit_data_type(item);
     }
-    for item in &node.entries {
+    for item in &mut node.entries {
         visitor.visit_constant_entry(item);
     }
 }
 
-pub fn walk_if_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &IfStatement) {
-    visitor.visit_expression(&node.condition);
-    visitor.visit_if_statement_body(&node.body);
+pub fn walk_if_statement_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut IfStatement) {
+    visitor.visit_expression(&mut node.condition);
+    visitor.visit_if_statement_body(&mut node.body);
 }
 
-pub fn walk_if_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &IfStatementBody) {
+pub fn walk_if_statement_body_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut IfStatementBody,
+) {
     match node {
         IfStatementBody::Statement {
             statement,
@@ -783,46 +888,55 @@ pub fn walk_if_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &IfSta
     }
 }
 
-pub fn walk_if_statement_else_if<V: Visitor + ?Sized>(visitor: &mut V, node: &IfStatementElseIf) {
-    visitor.visit_expression(&node.condition);
-    visitor.visit_statement(&node.statement);
-}
-
-pub fn walk_if_statement_else<V: Visitor + ?Sized>(visitor: &mut V, node: &IfStatementElse) {
-    visitor.visit_statement(&node.statement);
-}
-
-pub fn walk_if_statement_else_if_block<V: Visitor + ?Sized>(
+pub fn walk_if_statement_else_if_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &IfStatementElseIfBlock,
+    node: &mut IfStatementElseIf,
 ) {
-    visitor.visit_expression(&node.condition);
-    for item in &node.statements {
+    visitor.visit_expression(&mut node.condition);
+    visitor.visit_statement(&mut node.statement);
+}
+
+pub fn walk_if_statement_else_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut IfStatementElse,
+) {
+    visitor.visit_statement(&mut node.statement);
+}
+
+pub fn walk_if_statement_else_if_block_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut IfStatementElseIfBlock,
+) {
+    visitor.visit_expression(&mut node.condition);
+    for item in &mut node.statements {
         visitor.visit_statement(item);
     }
 }
 
-pub fn walk_if_statement_else_block<V: Visitor + ?Sized>(
+pub fn walk_if_statement_else_block_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &IfStatementElseBlock,
+    node: &mut IfStatementElseBlock,
 ) {
-    for item in &node.statements {
+    for item in &mut node.statements {
         visitor.visit_statement(item);
     }
 }
 
-pub fn walk_declare_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &DeclareEntry) {
-    visitor.visit_simple_identifier(&node.key);
-    visitor.visit_literal(&node.value);
+pub fn walk_declare_entry_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut DeclareEntry) {
+    visitor.visit_simple_identifier(&mut node.key);
+    visitor.visit_literal(&mut node.value);
 }
 
-pub fn walk_declare_entry_group<V: Visitor + ?Sized>(visitor: &mut V, node: &DeclareEntryGroup) {
-    for item in &node.entries {
+pub fn walk_declare_entry_group_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut DeclareEntryGroup,
+) {
+    for item in &mut node.entries {
         visitor.visit_declare_entry(item);
     }
 }
 
-pub fn walk_declare_body<V: Visitor + ?Sized>(visitor: &mut V, node: &DeclareBody) {
+pub fn walk_declare_body_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut DeclareBody) {
     match node {
         DeclareBody::Noop { semicolon } => {}
         DeclareBody::Braced {
@@ -852,282 +966,336 @@ pub fn walk_declare_body<V: Visitor + ?Sized>(visitor: &mut V, node: &DeclareBod
     }
 }
 
-pub fn walk_declare_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &DeclareStatement) {
-    visitor.visit_declare_entry_group(&node.entries);
-    visitor.visit_declare_body(&node.body);
+pub fn walk_declare_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut DeclareStatement,
+) {
+    visitor.visit_declare_entry_group(&mut node.entries);
+    visitor.visit_declare_body(&mut node.body);
 }
 
-pub fn walk_unit_enum_case<V: Visitor + ?Sized>(visitor: &mut V, node: &UnitEnumCase) {
-    for item in &node.attributes {
+pub fn walk_unit_enum_case_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut UnitEnumCase) {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_simple_identifier(&node.name);
+    visitor.visit_simple_identifier(&mut node.name);
 }
 
-pub fn walk_unit_enum_member<V: Visitor + ?Sized>(visitor: &mut V, node: &UnitEnumMember) {
+pub fn walk_unit_enum_member_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut UnitEnumMember,
+) {
     match node {
         UnitEnumMember::Case(inner) => visitor.visit_unit_enum_case(inner),
         UnitEnumMember::Classish(inner) => visitor.visit_classish_member(inner),
     }
 }
 
-pub fn walk_unit_enum_body<V: Visitor + ?Sized>(visitor: &mut V, node: &UnitEnumBody) {
-    for item in &node.members {
+pub fn walk_unit_enum_body_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut UnitEnumBody) {
+    for item in &mut node.members {
         visitor.visit_unit_enum_member(item);
     }
 }
 
-pub fn walk_unit_enum_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &UnitEnumStatement) {
-    for item in &node.attributes {
+pub fn walk_unit_enum_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut UnitEnumStatement,
+) {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_name(&node.name);
-    for item in &node.implements {
+    visitor.visit_name(&mut node.name);
+    for item in &mut node.implements {
         visitor.visit_simple_identifier(item);
     }
-    visitor.visit_unit_enum_body(&node.body);
+    visitor.visit_unit_enum_body(&mut node.body);
 }
 
-pub fn walk_backed_enum_case<V: Visitor + ?Sized>(visitor: &mut V, node: &BackedEnumCase) {
-    for item in &node.attributes {
+pub fn walk_backed_enum_case_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut BackedEnumCase,
+) {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_simple_identifier(&node.name);
-    visitor.visit_expression(&node.value);
+    visitor.visit_simple_identifier(&mut node.name);
+    visitor.visit_expression(&mut node.value);
 }
 
-pub fn walk_backed_enum_member<V: Visitor + ?Sized>(visitor: &mut V, node: &BackedEnumMember) {
+pub fn walk_backed_enum_member_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut BackedEnumMember,
+) {
     match node {
         BackedEnumMember::Case(inner) => visitor.visit_backed_enum_case(inner),
         BackedEnumMember::Classish(inner) => visitor.visit_classish_member(inner),
     }
 }
 
-pub fn walk_backed_enum_body<V: Visitor + ?Sized>(visitor: &mut V, node: &BackedEnumBody) {
-    for item in &node.members {
+pub fn walk_backed_enum_body_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut BackedEnumBody,
+) {
+    for item in &mut node.members {
         visitor.visit_backed_enum_member(item);
     }
 }
 
-pub fn walk_backed_enum_statement<V: Visitor + ?Sized>(
+pub fn walk_backed_enum_statement_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &BackedEnumStatement,
+    node: &mut BackedEnumStatement,
 ) {
-    for item in &node.attributes {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_name(&node.name);
-    for item in &node.implements {
+    visitor.visit_name(&mut node.name);
+    for item in &mut node.implements {
         visitor.visit_simple_identifier(item);
     }
-    visitor.visit_backed_enum_body(&node.body);
+    visitor.visit_backed_enum_body(&mut node.body);
 }
 
-pub fn walk_return_type<V: Visitor + ?Sized>(visitor: &mut V, node: &ReturnType) {
-    visitor.visit_data_type(&node.data_type);
+pub fn walk_return_type_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut ReturnType) {
+    visitor.visit_data_type(&mut node.data_type);
 }
 
-pub fn walk_function_parameter<V: Visitor + ?Sized>(visitor: &mut V, node: &FunctionParameter) {
-    visitor.visit_simple_variable(&node.name);
-    for item in &node.attributes {
+pub fn walk_function_parameter_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut FunctionParameter,
+) {
+    visitor.visit_simple_variable(&mut node.name);
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    if let Some(item) = &node.data_type {
+    if let Some(item) = &mut node.data_type {
         visitor.visit_data_type(item);
     }
-    if let Some(item) = &node.default {
+    if let Some(item) = &mut node.default {
         visitor.visit_expression(item);
     }
 }
 
-pub fn walk_function_parameter_list<V: Visitor + ?Sized>(
+pub fn walk_function_parameter_list_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &FunctionParameterList,
+    node: &mut FunctionParameterList,
 ) {
-    for item in &node.parameters.inner {
+    for item in &mut node.parameters.inner {
         visitor.visit_function_parameter(item);
     }
 }
 
-pub fn walk_function_body<V: Visitor + ?Sized>(visitor: &mut V, node: &FunctionBody) {
-    for item in &node.statements {
+pub fn walk_function_body_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut FunctionBody) {
+    for item in &mut node.statements {
         visitor.visit_statement(item);
     }
 }
 
-pub fn walk_function_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &FunctionStatement) {
-    for item in &node.attributes {
+pub fn walk_function_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut FunctionStatement,
+) {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_simple_identifier(&node.name);
-    visitor.visit_function_parameter_list(&node.parameters);
-    if let Some(item) = &node.return_type {
+    visitor.visit_simple_identifier(&mut node.name);
+    visitor.visit_function_parameter_list(&mut node.parameters);
+    if let Some(item) = &mut node.return_type {
         visitor.visit_return_type(item);
     }
-    visitor.visit_function_body(&node.body);
+    visitor.visit_function_body(&mut node.body);
 }
 
-pub fn walk_closure_use_variable<V: Visitor + ?Sized>(visitor: &mut V, node: &ClosureUseVariable) {
-    visitor.visit_simple_variable(&node.variable);
+pub fn walk_closure_use_variable_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ClosureUseVariable,
+) {
+    visitor.visit_simple_variable(&mut node.variable);
 }
 
-pub fn walk_closure_use<V: Visitor + ?Sized>(visitor: &mut V, node: &ClosureUse) {
-    for item in &node.variables.inner {
+pub fn walk_closure_use_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut ClosureUse) {
+    for item in &mut node.variables.inner {
         visitor.visit_closure_use_variable(item);
     }
 }
 
-pub fn walk_closure_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &ClosureExpression) {
-    for item in &node.attributes {
+pub fn walk_closure_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ClosureExpression,
+) {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_function_parameter_list(&node.parameters);
-    if let Some(item) = &node.uses {
+    visitor.visit_function_parameter_list(&mut node.parameters);
+    if let Some(item) = &mut node.uses {
         visitor.visit_closure_use(item);
     }
-    if let Some(item) = &node.return_type {
+    if let Some(item) = &mut node.return_type {
         visitor.visit_return_type(item);
     }
-    visitor.visit_function_body(&node.body);
+    visitor.visit_function_body(&mut node.body);
 }
 
-pub fn walk_arrow_function_expression<V: Visitor + ?Sized>(
+pub fn walk_arrow_function_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ArrowFunctionExpression,
+    node: &mut ArrowFunctionExpression,
 ) {
-    for item in &node.attributes {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_function_parameter_list(&node.parameters);
-    if let Some(item) = &node.return_type {
+    visitor.visit_function_parameter_list(&mut node.parameters);
+    if let Some(item) = &mut node.return_type {
         visitor.visit_return_type(item);
     }
-    visitor.visit_expression(&node.body);
+    visitor.visit_expression(&mut node.body);
 }
 
-pub fn walk_constructor_parameter<V: Visitor + ?Sized>(
+pub fn walk_constructor_parameter_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ConstructorParameter,
+    node: &mut ConstructorParameter,
 ) {
-    for item in &node.attributes {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_simple_variable(&node.name);
-    if let Some(item) = &node.data_type {
+    visitor.visit_simple_variable(&mut node.name);
+    if let Some(item) = &mut node.data_type {
         visitor.visit_data_type(item);
     }
-    if let Some(item) = &node.default {
+    if let Some(item) = &mut node.default {
         visitor.visit_expression(item);
     }
-    visitor.visit_promoted_property_modifier_group(&node.modifiers);
+    visitor.visit_promoted_property_modifier_group(&mut node.modifiers);
 }
 
-pub fn walk_constructor_parameter_list<V: Visitor + ?Sized>(
+pub fn walk_constructor_parameter_list_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ConstructorParameterList,
+    node: &mut ConstructorParameterList,
 ) {
-    for item in &node.parameters.inner {
+    for item in &mut node.parameters.inner {
         visitor.visit_constructor_parameter(item);
     }
 }
 
-pub fn walk_abstract_constructor<V: Visitor + ?Sized>(visitor: &mut V, node: &AbstractConstructor) {
-    for item in &node.attributes {
+pub fn walk_abstract_constructor_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut AbstractConstructor,
+) {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_method_modifier_group(&node.modifiers);
-    visitor.visit_simple_identifier(&node.name);
-    visitor.visit_constructor_parameter_list(&node.parameters);
+    visitor.visit_method_modifier_group(&mut node.modifiers);
+    visitor.visit_simple_identifier(&mut node.name);
+    visitor.visit_constructor_parameter_list(&mut node.parameters);
 }
 
-pub fn walk_concrete_constructor<V: Visitor + ?Sized>(visitor: &mut V, node: &ConcreteConstructor) {
-    for item in &node.attributes {
+pub fn walk_concrete_constructor_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ConcreteConstructor,
+) {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_method_modifier_group(&node.modifiers);
-    visitor.visit_simple_identifier(&node.name);
-    visitor.visit_constructor_parameter_list(&node.parameters);
-    visitor.visit_method_body(&node.body);
+    visitor.visit_method_modifier_group(&mut node.modifiers);
+    visitor.visit_simple_identifier(&mut node.name);
+    visitor.visit_constructor_parameter_list(&mut node.parameters);
+    visitor.visit_method_body(&mut node.body);
 }
 
-pub fn walk_abstract_method<V: Visitor + ?Sized>(visitor: &mut V, node: &AbstractMethod) {
-    for item in &node.attributes {
+pub fn walk_abstract_method_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut AbstractMethod,
+) {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_method_modifier_group(&node.modifiers);
-    visitor.visit_simple_identifier(&node.name);
-    visitor.visit_function_parameter_list(&node.parameters);
-    if let Some(item) = &node.return_type {
+    visitor.visit_method_modifier_group(&mut node.modifiers);
+    visitor.visit_simple_identifier(&mut node.name);
+    visitor.visit_function_parameter_list(&mut node.parameters);
+    if let Some(item) = &mut node.return_type {
         visitor.visit_return_type(item);
     }
 }
 
-pub fn walk_concrete_method<V: Visitor + ?Sized>(visitor: &mut V, node: &ConcreteMethod) {
-    for item in &node.attributes {
+pub fn walk_concrete_method_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ConcreteMethod,
+) {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_method_modifier_group(&node.modifiers);
-    visitor.visit_simple_identifier(&node.name);
-    visitor.visit_function_parameter_list(&node.parameters);
-    if let Some(item) = &node.return_type {
+    visitor.visit_method_modifier_group(&mut node.modifiers);
+    visitor.visit_simple_identifier(&mut node.name);
+    visitor.visit_function_parameter_list(&mut node.parameters);
+    if let Some(item) = &mut node.return_type {
         visitor.visit_return_type(item);
     }
-    visitor.visit_method_body(&node.body);
+    visitor.visit_method_body(&mut node.body);
 }
 
-pub fn walk_method_body<V: Visitor + ?Sized>(visitor: &mut V, node: &MethodBody) {
-    for item in &node.statements {
+pub fn walk_method_body_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut MethodBody) {
+    for item in &mut node.statements {
         visitor.visit_statement(item);
     }
 }
 
-pub fn walk_label_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &LabelStatement) {
-    visitor.visit_simple_identifier(&node.label);
+pub fn walk_label_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut LabelStatement,
+) {
+    visitor.visit_simple_identifier(&mut node.label);
 }
 
-pub fn walk_goto_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &GotoStatement) {
-    visitor.visit_simple_identifier(&node.label);
+pub fn walk_goto_statement_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut GotoStatement) {
+    visitor.visit_simple_identifier(&mut node.label);
 }
 
-pub fn walk_identifier<V: Visitor + ?Sized>(visitor: &mut V, node: &Identifier) {
+pub fn walk_identifier_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Identifier) {
     match node {
         Identifier::SimpleIdentifier(inner) => visitor.visit_simple_identifier(inner),
         Identifier::DynamicIdentifier(inner) => visitor.visit_dynamic_identifier(inner),
     }
 }
 
-pub fn walk_dynamic_identifier<V: Visitor + ?Sized>(visitor: &mut V, node: &DynamicIdentifier) {
-    visitor.visit_expression(&node.expr);
+pub fn walk_dynamic_identifier_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut DynamicIdentifier,
+) {
+    visitor.visit_expression(&mut node.expr);
 }
 
-pub fn walk_interface_extends<V: Visitor + ?Sized>(visitor: &mut V, node: &InterfaceExtends) {
-    for item in &node.parents.inner {
+pub fn walk_interface_extends_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut InterfaceExtends,
+) {
+    for item in &mut node.parents.inner {
         visitor.visit_name(item);
     }
 }
 
-pub fn walk_interface_body<V: Visitor + ?Sized>(visitor: &mut V, node: &InterfaceBody) {
-    for item in &node.members {
+pub fn walk_interface_body_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut InterfaceBody) {
+    for item in &mut node.members {
         visitor.visit_classish_member(item);
     }
 }
 
-pub fn walk_interface_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &InterfaceStatement) {
-    for item in &node.attributes {
+pub fn walk_interface_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut InterfaceStatement,
+) {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_name(&node.name);
-    if let Some(item) = &node.extends {
+    visitor.visit_name(&mut node.name);
+    if let Some(item) = &mut node.extends {
         visitor.visit_interface_extends(item);
     }
-    visitor.visit_interface_body(&node.body);
+    visitor.visit_interface_body(&mut node.body);
 }
 
-pub fn walk_literal<V: Visitor + ?Sized>(visitor: &mut V, node: &Literal) {
-    visitor.visit_literal_kind(&node.kind);
+pub fn walk_literal_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Literal) {
+    visitor.visit_literal_kind(&mut node.kind);
 }
 
-pub fn walk_literal_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &LiteralKind) {
+pub fn walk_literal_kind_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut LiteralKind) {
     match node {
         LiteralKind::Integer => {}
         LiteralKind::Float => {}
@@ -1136,14 +1304,17 @@ pub fn walk_literal_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &LiteralKin
     }
 }
 
-pub fn walk_foreach_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &ForeachStatement) {
-    visitor.visit_foreach_statement_iterator(&node.iterator);
-    visitor.visit_foreach_statement_body(&node.body);
+pub fn walk_foreach_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ForeachStatement,
+) {
+    visitor.visit_foreach_statement_iterator(&mut node.iterator);
+    visitor.visit_foreach_statement_body(&mut node.body);
 }
 
-pub fn walk_foreach_statement_iterator<V: Visitor + ?Sized>(
+pub fn walk_foreach_statement_iterator_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ForeachStatementIterator,
+    node: &mut ForeachStatementIterator,
 ) {
     match node {
         ForeachStatementIterator::Value {
@@ -1170,9 +1341,9 @@ pub fn walk_foreach_statement_iterator<V: Visitor + ?Sized>(
     }
 }
 
-pub fn walk_foreach_statement_body<V: Visitor + ?Sized>(
+pub fn walk_foreach_statement_body_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ForeachStatementBody,
+    node: &mut ForeachStatementBody,
 ) {
     match node {
         ForeachStatementBody::Statement { statement } => {
@@ -1192,27 +1363,30 @@ pub fn walk_foreach_statement_body<V: Visitor + ?Sized>(
     }
 }
 
-pub fn walk_for_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &ForStatement) {
-    visitor.visit_for_statement_iterator(&node.iterator);
-    visitor.visit_for_statement_body(&node.body);
+pub fn walk_for_statement_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut ForStatement) {
+    visitor.visit_for_statement_iterator(&mut node.iterator);
+    visitor.visit_for_statement_body(&mut node.body);
 }
 
-pub fn walk_for_statement_iterator<V: Visitor + ?Sized>(
+pub fn walk_for_statement_iterator_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ForStatementIterator,
+    node: &mut ForStatementIterator,
 ) {
-    for item in &node.initializations.inner {
+    for item in &mut node.initializations.inner {
         visitor.visit_expression(item);
     }
-    for item in &node.conditions.inner {
+    for item in &mut node.conditions.inner {
         visitor.visit_expression(item);
     }
-    for item in &node.r#loop.inner {
+    for item in &mut node.r#loop.inner {
         visitor.visit_expression(item);
     }
 }
 
-pub fn walk_for_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &ForStatementBody) {
+pub fn walk_for_statement_body_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ForStatementBody,
+) {
     match node {
         ForStatementBody::Statement { statement } => {
             visitor.visit_statement(statement);
@@ -1231,17 +1405,26 @@ pub fn walk_for_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &ForS
     }
 }
 
-pub fn walk_do_while_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &DoWhileStatement) {
-    visitor.visit_statement(&node.body);
-    visitor.visit_expression(&node.condition);
+pub fn walk_do_while_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut DoWhileStatement,
+) {
+    visitor.visit_statement(&mut node.body);
+    visitor.visit_expression(&mut node.condition);
 }
 
-pub fn walk_while_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &WhileStatement) {
-    visitor.visit_expression(&node.condition);
-    visitor.visit_while_statement_body(&node.body);
+pub fn walk_while_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut WhileStatement,
+) {
+    visitor.visit_expression(&mut node.condition);
+    visitor.visit_while_statement_body(&mut node.body);
 }
 
-pub fn walk_while_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &WhileStatementBody) {
+pub fn walk_while_statement_body_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut WhileStatementBody,
+) {
     match node {
         WhileStatementBody::Statement { statement } => {
             visitor.visit_statement(statement);
@@ -1260,7 +1443,7 @@ pub fn walk_while_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &Wh
     }
 }
 
-pub fn walk_level<V: Visitor + ?Sized>(visitor: &mut V, node: &Level) {
+pub fn walk_level_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Level) {
     match node {
         Level::Literal(inner) => visitor.visit_literal(inner),
         Level::Parenthesized {
@@ -1271,89 +1454,107 @@ pub fn walk_level<V: Visitor + ?Sized>(visitor: &mut V, node: &Level) {
     }
 }
 
-pub fn walk_break_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &BreakStatement) {
-    visitor.visit_ending(&node.ending);
-}
-
-pub fn walk_continue_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &ContinueStatement) {
-    visitor.visit_ending(&node.ending);
-}
-
-pub fn walk_promoted_property_modifier_group<V: Visitor + ?Sized>(
+pub fn walk_break_statement_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &PromotedPropertyModifierGroup,
+    node: &mut BreakStatement,
 ) {
-    for item in &node.modifiers {
+    visitor.visit_ending(&mut node.ending);
+}
+
+pub fn walk_continue_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ContinueStatement,
+) {
+    visitor.visit_ending(&mut node.ending);
+}
+
+pub fn walk_promoted_property_modifier_group_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut PromotedPropertyModifierGroup,
+) {
+    for item in &mut node.modifiers {
         visitor.visit_promoted_property_modifier(item);
     }
 }
 
-pub fn walk_property_modifier_group<V: Visitor + ?Sized>(
+pub fn walk_property_modifier_group_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &PropertyModifierGroup,
+    node: &mut PropertyModifierGroup,
 ) {
-    for item in &node.modifiers {
+    for item in &mut node.modifiers {
         visitor.visit_property_modifier(item);
     }
 }
 
-pub fn walk_method_modifier_group<V: Visitor + ?Sized>(
+pub fn walk_method_modifier_group_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &MethodModifierGroup,
+    node: &mut MethodModifierGroup,
 ) {
-    for item in &node.modifiers {
+    for item in &mut node.modifiers {
         visitor.visit_method_modifier(item);
     }
 }
 
-pub fn walk_class_modifier_group<V: Visitor + ?Sized>(visitor: &mut V, node: &ClassModifierGroup) {
-    for item in &node.modifiers {
+pub fn walk_class_modifier_group_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ClassModifierGroup,
+) {
+    for item in &mut node.modifiers {
         visitor.visit_class_modifier(item);
     }
 }
 
-pub fn walk_constant_modifier_group<V: Visitor + ?Sized>(
+pub fn walk_constant_modifier_group_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ConstantModifierGroup,
+    node: &mut ConstantModifierGroup,
 ) {
-    for item in &node.modifiers {
+    for item in &mut node.modifiers {
         visitor.visit_constant_modifier(item);
     }
 }
 
-pub fn walk_unbraced_namespace<V: Visitor + ?Sized>(visitor: &mut V, node: &UnbracedNamespace) {
-    visitor.visit_name(&node.name);
-    for item in &node.statements {
+pub fn walk_unbraced_namespace_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut UnbracedNamespace,
+) {
+    visitor.visit_name(&mut node.name);
+    for item in &mut node.statements {
         visitor.visit_statement(item);
     }
 }
 
-pub fn walk_braced_namespace<V: Visitor + ?Sized>(visitor: &mut V, node: &BracedNamespace) {
-    if let Some(item) = &node.name {
+pub fn walk_braced_namespace_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut BracedNamespace,
+) {
+    if let Some(item) = &mut node.name {
         visitor.visit_name(item);
     }
-    visitor.visit_braced_namespace_body(&node.body);
+    visitor.visit_braced_namespace_body(&mut node.body);
 }
 
-pub fn walk_braced_namespace_body<V: Visitor + ?Sized>(
+pub fn walk_braced_namespace_body_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &BracedNamespaceBody,
+    node: &mut BracedNamespaceBody,
 ) {
-    for item in &node.statements {
+    for item in &mut node.statements {
         visitor.visit_statement(item);
     }
 }
 
-pub fn walk_namespace_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &NamespaceStatement) {
+pub fn walk_namespace_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut NamespaceStatement,
+) {
     match node {
         NamespaceStatement::Unbraced(inner) => visitor.visit_unbraced_namespace(inner),
         NamespaceStatement::Braced(inner) => visitor.visit_braced_namespace(inner),
     }
 }
 
-pub fn walk_arithmetic_operation_expression<V: Visitor + ?Sized>(
+pub fn walk_arithmetic_operation_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ArithmeticOperationExpression,
+    node: &mut ArithmeticOperationExpression,
 ) {
     match node {
         ArithmeticOperationExpression::Addition { left, plus, right } => {
@@ -1409,9 +1610,9 @@ pub fn walk_arithmetic_operation_expression<V: Visitor + ?Sized>(
     }
 }
 
-pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
+pub fn walk_assignment_operation_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &AssignmentOperationExpression,
+    node: &mut AssignmentOperationExpression,
 ) {
     match node {
         AssignmentOperationExpression::Assign {
@@ -1529,9 +1730,9 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
     }
 }
 
-pub fn walk_bitwise_operation_expression<V: Visitor + ?Sized>(
+pub fn walk_bitwise_operation_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &BitwiseOperationExpression,
+    node: &mut BitwiseOperationExpression,
 ) {
     match node {
         BitwiseOperationExpression::And { left, and, right } => {
@@ -1568,9 +1769,9 @@ pub fn walk_bitwise_operation_expression<V: Visitor + ?Sized>(
     }
 }
 
-pub fn walk_comparison_operation_expression<V: Visitor + ?Sized>(
+pub fn walk_comparison_operation_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &ComparisonOperationExpression,
+    node: &mut ComparisonOperationExpression,
 ) {
     match node {
         ComparisonOperationExpression::Equal {
@@ -1656,9 +1857,9 @@ pub fn walk_comparison_operation_expression<V: Visitor + ?Sized>(
     }
 }
 
-pub fn walk_logical_operation_expression<V: Visitor + ?Sized>(
+pub fn walk_logical_operation_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &LogicalOperationExpression,
+    node: &mut LogicalOperationExpression,
 ) {
     match node {
         LogicalOperationExpression::And {
@@ -1695,11 +1896,11 @@ pub fn walk_logical_operation_expression<V: Visitor + ?Sized>(
     }
 }
 
-pub fn walk_name<V: Visitor + ?Sized>(visitor: &mut V, node: &Name) {
-    visitor.visit_name_kind(&node.kind);
+pub fn walk_name_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Name) {
+    visitor.visit_name_kind(&mut node.kind);
 }
 
-pub fn walk_name_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &NameKind) {
+pub fn walk_name_kind_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut NameKind) {
     match node {
         NameKind::Special(inner) => visitor.visit_special_name(inner),
         NameKind::Unresolved(inner) => visitor.visit_unresolved_name(inner),
@@ -1707,11 +1908,14 @@ pub fn walk_name_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &NameKind) {
     }
 }
 
-pub fn walk_special_name<V: Visitor + ?Sized>(visitor: &mut V, node: &SpecialName) {
-    visitor.visit_special_name_kind(&node.kind);
+pub fn walk_special_name_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut SpecialName) {
+    visitor.visit_special_name_kind(&mut node.kind);
 }
 
-pub fn walk_special_name_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &SpecialNameKind) {
+pub fn walk_special_name_kind_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut SpecialNameKind,
+) {
     match node {
         SpecialNameKind::Self_ => {}
         SpecialNameKind::Parent => {}
@@ -1719,32 +1923,35 @@ pub fn walk_special_name_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &Speci
     }
 }
 
-pub fn walk_property<V: Visitor + ?Sized>(visitor: &mut V, node: &Property) {
-    for item in &node.attributes {
+pub fn walk_property_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Property) {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_property_modifier_group(&node.modifiers);
-    if let Some(item) = &node.r#type {
+    visitor.visit_property_modifier_group(&mut node.modifiers);
+    if let Some(item) = &mut node.r#type {
         visitor.visit_data_type(item);
     }
-    for item in &node.entries {
+    for item in &mut node.entries {
         visitor.visit_property_entry(item);
     }
 }
 
-pub fn walk_variable_property<V: Visitor + ?Sized>(visitor: &mut V, node: &VariableProperty) {
-    for item in &node.attributes {
+pub fn walk_variable_property_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut VariableProperty,
+) {
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    if let Some(item) = &node.r#type {
+    if let Some(item) = &mut node.r#type {
         visitor.visit_data_type(item);
     }
-    for item in &node.entries {
+    for item in &mut node.entries {
         visitor.visit_property_entry(item);
     }
 }
 
-pub fn walk_property_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &PropertyEntry) {
+pub fn walk_property_entry_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut PropertyEntry) {
     match node {
         PropertyEntry::Uninitialized { variable } => {
             visitor.visit_simple_variable(variable);
@@ -1760,32 +1967,35 @@ pub fn walk_property_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &Property
     }
 }
 
-pub fn walk_trait_body<V: Visitor + ?Sized>(visitor: &mut V, node: &TraitBody) {
-    for item in &node.members {
+pub fn walk_trait_body_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut TraitBody) {
+    for item in &mut node.members {
         visitor.visit_classish_member(item);
     }
 }
 
-pub fn walk_trait_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &TraitStatement) {
-    visitor.visit_name(&node.name);
-    for item in &node.attributes {
+pub fn walk_trait_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut TraitStatement,
+) {
+    visitor.visit_name(&mut node.name);
+    for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_trait_body(&node.body);
+    visitor.visit_trait_body(&mut node.body);
 }
 
-pub fn walk_trait_usage<V: Visitor + ?Sized>(visitor: &mut V, node: &TraitUsage) {
-    for item in &node.traits {
+pub fn walk_trait_usage_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut TraitUsage) {
+    for item in &mut node.traits {
         visitor.visit_simple_identifier(item);
     }
-    for item in &node.adaptations {
+    for item in &mut node.adaptations {
         visitor.visit_trait_usage_adaptation(item);
     }
 }
 
-pub fn walk_trait_usage_adaptation<V: Visitor + ?Sized>(
+pub fn walk_trait_usage_adaptation_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &TraitUsageAdaptation,
+    node: &mut TraitUsageAdaptation,
 ) {
     match node {
         TraitUsageAdaptation::Alias {
@@ -1830,7 +2040,7 @@ pub fn walk_trait_usage_adaptation<V: Visitor + ?Sized>(
     }
 }
 
-pub fn walk_catch_type<V: Visitor + ?Sized>(visitor: &mut V, node: &CatchType) {
+pub fn walk_catch_type_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut CatchType) {
     match node {
         CatchType::Identifier { identifier } => {
             visitor.visit_simple_identifier(identifier);
@@ -1843,29 +2053,29 @@ pub fn walk_catch_type<V: Visitor + ?Sized>(visitor: &mut V, node: &CatchType) {
     }
 }
 
-pub fn walk_try_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &TryStatement) {
-    visitor.visit(&node.body);
-    for item in &node.catches {
+pub fn walk_try_statement_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut TryStatement) {
+    visitor.visit(&mut node.body);
+    for item in &mut node.catches {
         visitor.visit_catch_block(item);
     }
-    if let Some(item) = &node.finally {
+    if let Some(item) = &mut node.finally {
         visitor.visit_finally_block(item);
     }
 }
 
-pub fn walk_catch_block<V: Visitor + ?Sized>(visitor: &mut V, node: &CatchBlock) {
-    visitor.visit_catch_type(&node.types);
-    if let Some(item) = &node.var {
+pub fn walk_catch_block_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut CatchBlock) {
+    visitor.visit_catch_type(&mut node.types);
+    if let Some(item) = &mut node.var {
         visitor.visit_simple_variable(item);
     }
-    visitor.visit(&node.body);
+    visitor.visit(&mut node.body);
 }
 
-pub fn walk_finally_block<V: Visitor + ?Sized>(visitor: &mut V, node: &FinallyBlock) {
-    visitor.visit(&node.body);
+pub fn walk_finally_block_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut FinallyBlock) {
+    visitor.visit(&mut node.body);
 }
 
-pub fn walk_variable<V: Visitor + ?Sized>(visitor: &mut V, node: &Variable) {
+pub fn walk_variable_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Variable) {
     match node {
         Variable::SimpleVariable(inner) => visitor.visit_simple_variable(inner),
         Variable::VariableVariable(inner) => visitor.visit_variable_variable(inner),
@@ -1873,62 +2083,77 @@ pub fn walk_variable<V: Visitor + ?Sized>(visitor: &mut V, node: &Variable) {
     }
 }
 
-pub fn walk_variable_variable<V: Visitor + ?Sized>(visitor: &mut V, node: &VariableVariable) {
-    visitor.visit_variable(&node.variable);
-}
-
-pub fn walk_braced_variable_variable<V: Visitor + ?Sized>(
+pub fn walk_variable_variable_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &BracedVariableVariable,
+    node: &mut VariableVariable,
 ) {
-    visitor.visit_expression(&node.variable);
+    visitor.visit_variable(&mut node.variable);
 }
 
-pub fn walk_static_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &StaticStatement) {
-    for item in &node.vars {
+pub fn walk_braced_variable_variable_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut BracedVariableVariable,
+) {
+    visitor.visit_expression(&mut node.variable);
+}
+
+pub fn walk_static_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut StaticStatement,
+) {
+    for item in &mut node.vars {
         visitor.visit_static_var(item);
     }
 }
 
-pub fn walk_switch_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &SwitchStatement) {
-    visitor.visit_expression(&node.condition);
-    for item in &node.cases {
+pub fn walk_switch_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut SwitchStatement,
+) {
+    visitor.visit_expression(&mut node.condition);
+    for item in &mut node.cases {
         visitor.visit_case(item);
     }
 }
 
-pub fn walk_echo_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &EchoStatement) {
-    for item in &node.values {
+pub fn walk_echo_statement_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut EchoStatement) {
+    for item in &mut node.values {
         visitor.visit_expression(item);
     }
-    visitor.visit_ending(&node.ending);
+    visitor.visit_ending(&mut node.ending);
 }
 
-pub fn walk_return_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &ReturnStatement) {
-    if let Some(item) = &node.value {
+pub fn walk_return_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ReturnStatement,
+) {
+    if let Some(item) = &mut node.value {
         visitor.visit_expression(item);
     }
-    visitor.visit_ending(&node.ending);
+    visitor.visit_ending(&mut node.ending);
 }
 
-pub fn walk_use_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &UseStatement) {
-    visitor.visit_use_kind(&node.kind);
-    for item in &node.uses {
+pub fn walk_use_statement_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut UseStatement) {
+    visitor.visit_use_kind(&mut node.kind);
+    for item in &mut node.uses {
         visitor.visit_use(item);
     }
 }
 
-pub fn walk_group_use_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &GroupUseStatement) {
-    visitor.visit_simple_identifier(&node.prefix);
-    visitor.visit_use_kind(&node.kind);
-    for item in &node.uses {
+pub fn walk_group_use_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut GroupUseStatement,
+) {
+    visitor.visit_simple_identifier(&mut node.prefix);
+    visitor.visit_use_kind(&mut node.kind);
+    for item in &mut node.uses {
         visitor.visit_use(item);
     }
 }
 
-pub fn walk_static_var<V: Visitor + ?Sized>(visitor: &mut V, node: &StaticVar) {
-    visitor.visit_variable(&node.var);
-    if let Some(item) = &node.default {
+pub fn walk_static_var_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut StaticVar) {
+    visitor.visit_variable(&mut node.var);
+    if let Some(item) = &mut node.default {
         visitor.visit_expression(item);
     }
 }
