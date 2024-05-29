@@ -554,8 +554,6 @@ pub fn walk_string_part<V: Visitor + ?Sized>(visitor: &mut V, node: &StringPart)
     }
 }
 
-pub fn walk_literal_string_part<V: Visitor + ?Sized>(visitor: &mut V, node: &LiteralStringPart) {}
-
 pub fn walk_expression_string_part<V: Visitor + ?Sized>(
     visitor: &mut V,
     node: &ExpressionStringPart,
@@ -638,9 +636,6 @@ pub fn walk_single_argument<V: Visitor + ?Sized>(visitor: &mut V, node: &SingleA
     if let Some(item) = &node.argument {
         visitor.visit_argument(item);
     }
-}
-
-pub fn walk_argument_placeholder<V: Visitor + ?Sized>(visitor: &mut V, node: &ArgumentPlaceholder) {
 }
 
 pub fn walk_attribute<V: Visitor + ?Sized>(visitor: &mut V, node: &Attribute) {
@@ -815,8 +810,6 @@ pub fn walk_if_statement_else_block<V: Visitor + ?Sized>(
         visitor.visit_statement(item);
     }
 }
-
-pub fn walk_data_type<V: Visitor + ?Sized>(visitor: &mut V, node: &DataType) {}
 
 pub fn walk_declare_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &DeclareEntry) {
     visitor.visit_simple_identifier(&node.key);
@@ -1103,8 +1096,6 @@ pub fn walk_identifier<V: Visitor + ?Sized>(visitor: &mut V, node: &Identifier) 
     }
 }
 
-pub fn walk_simple_identifier<V: Visitor + ?Sized>(visitor: &mut V, node: &SimpleIdentifier) {}
-
 pub fn walk_dynamic_identifier<V: Visitor + ?Sized>(visitor: &mut V, node: &DynamicIdentifier) {
     visitor.visit_expression(&node.expr);
 }
@@ -1281,16 +1272,10 @@ pub fn walk_level<V: Visitor + ?Sized>(visitor: &mut V, node: &Level) {
 }
 
 pub fn walk_break_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &BreakStatement) {
-    if let Some(item) = &node.level {
-        visitor.visit_level(item);
-    }
     visitor.visit_ending(&node.ending);
 }
 
 pub fn walk_continue_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &ContinueStatement) {
-    if let Some(item) = &node.level {
-        visitor.visit_level(item);
-    }
     visitor.visit_ending(&node.ending);
 }
 
@@ -1734,10 +1719,6 @@ pub fn walk_special_name_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &Speci
     }
 }
 
-pub fn walk_unresolved_name<V: Visitor + ?Sized>(visitor: &mut V, node: &UnresolvedName) {}
-
-pub fn walk_resolved_name<V: Visitor + ?Sized>(visitor: &mut V, node: &ResolvedName) {}
-
 pub fn walk_property<V: Visitor + ?Sized>(visitor: &mut V, node: &Property) {
     for item in &node.attributes {
         visitor.visit_attribute_group(item);
@@ -1891,8 +1872,6 @@ pub fn walk_variable<V: Visitor + ?Sized>(visitor: &mut V, node: &Variable) {
         Variable::BracedVariableVariable(inner) => visitor.visit_braced_variable_variable(inner),
     }
 }
-
-pub fn walk_simple_variable<V: Visitor + ?Sized>(visitor: &mut V, node: &SimpleVariable) {}
 
 pub fn walk_variable_variable<V: Visitor + ?Sized>(visitor: &mut V, node: &VariableVariable) {
     visitor.visit_variable(&node.variable);

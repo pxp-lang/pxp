@@ -629,12 +629,6 @@ pub fn walk_string_part_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut 
     }
 }
 
-pub fn walk_literal_string_part_mut<V: VisitorMut + ?Sized>(
-    visitor: &mut V,
-    node: &mut LiteralStringPart,
-) {
-}
-
 pub fn walk_expression_string_part_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
     node: &mut ExpressionStringPart,
@@ -723,12 +717,6 @@ pub fn walk_single_argument_mut<V: VisitorMut + ?Sized>(
     if let Some(item) = &mut node.argument {
         visitor.visit_argument(item);
     }
-}
-
-pub fn walk_argument_placeholder_mut<V: VisitorMut + ?Sized>(
-    visitor: &mut V,
-    node: &mut ArgumentPlaceholder,
-) {
 }
 
 pub fn walk_attribute_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Attribute) {
@@ -933,8 +921,6 @@ pub fn walk_if_statement_else_block_mut<V: VisitorMut + ?Sized>(
         visitor.visit_statement(item);
     }
 }
-
-pub fn walk_data_type_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut DataType) {}
 
 pub fn walk_declare_entry_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut DeclareEntry) {
     visitor.visit_simple_identifier(&mut node.key);
@@ -1269,12 +1255,6 @@ pub fn walk_identifier_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut I
     }
 }
 
-pub fn walk_simple_identifier_mut<V: VisitorMut + ?Sized>(
-    visitor: &mut V,
-    node: &mut SimpleIdentifier,
-) {
-}
-
 pub fn walk_dynamic_identifier_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
     node: &mut DynamicIdentifier,
@@ -1478,9 +1458,6 @@ pub fn walk_break_statement_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
     node: &mut BreakStatement,
 ) {
-    if let Some(item) = &mut node.level {
-        visitor.visit_level(item);
-    }
     visitor.visit_ending(&mut node.ending);
 }
 
@@ -1488,9 +1465,6 @@ pub fn walk_continue_statement_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
     node: &mut ContinueStatement,
 ) {
-    if let Some(item) = &mut node.level {
-        visitor.visit_level(item);
-    }
     visitor.visit_ending(&mut node.ending);
 }
 
@@ -1949,14 +1923,6 @@ pub fn walk_special_name_kind_mut<V: VisitorMut + ?Sized>(
     }
 }
 
-pub fn walk_unresolved_name_mut<V: VisitorMut + ?Sized>(
-    visitor: &mut V,
-    node: &mut UnresolvedName,
-) {
-}
-
-pub fn walk_resolved_name_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut ResolvedName) {}
-
 pub fn walk_property_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Property) {
     for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
@@ -2115,12 +2081,6 @@ pub fn walk_variable_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Var
         Variable::VariableVariable(inner) => visitor.visit_variable_variable(inner),
         Variable::BracedVariableVariable(inner) => visitor.visit_braced_variable_variable(inner),
     }
-}
-
-pub fn walk_simple_variable_mut<V: VisitorMut + ?Sized>(
-    visitor: &mut V,
-    node: &mut SimpleVariable,
-) {
 }
 
 pub fn walk_variable_variable_mut<V: VisitorMut + ?Sized>(

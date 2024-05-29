@@ -287,9 +287,7 @@ pub trait VisitorMut {
         walk_string_part_mut(self, node);
     }
 
-    fn visit_literal_string_part(&mut self, node: &mut LiteralStringPart) {
-        walk_literal_string_part_mut(self, node);
-    }
+    fn visit_literal_string_part(&mut self, node: &mut LiteralStringPart) {}
 
     fn visit_expression_string_part(&mut self, node: &mut ExpressionStringPart) {
         walk_expression_string_part_mut(self, node);
@@ -323,9 +321,7 @@ pub trait VisitorMut {
         walk_single_argument_mut(self, node);
     }
 
-    fn visit_argument_placeholder(&mut self, node: &mut ArgumentPlaceholder) {
-        walk_argument_placeholder_mut(self, node);
-    }
+    fn visit_argument_placeholder(&mut self, node: &mut ArgumentPlaceholder) {}
 
     fn visit_attribute(&mut self, node: &mut Attribute) {
         walk_attribute_mut(self, node);
@@ -399,9 +395,7 @@ pub trait VisitorMut {
         walk_if_statement_else_block_mut(self, node);
     }
 
-    fn visit_data_type(&mut self, node: &mut DataType) {
-        walk_data_type_mut(self, node);
-    }
+    fn visit_data_type(&mut self, node: &mut DataType) {}
 
     fn visit_declare_entry(&mut self, node: &mut DeclareEntry) {
         walk_declare_entry_mut(self, node);
@@ -527,9 +521,7 @@ pub trait VisitorMut {
         walk_identifier_mut(self, node);
     }
 
-    fn visit_simple_identifier(&mut self, node: &mut SimpleIdentifier) {
-        walk_simple_identifier_mut(self, node);
-    }
+    fn visit_simple_identifier(&mut self, node: &mut SimpleIdentifier) {}
 
     fn visit_dynamic_identifier(&mut self, node: &mut DynamicIdentifier) {
         walk_dynamic_identifier_mut(self, node);
@@ -687,13 +679,9 @@ pub trait VisitorMut {
         walk_special_name_kind_mut(self, node);
     }
 
-    fn visit_unresolved_name(&mut self, node: &mut UnresolvedName) {
-        walk_unresolved_name_mut(self, node);
-    }
+    fn visit_unresolved_name(&mut self, node: &mut UnresolvedName) {}
 
-    fn visit_resolved_name(&mut self, node: &mut ResolvedName) {
-        walk_resolved_name_mut(self, node);
-    }
+    fn visit_resolved_name(&mut self, node: &mut ResolvedName) {}
 
     fn visit_property(&mut self, node: &mut Property) {
         walk_property_mut(self, node);
@@ -743,9 +731,7 @@ pub trait VisitorMut {
         walk_variable_mut(self, node);
     }
 
-    fn visit_simple_variable(&mut self, node: &mut SimpleVariable) {
-        walk_simple_variable_mut(self, node);
-    }
+    fn visit_simple_variable(&mut self, node: &mut SimpleVariable) {}
 
     fn visit_variable_variable(&mut self, node: &mut VariableVariable) {
         walk_variable_variable_mut(self, node);
