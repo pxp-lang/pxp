@@ -1,3 +1,4 @@
+#[allow(unused)]
 mod visitor;
 mod visitor_mut;
 mod walk;
