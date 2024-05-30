@@ -212,6 +212,8 @@ snap!(snapper, class_extends_aliased, process("fixtures/name-resolving/class-ext
 snap!(snapper, class_extends_qualified_aliased, process("fixtures/name-resolving/class-extends-qualified-aliased.php"));
 snap!(snapper, interface_extends, process("fixtures/name-resolving/interface-extends.php"));
 snap!(snapper, class_implements, process("fixtures/name-resolving/class-implements.php"));
+snap!(snapper, class_implements_aliased, process("fixtures/name-resolving/class-implements-aliased.php"));
+snap!(snapper, class_implements_qualified_aliased, process("fixtures/name-resolving/class-implements-qualified-aliased.php"));
 
 // Uses
 snap!(snapper, simple_use, process("fixtures/uses/simple-use.php"));
