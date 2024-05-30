@@ -732,7 +732,7 @@ FunctionStatement:
   attributes: Vec<AttributeGroup>
   function: Span
   ampersand: Option<Span>
-  name: SimpleIdentifier
+  name: Name
   parameters: FunctionParameterList
   return_type: Option<ReturnType>
   body: FunctionBody

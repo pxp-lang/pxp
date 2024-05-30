@@ -14,6 +14,8 @@ use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
+use super::names;
+
 pub enum Method {
     Abstract(AbstractMethod),
     Concrete(ConcreteMethod),
@@ -189,7 +191,7 @@ pub fn function(state: &mut State) -> StatementKind {
         None
     };
 
-    let name = identifiers::identifier_maybe_soft_reserved(state);
+    let name = names::name_maybe_soft_reserved(state);
 
     // get attributes before processing parameters, otherwise
     // parameters will steal attributes of this function.

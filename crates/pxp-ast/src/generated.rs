@@ -969,7 +969,7 @@ pub struct FunctionStatement {
     pub attributes: Vec<AttributeGroup>,
     pub function: Span,
     pub ampersand: Option<Span>,
-    pub name: SimpleIdentifier,
+    pub name: Name,
     pub parameters: FunctionParameterList,
     pub return_type: Option<ReturnType>,
     pub body: FunctionBody,

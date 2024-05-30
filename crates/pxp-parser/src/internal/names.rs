@@ -5,7 +5,7 @@ use pxp_token::TokenKind;
 
 use crate::{state::State, ParserDiagnostic};
 
-use super::identifiers::{self, is_reserved_identifier};
+use super::identifiers::{self, is_reserved_identifier, is_soft_reserved_identifier};
 
 pub fn full_name(state: &mut State, kind: UseKind) -> Name {
     let current = state.stream.current();
@@ -36,6 +36,19 @@ pub fn full_name(state: &mut State, kind: UseKind) -> Name {
 
             Name::missing(current.span)
         }
+    }
+}
+
+pub fn name_maybe_soft_reserved(state: &mut State) -> Name {
+    let current = state.stream.current();
+
+    if is_soft_reserved_identifier(&current.kind) {
+        let symbol = current.symbol.unwrap();
+        let resolved = state.join_with_namespace(symbol);
+
+        Name::resolved(resolved, symbol, current.span)
+    } else {
+        type_name(state)
     }
 }
 

@@ -1097,7 +1097,7 @@ pub fn walk_function_statement_mut<V: VisitorMut + ?Sized>(
     for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_simple_identifier(&mut node.name);
+    visitor.visit_name(&mut node.name);
     visitor.visit_function_parameter_list(&mut node.parameters);
     if let Some(item) = &mut node.return_type {
         visitor.visit_return_type(item);

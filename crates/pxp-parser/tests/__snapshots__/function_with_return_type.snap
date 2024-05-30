@@ -28,8 +28,13 @@
                     end: 15,
                 },
                 ampersand: None,
-                name: SimpleIdentifier {
-                    symbol: Symbol("foo"),
+                name: Name {
+                    kind: Resolved(
+                        ResolvedName {
+                            resolved: Symbol("foo"),
+                            original: Symbol("foo"),
+                        },
+                    ),
                     span: Span {
                         start: 16,
                         end: 19,

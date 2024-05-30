@@ -959,7 +959,7 @@ pub fn walk_function_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &Func
     for item in &node.attributes {
         visitor.visit_attribute_group(item);
     }
-    visitor.visit_simple_identifier(&node.name);
+    visitor.visit_name(&node.name);
     visitor.visit_function_parameter_list(&node.parameters);
     if let Some(item) = &node.return_type {
         visitor.visit_return_type(item);
