@@ -793,7 +793,7 @@ pub fn walk_class_implements_mut<V: VisitorMut + ?Sized>(
     node: &mut ClassImplements,
 ) {
     for item in &mut node.interfaces.inner {
-        visitor.visit_simple_identifier(item);
+        visitor.visit_name(item);
     }
 }
 

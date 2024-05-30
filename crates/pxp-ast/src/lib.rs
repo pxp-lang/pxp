@@ -7,15 +7,15 @@ use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
+pub mod data_type;
 pub mod identifiers;
-pub mod name;
 pub mod literals;
 pub mod modifiers;
+pub mod name;
 pub mod operators;
 pub mod properties;
 pub mod utils;
 pub mod variables;
-pub mod data_type;
 
 impl Display for UseKind {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -49,7 +49,11 @@ impl Statement {
 
 impl Expression {
     pub fn new(kind: ExpressionKind, span: Span, comments: CommentGroup) -> Self {
-        Self { span, kind, comments }
+        Self {
+            span,
+            kind,
+            comments,
+        }
     }
 
     pub fn missing(span: Span) -> Self {
@@ -57,7 +61,7 @@ impl Expression {
     }
 
     pub fn noop(span: Span) -> Self {
-        Self::new( ExpressionKind::Noop, span, CommentGroup::default())
+        Self::new(ExpressionKind::Noop, span, CommentGroup::default())
     }
 }
 

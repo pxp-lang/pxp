@@ -52,8 +52,8 @@ pub fn parse(state: &mut State) -> StatementKind {
         state.stream.next();
 
         let interfaces =
-            utils::at_least_one_comma_separated_no_trailing::<SimpleIdentifier>(state, &|state| {
-                identifiers::full_type_name(state)
+            utils::at_least_one_comma_separated_no_trailing::<Name>(state, &|state| {
+                names::full_name(state, UseKind::Normal)
             });
 
         Some(ClassImplements {
@@ -131,8 +131,8 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
 
         let implements = current.span;
         let interfaces =
-            utils::at_least_one_comma_separated_no_trailing::<SimpleIdentifier>(state, &|state| {
-                identifiers::full_name(state)
+            utils::at_least_one_comma_separated_no_trailing::<Name>(state, &|state| {
+                names::full_name(state, UseKind::Normal)
             });
 
         Some(ClassImplements {

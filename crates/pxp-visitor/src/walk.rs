@@ -700,7 +700,7 @@ pub fn walk_class_extends<V: Visitor + ?Sized>(visitor: &mut V, node: &ClassExte
 
 pub fn walk_class_implements<V: Visitor + ?Sized>(visitor: &mut V, node: &ClassImplements) {
     for item in &node.interfaces.inner {
-        visitor.visit_simple_identifier(item);
+        visitor.visit_name(item);
     }
 }
 

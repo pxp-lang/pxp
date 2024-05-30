@@ -10,15 +10,33 @@ impl Name {
     }
 
     pub fn missing(span: Span) -> Self {
-        Self::new(NameKind::Resolved(ResolvedName { resolved: Symbol::missing(), original: Symbol::missing() }), span)
+        Self::new(
+            NameKind::Resolved(ResolvedName {
+                resolved: Symbol::missing(),
+                original: Symbol::missing(),
+            }),
+            span,
+        )
     }
 
     pub fn resolved(symbol: Symbol, original: Symbol, span: Span) -> Self {
-        Self::new(NameKind::Resolved(ResolvedName { resolved: symbol, original }), span)
+        Self::new(
+            NameKind::Resolved(ResolvedName {
+                resolved: symbol,
+                original,
+            }),
+            span,
+        )
     }
 
     pub fn unresolved(symbol: Symbol, qualification: NameQualification, span: Span) -> Self {
-        Self::new(NameKind::Unresolved(UnresolvedName { symbol, qualification }), span)
+        Self::new(
+            NameKind::Unresolved(UnresolvedName {
+                symbol,
+                qualification,
+            }),
+            span,
+        )
     }
 
     pub fn special(kind: SpecialNameKind, symbol: Symbol, span: Span) -> Self {

@@ -30,34 +30,34 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
-                            resolved: Symbol("Foo"),
-                            original: Symbol("Foo"),
+                            resolved: Symbol("A"),
+                            original: Symbol("A"),
                         },
                     ),
                     span: Span {
                         start: 13,
-                        end: 16,
+                        end: 14,
                     },
                 },
                 extends: None,
                 implements: Some(
                     ClassImplements {
                         implements: Span {
-                            start: 17,
-                            end: 27,
+                            start: 15,
+                            end: 25,
                         },
                         interfaces: CommaSeparated {
                             inner: [
                                 Name {
                                     kind: Unresolved(
                                         UnresolvedName {
-                                            symbol: Symbol("Bar"),
+                                            symbol: Symbol("Foo"),
                                             qualification: Unqualified,
                                         },
                                     ),
                                     span: Span {
-                                        start: 28,
-                                        end: 31,
+                                        start: 26,
+                                        end: 29,
                                     },
                                 },
                             ],
@@ -67,20 +67,20 @@
                 ),
                 body: ClassBody {
                     left_brace: Span {
-                        start: 32,
-                        end: 33,
+                        start: 30,
+                        end: 31,
                     },
                     members: [],
                     right_brace: Span {
-                        start: 33,
-                        end: 34,
+                        start: 31,
+                        end: 32,
                     },
                 },
             },
         ),
         span: Span {
             start: 7,
-            end: 34,
+            end: 32,
         },
         comments: CommentGroup {
             comments: [],

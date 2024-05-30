@@ -1,7 +1,11 @@
 use pxp_span::Span;
 use pxp_syntax::visibility::Visibility;
 
-use crate::{ClassModifier, ClassModifierGroup, ConstantModifier, ConstantModifierGroup, MethodModifier, MethodModifierGroup, PromotedPropertyModifier, PromotedPropertyModifierGroup, PropertyModifier, PropertyModifierGroup};
+use crate::{
+    ClassModifier, ClassModifierGroup, ConstantModifier, ConstantModifierGroup, MethodModifier,
+    MethodModifierGroup, PromotedPropertyModifier, PromotedPropertyModifierGroup, PropertyModifier,
+    PropertyModifierGroup,
+};
 
 impl PromotedPropertyModifier {
     pub fn span(&self) -> Span {

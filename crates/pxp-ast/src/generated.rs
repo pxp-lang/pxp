@@ -2,13 +2,13 @@
 // Do not make modifications to this file directly.
 
 use crate::utils::CommaSeparated;
-use pxp_syntax::comments::{CommentGroup, Comment};
-use pxp_type::Type;
-use pxp_token::Token;
 use pxp_span::Span;
 use pxp_symbol::Symbol;
 use pxp_syntax::backed_enum_type::BackedEnumType;
+use pxp_syntax::comments::{Comment, CommentGroup};
 use pxp_syntax::name::NameQualification;
+use pxp_token::Token;
+use pxp_type::Type;
 
 pub type Block = Vec<Statement>;
 
@@ -720,7 +720,7 @@ pub struct ClassExtends {
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassImplements {
     pub implements: Span,
-    pub interfaces: CommaSeparated<SimpleIdentifier>,
+    pub interfaces: CommaSeparated<Name>,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1757,12 +1757,8 @@ pub enum TraitUsageAdaptation {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum CatchType {
-    Identifier {
-        identifier: SimpleIdentifier,
-    },
-    Union {
-        identifiers: Vec<SimpleIdentifier>,
-    },
+    Identifier { identifier: SimpleIdentifier },
+    Union { identifiers: Vec<SimpleIdentifier> },
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1874,4 +1870,3 @@ pub struct StaticVar {
     pub var: Variable,
     pub default: Option<Expression>,
 }
-

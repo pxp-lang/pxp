@@ -4,6 +4,9 @@ use pxp_symbol::Symbol;
 
 impl SimpleVariable {
     pub fn missing(span: Span) -> Self {
-        Self { symbol: Symbol::missing(), span }
+        Self {
+            symbol: Symbol::missing(),
+            span,
+        }
     }
 }

@@ -67,15 +67,25 @@
                         },
                         interfaces: CommaSeparated {
                             inner: [
-                                SimpleIdentifier {
-                                    symbol: Symbol("Baz"),
+                                Name {
+                                    kind: Unresolved(
+                                        UnresolvedName {
+                                            symbol: Symbol("Baz"),
+                                            qualification: Unqualified,
+                                        },
+                                    ),
                                     span: Span {
                                         start: 40,
                                         end: 43,
                                     },
                                 },
-                                SimpleIdentifier {
-                                    symbol: Symbol("Qux"),
+                                Name {
+                                    kind: Unresolved(
+                                        UnresolvedName {
+                                            symbol: Symbol("Qux"),
+                                            qualification: Unqualified,
+                                        },
+                                    ),
                                     span: Span {
                                         start: 45,
                                         end: 48,

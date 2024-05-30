@@ -540,7 +540,7 @@ ClassExtends:
 
 ClassImplements:
   implements: Span
-  interfaces: CommaSeparated<SimpleIdentifier>
+  interfaces: CommaSeparated<Name>
 
 ClassishMember:
   as: Enum
