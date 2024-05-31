@@ -321,58 +321,6 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
     }
 }
 
-/// Expect an unqualified, qualified or fully qualified identifier such as Foo, Foo\Bar or \Foo\Bar.
-pub fn full_type_name_including_self(state: &mut State) -> SimpleIdentifier {
-    let current = state.stream.current();
-    match &current.kind {
-        TokenKind::Identifier
-        | TokenKind::QualifiedIdentifier
-        | TokenKind::FullyQualifiedIdentifier => {
-            state.stream.next();
-
-            let symbol = current.symbol.unwrap();
-
-            SimpleIdentifier::new(symbol, current.span)
-        }
-        TokenKind::Enum
-        | TokenKind::From
-        | TokenKind::Self_
-        | TokenKind::Static
-        | TokenKind::Parent => {
-            state.stream.next();
-
-            let symbol = current.symbol.unwrap();
-
-            SimpleIdentifier::new(symbol, current.span)
-        }
-        t if is_reserved_identifier(t) => {
-            state.diagnostic(
-                ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
-                Severity::Error,
-                current.span,
-            );
-
-            state.stream.next();
-
-            let symbol = current.symbol.unwrap();
-
-            SimpleIdentifier::new(symbol, current.span)
-        }
-        _ => {
-            state.diagnostic(
-                ParserDiagnostic::ExpectedToken {
-                    expected: vec![TokenKind::Identifier],
-                    found: *current,
-                },
-                Severity::Error,
-                current.span,
-            );
-
-            SimpleIdentifier::new(Symbol::missing(), current.span)
-        }
-    }
-}
-
 pub fn identifier_maybe_reserved(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
 

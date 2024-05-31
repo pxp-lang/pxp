@@ -2,7 +2,6 @@ use crate::internal::attributes;
 use crate::internal::constants::classish;
 use crate::internal::functions::method;
 use crate::internal::functions::Method;
-use crate::internal::identifiers;
 use crate::internal::modifiers;
 use crate::internal::parameters;
 use crate::internal::properties;
