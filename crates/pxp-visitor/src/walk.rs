@@ -639,7 +639,7 @@ pub fn walk_single_argument<V: Visitor + ?Sized>(visitor: &mut V, node: &SingleA
 }
 
 pub fn walk_attribute<V: Visitor + ?Sized>(visitor: &mut V, node: &Attribute) {
-    visitor.visit_simple_identifier(&node.name);
+    visitor.visit_name(&node.name);
     if let Some(item) = &node.arguments {
         visitor.visit_argument_list(item);
     }

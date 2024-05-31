@@ -82,7 +82,7 @@ impl<'a, 'b> State<'a, 'b> {
     pub fn maybe_resolve_identifier(&mut self, token: Token, kind: UseKind) -> Name {
         let symbol = token.symbol.unwrap();
         let part = match &token.kind {
-            TokenKind::Identifier => token.symbol.unwrap(),
+            TokenKind::Identifier | TokenKind::Enum | TokenKind::From => token.symbol.unwrap(),
             TokenKind::QualifiedIdentifier => {
                 let bytestring = self.symbol_table.resolve(token.symbol.unwrap()).unwrap().to_bytestring();
                 let parts = bytestring.split(|c| *c == b'\\').collect::<Vec<_>>();

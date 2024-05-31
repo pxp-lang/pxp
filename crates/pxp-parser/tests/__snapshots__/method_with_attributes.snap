@@ -64,8 +64,13 @@
                                                     start: 23,
                                                     end: 25,
                                                 },
-                                                name: SimpleIdentifier {
-                                                    symbol: Symbol("B"),
+                                                name: Name {
+                                                    kind: Unresolved(
+                                                        UnresolvedName {
+                                                            symbol: Symbol("B"),
+                                                            qualification: Unqualified,
+                                                        },
+                                                    ),
                                                     span: Span {
                                                         start: 23,
                                                         end: 24,
@@ -86,8 +91,13 @@
                                                     start: 32,
                                                     end: 34,
                                                 },
-                                                name: SimpleIdentifier {
-                                                    symbol: Symbol("C"),
+                                                name: Name {
+                                                    kind: Unresolved(
+                                                        UnresolvedName {
+                                                            symbol: Symbol("C"),
+                                                            qualification: Unqualified,
+                                                        },
+                                                    ),
                                                     span: Span {
                                                         start: 32,
                                                         end: 33,
@@ -100,8 +110,13 @@
                                                     start: 35,
                                                     end: 46,
                                                 },
-                                                name: SimpleIdentifier {
-                                                    symbol: Symbol("D"),
+                                                name: Name {
+                                                    kind: Unresolved(
+                                                        UnresolvedName {
+                                                            symbol: Symbol("D"),
+                                                            qualification: Unqualified,
+                                                        },
+                                                    ),
                                                     span: Span {
                                                         start: 35,
                                                         end: 36,

@@ -6,6 +6,8 @@ use pxp_ast::*;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
+use super::names;
+
 pub fn gather_attributes(state: &mut State) -> bool {
     if state.stream.current().kind != TokenKind::Attribute {
         return false;
@@ -18,7 +20,7 @@ pub fn gather_attributes(state: &mut State) -> bool {
 
     loop {
         let start = state.stream.current().span;
-        let name = identifiers::full_type_name_including_self(state);
+        let name = names::full_name_including_self(state);
         let arguments = if state.stream.current().kind == TokenKind::LeftParen {
             Some(parameters::argument_list(state))
         } else {

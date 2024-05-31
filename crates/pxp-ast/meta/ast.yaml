@@ -501,7 +501,7 @@ ArgumentPlaceholder:
 
 Attribute:
   span: Span
-  name: SimpleIdentifier
+  name: Name
   arguments: Option<ArgumentList>
 
 AttributeGroup:

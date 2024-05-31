@@ -720,7 +720,7 @@ pub fn walk_single_argument_mut<V: VisitorMut + ?Sized>(
 }
 
 pub fn walk_attribute_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Attribute) {
-    visitor.visit_simple_identifier(&mut node.name);
+    visitor.visit_name(&mut node.name);
     if let Some(item) = &mut node.arguments {
         visitor.visit_argument_list(item);
     }

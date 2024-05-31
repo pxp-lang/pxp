@@ -64,8 +64,13 @@
                                                     start: 25,
                                                     end: 29,
                                                 },
-                                                name: SimpleIdentifier {
-                                                    symbol: Symbol("Baz"),
+                                                name: Name {
+                                                    kind: Unresolved(
+                                                        UnresolvedName {
+                                                            symbol: Symbol("Baz"),
+                                                            qualification: Unqualified,
+                                                        },
+                                                    ),
                                                     span: Span {
                                                         start: 25,
                                                         end: 28,

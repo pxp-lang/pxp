@@ -1,6 +1,7 @@
 use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_symbol::Symbol;
+use pxp_syntax::name::NameQualification;
 use pxp_token::TokenKind;
 
 use crate::{state::State, ParserDiagnostic};
@@ -116,4 +117,59 @@ pub fn use_name(state: &mut State) -> Name {
     }
 
     Name::resolved(identifier.symbol, identifier.symbol, identifier.span)
+}
+
+pub fn full_name_including_self(state: &mut State) -> Name {
+    let current = state.stream.current();
+    match &current.kind {
+        TokenKind::FullyQualifiedIdentifier => {
+            state.stream.next();
+
+            let symbol = current.symbol.unwrap();
+
+            Name::resolved(symbol, symbol, current.span)
+        },
+        TokenKind::Identifier
+        | TokenKind::QualifiedIdentifier
+        | TokenKind::Enum
+        | TokenKind::From => {
+            state.stream.next();
+
+            state.maybe_resolve_identifier(*current, UseKind::Normal)
+        }
+        TokenKind::Self_
+        | TokenKind::Static
+        | TokenKind::Parent => {
+            state.stream.next();
+
+            let symbol = current.symbol.unwrap();
+
+            Name::special(SpecialNameKind::from(current.kind), symbol, current.span)
+        }
+        t if is_reserved_identifier(t) => {
+            state.diagnostic(
+                ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
+                Severity::Error,
+                current.span,
+            );
+
+            state.stream.next();
+
+            let symbol = current.symbol.unwrap();
+
+            Name::unresolved(symbol, NameQualification::Unqualified, current.span)
+        }
+        _ => {
+            state.diagnostic(
+                ParserDiagnostic::ExpectedToken {
+                    expected: vec![TokenKind::Identifier],
+                    found: *current,
+                },
+                Severity::Error,
+                current.span,
+            );
+
+            Name::missing(current.span)
+        }
+    }
 }

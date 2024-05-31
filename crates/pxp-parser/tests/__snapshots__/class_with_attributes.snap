@@ -31,8 +31,13 @@
                                     start: 9,
                                     end: 13,
                                 },
-                                name: SimpleIdentifier {
-                                    symbol: Symbol("Bar"),
+                                name: Name {
+                                    kind: Unresolved(
+                                        UnresolvedName {
+                                            symbol: Symbol("Bar"),
+                                            qualification: Unqualified,
+                                        },
+                                    ),
                                     span: Span {
                                         start: 9,
                                         end: 12,
@@ -53,8 +58,13 @@
                                     start: 16,
                                     end: 20,
                                 },
-                                name: SimpleIdentifier {
-                                    symbol: Symbol("Baz"),
+                                name: Name {
+                                    kind: Unresolved(
+                                        UnresolvedName {
+                                            symbol: Symbol("Baz"),
+                                            qualification: Unqualified,
+                                        },
+                                    ),
                                     span: Span {
                                         start: 16,
                                         end: 19,
@@ -67,8 +77,13 @@
                                     start: 21,
                                     end: 25,
                                 },
-                                name: SimpleIdentifier {
-                                    symbol: Symbol("Qux"),
+                                name: Name {
+                                    kind: Unresolved(
+                                        UnresolvedName {
+                                            symbol: Symbol("Qux"),
+                                            qualification: Unqualified,
+                                        },
+                                    ),
                                     span: Span {
                                         start: 21,
                                         end: 24,
