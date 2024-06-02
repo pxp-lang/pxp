@@ -1,0 +1,198 @@
+[
+    Statement {
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Class(
+            ClassStatement {
+                attributes: [],
+                modifiers: ClassModifierGroup {
+                    modifiers: [],
+                },
+                class: Span {
+                    start: 7,
+                    end: 12,
+                },
+                name: Name {
+                    kind: Resolved(
+                        ResolvedName {
+                            resolved: Symbol("A"),
+                            original: Symbol("A"),
+                        },
+                    ),
+                    span: Span {
+                        start: 13,
+                        end: 14,
+                    },
+                },
+                extends: None,
+                implements: None,
+                body: ClassBody {
+                    left_brace: Span {
+                        start: 15,
+                        end: 16,
+                    },
+                    members: [
+                        ConcreteMethod(
+                            ConcreteMethod {
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                                attributes: [],
+                                modifiers: MethodModifierGroup {
+                                    modifiers: [],
+                                },
+                                function: Span {
+                                    start: 21,
+                                    end: 29,
+                                },
+                                ampersand: None,
+                                name: SimpleIdentifier {
+                                    symbol: Symbol("a"),
+                                    span: Span {
+                                        start: 30,
+                                        end: 31,
+                                    },
+                                },
+                                parameters: FunctionParameterList {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_parenthesis: Span {
+                                        start: 31,
+                                        end: 32,
+                                    },
+                                    parameters: CommaSeparated {
+                                        inner: [],
+                                        commas: [],
+                                    },
+                                    right_parenthesis: Span {
+                                        start: 32,
+                                        end: 33,
+                                    },
+                                },
+                                return_type: None,
+                                body: MethodBody {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_brace: Span {
+                                        start: 34,
+                                        end: 35,
+                                    },
+                                    statements: [
+                                        Statement {
+                                            kind: Expression(
+                                                ExpressionStatement {
+                                                    expression: Expression {
+                                                        kind: New(
+                                                            NewExpression {
+                                                                new: Span {
+                                                                    start: 44,
+                                                                    end: 47,
+                                                                },
+                                                                target: Expression {
+                                                                    kind: Name(
+                                                                        Name {
+                                                                            kind: Special(
+                                                                                SpecialName {
+                                                                                    kind: Static,
+                                                                                    symbol: Symbol("static"),
+                                                                                },
+                                                                            ),
+                                                                            span: Span {
+                                                                                start: 48,
+                                                                                end: 54,
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                    span: Span {
+                                                                        start: 48,
+                                                                        end: 54,
+                                                                    },
+                                                                    comments: CommentGroup {
+                                                                        comments: [],
+                                                                    },
+                                                                },
+                                                                arguments: Some(
+                                                                    ArgumentList {
+                                                                        comments: CommentGroup {
+                                                                            comments: [],
+                                                                        },
+                                                                        left_parenthesis: Span {
+                                                                            start: 54,
+                                                                            end: 55,
+                                                                        },
+                                                                        arguments: [],
+                                                                        right_parenthesis: Span {
+                                                                            start: 55,
+                                                                            end: 56,
+                                                                        },
+                                                                    },
+                                                                ),
+                                                            },
+                                                        ),
+                                                        span: Span {
+                                                            start: 44,
+                                                            end: 54,
+                                                        },
+                                                        comments: CommentGroup {
+                                                            comments: [],
+                                                        },
+                                                    },
+                                                    ending: Semicolon(
+                                                        Span {
+                                                            start: 56,
+                                                            end: 57,
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                            span: Span {
+                                                start: 44,
+                                                end: 57,
+                                            },
+                                            comments: CommentGroup {
+                                                comments: [],
+                                            },
+                                        },
+                                    ],
+                                    right_brace: Span {
+                                        start: 62,
+                                        end: 63,
+                                    },
+                                },
+                            },
+                        ),
+                    ],
+                    right_brace: Span {
+                        start: 64,
+                        end: 65,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: 7,
+            end: 65,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

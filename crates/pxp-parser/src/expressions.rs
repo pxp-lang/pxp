@@ -1049,35 +1049,41 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let current_span = state.stream.current().span;
             let target = match state.stream.current().kind {
                 TokenKind::Self_ => {
+                    let token = state.stream.current();
+
                     state.stream.next();
 
                     Expression::new(
-                        ExpressionKind::Self_,
-                        current_span,
+                        ExpressionKind::Name(Name::special(SpecialNameKind::Self_, token.symbol.unwrap(), token.span)),
+                        token.span,
                         CommentGroup::default(),
                     )
                 }
                 TokenKind::Static => {
+                    let token = state.stream.current();
+
                     state.stream.next();
 
                     Expression::new(
-                        ExpressionKind::Static,
-                        current_span,
+                        ExpressionKind::Name(Name::special(SpecialNameKind::Static, token.symbol.unwrap(), token.span)),
+                        token.span,
                         CommentGroup::default(),
                     )
                 }
                 TokenKind::Parent => {
+                    let token = state.stream.current();
+
                     state.stream.next();
 
                     Expression::new(
-                        ExpressionKind::Parent,
-                        current_span,
+                        ExpressionKind::Name(Name::special(SpecialNameKind::Parent, token.symbol.unwrap(), token.span)),
+                        token.span,
                         CommentGroup::default(),
                     )
                 }
                 TokenKind::FullyQualifiedIdentifier => {
                     let token = state.stream.current();
-                    
+
                     let span = token.span;
                     let symbol = token.symbol.unwrap();
 
