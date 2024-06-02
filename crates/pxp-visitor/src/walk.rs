@@ -156,6 +156,7 @@ pub fn walk_expression_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &Express
         ExpressionKind::Yield(inner) => visitor.visit_yield_expression(inner),
         ExpressionKind::YieldFrom(inner) => visitor.visit_yield_from_expression(inner),
         ExpressionKind::Cast(inner) => visitor.visit_cast_expression(inner),
+        ExpressionKind::Name(inner) => visitor.visit_name(inner),
         ExpressionKind::Noop => {}
         _ => {}
     }

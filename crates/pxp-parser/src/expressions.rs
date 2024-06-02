@@ -1075,38 +1075,31 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                         CommentGroup::default(),
                     )
                 }
-                TokenKind::Enum => {
-                    let token = *state.stream.current();
+                TokenKind::FullyQualifiedIdentifier => {
+                    let token = state.stream.current();
+                    
                     let span = token.span;
+                    let symbol = token.symbol.unwrap();
 
                     state.stream.next();
 
-                    let symbol = token.symbol.unwrap();
-
                     Expression::new(
-                        ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier::new( symbol, token.span),
-                        )),
+                        ExpressionKind::Name(Name::resolved(symbol, symbol, span)),
                         span,
                         CommentGroup::default(),
                     )
-                }
-                TokenKind::From => {
-                    let token = *state.stream.current();
-                    let span = token.span;
+                },
+                TokenKind::Identifier | TokenKind::QualifiedIdentifier | TokenKind::Enum | TokenKind::From => {
+                    let token = state.stream.current();
 
                     state.stream.next();
 
-                    let symbol = token.symbol.unwrap();
-
                     Expression::new(
-                        ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier::new( symbol, token.span)
-                        )),
-                        span,
+                        ExpressionKind::Name(state.maybe_resolve_identifier(*token, UseKind::Normal)),
+                        token.span,
                         CommentGroup::default(),
                     )
-                }
+                },
                 _ => clone_or_new_precedence(state),
             };
 

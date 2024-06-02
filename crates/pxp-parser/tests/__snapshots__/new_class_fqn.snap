@@ -1,0 +1,95 @@
+[
+    Statement {
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    kind: New(
+                        NewExpression {
+                            new: Span {
+                                start: 7,
+                                end: 10,
+                            },
+                            target: Expression {
+                                kind: Name(
+                                    Name {
+                                        kind: Resolved(
+                                            ResolvedName {
+                                                resolved: Symbol("\Foo\Bar\Baz"),
+                                                original: Symbol("\Foo\Bar\Baz"),
+                                            },
+                                        ),
+                                        span: Span {
+                                            start: 11,
+                                            end: 23,
+                                        },
+                                    },
+                                ),
+                                span: Span {
+                                    start: 11,
+                                    end: 23,
+                                },
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                            },
+                            arguments: Some(
+                                ArgumentList {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_parenthesis: Span {
+                                        start: 23,
+                                        end: 24,
+                                    },
+                                    arguments: [],
+                                    right_parenthesis: Span {
+                                        start: 24,
+                                        end: 25,
+                                    },
+                                },
+                            ),
+                        },
+                    ),
+                    span: Span {
+                        start: 7,
+                        end: 23,
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: 25,
+                        end: 26,
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: 7,
+            end: 26,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

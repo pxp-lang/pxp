@@ -96,7 +96,7 @@ impl<'a, 'b> State<'a, 'b> {
 
         if let Some(imported) = map.get(&part) {
             match &token.kind {
-                TokenKind::Identifier => {
+                TokenKind::Identifier | TokenKind::From | TokenKind::Enum => {
                     Name::resolved(*imported, symbol, token.span)
                 },
                 TokenKind::QualifiedIdentifier => {

@@ -218,6 +218,11 @@ snap!(snapper, function_in_namespace, process("fixtures/name-resolving/function-
 snap!(snapper, attribute, process("fixtures/name-resolving/attribute.php"));
 snap!(snapper, attribute_use, process("fixtures/name-resolving/attribute-use.php"));
 snap!(snapper, attribute_use_aliased, process("fixtures/name-resolving/attribute-use-aliased.php"));
+snap!(snapper, new_class, process("fixtures/name-resolving/new-class.php"));
+snap!(snapper, new_class_fqn, process("fixtures/name-resolving/new-class-fqn.php"));
+snap!(snapper, new_class_aliased, process("fixtures/name-resolving/new-class-aliased.php"));
+snap!(snapper, new_class_qualified, process("fixtures/name-resolving/new-class-qualified.php"));
+snap!(snapper, new_class_qualified_aliased, process("fixtures/name-resolving/new-class-qualified-aliased.php"));
 
 // Uses
 snap!(snapper, simple_use, process("fixtures/uses/simple-use.php"));

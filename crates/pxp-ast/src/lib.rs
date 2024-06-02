@@ -85,3 +85,14 @@ impl From<&TokenKind> for CastKind {
         kind.into()
     }
 }
+
+impl From<TokenKind> for SpecialNameKind {
+    fn from(value: TokenKind) -> Self {
+        match value {
+            TokenKind::Self_ => Self::Self_,
+            TokenKind::Parent => Self::Parent,
+            TokenKind::Static => Self::Static,
+            _ => unreachable!(),
+        }
+    }
+}

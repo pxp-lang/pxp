@@ -159,6 +159,7 @@ pub fn walk_expression_kind_mut<V: VisitorMut + ?Sized>(
         ExpressionKind::Yield(inner) => visitor.visit_yield_expression(inner),
         ExpressionKind::YieldFrom(inner) => visitor.visit_yield_from_expression(inner),
         ExpressionKind::Cast(inner) => visitor.visit_cast_expression(inner),
+        ExpressionKind::Name(inner) => visitor.visit_name(inner),
         ExpressionKind::Noop => {}
         _ => {}
     }

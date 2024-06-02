@@ -116,6 +116,7 @@ ExpressionKind:
   Yield: YieldExpression
   YieldFrom: YieldFromExpression
   Cast: CastExpression
+  Name: Name
   Noop: ""
 
 InlineHtmlStatement:

@@ -7,7 +7,7 @@ use pxp_symbol::Symbol;
 use pxp_syntax::backed_enum_type::BackedEnumType;
 use pxp_syntax::comments::{Comment, CommentGroup};
 use pxp_syntax::name::NameQualification;
-use pxp_token::{Token, TokenKind};
+use pxp_token::Token;
 use pxp_type::Type;
 
 pub type Block = Vec<Statement>;
@@ -133,6 +133,7 @@ pub enum ExpressionKind {
     Yield(YieldExpression),
     YieldFrom(YieldFromExpression),
     Cast(CastExpression),
+    Name(Name),
     Noop,
 }
 
@@ -1670,17 +1671,6 @@ pub enum SpecialNameKind {
     Self_,
     Parent,
     Static,
-}
-
-impl From<TokenKind> for SpecialNameKind {
-    fn from(value: TokenKind) -> Self {
-        match value {
-            TokenKind::Self_ => SpecialNameKind::Self_,
-            TokenKind::Parent => SpecialNameKind::Parent,
-            TokenKind::Static => SpecialNameKind::Static,
-            _ => unreachable!(),
-        }
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
