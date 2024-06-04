@@ -23,16 +23,19 @@
                     kind: FunctionCall(
                         FunctionCallExpression {
                             target: Expression {
-                                kind: Identifier(
-                                    SimpleIdentifier(
-                                        SimpleIdentifier {
-                                            symbol: Symbol("foo"),
-                                            span: Span {
-                                                start: 7,
-                                                end: 10,
+                                kind: Name(
+                                    Name {
+                                        kind: Unresolved(
+                                            UnresolvedName {
+                                                symbol: Symbol("foo"),
+                                                qualification: Unqualified,
                                             },
+                                        ),
+                                        span: Span {
+                                            start: 7,
+                                            end: 10,
                                         },
-                                    ),
+                                    },
                                 ),
                                 span: Span {
                                     start: 7,

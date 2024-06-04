@@ -4,6 +4,7 @@ use crate::internal::classes;
 use crate::internal::control_flow;
 use crate::internal::functions;
 use crate::internal::identifiers;
+use crate::internal::names;
 use crate::internal::parameters;
 use crate::internal::precedences::Associativity;
 use crate::internal::precedences::Precedence;
@@ -966,12 +967,14 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             | TokenKind::FullyQualifiedIdentifier,
             _,
         ) => {
-            let identifier = identifiers::full_name(state);
-            let identifier_span = identifier.span;
+            let name = names::full_name(state, match state.stream.peek().kind {
+                TokenKind::LeftParen => UseKind::Function,
+                _ => UseKind::Normal
+            });
 
             Expression::new(
-                ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier)),
-                identifier_span,
+                ExpressionKind::Name(name),
+                name.span,
                 CommentGroup::default(),
             )
         }

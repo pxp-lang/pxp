@@ -23,16 +23,19 @@
                     kind: StaticMethodCall(
                         StaticMethodCallExpression {
                             target: Expression {
-                                kind: Identifier(
-                                    SimpleIdentifier(
-                                        SimpleIdentifier {
-                                            symbol: Symbol("\A\B"),
-                                            span: Span {
-                                                start: 7,
-                                                end: 11,
+                                kind: Name(
+                                    Name {
+                                        kind: Resolved(
+                                            ResolvedName {
+                                                resolved: Symbol("\A\B"),
+                                                original: Symbol("\A\B"),
                                             },
+                                        ),
+                                        span: Span {
+                                            start: 7,
+                                            end: 11,
                                         },
-                                    ),
+                                    },
                                 ),
                                 span: Span {
                                     start: 7,
