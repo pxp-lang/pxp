@@ -40,7 +40,7 @@ pub fn full_name(state: &mut State, kind: UseKind) -> Name {
     }
 }
 
-pub fn name_maybe_soft_reserved(state: &mut State) -> Name {
+pub fn type_name_maybe_soft_reserved(state: &mut State) -> Name {
     let current = state.stream.current();
 
     if is_soft_reserved_identifier(&current.kind) {
