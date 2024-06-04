@@ -19,7 +19,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
     while state.stream.current().kind != TokenKind::SemiColon
         && state.stream.current().kind != TokenKind::LeftBrace
     {
-        let t = identifiers::full_type_name(state);
+        let t = names::full_name(state, UseKind::Normal);
         traits.push(t);
 
         if state.stream.current().kind == TokenKind::Comma {
@@ -44,10 +44,10 @@ pub fn usage(state: &mut State) -> TraitUsage {
         utils::skip_left_brace(state);
 
         while state.stream.current().kind != TokenKind::RightBrace {
-            let (r#trait, method): (Option<SimpleIdentifier>, SimpleIdentifier) =
+            let (r#trait, method): (Option<Name>, SimpleIdentifier) =
                 match state.stream.peek().kind {
                     TokenKind::DoubleColon => {
-                        let r#trait = identifiers::full_type_name(state);
+                        let r#trait = names::full_name_including_self(state);
                         state.stream.next();
                         let method = identifiers::identifier(state);
                         (Some(r#trait), method)

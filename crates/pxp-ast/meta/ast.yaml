@@ -1334,22 +1334,22 @@ TraitStatement:
 
 TraitUsage:
   r#use: Span
-  traits: Vec<SimpleIdentifier>
+  traits: Vec<Name>
   adaptations: Vec<TraitUsageAdaptation>
 
 TraitUsageAdaptation:
   as: Enum
   Alias:
-    r#trait: Option<SimpleIdentifier>
+    r#trait: Option<Name>
     method: SimpleIdentifier
     alias: SimpleIdentifier
     visibility: Option<VisibilityModifier>
   Visibility:
-    r#trait: Option<SimpleIdentifier>
+    r#trait: Option<Name>
     method: SimpleIdentifier
     visibility: VisibilityModifier
   Precedence:
-    r#trait: Option<SimpleIdentifier>
+    r#trait: Option<Name>
     method: SimpleIdentifier
     insteadof: Vec<SimpleIdentifier>
 

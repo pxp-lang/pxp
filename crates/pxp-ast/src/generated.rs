@@ -1732,25 +1732,25 @@ pub struct TraitStatement {
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TraitUsage {
     pub r#use: Span,
-    pub traits: Vec<SimpleIdentifier>,
+    pub traits: Vec<Name>,
     pub adaptations: Vec<TraitUsageAdaptation>,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum TraitUsageAdaptation {
     Alias {
-        r#trait: Option<SimpleIdentifier>,
+        r#trait: Option<Name>,
         method: SimpleIdentifier,
         alias: SimpleIdentifier,
         visibility: Option<VisibilityModifier>,
     },
     Visibility {
-        r#trait: Option<SimpleIdentifier>,
+        r#trait: Option<Name>,
         method: SimpleIdentifier,
         visibility: VisibilityModifier,
     },
     Precedence {
-        r#trait: Option<SimpleIdentifier>,
+        r#trait: Option<Name>,
         method: SimpleIdentifier,
         insteadof: Vec<SimpleIdentifier>,
     },

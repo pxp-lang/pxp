@@ -1989,7 +1989,7 @@ pub fn walk_trait_statement_mut<V: VisitorMut + ?Sized>(
 
 pub fn walk_trait_usage_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut TraitUsage) {
     for item in &mut node.traits {
-        visitor.visit_simple_identifier(item);
+        visitor.visit_name(item);
     }
     for item in &mut node.adaptations {
         visitor.visit_trait_usage_adaptation(item);
@@ -2008,7 +2008,7 @@ pub fn walk_trait_usage_adaptation_mut<V: VisitorMut + ?Sized>(
             visibility,
         } => {
             if let Some(item) = r#trait {
-                visitor.visit_simple_identifier(item);
+                visitor.visit_name(item);
             }
             visitor.visit_simple_identifier(method);
             visitor.visit_simple_identifier(alias);
@@ -2022,7 +2022,7 @@ pub fn walk_trait_usage_adaptation_mut<V: VisitorMut + ?Sized>(
             visibility,
         } => {
             if let Some(item) = r#trait {
-                visitor.visit_simple_identifier(item);
+                visitor.visit_name(item);
             }
             visitor.visit_simple_identifier(method);
             visitor.visit_visibility_modifier(visibility);
@@ -2033,7 +2033,7 @@ pub fn walk_trait_usage_adaptation_mut<V: VisitorMut + ?Sized>(
             insteadof,
         } => {
             if let Some(item) = r#trait {
-                visitor.visit_simple_identifier(item);
+                visitor.visit_name(item);
             }
             visitor.visit_simple_identifier(method);
             for item in insteadof {

@@ -54,8 +54,13 @@
                                     end: 26,
                                 },
                                 traits: [
-                                    SimpleIdentifier {
-                                        symbol: Symbol("Bar"),
+                                    Name {
+                                        kind: Unresolved(
+                                            UnresolvedName {
+                                                symbol: Symbol("Bar"),
+                                                qualification: Unqualified,
+                                            },
+                                        ),
                                         span: Span {
                                             start: 27,
                                             end: 30,
@@ -65,8 +70,13 @@
                                 adaptations: [
                                     Alias {
                                         trait: Some(
-                                            SimpleIdentifier {
-                                                symbol: Symbol("Bar"),
+                                            Name {
+                                                kind: Unresolved(
+                                                    UnresolvedName {
+                                                        symbol: Symbol("Bar"),
+                                                        qualification: Unqualified,
+                                                    },
+                                                ),
                                                 span: Span {
                                                     start: 41,
                                                     end: 44,

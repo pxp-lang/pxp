@@ -54,15 +54,25 @@
                                     end: 26,
                                 },
                                 traits: [
-                                    SimpleIdentifier {
-                                        symbol: Symbol("Bar"),
+                                    Name {
+                                        kind: Unresolved(
+                                            UnresolvedName {
+                                                symbol: Symbol("Bar"),
+                                                qualification: Unqualified,
+                                            },
+                                        ),
                                         span: Span {
                                             start: 27,
                                             end: 30,
                                         },
                                     },
-                                    SimpleIdentifier {
-                                        symbol: Symbol("Baz"),
+                                    Name {
+                                        kind: Unresolved(
+                                            UnresolvedName {
+                                                symbol: Symbol("Baz"),
+                                                qualification: Unqualified,
+                                            },
+                                        ),
                                         span: Span {
                                             start: 32,
                                             end: 35,
@@ -72,8 +82,13 @@
                                 adaptations: [
                                     Precedence {
                                         trait: Some(
-                                            SimpleIdentifier {
-                                                symbol: Symbol("Bar"),
+                                            Name {
+                                                kind: Unresolved(
+                                                    UnresolvedName {
+                                                        symbol: Symbol("Bar"),
+                                                        qualification: Unqualified,
+                                                    },
+                                                ),
                                                 span: Span {
                                                     start: 46,
                                                     end: 49,
