@@ -5,11 +5,11 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Hash)]
 
-pub enum Type {
-    Named(Symbol),
-    Nullable(Box<Type>),
-    Union(Vec<Type>),
-    Intersection(Vec<Type>),
+pub enum Type<N: Debug + Display = Symbol> {
+    Named(N),
+    Nullable(Box<Type<N>>),
+    Union(Vec<Type<N>>),
+    Intersection(Vec<Type<N>>),
     Void,
     Null,
     True,
@@ -20,7 +20,7 @@ pub enum Type {
     Integer,
     String,
     Array,
-    GenericArray(Box<Type>, Box<Type>),
+    GenericArray(Box<Type<N>>, Box<Type<N>>),
     EmptyArray,
     Object,
     Mixed,
@@ -32,13 +32,13 @@ pub enum Type {
     Missing,
 }
 
-impl Default for Type {
+impl<N: Debug + Display> Default for Type<N> {
     fn default() -> Self {
         Self::Missing
     }
 }
 
-impl Type {
+impl<N: Debug + Display> Type<N> {
     pub fn standalone(&self) -> bool {
         matches!(
             self,
@@ -65,7 +65,7 @@ impl Type {
     }
 }
 
-impl Display for Type {
+impl<N: Debug + Display> Display for Type<N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
             Type::Named(inner) => write!(f, "{}", inner),
