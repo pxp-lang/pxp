@@ -335,20 +335,6 @@ pub fn identifier_maybe_reserved(state: &mut State) -> SimpleIdentifier {
     }
 }
 
-pub fn identifier_maybe_soft_reserved(state: &mut State) -> SimpleIdentifier {
-    let current = state.stream.current();
-
-    if is_soft_reserved_identifier(&current.kind) {
-        state.stream.next();
-
-        let symbol = current.symbol.unwrap();
-
-        SimpleIdentifier::new(symbol, current.span)
-    } else {
-        identifier(state)
-    }
-}
-
 pub fn is_identifier_maybe_soft_reserved(kind: &TokenKind) -> bool {
     if let TokenKind::Identifier = kind {
         return true;
