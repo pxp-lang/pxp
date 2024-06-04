@@ -736,12 +736,12 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             | TokenKind::Enum
             | TokenKind::From,
             TokenKind::LeftParen,
-        ) if precedence >= &Precedence::CallDim => {
-            let span = state.stream.current().span;
-            let ident = identifiers::identifier_maybe_soft_reserved(state);
+        ) => {
+            let name = names::name_maybe_soft_reserved(state, UseKind::Function);
+
             let lhs = Expression::new(
-                ExpressionKind::Identifier(Identifier::SimpleIdentifier(ident)),
-                span,
+                ExpressionKind::Name(name),
+                name.span,
                 CommentGroup::default(),
             );
 

@@ -47,9 +47,23 @@ pub fn type_name_maybe_soft_reserved(state: &mut State) -> Name {
         let symbol = current.symbol.unwrap();
         let resolved = state.join_with_namespace(symbol);
 
+        state.stream.next();
+
         Name::resolved(resolved, symbol, current.span)
     } else {
         type_name(state)
+    }
+}
+
+pub fn name_maybe_soft_reserved(state: &mut State, kind: UseKind) -> Name {
+    let current = state.stream.current();
+
+    if is_soft_reserved_identifier(&current.kind) {
+        state.stream.next();
+
+        state.maybe_resolve_identifier(*current, kind)
+    } else {
+        full_name(state, kind)
     }
 }
 

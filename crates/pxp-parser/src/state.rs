@@ -7,7 +7,7 @@ use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_token::{Token, TokenKind};
 
-use crate::ParserDiagnostic;
+use crate::{internal::identifiers::is_soft_reserved_identifier, ParserDiagnostic};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum NamespaceType {
@@ -89,6 +89,7 @@ impl<'a, 'b> State<'a, 'b> {
 
                 self.symbol_table.intern(parts.first().unwrap())
             },
+            _ if is_soft_reserved_identifier(&token.kind) => token.symbol.unwrap(),
             _ => unreachable!(),
         };
 
