@@ -229,6 +229,12 @@ snap!(snapper, new_parent, process("fixtures/name-resolving/new-parent.php"));
 snap!(snapper, function_call_unqualified, process("fixtures/name-resolving/function-call-unqualified.php"));
 snap!(snapper, function_call_qualified, process("fixtures/name-resolving/function-call-qualified.php"));
 snap!(snapper, function_call_use, process("fixtures/name-resolving/function-call-use.php"));
+snap!(snapper, enum_static, process("fixtures/name-resolving/enum-static.php"));
+snap!(snapper, enum_static_use, process("fixtures/name-resolving/enum-static-use.php"));
+snap!(snapper, enum_static_use_alias, process("fixtures/name-resolving/enum-static-use-alias.php"));
+snap!(snapper, from_static, process("fixtures/name-resolving/from-static.php"));
+snap!(snapper, from_static_use, process("fixtures/name-resolving/from-static-use.php"));
+snap!(snapper, from_static_use_alias, process("fixtures/name-resolving/from-static-use-alias.php"));
 
 // Uses
 snap!(snapper, simple_use, process("fixtures/uses/simple-use.php"));

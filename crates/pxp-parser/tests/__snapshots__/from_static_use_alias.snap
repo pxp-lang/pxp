@@ -1,0 +1,142 @@
+[
+    Statement {
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Use(
+            UseStatement {
+                kind: Normal,
+                uses: [
+                    Use {
+                        name: Name {
+                            kind: Resolved(
+                                ResolvedName {
+                                    resolved: Symbol("Foo\Bar"),
+                                    original: Symbol("Foo\Bar"),
+                                },
+                            ),
+                            span: Span {
+                                start: 11,
+                                end: 18,
+                            },
+                        },
+                        alias: Some(
+                            SimpleIdentifier {
+                                symbol: Symbol("From"),
+                                span: Span {
+                                    start: 22,
+                                    end: 26,
+                                },
+                            },
+                        ),
+                        kind: None,
+                    },
+                ],
+            },
+        ),
+        span: Span {
+            start: 7,
+            end: 27,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    kind: StaticMethodCall(
+                        StaticMethodCallExpression {
+                            target: Expression {
+                                kind: Name(
+                                    Name {
+                                        kind: Resolved(
+                                            ResolvedName {
+                                                resolved: Symbol("Foo\Bar"),
+                                                original: Symbol("From"),
+                                            },
+                                        ),
+                                        span: Span {
+                                            start: 29,
+                                            end: 33,
+                                        },
+                                    },
+                                ),
+                                span: Span {
+                                    start: 29,
+                                    end: 33,
+                                },
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                            },
+                            double_colon: Span {
+                                start: 33,
+                                end: 35,
+                            },
+                            method: SimpleIdentifier(
+                                SimpleIdentifier {
+                                    symbol: Symbol("foo"),
+                                    span: Span {
+                                        start: 35,
+                                        end: 38,
+                                    },
+                                },
+                            ),
+                            arguments: ArgumentList {
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                                left_parenthesis: Span {
+                                    start: 38,
+                                    end: 39,
+                                },
+                                arguments: [],
+                                right_parenthesis: Span {
+                                    start: 39,
+                                    end: 40,
+                                },
+                            },
+                        },
+                    ),
+                    span: Span {
+                        start: 33,
+                        end: 40,
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: 40,
+                        end: 41,
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: 29,
+            end: 41,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

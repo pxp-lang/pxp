@@ -749,11 +749,10 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
         }
 
         (TokenKind::Enum | TokenKind::From, TokenKind::DoubleColon) => {
-            let span = state.stream.current().span;
-            let ident = identifiers::type_identifier(state);
+            let name = names::full_name_including_self(state);
             let lhs = Expression::new(
-                ExpressionKind::Identifier(Identifier::SimpleIdentifier(ident)),
-                span,
+                ExpressionKind::Name(name),
+                name.span,
                 CommentGroup::default(),
             );
 

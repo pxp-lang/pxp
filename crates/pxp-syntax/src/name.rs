@@ -10,7 +10,7 @@ pub enum NameQualification {
 impl From<TokenKind> for NameQualification {
     fn from(kind: TokenKind) -> Self {
         match kind {
-            TokenKind::Identifier => NameQualification::Unqualified,
+            TokenKind::Identifier | TokenKind::Enum | TokenKind::From => NameQualification::Unqualified,
             TokenKind::QualifiedIdentifier => NameQualification::Qualified,
             TokenKind::FullyQualifiedIdentifier => NameQualification::FullyQualified,
             _ => unreachable!(),
