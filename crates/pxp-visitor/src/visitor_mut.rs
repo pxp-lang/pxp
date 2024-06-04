@@ -395,7 +395,9 @@ pub trait VisitorMut {
         walk_if_statement_else_block_mut(self, node);
     }
 
-    fn visit_data_type(&mut self, node: &mut DataType) {}
+    fn visit_data_type(&mut self, node: &mut DataType) {
+        walk_data_type_mut(self, node);
+    }
 
     fn visit_declare_entry(&mut self, node: &mut DeclareEntry) {
         walk_declare_entry_mut(self, node);

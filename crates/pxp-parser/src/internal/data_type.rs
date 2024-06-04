@@ -68,7 +68,7 @@ pub fn optional_data_type(state: &mut State) -> Option<DataType> {
     Some(DataType::new(kind, Span::new(start.start, end.end)))
 }
 
-fn dnf(state: &mut State) -> Type {
+fn dnf(state: &mut State) -> Type<Name> {
     // (A|B|..)&C.. or (A&B&..)|C..
     state.stream.next();
     let ty = simple_data_type(state);
@@ -100,7 +100,7 @@ fn dnf(state: &mut State) -> Type {
     }
 }
 
-fn optional_simple_data_type(state: &mut State) -> Option<Type> {
+fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
     let current = state.stream.current();
 
     match &current.kind {
@@ -147,7 +147,7 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type> {
         TokenKind::Enum | TokenKind::From => {
             state.stream.next();
 
-            Some(Type::Named(current.symbol.unwrap()))
+            Some(Type::Named(state.maybe_resolve_identifier(*current, UseKind::Normal)))
         }
         TokenKind::Identifier => {
             let id = state.symbol_table.resolve(current.symbol.unwrap()).unwrap();
@@ -170,19 +170,28 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type> {
                 b"false" => Some(Type::False),
                 b"array" => Some(Type::Array),
                 b"callable" => Some(Type::Callable),
-                _ => Some(Type::Named(current.symbol.unwrap())),
+                _ => Some(Type::Named(state.maybe_resolve_identifier(*current, UseKind::Normal))),
             }
         }
-        TokenKind::QualifiedIdentifier | TokenKind::FullyQualifiedIdentifier => {
+        TokenKind::FullyQualifiedIdentifier => {
             state.stream.next();
 
-            Some(Type::Named(current.symbol.unwrap()))
+            let symbol = current.symbol.unwrap();
+
+            Some(Type::Named(Name::resolved(symbol, symbol, current.span)))
+        },
+        TokenKind::QualifiedIdentifier => {
+            state.stream.next();
+
+            let name = state.maybe_resolve_identifier(*current, UseKind::Normal);
+
+            Some(Type::Named(name))
         }
         _ => None,
     }
 }
 
-fn simple_data_type(state: &mut State) -> Type {    
+fn simple_data_type(state: &mut State) -> Type<Name> {    
     match optional_simple_data_type(state) {
         Some(ty) => ty,
         None => {
@@ -197,7 +206,7 @@ fn simple_data_type(state: &mut State) -> Type {
     }
 }
 
-fn nullable(state: &mut State) -> Type {
+fn nullable(state: &mut State) -> Type<Name> {
     let current = state.stream.current();
 
     state.stream.next();
@@ -215,7 +224,7 @@ fn nullable(state: &mut State) -> Type {
     Type::Nullable(Box::new(ty))
 }
 
-fn union(state: &mut State, other: Type, within_dnf: bool) -> Type {
+fn union(state: &mut State, other: Type<Name>, within_dnf: bool) -> Type<Name> {
     if other.standalone() {
         state.diagnostic(
             ParserDiagnostic::StandaloneTypeUsedInUnionType,
@@ -284,7 +293,7 @@ fn union(state: &mut State, other: Type, within_dnf: bool) -> Type {
     Type::Union(types)
 }
 
-fn intersection(state: &mut State, other: Type, within_dnf: bool) -> Type {
+fn intersection(state: &mut State, other: Type<Name>, within_dnf: bool) -> Type<Name> {
     if other.standalone() {
         state.diagnostic(
             ParserDiagnostic::StandaloneTypeUsedInIntersectionType,

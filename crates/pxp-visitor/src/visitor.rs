@@ -389,7 +389,9 @@ pub trait Visitor {
         walk_if_statement_else_block(self, node);
     }
 
-    fn visit_data_type(&mut self, node: &DataType) {}
+    fn visit_data_type(&mut self, node: &DataType) {
+        walk_data_type(self, node);
+    }
 
     fn visit_declare_entry(&mut self, node: &DeclareEntry) {
         walk_declare_entry(self, node);

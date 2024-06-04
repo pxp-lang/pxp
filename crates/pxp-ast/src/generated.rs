@@ -822,7 +822,7 @@ pub struct IfStatementElseBlock {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DataType {
-    pub kind: Type,
+    pub kind: Type<Name>,
     pub span: Span,
 }
 

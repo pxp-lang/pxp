@@ -812,6 +812,8 @@ pub fn walk_if_statement_else_block<V: Visitor + ?Sized>(
     }
 }
 
+pub fn walk_data_type<V: Visitor + ?Sized>(visitor: &mut V, node: &DataType) {}
+
 pub fn walk_declare_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &DeclareEntry) {
     visitor.visit_simple_identifier(&node.key);
     visitor.visit_literal(&node.value);

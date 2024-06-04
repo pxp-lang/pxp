@@ -1,8 +1,20 @@
+use std::fmt::{Debug, Display};
+
 use pxp_span::Span;
 use pxp_symbol::Symbol;
 use pxp_syntax::name::NameQualification;
 
 use crate::{Name, NameKind, ResolvedName, SpecialName, SpecialNameKind, UnresolvedName};
+
+impl Display for Name {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self.kind {
+            NameKind::Special(s) => write!(f, "{}", s.symbol),
+            NameKind::Unresolved(u) => write!(f, "{}", u.symbol),
+            NameKind::Resolved(r) => write!(f, "{}", r.resolved),
+        }
+    }
+}
 
 impl Name {
     pub fn new(kind: NameKind, span: Span) -> Self {
@@ -61,5 +73,27 @@ impl Name {
 
     pub fn is_resolved(&self) -> bool {
         matches!(self.kind, NameKind::Resolved(_))
+    }
+}
+
+impl Display for SpecialName {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self.kind {
+            SpecialNameKind::Self_ => write!(f, "self"),
+            SpecialNameKind::Static => write!(f, "static"),
+            SpecialNameKind::Parent => write!(f, "parent"),
+        }
+    }
+}
+
+impl Display for UnresolvedName {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.symbol)
+    }
+}
+
+impl Display for ResolvedName {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.original)
     }
 }

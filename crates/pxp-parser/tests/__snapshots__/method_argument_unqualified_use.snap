@@ -1,0 +1,398 @@
+[
+    Statement {
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Use(
+            UseStatement {
+                kind: Normal,
+                uses: [
+                    Use {
+                        name: Name {
+                            kind: Resolved(
+                                ResolvedName {
+                                    resolved: Symbol("App\Foo"),
+                                    original: Symbol("App\Foo"),
+                                },
+                            ),
+                            span: Span {
+                                start: 11,
+                                end: 18,
+                            },
+                        },
+                        alias: None,
+                        kind: None,
+                    },
+                ],
+            },
+        ),
+        span: Span {
+            start: 7,
+            end: 19,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Use(
+            UseStatement {
+                kind: Normal,
+                uses: [
+                    Use {
+                        name: Name {
+                            kind: Resolved(
+                                ResolvedName {
+                                    resolved: Symbol("Foo\Bar\Baz"),
+                                    original: Symbol("Foo\Bar\Baz"),
+                                },
+                            ),
+                            span: Span {
+                                start: 24,
+                                end: 35,
+                            },
+                        },
+                        alias: Some(
+                            SimpleIdentifier {
+                                symbol: Symbol("Bar"),
+                                span: Span {
+                                    start: 39,
+                                    end: 42,
+                                },
+                            },
+                        ),
+                        kind: None,
+                    },
+                ],
+            },
+        ),
+        span: Span {
+            start: 20,
+            end: 43,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Class(
+            ClassStatement {
+                attributes: [],
+                modifiers: ClassModifierGroup {
+                    modifiers: [],
+                },
+                class: Span {
+                    start: 45,
+                    end: 50,
+                },
+                name: Name {
+                    kind: Resolved(
+                        ResolvedName {
+                            resolved: Symbol("A"),
+                            original: Symbol("A"),
+                        },
+                    ),
+                    span: Span {
+                        start: 51,
+                        end: 52,
+                    },
+                },
+                extends: None,
+                implements: None,
+                body: ClassBody {
+                    left_brace: Span {
+                        start: 53,
+                        end: 54,
+                    },
+                    members: [
+                        ConcreteMethod(
+                            ConcreteMethod {
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                                attributes: [],
+                                modifiers: MethodModifierGroup {
+                                    modifiers: [],
+                                },
+                                function: Span {
+                                    start: 59,
+                                    end: 67,
+                                },
+                                ampersand: None,
+                                name: SimpleIdentifier {
+                                    symbol: Symbol("a"),
+                                    span: Span {
+                                        start: 68,
+                                        end: 69,
+                                    },
+                                },
+                                parameters: FunctionParameterList {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_parenthesis: Span {
+                                        start: 69,
+                                        end: 70,
+                                    },
+                                    parameters: CommaSeparated {
+                                        inner: [
+                                            FunctionParameter {
+                                                comments: CommentGroup {
+                                                    comments: [],
+                                                },
+                                                name: SimpleVariable {
+                                                    symbol: Symbol("$a"),
+                                                    span: Span {
+                                                        start: 74,
+                                                        end: 76,
+                                                    },
+                                                },
+                                                attributes: [],
+                                                data_type: Some(
+                                                    DataType {
+                                                        kind: Named(
+                                                            Name {
+                                                                kind: Resolved(
+                                                                    ResolvedName {
+                                                                        resolved: Symbol("App\Foo"),
+                                                                        original: Symbol("Foo"),
+                                                                    },
+                                                                ),
+                                                                span: Span {
+                                                                    start: 70,
+                                                                    end: 73,
+                                                                },
+                                                            },
+                                                        ),
+                                                        span: Span {
+                                                            start: 70,
+                                                            end: 73,
+                                                        },
+                                                    },
+                                                ),
+                                                ellipsis: None,
+                                                default: None,
+                                                ampersand: None,
+                                            },
+                                            FunctionParameter {
+                                                comments: CommentGroup {
+                                                    comments: [],
+                                                },
+                                                name: SimpleVariable {
+                                                    symbol: Symbol("$b"),
+                                                    span: Span {
+                                                        start: 88,
+                                                        end: 90,
+                                                    },
+                                                },
+                                                attributes: [],
+                                                data_type: Some(
+                                                    DataType {
+                                                        kind: Union(
+                                                            [
+                                                                Named(
+                                                                    Name {
+                                                                        kind: Resolved(
+                                                                            ResolvedName {
+                                                                                resolved: Symbol("App\Foo"),
+                                                                                original: Symbol("Foo"),
+                                                                            },
+                                                                        ),
+                                                                        span: Span {
+                                                                            start: 78,
+                                                                            end: 81,
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                Named(
+                                                                    Name {
+                                                                        kind: Resolved(
+                                                                            ResolvedName {
+                                                                                resolved: Symbol("Foo\Bar\Baz"),
+                                                                                original: Symbol("Bar"),
+                                                                            },
+                                                                        ),
+                                                                        span: Span {
+                                                                            start: 84,
+                                                                            end: 87,
+                                                                        },
+                                                                    },
+                                                                ),
+                                                            ],
+                                                        ),
+                                                        span: Span {
+                                                            start: 78,
+                                                            end: 87,
+                                                        },
+                                                    },
+                                                ),
+                                                ellipsis: None,
+                                                default: None,
+                                                ampersand: None,
+                                            },
+                                            FunctionParameter {
+                                                comments: CommentGroup {
+                                                    comments: [],
+                                                },
+                                                name: SimpleVariable {
+                                                    symbol: Symbol("$c"),
+                                                    span: Span {
+                                                        start: 102,
+                                                        end: 104,
+                                                    },
+                                                },
+                                                attributes: [],
+                                                data_type: Some(
+                                                    DataType {
+                                                        kind: Intersection(
+                                                            [
+                                                                Named(
+                                                                    Name {
+                                                                        kind: Resolved(
+                                                                            ResolvedName {
+                                                                                resolved: Symbol("App\Foo"),
+                                                                                original: Symbol("Foo"),
+                                                                            },
+                                                                        ),
+                                                                        span: Span {
+                                                                            start: 92,
+                                                                            end: 95,
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                Named(
+                                                                    Name {
+                                                                        kind: Resolved(
+                                                                            ResolvedName {
+                                                                                resolved: Symbol("Foo\Bar\Baz"),
+                                                                                original: Symbol("Bar"),
+                                                                            },
+                                                                        ),
+                                                                        span: Span {
+                                                                            start: 98,
+                                                                            end: 101,
+                                                                        },
+                                                                    },
+                                                                ),
+                                                            ],
+                                                        ),
+                                                        span: Span {
+                                                            start: 92,
+                                                            end: 101,
+                                                        },
+                                                    },
+                                                ),
+                                                ellipsis: None,
+                                                default: None,
+                                                ampersand: None,
+                                            },
+                                            FunctionParameter {
+                                                comments: CommentGroup {
+                                                    comments: [],
+                                                },
+                                                name: SimpleVariable {
+                                                    symbol: Symbol("$d"),
+                                                    span: Span {
+                                                        start: 111,
+                                                        end: 113,
+                                                    },
+                                                },
+                                                attributes: [],
+                                                data_type: Some(
+                                                    DataType {
+                                                        kind: Nullable(
+                                                            Named(
+                                                                Name {
+                                                                    kind: Resolved(
+                                                                        ResolvedName {
+                                                                            resolved: Symbol("App\Foo"),
+                                                                            original: Symbol("Foo"),
+                                                                        },
+                                                                    ),
+                                                                    span: Span {
+                                                                        start: 107,
+                                                                        end: 110,
+                                                                    },
+                                                                },
+                                                            ),
+                                                        ),
+                                                        span: Span {
+                                                            start: 106,
+                                                            end: 110,
+                                                        },
+                                                    },
+                                                ),
+                                                ellipsis: None,
+                                                default: None,
+                                                ampersand: None,
+                                            },
+                                        ],
+                                        commas: [
+                                            Span {
+                                                start: 76,
+                                                end: 77,
+                                            },
+                                            Span {
+                                                start: 90,
+                                                end: 91,
+                                            },
+                                            Span {
+                                                start: 104,
+                                                end: 105,
+                                            },
+                                        ],
+                                    },
+                                    right_parenthesis: Span {
+                                        start: 113,
+                                        end: 114,
+                                    },
+                                },
+                                return_type: None,
+                                body: MethodBody {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    left_brace: Span {
+                                        start: 119,
+                                        end: 120,
+                                    },
+                                    statements: [],
+                                    right_brace: Span {
+                                        start: 125,
+                                        end: 126,
+                                    },
+                                },
+                            },
+                        ),
+                    ],
+                    right_brace: Span {
+                        start: 127,
+                        end: 128,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: 45,
+            end: 128,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

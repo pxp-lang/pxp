@@ -923,6 +923,8 @@ pub fn walk_if_statement_else_block_mut<V: VisitorMut + ?Sized>(
     }
 }
 
+pub fn walk_data_type_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut DataType) {}
+
 pub fn walk_declare_entry_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut DeclareEntry) {
     visitor.visit_simple_identifier(&mut node.key);
     visitor.visit_literal(&mut node.value);

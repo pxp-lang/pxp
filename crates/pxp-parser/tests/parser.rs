@@ -235,6 +235,10 @@ snap!(snapper, enum_static_use_alias, process("fixtures/name-resolving/enum-stat
 snap!(snapper, from_static, process("fixtures/name-resolving/from-static.php"));
 snap!(snapper, from_static_use, process("fixtures/name-resolving/from-static-use.php"));
 snap!(snapper, from_static_use_alias, process("fixtures/name-resolving/from-static-use-alias.php"));
+snap!(snapper, function_argument_unqualified, process("fixtures/name-resolving/function-argument-unqualified.php"));
+snap!(snapper, function_argument_unqualified_use, process("fixtures/name-resolving/function-argument-unqualified-use.php"));
+snap!(snapper, method_argument_unqualified, process("fixtures/name-resolving/method-argument-unqualified.php"));
+snap!(snapper, method_argument_unqualified_use, process("fixtures/name-resolving/method-argument-unqualified-use.php"));
 
 // Uses
 snap!(snapper, simple_use, process("fixtures/uses/simple-use.php"));

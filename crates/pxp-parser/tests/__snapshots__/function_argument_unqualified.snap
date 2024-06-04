@@ -31,13 +31,13 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
-                            resolved: Symbol("foo"),
-                            original: Symbol("foo"),
+                            resolved: Symbol("a"),
+                            original: Symbol("a"),
                         },
                     ),
                     span: Span {
                         start: 16,
-                        end: 19,
+                        end: 17,
                     },
                 },
                 parameters: FunctionParameterList {
@@ -45,8 +45,8 @@
                         comments: [],
                     },
                     left_parenthesis: Span {
-                        start: 19,
-                        end: 20,
+                        start: 17,
+                        end: 18,
                     },
                     parameters: CommaSeparated {
                         inner: [
@@ -57,17 +57,30 @@
                                 name: SimpleVariable {
                                     symbol: Symbol("$a"),
                                     span: Span {
-                                        start: 27,
-                                        end: 29,
+                                        start: 22,
+                                        end: 24,
                                     },
                                 },
                                 attributes: [],
                                 data_type: Some(
                                     DataType {
-                                        kind: String,
+                                        kind: Named(
+                                            Name {
+                                                kind: Unresolved(
+                                                    UnresolvedName {
+                                                        symbol: Symbol("Foo"),
+                                                        qualification: Unqualified,
+                                                    },
+                                                ),
+                                                span: Span {
+                                                    start: 18,
+                                                    end: 21,
+                                                },
+                                            },
+                                        ),
                                         span: Span {
-                                            start: 20,
-                                            end: 26,
+                                            start: 18,
+                                            end: 21,
                                         },
                                     },
                                 ),
@@ -82,19 +95,48 @@
                                 name: SimpleVariable {
                                     symbol: Symbol("$b"),
                                     span: Span {
-                                        start: 39,
-                                        end: 41,
+                                        start: 36,
+                                        end: 38,
                                     },
                                 },
                                 attributes: [],
                                 data_type: Some(
                                     DataType {
-                                        kind: Nullable(
-                                            String,
+                                        kind: Union(
+                                            [
+                                                Named(
+                                                    Name {
+                                                        kind: Unresolved(
+                                                            UnresolvedName {
+                                                                symbol: Symbol("Foo"),
+                                                                qualification: Unqualified,
+                                                            },
+                                                        ),
+                                                        span: Span {
+                                                            start: 26,
+                                                            end: 29,
+                                                        },
+                                                    },
+                                                ),
+                                                Named(
+                                                    Name {
+                                                        kind: Unresolved(
+                                                            UnresolvedName {
+                                                                symbol: Symbol("Bar"),
+                                                                qualification: Unqualified,
+                                                            },
+                                                        ),
+                                                        span: Span {
+                                                            start: 32,
+                                                            end: 35,
+                                                        },
+                                                    },
+                                                ),
+                                            ],
                                         ),
                                         span: Span {
-                                            start: 31,
-                                            end: 38,
+                                            start: 26,
+                                            end: 35,
                                         },
                                     },
                                 ),
@@ -109,51 +151,8 @@
                                 name: SimpleVariable {
                                     symbol: Symbol("$c"),
                                     span: Span {
-                                        start: 54,
-                                        end: 56,
-                                    },
-                                },
-                                attributes: [],
-                                data_type: Some(
-                                    DataType {
-                                        kind: Union(
-                                            [
-                                                String,
-                                                Named(
-                                                    Name {
-                                                        kind: Unresolved(
-                                                            UnresolvedName {
-                                                                symbol: Symbol("Foo"),
-                                                                qualification: Unqualified,
-                                                            },
-                                                        ),
-                                                        span: Span {
-                                                            start: 50,
-                                                            end: 53,
-                                                        },
-                                                    },
-                                                ),
-                                            ],
-                                        ),
-                                        span: Span {
-                                            start: 43,
-                                            end: 53,
-                                        },
-                                    },
-                                ),
-                                ellipsis: None,
-                                default: None,
-                                ampersand: None,
-                            },
-                            FunctionParameter {
-                                comments: CommentGroup {
-                                    comments: [],
-                                },
-                                name: SimpleVariable {
-                                    symbol: Symbol("$d"),
-                                    span: Span {
-                                        start: 66,
-                                        end: 68,
+                                        start: 50,
+                                        end: 52,
                                     },
                                 },
                                 attributes: [],
@@ -170,8 +169,8 @@
                                                             },
                                                         ),
                                                         span: Span {
-                                                            start: 58,
-                                                            end: 61,
+                                                            start: 40,
+                                                            end: 43,
                                                         },
                                                     },
                                                 ),
@@ -184,16 +183,16 @@
                                                             },
                                                         ),
                                                         span: Span {
-                                                            start: 62,
-                                                            end: 65,
+                                                            start: 46,
+                                                            end: 49,
                                                         },
                                                     },
                                                 ),
                                             ],
                                         ),
                                         span: Span {
-                                            start: 58,
-                                            end: 65,
+                                            start: 40,
+                                            end: 49,
                                         },
                                     },
                                 ),
@@ -206,68 +205,34 @@
                                     comments: [],
                                 },
                                 name: SimpleVariable {
-                                    symbol: Symbol("$e"),
+                                    symbol: Symbol("$d"),
                                     span: Span {
-                                        start: 84,
-                                        end: 86,
+                                        start: 59,
+                                        end: 61,
                                     },
                                 },
                                 attributes: [],
                                 data_type: Some(
                                     DataType {
-                                        kind: Union(
-                                            [
-                                                Intersection(
-                                                    [
-                                                        Named(
-                                                            Name {
-                                                                kind: Unresolved(
-                                                                    UnresolvedName {
-                                                                        symbol: Symbol("Foo"),
-                                                                        qualification: Unqualified,
-                                                                    },
-                                                                ),
-                                                                span: Span {
-                                                                    start: 71,
-                                                                    end: 74,
-                                                                },
-                                                            },
-                                                        ),
-                                                        Named(
-                                                            Name {
-                                                                kind: Unresolved(
-                                                                    UnresolvedName {
-                                                                        symbol: Symbol("Bar"),
-                                                                        qualification: Unqualified,
-                                                                    },
-                                                                ),
-                                                                span: Span {
-                                                                    start: 75,
-                                                                    end: 78,
-                                                                },
-                                                            },
-                                                        ),
-                                                    ],
-                                                ),
-                                                Named(
-                                                    Name {
-                                                        kind: Unresolved(
-                                                            UnresolvedName {
-                                                                symbol: Symbol("Baz"),
-                                                                qualification: Unqualified,
-                                                            },
-                                                        ),
-                                                        span: Span {
-                                                            start: 80,
-                                                            end: 83,
+                                        kind: Nullable(
+                                            Named(
+                                                Name {
+                                                    kind: Unresolved(
+                                                        UnresolvedName {
+                                                            symbol: Symbol("Foo"),
+                                                            qualification: Unqualified,
                                                         },
+                                                    ),
+                                                    span: Span {
+                                                        start: 55,
+                                                        end: 58,
                                                     },
-                                                ),
-                                            ],
+                                                },
+                                            ),
                                         ),
                                         span: Span {
-                                            start: 70,
-                                            end: 83,
+                                            start: 54,
+                                            end: 58,
                                         },
                                     },
                                 ),
@@ -278,26 +243,22 @@
                         ],
                         commas: [
                             Span {
-                                start: 29,
-                                end: 30,
+                                start: 24,
+                                end: 25,
                             },
                             Span {
-                                start: 41,
-                                end: 42,
+                                start: 38,
+                                end: 39,
                             },
                             Span {
-                                start: 56,
-                                end: 57,
-                            },
-                            Span {
-                                start: 68,
-                                end: 69,
+                                start: 52,
+                                end: 53,
                             },
                         ],
                     },
                     right_parenthesis: Span {
-                        start: 86,
-                        end: 87,
+                        start: 61,
+                        end: 62,
                     },
                 },
                 return_type: None,
@@ -306,20 +267,20 @@
                         comments: [],
                     },
                     left_brace: Span {
-                        start: 88,
-                        end: 89,
+                        start: 63,
+                        end: 64,
                     },
                     statements: [],
                     right_brace: Span {
-                        start: 89,
-                        end: 90,
+                        start: 66,
+                        end: 67,
                     },
                 },
             },
         ),
         span: Span {
             start: 7,
-            end: 90,
+            end: 67,
         },
         comments: CommentGroup {
             comments: [],
