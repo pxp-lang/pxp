@@ -226,6 +226,9 @@ snap!(snapper, new_class_qualified_aliased, process("fixtures/name-resolving/new
 snap!(snapper, new_self, process("fixtures/name-resolving/new-self.php"));
 snap!(snapper, new_static, process("fixtures/name-resolving/new-static.php"));
 snap!(snapper, new_parent, process("fixtures/name-resolving/new-parent.php"));
+snap!(snapper, function_call_unqualified, process("fixtures/name-resolving/function-call-unqualified.php"));
+snap!(snapper, function_call_qualified, process("fixtures/name-resolving/function-call-qualified.php"));
+snap!(snapper, function_call_use, process("fixtures/name-resolving/function-call-use.php"));
 
 // Uses
 snap!(snapper, simple_use, process("fixtures/uses/simple-use.php"));

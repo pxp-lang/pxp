@@ -1,0 +1,121 @@
+[
+    Statement {
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Use(
+            UseStatement {
+                kind: Function,
+                uses: [
+                    Use {
+                        name: Name {
+                            kind: Resolved(
+                                ResolvedName {
+                                    resolved: Symbol("Bar\foo"),
+                                    original: Symbol("Bar\foo"),
+                                },
+                            ),
+                            span: Span {
+                                start: 20,
+                                end: 27,
+                            },
+                        },
+                        alias: None,
+                        kind: None,
+                    },
+                ],
+            },
+        ),
+        span: Span {
+            start: 7,
+            end: 28,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    kind: FunctionCall(
+                        FunctionCallExpression {
+                            target: Expression {
+                                kind: Name(
+                                    Name {
+                                        kind: Resolved(
+                                            ResolvedName {
+                                                resolved: Symbol("Bar\foo"),
+                                                original: Symbol("foo"),
+                                            },
+                                        ),
+                                        span: Span {
+                                            start: 30,
+                                            end: 33,
+                                        },
+                                    },
+                                ),
+                                span: Span {
+                                    start: 30,
+                                    end: 33,
+                                },
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                            },
+                            arguments: ArgumentList {
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                                left_parenthesis: Span {
+                                    start: 33,
+                                    end: 34,
+                                },
+                                arguments: [],
+                                right_parenthesis: Span {
+                                    start: 34,
+                                    end: 35,
+                                },
+                            },
+                        },
+                    ),
+                    span: Span {
+                        start: 33,
+                        end: 35,
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: 35,
+                        end: 36,
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: 30,
+            end: 36,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---

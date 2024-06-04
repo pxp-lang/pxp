@@ -1,0 +1,89 @@
+[
+    Statement {
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Expression(
+            ExpressionStatement {
+                expression: Expression {
+                    kind: FunctionCall(
+                        FunctionCallExpression {
+                            target: Expression {
+                                kind: Name(
+                                    Name {
+                                        kind: Unresolved(
+                                            UnresolvedName {
+                                                symbol: Symbol("foo"),
+                                                qualification: Unqualified,
+                                            },
+                                        ),
+                                        span: Span {
+                                            start: 7,
+                                            end: 10,
+                                        },
+                                    },
+                                ),
+                                span: Span {
+                                    start: 7,
+                                    end: 10,
+                                },
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                            },
+                            arguments: ArgumentList {
+                                comments: CommentGroup {
+                                    comments: [],
+                                },
+                                left_parenthesis: Span {
+                                    start: 10,
+                                    end: 11,
+                                },
+                                arguments: [],
+                                right_parenthesis: Span {
+                                    start: 11,
+                                    end: 12,
+                                },
+                            },
+                        },
+                    ),
+                    span: Span {
+                        start: 10,
+                        end: 12,
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: 12,
+                        end: 13,
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: 7,
+            end: 13,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---
