@@ -8,6 +8,7 @@ use crate::parameter::Parameter;
 pub struct ClassLike {
     pub name: Symbol,
     pub short: Symbol,
+    pub namespace: Option<Symbol>,
     pub properties: Vec<Property>,
     pub methods: Vec<Method>,
     pub modifiers: ClassModifierGroup,

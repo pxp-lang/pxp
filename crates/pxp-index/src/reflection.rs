@@ -37,6 +37,10 @@ impl<'a> ReflectionClass<'a> {
         self.class.short
     }
 
+    pub fn get_namespace(&self) -> Option<Symbol> {
+        self.class.namespace
+    }
+
     pub fn get_methods(&self) -> impl Iterator<Item = ReflectionMethod> + 'a {
         self.class.methods.iter().map(|method| ReflectionMethod { method, index: self.index })
     }
