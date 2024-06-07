@@ -16,8 +16,9 @@ pub fn full_name(state: &mut State, kind: UseKind) -> Name {
             state.stream.next();
 
             let symbol = current.symbol.unwrap();
+            let resolved = state.strip_leading_namespace_qualifier(symbol);
 
-            Name::resolved(symbol, symbol, current.span)
+            Name::resolved(resolved, symbol, current.span)
         },
         TokenKind::Identifier
         | TokenKind::QualifiedIdentifier => {
@@ -140,8 +141,9 @@ pub fn full_name_including_self(state: &mut State) -> Name {
             state.stream.next();
 
             let symbol = current.symbol.unwrap();
+            let resolved = state.strip_leading_namespace_qualifier(symbol);
 
-            Name::resolved(symbol, symbol, current.span)
+            Name::resolved(resolved, symbol, current.span)
         },
         TokenKind::Identifier
         | TokenKind::QualifiedIdentifier

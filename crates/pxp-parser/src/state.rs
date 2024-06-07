@@ -141,6 +141,16 @@ impl<'a, 'b> State<'a, 'b> {
         self.imports.get_mut(kind).unwrap().insert(alias, name);
     }
 
+    pub fn strip_leading_namespace_qualifier(&mut self, symbol: Symbol) -> Symbol {
+        let bytestring = self.symbol_table.resolve(symbol).unwrap().to_bytestring();
+
+        if bytestring.starts_with(&[b'\\']) {
+            self.symbol_table.intern(&bytestring[1..])
+        } else {
+            symbol
+        }
+    }
+
     pub fn join_with_namespace(&mut self, name: Symbol) -> Symbol {
         match self.namespace() {
             Some(Scope::Namespace(namespace)) => {

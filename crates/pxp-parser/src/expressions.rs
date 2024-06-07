@@ -1088,11 +1088,12 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
 
                     let span = token.span;
                     let symbol = token.symbol.unwrap();
+                    let resolved = state.strip_leading_namespace_qualifier(symbol);
 
                     state.stream.next();
 
                     Expression::new(
-                        ExpressionKind::Name(Name::resolved(symbol, symbol, span)),
+                        ExpressionKind::Name(Name::resolved(resolved, symbol, span)),
                         span,
                         CommentGroup::default(),
                     )

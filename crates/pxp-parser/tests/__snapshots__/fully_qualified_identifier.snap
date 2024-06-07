@@ -27,7 +27,7 @@
                                     Name {
                                         kind: Resolved(
                                             ResolvedName {
-                                                resolved: Symbol("\A\B"),
+                                                resolved: Symbol("A\B"),
                                                 original: Symbol("\A\B"),
                                             },
                                         ),
