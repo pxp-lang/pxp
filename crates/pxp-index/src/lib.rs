@@ -1,14 +1,31 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+use std::collections::HashMap;
+use class_like::ClassLike;
+use pxp_symbol::Symbol;
+
+mod class_like;
+mod parameter;
+mod reflection;
+mod indexer;
+
+pub use reflection::*;
+
+#[derive(Debug, Clone)]
+pub struct Index {
+    classes: HashMap<Symbol, ClassLike>
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+impl Index {
+    pub fn new() -> Self {
+        Self {
+            classes: HashMap::new()
+        }
+    }
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    pub(crate) fn add_class(&mut self, class: ClassLike) {
+        self.classes.insert(class.name, class);
+    }
+
+    pub fn get_class(&self, name: Symbol) -> Option<ReflectionClass> {
+        self.classes.get(&name).map(|class| ReflectionClass { class, index: self })
     }
 }

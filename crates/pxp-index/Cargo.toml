@@ -6,3 +6,7 @@ license-file.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+pxp-ast = { version = "0.1.0", path = "../pxp-ast" }
+pxp-parser = { version = "0.1.0", path = "../pxp-parser" }
+pxp-symbol = { version = "0.1.0", path = "../pxp-symbol" }
+pxp-type = { version = "0.1.0", path = "../pxp-type" }
