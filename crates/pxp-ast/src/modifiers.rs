@@ -100,6 +100,24 @@ impl PropertyModifierGroup {
             .any(|modifier| matches!(modifier, PropertyModifier::Static { .. }))
     }
 
+    pub fn is_public(&self) -> bool {
+        self.modifiers
+            .iter()
+            .any(|modifier| matches!(modifier, PropertyModifier::Public { .. }))
+    }
+
+    pub fn is_protected(&self) -> bool {
+        self.modifiers
+            .iter()
+            .any(|modifier| matches!(modifier, PropertyModifier::Protected { .. }))
+    }
+
+    pub fn is_private(&self) -> bool {
+        self.modifiers
+            .iter()
+            .any(|modifier| matches!(modifier, PropertyModifier::Private { .. }))
+    }
+
     pub fn visibility(&self) -> Visibility {
         self.modifiers
             .iter()
