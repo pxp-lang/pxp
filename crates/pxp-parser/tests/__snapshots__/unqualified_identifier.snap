@@ -25,10 +25,10 @@
                             target: Expression {
                                 kind: Name(
                                     Name {
-                                        kind: Unresolved(
-                                            UnresolvedName {
-                                                symbol: Symbol("A"),
-                                                qualification: Unqualified,
+                                        kind: Resolved(
+                                            ResolvedName {
+                                                resolved: Symbol("A"),
+                                                original: Symbol("A"),
                                             },
                                         ),
                                         span: Span {

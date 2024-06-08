@@ -55,10 +55,10 @@
                                 },
                                 traits: [
                                     Name {
-                                        kind: Unresolved(
-                                            UnresolvedName {
-                                                symbol: Symbol("Bar"),
-                                                qualification: Unqualified,
+                                        kind: Resolved(
+                                            ResolvedName {
+                                                resolved: Symbol("Bar"),
+                                                original: Symbol("Bar"),
                                             },
                                         ),
                                         span: Span {
@@ -71,10 +71,10 @@
                                     Alias {
                                         trait: Some(
                                             Name {
-                                                kind: Unresolved(
-                                                    UnresolvedName {
-                                                        symbol: Symbol("Bar"),
-                                                        qualification: Unqualified,
+                                                kind: Resolved(
+                                                    ResolvedName {
+                                                        resolved: Symbol("Bar"),
+                                                        original: Symbol("Bar"),
                                                     },
                                                 ),
                                                 span: Span {

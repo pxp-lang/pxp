@@ -94,10 +94,10 @@
                                                     DataType {
                                                         kind: Named(
                                                             Name {
-                                                                kind: Unresolved(
-                                                                    UnresolvedName {
-                                                                        symbol: Symbol("Foo"),
-                                                                        qualification: Unqualified,
+                                                                kind: Resolved(
+                                                                    ResolvedName {
+                                                                        resolved: Symbol("Foo"),
+                                                                        original: Symbol("Foo"),
                                                                     },
                                                                 ),
                                                                 span: Span {
@@ -134,10 +134,10 @@
                                                             [
                                                                 Named(
                                                                     Name {
-                                                                        kind: Unresolved(
-                                                                            UnresolvedName {
-                                                                                symbol: Symbol("Foo"),
-                                                                                qualification: Unqualified,
+                                                                        kind: Resolved(
+                                                                            ResolvedName {
+                                                                                resolved: Symbol("Foo"),
+                                                                                original: Symbol("Foo"),
                                                                             },
                                                                         ),
                                                                         span: Span {
@@ -148,10 +148,10 @@
                                                                 ),
                                                                 Named(
                                                                     Name {
-                                                                        kind: Unresolved(
-                                                                            UnresolvedName {
-                                                                                symbol: Symbol("Bar"),
-                                                                                qualification: Unqualified,
+                                                                        kind: Resolved(
+                                                                            ResolvedName {
+                                                                                resolved: Symbol("Bar"),
+                                                                                original: Symbol("Bar"),
                                                                             },
                                                                         ),
                                                                         span: Span {
@@ -190,10 +190,10 @@
                                                             [
                                                                 Named(
                                                                     Name {
-                                                                        kind: Unresolved(
-                                                                            UnresolvedName {
-                                                                                symbol: Symbol("Foo"),
-                                                                                qualification: Unqualified,
+                                                                        kind: Resolved(
+                                                                            ResolvedName {
+                                                                                resolved: Symbol("Foo"),
+                                                                                original: Symbol("Foo"),
                                                                             },
                                                                         ),
                                                                         span: Span {
@@ -204,10 +204,10 @@
                                                                 ),
                                                                 Named(
                                                                     Name {
-                                                                        kind: Unresolved(
-                                                                            UnresolvedName {
-                                                                                symbol: Symbol("Bar"),
-                                                                                qualification: Unqualified,
+                                                                        kind: Resolved(
+                                                                            ResolvedName {
+                                                                                resolved: Symbol("Bar"),
+                                                                                original: Symbol("Bar"),
                                                                             },
                                                                         ),
                                                                         span: Span {
@@ -245,10 +245,10 @@
                                                         kind: Nullable(
                                                             Named(
                                                                 Name {
-                                                                    kind: Unresolved(
-                                                                        UnresolvedName {
-                                                                            symbol: Symbol("Foo"),
-                                                                            qualification: Unqualified,
+                                                                    kind: Resolved(
+                                                                        ResolvedName {
+                                                                            resolved: Symbol("Foo"),
+                                                                            original: Symbol("Foo"),
                                                                         },
                                                                     ),
                                                                     span: Span {
