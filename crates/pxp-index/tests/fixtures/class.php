@@ -12,3 +12,11 @@ class Properties {
     public static $e;
     var $f;
 }
+
+class Methods {
+    public function a() {}
+    public function b(): string {}
+    protected function c(): int {}
+    private function d(): bool {}
+    public static function e() {}
+}

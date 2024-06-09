@@ -66,6 +66,35 @@ fn it_indexes_classes() {
     let f = properties.get_property(name(b"f")).unwrap();
     assert!(f.is_public());
     assert!(f.get_type() == &Type::Mixed);
+
+    let methods = index.get_class(name(b"Methods")).unwrap();
+
+    assert!(methods.get_name() == name(b"Methods"));
+    assert!(methods.get_short_name() == name(b"Methods"));
+    assert!(methods.get_namespace() == None);
+
+    let methods_methods = methods.get_methods().collect::<Vec<_>>();
+
+    assert!(methods_methods.len() == 5);
+
+    let a = methods.get_method(name(b"a")).unwrap();
+    assert!(a.is_public());
+    assert!(a.get_return_type() == &Type::Mixed);
+
+    let b = methods.get_method(name(b"b")).unwrap();
+    assert!(b.is_public());
+    assert!(b.get_return_type() == &Type::String);
+
+    let c = methods.get_method(name(b"c")).unwrap();
+    assert!(c.is_protected());
+    assert!(c.get_return_type() == &Type::Integer);
+
+    let d = methods.get_method(name(b"d")).unwrap();
+    assert!(d.is_private());
+    assert!(d.get_return_type() == &Type::Boolean);
+
+    let e = methods.get_method(name(b"e")).unwrap();
+    assert!(e.is_static());
 }
 
 fn name(name: &[u8]) -> Symbol {

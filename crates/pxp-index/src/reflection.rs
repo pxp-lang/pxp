@@ -125,6 +125,28 @@ pub struct ReflectionMethod<'a> {
     pub(crate) index: &'a Index,
 }
 
+impl<'a> ReflectionMethod<'a> {
+    pub fn is_static(&self) -> bool {
+        self.method.modifiers.has_static()
+    }
+
+    pub fn is_public(&self) -> bool {
+        self.method.modifiers.is_public()
+    }
+
+    pub fn is_protected(&self) -> bool {
+        self.method.modifiers.is_protected()
+    }
+
+    pub fn is_private(&self) -> bool {
+        self.method.modifiers.is_private()
+    }
+
+    pub fn get_return_type(&self) -> &Type<Name> {
+        &self.method.return_type
+    }
+}
+
 impl Debug for ReflectionMethod<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ReflectionMethod")

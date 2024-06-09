@@ -173,6 +173,24 @@ impl MethodModifierGroup {
             .find(|modifier| matches!(modifier, MethodModifier::Abstract { .. }))
     }
 
+    pub fn is_public(&self) -> bool {
+        self.modifiers
+            .iter()
+            .any(|modifier| matches!(modifier, MethodModifier::Public { .. }))
+    }
+
+    pub fn is_protected(&self) -> bool {
+        self.modifiers
+            .iter()
+            .any(|modifier| matches!(modifier, MethodModifier::Protected { .. }))
+    }
+
+    pub fn is_private(&self) -> bool {
+        self.modifiers
+            .iter()
+            .any(|modifier| matches!(modifier, MethodModifier::Private { .. }))
+    }
+
     pub fn visibility(&self) -> Visibility {
         self.modifiers
             .iter()
