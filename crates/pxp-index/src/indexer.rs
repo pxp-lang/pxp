@@ -1,3 +1,4 @@
+use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
 use pxp_visitor::{walk_braced_namespace, walk_class_statement, walk_unbraced_namespace, Visitor};
@@ -151,5 +152,37 @@ impl Visitor for Indexer {
         let parameters = self.transform_constructor_parameter_list(&node.parameters);
 
         self.context.class().methods.push(Method { name, return_type, modifiers, parameters, r#abstract: true });
+    }
+
+    fn visit_property(&mut self, node: &Property) {
+        if !self.context.in_class() {
+            return;
+        }
+
+        let r#type = node.r#type.as_ref().map(|r| r.get_type()).unwrap_or_else(|| &Type::Mixed).clone();
+        let modifiers = node.modifiers.clone();
+
+        for entry in node.entries.iter() {
+            let name = entry.variable().symbol;
+            let default = entry.is_initialized();
+
+            self.context.class().properties.push(crate::class_like::Property { name, r#type: r#type.clone(), default, modifiers: modifiers.clone() });
+        }
+    }
+
+    fn visit_variable_property(&mut self, node: &VariableProperty) {
+        if !self.context.in_class() {
+            return;
+        }
+
+        let r#type = node.r#type.as_ref().map(|r| r.get_type()).unwrap_or_else(|| &Type::Mixed).clone();
+        let modifiers = PropertyModifierGroup { modifiers: vec![PropertyModifier::Public(Span::default())] };
+
+        for entry in node.entries.iter() {
+            let name = entry.variable().symbol;
+            let default = entry.is_initialized();
+
+            self.context.class().properties.push(crate::class_like::Property { name, r#type: r#type.clone(), default, modifiers: modifiers.clone() });
+        }
     }
 }
