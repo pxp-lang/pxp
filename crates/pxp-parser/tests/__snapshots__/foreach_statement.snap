@@ -33,6 +33,7 @@
                             SimpleVariable(
                                 SimpleVariable {
                                     symbol: Symbol("$array"),
+                                    stripped: Symbol("array"),
                                     span: Span {
                                         start: 16,
                                         end: 22,
@@ -58,6 +59,7 @@
                             SimpleVariable(
                                 SimpleVariable {
                                     symbol: Symbol("$value"),
+                                    stripped: Symbol("value"),
                                     span: Span {
                                         start: 26,
                                         end: 32,

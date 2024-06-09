@@ -1001,6 +1001,7 @@ PromotedPropertyModifier:
   Readonly: Span
 
 PromotedPropertyModifierGroup:
+  derive: Default
   modifiers: Vec<PromotedPropertyModifier>
 
 PropertyModifier:
@@ -1012,6 +1013,7 @@ PropertyModifier:
   Readonly: Span
 
 PropertyModifierGroup:
+  derive: Default
   modifiers: Vec<PropertyModifier>
 
 MethodModifier:
@@ -1024,6 +1026,7 @@ MethodModifier:
   Final: Span
 
 MethodModifierGroup:
+  derive: Default
   modifiers: Vec<MethodModifier>
 
 ClassModifier:
@@ -1033,6 +1036,7 @@ ClassModifier:
   Readonly: Span
 
 ClassModifierGroup:
+  derive: Default
   modifiers: Vec<ClassModifier>
 
 ConstantModifier:
@@ -1387,6 +1391,7 @@ Variable:
 
 SimpleVariable:
   symbol: Symbol
+  stripped: Symbol
   span: Span
 
 VariableVariable:

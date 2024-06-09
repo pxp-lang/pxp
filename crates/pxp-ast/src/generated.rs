@@ -1308,7 +1308,7 @@ pub enum PromotedPropertyModifier {
     Readonly(Span),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct PromotedPropertyModifierGroup {
     pub modifiers: Vec<PromotedPropertyModifier>,
 }
@@ -1322,7 +1322,7 @@ pub enum PropertyModifier {
     Readonly(Span),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct PropertyModifierGroup {
     pub modifiers: Vec<PropertyModifier>,
 }
@@ -1337,7 +1337,7 @@ pub enum MethodModifier {
     Final(Span),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct MethodModifierGroup {
     pub modifiers: Vec<MethodModifier>,
 }
@@ -1797,6 +1797,7 @@ pub enum Variable {
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct SimpleVariable {
     pub symbol: Symbol,
+    pub stripped: Symbol,
     pub span: Span,
 }
 

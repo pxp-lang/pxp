@@ -37,6 +37,7 @@
                                                 SimpleVariable(
                                                     SimpleVariable {
                                                         symbol: Symbol("$world"),
+                                                        stripped: Symbol("world"),
                                                         span: Span {
                                                             start: 21,
                                                             end: 27,
@@ -67,6 +68,7 @@
                                                 SimpleVariable(
                                                     SimpleVariable {
                                                         symbol: Symbol("$world"),
+                                                        stripped: Symbol("world"),
                                                         span: Span {
                                                             start: 37,
                                                             end: 43,
@@ -100,6 +102,7 @@
                                                             SimpleVariable(
                                                                 SimpleVariable {
                                                                     symbol: Symbol("$world"),
+                                                                    stripped: Symbol("world"),
                                                                     span: Span {
                                                                         start: 54,
                                                                         end: 60,
@@ -167,6 +170,7 @@
                                                             SimpleVariable(
                                                                 SimpleVariable {
                                                                     symbol: Symbol("$world"),
+                                                                    stripped: Symbol("world"),
                                                                     span: Span {
                                                                         start: 77,
                                                                         end: 83,
@@ -248,6 +252,7 @@
                                                             SimpleVariable(
                                                                 SimpleVariable {
                                                                     symbol: Symbol("$world"),
+                                                                    stripped: Symbol("world"),
                                                                     span: Span {
                                                                         start: 102,
                                                                         end: 108,

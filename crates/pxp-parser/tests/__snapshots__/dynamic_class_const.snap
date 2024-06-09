@@ -60,6 +60,7 @@
                                             SimpleVariable(
                                                 SimpleVariable {
                                                     symbol: Symbol("$foo"),
+                                                    stripped: Symbol("foo"),
                                                     span: Span {
                                                         start: 13,
                                                         end: 17,

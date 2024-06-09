@@ -5,6 +5,7 @@ use crate::ParserDiagnostic;
 use pxp_ast::*;
 
 use pxp_diagnostics::Severity;
+use pxp_symbol::Symbol;
 use pxp_token::TokenKind;
 
 pub fn simple_variable(state: &mut State) -> SimpleVariable {
@@ -14,7 +15,12 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
         TokenKind::Variable => {
             state.stream.next();
 
-            SimpleVariable { symbol: current.symbol.unwrap(), span: current.span }
+            let symbol = current.symbol.unwrap();
+
+            let name = state.symbol_table.must_resolve(symbol).to_bytestring();
+            let stripped = state.symbol_table.intern(&name[1..]);
+
+            SimpleVariable { symbol: current.symbol.unwrap(), stripped, span: current.span }
         }
         TokenKind::Dollar => {
             state.stream.next();
@@ -25,7 +31,7 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
                 current.span,
             );
 
-            SimpleVariable { symbol: current.symbol.unwrap(), span: current.span }
+            SimpleVariable { symbol: current.symbol.unwrap(), stripped: Symbol::missing(), span: current.span }
         }
         _ => {
             state.diagnostic(
@@ -48,7 +54,11 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
         TokenKind::Variable => {
             state.stream.next();
 
-            Variable::SimpleVariable(SimpleVariable { symbol: current.symbol.unwrap(), span: current.span })
+            let symbol = current.symbol.unwrap();
+            let name = state.symbol_table.must_resolve(symbol).to_bytestring();
+            let stripped = state.symbol_table.intern(&name[1..]);
+
+            Variable::SimpleVariable(SimpleVariable { symbol: current.symbol.unwrap(), stripped, span: current.span })
         }
         TokenKind::DollarLeftBrace => {
             let start = current.span;

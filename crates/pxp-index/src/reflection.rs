@@ -1,6 +1,8 @@
 use std::fmt::Debug;
 
+use pxp_ast::Name;
 use pxp_symbol::Symbol;
+use pxp_type::Type;
 
 use crate::{class_like::{ClassLike, Method, Property}, Index};
 
@@ -41,6 +43,14 @@ impl<'a> ReflectionClass<'a> {
 
     pub fn get_namespace(&self) -> Option<Symbol> {
         self.class.namespace
+    }
+
+    pub fn get_parent(&self) -> Option<ReflectionClass<'a>> {
+        self.class.parent.as_ref().map(|parent| self.index.get_class(*parent)).flatten()
+    }
+
+    pub fn get_interfaces(&self) -> impl Iterator<Item = ReflectionClass> + '_ {
+        self.class.interfaces.iter().map(move |interface| self.index.get_class(*interface)).flatten()
     }
 
     pub fn get_methods(&'a self) -> impl Iterator<Item = ReflectionMethod> + 'a {
@@ -90,6 +100,10 @@ impl<'a> ReflectionProperty<'a> {
 
     pub fn is_private(&self) -> bool {
         self.property.modifiers.is_private()
+    }
+
+    pub fn get_type(&self) -> &Type<Name> {
+        &self.property.r#type
     }
 }
 
