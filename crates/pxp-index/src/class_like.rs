@@ -39,4 +39,5 @@ pub struct Method {
     pub return_type: Type<Name>,
     pub modifiers: MethodModifierGroup,
     pub parameters: Vec<Parameter>,
+    pub r#abstract: bool,
 }

@@ -38,6 +38,18 @@ impl Indexer {
             Parameter { name, r#type, default, variadic, reference }
         }).collect()
     }
+
+    fn transform_constructor_parameter_list(&self, parameters: &ConstructorParameterList) -> Vec<Parameter> {
+        parameters.parameters.iter().map(|p| {
+            let name = p.name.symbol;
+            let r#type = p.data_type.as_ref().map(|r| r.get_type()).unwrap_or_else(|| &Type::Mixed).clone();
+            let default = p.default.is_some();
+            let variadic = p.ellipsis.is_some();
+            let reference = p.ampersand.is_some();
+            
+            Parameter { name, r#type, default, variadic, reference }
+        }).collect()
+    }
 }
 
 #[derive(Debug, Clone, Default)]
@@ -99,6 +111,45 @@ impl Visitor for Indexer {
         let modifiers = node.modifiers.clone();
         let parameters = self.transform_function_parameter_list(&node.parameters);
 
-        self.context.class().methods.push(Method { name, return_type, modifiers, parameters });
+        self.context.class().methods.push(Method { name, return_type, modifiers, parameters, r#abstract: false });
+    }
+
+    fn visit_abstract_method(&mut self, node: &AbstractMethod) {
+        if !self.context.in_class() {
+            return;
+        }
+
+        let name = node.name.symbol;
+        let return_type = node.return_type.as_ref().map(|r| r.data_type.get_type()).unwrap_or_else(|| &Type::Mixed).clone();
+        let modifiers = node.modifiers.clone();
+        let parameters = self.transform_function_parameter_list(&node.parameters);
+
+        self.context.class().methods.push(Method { name, return_type, modifiers, parameters, r#abstract: true });
+    }
+
+    fn visit_concrete_constructor(&mut self, node: &ConcreteConstructor) {
+        if !self.context.in_class() {
+            return;
+        }
+
+        let name = SymbolTable::the().intern(b"__construct");
+        let return_type = Type::Void;
+        let modifiers = node.modifiers.clone();
+        let parameters = self.transform_constructor_parameter_list(&node.parameters);
+
+        self.context.class().methods.push(Method { name, return_type, modifiers, parameters, r#abstract: false });
+    }
+
+    fn visit_abstract_constructor(&mut self, node: &AbstractConstructor) {
+        if !self.context.in_class() {
+            return;
+        }
+
+        let name = SymbolTable::the().intern(b"__construct");
+        let return_type = Type::Void;
+        let modifiers = node.modifiers.clone();
+        let parameters = self.transform_constructor_parameter_list(&node.parameters);
+
+        self.context.class().methods.push(Method { name, return_type, modifiers, parameters, r#abstract: true });
     }
 }
