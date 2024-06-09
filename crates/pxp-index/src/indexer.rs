@@ -1,8 +1,9 @@
 use pxp_symbol::{Symbol, SymbolTable};
+use pxp_type::Type;
 use pxp_visitor::{walk_braced_namespace, walk_class_statement, walk_unbraced_namespace, Visitor};
 use pxp_ast::{UnbracedNamespace, *};
 
-use crate::{class_like::ClassLike, Index};
+use crate::{class_like::{ClassLike, Method}, parameter::Parameter, Index};
 
 #[derive(Debug, Clone)]
 pub struct Indexer {
@@ -25,6 +26,18 @@ impl Indexer {
     pub fn get_index(&self) -> &Index {
         &self.index
     }
+
+    fn transform_function_parameter_list(&self, parameters: &FunctionParameterList) -> Vec<Parameter> {
+        parameters.parameters.iter().map(|p| {
+            let name = p.name.symbol;
+            let r#type = p.data_type.as_ref().map(|r| r.get_type()).unwrap_or_else(|| &Type::Mixed).clone();
+            let default = p.default.is_some();
+            let variadic = p.ellipsis.is_some();
+            let reference = p.ampersand.is_some();
+            
+            Parameter { name, r#type, default, variadic, reference }
+        }).collect()
+    }
 }
 
 #[derive(Debug, Clone, Default)]
@@ -40,6 +53,10 @@ impl IndexerContext {
 
     fn class(&mut self) -> &mut ClassLike {
         self.class.as_mut().unwrap()
+    }
+
+    fn in_class(&self) -> bool {
+        self.class.is_some()
     }
 
     fn set_class(&mut self, class: ClassLike) {
@@ -70,5 +87,18 @@ impl Visitor for Indexer {
 
         self.index.add_class(class);
         self.context.class = None;
+    }
+
+    fn visit_concrete_method(&mut self, node: &ConcreteMethod) {
+        if !self.context.in_class() {
+            return;
+        }
+
+        let name = node.name.symbol;
+        let return_type = node.return_type.as_ref().map(|r| r.data_type.get_type()).unwrap_or_else(|| &Type::Mixed).clone();
+        let modifiers = node.modifiers.clone();
+        let parameters = self.transform_function_parameter_list(&node.parameters);
+
+        self.context.class().methods.push(Method { name, return_type, modifiers, parameters });
     }
 }
