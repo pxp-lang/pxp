@@ -1349,7 +1349,7 @@ pub enum ClassModifier {
     Readonly(Span),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct ClassModifierGroup {
     pub modifiers: Vec<ClassModifier>,
 }

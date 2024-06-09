@@ -1,8 +1,10 @@
+use std::fmt::Debug;
+
 use pxp_symbol::Symbol;
 
 use crate::{class_like::{ClassLike, Method, Property}, Index};
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct ReflectionClass<'a> {
     pub(crate) class: &'a ClassLike,
     pub(crate) index: &'a Index,
@@ -50,7 +52,19 @@ impl<'a> ReflectionClass<'a> {
     }
 }
 
-#[derive(Debug, Clone)]
+impl<'a> Debug for ReflectionClass<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ReflectionClass")
+            .field("name", &self.get_name())
+            .field("short", &self.get_short_name())
+            .field("namespace", &self.get_namespace())
+            .field("properties", &self.get_properties().collect::<Vec<_>>())
+            .field("methods", &self.get_methods().collect::<Vec<_>>())
+            .finish()
+    }
+}
+
+#[derive(Clone)]
 pub struct ReflectionProperty<'a> {
     pub(crate) class: &'a ReflectionClass<'a>,
     pub(crate) property: &'a Property,
@@ -79,9 +93,31 @@ impl<'a> ReflectionProperty<'a> {
     }
 }
 
-#[derive(Debug, Clone)]
+impl Debug for ReflectionProperty<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ReflectionProperty")
+            .field("name", &self.property.name)
+            .field("type", &self.property.r#type)
+            .field("default", &self.property.default)
+            .field("modifiers", &self.property.modifiers)
+            .finish()
+    }
+}
+
+#[derive(Clone)]
 pub struct ReflectionMethod<'a> {
     pub(crate) class: &'a ReflectionClass<'a>,
     pub(crate) method: &'a Method,
     pub(crate) index: &'a Index,
+}
+
+impl Debug for ReflectionMethod<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ReflectionMethod")
+            .field("name", &self.method.name)
+            .field("return_type", &self.method.return_type)
+            .field("modifiers", &self.method.modifiers)
+            .field("parameters", &self.method.parameters)
+            .finish()
+    }
 }

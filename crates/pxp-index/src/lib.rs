@@ -8,6 +8,7 @@ mod reflection;
 mod indexer;
 
 pub use reflection::*;
+pub use indexer::Indexer;
 
 #[derive(Debug, Clone)]
 pub struct Index {

@@ -4,7 +4,7 @@ use pxp_type::Type;
 
 use crate::parameter::Parameter;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct ClassLike {
     pub name: Symbol,
     pub short: Symbol,
@@ -12,6 +12,17 @@ pub struct ClassLike {
     pub properties: Vec<Property>,
     pub methods: Vec<Method>,
     pub modifiers: ClassModifierGroup,
+}
+
+impl ClassLike {
+    pub fn new(name: Symbol, short: Symbol, namespace: Option<Symbol>) -> Self {
+        ClassLike {
+            name,
+            short,
+            namespace,
+            ..Default::default()
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
