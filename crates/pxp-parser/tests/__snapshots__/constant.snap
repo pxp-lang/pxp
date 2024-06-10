@@ -28,8 +28,13 @@
                 },
                 entries: [
                     ConstantEntry {
-                        name: SimpleIdentifier {
-                            symbol: Symbol("FOO"),
+                        name: Name {
+                            kind: Resolved(
+                                ResolvedName {
+                                    resolved: Symbol("FOO"),
+                                    original: Symbol("FOO"),
+                                },
+                            ),
                             span: Span {
                                 start: 13,
                                 end: 16,

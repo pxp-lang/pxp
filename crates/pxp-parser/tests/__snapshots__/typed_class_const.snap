@@ -70,7 +70,7 @@
                                     },
                                 ),
                                 entries: [
-                                    ConstantEntry {
+                                    ClassishConstantEntry {
                                         name: SimpleIdentifier {
                                             symbol: Symbol("FOO"),
                                             span: Span {

@@ -58,7 +58,7 @@
                                 },
                                 data_type: None,
                                 entries: [
-                                    ConstantEntry {
+                                    ClassishConstantEntry {
                                         name: SimpleIdentifier {
                                             symbol: Symbol("A"),
                                             span: Span {
@@ -124,7 +124,7 @@
                                 },
                                 data_type: None,
                                 entries: [
-                                    ConstantEntry {
+                                    ClassishConstantEntry {
                                         name: SimpleIdentifier {
                                             symbol: Symbol("B"),
                                             span: Span {

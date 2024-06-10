@@ -4,7 +4,7 @@ use pxp_ast::Name;
 use pxp_symbol::Symbol;
 use pxp_type::Type;
 
-use crate::{class_like::{ClassLike, Method, Property}, function::Function, parameter::Parameter, Index};
+use crate::{class_like::{ClassLike, Method, Property}, constant::Constant, function::Function, parameter::Parameter, Index};
 
 #[derive(Clone)]
 pub struct ReflectionFunction<'a> {
@@ -220,4 +220,10 @@ impl Debug for ReflectionMethod<'_> {
             .field("parameters", &self.method.parameters)
             .finish()
     }
+}
+
+#[derive(Clone)]
+pub struct ReflectionConstant<'a> {
+    pub(crate) constant: &'a Constant,
+    pub(crate) index: &'a Index,
 }
