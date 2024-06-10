@@ -97,6 +97,43 @@ fn it_indexes_classes() {
     assert!(e.is_static());
 }
 
+#[test]
+fn it_indexes_functions() {
+    let index = index();
+
+    let a = index.get_function(name(b"a")).unwrap();
+
+    assert!(a.get_name() == name(b"a"));
+    assert!(a.get_short_name() == name(b"a"));
+    assert!(a.get_namespace() == None);
+
+    let c = index.get_function(name(b"c")).unwrap();
+
+    assert!(c.get_name() == name(b"c"));
+    assert!(c.get_short_name() == name(b"c"));
+    assert!(c.get_namespace() == None);
+
+    let c_parameters = c.get_parameters().collect::<Vec<_>>();
+
+    assert!(c_parameters.len() == 1);
+    assert!(c_parameters[0].get_name() == name(b"a"));
+    assert!(c_parameters[0].get_type() == &Type::String);
+
+    let d = index.get_function(name(b"d")).unwrap();
+
+    assert!(d.get_return_type() == &Type::Integer);
+
+    let e = index.get_function(name(b"e")).unwrap();
+
+    assert!(e.returns_by_reference());
+
+    let b = index.get_function(name(b"A\\b")).unwrap();
+
+    assert!(b.get_name() == name(b"A\\b"));
+    assert!(b.get_short_name() == name(b"b"));
+    assert!(b.get_namespace() == Some(name(b"A")));
+}
+
 fn name(name: &[u8]) -> Symbol {
     SymbolTable::the().intern(name)
 }

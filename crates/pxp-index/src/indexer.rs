@@ -4,7 +4,7 @@ use pxp_type::Type;
 use pxp_visitor::{walk_braced_namespace, walk_class_statement, walk_unbraced_namespace, Visitor};
 use pxp_ast::{UnbracedNamespace, *};
 
-use crate::{class_like::{ClassLike, Method}, parameter::Parameter, Index};
+use crate::{class_like::{ClassLike, Method}, function::Function, parameter::Parameter, Index};
 
 #[derive(Debug, Clone)]
 pub struct Indexer {
@@ -30,7 +30,7 @@ impl Indexer {
 
     fn transform_function_parameter_list(&self, parameters: &FunctionParameterList) -> Vec<Parameter> {
         parameters.parameters.iter().map(|p| {
-            let name = p.name.symbol;
+            let name = p.name.stripped;
             let r#type = p.data_type.as_ref().map(|r| r.get_type()).unwrap_or_else(|| &Type::Mixed).clone();
             let default = p.default.is_some();
             let variadic = p.ellipsis.is_some();
@@ -88,6 +88,17 @@ impl Visitor for Indexer {
         self.context.namespace = node.name.as_ref().map(|n| n.as_resolved().unwrap().resolved);
         walk_braced_namespace(self, node);
         self.context.namespace = None;
+    }
+
+    fn visit_function_statement(&mut self, node: &FunctionStatement) {
+        let name = node.name.as_resolved().unwrap().resolved;
+        let short = node.name.as_resolved().unwrap().original;
+        let namespace = self.context.namespace();
+        let parameters = self.transform_function_parameter_list(&node.parameters);
+        let return_type = node.return_type.as_ref().map(|r| r.data_type.get_type()).unwrap_or_else(|| &Type::Mixed).clone();
+        let returns_by_reference = node.ampersand.is_some();
+
+        self.index.add_function(Function { name, short, namespace, parameters, return_type, returns_by_reference });
     }
 
     fn visit_class_statement(&mut self, node: &ClassStatement) {

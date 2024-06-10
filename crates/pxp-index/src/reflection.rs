@@ -4,7 +4,71 @@ use pxp_ast::Name;
 use pxp_symbol::Symbol;
 use pxp_type::Type;
 
-use crate::{class_like::{ClassLike, Method, Property}, Index};
+use crate::{class_like::{ClassLike, Method, Property}, function::Function, parameter::Parameter, Index};
+
+#[derive(Clone)]
+pub struct ReflectionFunction<'a> {
+    pub(crate) function: &'a Function,
+    pub(crate) index: &'a Index,
+}
+
+impl<'a> ReflectionFunction<'a> {
+    pub fn get_name(&self) -> Symbol {
+        self.function.name
+    }
+
+    pub fn get_short_name(&self) -> Symbol {
+        self.function.short
+    }
+
+    pub fn get_namespace(&self) -> Option<Symbol> {
+        self.function.namespace
+    }
+
+    pub fn get_return_type(&self) -> &Type<Name> {
+        &self.function.return_type
+    }
+
+    pub fn returns_by_reference(&self) -> bool {
+        self.function.returns_by_reference
+    }
+
+    pub fn get_parameters(&'a self) -> impl Iterator<Item = ReflectionParameter> + 'a {
+        self.function.parameters.iter().map(|parameter| ReflectionParameter { parameter, index: self.index })
+    }
+
+    pub fn get_parameter(&self, name: Symbol) -> Option<ReflectionParameter> {
+        self.function.parameters.iter().find(|parameter| parameter.name == name).map(|parameter| ReflectionParameter { parameter, index: self.index })
+    }
+}
+
+#[derive(Clone)]
+pub struct ReflectionParameter<'a> {
+    pub(crate) parameter: &'a Parameter,
+    pub(crate) index: &'a Index,
+}
+
+impl<'a> ReflectionParameter<'a> {
+    pub fn get_name(&self) -> Symbol {
+        self.parameter.name
+    }
+
+    pub fn get_type(&self) -> &Type<Name> {
+        &self.parameter.r#type
+    }
+
+    pub fn is_optional(&self) -> bool {
+        self.parameter.default
+    }
+
+    pub fn is_passed_by_reference(&self) -> bool {
+        self.parameter.reference
+    }
+
+    pub fn is_variadic(&self) -> bool {
+        self.parameter.variadic
+    }
+}
 
 #[derive(Clone)]
 pub struct ReflectionClass<'a> {
