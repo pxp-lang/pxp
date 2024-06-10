@@ -968,7 +968,8 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
         ) => {
             let name = names::full_name(state, match state.stream.peek().kind {
                 TokenKind::LeftParen => UseKind::Function,
-                _ => UseKind::Normal
+                TokenKind::DoubleColon => UseKind::Normal,
+                _ => UseKind::Const
             });
 
             Expression::new(

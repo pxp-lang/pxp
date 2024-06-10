@@ -241,6 +241,7 @@ snap!(snapper, method_argument_unqualified, process("fixtures/name-resolving/met
 snap!(snapper, method_argument_unqualified_use, process("fixtures/name-resolving/method-argument-unqualified-use.php"));
 snap!(snapper, constant_unnamespaced, process("fixtures/name-resolving/constant-unnamespaced.php"));
 snap!(snapper, constant_namespaced, process("fixtures/name-resolving/constant-namespaced.php"));
+snap!(snapper, constant_use, process("fixtures/name-resolving/constant-use.php"));
 
 // Uses
 snap!(snapper, simple_use, process("fixtures/uses/simple-use.php"));
