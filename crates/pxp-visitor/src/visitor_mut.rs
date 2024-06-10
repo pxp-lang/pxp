@@ -363,6 +363,10 @@ pub trait VisitorMut {
         walk_constant_entry_mut(self, node);
     }
 
+    fn visit_classish_constant_entry(&mut self, node: &mut ClassishConstantEntry) {
+        walk_classish_constant_entry_mut(self, node);
+    }
+
     fn visit_constant_statement(&mut self, node: &mut ConstantStatement) {
         walk_constant_statement_mut(self, node);
     }

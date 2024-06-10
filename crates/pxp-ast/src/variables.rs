@@ -6,6 +6,7 @@ impl SimpleVariable {
     pub fn missing(span: Span) -> Self {
         Self {
             symbol: Symbol::missing(),
+            stripped: Symbol::missing(),
             span,
         }
     }

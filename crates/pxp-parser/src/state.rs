@@ -95,6 +95,7 @@ impl<'a, 'b> State<'a, 'b> {
 
         let map = self.imports.get(&kind).unwrap();
 
+        // We found an import that matches the first part of the identifier, so we can resolve it.
         if let Some(imported) = map.get(&part) {
             match &token.kind {
                 TokenKind::Identifier | TokenKind::From | TokenKind::Enum => {
@@ -112,6 +113,14 @@ impl<'a, 'b> State<'a, 'b> {
                 },
                 _ => unreachable!()
             }
+        // We didn't find an import, but since we're trying to resolve the name of a class like, we can
+        // follow PHP's name resolution rules and just prepend the current namespace.
+        } else if kind == UseKind::Normal {
+            Name::resolved(self.join_with_namespace(symbol), symbol, token.span)
+        // If the name we're trying to resolve is qualified, then PHP's name resolution rules say that
+        // we should just prepend the current namespace if the import map doesn't contain the first part.
+        } else if &token.kind == &TokenKind::QualifiedIdentifier {
+            Name::resolved(self.join_with_namespace(symbol), symbol, token.span)
         } else {
             Name::unresolved(symbol, token.kind.into(), token.span)
         }
@@ -139,6 +148,16 @@ impl<'a, 'b> State<'a, 'b> {
 
         // Then we can insert the import into the hashmap.
         self.imports.get_mut(kind).unwrap().insert(alias, name);
+    }
+
+    pub fn strip_leading_namespace_qualifier(&mut self, symbol: Symbol) -> Symbol {
+        let bytestring = self.symbol_table.resolve(symbol).unwrap().to_bytestring();
+
+        if bytestring.starts_with(&[b'\\']) {
+            self.symbol_table.intern(&bytestring[1..])
+        } else {
+            symbol
+        }
     }
 
     pub fn join_with_namespace(&mut self, name: Symbol) -> Symbol {

@@ -74,6 +74,27 @@ impl Name {
     pub fn is_resolved(&self) -> bool {
         matches!(self.kind, NameKind::Resolved(_))
     }
+
+    pub fn as_resolved(&self) -> Option<&ResolvedName> {
+        match &self.kind {
+            NameKind::Resolved(r) => Some(r),
+            _ => None,
+        }
+    }
+
+    pub fn as_unresolved(&self) -> Option<&UnresolvedName> {
+        match &self.kind {
+            NameKind::Unresolved(u) => Some(u),
+            _ => None,
+        }
+    }
+
+    pub fn as_special(&self) -> Option<&SpecialName> {
+        match &self.kind {
+            NameKind::Special(s) => Some(s),
+            _ => None,
+        }
+    }
 }
 
 impl Display for SpecialName {

@@ -24,6 +24,7 @@
                         SimpleVariable(
                             SimpleVariable {
                                 symbol: Symbol("$a"),
+                                stripped: Symbol("a"),
                                 span: Span {
                                     start: 7,
                                     end: 9,

@@ -50,6 +50,7 @@
                                     Uninitialized {
                                         variable: SimpleVariable {
                                             symbol: Symbol("$a"),
+                                            stripped: Symbol("a"),
                                             span: Span {
                                                 start: 27,
                                                 end: 29,
@@ -81,6 +82,7 @@
                                     Uninitialized {
                                         variable: SimpleVariable {
                                             symbol: Symbol("$b"),
+                                            stripped: Symbol("b"),
                                             span: Span {
                                                 start: 42,
                                                 end: 44,
@@ -112,6 +114,7 @@
                                     Uninitialized {
                                         variable: SimpleVariable {
                                             symbol: Symbol("$c"),
+                                            stripped: Symbol("c"),
                                             span: Span {
                                                 start: 60,
                                                 end: 62,
@@ -143,6 +146,7 @@
                                     Uninitialized {
                                         variable: SimpleVariable {
                                             symbol: Symbol("$d"),
+                                            stripped: Symbol("d"),
                                             span: Span {
                                                 start: 76,
                                                 end: 78,
@@ -174,6 +178,7 @@
                                     Uninitialized {
                                         variable: SimpleVariable {
                                             symbol: Symbol("$e"),
+                                            stripped: Symbol("e"),
                                             span: Span {
                                                 start: 91,
                                                 end: 93,

@@ -719,6 +719,14 @@ pub fn walk_classish_member<V: Visitor + ?Sized>(visitor: &mut V, node: &Classis
 }
 
 pub fn walk_constant_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &ConstantEntry) {
+    visitor.visit_name(&node.name);
+    visitor.visit_expression(&node.value);
+}
+
+pub fn walk_classish_constant_entry<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &ClassishConstantEntry,
+) {
     visitor.visit_simple_identifier(&node.name);
     visitor.visit_expression(&node.value);
 }
@@ -738,7 +746,7 @@ pub fn walk_classish_constant<V: Visitor + ?Sized>(visitor: &mut V, node: &Class
         visitor.visit_data_type(item);
     }
     for item in &node.entries {
-        visitor.visit_constant_entry(item);
+        visitor.visit_classish_constant_entry(item);
     }
 }
 

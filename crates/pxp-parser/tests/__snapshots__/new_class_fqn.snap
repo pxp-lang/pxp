@@ -31,7 +31,7 @@
                                     Name {
                                         kind: Resolved(
                                             ResolvedName {
-                                                resolved: Symbol("\Foo\Bar\Baz"),
+                                                resolved: Symbol("Foo\Bar\Baz"),
                                                 original: Symbol("\Foo\Bar\Baz"),
                                             },
                                         ),

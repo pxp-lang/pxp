@@ -738,6 +738,13 @@ pub enum ClassishMember {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstantEntry {
+    pub name: Name,
+    pub equals: Span,
+    pub value: Expression,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ClassishConstantEntry {
     pub name: SimpleIdentifier,
     pub equals: Span,
     pub value: Expression,
@@ -758,7 +765,7 @@ pub struct ClassishConstant {
     pub modifiers: ConstantModifierGroup,
     pub r#const: Span,
     pub data_type: Option<DataType>,
-    pub entries: Vec<ConstantEntry>,
+    pub entries: Vec<ClassishConstantEntry>,
     pub semicolon: Span,
 }
 
@@ -1308,7 +1315,7 @@ pub enum PromotedPropertyModifier {
     Readonly(Span),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct PromotedPropertyModifierGroup {
     pub modifiers: Vec<PromotedPropertyModifier>,
 }
@@ -1322,7 +1329,7 @@ pub enum PropertyModifier {
     Readonly(Span),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct PropertyModifierGroup {
     pub modifiers: Vec<PropertyModifier>,
 }
@@ -1337,7 +1344,7 @@ pub enum MethodModifier {
     Final(Span),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct MethodModifierGroup {
     pub modifiers: Vec<MethodModifier>,
 }
@@ -1349,7 +1356,7 @@ pub enum ClassModifier {
     Readonly(Span),
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct ClassModifierGroup {
     pub modifiers: Vec<ClassModifier>,
 }
@@ -1797,6 +1804,7 @@ pub enum Variable {
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct SimpleVariable {
     pub symbol: Symbol,
+    pub stripped: Symbol,
     pub span: Span,
 }
 

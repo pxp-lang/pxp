@@ -6,6 +6,7 @@ use pxp_ast::*;
 use pxp_token::TokenKind;
 
 use super::data_type::data_type;
+use super::names;
 
 pub fn parse(state: &mut State) -> ConstantStatement {
     let comments = state.stream.comments();
@@ -14,7 +15,7 @@ pub fn parse(state: &mut State) -> ConstantStatement {
     let mut entries = vec![];
 
     loop {
-        let name = identifiers::constant_identifier(state);
+        let name = names::constant_identifier(state);
         let span = utils::skip(state, TokenKind::Equals);
         let value = expressions::create(state);
 
@@ -60,7 +61,7 @@ pub fn classish(state: &mut State, modifiers: ConstantModifierGroup) -> Classish
         let span = utils::skip(state, TokenKind::Equals);
         let value = expressions::create(state);
 
-        entries.push(ConstantEntry {
+        entries.push(ClassishConstantEntry {
             name,
             equals: span,
             value,

@@ -123,7 +123,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
 }
 
 /// Expect an unqualified identifier such as FOO or BAR for a constant name.
-pub fn constant_identifier(state: &mut State) -> SimpleIdentifier {
+pub fn constant_name(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();
     match &current.kind {
         TokenKind::Identifier

@@ -177,8 +177,9 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
             state.stream.next();
 
             let symbol = current.symbol.unwrap();
+            let resolved = state.strip_leading_namespace_qualifier(symbol);
 
-            Some(Type::Named(Name::resolved(symbol, symbol, current.span)))
+            Some(Type::Named(Name::resolved(resolved, symbol, current.span)))
         },
         TokenKind::QualifiedIdentifier => {
             state.stream.next();

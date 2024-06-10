@@ -555,6 +555,11 @@ ClassishMember:
   ConcreteConstructor: ConcreteConstructor
 
 ConstantEntry:
+  name: Name
+  equals: Span
+  value: Expression
+
+ClassishConstantEntry:
   name: SimpleIdentifier
   equals: Span
   value: Expression
@@ -571,7 +576,7 @@ ClassishConstant:
   modifiers: ConstantModifierGroup
   r#const: Span
   data_type: Option<DataType>
-  entries: Vec<ConstantEntry>
+  entries: Vec<ClassishConstantEntry>
   semicolon: Span
 
 IfStatement:
@@ -1001,6 +1006,7 @@ PromotedPropertyModifier:
   Readonly: Span
 
 PromotedPropertyModifierGroup:
+  derive: Default
   modifiers: Vec<PromotedPropertyModifier>
 
 PropertyModifier:
@@ -1012,6 +1018,7 @@ PropertyModifier:
   Readonly: Span
 
 PropertyModifierGroup:
+  derive: Default
   modifiers: Vec<PropertyModifier>
 
 MethodModifier:
@@ -1024,6 +1031,7 @@ MethodModifier:
   Final: Span
 
 MethodModifierGroup:
+  derive: Default
   modifiers: Vec<MethodModifier>
 
 ClassModifier:
@@ -1033,6 +1041,7 @@ ClassModifier:
   Readonly: Span
 
 ClassModifierGroup:
+  derive: Default
   modifiers: Vec<ClassModifier>
 
 ConstantModifier:
@@ -1387,6 +1396,7 @@ Variable:
 
 SimpleVariable:
   symbol: Symbol
+  stripped: Symbol
   span: Span
 
 VariableVariable:

@@ -84,6 +84,7 @@
                                                 },
                                                 name: SimpleVariable {
                                                     symbol: Symbol("$a"),
+                                                    stripped: Symbol("a"),
                                                     span: Span {
                                                         start: 36,
                                                         end: 38,
@@ -109,6 +110,7 @@
                                                 },
                                                 name: SimpleVariable {
                                                     symbol: Symbol("$b"),
+                                                    stripped: Symbol("b"),
                                                     span: Span {
                                                         start: 52,
                                                         end: 54,

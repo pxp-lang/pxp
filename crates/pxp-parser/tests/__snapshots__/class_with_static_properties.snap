@@ -65,6 +65,7 @@
                                     Uninitialized {
                                         variable: SimpleVariable {
                                             symbol: Symbol("$a"),
+                                            stripped: Symbol("a"),
                                             span: Span {
                                                 start: 30,
                                                 end: 32,
@@ -102,6 +103,7 @@
                                     Uninitialized {
                                         variable: SimpleVariable {
                                             symbol: Symbol("$b"),
+                                            stripped: Symbol("b"),
                                             span: Span {
                                                 start: 52,
                                                 end: 54,
@@ -139,6 +141,7 @@
                                     Uninitialized {
                                         variable: SimpleVariable {
                                             symbol: Symbol("$c"),
+                                            stripped: Symbol("c"),
                                             span: Span {
                                                 start: 77,
                                                 end: 79,
@@ -176,6 +179,7 @@
                                     Uninitialized {
                                         variable: SimpleVariable {
                                             symbol: Symbol("$d"),
+                                            stripped: Symbol("d"),
                                             span: Span {
                                                 start: 100,
                                                 end: 102,

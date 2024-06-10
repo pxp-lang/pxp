@@ -357,6 +357,10 @@ pub trait Visitor {
         walk_constant_entry(self, node);
     }
 
+    fn visit_classish_constant_entry(&mut self, node: &ClassishConstantEntry) {
+        walk_classish_constant_entry(self, node);
+    }
+
     fn visit_constant_statement(&mut self, node: &ConstantStatement) {
         walk_constant_statement(self, node);
     }

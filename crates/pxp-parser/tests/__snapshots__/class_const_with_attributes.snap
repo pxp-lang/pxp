@@ -65,10 +65,10 @@
                                                     end: 29,
                                                 },
                                                 name: Name {
-                                                    kind: Unresolved(
-                                                        UnresolvedName {
-                                                            symbol: Symbol("Baz"),
-                                                            qualification: Unqualified,
+                                                    kind: Resolved(
+                                                        ResolvedName {
+                                                            resolved: Symbol("Baz"),
+                                                            original: Symbol("Baz"),
                                                         },
                                                     ),
                                                     span: Span {
@@ -90,7 +90,7 @@
                                 },
                                 data_type: None,
                                 entries: [
-                                    ConstantEntry {
+                                    ClassishConstantEntry {
                                         name: SimpleIdentifier {
                                             symbol: Symbol("A"),
                                             span: Span {

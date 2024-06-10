@@ -62,7 +62,7 @@
                                 },
                                 data_type: None,
                                 entries: [
-                                    ConstantEntry {
+                                    ClassishConstantEntry {
                                         name: SimpleIdentifier {
                                             symbol: Symbol("A"),
                                             span: Span {
@@ -128,7 +128,7 @@
                                 },
                                 data_type: None,
                                 entries: [
-                                    ConstantEntry {
+                                    ClassishConstantEntry {
                                         name: SimpleIdentifier {
                                             symbol: Symbol("B"),
                                             span: Span {
@@ -194,7 +194,7 @@
                                 },
                                 data_type: None,
                                 entries: [
-                                    ConstantEntry {
+                                    ClassishConstantEntry {
                                         name: SimpleIdentifier {
                                             symbol: Symbol("C"),
                                             span: Span {
@@ -260,7 +260,7 @@
                                 },
                                 data_type: None,
                                 entries: [
-                                    ConstantEntry {
+                                    ClassishConstantEntry {
                                         name: SimpleIdentifier {
                                             symbol: Symbol("D"),
                                             span: Span {
@@ -319,7 +319,7 @@
                                 },
                                 data_type: None,
                                 entries: [
-                                    ConstantEntry {
+                                    ClassishConstantEntry {
                                         name: SimpleIdentifier {
                                             symbol: Symbol("E"),
                                             span: Span {

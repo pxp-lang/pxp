@@ -49,10 +49,10 @@
                         interfaces: CommaSeparated {
                             inner: [
                                 Name {
-                                    kind: Unresolved(
-                                        UnresolvedName {
-                                            symbol: Symbol("Bar"),
-                                            qualification: Unqualified,
+                                    kind: Resolved(
+                                        ResolvedName {
+                                            resolved: Symbol("Bar"),
+                                            original: Symbol("Bar"),
                                         },
                                     ),
                                     span: Span {

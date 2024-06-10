@@ -65,10 +65,10 @@
                                                     end: 25,
                                                 },
                                                 name: Name {
-                                                    kind: Unresolved(
-                                                        UnresolvedName {
-                                                            symbol: Symbol("B"),
-                                                            qualification: Unqualified,
+                                                    kind: Resolved(
+                                                        ResolvedName {
+                                                            resolved: Symbol("B"),
+                                                            original: Symbol("B"),
                                                         },
                                                     ),
                                                     span: Span {
@@ -92,10 +92,10 @@
                                                     end: 34,
                                                 },
                                                 name: Name {
-                                                    kind: Unresolved(
-                                                        UnresolvedName {
-                                                            symbol: Symbol("C"),
-                                                            qualification: Unqualified,
+                                                    kind: Resolved(
+                                                        ResolvedName {
+                                                            resolved: Symbol("C"),
+                                                            original: Symbol("C"),
                                                         },
                                                     ),
                                                     span: Span {
@@ -111,10 +111,10 @@
                                                     end: 46,
                                                 },
                                                 name: Name {
-                                                    kind: Unresolved(
-                                                        UnresolvedName {
-                                                            symbol: Symbol("D"),
-                                                            qualification: Unqualified,
+                                                    kind: Resolved(
+                                                        ResolvedName {
+                                                            resolved: Symbol("D"),
+                                                            original: Symbol("D"),
                                                         },
                                                     ),
                                                     span: Span {
