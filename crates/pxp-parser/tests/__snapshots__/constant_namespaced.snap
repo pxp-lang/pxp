@@ -1,0 +1,125 @@
+[
+    Statement {
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        kind: Namespace(
+            Unbraced(
+                UnbracedNamespace {
+                    start: Span {
+                        start: 7,
+                        end: 16,
+                    },
+                    name: Name {
+                        kind: Resolved(
+                            ResolvedName {
+                                resolved: Symbol("A"),
+                                original: Symbol("A"),
+                            },
+                        ),
+                        span: Span {
+                            start: 17,
+                            end: 18,
+                        },
+                    },
+                    end: Span {
+                        start: 18,
+                        end: 19,
+                    },
+                    statements: [
+                        Statement {
+                            kind: Constant(
+                                ConstantStatement {
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                    const: Span {
+                                        start: 21,
+                                        end: 26,
+                                    },
+                                    entries: [
+                                        ConstantEntry {
+                                            name: Name {
+                                                kind: Resolved(
+                                                    ResolvedName {
+                                                        resolved: Symbol("A\FOO"),
+                                                        original: Symbol("FOO"),
+                                                    },
+                                                ),
+                                                span: Span {
+                                                    start: 27,
+                                                    end: 30,
+                                                },
+                                            },
+                                            equals: Span {
+                                                start: 31,
+                                                end: 32,
+                                            },
+                                            value: Expression {
+                                                kind: Literal(
+                                                    Literal {
+                                                        kind: Integer,
+                                                        token: Token {
+                                                            kind: LiteralInteger,
+                                                            span: Span {
+                                                                start: 33,
+                                                                end: 34,
+                                                            },
+                                                            symbol: Some(
+                                                                Symbol("1"),
+                                                            ),
+                                                        },
+                                                    },
+                                                ),
+                                                span: Span {
+                                                    start: 33,
+                                                    end: 34,
+                                                },
+                                                comments: CommentGroup {
+                                                    comments: [],
+                                                },
+                                            },
+                                        },
+                                    ],
+                                    semicolon: Span {
+                                        start: 34,
+                                        end: 35,
+                                    },
+                                },
+                            ),
+                            span: Span {
+                                start: 21,
+                                end: 35,
+                            },
+                            comments: CommentGroup {
+                                comments: [],
+                            },
+                        },
+                    ],
+                },
+            ),
+        ),
+        span: Span {
+            start: 7,
+            end: 35,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---
