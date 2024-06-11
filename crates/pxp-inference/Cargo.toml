@@ -1,0 +1,8 @@
+[package]
+name = "pxp-inference"
+version = "0.1.0"
+edition = "2021"
+license-file.workspace = true
+rust-version.workspace = true
+
+[dependencies]
