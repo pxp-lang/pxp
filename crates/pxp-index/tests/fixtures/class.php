@@ -20,3 +20,11 @@ class Methods {
     private function d(): bool {}
     public static function e() {}
 }
+
+class Constants {
+    const A = 1;
+    public const int B = 2;
+    protected const string C = 3;
+    private const D = 4;
+    final const E = 5;
+}

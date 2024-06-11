@@ -95,6 +95,34 @@ fn it_indexes_classes() {
 
     let e = methods.get_method(name(b"e")).unwrap();
     assert!(e.is_static());
+
+    let constants = index.get_class(name(b"Constants")).unwrap();
+
+    assert!(constants.get_name() == name(b"Constants"));
+    assert!(constants.get_short_name() == name(b"Constants"));
+    assert!(constants.get_namespace() == None);
+    assert!(constants.is_class());
+
+    let constants = constants.get_constants().collect::<Vec<_>>();
+
+    assert!(constants.len() == 5);
+
+    assert!(constants[0].get_name() == name(b"A"));
+    assert!(constants[0].get_type() == &Type::Mixed);
+
+    assert!(constants[1].get_name() == name(b"B"));
+    assert!(constants[1].get_type() == &Type::Integer);
+    assert!(constants[1].is_public());
+
+    assert!(constants[2].get_name() == name(b"C"));
+    assert!(constants[2].get_type() == &Type::String);
+    assert!(constants[2].is_protected());
+
+    assert!(constants[3].get_name() == name(b"D"));
+    assert!(constants[3].is_private());
+
+    assert!(constants[4].get_name() == name(b"E"));
+    assert!(constants[4].is_final());
 }
 
 #[test]

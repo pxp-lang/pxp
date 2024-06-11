@@ -4,7 +4,7 @@ use pxp_type::Type;
 use pxp_visitor::{walk_backed_enum_statement, walk_braced_namespace, walk_class_statement, walk_unbraced_namespace, walk_unit_enum_statement, Visitor};
 use pxp_ast::{UnbracedNamespace, *};
 
-use crate::{class_like::{ClassKind, ClassLike, Method}, function::Function, parameter::Parameter, Index};
+use crate::{class_like::{ClassConstant, ClassKind, ClassLike, Method}, function::Function, parameter::Parameter, Index};
 
 #[derive(Debug, Clone)]
 pub struct Indexer {
@@ -247,6 +247,21 @@ impl Visitor for Indexer {
             let default = entry.is_initialized();
 
             self.context.class().properties.push(crate::class_like::Property { name, r#type: r#type.clone(), default, modifiers: modifiers.clone() });
+        }
+    }
+
+    fn visit_classish_constant(&mut self, node: &ClassishConstant) {
+        if !self.context.in_class() {
+            return;
+        }
+
+        let r#type = node.data_type.as_ref().map(|r| r.get_type()).unwrap_or_else(|| &Type::Mixed).clone();
+        let modifiers = node.modifiers.clone();
+
+        for entry in node.entries.iter() {
+            let name = entry.name.symbol;
+
+            self.context.class().constants.push(ClassConstant { name, r#type: r#type.clone(), modifiers: modifiers.clone() });
         }
     }
 }

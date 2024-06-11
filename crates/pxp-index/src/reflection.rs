@@ -4,7 +4,7 @@ use pxp_ast::Name;
 use pxp_symbol::Symbol;
 use pxp_type::Type;
 
-use crate::{class_like::{ClassKind, ClassLike, Method, Property}, constant::Constant, function::Function, parameter::Parameter, Index};
+use crate::{class_like::{ClassConstant, ClassKind, ClassLike, Method, Property}, constant::Constant, function::Function, parameter::Parameter, Index};
 
 #[derive(Clone)]
 pub struct ReflectionFunction<'a> {
@@ -167,6 +167,43 @@ impl<'a> ReflectionClass<'a> {
 
     pub fn get_cases(&self) -> impl Iterator<Item = ReflectionCase> + '_ {
         self.class.cases.iter().map(|case| ReflectionCase { r#enum: self, case: *case, index: self.index })
+    }
+
+    pub fn get_constants(&self) -> impl Iterator<Item = ReflectionClassConstant> + '_ {
+        self.class.constants.iter().map(|constant| ReflectionClassConstant { class: self, constant, index: self.index })
+    }
+}
+
+#[derive(Clone)]
+pub struct ReflectionClassConstant<'a> {
+    pub(crate) class: &'a ReflectionClass<'a>,
+    pub(crate) constant: &'a ClassConstant,
+    pub(crate) index: &'a Index,
+}
+
+impl<'a> ReflectionClassConstant<'a> {
+    pub fn get_name(&self) -> Symbol {
+        self.constant.name
+    }
+
+    pub fn get_type(&self) -> &Type<Name> {
+        &self.constant.r#type
+    }
+
+    pub fn is_public(&self) -> bool {
+        self.constant.modifiers.is_public()
+    }
+
+    pub fn is_protected(&self) -> bool {
+        self.constant.modifiers.is_protected()
+    }
+
+    pub fn is_private(&self) -> bool {
+        self.constant.modifiers.is_private()
+    }
+
+    pub fn is_final(&self) -> bool {
+        self.constant.modifiers.has_final()
     }
 }
 

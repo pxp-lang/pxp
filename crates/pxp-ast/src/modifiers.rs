@@ -245,6 +245,22 @@ impl ConstantModifierGroup {
             .any(|modifier| matches!(modifier, ConstantModifier::Private { .. }))
     }
 
+    pub fn is_private(&self) -> bool {
+        self.has_private()
+    }
+
+    pub fn is_protected(&self) -> bool {
+        self.modifiers
+            .iter()
+            .any(|modifier| matches!(modifier, ConstantModifier::Protected { .. }))
+    }
+
+    pub fn is_public(&self) -> bool {
+        self.modifiers
+            .iter()
+            .any(|modifier| matches!(modifier, ConstantModifier::Public { .. }))
+    }
+
     pub fn visibility(&self) -> Visibility {
         self.modifiers
             .iter()
