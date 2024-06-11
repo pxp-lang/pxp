@@ -27,3 +27,8 @@ bench-lexer:
         --command-name="PHP (Core)" "php ./benches/lexing/php.php ./playground/laravel-framework" \
         --command-name="PHP (Core + Opcache)" "php -d opcache.enable_cli=1 ./benches/lexing/php.php ./playground/laravel-framework" \
         --command-name="PXP (Release)" "./target/release/tokenise ./playground/laravel-framework --no-output"
+
+bench-indexer:
+    cargo build --release --bin index
+    hyperfine --warmup=1 --runs=1 \
+        --command-name="Indexer (Release)" "./target/release/index ./playground/laravel-framework --no-output"
