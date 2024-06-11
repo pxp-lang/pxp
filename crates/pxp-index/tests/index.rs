@@ -126,6 +126,68 @@ fn it_indexes_classes() {
 }
 
 #[test]
+fn it_indexes_interfaces() {
+    let index = index();
+
+    let i = index.get_class(name(b"I")).unwrap();
+
+    assert!(i.get_name() == name(b"I"));
+    assert!(i.get_short_name() == name(b"I"));
+    assert!(i.get_namespace() == None);
+    assert!(i.is_interface());
+
+    let j = index.get_class(name(b"J")).unwrap();
+
+    assert!(j.get_name() == name(b"J"));
+    assert!(j.get_short_name() == name(b"J"));
+    assert!(j.get_namespace() == None);
+    assert!(j.is_interface());
+
+    let k = index.get_class(name(b"K")).unwrap();
+
+    assert!(k.get_name() == name(b"K"));
+    assert!(k.get_short_name() == name(b"K"));
+    assert!(k.get_namespace() == None);
+    assert!(k.is_interface());
+
+    let k_interfaces = k.get_interfaces().collect::<Vec<_>>();
+
+    assert!(k_interfaces.len() == 2);
+    assert!(k_interfaces[0].get_name() == name(b"I"));
+    assert!(k_interfaces[1].get_name() == name(b"J"));
+
+    let l = index.get_class(name(b"L")).unwrap();
+
+    assert!(l.get_name() == name(b"L"));
+    assert!(l.get_short_name() == name(b"L"));
+    assert!(l.get_namespace() == None);
+    assert!(l.is_interface());
+
+    let l_constants = l.get_constants().collect::<Vec<_>>();
+
+    assert!(l_constants.len() == 1);
+    assert!(l_constants[0].get_name() == name(b"A"));
+
+    let l_methods = l.get_methods().collect::<Vec<_>>();
+
+    assert!(l_methods.len() == 3);
+
+    let a = l.get_method(name(b"a")).unwrap();
+    assert!(a.is_public());
+    assert!(a.get_return_type() == &Type::Mixed);
+
+    let b = l.get_method(name(b"b")).unwrap();
+    assert!(b.is_public());
+    assert!(b.get_return_type() == &Type::String);
+
+    let c = l.get_method(name(b"c")).unwrap();
+
+    assert!(c.get_return_type() == &Type::Mixed);
+    assert!(c.is_static());
+    assert!(c.is_abstract());
+}
+
+#[test]
 fn it_indexes_functions() {
     let index = index();
 

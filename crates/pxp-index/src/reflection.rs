@@ -300,6 +300,10 @@ impl<'a> ReflectionMethod<'a> {
         self.method.modifiers.is_private()
     }
 
+    pub fn is_abstract(&self) -> bool {
+        self.method.r#abstract || self.method.modifiers.has_abstract()
+    }
+
     pub fn get_return_type(&self) -> &Type<Name> {
         &self.method.return_type
     }

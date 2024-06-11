@@ -1,7 +1,7 @@
 use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
-use pxp_visitor::{walk_backed_enum_statement, walk_braced_namespace, walk_class_statement, walk_unbraced_namespace, walk_unit_enum_statement, Visitor};
+use pxp_visitor::{walk_backed_enum_statement, walk_braced_namespace, walk_class_statement, walk_interface_statement, walk_unbraced_namespace, walk_unit_enum_statement, Visitor};
 use pxp_ast::{UnbracedNamespace, *};
 
 use crate::{class_like::{ClassConstant, ClassKind, ClassLike, Method}, function::Function, parameter::Parameter, Index};
@@ -263,5 +263,20 @@ impl Visitor for Indexer {
 
             self.context.class().constants.push(ClassConstant { name, r#type: r#type.clone(), modifiers: modifiers.clone() });
         }
+    }
+
+    fn visit_interface_statement(&mut self, node: &InterfaceStatement) {
+        let name = node.name.as_resolved().unwrap();
+
+        let mut class = ClassLike::new(name.resolved, name.original, self.context.namespace(), ClassKind::Interface);
+        class.interfaces = node.extends.as_ref().map(|i| i.parents.inner.iter().map(|i| i.as_resolved().unwrap().resolved).collect::<Vec<_>>()).unwrap_or_else(|| Vec::new());
+
+        self.context.set_class(class);
+        walk_interface_statement(self, node);
+        
+        let class = self.context.class.as_ref().unwrap().clone();
+
+        self.index.add_class(class);
+        self.context.class = None;
     }
 }
