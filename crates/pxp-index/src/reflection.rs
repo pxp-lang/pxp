@@ -97,6 +97,18 @@ impl<'a> ReflectionClass<'a> {
         self.class.properties.iter().find(|property| property.name == name).map(|property| ReflectionProperty { class: self, property, index: self.index })
     }
 
+    pub fn get_public_properties(&self) -> impl Iterator<Item = ReflectionProperty> + '_ {
+        self.get_properties().filter(|property| property.is_public())
+    }
+
+    pub fn get_protected_properties(&self) -> impl Iterator<Item = ReflectionProperty> + '_ {
+        self.get_properties().filter(|property| property.is_protected())
+    }
+
+    pub fn get_private_properties(&self) -> impl Iterator<Item = ReflectionProperty> + '_ {
+        self.get_properties().filter(|property| property.is_private())
+    }
+
     pub fn get_name(&self) -> Symbol {
         self.class.name
     }
@@ -123,6 +135,18 @@ impl<'a> ReflectionClass<'a> {
 
     pub fn get_method(&self, name: Symbol) -> Option<ReflectionMethod> {
         self.class.methods.iter().find(|method| method.name == name).map(|method| ReflectionMethod { class: self, method, index: self.index })
+    }
+
+    pub fn get_public_methods(&self) -> impl Iterator<Item = ReflectionMethod> + '_ {
+        self.get_methods().filter(|method| method.is_public())
+    }
+
+    pub fn get_protected_methods(&self) -> impl Iterator<Item = ReflectionMethod> + '_ {
+        self.get_methods().filter(|method| method.is_protected())
+    }
+
+    pub fn get_private_methods(&self) -> impl Iterator<Item = ReflectionMethod> + '_ {
+        self.get_methods().filter(|method| method.is_private())
     }
 }
 
