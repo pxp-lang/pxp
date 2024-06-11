@@ -4,7 +4,7 @@ use pxp_type::Type;
 use pxp_visitor::{walk_braced_namespace, walk_class_statement, walk_unbraced_namespace, Visitor};
 use pxp_ast::{UnbracedNamespace, *};
 
-use crate::{class_like::{ClassLike, Method}, function::Function, parameter::Parameter, Index};
+use crate::{class_like::{ClassKind, ClassLike, Method}, function::Function, parameter::Parameter, Index};
 
 #[derive(Debug, Clone)]
 pub struct Indexer {
@@ -104,7 +104,7 @@ impl Visitor for Indexer {
     fn visit_class_statement(&mut self, node: &ClassStatement) {
         let name = node.name.as_resolved().unwrap();
 
-        let mut class = ClassLike::new(name.resolved, name.original, self.context.namespace());
+        let mut class = ClassLike::new(name.resolved, name.original, self.context.namespace(), ClassKind::Class);
         class.parent = node.extends.as_ref().map(|e| e.parent.as_resolved().unwrap().resolved);
         class.interfaces = node.implements.as_ref().map(|i| i.interfaces.iter().map(|i| i.as_resolved().unwrap().resolved).collect::<Vec<_>>()).unwrap_or_else(|| Vec::new());
 

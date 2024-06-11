@@ -14,14 +14,25 @@ pub struct ClassLike {
     pub properties: Vec<Property>,
     pub methods: Vec<Method>,
     pub modifiers: ClassModifierGroup,
+    pub kind: ClassKind,
+}
+
+#[derive(Debug, Clone, Default, Copy)]
+pub(crate) enum ClassKind {
+    #[default]
+    Class,
+    Interface,
+    r#Trait,
+    Enum,
 }
 
 impl ClassLike {
-    pub fn new(name: Symbol, short: Symbol, namespace: Option<Symbol>) -> Self {
+    pub fn new(name: Symbol, short: Symbol, namespace: Option<Symbol>, kind: ClassKind) -> Self {
         ClassLike {
             name,
             short,
             namespace,
+            kind,
             ..Default::default()
         }
     }
