@@ -17,6 +17,7 @@ A suite of high-performance tools for PHP developers. Written in Rust, designed 
 * [ ] Better Language Server w/ all of above
 * [ ] Framework-specific Support – Laravel models, config, views, etc
 * [ ] Multi-threaded Support
+* [ ] Codemod API
 
 ## Contributing
 
