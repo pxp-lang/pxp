@@ -894,7 +894,7 @@ pub fn walk_unit_enum_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &Uni
     }
     visitor.visit_name(&node.name);
     for item in &node.implements {
-        visitor.visit_simple_identifier(item);
+        visitor.visit_name(item);
     }
     visitor.visit_unit_enum_body(&node.body);
 }
@@ -929,7 +929,7 @@ pub fn walk_backed_enum_statement<V: Visitor + ?Sized>(
     }
     visitor.visit_name(&node.name);
     for item in &node.implements {
-        visitor.visit_simple_identifier(item);
+        visitor.visit_name(item);
     }
     visitor.visit_backed_enum_body(&node.body);
 }

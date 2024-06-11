@@ -901,7 +901,7 @@ pub struct UnitEnumStatement {
     pub attributes: Vec<AttributeGroup>,
     pub r#enum: Span,
     pub name: Name,
-    pub implements: Vec<SimpleIdentifier>,
+    pub implements: Vec<Name>,
     pub body: UnitEnumBody,
 }
 
@@ -934,7 +934,7 @@ pub struct BackedEnumStatement {
     pub r#enum: Span,
     pub name: Name,
     pub backed_type: BackedEnumType,
-    pub implements: Vec<SimpleIdentifier>,
+    pub implements: Vec<Name>,
     pub body: BackedEnumBody,
 }
 

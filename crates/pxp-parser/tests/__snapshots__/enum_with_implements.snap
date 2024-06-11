@@ -37,8 +37,13 @@
                     },
                 },
                 implements: [
-                    SimpleIdentifier {
-                        symbol: Symbol("Bar"),
+                    Name {
+                        kind: Resolved(
+                            ResolvedName {
+                                resolved: Symbol("Bar"),
+                                original: Symbol("Bar"),
+                            },
+                        ),
                         span: Span {
                             start: 27,
                             end: 30,

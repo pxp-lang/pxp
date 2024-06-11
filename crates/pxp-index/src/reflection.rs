@@ -4,7 +4,7 @@ use pxp_ast::Name;
 use pxp_symbol::Symbol;
 use pxp_type::Type;
 
-use crate::{class_like::{ClassLike, Method, Property}, constant::Constant, function::Function, parameter::Parameter, Index};
+use crate::{class_like::{ClassKind, ClassLike, Method, Property}, constant::Constant, function::Function, parameter::Parameter, Index};
 
 #[derive(Clone)]
 pub struct ReflectionFunction<'a> {
@@ -89,6 +89,22 @@ impl<'a> ReflectionClass<'a> {
         self.class.modifiers.has_readonly()
     }
 
+    pub fn is_enum(&self) -> bool {
+        self.class.kind == ClassKind::Enum
+    }
+
+    pub fn is_class(&self) -> bool {
+        self.class.kind == ClassKind::Class
+    }
+
+    pub fn is_interface(&self) -> bool {
+        self.class.kind == ClassKind::Interface
+    }
+
+    pub fn is_trait(&self) -> bool {
+        self.class.kind == ClassKind::Trait
+    }
+
     pub fn get_properties(&'a self) -> impl Iterator<Item = ReflectionProperty> + 'a {
         self.class.properties.iter().map(|property| ReflectionProperty { class: self, property, index: self.index })
     }
@@ -147,6 +163,23 @@ impl<'a> ReflectionClass<'a> {
 
     pub fn get_private_methods(&self) -> impl Iterator<Item = ReflectionMethod> + '_ {
         self.get_methods().filter(|method| method.is_private())
+    }
+
+    pub fn get_cases(&self) -> impl Iterator<Item = ReflectionCase> + '_ {
+        self.class.cases.iter().map(|case| ReflectionCase { r#enum: self, case: *case, index: self.index })
+    }
+}
+
+#[derive(Clone, Copy)]
+pub struct ReflectionCase<'a> {
+    pub(crate) r#enum: &'a ReflectionClass<'a>,
+    pub(crate) case: Symbol,
+    pub(crate) index: &'a Index,
+}
+
+impl<'a> ReflectionCase<'a> {
+    pub fn get_name(&self) -> Symbol {
+        self.case
     }
 }
 
@@ -232,6 +265,10 @@ impl<'a> ReflectionMethod<'a> {
 
     pub fn get_return_type(&self) -> &Type<Name> {
         &self.method.return_type
+    }
+
+    pub fn get_name(&self) -> Symbol {
+        self.method.name
     }
 }
 

@@ -80,7 +80,7 @@ pub fn parse(state: &mut State) -> StatementKind {
         state.stream.next();
 
         while state.stream.current().kind != TokenKind::LeftBrace {
-            implements.push(identifiers::full_type_name(state));
+            implements.push(names::full_name(state, UseKind::Normal));
 
             if state.stream.current().kind == TokenKind::Comma {
                 state.stream.next();

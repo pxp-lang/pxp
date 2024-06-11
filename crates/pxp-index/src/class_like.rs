@@ -13,16 +13,17 @@ pub struct ClassLike {
     pub interfaces: Vec<Symbol>,
     pub properties: Vec<Property>,
     pub methods: Vec<Method>,
+    pub cases: Vec<Symbol>,
     pub modifiers: ClassModifierGroup,
     pub kind: ClassKind,
 }
 
-#[derive(Debug, Clone, Default, Copy)]
+#[derive(Debug, Clone, Default, Copy, PartialEq, Eq)]
 pub(crate) enum ClassKind {
     #[default]
     Class,
     Interface,
-    r#Trait,
+    Trait,
     Enum,
 }
 

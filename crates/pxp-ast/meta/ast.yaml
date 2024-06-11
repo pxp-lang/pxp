@@ -679,7 +679,7 @@ UnitEnumStatement:
   attributes: Vec<AttributeGroup>
   r#enum: Span
   name: Name
-  implements: Vec<SimpleIdentifier>
+  implements: Vec<Name>
   body: UnitEnumBody
 
 BackedEnumCase:
@@ -705,7 +705,7 @@ BackedEnumStatement:
   r#enum: Span
   name: Name
   backed_type: BackedEnumType
-  implements: Vec<SimpleIdentifier>
+  implements: Vec<Name>
   body: BackedEnumBody
 
 ReturnType:

@@ -1,7 +1,7 @@
 use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
-use pxp_visitor::{walk_braced_namespace, walk_class_statement, walk_unbraced_namespace, Visitor};
+use pxp_visitor::{walk_backed_enum_statement, walk_braced_namespace, walk_class_statement, walk_unbraced_namespace, walk_unit_enum_statement, Visitor};
 use pxp_ast::{UnbracedNamespace, *};
 
 use crate::{class_like::{ClassKind, ClassLike, Method}, function::Function, parameter::Parameter, Index};
@@ -107,6 +107,7 @@ impl Visitor for Indexer {
         let mut class = ClassLike::new(name.resolved, name.original, self.context.namespace(), ClassKind::Class);
         class.parent = node.extends.as_ref().map(|e| e.parent.as_resolved().unwrap().resolved);
         class.interfaces = node.implements.as_ref().map(|i| i.interfaces.iter().map(|i| i.as_resolved().unwrap().resolved).collect::<Vec<_>>()).unwrap_or_else(|| Vec::new());
+        class.modifiers = node.modifiers.clone();
 
         self.context.set_class(class);
         walk_class_statement(self, node);
@@ -115,6 +116,54 @@ impl Visitor for Indexer {
 
         self.index.add_class(class);
         self.context.class = None;
+    }
+
+    fn visit_unit_enum_statement(&mut self, node: &UnitEnumStatement) {
+        let name = node.name.as_resolved().unwrap();
+
+        let mut class = ClassLike::new(name.resolved, name.original, self.context.namespace(), ClassKind::Enum);
+        class.interfaces = node.implements.iter().map(|i| i.as_resolved().unwrap().resolved).collect::<Vec<_>>();
+
+        self.context.set_class(class);
+        walk_unit_enum_statement(self, node);
+        
+        let class = self.context.class.as_ref().unwrap().clone();
+
+        self.index.add_class(class);
+        self.context.class = None;
+    }
+
+    fn visit_unit_enum_case(&mut self, node: &UnitEnumCase) {
+        if !self.context.in_class() {
+            return;
+        }
+
+        self.context.class().cases.push(node.name.symbol);
+    }
+
+    fn visit_backed_enum_statement(&mut self, node: &BackedEnumStatement) {
+        let name = node.name.as_resolved().unwrap();
+
+        let mut class = ClassLike::new(name.resolved, name.original, self.context.namespace(), ClassKind::Enum);
+        class.interfaces = node.implements.iter().map(|i| i.as_resolved().unwrap().resolved).collect::<Vec<_>>();
+
+        self.context.set_class(class);
+        walk_backed_enum_statement(self, node);
+        
+        let class = self.context.class.as_ref().unwrap().clone();
+
+        self.index.add_class(class);
+        self.context.class = None;
+    }
+
+    fn visit_backed_enum_case(&mut self, node: &BackedEnumCase) {
+        if !self.context.in_class() {
+            return;
+        }
+
+        let name = node.name.symbol;
+
+        self.context.class().cases.push(name);
     }
 
     fn visit_concrete_method(&mut self, node: &ConcreteMethod) {

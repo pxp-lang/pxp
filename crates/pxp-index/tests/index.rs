@@ -134,6 +134,61 @@ fn it_indexes_functions() {
     assert!(b.get_namespace() == Some(name(b"A")));
 }
 
+#[test]
+fn it_indexes_enums() {
+    let index = index();
+
+    let role = index.get_class(name(b"Role")).unwrap();
+
+    assert!(role.get_name() == name(b"Role"));
+    assert!(role.get_short_name() == name(b"Role"));
+    assert!(role.get_namespace() == None);
+    assert!(role.is_enum());
+
+    let cases = role.get_cases().collect::<Vec<_>>();
+
+    assert!(cases.len() == 2);
+    assert!(cases[0].get_name() == name(b"Admin"));
+    assert!(cases[1].get_name() == name(b"User"));
+
+    let status = index.get_class(name(b"Status")).unwrap();
+
+    assert!(status.get_name() == name(b"Status"));
+    assert!(status.get_short_name() == name(b"Status"));
+    assert!(status.get_namespace() == None);
+    assert!(status.is_enum());
+
+    let cases = status.get_cases().collect::<Vec<_>>();
+
+    assert!(cases.len() == 2);
+    assert!(cases[0].get_name() == name(b"Active"));
+    assert!(cases[1].get_name() == name(b"Inactive"));
+
+    let color = index.get_class(name(b"Color")).unwrap();
+
+    assert!(color.get_name() == name(b"Color"));
+    assert!(color.get_short_name() == name(b"Color"));
+    assert!(color.get_namespace() == None);
+    assert!(color.is_enum());
+
+    let cases = color.get_cases().collect::<Vec<_>>();
+
+    assert!(cases.len() == 3);
+    assert!(cases[0].get_name() == name(b"Red"));
+    assert!(cases[1].get_name() == name(b"Green"));
+    assert!(cases[2].get_name() == name(b"Blue"));
+
+    let methods = color.get_methods().collect::<Vec<_>>();
+
+    assert!(methods.len() == 1);
+    
+    let get_hex = &methods[0];
+
+    assert!(get_hex.get_name() == name(b"getHex"));
+    assert!(get_hex.get_return_type() == &Type::String);
+    assert!(get_hex.is_public());
+}
+
 fn name(name: &[u8]) -> Symbol {
     SymbolTable::the().intern(name)
 }
