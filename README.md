@@ -6,7 +6,7 @@ A suite of high-performance tools for PHP developers. Written in Rust, designed 
 
 * [x] Lexer, Tolerant Parser & Syntax Tree
 * [x] Visitor API
-* [ ] Simple Indexer
+* [x] Simple Indexer
 * [ ] Simple Type Inference
 * [ ] Simple Formatter
 * [ ] Language Server w/ Completions, Go-to, Hover
