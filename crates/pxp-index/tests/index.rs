@@ -188,6 +188,70 @@ fn it_indexes_interfaces() {
 }
 
 #[test]
+fn it_indexes_traits() {
+    let index = index();
+
+    let trait_a = index.get_class(name(b"TraitA")).unwrap();
+
+    assert!(trait_a.get_name() == name(b"TraitA"));
+    assert!(trait_a.get_short_name() == name(b"TraitA"));
+    assert!(trait_a.get_namespace() == None);
+    assert!(trait_a.is_trait());
+
+    let trait_b = index.get_class(name(b"TraitB")).unwrap();
+
+    assert!(trait_b.get_name() == name(b"TraitB"));
+    assert!(trait_b.get_short_name() == name(b"TraitB"));
+    assert!(trait_b.get_namespace() == None);
+    assert!(trait_b.is_trait());
+
+    let trait_c = index.get_class(name(b"TraitC")).unwrap();
+
+    assert!(trait_c.get_name() == name(b"TraitC"));
+    assert!(trait_c.get_short_name() == name(b"TraitC"));
+    assert!(trait_c.get_namespace() == None);
+    assert!(trait_c.is_trait());
+
+    let trait_c_traits = trait_c.get_traits().collect::<Vec<_>>();
+
+    assert!(trait_c_traits.len() == 2);
+    assert!(trait_c_traits[0].get_name() == name(b"TraitA"));
+    assert!(trait_c_traits[1].get_name() == name(b"TraitB"));
+
+    let trait_d = index.get_class(name(b"TraitD")).unwrap();
+
+    assert!(trait_d.get_name() == name(b"TraitD"));
+    assert!(trait_d.get_short_name() == name(b"TraitD"));
+    assert!(trait_d.get_namespace() == None);
+    assert!(trait_d.is_trait());
+
+    let trait_d_constants = trait_d.get_constants().collect::<Vec<_>>();
+
+    assert!(trait_d_constants.len() == 1);
+    assert!(trait_d_constants[0].get_name() == name(b"A"));
+
+    let trait_d_methods = trait_d.get_methods().collect::<Vec<_>>();
+
+    assert!(trait_d_methods.len() == 4);
+
+    let a = trait_d.get_method(name(b"a")).unwrap();
+    assert!(a.is_public());
+    assert!(a.get_return_type() == &Type::Mixed);
+
+    let b = trait_d.get_method(name(b"b")).unwrap();
+    assert!(b.is_public());
+    assert!(b.get_return_type() == &Type::String);
+
+    let c = trait_d.get_method(name(b"c")).unwrap();
+    assert!(c.is_protected());
+    assert!(c.is_static());
+
+    let d = trait_d.get_method(name(b"d")).unwrap();
+    assert!(d.is_private());
+    assert!(d.is_abstract());
+}
+
+#[test]
 fn it_indexes_functions() {
     let index = index();
 

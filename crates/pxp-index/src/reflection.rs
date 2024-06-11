@@ -145,6 +145,10 @@ impl<'a> ReflectionClass<'a> {
         self.class.interfaces.iter().map(move |interface| self.index.get_class(*interface)).flatten()
     }
 
+    pub fn get_traits(&self) -> impl Iterator<Item = ReflectionClass> + '_ {
+        self.class.traits.iter().map(move |r#trait| self.index.get_class(*r#trait)).flatten()
+    }
+
     pub fn get_methods(&'a self) -> impl Iterator<Item = ReflectionMethod> + 'a {
         self.class.methods.iter().map(|method| ReflectionMethod { class: self, method, index: self.index })
     }

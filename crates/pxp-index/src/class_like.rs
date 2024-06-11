@@ -11,6 +11,7 @@ pub struct ClassLike {
     pub namespace: Option<Symbol>,
     pub parent: Option<Symbol>,
     pub interfaces: Vec<Symbol>,
+    pub traits: Vec<Symbol>,
     pub properties: Vec<Property>,
     pub methods: Vec<Method>,
     pub cases: Vec<Symbol>,

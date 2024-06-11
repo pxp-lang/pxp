@@ -1,7 +1,7 @@
 use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
-use pxp_visitor::{walk_backed_enum_statement, walk_braced_namespace, walk_class_statement, walk_interface_statement, walk_unbraced_namespace, walk_unit_enum_statement, Visitor};
+use pxp_visitor::{walk_backed_enum_statement, walk_braced_namespace, walk_class_statement, walk_interface_statement, walk_trait_statement, walk_unbraced_namespace, walk_unit_enum_statement, Visitor};
 use pxp_ast::{UnbracedNamespace, *};
 
 use crate::{class_like::{ClassConstant, ClassKind, ClassLike, Method}, function::Function, parameter::Parameter, Index};
@@ -278,5 +278,31 @@ impl Visitor for Indexer {
 
         self.index.add_class(class);
         self.context.class = None;
+    }
+
+    fn visit_trait_statement(&mut self, node: &TraitStatement) {
+        let name = node.name.as_resolved().unwrap();
+
+        let class = ClassLike::new(name.resolved, name.original, self.context.namespace(), ClassKind::Trait);
+
+        self.context.set_class(class);
+        walk_trait_statement(self, node);
+        
+        let class = self.context.class.as_ref().unwrap().clone();
+
+        self.index.add_class(class);
+        self.context.class = None;
+    }
+
+    fn visit_trait_usage(&mut self, node: &TraitUsage) {
+        if !self.context.in_class() {
+            return;
+        }
+
+        for entry in node.traits.iter() {
+            let name = entry.as_resolved().unwrap().resolved;
+
+            self.context.class().traits.push(name);
+        }
     }
 }
