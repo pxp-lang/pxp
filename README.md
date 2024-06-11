@@ -1,22 +1,22 @@
 ![](/art/hero.png)
 
-The canonical repository for development of PXP and surrounding tools.
+A suite of high-performance tools for PHP developers. Written in Rust, designed for performance and reliability.
 
-PXP is not just a superset of PHP but a full suite of high performance tools for PHP developers written in Rust.
+## Roadmap
 
-## Overview
-
-The project is separated into smaller easy to maintain, and easy to consume crates. The more important ones are listed below:
-
-* [AST](/crates/pxp-ast/)
-* [Lexer](/crates/pxp-lexer/)
-* [Parser](/crates/pxp-parser/)
-* [Syntax](/crates/pxp-syntax/)
-* [Token](/crates/pxp-token/)
-* [Type](/crates/pxp-type/)
-* [Visitor](/crates/pxp-visitor/)
-
-To find out more information about a particular crate, click one of the links above and read through the crate's own README.
+* [x] Lexer, Tolerant Parser & Syntax Tree
+* [x] Visitor API
+* [ ] Simple Indexer
+* [ ] Simple Type Inference
+* [ ] Simple Formatter
+* [ ] Language Server w/ Completions, Go-to, Hover
+* [ ] Type Checker
+* [ ] PHPDoc Parser
+* [ ] Better Indexer w/ virtual methods & properties
+* [ ] Better Type Inference w/ virtual methods & properties, generics, etc
+* [ ] Better Language Server w/ all of above
+* [ ] Framework-specific Support – Laravel models, config, views, etc
+* [ ] Multi-threaded Support
 
 ## Contributing
 
