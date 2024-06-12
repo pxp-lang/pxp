@@ -29,3 +29,38 @@ pub type ByteOffset = usize;
 pub trait Spanned {
     fn span(&self) -> Span;
 }
+
+impl Spanned for Span {
+    fn span(&self) -> Span {
+        *self
+    }
+}
+
+impl<T: Spanned> Spanned for &T {
+    fn span(&self) -> Span {
+        (*self).span()
+    }
+}
+
+impl<T: Spanned> Spanned for Box<T> {
+    fn span(&self) -> Span {
+        self.as_ref().span()
+    }
+}
+
+impl<T: Spanned> Spanned for Vec<T> {
+    fn span(&self) -> Span {
+        if let Some(first) = self.first() {
+            let last = self.last().unwrap();
+            Span::new(first.span().start, last.span().end)
+        } else {
+            Span::default()
+        }
+    }
+}
+
+impl<T: Spanned> Spanned for Option<T> {
+    fn span(&self) -> Span {
+        self.as_ref().map_or(Span::default(), |t| t.span())
+    }
+}
