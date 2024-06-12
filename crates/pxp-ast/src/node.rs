@@ -1,7 +1,5 @@
 use std::any::{Any, TypeId};
 
-use pxp_span::Span;
-
 use crate::utils::CommaSeparated;
 
 pub trait Node: Any {
@@ -9,10 +7,6 @@ pub trait Node: Any {
 
     fn children(&self) -> Vec<&dyn Node> {
         Vec::new()
-    }
-
-    fn span(&self) -> Span {
-        Span::default()
     }
 }
 
@@ -35,18 +29,6 @@ impl<T: Node> Node for Vec<T> {
     fn children(&self) -> Vec<&dyn Node> {
         self.iter().map(|n| n as &dyn Node).collect()
     }
-
-    fn span(&self) -> Span {
-        if let Some(first) = self.first() {
-            if let Some(last) = self.last() {
-                Span::new(first.span().start, last.span().end)
-            } else {
-                first.span()
-            }
-        } else {
-            Span::default()
-        }
-    }
 }
 
 impl<T: Node> Node for Option<T> {
@@ -60,14 +42,6 @@ impl<T: Node> Node for Option<T> {
             None => Vec::new(),
         }
     }
-
-    fn span(&self) -> Span {
-        if let Some(n) = self {
-            n.span()
-        } else {
-            Span::default()
-        }
-    }
 }
 
 impl<T: Node> Node for Box<T> {
@@ -78,10 +52,6 @@ impl<T: Node> Node for Box<T> {
     fn children(&self) -> Vec<&dyn Node> {
         vec![self.as_ref() as &dyn Node]
     }
-
-    fn span(&self) -> Span {
-        self.as_ref().span()
-    }
 }
 
 impl<T: Node> Node for CommaSeparated<T> {
@@ -91,17 +61,5 @@ impl<T: Node> Node for CommaSeparated<T> {
 
     fn children(&self) -> Vec<&dyn Node> {
         self.inner.iter().map(|n| n as &dyn Node).collect()
-    }
-
-    fn span(&self) -> Span {
-        if let Some(first) = self.inner.first() {
-            if let Some(last) = self.inner.last() {
-                Span::new(first.span().start, last.span().end)
-            } else {
-                first.span()
-            }
-        } else {
-            Span::default()
-        }
     }
 }
