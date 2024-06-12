@@ -2,6 +2,7 @@ use std::slice::Iter;
 use std::slice::IterMut;
 
 use pxp_span::Span;
+use pxp_span::Spanned;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -34,5 +35,16 @@ impl<T> IntoIterator for CommaSeparated<T> {
 
     fn into_iter(self) -> Self::IntoIter {
         self.inner.into_iter()
+    }
+}
+
+impl<T: Spanned> Spanned for CommaSeparated<T> {
+    fn span(&self) -> Span {
+        if let Some(first) = self.inner.first() {
+            let last = self.inner.last().unwrap();
+            Span::new(first.span().start, last.span().end)
+        } else {
+            Span::default()
+        }
     }
 }
