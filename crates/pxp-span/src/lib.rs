@@ -18,6 +18,10 @@ impl Span {
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
+
+    pub fn contains(&self, offset: ByteOffset) -> bool {
+        self.start <= offset && offset <= self.end
+    }
 }
 
 pub type ByteOffset = usize;
