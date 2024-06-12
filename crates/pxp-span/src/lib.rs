@@ -22,6 +22,13 @@ impl Span {
     pub fn contains(&self, offset: ByteOffset) -> bool {
         self.start <= offset && offset <= self.end
     }
+
+    pub fn merge(&self, other: &Self) -> Self {
+        Self {
+            start: self.start.min(other.start),
+            end: self.end.max(other.end),
+        }
+    }
 }
 
 pub type ByteOffset = usize;
