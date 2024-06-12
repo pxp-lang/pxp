@@ -6,3 +6,4 @@ license-file.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+pxp-type = { version = "0.1.0", path = "../pxp-type" }

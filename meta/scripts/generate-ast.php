@@ -10,6 +10,7 @@ $output = <<<'RUST'
 // Do not make modifications to this file directly.
 
 use crate::utils::CommaSeparated;
+use crate::Node;
 use pxp_syntax::comments::{CommentGroup, Comment};
 use pxp_type::Type;
 use pxp_token::Token;
@@ -22,6 +23,10 @@ use pxp_syntax::name::NameQualification;
 RUST;
 
 $reserved = ['as', 'derive'];
+
+function is_node(string $type): bool {
+    return !in_array($type, ['Span', 'Option<Span>', 'Token', 'Option<Token>', 'Symbol', 'Type', 'Type<Name>', 'Comment', 'CommentGroup', 'BackedEnumType', 'NameQualification', 'bool'], true);
+}
 
 foreach ($ast as $node => $structure) {
     if (is_string($structure)) {
@@ -75,6 +80,39 @@ foreach ($ast as $node => $structure) {
             $output .= "    pub {$field}: {$type},\n";
         }
     }
+
+    $output .= "}\n\n";
+
+    // Node trait implementation.
+    $output .= "impl Node for {$node} {\n";
+
+    // Node::name()
+    $output .= "    fn name(&self) -> &'static str {\n";
+    $output .= "        \"{$node}\"\n";
+    $output .= "    }\n\n";
+
+    // Node::children()
+    $output .= "    fn children(&self) -> Vec<&dyn Node> {\n";
+
+    if ($enum) {
+        $output .= "        Vec::new()";
+    } else {
+        $output .= "        vec![\n";
+
+        foreach ($structure as $field => $type) {
+            if (in_array($field, $reserved, true)) {
+                continue;
+            }
+
+            if (is_node($type)) {
+                $output .= "            &self.{$field},\n";
+            }
+        }
+
+        $output .= "        ]";
+    }
+
+    $output .= "    }\n";
 
     $output .= "}\n\n";
 }

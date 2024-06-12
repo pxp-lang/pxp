@@ -1,11 +1,15 @@
 use std::fmt::{Display, Formatter};
 
 mod generated;
+mod node;
 
 pub use generated::*;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
+
+pub use node::downcast;
+pub use node::Node;
 
 pub mod data_type;
 pub mod identifiers;

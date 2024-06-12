@@ -2,6 +2,7 @@
 // Do not make modifications to this file directly.
 
 use crate::utils::CommaSeparated;
+use crate::Node;
 use pxp_span::Span;
 use pxp_symbol::Symbol;
 use pxp_syntax::backed_enum_type::BackedEnumType;
@@ -17,6 +18,16 @@ pub struct Statement {
     pub kind: StatementKind,
     pub span: Span,
     pub comments: CommentGroup,
+}
+
+impl Node for Statement {
+    fn name(&self) -> &'static str {
+        "Statement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.kind]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -59,11 +70,31 @@ pub enum StatementKind {
     Noop(Span),
 }
 
+impl Node for StatementKind {
+    fn name(&self) -> &'static str {
+        "StatementKind"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Expression {
     pub kind: ExpressionKind,
     pub span: Span,
     pub comments: CommentGroup,
+}
+
+impl Node for Expression {
+    fn name(&self) -> &'static str {
+        "Expression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.kind]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -137,9 +168,29 @@ pub enum ExpressionKind {
     Noop,
 }
 
+impl Node for ExpressionKind {
+    fn name(&self) -> &'static str {
+        "ExpressionKind"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InlineHtmlStatement {
     pub html: Token,
+}
+
+impl Node for InlineHtmlStatement {
+    fn name(&self) -> &'static str {
+        "InlineHtmlStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -147,9 +198,29 @@ pub struct FullOpeningTagStatement {
     pub span: Span,
 }
 
+impl Node for FullOpeningTagStatement {
+    fn name(&self) -> &'static str {
+        "FullOpeningTagStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ShortOpeningTagStatement {
     pub span: Span,
+}
+
+impl Node for ShortOpeningTagStatement {
+    fn name(&self) -> &'static str {
+        "ShortOpeningTagStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -157,9 +228,29 @@ pub struct EchoOpeningTagStatement {
     pub span: Span,
 }
 
+impl Node for EchoOpeningTagStatement {
+    fn name(&self) -> &'static str {
+        "EchoOpeningTagStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClosingTagStatement {
     pub span: Span,
+}
+
+impl Node for ClosingTagStatement {
+    fn name(&self) -> &'static str {
+        "ClosingTagStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -168,10 +259,30 @@ pub struct ExpressionStatement {
     pub ending: Ending,
 }
 
+impl Node for ExpressionStatement {
+    fn name(&self) -> &'static str {
+        "ExpressionStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.expression, &self.ending]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct GlobalStatement {
     pub global: Span,
     pub variables: Vec<Variable>,
+}
+
+impl Node for GlobalStatement {
+    fn name(&self) -> &'static str {
+        "GlobalStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.variables]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -179,6 +290,16 @@ pub struct BlockStatement {
     pub left_brace: Span,
     pub statements: Vec<Statement>,
     pub right_brace: Span,
+}
+
+impl Node for BlockStatement {
+    fn name(&self) -> &'static str {
+        "BlockStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.statements]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -192,10 +313,30 @@ pub enum CastKind {
     Unset,
 }
 
+impl Node for CastKind {
+    fn name(&self) -> &'static str {
+        "CastKind"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Case {
     pub condition: Option<Expression>,
     pub body: Block,
+}
+
+impl Node for Case {
+    fn name(&self) -> &'static str {
+        "Case"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.condition, &self.body]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -205,11 +346,31 @@ pub struct Use {
     pub kind: Option<UseKind>,
 }
 
+impl Node for Use {
+    fn name(&self) -> &'static str {
+        "Use"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.name, &self.alias, &self.kind]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Copy)]
 pub enum UseKind {
     Normal,
     Function,
     Const,
+}
+
+impl Node for UseKind {
+    fn name(&self) -> &'static str {
+        "UseKind"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -218,10 +379,30 @@ pub struct EvalExpression {
     pub argument: Box<SingleArgument>,
 }
 
+impl Node for EvalExpression {
+    fn name(&self) -> &'static str {
+        "EvalExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.argument]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct EmptyExpression {
     pub empty: Span,
     pub argument: Box<SingleArgument>,
+}
+
+impl Node for EmptyExpression {
+    fn name(&self) -> &'static str {
+        "EmptyExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.argument]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -230,10 +411,30 @@ pub struct DieExpression {
     pub argument: Option<Box<SingleArgument>>,
 }
 
+impl Node for DieExpression {
+    fn name(&self) -> &'static str {
+        "DieExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.argument]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ExitExpression {
     pub exit: Span,
     pub argument: Option<Box<SingleArgument>>,
+}
+
+impl Node for ExitExpression {
+    fn name(&self) -> &'static str {
+        "ExitExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.argument]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -242,10 +443,30 @@ pub struct IssetExpression {
     pub arguments: ArgumentList,
 }
 
+impl Node for IssetExpression {
+    fn name(&self) -> &'static str {
+        "IssetExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.arguments]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UnsetExpression {
     pub unset: Span,
     pub arguments: ArgumentList,
+}
+
+impl Node for UnsetExpression {
+    fn name(&self) -> &'static str {
+        "UnsetExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.arguments]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -255,11 +476,31 @@ pub struct PrintExpression {
     pub argument: Option<Box<SingleArgument>>,
 }
 
+impl Node for PrintExpression {
+    fn name(&self) -> &'static str {
+        "PrintExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.value, &self.argument]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConcatExpression {
     pub left: Box<Expression>,
     pub dot: Span,
     pub right: Box<Expression>,
+}
+
+impl Node for ConcatExpression {
+    fn name(&self) -> &'static str {
+        "ConcatExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.left, &self.right]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -269,10 +510,30 @@ pub struct InstanceofExpression {
     pub right: Box<Expression>,
 }
 
+impl Node for InstanceofExpression {
+    fn name(&self) -> &'static str {
+        "InstanceofExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.left, &self.right]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ReferenceExpression {
     pub ampersand: Span,
     pub right: Box<Expression>,
+}
+
+impl Node for ReferenceExpression {
+    fn name(&self) -> &'static str {
+        "ReferenceExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.right]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -282,10 +543,30 @@ pub struct ParenthesizedExpression {
     pub end: Span,
 }
 
+impl Node for ParenthesizedExpression {
+    fn name(&self) -> &'static str {
+        "ParenthesizedExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.expr]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ErrorSuppressExpression {
     pub at: Span,
     pub expr: Box<Expression>,
+}
+
+impl Node for ErrorSuppressExpression {
+    fn name(&self) -> &'static str {
+        "ErrorSuppressExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.expr]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -294,10 +575,30 @@ pub struct IncludeExpression {
     pub path: Box<Expression>,
 }
 
+impl Node for IncludeExpression {
+    fn name(&self) -> &'static str {
+        "IncludeExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.path]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IncludeOnceExpression {
     pub include_once: Span,
     pub path: Box<Expression>,
+}
+
+impl Node for IncludeOnceExpression {
+    fn name(&self) -> &'static str {
+        "IncludeOnceExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.path]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -306,10 +607,30 @@ pub struct RequireExpression {
     pub path: Box<Expression>,
 }
 
+impl Node for RequireExpression {
+    fn name(&self) -> &'static str {
+        "RequireExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.path]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct RequireOnceExpression {
     pub require_once: Span,
     pub path: Box<Expression>,
+}
+
+impl Node for RequireOnceExpression {
+    fn name(&self) -> &'static str {
+        "RequireOnceExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.path]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -318,10 +639,30 @@ pub struct FunctionCallExpression {
     pub arguments: ArgumentList,
 }
 
+impl Node for FunctionCallExpression {
+    fn name(&self) -> &'static str {
+        "FunctionCallExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.target, &self.arguments]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionClosureCreationExpression {
     pub target: Box<Expression>,
     pub placeholder: ArgumentPlaceholder,
+}
+
+impl Node for FunctionClosureCreationExpression {
+    fn name(&self) -> &'static str {
+        "FunctionClosureCreationExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.target, &self.placeholder]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -332,12 +673,32 @@ pub struct MethodCallExpression {
     pub arguments: ArgumentList,
 }
 
+impl Node for MethodCallExpression {
+    fn name(&self) -> &'static str {
+        "MethodCallExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.target, &self.method, &self.arguments]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MethodClosureCreationExpression {
     pub target: Box<Expression>,
     pub arrow: Span,
     pub method: Box<Expression>,
     pub placeholder: ArgumentPlaceholder,
+}
+
+impl Node for MethodClosureCreationExpression {
+    fn name(&self) -> &'static str {
+        "MethodClosureCreationExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.target, &self.method, &self.placeholder]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -348,12 +709,32 @@ pub struct NullsafeMethodCallExpression {
     pub arguments: ArgumentList,
 }
 
+impl Node for NullsafeMethodCallExpression {
+    fn name(&self) -> &'static str {
+        "NullsafeMethodCallExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.target, &self.method, &self.arguments]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticMethodCallExpression {
     pub target: Box<Expression>,
     pub double_colon: Span,
     pub method: Identifier,
     pub arguments: ArgumentList,
+}
+
+impl Node for StaticMethodCallExpression {
+    fn name(&self) -> &'static str {
+        "StaticMethodCallExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.target, &self.method, &self.arguments]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -364,12 +745,32 @@ pub struct StaticVariableMethodCallExpression {
     pub arguments: ArgumentList,
 }
 
+impl Node for StaticVariableMethodCallExpression {
+    fn name(&self) -> &'static str {
+        "StaticVariableMethodCallExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.target, &self.method, &self.arguments]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticMethodClosureCreationExpression {
     pub target: Box<Expression>,
     pub double_colon: Span,
     pub method: Identifier,
     pub placeholder: ArgumentPlaceholder,
+}
+
+impl Node for StaticMethodClosureCreationExpression {
+    fn name(&self) -> &'static str {
+        "StaticMethodClosureCreationExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.target, &self.method, &self.placeholder]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -380,11 +781,31 @@ pub struct StaticVariableMethodClosureCreationExpression {
     pub placeholder: ArgumentPlaceholder,
 }
 
+impl Node for StaticVariableMethodClosureCreationExpression {
+    fn name(&self) -> &'static str {
+        "StaticVariableMethodClosureCreationExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.target, &self.method, &self.placeholder]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PropertyFetchExpression {
     pub target: Box<Expression>,
     pub arrow: Span,
     pub property: Box<Expression>,
+}
+
+impl Node for PropertyFetchExpression {
+    fn name(&self) -> &'static str {
+        "PropertyFetchExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.target, &self.property]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -394,11 +815,31 @@ pub struct NullsafePropertyFetchExpression {
     pub property: Box<Expression>,
 }
 
+impl Node for NullsafePropertyFetchExpression {
+    fn name(&self) -> &'static str {
+        "NullsafePropertyFetchExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.target, &self.property]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticPropertyFetchExpression {
     pub target: Box<Expression>,
     pub double_colon: Span,
     pub property: Variable,
+}
+
+impl Node for StaticPropertyFetchExpression {
+    fn name(&self) -> &'static str {
+        "StaticPropertyFetchExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.target, &self.property]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -408,11 +849,31 @@ pub struct ConstantFetchExpression {
     pub constant: Identifier,
 }
 
+impl Node for ConstantFetchExpression {
+    fn name(&self) -> &'static str {
+        "ConstantFetchExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.target, &self.constant]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ShortArrayExpression {
     pub start: Span,
     pub items: CommaSeparated<ArrayItem>,
     pub end: Span,
+}
+
+impl Node for ShortArrayExpression {
+    fn name(&self) -> &'static str {
+        "ShortArrayExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.items]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -423,12 +884,32 @@ pub struct ArrayExpression {
     pub end: Span,
 }
 
+impl Node for ArrayExpression {
+    fn name(&self) -> &'static str {
+        "ArrayExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.items]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ListExpression {
     pub list: Span,
     pub start: Span,
     pub items: Vec<ListEntry>,
     pub end: Span,
+}
+
+impl Node for ListExpression {
+    fn name(&self) -> &'static str {
+        "ListExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.items]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -438,9 +919,29 @@ pub struct NewExpression {
     pub arguments: Option<ArgumentList>,
 }
 
+impl Node for NewExpression {
+    fn name(&self) -> &'static str {
+        "NewExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.target, &self.arguments]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InterpolatedStringExpression {
     pub parts: Vec<StringPart>,
+}
+
+impl Node for InterpolatedStringExpression {
+    fn name(&self) -> &'static str {
+        "InterpolatedStringExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.parts]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -449,10 +950,30 @@ pub struct HeredocExpression {
     pub parts: Vec<StringPart>,
 }
 
+impl Node for HeredocExpression {
+    fn name(&self) -> &'static str {
+        "HeredocExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.parts]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NowdocExpression {
     pub label: Token,
     pub value: Token,
+}
+
+impl Node for NowdocExpression {
+    fn name(&self) -> &'static str {
+        "NowdocExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -460,9 +981,29 @@ pub struct ShellExecExpression {
     pub parts: Vec<StringPart>,
 }
 
+impl Node for ShellExecExpression {
+    fn name(&self) -> &'static str {
+        "ShellExecExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.parts]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BoolExpression {
     pub value: bool,
+}
+
+impl Node for BoolExpression {
+    fn name(&self) -> &'static str {
+        "BoolExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -473,11 +1014,31 @@ pub struct ArrayIndexExpression {
     pub right_bracket: Span,
 }
 
+impl Node for ArrayIndexExpression {
+    fn name(&self) -> &'static str {
+        "ArrayIndexExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.array, &self.index]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ShortTernaryExpression {
     pub condition: Box<Expression>,
     pub question_colon: Span,
     pub r#else: Box<Expression>,
+}
+
+impl Node for ShortTernaryExpression {
+    fn name(&self) -> &'static str {
+        "ShortTernaryExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.condition, &self.r#else]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -489,6 +1050,16 @@ pub struct TernaryExpression {
     pub r#else: Box<Expression>,
 }
 
+impl Node for TernaryExpression {
+    fn name(&self) -> &'static str {
+        "TernaryExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.condition, &self.then, &self.r#else]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CoalesceExpression {
     pub lhs: Box<Expression>,
@@ -496,9 +1067,29 @@ pub struct CoalesceExpression {
     pub rhs: Box<Expression>,
 }
 
+impl Node for CoalesceExpression {
+    fn name(&self) -> &'static str {
+        "CoalesceExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.lhs, &self.rhs]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CloneExpression {
     pub target: Box<Expression>,
+}
+
+impl Node for CloneExpression {
+    fn name(&self) -> &'static str {
+        "CloneExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.target]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -513,9 +1104,29 @@ pub struct MatchExpression {
     pub right_brace: Span,
 }
 
+impl Node for MatchExpression {
+    fn name(&self) -> &'static str {
+        "MatchExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.condition, &self.default, &self.arms]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ThrowExpression {
     pub value: Box<Expression>,
+}
+
+impl Node for ThrowExpression {
+    fn name(&self) -> &'static str {
+        "ThrowExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.value]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -524,9 +1135,29 @@ pub struct YieldExpression {
     pub value: Option<Box<Expression>>,
 }
 
+impl Node for YieldExpression {
+    fn name(&self) -> &'static str {
+        "YieldExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.key, &self.value]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct YieldFromExpression {
     pub value: Box<Expression>,
+}
+
+impl Node for YieldFromExpression {
+    fn name(&self) -> &'static str {
+        "YieldFromExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.value]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -536,6 +1167,16 @@ pub struct CastExpression {
     pub value: Box<Expression>,
 }
 
+impl Node for CastExpression {
+    fn name(&self) -> &'static str {
+        "CastExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.kind, &self.value]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DefaultMatchArm {
     pub keyword: Span,
@@ -543,11 +1184,31 @@ pub struct DefaultMatchArm {
     pub body: Expression,
 }
 
+impl Node for DefaultMatchArm {
+    fn name(&self) -> &'static str {
+        "DefaultMatchArm"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.body]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MatchArm {
     pub conditions: Vec<Expression>,
     pub arrow: Span,
     pub body: Expression,
+}
+
+impl Node for MatchArm {
+    fn name(&self) -> &'static str {
+        "MatchArm"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.conditions, &self.body]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -563,10 +1224,30 @@ pub enum MagicConstantExpression {
     CompilerHaltOffset(Span),
 }
 
+impl Node for MagicConstantExpression {
+    fn name(&self) -> &'static str {
+        "MagicConstantExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum StringPart {
     Literal(LiteralStringPart),
     Expression(ExpressionStringPart),
+}
+
+impl Node for StringPart {
+    fn name(&self) -> &'static str {
+        "StringPart"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -574,9 +1255,29 @@ pub struct LiteralStringPart {
     pub value: Symbol,
 }
 
+impl Node for LiteralStringPart {
+    fn name(&self) -> &'static str {
+        "LiteralStringPart"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ExpressionStringPart {
     pub expression: Box<Expression>,
+}
+
+impl Node for ExpressionStringPart {
+    fn name(&self) -> &'static str {
+        "ExpressionStringPart"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.expression]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -606,6 +1307,16 @@ pub enum ArrayItem {
     },
 }
 
+impl Node for ArrayItem {
+    fn name(&self) -> &'static str {
+        "ArrayItem"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ListEntry {
     Skipped,
@@ -619,11 +1330,31 @@ pub enum ListEntry {
     },
 }
 
+impl Node for ListEntry {
+    fn name(&self) -> &'static str {
+        "ListEntry"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PositionalArgument {
     pub comments: CommentGroup,
     pub ellipsis: Option<Span>,
     pub value: Expression,
+}
+
+impl Node for PositionalArgument {
+    fn name(&self) -> &'static str {
+        "PositionalArgument"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.value]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -635,10 +1366,30 @@ pub struct NamedArgument {
     pub value: Expression,
 }
 
+impl Node for NamedArgument {
+    fn name(&self) -> &'static str {
+        "NamedArgument"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.name, &self.value]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Argument {
     Positional(PositionalArgument),
     Named(NamedArgument),
+}
+
+impl Node for Argument {
+    fn name(&self) -> &'static str {
+        "Argument"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -649,12 +1400,32 @@ pub struct ArgumentList {
     pub right_parenthesis: Span,
 }
 
+impl Node for ArgumentList {
+    fn name(&self) -> &'static str {
+        "ArgumentList"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.arguments]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct SingleArgument {
     pub comments: CommentGroup,
     pub left_parenthesis: Span,
     pub argument: Option<Argument>,
     pub right_parenthesis: Span,
+}
+
+impl Node for SingleArgument {
+    fn name(&self) -> &'static str {
+        "SingleArgument"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.argument]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -665,11 +1436,31 @@ pub struct ArgumentPlaceholder {
     pub right_parenthesis: Span,
 }
 
+impl Node for ArgumentPlaceholder {
+    fn name(&self) -> &'static str {
+        "ArgumentPlaceholder"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Attribute {
     pub span: Span,
     pub name: Name,
     pub arguments: Option<ArgumentList>,
+}
+
+impl Node for Attribute {
+    fn name(&self) -> &'static str {
+        "Attribute"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.name, &self.arguments]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -678,11 +1469,31 @@ pub struct AttributeGroup {
     pub members: Vec<Attribute>,
 }
 
+impl Node for AttributeGroup {
+    fn name(&self) -> &'static str {
+        "AttributeGroup"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.members]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassBody {
     pub left_brace: Span,
     pub members: Vec<ClassishMember>,
     pub right_brace: Span,
+}
+
+impl Node for ClassBody {
+    fn name(&self) -> &'static str {
+        "ClassBody"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.members]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -696,11 +1507,38 @@ pub struct ClassStatement {
     pub body: ClassBody,
 }
 
+impl Node for ClassStatement {
+    fn name(&self) -> &'static str {
+        "ClassStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![
+            &self.attributes,
+            &self.modifiers,
+            &self.name,
+            &self.extends,
+            &self.implements,
+            &self.body,
+        ]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct AnonymousClassBody {
     pub left_brace: Span,
     pub members: Vec<ClassishMember>,
     pub right_brace: Span,
+}
+
+impl Node for AnonymousClassBody {
+    fn name(&self) -> &'static str {
+        "AnonymousClassBody"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.members]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -712,16 +1550,51 @@ pub struct AnonymousClassExpression {
     pub body: AnonymousClassBody,
 }
 
+impl Node for AnonymousClassExpression {
+    fn name(&self) -> &'static str {
+        "AnonymousClassExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![
+            &self.attributes,
+            &self.extends,
+            &self.implements,
+            &self.body,
+        ]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassExtends {
     pub extends: Span,
     pub parent: Name,
 }
 
+impl Node for ClassExtends {
+    fn name(&self) -> &'static str {
+        "ClassExtends"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.parent]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassImplements {
     pub implements: Span,
     pub interfaces: CommaSeparated<Name>,
+}
+
+impl Node for ClassImplements {
+    fn name(&self) -> &'static str {
+        "ClassImplements"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.interfaces]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -736,11 +1609,31 @@ pub enum ClassishMember {
     ConcreteConstructor(ConcreteConstructor),
 }
 
+impl Node for ClassishMember {
+    fn name(&self) -> &'static str {
+        "ClassishMember"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstantEntry {
     pub name: Name,
     pub equals: Span,
     pub value: Expression,
+}
+
+impl Node for ConstantEntry {
+    fn name(&self) -> &'static str {
+        "ConstantEntry"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.name, &self.value]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -750,12 +1643,32 @@ pub struct ClassishConstantEntry {
     pub value: Expression,
 }
 
+impl Node for ClassishConstantEntry {
+    fn name(&self) -> &'static str {
+        "ClassishConstantEntry"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.name, &self.value]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstantStatement {
     pub comments: CommentGroup,
     pub r#const: Span,
     pub entries: Vec<ConstantEntry>,
     pub semicolon: Span,
+}
+
+impl Node for ConstantStatement {
+    fn name(&self) -> &'static str {
+        "ConstantStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.entries]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -769,6 +1682,21 @@ pub struct ClassishConstant {
     pub semicolon: Span,
 }
 
+impl Node for ClassishConstant {
+    fn name(&self) -> &'static str {
+        "ClassishConstant"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![
+            &self.attributes,
+            &self.modifiers,
+            &self.data_type,
+            &self.entries,
+        ]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IfStatement {
     pub r#if: Span,
@@ -776,6 +1704,16 @@ pub struct IfStatement {
     pub condition: Expression,
     pub right_parenthesis: Span,
     pub body: IfStatementBody,
+}
+
+impl Node for IfStatement {
+    fn name(&self) -> &'static str {
+        "IfStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.condition, &self.body]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -795,6 +1733,16 @@ pub enum IfStatementBody {
     },
 }
 
+impl Node for IfStatementBody {
+    fn name(&self) -> &'static str {
+        "IfStatementBody"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IfStatementElseIf {
     pub elseif: Span,
@@ -804,10 +1752,30 @@ pub struct IfStatementElseIf {
     pub statement: Box<Statement>,
 }
 
+impl Node for IfStatementElseIf {
+    fn name(&self) -> &'static str {
+        "IfStatementElseIf"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.condition, &self.statement]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IfStatementElse {
     pub r#else: Span,
     pub statement: Box<Statement>,
+}
+
+impl Node for IfStatementElse {
+    fn name(&self) -> &'static str {
+        "IfStatementElse"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.statement]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -820,6 +1788,16 @@ pub struct IfStatementElseIfBlock {
     pub statements: Vec<Statement>,
 }
 
+impl Node for IfStatementElseIfBlock {
+    fn name(&self) -> &'static str {
+        "IfStatementElseIfBlock"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.condition, &self.statements]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IfStatementElseBlock {
     pub r#else: Span,
@@ -827,10 +1805,30 @@ pub struct IfStatementElseBlock {
     pub statements: Vec<Statement>,
 }
 
+impl Node for IfStatementElseBlock {
+    fn name(&self) -> &'static str {
+        "IfStatementElseBlock"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.statements]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DataType {
     pub kind: Type<Name>,
     pub span: Span,
+}
+
+impl Node for DataType {
+    fn name(&self) -> &'static str {
+        "DataType"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -840,11 +1838,31 @@ pub struct DeclareEntry {
     pub value: Literal,
 }
 
+impl Node for DeclareEntry {
+    fn name(&self) -> &'static str {
+        "DeclareEntry"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.key, &self.value]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DeclareEntryGroup {
     pub left_parenthesis: Span,
     pub right_parenthesis: Span,
     pub entries: Vec<DeclareEntry>,
+}
+
+impl Node for DeclareEntryGroup {
+    fn name(&self) -> &'static str {
+        "DeclareEntryGroup"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.entries]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -868,11 +1886,31 @@ pub enum DeclareBody {
     },
 }
 
+impl Node for DeclareBody {
+    fn name(&self) -> &'static str {
+        "DeclareBody"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DeclareStatement {
     pub declare: Span,
     pub entries: DeclareEntryGroup,
     pub body: DeclareBody,
+}
+
+impl Node for DeclareStatement {
+    fn name(&self) -> &'static str {
+        "DeclareStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.entries, &self.body]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -883,10 +1921,30 @@ pub struct UnitEnumCase {
     pub end: Span,
 }
 
+impl Node for UnitEnumCase {
+    fn name(&self) -> &'static str {
+        "UnitEnumCase"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.attributes, &self.name]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum UnitEnumMember {
     Case(UnitEnumCase),
     Classish(ClassishMember),
+}
+
+impl Node for UnitEnumMember {
+    fn name(&self) -> &'static str {
+        "UnitEnumMember"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -896,6 +1954,16 @@ pub struct UnitEnumBody {
     pub right_brace: Span,
 }
 
+impl Node for UnitEnumBody {
+    fn name(&self) -> &'static str {
+        "UnitEnumBody"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.members]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UnitEnumStatement {
     pub attributes: Vec<AttributeGroup>,
@@ -903,6 +1971,16 @@ pub struct UnitEnumStatement {
     pub name: Name,
     pub implements: Vec<Name>,
     pub body: UnitEnumBody,
+}
+
+impl Node for UnitEnumStatement {
+    fn name(&self) -> &'static str {
+        "UnitEnumStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.attributes, &self.name, &self.implements, &self.body]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -915,10 +1993,30 @@ pub struct BackedEnumCase {
     pub semicolon: Span,
 }
 
+impl Node for BackedEnumCase {
+    fn name(&self) -> &'static str {
+        "BackedEnumCase"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.attributes, &self.name, &self.value]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum BackedEnumMember {
     Case(BackedEnumCase),
     Classish(ClassishMember),
+}
+
+impl Node for BackedEnumMember {
+    fn name(&self) -> &'static str {
+        "BackedEnumMember"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -926,6 +2024,16 @@ pub struct BackedEnumBody {
     pub left_brace: Span,
     pub members: Vec<BackedEnumMember>,
     pub right_brace: Span,
+}
+
+impl Node for BackedEnumBody {
+    fn name(&self) -> &'static str {
+        "BackedEnumBody"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.members]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -938,10 +2046,30 @@ pub struct BackedEnumStatement {
     pub body: BackedEnumBody,
 }
 
+impl Node for BackedEnumStatement {
+    fn name(&self) -> &'static str {
+        "BackedEnumStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.attributes, &self.name, &self.implements, &self.body]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ReturnType {
     pub colon: Span,
     pub data_type: DataType,
+}
+
+impl Node for ReturnType {
+    fn name(&self) -> &'static str {
+        "ReturnType"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.data_type]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -955,6 +2083,16 @@ pub struct FunctionParameter {
     pub ampersand: Option<Span>,
 }
 
+impl Node for FunctionParameter {
+    fn name(&self) -> &'static str {
+        "FunctionParameter"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.name, &self.attributes, &self.data_type, &self.default]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionParameterList {
     pub comments: CommentGroup,
@@ -963,12 +2101,32 @@ pub struct FunctionParameterList {
     pub right_parenthesis: Span,
 }
 
+impl Node for FunctionParameterList {
+    fn name(&self) -> &'static str {
+        "FunctionParameterList"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.parameters]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionBody {
     pub comments: CommentGroup,
     pub left_brace: Span,
     pub statements: Vec<Statement>,
     pub right_brace: Span,
+}
+
+impl Node for FunctionBody {
+    fn name(&self) -> &'static str {
+        "FunctionBody"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.statements]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -983,11 +2141,37 @@ pub struct FunctionStatement {
     pub body: FunctionBody,
 }
 
+impl Node for FunctionStatement {
+    fn name(&self) -> &'static str {
+        "FunctionStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![
+            &self.attributes,
+            &self.name,
+            &self.parameters,
+            &self.return_type,
+            &self.body,
+        ]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClosureUseVariable {
     pub comments: CommentGroup,
     pub ampersand: Option<Span>,
     pub variable: SimpleVariable,
+}
+
+impl Node for ClosureUseVariable {
+    fn name(&self) -> &'static str {
+        "ClosureUseVariable"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.variable]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -997,6 +2181,16 @@ pub struct ClosureUse {
     pub left_parenthesis: Span,
     pub variables: CommaSeparated<ClosureUseVariable>,
     pub right_parenthesis: Span,
+}
+
+impl Node for ClosureUse {
+    fn name(&self) -> &'static str {
+        "ClosureUse"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.variables]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1012,6 +2206,22 @@ pub struct ClosureExpression {
     pub body: FunctionBody,
 }
 
+impl Node for ClosureExpression {
+    fn name(&self) -> &'static str {
+        "ClosureExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![
+            &self.attributes,
+            &self.parameters,
+            &self.uses,
+            &self.return_type,
+            &self.body,
+        ]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArrowFunctionExpression {
     pub comments: CommentGroup,
@@ -1023,6 +2233,21 @@ pub struct ArrowFunctionExpression {
     pub return_type: Option<ReturnType>,
     pub double_arrow: Span,
     pub body: Box<Expression>,
+}
+
+impl Node for ArrowFunctionExpression {
+    fn name(&self) -> &'static str {
+        "ArrowFunctionExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![
+            &self.attributes,
+            &self.parameters,
+            &self.return_type,
+            &self.body,
+        ]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1037,12 +2262,38 @@ pub struct ConstructorParameter {
     pub modifiers: PromotedPropertyModifierGroup,
 }
 
+impl Node for ConstructorParameter {
+    fn name(&self) -> &'static str {
+        "ConstructorParameter"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![
+            &self.attributes,
+            &self.name,
+            &self.data_type,
+            &self.default,
+            &self.modifiers,
+        ]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstructorParameterList {
     pub comments: CommentGroup,
     pub left_parenthesis: Span,
     pub parameters: CommaSeparated<ConstructorParameter>,
     pub right_parenthesis: Span,
+}
+
+impl Node for ConstructorParameterList {
+    fn name(&self) -> &'static str {
+        "ConstructorParameterList"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.parameters]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1057,6 +2308,21 @@ pub struct AbstractConstructor {
     pub semicolon: Span,
 }
 
+impl Node for AbstractConstructor {
+    fn name(&self) -> &'static str {
+        "AbstractConstructor"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![
+            &self.attributes,
+            &self.modifiers,
+            &self.name,
+            &self.parameters,
+        ]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConcreteConstructor {
     pub comments: CommentGroup,
@@ -1067,6 +2333,22 @@ pub struct ConcreteConstructor {
     pub name: SimpleIdentifier,
     pub parameters: ConstructorParameterList,
     pub body: MethodBody,
+}
+
+impl Node for ConcreteConstructor {
+    fn name(&self) -> &'static str {
+        "ConcreteConstructor"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![
+            &self.attributes,
+            &self.modifiers,
+            &self.name,
+            &self.parameters,
+            &self.body,
+        ]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1082,6 +2364,22 @@ pub struct AbstractMethod {
     pub semicolon: Span,
 }
 
+impl Node for AbstractMethod {
+    fn name(&self) -> &'static str {
+        "AbstractMethod"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![
+            &self.attributes,
+            &self.modifiers,
+            &self.name,
+            &self.parameters,
+            &self.return_type,
+        ]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConcreteMethod {
     pub comments: CommentGroup,
@@ -1095,6 +2393,23 @@ pub struct ConcreteMethod {
     pub body: MethodBody,
 }
 
+impl Node for ConcreteMethod {
+    fn name(&self) -> &'static str {
+        "ConcreteMethod"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![
+            &self.attributes,
+            &self.modifiers,
+            &self.name,
+            &self.parameters,
+            &self.return_type,
+            &self.body,
+        ]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MethodBody {
     pub comments: CommentGroup,
@@ -1103,11 +2418,31 @@ pub struct MethodBody {
     pub right_brace: Span,
 }
 
+impl Node for MethodBody {
+    fn name(&self) -> &'static str {
+        "MethodBody"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.statements]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct LabelStatement {
     pub comments: CommentGroup,
     pub label: SimpleIdentifier,
     pub colon: Span,
+}
+
+impl Node for LabelStatement {
+    fn name(&self) -> &'static str {
+        "LabelStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.label]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1118,10 +2453,30 @@ pub struct GotoStatement {
     pub semicolon: Span,
 }
 
+impl Node for GotoStatement {
+    fn name(&self) -> &'static str {
+        "GotoStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.label]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Identifier {
     SimpleIdentifier(SimpleIdentifier),
     DynamicIdentifier(DynamicIdentifier),
+}
+
+impl Node for Identifier {
+    fn name(&self) -> &'static str {
+        "Identifier"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1130,10 +2485,30 @@ pub struct SimpleIdentifier {
     pub span: Span,
 }
 
+impl Node for SimpleIdentifier {
+    fn name(&self) -> &'static str {
+        "SimpleIdentifier"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DynamicIdentifier {
     pub span: Span,
     pub expr: Box<Expression>,
+}
+
+impl Node for DynamicIdentifier {
+    fn name(&self) -> &'static str {
+        "DynamicIdentifier"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.expr]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1142,11 +2517,31 @@ pub struct InterfaceExtends {
     pub parents: CommaSeparated<Name>,
 }
 
+impl Node for InterfaceExtends {
+    fn name(&self) -> &'static str {
+        "InterfaceExtends"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.parents]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InterfaceBody {
     pub left_brace: Span,
     pub members: Vec<ClassishMember>,
     pub right_brace: Span,
+}
+
+impl Node for InterfaceBody {
+    fn name(&self) -> &'static str {
+        "InterfaceBody"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.members]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1158,10 +2553,30 @@ pub struct InterfaceStatement {
     pub body: InterfaceBody,
 }
 
+impl Node for InterfaceStatement {
+    fn name(&self) -> &'static str {
+        "InterfaceStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.attributes, &self.name, &self.extends, &self.body]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Literal {
     pub kind: LiteralKind,
     pub token: Token,
+}
+
+impl Node for Literal {
+    fn name(&self) -> &'static str {
+        "Literal"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.kind]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1172,6 +2587,16 @@ pub enum LiteralKind {
     Missing,
 }
 
+impl Node for LiteralKind {
+    fn name(&self) -> &'static str {
+        "LiteralKind"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ForeachStatement {
     pub foreach: Span,
@@ -1179,6 +2604,16 @@ pub struct ForeachStatement {
     pub iterator: ForeachStatementIterator,
     pub right_parenthesis: Span,
     pub body: ForeachStatementBody,
+}
+
+impl Node for ForeachStatement {
+    fn name(&self) -> &'static str {
+        "ForeachStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.iterator, &self.body]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1199,6 +2634,16 @@ pub enum ForeachStatementIterator {
     },
 }
 
+impl Node for ForeachStatementIterator {
+    fn name(&self) -> &'static str {
+        "ForeachStatementIterator"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ForeachStatementBody {
     Statement {
@@ -1212,6 +2657,16 @@ pub enum ForeachStatementBody {
     },
 }
 
+impl Node for ForeachStatementBody {
+    fn name(&self) -> &'static str {
+        "ForeachStatementBody"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ForStatement {
     pub r#for: Span,
@@ -1221,6 +2676,16 @@ pub struct ForStatement {
     pub body: ForStatementBody,
 }
 
+impl Node for ForStatement {
+    fn name(&self) -> &'static str {
+        "ForStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.iterator, &self.body]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ForStatementIterator {
     pub initializations: CommaSeparated<Expression>,
@@ -1228,6 +2693,16 @@ pub struct ForStatementIterator {
     pub conditions: CommaSeparated<Expression>,
     pub conditions_semicolon: Span,
     pub r#loop: CommaSeparated<Expression>,
+}
+
+impl Node for ForStatementIterator {
+    fn name(&self) -> &'static str {
+        "ForStatementIterator"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.initializations, &self.conditions, &self.r#loop]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1243,6 +2718,16 @@ pub enum ForStatementBody {
     },
 }
 
+impl Node for ForStatementBody {
+    fn name(&self) -> &'static str {
+        "ForStatementBody"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DoWhileStatement {
     pub r#do: Span,
@@ -1254,6 +2739,16 @@ pub struct DoWhileStatement {
     pub semicolon: Span,
 }
 
+impl Node for DoWhileStatement {
+    fn name(&self) -> &'static str {
+        "DoWhileStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.body, &self.condition]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct WhileStatement {
     pub r#while: Span,
@@ -1261,6 +2756,16 @@ pub struct WhileStatement {
     pub condition: Expression,
     pub right_parenthesis: Span,
     pub body: WhileStatementBody,
+}
+
+impl Node for WhileStatement {
+    fn name(&self) -> &'static str {
+        "WhileStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.condition, &self.body]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1276,6 +2781,16 @@ pub enum WhileStatementBody {
     },
 }
 
+impl Node for WhileStatementBody {
+    fn name(&self) -> &'static str {
+        "WhileStatementBody"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Level {
     Literal(Literal),
@@ -1286,11 +2801,31 @@ pub enum Level {
     },
 }
 
+impl Node for Level {
+    fn name(&self) -> &'static str {
+        "Level"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BreakStatement {
     pub r#break: Span,
     pub level: Option<Level>,
     pub ending: Ending,
+}
+
+impl Node for BreakStatement {
+    fn name(&self) -> &'static str {
+        "BreakStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.level, &self.ending]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1300,11 +2835,31 @@ pub struct ContinueStatement {
     pub ending: Ending,
 }
 
+impl Node for ContinueStatement {
+    fn name(&self) -> &'static str {
+        "ContinueStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.level, &self.ending]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum VisibilityModifier {
     Public(Span),
     Protected(Span),
     Private(Span),
+}
+
+impl Node for VisibilityModifier {
+    fn name(&self) -> &'static str {
+        "VisibilityModifier"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1315,9 +2870,29 @@ pub enum PromotedPropertyModifier {
     Readonly(Span),
 }
 
+impl Node for PromotedPropertyModifier {
+    fn name(&self) -> &'static str {
+        "PromotedPropertyModifier"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct PromotedPropertyModifierGroup {
     pub modifiers: Vec<PromotedPropertyModifier>,
+}
+
+impl Node for PromotedPropertyModifierGroup {
+    fn name(&self) -> &'static str {
+        "PromotedPropertyModifierGroup"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.modifiers]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1329,9 +2904,29 @@ pub enum PropertyModifier {
     Readonly(Span),
 }
 
+impl Node for PropertyModifier {
+    fn name(&self) -> &'static str {
+        "PropertyModifier"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct PropertyModifierGroup {
     pub modifiers: Vec<PropertyModifier>,
+}
+
+impl Node for PropertyModifierGroup {
+    fn name(&self) -> &'static str {
+        "PropertyModifierGroup"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.modifiers]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1344,9 +2939,29 @@ pub enum MethodModifier {
     Final(Span),
 }
 
+impl Node for MethodModifier {
+    fn name(&self) -> &'static str {
+        "MethodModifier"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct MethodModifierGroup {
     pub modifiers: Vec<MethodModifier>,
+}
+
+impl Node for MethodModifierGroup {
+    fn name(&self) -> &'static str {
+        "MethodModifierGroup"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.modifiers]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1356,9 +2971,29 @@ pub enum ClassModifier {
     Readonly(Span),
 }
 
+impl Node for ClassModifier {
+    fn name(&self) -> &'static str {
+        "ClassModifier"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct ClassModifierGroup {
     pub modifiers: Vec<ClassModifier>,
+}
+
+impl Node for ClassModifierGroup {
+    fn name(&self) -> &'static str {
+        "ClassModifierGroup"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.modifiers]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1369,9 +3004,29 @@ pub enum ConstantModifier {
     Final(Span),
 }
 
+impl Node for ConstantModifier {
+    fn name(&self) -> &'static str {
+        "ConstantModifier"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstantModifierGroup {
     pub modifiers: Vec<ConstantModifier>,
+}
+
+impl Node for ConstantModifierGroup {
+    fn name(&self) -> &'static str {
+        "ConstantModifierGroup"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.modifiers]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1382,11 +3037,31 @@ pub struct UnbracedNamespace {
     pub statements: Vec<Statement>,
 }
 
+impl Node for UnbracedNamespace {
+    fn name(&self) -> &'static str {
+        "UnbracedNamespace"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.name, &self.statements]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BracedNamespace {
     pub namespace: Span,
     pub name: Option<Name>,
     pub body: BracedNamespaceBody,
+}
+
+impl Node for BracedNamespace {
+    fn name(&self) -> &'static str {
+        "BracedNamespace"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.name, &self.body]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1396,10 +3071,30 @@ pub struct BracedNamespaceBody {
     pub statements: Vec<Statement>,
 }
 
+impl Node for BracedNamespaceBody {
+    fn name(&self) -> &'static str {
+        "BracedNamespaceBody"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.statements]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum NamespaceStatement {
     Unbraced(UnbracedNamespace),
     Braced(BracedNamespace),
+}
+
+impl Node for NamespaceStatement {
+    fn name(&self) -> &'static str {
+        "NamespaceStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1458,6 +3153,16 @@ pub enum ArithmeticOperationExpression {
         left: Box<Expression>,
         decrement: Span,
     },
+}
+
+impl Node for ArithmeticOperationExpression {
+    fn name(&self) -> &'static str {
+        "ArithmeticOperationExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1534,6 +3239,16 @@ pub enum AssignmentOperationExpression {
     },
 }
 
+impl Node for AssignmentOperationExpression {
+    fn name(&self) -> &'static str {
+        "AssignmentOperationExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum BitwiseOperationExpression {
     And {
@@ -1565,6 +3280,16 @@ pub enum BitwiseOperationExpression {
         not: Span,
         right: Box<Expression>,
     },
+}
+
+impl Node for BitwiseOperationExpression {
+    fn name(&self) -> &'static str {
+        "BitwiseOperationExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1621,6 +3346,16 @@ pub enum ComparisonOperationExpression {
     },
 }
 
+impl Node for ComparisonOperationExpression {
+    fn name(&self) -> &'static str {
+        "ComparisonOperationExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum LogicalOperationExpression {
     And {
@@ -1654,10 +3389,30 @@ pub enum LogicalOperationExpression {
     },
 }
 
+impl Node for LogicalOperationExpression {
+    fn name(&self) -> &'static str {
+        "LogicalOperationExpression"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Name {
     pub kind: NameKind,
     pub span: Span,
+}
+
+impl Node for Name {
+    fn name(&self) -> &'static str {
+        "Name"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.kind]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -1667,10 +3422,30 @@ pub enum NameKind {
     Resolved(ResolvedName),
 }
 
+impl Node for NameKind {
+    fn name(&self) -> &'static str {
+        "NameKind"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct SpecialName {
     pub kind: SpecialNameKind,
     pub symbol: Symbol,
+}
+
+impl Node for SpecialName {
+    fn name(&self) -> &'static str {
+        "SpecialName"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.kind]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -1680,16 +3455,46 @@ pub enum SpecialNameKind {
     Static,
 }
 
+impl Node for SpecialNameKind {
+    fn name(&self) -> &'static str {
+        "SpecialNameKind"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct UnresolvedName {
     pub symbol: Symbol,
     pub qualification: NameQualification,
 }
 
+impl Node for UnresolvedName {
+    fn name(&self) -> &'static str {
+        "UnresolvedName"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct ResolvedName {
     pub resolved: Symbol,
     pub original: Symbol,
+}
+
+impl Node for ResolvedName {
+    fn name(&self) -> &'static str {
+        "ResolvedName"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1701,12 +3506,37 @@ pub struct Property {
     pub end: Span,
 }
 
+impl Node for Property {
+    fn name(&self) -> &'static str {
+        "Property"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![
+            &self.attributes,
+            &self.modifiers,
+            &self.r#type,
+            &self.entries,
+        ]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct VariableProperty {
     pub attributes: Vec<AttributeGroup>,
     pub r#type: Option<DataType>,
     pub entries: Vec<PropertyEntry>,
     pub end: Span,
+}
+
+impl Node for VariableProperty {
+    fn name(&self) -> &'static str {
+        "VariableProperty"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.attributes, &self.r#type, &self.entries]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1721,11 +3551,31 @@ pub enum PropertyEntry {
     },
 }
 
+impl Node for PropertyEntry {
+    fn name(&self) -> &'static str {
+        "PropertyEntry"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TraitBody {
     pub left_brace: Span,
     pub members: Vec<ClassishMember>,
     pub right_brace: Span,
+}
+
+impl Node for TraitBody {
+    fn name(&self) -> &'static str {
+        "TraitBody"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.members]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1736,11 +3586,31 @@ pub struct TraitStatement {
     pub body: TraitBody,
 }
 
+impl Node for TraitStatement {
+    fn name(&self) -> &'static str {
+        "TraitStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.name, &self.attributes, &self.body]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TraitUsage {
     pub r#use: Span,
     pub traits: Vec<Name>,
     pub adaptations: Vec<TraitUsageAdaptation>,
+}
+
+impl Node for TraitUsage {
+    fn name(&self) -> &'static str {
+        "TraitUsage"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.traits, &self.adaptations]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1763,10 +3633,30 @@ pub enum TraitUsageAdaptation {
     },
 }
 
+impl Node for TraitUsageAdaptation {
+    fn name(&self) -> &'static str {
+        "TraitUsageAdaptation"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum CatchType {
     Identifier { identifier: SimpleIdentifier },
     Union { identifiers: Vec<SimpleIdentifier> },
+}
+
+impl Node for CatchType {
+    fn name(&self) -> &'static str {
+        "CatchType"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1778,6 +3668,16 @@ pub struct TryStatement {
     pub finally: Option<FinallyBlock>,
 }
 
+impl Node for TryStatement {
+    fn name(&self) -> &'static str {
+        "TryStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.body, &self.catches, &self.finally]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CatchBlock {
     pub start: Span,
@@ -1787,11 +3687,31 @@ pub struct CatchBlock {
     pub body: Block,
 }
 
+impl Node for CatchBlock {
+    fn name(&self) -> &'static str {
+        "CatchBlock"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.types, &self.var, &self.body]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FinallyBlock {
     pub start: Span,
     pub end: Span,
     pub body: Block,
+}
+
+impl Node for FinallyBlock {
+    fn name(&self) -> &'static str {
+        "FinallyBlock"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.body]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1801,6 +3721,16 @@ pub enum Variable {
     BracedVariableVariable(BracedVariableVariable),
 }
 
+impl Node for Variable {
+    fn name(&self) -> &'static str {
+        "Variable"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct SimpleVariable {
     pub symbol: Symbol,
@@ -1808,10 +3738,30 @@ pub struct SimpleVariable {
     pub span: Span,
 }
 
+impl Node for SimpleVariable {
+    fn name(&self) -> &'static str {
+        "SimpleVariable"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct VariableVariable {
     pub span: Span,
     pub variable: Box<Variable>,
+}
+
+impl Node for VariableVariable {
+    fn name(&self) -> &'static str {
+        "VariableVariable"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.variable]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1821,6 +3771,16 @@ pub struct BracedVariableVariable {
     pub end: Span,
 }
 
+impl Node for BracedVariableVariable {
+    fn name(&self) -> &'static str {
+        "BracedVariableVariable"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.variable]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Ending {
     Missing(Span),
@@ -1828,9 +3788,29 @@ pub enum Ending {
     CloseTag(Span),
 }
 
+impl Node for Ending {
+    fn name(&self) -> &'static str {
+        "Ending"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        Vec::new()
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticStatement {
     pub vars: Vec<StaticVar>,
+}
+
+impl Node for StaticStatement {
+    fn name(&self) -> &'static str {
+        "StaticStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.vars]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1842,11 +3822,31 @@ pub struct SwitchStatement {
     pub cases: Vec<Case>,
 }
 
+impl Node for SwitchStatement {
+    fn name(&self) -> &'static str {
+        "SwitchStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.condition, &self.cases]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct EchoStatement {
     pub echo: Span,
     pub values: Vec<Expression>,
     pub ending: Ending,
+}
+
+impl Node for EchoStatement {
+    fn name(&self) -> &'static str {
+        "EchoStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.values, &self.ending]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1856,10 +3856,30 @@ pub struct ReturnStatement {
     pub ending: Ending,
 }
 
+impl Node for ReturnStatement {
+    fn name(&self) -> &'static str {
+        "ReturnStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.value, &self.ending]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UseStatement {
     pub kind: UseKind,
     pub uses: Vec<Use>,
+}
+
+impl Node for UseStatement {
+    fn name(&self) -> &'static str {
+        "UseStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.kind, &self.uses]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1869,13 +3889,43 @@ pub struct GroupUseStatement {
     pub uses: Vec<Use>,
 }
 
+impl Node for GroupUseStatement {
+    fn name(&self) -> &'static str {
+        "GroupUseStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.prefix, &self.kind, &self.uses]
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct HaltCompilerStatement {
     pub content: Option<Token>,
+}
+
+impl Node for HaltCompilerStatement {
+    fn name(&self) -> &'static str {
+        "HaltCompilerStatement"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![]
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticVar {
     pub var: Variable,
     pub default: Option<Expression>,
+}
+
+impl Node for StaticVar {
+    fn name(&self) -> &'static str {
+        "StaticVar"
+    }
+
+    fn children(&self) -> Vec<&dyn Node> {
+        vec![&self.var, &self.default]
+    }
 }
