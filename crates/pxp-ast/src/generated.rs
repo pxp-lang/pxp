@@ -76,7 +76,43 @@ impl Node for StatementKind {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::FullOpeningTag(node) => node.children(),
+            Self::ShortOpeningTag(node) => node.children(),
+            Self::EchoOpeningTag(node) => node.children(),
+            Self::ClosingTag(node) => node.children(),
+            Self::InlineHtml(node) => node.children(),
+            Self::Label(node) => node.children(),
+            Self::Goto(node) => node.children(),
+            Self::HaltCompiler(node) => node.children(),
+            Self::Static(node) => node.children(),
+            Self::DoWhile(node) => node.children(),
+            Self::While(node) => node.children(),
+            Self::For(node) => node.children(),
+            Self::Foreach(node) => node.children(),
+            Self::Break(node) => node.children(),
+            Self::Continue(node) => node.children(),
+            Self::Constant(node) => node.children(),
+            Self::Function(node) => node.children(),
+            Self::Class(node) => node.children(),
+            Self::Trait(node) => node.children(),
+            Self::Interface(node) => node.children(),
+            Self::If(node) => node.children(),
+            Self::Switch(node) => node.children(),
+            Self::Echo(node) => node.children(),
+            Self::Expression(node) => node.children(),
+            Self::Return(node) => node.children(),
+            Self::Namespace(node) => node.children(),
+            Self::Use(node) => node.children(),
+            Self::GroupUse(node) => node.children(),
+            Self::Try(node) => node.children(),
+            Self::UnitEnum(node) => node.children(),
+            Self::BackedEnum(node) => node.children(),
+            Self::Block(node) => node.children(),
+            Self::Global(node) => node.children(),
+            Self::Declare(node) => node.children(),
+            _ => vec![],
+        }
     }
 }
 
@@ -174,7 +210,70 @@ impl Node for ExpressionKind {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Eval(node) => node.children(),
+            Self::Empty(node) => node.children(),
+            Self::Die(node) => node.children(),
+            Self::Exit(node) => node.children(),
+            Self::Isset(node) => node.children(),
+            Self::Unset(node) => node.children(),
+            Self::Print(node) => node.children(),
+            Self::Literal(node) => node.children(),
+            Self::ArithmeticOperation(node) => node.children(),
+            Self::AssignmentOperation(node) => node.children(),
+            Self::BitwiseOperation(node) => node.children(),
+            Self::ComparisonOperation(node) => node.children(),
+            Self::LogicalOperation(node) => node.children(),
+            Self::Concat(node) => node.children(),
+            Self::Instanceof(node) => node.children(),
+            Self::Reference(node) => node.children(),
+            Self::Parenthesized(node) => node.children(),
+            Self::ErrorSuppress(node) => node.children(),
+            Self::Identifier(node) => node.children(),
+            Self::Variable(node) => node.children(),
+            Self::Include(node) => node.children(),
+            Self::IncludeOnce(node) => node.children(),
+            Self::Require(node) => node.children(),
+            Self::RequireOnce(node) => node.children(),
+            Self::FunctionCall(node) => node.children(),
+            Self::FunctionClosureCreation(node) => node.children(),
+            Self::MethodCall(node) => node.children(),
+            Self::MethodClosureCreation(node) => node.children(),
+            Self::NullsafeMethodCall(node) => node.children(),
+            Self::StaticMethodCall(node) => node.children(),
+            Self::StaticVariableMethodCall(node) => node.children(),
+            Self::StaticMethodClosureCreation(node) => node.children(),
+            Self::StaticVariableMethodClosureCreation(node) => node.children(),
+            Self::PropertyFetch(node) => node.children(),
+            Self::NullsafePropertyFetch(node) => node.children(),
+            Self::StaticPropertyFetch(node) => node.children(),
+            Self::ConstantFetch(node) => node.children(),
+            Self::ShortArray(node) => node.children(),
+            Self::Array(node) => node.children(),
+            Self::List(node) => node.children(),
+            Self::Closure(node) => node.children(),
+            Self::ArrowFunction(node) => node.children(),
+            Self::New(node) => node.children(),
+            Self::InterpolatedString(node) => node.children(),
+            Self::Heredoc(node) => node.children(),
+            Self::Nowdoc(node) => node.children(),
+            Self::ShellExec(node) => node.children(),
+            Self::AnonymousClass(node) => node.children(),
+            Self::Bool(node) => node.children(),
+            Self::ArrayIndex(node) => node.children(),
+            Self::MagicConstant(node) => node.children(),
+            Self::ShortTernary(node) => node.children(),
+            Self::Ternary(node) => node.children(),
+            Self::Coalesce(node) => node.children(),
+            Self::Clone(node) => node.children(),
+            Self::Match(node) => node.children(),
+            Self::Throw(node) => node.children(),
+            Self::Yield(node) => node.children(),
+            Self::YieldFrom(node) => node.children(),
+            Self::Cast(node) => node.children(),
+            Self::Name(node) => node.children(),
+            _ => vec![],
+        }
     }
 }
 
@@ -319,7 +418,9 @@ impl Node for CastKind {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            _ => vec![],
+        }
     }
 }
 
@@ -369,7 +470,9 @@ impl Node for UseKind {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            _ => vec![],
+        }
     }
 }
 
@@ -1230,7 +1333,9 @@ impl Node for MagicConstantExpression {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            _ => vec![],
+        }
     }
 }
 
@@ -1246,7 +1351,11 @@ impl Node for StringPart {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Literal(node) => node.children(),
+            Self::Expression(node) => node.children(),
+            _ => vec![],
+        }
     }
 }
 
@@ -1313,7 +1422,33 @@ impl Node for ArrayItem {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Value { value } => {
+                vec![value]
+            }
+            Self::ReferencedValue { ampersand, value } => {
+                vec![value]
+            }
+            Self::SpreadValue { ellipsis, value } => {
+                vec![value]
+            }
+            Self::KeyValue {
+                key,
+                double_arrow,
+                value,
+            } => {
+                vec![key, value]
+            }
+            Self::ReferencedKeyValue {
+                key,
+                double_arrow,
+                ampersand,
+                value,
+            } => {
+                vec![key, value]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -1336,7 +1471,19 @@ impl Node for ListEntry {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Value { value } => {
+                vec![value]
+            }
+            Self::KeyValue {
+                key,
+                double_arrow,
+                value,
+            } => {
+                vec![key, value]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -1388,7 +1535,11 @@ impl Node for Argument {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Positional(node) => node.children(),
+            Self::Named(node) => node.children(),
+            _ => vec![],
+        }
     }
 }
 
@@ -1615,7 +1766,17 @@ impl Node for ClassishMember {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Constant(node) => node.children(),
+            Self::TraitUsage(node) => node.children(),
+            Self::Property(node) => node.children(),
+            Self::VariableProperty(node) => node.children(),
+            Self::AbstractMethod(node) => node.children(),
+            Self::AbstractConstructor(node) => node.children(),
+            Self::ConcreteMethod(node) => node.children(),
+            Self::ConcreteConstructor(node) => node.children(),
+            _ => vec![],
+        }
     }
 }
 
@@ -1739,7 +1900,26 @@ impl Node for IfStatementBody {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Statement {
+                statement,
+                elseifs,
+                r#else,
+            } => {
+                vec![statement, elseifs, r#else]
+            }
+            Self::Block {
+                colon,
+                statements,
+                elseifs,
+                r#else,
+                endif,
+                ending,
+            } => {
+                vec![statements, elseifs, r#else, ending]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -1892,7 +2072,32 @@ impl Node for DeclareBody {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Noop { semicolon } => {
+                vec![]
+            }
+            Self::Braced {
+                left_brace,
+                statements,
+                right_brace,
+            } => {
+                vec![statements]
+            }
+            Self::Expression {
+                expression,
+                semicolon,
+            } => {
+                vec![expression]
+            }
+            Self::Block {
+                colon,
+                statements,
+                end,
+            } => {
+                vec![statements]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -1943,7 +2148,11 @@ impl Node for UnitEnumMember {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Case(node) => node.children(),
+            Self::Classish(node) => node.children(),
+            _ => vec![],
+        }
     }
 }
 
@@ -2015,7 +2224,11 @@ impl Node for BackedEnumMember {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Case(node) => node.children(),
+            Self::Classish(node) => node.children(),
+            _ => vec![],
+        }
     }
 }
 
@@ -2475,7 +2688,11 @@ impl Node for Identifier {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::SimpleIdentifier(node) => node.children(),
+            Self::DynamicIdentifier(node) => node.children(),
+            _ => vec![],
+        }
     }
 }
 
@@ -2593,7 +2810,9 @@ impl Node for LiteralKind {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            _ => vec![],
+        }
     }
 }
 
@@ -2640,7 +2859,27 @@ impl Node for ForeachStatementIterator {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Value {
+                expression,
+                r#as,
+                ampersand,
+                value,
+            } => {
+                vec![expression, value]
+            }
+            Self::KeyAndValue {
+                expression,
+                r#as,
+                ampersand,
+                key,
+                double_arrow,
+                value,
+            } => {
+                vec![expression, key, value]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -2663,7 +2902,20 @@ impl Node for ForeachStatementBody {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Statement { statement } => {
+                vec![statement]
+            }
+            Self::Block {
+                colon,
+                statements,
+                endforeach,
+                ending,
+            } => {
+                vec![statements, ending]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -2724,7 +2976,20 @@ impl Node for ForStatementBody {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Statement { statement } => {
+                vec![statement]
+            }
+            Self::Block {
+                colon,
+                statements,
+                endfor,
+                ending,
+            } => {
+                vec![statements, ending]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -2787,7 +3052,20 @@ impl Node for WhileStatementBody {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Statement { statement } => {
+                vec![statement]
+            }
+            Self::Block {
+                colon,
+                statements,
+                endwhile,
+                ending,
+            } => {
+                vec![statements, ending]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -2807,7 +3085,17 @@ impl Node for Level {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Literal(node) => node.children(),
+            Self::Parenthesized {
+                left_parenthesis,
+                level,
+                right_parenthesis,
+            } => {
+                vec![level]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -2858,7 +3146,9 @@ impl Node for VisibilityModifier {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            _ => vec![],
+        }
     }
 }
 
@@ -2876,7 +3166,9 @@ impl Node for PromotedPropertyModifier {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            _ => vec![],
+        }
     }
 }
 
@@ -2910,7 +3202,9 @@ impl Node for PropertyModifier {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            _ => vec![],
+        }
     }
 }
 
@@ -2945,7 +3239,9 @@ impl Node for MethodModifier {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            _ => vec![],
+        }
     }
 }
 
@@ -2977,7 +3273,9 @@ impl Node for ClassModifier {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            _ => vec![],
+        }
     }
 }
 
@@ -3010,7 +3308,9 @@ impl Node for ConstantModifier {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            _ => vec![],
+        }
     }
 }
 
@@ -3093,7 +3393,11 @@ impl Node for NamespaceStatement {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Unbraced(node) => node.children(),
+            Self::Braced(node) => node.children(),
+            _ => vec![],
+        }
     }
 }
 
@@ -3161,7 +3465,53 @@ impl Node for ArithmeticOperationExpression {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Addition { left, plus, right } => {
+                vec![left, right]
+            }
+            Self::Subtraction { left, minus, right } => {
+                vec![left, right]
+            }
+            Self::Multiplication {
+                left,
+                asterisk,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::Division { left, slash, right } => {
+                vec![left, right]
+            }
+            Self::Modulo {
+                left,
+                percent,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::Exponentiation { left, pow, right } => {
+                vec![left, right]
+            }
+            Self::Negative { minus, right } => {
+                vec![right]
+            }
+            Self::Positive { plus, right } => {
+                vec![right]
+            }
+            Self::PreIncrement { increment, right } => {
+                vec![right]
+            }
+            Self::PostIncrement { left, increment } => {
+                vec![left]
+            }
+            Self::PreDecrement { decrement, right } => {
+                vec![right]
+            }
+            Self::PostDecrement { left, decrement } => {
+                vec![left]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -3245,7 +3595,107 @@ impl Node for AssignmentOperationExpression {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Assign {
+                left,
+                equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::Addition {
+                left,
+                plus_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::Subtraction {
+                left,
+                minus_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::Multiplication {
+                left,
+                asterisk_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::Division {
+                left,
+                slash_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::Modulo {
+                left,
+                percent_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::Exponentiation {
+                left,
+                pow_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::Concat {
+                left,
+                dot_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::BitwiseAnd {
+                left,
+                ampersand_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::BitwiseOr {
+                left,
+                pipe_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::BitwiseXor {
+                left,
+                caret_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::LeftShift {
+                left,
+                left_shift_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::RightShift {
+                left,
+                right_shift_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::Coalesce {
+                left,
+                coalesce_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -3288,7 +3738,35 @@ impl Node for BitwiseOperationExpression {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::And { left, and, right } => {
+                vec![left, right]
+            }
+            Self::Or { left, or, right } => {
+                vec![left, right]
+            }
+            Self::Xor { left, xor, right } => {
+                vec![left, right]
+            }
+            Self::LeftShift {
+                left,
+                left_shift,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::RightShift {
+                left,
+                right_shift,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::Not { not, right } => {
+                vec![right]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -3352,7 +3830,79 @@ impl Node for ComparisonOperationExpression {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Equal {
+                left,
+                double_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::Identical {
+                left,
+                triple_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::NotEqual {
+                left,
+                bang_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::AngledNotEqual {
+                left,
+                angled_left_right,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::NotIdentical {
+                left,
+                bang_double_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::LessThan {
+                left,
+                less_than,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::GreaterThan {
+                left,
+                greater_than,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::LessThanOrEqual {
+                left,
+                less_than_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::GreaterThanOrEqual {
+                left,
+                greater_than_equals,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::Spaceship {
+                left,
+                spaceship,
+                right,
+            } => {
+                vec![left, right]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -3395,7 +3945,35 @@ impl Node for LogicalOperationExpression {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::And {
+                left,
+                double_ampersand,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::Or {
+                left,
+                double_pipe,
+                right,
+            } => {
+                vec![left, right]
+            }
+            Self::Not { bang, right } => {
+                vec![right]
+            }
+            Self::LogicalAnd { left, and, right } => {
+                vec![left, right]
+            }
+            Self::LogicalOr { left, or, right } => {
+                vec![left, right]
+            }
+            Self::LogicalXor { left, xor, right } => {
+                vec![left, right]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -3428,7 +4006,12 @@ impl Node for NameKind {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Special(node) => node.children(),
+            Self::Unresolved(node) => node.children(),
+            Self::Resolved(node) => node.children(),
+            _ => vec![],
+        }
     }
 }
 
@@ -3461,7 +4044,9 @@ impl Node for SpecialNameKind {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            _ => vec![],
+        }
     }
 }
 
@@ -3557,7 +4142,19 @@ impl Node for PropertyEntry {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Uninitialized { variable } => {
+                vec![variable]
+            }
+            Self::Initialized {
+                variable,
+                equals,
+                value,
+            } => {
+                vec![variable, value]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -3639,7 +4236,31 @@ impl Node for TraitUsageAdaptation {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Alias {
+                r#trait,
+                method,
+                alias,
+                visibility,
+            } => {
+                vec![r#trait, method, alias, visibility]
+            }
+            Self::Visibility {
+                r#trait,
+                method,
+                visibility,
+            } => {
+                vec![r#trait, method, visibility]
+            }
+            Self::Precedence {
+                r#trait,
+                method,
+                insteadof,
+            } => {
+                vec![r#trait, method, insteadof]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -3655,7 +4276,15 @@ impl Node for CatchType {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::Identifier { identifier } => {
+                vec![identifier]
+            }
+            Self::Union { identifiers } => {
+                vec![identifiers]
+            }
+            _ => vec![],
+        }
     }
 }
 
@@ -3727,7 +4356,12 @@ impl Node for Variable {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            Self::SimpleVariable(node) => node.children(),
+            Self::VariableVariable(node) => node.children(),
+            Self::BracedVariableVariable(node) => node.children(),
+            _ => vec![],
+        }
     }
 }
 
@@ -3794,7 +4428,9 @@ impl Node for Ending {
     }
 
     fn children(&self) -> Vec<&dyn Node> {
-        Vec::new()
+        match self {
+            _ => vec![],
+        }
     }
 }
 

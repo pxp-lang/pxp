@@ -25,7 +25,7 @@ RUST;
 $reserved = ['as', 'derive'];
 
 function is_node(string $type): bool {
-    return !in_array($type, ['Span', 'Option<Span>', 'Token', 'Option<Token>', 'Symbol', 'Type', 'Type<Name>', 'Comment', 'CommentGroup', 'BackedEnumType', 'NameQualification', 'bool'], true);
+    return !in_array($type, ['Span', '(Span, Span)', 'Option<Span>', 'Token', 'Option<Token>', 'Symbol', 'Type', 'Type<Name>', 'Comment', 'CommentGroup', 'BackedEnumType', 'NameQualification', 'bool'], true);
 }
 
 foreach ($ast as $node => $structure) {
@@ -95,7 +95,47 @@ foreach ($ast as $node => $structure) {
     $output .= "    fn children(&self) -> Vec<&dyn Node> {\n";
 
     if ($enum) {
-        $output .= "        Vec::new()";
+        $output .= "        match self {\n";
+
+        foreach ($structure as $field => $value) {
+            if (in_array($field, $reserved, true)) {
+                continue;
+            }
+
+            if ($value === '') {
+                continue;
+            }
+
+            if (is_string($value) && is_node($value)) {
+                $output .= "            Self::{$field}(node) => node.children(),\n";
+            }
+
+            if (is_array($value)) {
+                $output .= "            Self::{$field} { ";
+
+                $fields = [];
+
+                foreach ($value as $subfield => $subtype) {
+                    $fields[] = $subfield;
+                }
+
+                $output .= implode(', ', $fields) . " } => {\n";
+                $output .= "                vec![\n";
+                foreach ($value as $subfield => $subtype) {
+                    if (! is_node($subtype)) {
+                        continue;
+                    }
+
+                    $output .= "                {$subfield},\n";
+                }
+                $output .= "                ]\n";
+
+                $output .= "            }\n";
+            }
+        }
+
+        $output .= "            _ => vec![],\n";
+        $output .= "        }\n";
     } else {
         $output .= "        vec![\n";
 
