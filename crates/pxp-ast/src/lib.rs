@@ -2,6 +2,7 @@ use std::fmt::{Display, Formatter};
 
 mod generated;
 mod node;
+mod spanned;
 
 pub use generated::*;
 use pxp_span::Span;

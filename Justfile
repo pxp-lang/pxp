@@ -9,6 +9,7 @@ parse +args:
 
 generate-ast:
     php ./meta/scripts/generate-ast.php
+    php ./meta/scripts/generate-spanned.php
     cargo fmt --package pxp-ast
 
 generate-visitor:
