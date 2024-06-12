@@ -25,3 +25,7 @@ impl Span {
 }
 
 pub type ByteOffset = usize;
+
+pub trait Spanned {
+    fn span(&self) -> Span;
+}
