@@ -6,6 +6,7 @@ mod walk;
 mod walk_mut;
 
 pub use node_visitor::NodeVisitor;
+pub use node_visitor::NodeVisitorResult;
 pub use visitor::Visitor;
 pub use visitor_mut::VisitorMut;
 pub use walk::*;
