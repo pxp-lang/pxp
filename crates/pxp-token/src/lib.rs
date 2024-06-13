@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use pxp_span::Span;
+use pxp_span::{Span, Spanned};
 use pxp_symbol::{Symbol, SymbolTable};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -243,6 +243,12 @@ pub struct Token {
     pub kind: TokenKind,
     pub span: Span,
     pub symbol: Option<Symbol>,
+}
+
+impl Spanned for Token {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 impl Default for Token {
