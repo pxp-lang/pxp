@@ -1,6 +1,6 @@
 use std::slice::Iter;
 
-use pxp_span::Span;
+use pxp_span::{Span, Spanned};
 use pxp_symbol::Symbol;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -17,6 +17,12 @@ pub struct Comment {
     pub span: Span,
     pub format: CommentFormat,
     pub content: Symbol,
+}
+
+impl Spanned for Comment {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
