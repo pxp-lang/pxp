@@ -25,4 +25,4 @@ All contributions to the project are welcome. For more information about contrib
 
 ## Credits
 
-This project is maintained by [Ryan Chandler](https://twitter.com/ryangjchandler) with the help of [contributors](https://github.com/pxp-lang/wip/graphs/contributors).
+This project is maintained by [Ryan Chandler](https://twitter.com/ryangjchandler) with the help of [contributors](https://github.com/pxp-lang/pxp/graphs/contributors).
