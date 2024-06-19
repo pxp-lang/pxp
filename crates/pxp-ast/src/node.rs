@@ -1,4 +1,7 @@
-use std::{any::{Any, TypeId}, fmt::Debug};
+use std::{
+    any::{Any, TypeId},
+    fmt::Debug,
+};
 
 use pxp_span::Spanned;
 

@@ -116,7 +116,7 @@ class AstGenerator
                     }
 
                     if (is_string($value) && $this->isNodeType($value)) {
-                        $output .= "            Self::{$field}(node) => node.children(),\n";
+                        $output .= "            Self::{$field}(node) => vec![node],\n";
                     }
 
                     if (is_array($value)) {

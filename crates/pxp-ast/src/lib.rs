@@ -119,3 +119,28 @@ impl StringPart {
         }
     }
 }
+
+impl AssignmentOperationExpression {
+    pub fn targets_variable(&self) -> bool {
+        matches!(self.target().kind, ExpressionKind::Variable(_))
+    }
+
+    pub fn target(&self) -> &Expression {
+        match self {
+            AssignmentOperationExpression::Assign { left, .. } => left,
+            AssignmentOperationExpression::Addition { left, .. } => left,
+            AssignmentOperationExpression::Subtraction { left, .. } => left,
+            AssignmentOperationExpression::Multiplication { left, .. } => left,
+            AssignmentOperationExpression::Division { left, .. } => left,
+            AssignmentOperationExpression::Modulo { left, .. } => left,
+            AssignmentOperationExpression::Exponentiation { left, .. } => left,
+            AssignmentOperationExpression::Concat { left, .. } => left,
+            AssignmentOperationExpression::BitwiseAnd { left, .. } => left,
+            AssignmentOperationExpression::BitwiseOr { left, .. } => left,
+            AssignmentOperationExpression::BitwiseXor { left, .. } => left,
+            AssignmentOperationExpression::LeftShift { left, .. } => left,
+            AssignmentOperationExpression::RightShift { left, .. } => left,
+            AssignmentOperationExpression::Coalesce { left, .. } => left,
+        }
+    }
+}
