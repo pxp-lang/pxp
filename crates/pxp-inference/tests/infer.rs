@@ -29,6 +29,14 @@ fn is_can_infer_types_of_literal_expressions() {
     );
 }
 
+#[test]
+fn it_can_infer_types_of_variables() {
+    assert_eq!(
+        infer("<?php $a = 1; $a^^;"),
+        Type::Integer,
+    );
+}
+
 fn infer(input: &str) -> Type<Name> {
     let index = index();
     let engine = InferenceEngine::new();
