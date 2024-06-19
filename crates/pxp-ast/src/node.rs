@@ -1,8 +1,10 @@
-use std::any::{Any, TypeId};
+use std::{any::{Any, TypeId}, fmt::Debug};
+
+use pxp_span::Spanned;
 
 use crate::utils::CommaSeparated;
 
-pub trait Node: Any {
+pub trait Node: Any + Spanned + Debug {
     fn name(&self) -> &'static str;
 
     fn children(&self) -> Vec<&dyn Node> {

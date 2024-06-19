@@ -7,6 +7,10 @@ tokenise +args:
 parse +args:
     RUSTFLAGS=-Awarnings cargo run -q --package pxp-tools --bin parse --release -- {{args}}
 
+# Adding this here because I keep on typing "just check" instead of "cargo check"...
+check:
+    cargo check
+
 generate-ast:
     php ./meta/scripts/generate-ast.php
     php ./meta/scripts/generate-spanned.php

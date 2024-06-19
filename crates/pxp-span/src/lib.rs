@@ -20,7 +20,15 @@ impl Span {
     }
 
     pub fn contains(&self, offset: ByteOffset) -> bool {
-        self.start <= offset && offset <= self.end
+        offset >= self.start && offset <= self.end
+    }
+
+    pub fn is_after(&self, offset: ByteOffset) -> bool {
+        self.start > offset
+    }
+
+    pub fn is_before(&self, offset: ByteOffset) -> bool {
+        self.end < offset
     }
 
     pub fn merge(&self, other: &Self) -> Self {

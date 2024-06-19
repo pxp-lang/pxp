@@ -92,8 +92,8 @@ impl<'a> ContextTrackingNodeVisitor<'a> {
     }
 }
 
-impl<'a> NodeVisitor for ContextTrackingNodeVisitor<'a> {
-    fn visit(&mut self, node: &dyn Node) -> NodeVisitorResult {
+impl<'a> NodeVisitor<'a> for ContextTrackingNodeVisitor<'a> {
+    fn visit(&mut self, node: &'a dyn Node) -> NodeVisitorResult {
         if std::ptr::eq(node, self.target) {
             self.resolved = self.resolve_type(node);
 

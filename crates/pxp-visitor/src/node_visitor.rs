@@ -1,7 +1,7 @@
 use pxp_ast::{Node, Statement};
 
-pub trait NodeVisitor {
-    fn visit_ast(&mut self, ast: &[Statement]) {
+pub trait NodeVisitor<'a> {
+    fn visit_ast(&mut self, ast: &'a [Statement]) {
         for node in ast {
             let result = self.visit_node(node);
 
@@ -11,7 +11,7 @@ pub trait NodeVisitor {
         }
     }
 
-    fn visit_node(&mut self, node: &dyn Node) -> NodeVisitorResult {
+    fn visit_node(&mut self, node: &'a dyn Node) -> NodeVisitorResult {
         let result = self.visit(node);
 
         if result != NodeVisitorResult::SkipChildren {
@@ -27,7 +27,7 @@ pub trait NodeVisitor {
         result
     }
 
-    fn visit(&mut self, node: &dyn Node) -> NodeVisitorResult;
+    fn visit(&mut self, node: &'a dyn Node) -> NodeVisitorResult;
 }
 
 #[derive(PartialEq, Eq)]

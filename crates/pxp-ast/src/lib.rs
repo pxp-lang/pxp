@@ -6,6 +6,7 @@ mod spanned;
 
 pub use generated::*;
 use pxp_span::Span;
+use pxp_symbol::Symbol;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
@@ -97,6 +98,23 @@ impl From<TokenKind> for SpecialNameKind {
             TokenKind::Self_ => Self::Self_,
             TokenKind::Parent => Self::Parent,
             TokenKind::Static => Self::Static,
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl StringPart {
+    pub fn is_literal(&self) -> bool {
+        matches!(self, Self::Literal(_))
+    }
+
+    pub fn is_expression(&self) -> bool {
+        matches!(self, Self::Expression(_))
+    }
+
+    pub fn literal(&self) -> Symbol {
+        match self {
+            Self::Literal(LiteralStringPart { value }) => *value,
             _ => unreachable!(),
         }
     }
