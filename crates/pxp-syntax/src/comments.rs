@@ -31,6 +31,12 @@ pub struct CommentGroup {
     pub comments: Vec<Comment>,
 }
 
+impl Spanned for CommentGroup {
+    fn span(&self) -> Span {
+        self.comments.span()
+    }
+}
+
 impl CommentGroup {
     pub fn iter(&self) -> Iter<'_, Comment> {
         self.comments.iter()
