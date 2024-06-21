@@ -1,3 +1,16 @@
+# This file contains the AST definition.
+# Each node in the AST is defined as an object in this file.
+#
+# The keys of the object are the field names of the node.
+# If the object has an `as` field with a value of Enum, it is an `enum`.
+#
+# There are some "special" field names used to modify the output.
+# spanned: contains an expression that is used to generate a `Spanned` implementation for the node.
+# as: used to declare the type of the node.
+# derive: used to add additional traits to the node.
+#
+# AST nodes should not be modified directly. All changes should be made in this file.
+
 Block: Vec<Statement>
 
 Statement:
