@@ -5,7 +5,6 @@
 # If the object has an `as` field with a value of Enum, it is an `enum`.
 #
 # There are some "special" field names used to modify the output.
-# spanned: contains an expression that is used to generate a `Spanned` implementation for the node.
 # as: used to declare the type of the node.
 # derive: used to add additional traits to the node.
 #
