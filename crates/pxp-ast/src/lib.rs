@@ -7,6 +7,7 @@ use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
+pub mod spanned;
 pub mod data_type;
 pub mod identifiers;
 pub mod literals;
