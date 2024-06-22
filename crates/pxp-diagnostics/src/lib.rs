@@ -5,7 +5,7 @@ use std::fmt::Display;
 use pxp_span::Span;
 pub use severity::*;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Diagnostic<K: Display> {
     pub kind: K,
     pub severity: Severity,
