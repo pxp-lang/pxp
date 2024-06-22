@@ -1,17 +1,17 @@
-use crate::{PropertyEntry, SimpleVariable};
+use crate::{PropertyEntryKind, SimpleVariable};
 
-impl PropertyEntry {
+impl PropertyEntryKind {
     pub fn variable(&self) -> &SimpleVariable {
         match self {
-            PropertyEntry::Uninitialized { variable } => variable,
-            PropertyEntry::Initialized { variable, .. } => variable,
+            PropertyEntryKind::Uninitialized { variable, .. } => variable,
+            PropertyEntryKind::Initialized { variable, .. } => variable,
         }
     }
 
     pub fn is_initialized(&self) -> bool {
         match self {
-            PropertyEntry::Uninitialized { .. } => false,
-            PropertyEntry::Initialized { .. } => true,
+            PropertyEntryKind::Uninitialized { .. } => false,
+            PropertyEntryKind::Initialized { .. } => true,
         }
     }
 }

@@ -51,9 +51,7 @@ pub trait VisitorMut {
         walk_block_statement_mut(self, node);
     }
 
-    fn visit_cast_kind(&mut self, node: &mut CastKind) {
-        walk_cast_kind_mut(self, node);
-    }
+    fn visit_cast_kind(&mut self, node: &mut CastKind) {}
 
     fn visit_case(&mut self, node: &mut Case) {
         walk_case_mut(self, node);
@@ -63,9 +61,7 @@ pub trait VisitorMut {
         walk_use_mut(self, node);
     }
 
-    fn visit_use_kind(&mut self, node: &mut UseKind) {
-        walk_use_kind_mut(self, node);
-    }
+    fn visit_use_kind(&mut self, node: &mut UseKind) {}
 
     fn visit_eval_expression(&mut self, node: &mut EvalExpression) {
         walk_eval_expression_mut(self, node);
@@ -653,20 +649,40 @@ pub trait VisitorMut {
         walk_arithmetic_operation_expression_mut(self, node);
     }
 
+    fn visit_arithmetic_operation_kind(&mut self, node: &mut ArithmeticOperationKind) {
+        walk_arithmetic_operation_kind_mut(self, node);
+    }
+
     fn visit_assignment_operation_expression(&mut self, node: &mut AssignmentOperationExpression) {
         walk_assignment_operation_expression_mut(self, node);
+    }
+
+    fn visit_assignment_operation_kind(&mut self, node: &mut AssignmentOperationKind) {
+        walk_assignment_operation_kind_mut(self, node);
     }
 
     fn visit_bitwise_operation_expression(&mut self, node: &mut BitwiseOperationExpression) {
         walk_bitwise_operation_expression_mut(self, node);
     }
 
+    fn visit_bitwise_operation_kind(&mut self, node: &mut BitwiseOperationKind) {
+        walk_bitwise_operation_kind_mut(self, node);
+    }
+
     fn visit_comparison_operation_expression(&mut self, node: &mut ComparisonOperationExpression) {
         walk_comparison_operation_expression_mut(self, node);
     }
 
+    fn visit_comparison_operation_kind(&mut self, node: &mut ComparisonOperationKind) {
+        walk_comparison_operation_kind_mut(self, node);
+    }
+
     fn visit_logical_operation_expression(&mut self, node: &mut LogicalOperationExpression) {
         walk_logical_operation_expression_mut(self, node);
+    }
+
+    fn visit_logical_operation_kind(&mut self, node: &mut LogicalOperationKind) {
+        walk_logical_operation_kind_mut(self, node);
     }
 
     fn visit_name(&mut self, node: &mut Name) {
@@ -681,9 +697,7 @@ pub trait VisitorMut {
         walk_special_name_mut(self, node);
     }
 
-    fn visit_special_name_kind(&mut self, node: &mut SpecialNameKind) {
-        walk_special_name_kind_mut(self, node);
-    }
+    fn visit_special_name_kind(&mut self, node: &mut SpecialNameKind) {}
 
     fn visit_unresolved_name(&mut self, node: &mut UnresolvedName) {}
 
@@ -699,6 +713,10 @@ pub trait VisitorMut {
 
     fn visit_property_entry(&mut self, node: &mut PropertyEntry) {
         walk_property_entry_mut(self, node);
+    }
+
+    fn visit_property_entry_kind(&mut self, node: &mut PropertyEntryKind) {
+        walk_property_entry_kind_mut(self, node);
     }
 
     fn visit_trait_body(&mut self, node: &mut TraitBody) {
@@ -717,8 +735,16 @@ pub trait VisitorMut {
         walk_trait_usage_adaptation_mut(self, node);
     }
 
+    fn visit_trait_usage_adaptation_kind(&mut self, node: &mut TraitUsageAdaptationKind) {
+        walk_trait_usage_adaptation_kind_mut(self, node);
+    }
+
     fn visit_catch_type(&mut self, node: &mut CatchType) {
         walk_catch_type_mut(self, node);
+    }
+
+    fn visit_catch_type_kind(&mut self, node: &mut CatchTypeKind) {
+        walk_catch_type_kind_mut(self, node);
     }
 
     fn visit_try_statement(&mut self, node: &mut TryStatement) {

@@ -5,9 +5,8 @@ mod generated;
 pub use generated::*;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
-use pxp_token::TokenKind;
+use pxp_token::{Token, TokenKind};
 
-pub mod spanned;
 pub mod data_type;
 pub mod identifiers;
 pub mod literals;
@@ -21,9 +20,9 @@ pub mod variables;
 impl Display for UseKind {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            UseKind::Normal => write!(f, "use"),
-            UseKind::Function => write!(f, "use function"),
-            UseKind::Const => write!(f, "use const"),
+            UseKind::Normal(_) => write!(f, "use"),
+            UseKind::Function(_) => write!(f, "use function"),
+            UseKind::Const(_) => write!(f, "use const"),
         }
     }
 }
@@ -58,24 +57,26 @@ impl Expression {
     }
 
     pub fn missing(span: Span) -> Self {
-        Self::new(ExpressionKind::Missing, span, CommentGroup::default())
+        Self::new(ExpressionKind::Missing(span), span, CommentGroup::default())
     }
 
     pub fn noop(span: Span) -> Self {
-        Self::new(ExpressionKind::Noop, span, CommentGroup::default())
+        Self::new(ExpressionKind::Noop(span), span, CommentGroup::default())
     }
 }
 
-impl From<TokenKind> for CastKind {
-    fn from(kind: TokenKind) -> Self {
-        match kind {
-            TokenKind::StringCast | TokenKind::BinaryCast => Self::String,
-            TokenKind::ObjectCast => Self::Object,
-            TokenKind::BoolCast | TokenKind::BooleanCast => Self::Bool,
-            TokenKind::IntCast | TokenKind::IntegerCast => Self::Int,
-            TokenKind::FloatCast | TokenKind::DoubleCast | TokenKind::RealCast => Self::Float,
-            TokenKind::UnsetCast => Self::Unset,
-            TokenKind::ArrayCast => Self::Array,
+impl From<Token> for CastKind {
+    fn from(token: Token) -> Self {
+        match token.kind {
+            TokenKind::StringCast | TokenKind::BinaryCast => Self::String(token.span),
+            TokenKind::ObjectCast => Self::Object(token.span),
+            TokenKind::BoolCast | TokenKind::BooleanCast => Self::Bool(token.span),
+            TokenKind::IntCast | TokenKind::IntegerCast => Self::Int(token.span),
+            TokenKind::FloatCast | TokenKind::DoubleCast | TokenKind::RealCast => {
+                Self::Float(token.span)
+            }
+            TokenKind::UnsetCast => Self::Unset(token.span),
+            TokenKind::ArrayCast => Self::Array(token.span),
             _ => unreachable!(),
         }
     }
@@ -87,12 +88,12 @@ impl From<&TokenKind> for CastKind {
     }
 }
 
-impl From<TokenKind> for SpecialNameKind {
-    fn from(value: TokenKind) -> Self {
-        match value {
-            TokenKind::Self_ => Self::Self_,
-            TokenKind::Parent => Self::Parent,
-            TokenKind::Static => Self::Static,
+impl From<Token> for SpecialNameKind {
+    fn from(token: Token) -> Self {
+        match token.kind {
+            TokenKind::Self_ => Self::Self_(token.span),
+            TokenKind::Parent => Self::Parent(token.span),
+            TokenKind::Static => Self::Static(token.span),
             _ => unreachable!(),
         }
     }
