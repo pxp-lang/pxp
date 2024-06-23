@@ -190,6 +190,15 @@ pub fn walk_use<V: Visitor + ?Sized>(visitor: &mut V, node: &Use) {
     }
 }
 
+pub fn walk_use_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &UseKind) {
+    match node {
+        UseKind::Normal => {}
+        UseKind::Function => {}
+        UseKind::Const => {}
+        _ => {}
+    }
+}
+
 pub fn walk_eval_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &EvalExpression) {
     visitor.visit_single_argument(&node.argument);
 }

@@ -61,7 +61,9 @@ pub trait Visitor {
         walk_use(self, node);
     }
 
-    fn visit_use_kind(&mut self, node: &UseKind) {}
+    fn visit_use_kind(&mut self, node: &UseKind) {
+        walk_use_kind(self, node);
+    }
 
     fn visit_eval_expression(&mut self, node: &EvalExpression) {
         walk_eval_expression(self, node);

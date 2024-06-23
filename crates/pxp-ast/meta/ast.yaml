@@ -156,6 +156,7 @@ GlobalStatement:
   span: Span
   global: Span
   variables: Vec<Variable>
+  semicolon: Span
 
 BlockStatement:
   span: Span
@@ -185,9 +186,9 @@ Use:
 UseKind:
   as: Enum
   derive: Hash, Copy
-  Normal: Span
-  Function: Span
-  Const: Span
+  Normal: ''
+  Function: ''
+  Const: ''
 
 EvalExpression:
   span: Span
@@ -1621,6 +1622,7 @@ Ending:
 StaticStatement:
   span: Span
   vars: Vec<StaticVar>
+  semicolon: Span
 
 SwitchStatement:
   span: Span

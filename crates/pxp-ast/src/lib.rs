@@ -20,9 +20,9 @@ pub mod variables;
 impl Display for UseKind {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            UseKind::Normal(_) => write!(f, "use"),
-            UseKind::Function(_) => write!(f, "use function"),
-            UseKind::Const(_) => write!(f, "use const"),
+            UseKind::Normal => write!(f, "use"),
+            UseKind::Function => write!(f, "use function"),
+            UseKind::Const => write!(f, "use const"),
         }
     }
 }

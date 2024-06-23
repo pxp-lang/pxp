@@ -202,6 +202,15 @@ pub fn walk_use_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Use) {
     }
 }
 
+pub fn walk_use_kind_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut UseKind) {
+    match node {
+        UseKind::Normal => {}
+        UseKind::Function => {}
+        UseKind::Const => {}
+        _ => {}
+    }
+}
+
 pub fn walk_eval_expression_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
     node: &mut EvalExpression,

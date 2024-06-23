@@ -246,6 +246,7 @@ pub struct GlobalStatement {
     pub span: Span,
     pub global: Span,
     pub variables: Vec<Variable>,
+    pub semicolon: Span,
 }
 
 impl Spanned for GlobalStatement {
@@ -309,20 +310,9 @@ pub struct Use {
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Copy)]
 pub enum UseKind {
-    Normal(Span),
-    Function(Span),
-    Const(Span),
-}
-
-impl Spanned for UseKind {
-    fn span(&self) -> Span {
-        match self {
-            UseKind::Normal(span) => *span,
-            UseKind::Function(span) => *span,
-            UseKind::Const(span) => *span,
-            _ => Span::default(),
-        }
-    }
+    Normal,
+    Function,
+    Const,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -3233,6 +3223,7 @@ impl Spanned for Ending {
 pub struct StaticStatement {
     pub span: Span,
     pub vars: Vec<StaticVar>,
+    pub semicolon: Span,
 }
 
 impl Spanned for StaticStatement {
