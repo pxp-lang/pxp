@@ -116,9 +116,8 @@ class VisitorGenerator
             $function .= sprintf("%s::%s", $type, $variant);
 
             if ($field === '') {
-                // Plain enum variants don't need to be walked.
                 $function .= " => {},\n";
-            } elseif (is_string($field)) {
+            } elseif (is_string($field) && $this->isSimpleType($field) && $field !== 'Span') {
                 // Enum variants with a single field can be walked directly.
                 $function .= sprintf("(inner) => visitor.%s(inner),\n", $this->generateVisitorMethodName($field, $template));
             } elseif (is_array($field)) {
@@ -144,10 +143,7 @@ class VisitorGenerator
             }
         }
 
-        if ($type === 'StatementKind' || $type === 'ExpressionKind') {
-            $function .= "_ => {},\n";
-        }
-
+        $function .= "_ => {},\n";
         $function .= "}\n";
 
         return $function;

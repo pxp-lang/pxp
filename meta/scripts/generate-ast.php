@@ -13,7 +13,7 @@ use crate::utils::CommaSeparated;
 use pxp_syntax::comments::{CommentGroup, Comment};
 use pxp_type::Type;
 use pxp_token::Token;
-use pxp_span::Span;
+use pxp_span::{Span, Spanned};
 use pxp_symbol::Symbol;
 use pxp_syntax::backed_enum_type::BackedEnumType;
 use pxp_syntax::name::NameQualification;
@@ -22,6 +22,24 @@ use pxp_syntax::name::NameQualification;
 RUST;
 
 $reserved = ['as', 'derive'];
+
+function is_spanned(array $structure): bool {
+    if (isset($structure['span'])) {
+        return true;
+    }
+
+    foreach ($structure as $field => $value) {
+        if (is_array($value) && isset($value['span'])) {
+            return true;
+        }
+
+        if (is_string($value) && $value === 'Span') {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 foreach ($ast as $node => $structure) {
     if (is_string($structure)) {
@@ -76,6 +94,31 @@ foreach ($ast as $node => $structure) {
         }
     }
 
+    $output .= "}\n\n";
+
+    if (! is_spanned($structure)) {
+        continue;
+    }
+
+    $output .= "impl Spanned for {$node} {\n";
+    $output .= "    fn span(&self) -> Span {\n";
+    
+    if (isset($structure['span'])) {
+        $output .= "        self.span";
+    } elseif ($enum) {
+        $output .= "        match self {";
+        foreach ($structure as $field => $value) {
+            if (is_string($value) && $value === 'Span') {
+                $output .= "{$node}::{$field}(span) => *span,\n";
+            } elseif (is_array($value)) {
+                $output .= "{$node}::{$field} { span, .. } => *span,";
+            }
+        }
+        $output .= "_ => Span::default(),\n";
+        $output .= "        }";
+    }
+
+    $output .= "    }";
     $output .= "}\n\n";
 }
 

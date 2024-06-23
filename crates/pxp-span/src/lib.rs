@@ -18,6 +18,10 @@ impl Span {
     pub fn is_empty(&self) -> bool {
         self.len() == 0
     }
+
+    pub fn combine(start: Span, end: Span) -> Span {
+        Span::new(start.start, end.end)
+    }
 }
 
 pub type ByteOffset = usize;

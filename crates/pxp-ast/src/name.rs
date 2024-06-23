@@ -1,4 +1,4 @@
-use std::fmt::{Debug, Display};
+use std::fmt::Display;
 
 use pxp_span::Span;
 use pxp_symbol::Symbol;
@@ -26,6 +26,7 @@ impl Name {
             NameKind::Resolved(ResolvedName {
                 resolved: Symbol::missing(),
                 original: Symbol::missing(),
+                span,
             }),
             span,
         )
@@ -36,6 +37,7 @@ impl Name {
             NameKind::Resolved(ResolvedName {
                 resolved: symbol,
                 original,
+                span,
             }),
             span,
         )
@@ -46,13 +48,14 @@ impl Name {
             NameKind::Unresolved(UnresolvedName {
                 symbol,
                 qualification,
+                span,
             }),
             span,
         )
     }
 
     pub fn special(kind: SpecialNameKind, symbol: Symbol, span: Span) -> Self {
-        Self::new(NameKind::Special(SpecialName { kind, symbol }), span)
+        Self::new(NameKind::Special(SpecialName { kind, symbol, span }), span)
     }
 
     pub fn symbol(&self) -> Symbol {
@@ -100,9 +103,9 @@ impl Name {
 impl Display for SpecialName {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self.kind {
-            SpecialNameKind::Self_ => write!(f, "self"),
-            SpecialNameKind::Static => write!(f, "static"),
-            SpecialNameKind::Parent => write!(f, "parent"),
+            SpecialNameKind::Self_(_) => write!(f, "self"),
+            SpecialNameKind::Static(_) => write!(f, "static"),
+            SpecialNameKind::Parent(_) => write!(f, "parent"),
         }
     }
 }
