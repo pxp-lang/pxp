@@ -19,9 +19,17 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 7,
+                    end: 92,
+                },
                 expression: Expression {
                     kind: Match(
                         MatchExpression {
+                            span: Span {
+                                start: 7,
+                                end: 91,
+                            },
                             keyword: Span {
                                 start: 7,
                                 end: 12,
@@ -61,6 +69,10 @@
                             },
                             default: Some(
                                 DefaultMatchArm {
+                                    span: Span {
+                                        start: 70,
+                                        end: 88,
+                                    },
                                     keyword: Span {
                                         start: 70,
                                         end: 77,
@@ -72,6 +84,10 @@
                                     body: Expression {
                                         kind: Literal(
                                             Literal {
+                                                span: Span {
+                                                    start: 81,
+                                                    end: 88,
+                                                },
                                                 kind: String,
                                                 token: Token {
                                                     kind: LiteralSingleQuotedString,
@@ -97,10 +113,18 @@
                             ),
                             arms: [
                                 MatchArm {
+                                    span: Span {
+                                        start: 26,
+                                        end: 36,
+                                    },
                                     conditions: [
                                         Expression {
                                             kind: Literal(
                                                 Literal {
+                                                    span: Span {
+                                                        start: 26,
+                                                        end: 27,
+                                                    },
                                                     kind: Integer,
                                                     token: Token {
                                                         kind: LiteralInteger,
@@ -130,6 +154,10 @@
                                     body: Expression {
                                         kind: Literal(
                                             Literal {
+                                                span: Span {
+                                                    start: 31,
+                                                    end: 36,
+                                                },
                                                 kind: String,
                                                 token: Token {
                                                     kind: LiteralSingleQuotedString,
@@ -153,10 +181,18 @@
                                     },
                                 },
                                 MatchArm {
+                                    span: Span {
+                                        start: 42,
+                                        end: 64,
+                                    },
                                     conditions: [
                                         Expression {
                                             kind: Literal(
                                                 Literal {
+                                                    span: Span {
+                                                        start: 42,
+                                                        end: 43,
+                                                    },
                                                     kind: Integer,
                                                     token: Token {
                                                         kind: LiteralInteger,
@@ -181,6 +217,10 @@
                                         Expression {
                                             kind: Literal(
                                                 Literal {
+                                                    span: Span {
+                                                        start: 45,
+                                                        end: 46,
+                                                    },
                                                     kind: Integer,
                                                     token: Token {
                                                         kind: LiteralInteger,
@@ -210,6 +250,10 @@
                                     body: Expression {
                                         kind: Literal(
                                             Literal {
+                                                span: Span {
+                                                    start: 50,
+                                                    end: 64,
+                                                },
                                                 kind: String,
                                                 token: Token {
                                                     kind: LiteralSingleQuotedString,

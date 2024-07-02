@@ -19,9 +19,17 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 7,
+                    end: 10,
+                },
                 expression: Expression {
                     kind: ShortArray(
                         ShortArrayExpression {
+                            span: Span {
+                                start: 7,
+                                end: 9,
+                            },
                             start: Span {
                                 start: 7,
                                 end: 8,
@@ -38,7 +46,7 @@
                     ),
                     span: Span {
                         start: 7,
-                        end: 10,
+                        end: 9,
                     },
                     comments: CommentGroup {
                         comments: [],

@@ -19,9 +19,17 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 7,
+                    end: 26,
+                },
                 expression: Expression {
                     kind: New(
                         NewExpression {
+                            span: Span {
+                                start: 7,
+                                end: 25,
+                            },
                             new: Span {
                                 start: 7,
                                 end: 10,
@@ -31,6 +39,10 @@
                                     Name {
                                         kind: Resolved(
                                             ResolvedName {
+                                                span: Span {
+                                                    start: 11,
+                                                    end: 23,
+                                                },
                                                 resolved: Symbol("Foo\Bar\Baz"),
                                                 original: Symbol("\Foo\Bar\Baz"),
                                             },
@@ -51,6 +63,10 @@
                             },
                             arguments: Some(
                                 ArgumentList {
+                                    span: Span {
+                                        start: 23,
+                                        end: 25,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -69,7 +85,7 @@
                     ),
                     span: Span {
                         start: 7,
-                        end: 23,
+                        end: 25,
                     },
                     comments: CommentGroup {
                         comments: [],

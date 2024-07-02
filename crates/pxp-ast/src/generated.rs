@@ -2,7 +2,7 @@
 // Do not make modifications to this file directly.
 
 use crate::utils::CommaSeparated;
-use pxp_span::Span;
+use pxp_span::{Span, Spanned};
 use pxp_symbol::Symbol;
 use pxp_syntax::backed_enum_type::BackedEnumType;
 use pxp_syntax::comments::{Comment, CommentGroup};
@@ -17,6 +17,12 @@ pub struct Statement {
     pub kind: StatementKind,
     pub span: Span,
     pub comments: CommentGroup,
+}
+
+impl Spanned for Statement {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -59,6 +65,15 @@ pub enum StatementKind {
     Noop(Span),
 }
 
+impl Spanned for StatementKind {
+    fn span(&self) -> Span {
+        match self {
+            StatementKind::Noop(span) => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Expression {
     pub kind: ExpressionKind,
@@ -66,9 +81,15 @@ pub struct Expression {
     pub comments: CommentGroup,
 }
 
+impl Spanned for Expression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ExpressionKind {
-    Missing,
+    Missing(Span),
     Eval(EvalExpression),
     Empty(EmptyExpression),
     Die(DieExpression),
@@ -106,9 +127,9 @@ pub enum ExpressionKind {
     NullsafePropertyFetch(NullsafePropertyFetchExpression),
     StaticPropertyFetch(StaticPropertyFetchExpression),
     ConstantFetch(ConstantFetchExpression),
-    Static,
-    Self_,
-    Parent,
+    Static(Span),
+    Self_(Span),
+    Parent(Span),
     ShortArray(ShortArrayExpression),
     Array(ArrayExpression),
     List(ListExpression),
@@ -122,7 +143,7 @@ pub enum ExpressionKind {
     AnonymousClass(AnonymousClassExpression),
     Bool(BoolExpression),
     ArrayIndex(ArrayIndexExpression),
-    Null,
+    Null(Span),
     MagicConstant(MagicConstantExpression),
     ShortTernary(ShortTernaryExpression),
     Ternary(TernaryExpression),
@@ -134,12 +155,33 @@ pub enum ExpressionKind {
     YieldFrom(YieldFromExpression),
     Cast(CastExpression),
     Name(Name),
-    Noop,
+    Noop(Span),
+}
+
+impl Spanned for ExpressionKind {
+    fn span(&self) -> Span {
+        match self {
+            ExpressionKind::Missing(span) => *span,
+            ExpressionKind::Static(span) => *span,
+            ExpressionKind::Self_(span) => *span,
+            ExpressionKind::Parent(span) => *span,
+            ExpressionKind::Null(span) => *span,
+            ExpressionKind::Noop(span) => *span,
+            _ => Span::default(),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InlineHtmlStatement {
+    pub span: Span,
     pub html: Token,
+}
+
+impl Spanned for InlineHtmlStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -147,9 +189,21 @@ pub struct FullOpeningTagStatement {
     pub span: Span,
 }
 
+impl Spanned for FullOpeningTagStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ShortOpeningTagStatement {
     pub span: Span,
+}
+
+impl Spanned for ShortOpeningTagStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -157,45 +211,101 @@ pub struct EchoOpeningTagStatement {
     pub span: Span,
 }
 
+impl Spanned for EchoOpeningTagStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClosingTagStatement {
     pub span: Span,
 }
 
+impl Spanned for ClosingTagStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ExpressionStatement {
+    pub span: Span,
     pub expression: Expression,
     pub ending: Ending,
 }
 
+impl Spanned for ExpressionStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct GlobalStatement {
+    pub span: Span,
     pub global: Span,
     pub variables: Vec<Variable>,
+    pub semicolon: Span,
+}
+
+impl Spanned for GlobalStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BlockStatement {
+    pub span: Span,
     pub left_brace: Span,
     pub statements: Vec<Statement>,
     pub right_brace: Span,
 }
 
+impl Spanned for BlockStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum CastKind {
-    Int,
-    Bool,
-    Float,
-    String,
-    Array,
-    Object,
-    Unset,
+    Int(Span),
+    Bool(Span),
+    Float(Span),
+    String(Span),
+    Array(Span),
+    Object(Span),
+    Unset(Span),
+}
+
+impl Spanned for CastKind {
+    fn span(&self) -> Span {
+        match self {
+            CastKind::Int(span) => *span,
+            CastKind::Bool(span) => *span,
+            CastKind::Float(span) => *span,
+            CastKind::String(span) => *span,
+            CastKind::Array(span) => *span,
+            CastKind::Object(span) => *span,
+            CastKind::Unset(span) => *span,
+            _ => Span::default(),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Case {
+    pub span: Span,
     pub condition: Option<Expression>,
     pub body: Block,
+}
+
+impl Spanned for Case {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -214,274 +324,555 @@ pub enum UseKind {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct EvalExpression {
+    pub span: Span,
     pub eval: Span,
     pub argument: Box<SingleArgument>,
 }
 
+impl Spanned for EvalExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct EmptyExpression {
+    pub span: Span,
     pub empty: Span,
     pub argument: Box<SingleArgument>,
 }
 
+impl Spanned for EmptyExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DieExpression {
+    pub span: Span,
     pub die: Span,
     pub argument: Option<Box<SingleArgument>>,
 }
 
+impl Spanned for DieExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ExitExpression {
+    pub span: Span,
     pub exit: Span,
     pub argument: Option<Box<SingleArgument>>,
 }
 
+impl Spanned for ExitExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IssetExpression {
+    pub span: Span,
     pub isset: Span,
     pub arguments: ArgumentList,
 }
 
+impl Spanned for IssetExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UnsetExpression {
+    pub span: Span,
     pub unset: Span,
     pub arguments: ArgumentList,
 }
 
+impl Spanned for UnsetExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PrintExpression {
+    pub span: Span,
     pub print: Span,
     pub value: Option<Box<Expression>>,
     pub argument: Option<Box<SingleArgument>>,
 }
 
+impl Spanned for PrintExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConcatExpression {
+    pub span: Span,
     pub left: Box<Expression>,
     pub dot: Span,
     pub right: Box<Expression>,
 }
 
+impl Spanned for ConcatExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InstanceofExpression {
+    pub span: Span,
     pub left: Box<Expression>,
     pub instanceof: Span,
     pub right: Box<Expression>,
 }
 
+impl Spanned for InstanceofExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ReferenceExpression {
+    pub span: Span,
     pub ampersand: Span,
     pub right: Box<Expression>,
 }
 
+impl Spanned for ReferenceExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ParenthesizedExpression {
+    pub span: Span,
     pub start: Span,
     pub expr: Box<Expression>,
     pub end: Span,
 }
 
+impl Spanned for ParenthesizedExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ErrorSuppressExpression {
+    pub span: Span,
     pub at: Span,
     pub expr: Box<Expression>,
 }
 
+impl Spanned for ErrorSuppressExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IncludeExpression {
+    pub span: Span,
     pub include: Span,
     pub path: Box<Expression>,
 }
 
+impl Spanned for IncludeExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IncludeOnceExpression {
+    pub span: Span,
     pub include_once: Span,
     pub path: Box<Expression>,
 }
 
+impl Spanned for IncludeOnceExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct RequireExpression {
+    pub span: Span,
     pub require: Span,
     pub path: Box<Expression>,
 }
 
+impl Spanned for RequireExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct RequireOnceExpression {
+    pub span: Span,
     pub require_once: Span,
     pub path: Box<Expression>,
 }
 
+impl Spanned for RequireOnceExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionCallExpression {
+    pub span: Span,
     pub target: Box<Expression>,
     pub arguments: ArgumentList,
+}
+
+impl Spanned for FunctionCallExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionClosureCreationExpression {
+    pub span: Span,
     pub target: Box<Expression>,
     pub placeholder: ArgumentPlaceholder,
+}
+
+impl Spanned for FunctionClosureCreationExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MethodCallExpression {
+    pub span: Span,
     pub target: Box<Expression>,
     pub arrow: Span,
     pub method: Box<Expression>,
     pub arguments: ArgumentList,
+}
+
+impl Spanned for MethodCallExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MethodClosureCreationExpression {
+    pub span: Span,
     pub target: Box<Expression>,
     pub arrow: Span,
     pub method: Box<Expression>,
     pub placeholder: ArgumentPlaceholder,
+}
+
+impl Spanned for MethodClosureCreationExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NullsafeMethodCallExpression {
+    pub span: Span,
     pub target: Box<Expression>,
     pub question_arrow: Span,
     pub method: Box<Expression>,
     pub arguments: ArgumentList,
 }
 
+impl Spanned for NullsafeMethodCallExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticMethodCallExpression {
+    pub span: Span,
     pub target: Box<Expression>,
     pub double_colon: Span,
     pub method: Identifier,
     pub arguments: ArgumentList,
+}
+
+impl Spanned for StaticMethodCallExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticVariableMethodCallExpression {
+    pub span: Span,
     pub target: Box<Expression>,
     pub double_colon: Span,
     pub method: Variable,
     pub arguments: ArgumentList,
 }
 
+impl Spanned for StaticVariableMethodCallExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticMethodClosureCreationExpression {
+    pub span: Span,
     pub target: Box<Expression>,
     pub double_colon: Span,
     pub method: Identifier,
     pub placeholder: ArgumentPlaceholder,
 }
 
+impl Spanned for StaticMethodClosureCreationExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticVariableMethodClosureCreationExpression {
+    pub span: Span,
     pub target: Box<Expression>,
     pub double_colon: Span,
     pub method: Variable,
     pub placeholder: ArgumentPlaceholder,
 }
 
+impl Spanned for StaticVariableMethodClosureCreationExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PropertyFetchExpression {
+    pub span: Span,
     pub target: Box<Expression>,
     pub arrow: Span,
     pub property: Box<Expression>,
 }
 
+impl Spanned for PropertyFetchExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NullsafePropertyFetchExpression {
+    pub span: Span,
     pub target: Box<Expression>,
     pub question_arrow: Span,
     pub property: Box<Expression>,
 }
 
+impl Spanned for NullsafePropertyFetchExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticPropertyFetchExpression {
+    pub span: Span,
     pub target: Box<Expression>,
     pub double_colon: Span,
     pub property: Variable,
 }
 
+impl Spanned for StaticPropertyFetchExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstantFetchExpression {
+    pub span: Span,
     pub target: Box<Expression>,
     pub double_colon: Span,
     pub constant: Identifier,
 }
 
+impl Spanned for ConstantFetchExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ShortArrayExpression {
+    pub span: Span,
     pub start: Span,
     pub items: CommaSeparated<ArrayItem>,
     pub end: Span,
 }
 
+impl Spanned for ShortArrayExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArrayExpression {
+    pub span: Span,
     pub array: Span,
     pub start: Span,
     pub items: CommaSeparated<ArrayItem>,
     pub end: Span,
 }
 
+impl Spanned for ArrayExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ListExpression {
+    pub span: Span,
     pub list: Span,
     pub start: Span,
     pub items: Vec<ListEntry>,
     pub end: Span,
 }
 
+impl Spanned for ListExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NewExpression {
+    pub span: Span,
     pub new: Span,
     pub target: Box<Expression>,
     pub arguments: Option<ArgumentList>,
 }
 
+impl Spanned for NewExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InterpolatedStringExpression {
+    pub span: Span,
     pub parts: Vec<StringPart>,
+}
+
+impl Spanned for InterpolatedStringExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct HeredocExpression {
+    pub span: Span,
     pub label: Symbol,
     pub parts: Vec<StringPart>,
 }
 
+impl Spanned for HeredocExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NowdocExpression {
+    pub span: Span,
     pub label: Token,
     pub value: Token,
 }
 
+impl Spanned for NowdocExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ShellExecExpression {
+    pub span: Span,
     pub parts: Vec<StringPart>,
+}
+
+impl Spanned for ShellExecExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BoolExpression {
-    pub value: bool,
+    pub span: Span,
+    pub value: Token,
+}
+
+impl Spanned for BoolExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArrayIndexExpression {
+    pub span: Span,
     pub array: Box<Expression>,
     pub left_bracket: Span,
     pub index: Option<Box<Expression>>,
     pub right_bracket: Span,
 }
 
+impl Spanned for ArrayIndexExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ShortTernaryExpression {
+    pub span: Span,
     pub condition: Box<Expression>,
     pub question_colon: Span,
     pub r#else: Box<Expression>,
 }
 
+impl Spanned for ShortTernaryExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TernaryExpression {
+    pub span: Span,
     pub condition: Box<Expression>,
     pub question: Span,
     pub then: Box<Expression>,
@@ -489,20 +880,42 @@ pub struct TernaryExpression {
     pub r#else: Box<Expression>,
 }
 
+impl Spanned for TernaryExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CoalesceExpression {
+    pub span: Span,
     pub lhs: Box<Expression>,
     pub double_question: Span,
     pub rhs: Box<Expression>,
 }
 
+impl Spanned for CoalesceExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CloneExpression {
+    pub span: Span,
+    pub clone: Span,
     pub target: Box<Expression>,
+}
+
+impl Spanned for CloneExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MatchExpression {
+    pub span: Span,
     pub keyword: Span,
     pub left_parenthesis: Span,
     pub condition: Box<Expression>,
@@ -513,41 +926,91 @@ pub struct MatchExpression {
     pub right_brace: Span,
 }
 
+impl Spanned for MatchExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ThrowExpression {
+    pub span: Span,
     pub value: Box<Expression>,
+}
+
+impl Spanned for ThrowExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct YieldExpression {
+    pub span: Span,
+    pub r#yield: Span,
     pub key: Option<Box<Expression>>,
     pub value: Option<Box<Expression>>,
 }
 
+impl Spanned for YieldExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct YieldFromExpression {
+    pub span: Span,
+    pub r#yield: Span,
+    pub from: Span,
     pub value: Box<Expression>,
+}
+
+impl Spanned for YieldFromExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CastExpression {
-    pub cast: Span,
+    pub span: Span,
     pub kind: CastKind,
     pub value: Box<Expression>,
 }
 
+impl Spanned for CastExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DefaultMatchArm {
+    pub span: Span,
     pub keyword: Span,
     pub double_arrow: Span,
     pub body: Expression,
 }
 
+impl Spanned for DefaultMatchArm {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MatchArm {
+    pub span: Span,
     pub conditions: Vec<Expression>,
     pub arrow: Span,
     pub body: Expression,
+}
+
+impl Spanned for MatchArm {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -563,6 +1026,23 @@ pub enum MagicConstantExpression {
     CompilerHaltOffset(Span),
 }
 
+impl Spanned for MagicConstantExpression {
+    fn span(&self) -> Span {
+        match self {
+            MagicConstantExpression::Directory(span) => *span,
+            MagicConstantExpression::File(span) => *span,
+            MagicConstantExpression::Line(span) => *span,
+            MagicConstantExpression::Function(span) => *span,
+            MagicConstantExpression::Class(span) => *span,
+            MagicConstantExpression::Method(span) => *span,
+            MagicConstantExpression::Namespace(span) => *span,
+            MagicConstantExpression::Trait(span) => *span,
+            MagicConstantExpression::CompilerHaltOffset(span) => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum StringPart {
     Literal(LiteralStringPart),
@@ -571,34 +1051,53 @@ pub enum StringPart {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct LiteralStringPart {
+    pub span: Span,
     pub value: Symbol,
+}
+
+impl Spanned for LiteralStringPart {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ExpressionStringPart {
+    pub span: Span,
     pub expression: Box<Expression>,
+}
+
+impl Spanned for ExpressionStringPart {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ArrayItem {
-    Skipped,
+    Skipped(Span),
     Value {
+        span: Span,
         value: Expression,
     },
     ReferencedValue {
+        span: Span,
         ampersand: Span,
         value: Expression,
     },
     SpreadValue {
+        span: Span,
         ellipsis: Span,
         value: Expression,
     },
     KeyValue {
+        span: Span,
         key: Expression,
         double_arrow: Span,
         value: Expression,
     },
     ReferencedKeyValue {
+        span: Span,
         key: Expression,
         double_arrow: Span,
         ampersand: Span,
@@ -606,33 +1105,74 @@ pub enum ArrayItem {
     },
 }
 
+impl Spanned for ArrayItem {
+    fn span(&self) -> Span {
+        match self {
+            ArrayItem::Skipped(span) => *span,
+            ArrayItem::Value { span, .. } => *span,
+            ArrayItem::ReferencedValue { span, .. } => *span,
+            ArrayItem::SpreadValue { span, .. } => *span,
+            ArrayItem::KeyValue { span, .. } => *span,
+            ArrayItem::ReferencedKeyValue { span, .. } => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ListEntry {
-    Skipped,
+    Skipped(Span),
     Value {
+        span: Span,
         value: Expression,
     },
     KeyValue {
+        span: Span,
         key: Expression,
         double_arrow: Span,
         value: Expression,
     },
 }
 
+impl Spanned for ListEntry {
+    fn span(&self) -> Span {
+        match self {
+            ListEntry::Skipped(span) => *span,
+            ListEntry::Value { span, .. } => *span,
+            ListEntry::KeyValue { span, .. } => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PositionalArgument {
+    pub span: Span,
     pub comments: CommentGroup,
     pub ellipsis: Option<Span>,
     pub value: Expression,
 }
 
+impl Spanned for PositionalArgument {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NamedArgument {
+    pub span: Span,
     pub comments: CommentGroup,
     pub name: SimpleIdentifier,
     pub colon: Span,
     pub ellipsis: Option<Span>,
     pub value: Expression,
+}
+
+impl Spanned for NamedArgument {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -643,26 +1183,47 @@ pub enum Argument {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArgumentList {
+    pub span: Span,
     pub comments: CommentGroup,
     pub left_parenthesis: Span,
     pub arguments: Vec<Argument>,
     pub right_parenthesis: Span,
 }
 
+impl Spanned for ArgumentList {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct SingleArgument {
+    pub span: Span,
     pub comments: CommentGroup,
     pub left_parenthesis: Span,
     pub argument: Option<Argument>,
     pub right_parenthesis: Span,
 }
 
+impl Spanned for SingleArgument {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArgumentPlaceholder {
+    pub span: Span,
     pub comments: CommentGroup,
     pub left_parenthesis: Span,
     pub ellipsis: Span,
     pub right_parenthesis: Span,
+}
+
+impl Spanned for ArgumentPlaceholder {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -672,21 +1233,41 @@ pub struct Attribute {
     pub arguments: Option<ArgumentList>,
 }
 
+impl Spanned for Attribute {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct AttributeGroup {
     pub span: Span,
     pub members: Vec<Attribute>,
 }
 
+impl Spanned for AttributeGroup {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassBody {
+    pub span: Span,
     pub left_brace: Span,
     pub members: Vec<ClassishMember>,
     pub right_brace: Span,
 }
 
+impl Spanned for ClassBody {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassStatement {
+    pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub modifiers: ClassModifierGroup,
     pub class: Span,
@@ -696,15 +1277,29 @@ pub struct ClassStatement {
     pub body: ClassBody,
 }
 
+impl Spanned for ClassStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct AnonymousClassBody {
+    pub span: Span,
     pub left_brace: Span,
     pub members: Vec<ClassishMember>,
     pub right_brace: Span,
 }
 
+impl Spanned for AnonymousClassBody {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct AnonymousClassExpression {
+    pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub class: Span,
     pub extends: Option<ClassExtends>,
@@ -712,16 +1307,36 @@ pub struct AnonymousClassExpression {
     pub body: AnonymousClassBody,
 }
 
+impl Spanned for AnonymousClassExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassExtends {
+    pub span: Span,
     pub extends: Span,
     pub parent: Name,
 }
 
+impl Spanned for ClassExtends {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassImplements {
+    pub span: Span,
     pub implements: Span,
     pub interfaces: CommaSeparated<Name>,
+}
+
+impl Spanned for ClassImplements {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -738,28 +1353,50 @@ pub enum ClassishMember {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstantEntry {
+    pub span: Span,
     pub name: Name,
     pub equals: Span,
     pub value: Expression,
 }
 
+impl Spanned for ConstantEntry {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassishConstantEntry {
+    pub span: Span,
     pub name: SimpleIdentifier,
     pub equals: Span,
     pub value: Expression,
 }
 
+impl Spanned for ClassishConstantEntry {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstantStatement {
+    pub span: Span,
     pub comments: CommentGroup,
     pub r#const: Span,
     pub entries: Vec<ConstantEntry>,
     pub semicolon: Span,
 }
 
+impl Spanned for ConstantStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassishConstant {
+    pub span: Span,
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
     pub modifiers: ConstantModifierGroup,
@@ -769,8 +1406,15 @@ pub struct ClassishConstant {
     pub semicolon: Span,
 }
 
+impl Spanned for ClassishConstant {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IfStatement {
+    pub span: Span,
     pub r#if: Span,
     pub left_parenthesis: Span,
     pub condition: Expression,
@@ -778,14 +1422,22 @@ pub struct IfStatement {
     pub body: IfStatementBody,
 }
 
+impl Spanned for IfStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum IfStatementBody {
     Statement {
+        span: Span,
         statement: Box<Statement>,
         elseifs: Vec<IfStatementElseIf>,
         r#else: Option<IfStatementElse>,
     },
     Block {
+        span: Span,
         colon: Span,
         statements: Vec<Statement>,
         elseifs: Vec<IfStatementElseIfBlock>,
@@ -795,23 +1447,48 @@ pub enum IfStatementBody {
     },
 }
 
+impl Spanned for IfStatementBody {
+    fn span(&self) -> Span {
+        match self {
+            IfStatementBody::Statement { span, .. } => *span,
+            IfStatementBody::Block { span, .. } => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IfStatementElseIf {
+    pub span: Span,
     pub elseif: Span,
     pub left_parenthesis: Span,
     pub condition: Expression,
     pub right_parenthesis: Span,
     pub statement: Box<Statement>,
+}
+
+impl Spanned for IfStatementElseIf {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IfStatementElse {
+    pub span: Span,
     pub r#else: Span,
     pub statement: Box<Statement>,
 }
 
+impl Spanned for IfStatementElse {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IfStatementElseIfBlock {
+    pub span: Span,
     pub elseif: Span,
     pub left_parenthesis: Span,
     pub condition: Expression,
@@ -820,11 +1497,24 @@ pub struct IfStatementElseIfBlock {
     pub statements: Vec<Statement>,
 }
 
+impl Spanned for IfStatementElseIfBlock {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IfStatementElseBlock {
+    pub span: Span,
     pub r#else: Span,
     pub colon: Span,
     pub statements: Vec<Statement>,
+}
+
+impl Spanned for IfStatementElseBlock {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -833,54 +1523,105 @@ pub struct DataType {
     pub span: Span,
 }
 
+impl Spanned for DataType {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DeclareEntry {
+    pub span: Span,
     pub key: SimpleIdentifier,
     pub equals: Span,
     pub value: Literal,
 }
 
+impl Spanned for DeclareEntry {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DeclareEntryGroup {
+    pub span: Span,
     pub left_parenthesis: Span,
     pub right_parenthesis: Span,
     pub entries: Vec<DeclareEntry>,
 }
 
+impl Spanned for DeclareEntryGroup {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum DeclareBody {
     Noop {
+        span: Span,
         semicolon: Span,
     },
     Braced {
+        span: Span,
         left_brace: Span,
         statements: Vec<Statement>,
         right_brace: Span,
     },
     Expression {
+        span: Span,
         expression: Expression,
         semicolon: Span,
     },
     Block {
+        span: Span,
         colon: Span,
         statements: Vec<Statement>,
-        end: (Span, Span),
+        enddeclare: Span,
+        semicolon: Span,
     },
+}
+
+impl Spanned for DeclareBody {
+    fn span(&self) -> Span {
+        match self {
+            DeclareBody::Noop { span, .. } => *span,
+            DeclareBody::Braced { span, .. } => *span,
+            DeclareBody::Expression { span, .. } => *span,
+            DeclareBody::Block { span, .. } => *span,
+            _ => Span::default(),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DeclareStatement {
+    pub span: Span,
     pub declare: Span,
     pub entries: DeclareEntryGroup,
     pub body: DeclareBody,
 }
 
+impl Spanned for DeclareStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UnitEnumCase {
+    pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub start: Span,
     pub name: SimpleIdentifier,
     pub end: Span,
+}
+
+impl Spanned for UnitEnumCase {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -891,13 +1632,21 @@ pub enum UnitEnumMember {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UnitEnumBody {
+    pub span: Span,
     pub left_brace: Span,
     pub members: Vec<UnitEnumMember>,
     pub right_brace: Span,
 }
 
+impl Spanned for UnitEnumBody {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UnitEnumStatement {
+    pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub r#enum: Span,
     pub name: Name,
@@ -905,14 +1654,27 @@ pub struct UnitEnumStatement {
     pub body: UnitEnumBody,
 }
 
+impl Spanned for UnitEnumStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BackedEnumCase {
+    pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub case: Span,
     pub name: SimpleIdentifier,
     pub equals: Span,
     pub value: Expression,
     pub semicolon: Span,
+}
+
+impl Spanned for BackedEnumCase {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -923,13 +1685,21 @@ pub enum BackedEnumMember {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BackedEnumBody {
+    pub span: Span,
     pub left_brace: Span,
     pub members: Vec<BackedEnumMember>,
     pub right_brace: Span,
 }
 
+impl Spanned for BackedEnumBody {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BackedEnumStatement {
+    pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub r#enum: Span,
     pub name: Name,
@@ -938,14 +1708,28 @@ pub struct BackedEnumStatement {
     pub body: BackedEnumBody,
 }
 
+impl Spanned for BackedEnumStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ReturnType {
+    pub span: Span,
     pub colon: Span,
     pub data_type: DataType,
 }
 
+impl Spanned for ReturnType {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionParameter {
+    pub span: Span,
     pub comments: CommentGroup,
     pub name: SimpleVariable,
     pub attributes: Vec<AttributeGroup>,
@@ -955,24 +1739,45 @@ pub struct FunctionParameter {
     pub ampersand: Option<Span>,
 }
 
+impl Spanned for FunctionParameter {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionParameterList {
+    pub span: Span,
     pub comments: CommentGroup,
     pub left_parenthesis: Span,
     pub parameters: CommaSeparated<FunctionParameter>,
     pub right_parenthesis: Span,
 }
 
+impl Spanned for FunctionParameterList {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionBody {
+    pub span: Span,
     pub comments: CommentGroup,
     pub left_brace: Span,
     pub statements: Vec<Statement>,
     pub right_brace: Span,
 }
 
+impl Spanned for FunctionBody {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionStatement {
+    pub span: Span,
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
     pub function: Span,
@@ -983,15 +1788,29 @@ pub struct FunctionStatement {
     pub body: FunctionBody,
 }
 
+impl Spanned for FunctionStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClosureUseVariable {
+    pub span: Span,
     pub comments: CommentGroup,
     pub ampersand: Option<Span>,
     pub variable: SimpleVariable,
 }
 
+impl Spanned for ClosureUseVariable {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClosureUse {
+    pub span: Span,
     pub comments: CommentGroup,
     pub r#use: Span,
     pub left_parenthesis: Span,
@@ -999,8 +1818,15 @@ pub struct ClosureUse {
     pub right_parenthesis: Span,
 }
 
+impl Spanned for ClosureUse {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClosureExpression {
+    pub span: Span,
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
     pub r#static: Option<Span>,
@@ -1012,8 +1838,15 @@ pub struct ClosureExpression {
     pub body: FunctionBody,
 }
 
+impl Spanned for ClosureExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArrowFunctionExpression {
+    pub span: Span,
     pub comments: CommentGroup,
     pub r#static: Option<Span>,
     pub ampersand: Option<Span>,
@@ -1025,8 +1858,15 @@ pub struct ArrowFunctionExpression {
     pub body: Box<Expression>,
 }
 
+impl Spanned for ArrowFunctionExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstructorParameter {
+    pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub comments: CommentGroup,
     pub ampersand: Option<Span>,
@@ -1037,16 +1877,30 @@ pub struct ConstructorParameter {
     pub modifiers: PromotedPropertyModifierGroup,
 }
 
+impl Spanned for ConstructorParameter {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstructorParameterList {
+    pub span: Span,
     pub comments: CommentGroup,
     pub left_parenthesis: Span,
     pub parameters: CommaSeparated<ConstructorParameter>,
     pub right_parenthesis: Span,
 }
 
+impl Spanned for ConstructorParameterList {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct AbstractConstructor {
+    pub span: Span,
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
     pub modifiers: MethodModifierGroup,
@@ -1055,10 +1909,17 @@ pub struct AbstractConstructor {
     pub name: SimpleIdentifier,
     pub parameters: ConstructorParameterList,
     pub semicolon: Span,
+}
+
+impl Spanned for AbstractConstructor {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConcreteConstructor {
+    pub span: Span,
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
     pub modifiers: MethodModifierGroup,
@@ -1069,8 +1930,15 @@ pub struct ConcreteConstructor {
     pub body: MethodBody,
 }
 
+impl Spanned for ConcreteConstructor {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct AbstractMethod {
+    pub span: Span,
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
     pub modifiers: MethodModifierGroup,
@@ -1082,8 +1950,15 @@ pub struct AbstractMethod {
     pub semicolon: Span,
 }
 
+impl Spanned for AbstractMethod {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConcreteMethod {
+    pub span: Span,
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
     pub modifiers: MethodModifierGroup,
@@ -1095,27 +1970,54 @@ pub struct ConcreteMethod {
     pub body: MethodBody,
 }
 
+impl Spanned for ConcreteMethod {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MethodBody {
+    pub span: Span,
     pub comments: CommentGroup,
     pub left_brace: Span,
     pub statements: Vec<Statement>,
     pub right_brace: Span,
 }
 
+impl Spanned for MethodBody {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct LabelStatement {
+    pub span: Span,
     pub comments: CommentGroup,
     pub label: SimpleIdentifier,
     pub colon: Span,
 }
 
+impl Spanned for LabelStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct GotoStatement {
+    pub span: Span,
     pub comments: CommentGroup,
     pub keyword: Span,
     pub label: SimpleIdentifier,
     pub semicolon: Span,
+}
+
+impl Spanned for GotoStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1130,27 +2032,54 @@ pub struct SimpleIdentifier {
     pub span: Span,
 }
 
+impl Spanned for SimpleIdentifier {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DynamicIdentifier {
     pub span: Span,
     pub expr: Box<Expression>,
 }
 
+impl Spanned for DynamicIdentifier {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InterfaceExtends {
+    pub span: Span,
     pub extends: Span,
     pub parents: CommaSeparated<Name>,
 }
 
+impl Spanned for InterfaceExtends {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InterfaceBody {
+    pub span: Span,
     pub left_brace: Span,
     pub members: Vec<ClassishMember>,
     pub right_brace: Span,
 }
 
+impl Spanned for InterfaceBody {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InterfaceStatement {
+    pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub interface: Span,
     pub name: Name,
@@ -1158,10 +2087,23 @@ pub struct InterfaceStatement {
     pub body: InterfaceBody,
 }
 
+impl Spanned for InterfaceStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Literal {
+    pub span: Span,
     pub kind: LiteralKind,
     pub token: Token,
+}
+
+impl Spanned for Literal {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1174,6 +2116,7 @@ pub enum LiteralKind {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ForeachStatement {
+    pub span: Span,
     pub foreach: Span,
     pub left_parenthesis: Span,
     pub iterator: ForeachStatementIterator,
@@ -1181,15 +2124,23 @@ pub struct ForeachStatement {
     pub body: ForeachStatementBody,
 }
 
+impl Spanned for ForeachStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ForeachStatementIterator {
     Value {
+        span: Span,
         expression: Expression,
         r#as: Span,
         ampersand: Option<Span>,
         value: Expression,
     },
     KeyAndValue {
+        span: Span,
         expression: Expression,
         r#as: Span,
         ampersand: Option<Span>,
@@ -1199,12 +2150,24 @@ pub enum ForeachStatementIterator {
     },
 }
 
+impl Spanned for ForeachStatementIterator {
+    fn span(&self) -> Span {
+        match self {
+            ForeachStatementIterator::Value { span, .. } => *span,
+            ForeachStatementIterator::KeyAndValue { span, .. } => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ForeachStatementBody {
     Statement {
+        span: Span,
         statement: Box<Statement>,
     },
     Block {
+        span: Span,
         colon: Span,
         statements: Vec<Statement>,
         endforeach: Span,
@@ -1212,8 +2175,19 @@ pub enum ForeachStatementBody {
     },
 }
 
+impl Spanned for ForeachStatementBody {
+    fn span(&self) -> Span {
+        match self {
+            ForeachStatementBody::Statement { span, .. } => *span,
+            ForeachStatementBody::Block { span, .. } => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ForStatement {
+    pub span: Span,
     pub r#for: Span,
     pub left_parenthesis: Span,
     pub iterator: ForStatementIterator,
@@ -1221,8 +2195,15 @@ pub struct ForStatement {
     pub body: ForStatementBody,
 }
 
+impl Spanned for ForStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ForStatementIterator {
+    pub span: Span,
     pub initializations: CommaSeparated<Expression>,
     pub initializations_semicolon: Span,
     pub conditions: CommaSeparated<Expression>,
@@ -1230,12 +2211,20 @@ pub struct ForStatementIterator {
     pub r#loop: CommaSeparated<Expression>,
 }
 
+impl Spanned for ForStatementIterator {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ForStatementBody {
     Statement {
+        span: Span,
         statement: Box<Statement>,
     },
     Block {
+        span: Span,
         colon: Span,
         statements: Vec<Statement>,
         endfor: Span,
@@ -1243,8 +2232,19 @@ pub enum ForStatementBody {
     },
 }
 
+impl Spanned for ForStatementBody {
+    fn span(&self) -> Span {
+        match self {
+            ForStatementBody::Statement { span, .. } => *span,
+            ForStatementBody::Block { span, .. } => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DoWhileStatement {
+    pub span: Span,
     pub r#do: Span,
     pub body: Box<Statement>,
     pub r#while: Span,
@@ -1254,8 +2254,15 @@ pub struct DoWhileStatement {
     pub semicolon: Span,
 }
 
+impl Spanned for DoWhileStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct WhileStatement {
+    pub span: Span,
     pub r#while: Span,
     pub left_parenthesis: Span,
     pub condition: Expression,
@@ -1263,12 +2270,20 @@ pub struct WhileStatement {
     pub body: WhileStatementBody,
 }
 
+impl Spanned for WhileStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum WhileStatementBody {
     Statement {
+        span: Span,
         statement: Box<Statement>,
     },
     Block {
+        span: Span,
         colon: Span,
         statements: Vec<Statement>,
         endwhile: Span,
@@ -1276,28 +2291,62 @@ pub enum WhileStatementBody {
     },
 }
 
+impl Spanned for WhileStatementBody {
+    fn span(&self) -> Span {
+        match self {
+            WhileStatementBody::Statement { span, .. } => *span,
+            WhileStatementBody::Block { span, .. } => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Level {
     Literal(Literal),
     Parenthesized {
+        span: Span,
         left_parenthesis: Span,
         level: Box<Level>,
         right_parenthesis: Span,
     },
 }
 
+impl Spanned for Level {
+    fn span(&self) -> Span {
+        match self {
+            Level::Parenthesized { span, .. } => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BreakStatement {
+    pub span: Span,
     pub r#break: Span,
     pub level: Option<Level>,
     pub ending: Ending,
 }
 
+impl Spanned for BreakStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ContinueStatement {
+    pub span: Span,
     pub r#continue: Span,
     pub level: Option<Level>,
     pub ending: Ending,
+}
+
+impl Spanned for ContinueStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1305,6 +2354,17 @@ pub enum VisibilityModifier {
     Public(Span),
     Protected(Span),
     Private(Span),
+}
+
+impl Spanned for VisibilityModifier {
+    fn span(&self) -> Span {
+        match self {
+            VisibilityModifier::Public(span) => *span,
+            VisibilityModifier::Protected(span) => *span,
+            VisibilityModifier::Private(span) => *span,
+            _ => Span::default(),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1315,9 +2375,28 @@ pub enum PromotedPropertyModifier {
     Readonly(Span),
 }
 
+impl Spanned for PromotedPropertyModifier {
+    fn span(&self) -> Span {
+        match self {
+            PromotedPropertyModifier::Public(span) => *span,
+            PromotedPropertyModifier::Protected(span) => *span,
+            PromotedPropertyModifier::Private(span) => *span,
+            PromotedPropertyModifier::Readonly(span) => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct PromotedPropertyModifierGroup {
+    pub span: Span,
     pub modifiers: Vec<PromotedPropertyModifier>,
+}
+
+impl Spanned for PromotedPropertyModifierGroup {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1329,9 +2408,29 @@ pub enum PropertyModifier {
     Readonly(Span),
 }
 
+impl Spanned for PropertyModifier {
+    fn span(&self) -> Span {
+        match self {
+            PropertyModifier::Public(span) => *span,
+            PropertyModifier::Protected(span) => *span,
+            PropertyModifier::Private(span) => *span,
+            PropertyModifier::Static(span) => *span,
+            PropertyModifier::Readonly(span) => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct PropertyModifierGroup {
+    pub span: Span,
     pub modifiers: Vec<PropertyModifier>,
+}
+
+impl Spanned for PropertyModifierGroup {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1344,9 +2443,30 @@ pub enum MethodModifier {
     Final(Span),
 }
 
+impl Spanned for MethodModifier {
+    fn span(&self) -> Span {
+        match self {
+            MethodModifier::Public(span) => *span,
+            MethodModifier::Protected(span) => *span,
+            MethodModifier::Private(span) => *span,
+            MethodModifier::Static(span) => *span,
+            MethodModifier::Abstract(span) => *span,
+            MethodModifier::Final(span) => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct MethodModifierGroup {
+    pub span: Span,
     pub modifiers: Vec<MethodModifier>,
+}
+
+impl Spanned for MethodModifierGroup {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1356,9 +2476,27 @@ pub enum ClassModifier {
     Readonly(Span),
 }
 
+impl Spanned for ClassModifier {
+    fn span(&self) -> Span {
+        match self {
+            ClassModifier::Abstract(span) => *span,
+            ClassModifier::Final(span) => *span,
+            ClassModifier::Readonly(span) => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct ClassModifierGroup {
+    pub span: Span,
     pub modifiers: Vec<ClassModifier>,
+}
+
+impl Spanned for ClassModifierGroup {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1369,31 +2507,71 @@ pub enum ConstantModifier {
     Final(Span),
 }
 
+impl Spanned for ConstantModifier {
+    fn span(&self) -> Span {
+        match self {
+            ConstantModifier::Public(span) => *span,
+            ConstantModifier::Protected(span) => *span,
+            ConstantModifier::Private(span) => *span,
+            ConstantModifier::Final(span) => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstantModifierGroup {
+    pub span: Span,
     pub modifiers: Vec<ConstantModifier>,
+}
+
+impl Spanned for ConstantModifierGroup {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UnbracedNamespace {
+    pub span: Span,
     pub start: Span,
     pub name: Name,
     pub end: Span,
     pub statements: Vec<Statement>,
 }
 
+impl Spanned for UnbracedNamespace {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BracedNamespace {
+    pub span: Span,
     pub namespace: Span,
     pub name: Option<Name>,
     pub body: BracedNamespaceBody,
 }
 
+impl Spanned for BracedNamespace {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BracedNamespaceBody {
+    pub span: Span,
     pub start: Span,
     pub end: Span,
     pub statements: Vec<Statement>,
+}
+
+impl Spanned for BracedNamespaceBody {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1403,7 +2581,19 @@ pub enum NamespaceStatement {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub enum ArithmeticOperationExpression {
+pub struct ArithmeticOperationExpression {
+    pub span: Span,
+    pub kind: ArithmeticOperationKind,
+}
+
+impl Spanned for ArithmeticOperationExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum ArithmeticOperationKind {
     Addition {
         left: Box<Expression>,
         plus: Span,
@@ -1461,7 +2651,19 @@ pub enum ArithmeticOperationExpression {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub enum AssignmentOperationExpression {
+pub struct AssignmentOperationExpression {
+    pub span: Span,
+    pub kind: AssignmentOperationKind,
+}
+
+impl Spanned for AssignmentOperationExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum AssignmentOperationKind {
     Assign {
         left: Box<Expression>,
         equals: Span,
@@ -1535,7 +2737,19 @@ pub enum AssignmentOperationExpression {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub enum BitwiseOperationExpression {
+pub struct BitwiseOperationExpression {
+    pub span: Span,
+    pub kind: BitwiseOperationKind,
+}
+
+impl Spanned for BitwiseOperationExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum BitwiseOperationKind {
     And {
         left: Box<Expression>,
         and: Span,
@@ -1568,7 +2782,19 @@ pub enum BitwiseOperationExpression {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub enum ComparisonOperationExpression {
+pub struct ComparisonOperationExpression {
+    pub span: Span,
+    pub kind: ComparisonOperationKind,
+}
+
+impl Spanned for ComparisonOperationExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum ComparisonOperationKind {
     Equal {
         left: Box<Expression>,
         double_equals: Span,
@@ -1622,7 +2848,19 @@ pub enum ComparisonOperationExpression {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub enum LogicalOperationExpression {
+pub struct LogicalOperationExpression {
+    pub span: Span,
+    pub kind: LogicalOperationKind,
+}
+
+impl Spanned for LogicalOperationExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum LogicalOperationKind {
     And {
         left: Box<Expression>,
         double_ampersand: Span,
@@ -1660,6 +2898,12 @@ pub struct Name {
     pub span: Span,
 }
 
+impl Spanned for Name {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum NameKind {
     Special(SpecialName),
@@ -1669,31 +2913,64 @@ pub enum NameKind {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct SpecialName {
+    pub span: Span,
     pub kind: SpecialNameKind,
     pub symbol: Symbol,
 }
 
+impl Spanned for SpecialName {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum SpecialNameKind {
-    Self_,
-    Parent,
-    Static,
+    Self_(Span),
+    Parent(Span),
+    Static(Span),
+}
+
+impl Spanned for SpecialNameKind {
+    fn span(&self) -> Span {
+        match self {
+            SpecialNameKind::Self_(span) => *span,
+            SpecialNameKind::Parent(span) => *span,
+            SpecialNameKind::Static(span) => *span,
+            _ => Span::default(),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct UnresolvedName {
+    pub span: Span,
     pub symbol: Symbol,
     pub qualification: NameQualification,
 }
 
+impl Spanned for UnresolvedName {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct ResolvedName {
+    pub span: Span,
     pub resolved: Symbol,
     pub original: Symbol,
 }
 
+impl Spanned for ResolvedName {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Property {
+    pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub modifiers: PropertyModifierGroup,
     pub r#type: Option<DataType>,
@@ -1701,16 +2978,41 @@ pub struct Property {
     pub end: Span,
 }
 
+impl Spanned for Property {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct VariableProperty {
+    pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub r#type: Option<DataType>,
     pub entries: Vec<PropertyEntry>,
     pub end: Span,
 }
 
+impl Spanned for VariableProperty {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub enum PropertyEntry {
+pub struct PropertyEntry {
+    pub span: Span,
+    pub kind: PropertyEntryKind,
+}
+
+impl Spanned for PropertyEntry {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum PropertyEntryKind {
     Uninitialized {
         variable: SimpleVariable,
     },
@@ -1723,28 +3025,61 @@ pub enum PropertyEntry {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TraitBody {
+    pub span: Span,
     pub left_brace: Span,
     pub members: Vec<ClassishMember>,
     pub right_brace: Span,
 }
 
+impl Spanned for TraitBody {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TraitStatement {
+    pub span: Span,
     pub r#trait: Span,
     pub name: Name,
     pub attributes: Vec<AttributeGroup>,
     pub body: TraitBody,
 }
 
+impl Spanned for TraitStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TraitUsage {
+    pub span: Span,
     pub r#use: Span,
     pub traits: Vec<Name>,
     pub adaptations: Vec<TraitUsageAdaptation>,
 }
 
+impl Spanned for TraitUsage {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub enum TraitUsageAdaptation {
+pub struct TraitUsageAdaptation {
+    pub span: Span,
+    pub kind: TraitUsageAdaptationKind,
+}
+
+impl Spanned for TraitUsageAdaptation {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum TraitUsageAdaptationKind {
     Alias {
         r#trait: Option<Name>,
         method: SimpleIdentifier,
@@ -1764,13 +3099,26 @@ pub enum TraitUsageAdaptation {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub enum CatchType {
+pub struct CatchType {
+    pub span: Span,
+    pub kind: CatchTypeKind,
+}
+
+impl Spanned for CatchType {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum CatchTypeKind {
     Identifier { identifier: SimpleIdentifier },
     Union { identifiers: Vec<SimpleIdentifier> },
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TryStatement {
+    pub span: Span,
     pub start: Span,
     pub end: Span,
     pub body: Block,
@@ -1778,8 +3126,15 @@ pub struct TryStatement {
     pub finally: Option<FinallyBlock>,
 }
 
+impl Spanned for TryStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CatchBlock {
+    pub span: Span,
     pub start: Span,
     pub end: Span,
     pub types: CatchType,
@@ -1787,11 +3142,24 @@ pub struct CatchBlock {
     pub body: Block,
 }
 
+impl Spanned for CatchBlock {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FinallyBlock {
+    pub span: Span,
     pub start: Span,
     pub end: Span,
     pub body: Block,
+}
+
+impl Spanned for FinallyBlock {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1808,17 +3176,36 @@ pub struct SimpleVariable {
     pub span: Span,
 }
 
+impl Spanned for SimpleVariable {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct VariableVariable {
     pub span: Span,
     pub variable: Box<Variable>,
 }
 
+impl Spanned for VariableVariable {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BracedVariableVariable {
+    pub span: Span,
     pub start: Span,
     pub variable: Box<Expression>,
     pub end: Span,
+}
+
+impl Spanned for BracedVariableVariable {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -1828,13 +3215,33 @@ pub enum Ending {
     CloseTag(Span),
 }
 
+impl Spanned for Ending {
+    fn span(&self) -> Span {
+        match self {
+            Ending::Missing(span) => *span,
+            Ending::Semicolon(span) => *span,
+            Ending::CloseTag(span) => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticStatement {
+    pub span: Span,
     pub vars: Vec<StaticVar>,
+    pub semicolon: Span,
+}
+
+impl Spanned for StaticStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct SwitchStatement {
+    pub span: Span,
     pub switch: Span,
     pub left_parenthesis: Span,
     pub condition: Expression,
@@ -1842,40 +3249,88 @@ pub struct SwitchStatement {
     pub cases: Vec<Case>,
 }
 
+impl Spanned for SwitchStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct EchoStatement {
+    pub span: Span,
     pub echo: Span,
     pub values: Vec<Expression>,
     pub ending: Ending,
 }
 
+impl Spanned for EchoStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ReturnStatement {
+    pub span: Span,
     pub r#return: Span,
     pub value: Option<Expression>,
     pub ending: Ending,
 }
 
+impl Spanned for ReturnStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UseStatement {
+    pub span: Span,
     pub kind: UseKind,
     pub uses: Vec<Use>,
 }
 
+impl Spanned for UseStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct GroupUseStatement {
+    pub span: Span,
     pub prefix: SimpleIdentifier,
     pub kind: UseKind,
     pub uses: Vec<Use>,
 }
 
+impl Spanned for GroupUseStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct HaltCompilerStatement {
+    pub span: Span,
     pub content: Option<Token>,
+}
+
+impl Spanned for HaltCompilerStatement {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticVar {
+    pub span: Span,
     pub var: Variable,
     pub default: Option<Expression>,
+}
+
+impl Spanned for StaticVar {
+    fn span(&self) -> Span {
+        self.span
+    }
 }

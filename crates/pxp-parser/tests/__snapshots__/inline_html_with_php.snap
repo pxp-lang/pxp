@@ -2,6 +2,10 @@
     Statement {
         kind: InlineHtml(
             InlineHtmlStatement {
+                span: Span {
+                    start: 0,
+                    end: 4,
+                },
                 html: Token {
                     kind: InlineHtml,
                     span: Span {
@@ -42,6 +46,10 @@
     Statement {
         kind: Echo(
             EchoStatement {
+                span: Span {
+                    start: 10,
+                    end: 33,
+                },
                 echo: Span {
                     start: 10,
                     end: 14,
@@ -50,6 +58,10 @@
                     Expression {
                         kind: Literal(
                             Literal {
+                                span: Span {
+                                    start: 16,
+                                    end: 29,
+                                },
                                 kind: String,
                                 token: Token {
                                     kind: LiteralDoubleQuotedString,
@@ -91,6 +103,10 @@
     Statement {
         kind: InlineHtml(
             InlineHtmlStatement {
+                span: Span {
+                    start: 33,
+                    end: 38,
+                },
                 html: Token {
                     kind: InlineHtml,
                     span: Span {

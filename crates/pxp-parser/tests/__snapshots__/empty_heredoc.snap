@@ -19,9 +19,17 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 7,
+                    end: 19,
+                },
                 expression: Expression {
                     kind: Heredoc(
                         HeredocExpression {
+                            span: Span {
+                                start: 7,
+                                end: 18,
+                            },
                             label: Symbol("<<<TXT
                             "),
                             parts: [],

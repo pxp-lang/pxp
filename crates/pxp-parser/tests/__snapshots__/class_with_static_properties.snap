@@ -19,8 +19,16 @@
     Statement {
         kind: Class(
             ClassStatement {
+                span: Span {
+                    start: 7,
+                    end: 105,
+                },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    span: Span {
+                        start: 0,
+                        end: 0,
+                    },
                     modifiers: [],
                 },
                 class: Span {
@@ -30,6 +38,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 13,
+                                end: 16,
+                            },
                             resolved: Symbol("Foo"),
                             original: Symbol("Foo"),
                         },
@@ -42,6 +54,10 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    span: Span {
+                        start: 17,
+                        end: 105,
+                    },
                     left_brace: Span {
                         start: 17,
                         end: 18,
@@ -49,8 +65,16 @@
                     members: [
                         Property(
                             Property {
+                                span: Span {
+                                    start: 30,
+                                    end: 32,
+                                },
                                 attributes: [],
                                 modifiers: PropertyModifierGroup {
+                                    span: Span {
+                                        start: 23,
+                                        end: 29,
+                                    },
                                     modifiers: [
                                         Static(
                                             Span {
@@ -62,13 +86,19 @@
                                 },
                                 type: None,
                                 entries: [
-                                    Uninitialized {
-                                        variable: SimpleVariable {
-                                            symbol: Symbol("$a"),
-                                            stripped: Symbol("a"),
-                                            span: Span {
-                                                start: 30,
-                                                end: 32,
+                                    PropertyEntry {
+                                        span: Span {
+                                            start: 30,
+                                            end: 32,
+                                        },
+                                        kind: Uninitialized {
+                                            variable: SimpleVariable {
+                                                symbol: Symbol("$a"),
+                                                stripped: Symbol("a"),
+                                                span: Span {
+                                                    start: 30,
+                                                    end: 32,
+                                                },
                                             },
                                         },
                                     },
@@ -81,8 +111,16 @@
                         ),
                         Property(
                             Property {
+                                span: Span {
+                                    start: 52,
+                                    end: 54,
+                                },
                                 attributes: [],
                                 modifiers: PropertyModifierGroup {
+                                    span: Span {
+                                        start: 38,
+                                        end: 51,
+                                    },
                                     modifiers: [
                                         Public(
                                             Span {
@@ -100,13 +138,19 @@
                                 },
                                 type: None,
                                 entries: [
-                                    Uninitialized {
-                                        variable: SimpleVariable {
-                                            symbol: Symbol("$b"),
-                                            stripped: Symbol("b"),
-                                            span: Span {
-                                                start: 52,
-                                                end: 54,
+                                    PropertyEntry {
+                                        span: Span {
+                                            start: 52,
+                                            end: 54,
+                                        },
+                                        kind: Uninitialized {
+                                            variable: SimpleVariable {
+                                                symbol: Symbol("$b"),
+                                                stripped: Symbol("b"),
+                                                span: Span {
+                                                    start: 52,
+                                                    end: 54,
+                                                },
                                             },
                                         },
                                     },
@@ -119,8 +163,16 @@
                         ),
                         Property(
                             Property {
+                                span: Span {
+                                    start: 77,
+                                    end: 79,
+                                },
                                 attributes: [],
                                 modifiers: PropertyModifierGroup {
+                                    span: Span {
+                                        start: 60,
+                                        end: 76,
+                                    },
                                     modifiers: [
                                         Protected(
                                             Span {
@@ -138,13 +190,19 @@
                                 },
                                 type: None,
                                 entries: [
-                                    Uninitialized {
-                                        variable: SimpleVariable {
-                                            symbol: Symbol("$c"),
-                                            stripped: Symbol("c"),
-                                            span: Span {
-                                                start: 77,
-                                                end: 79,
+                                    PropertyEntry {
+                                        span: Span {
+                                            start: 77,
+                                            end: 79,
+                                        },
+                                        kind: Uninitialized {
+                                            variable: SimpleVariable {
+                                                symbol: Symbol("$c"),
+                                                stripped: Symbol("c"),
+                                                span: Span {
+                                                    start: 77,
+                                                    end: 79,
+                                                },
                                             },
                                         },
                                     },
@@ -157,8 +215,16 @@
                         ),
                         Property(
                             Property {
+                                span: Span {
+                                    start: 100,
+                                    end: 102,
+                                },
                                 attributes: [],
                                 modifiers: PropertyModifierGroup {
+                                    span: Span {
+                                        start: 85,
+                                        end: 99,
+                                    },
                                     modifiers: [
                                         Private(
                                             Span {
@@ -176,13 +242,19 @@
                                 },
                                 type: None,
                                 entries: [
-                                    Uninitialized {
-                                        variable: SimpleVariable {
-                                            symbol: Symbol("$d"),
-                                            stripped: Symbol("d"),
-                                            span: Span {
-                                                start: 100,
-                                                end: 102,
+                                    PropertyEntry {
+                                        span: Span {
+                                            start: 100,
+                                            end: 102,
+                                        },
+                                        kind: Uninitialized {
+                                            variable: SimpleVariable {
+                                                symbol: Symbol("$d"),
+                                                stripped: Symbol("d"),
+                                                span: Span {
+                                                    start: 100,
+                                                    end: 102,
+                                                },
                                             },
                                         },
                                     },

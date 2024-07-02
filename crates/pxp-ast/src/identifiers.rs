@@ -1,4 +1,4 @@
-use pxp_span::Span;
+use pxp_span::{Span, Spanned};
 use pxp_symbol::Symbol;
 
 use crate::{Identifier, SimpleIdentifier};
@@ -19,6 +19,15 @@ impl Identifier {
         match self {
             Self::SimpleIdentifier(..) => false,
             Self::DynamicIdentifier(..) => true,
+        }
+    }
+}
+
+impl Spanned for Identifier {
+    fn span(&self) -> Span {
+        match self {
+            Self::SimpleIdentifier(simple) => simple.span,
+            Self::DynamicIdentifier(dynamic) => dynamic.span,
         }
     }
 }

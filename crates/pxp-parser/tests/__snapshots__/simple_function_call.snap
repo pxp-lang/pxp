@@ -19,14 +19,26 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 10,
+                    end: 13,
+                },
                 expression: Expression {
                     kind: FunctionCall(
                         FunctionCallExpression {
+                            span: Span {
+                                start: 7,
+                                end: 12,
+                            },
                             target: Expression {
                                 kind: Name(
                                     Name {
                                         kind: Unresolved(
                                             UnresolvedName {
+                                                span: Span {
+                                                    start: 7,
+                                                    end: 10,
+                                                },
                                                 symbol: Symbol("foo"),
                                                 qualification: Unqualified,
                                             },
@@ -46,6 +58,10 @@
                                 },
                             },
                             arguments: ArgumentList {
+                                span: Span {
+                                    start: 10,
+                                    end: 12,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },

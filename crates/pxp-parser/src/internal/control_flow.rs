@@ -16,6 +16,7 @@ use pxp_ast::{Block, MatchExpression};
 
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
+use pxp_span::Spanned;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
@@ -55,6 +56,7 @@ pub fn match_expression(state: &mut State) -> Expression {
             let body = expressions::create(state);
 
             default = Some(Box::new(DefaultMatchArm {
+                span: Span::combine(current.span, body.span),
                 keyword: current.span,
                 double_arrow: arrow,
                 body,
@@ -81,6 +83,7 @@ pub fn match_expression(state: &mut State) -> Expression {
             let body = expressions::create(state);
 
             arms.push(MatchArm {
+                span: Span::combine(conditions.span(), body.span),
                 conditions,
                 arrow,
                 body,
@@ -98,6 +101,7 @@ pub fn match_expression(state: &mut State) -> Expression {
 
     Expression::new(
         ExpressionKind::Match(MatchExpression {
+            span: Span::combine(keyword, right_brace),
             keyword,
             left_parenthesis,
             condition,
@@ -107,7 +111,7 @@ pub fn match_expression(state: &mut State) -> Expression {
             arms,
             right_brace,
         }),
-        Span::new(start_span.start, right_brace.end),
+        Span::combine(keyword, right_brace),
         CommentGroup::default(),
     )
 }
@@ -147,6 +151,7 @@ pub fn switch_statement(state: &mut State) -> StatementKind {
                 }
 
                 cases.push(Case {
+                    span: Span::combine(condition.span, body.span()),
                     condition: Some(condition),
                     body,
                 });
@@ -166,6 +171,7 @@ pub fn switch_statement(state: &mut State) -> StatementKind {
                 }
 
                 cases.push(Case {
+                    span: body.span(),
                     condition: None,
                     body,
                 });
@@ -191,6 +197,7 @@ pub fn switch_statement(state: &mut State) -> StatementKind {
     }
 
     StatementKind::Switch(SwitchStatement {
+        span: Span::combine(switch, cases.span()),
         switch,
         left_parenthesis,
         condition,
@@ -205,16 +212,19 @@ pub fn if_statement(state: &mut State) -> StatementKind {
     let (left_parenthesis, condition, right_parenthesis) =
         utils::parenthesized(state, &expressions::create);
 
+    let body = if state.stream.current().kind == TokenKind::Colon {
+        if_statement_block_body(state)
+    } else {
+        if_statement_statement_body(state)
+    };
+
     StatementKind::If(IfStatement {
+        span: Span::combine(r#if, body.span()),
         r#if,
         left_parenthesis,
         condition,
         right_parenthesis,
-        body: if state.stream.current().kind == TokenKind::Colon {
-            if_statement_block_body(state)
-        } else {
-            if_statement_statement_body(state)
-        },
+        body,
     })
 }
 
@@ -229,12 +239,15 @@ fn if_statement_statement_body(state: &mut State) -> IfStatementBody {
         let (left_parenthesis, condition, right_parenthesis) =
             utils::parenthesized(state, &expressions::create);
 
+        let statement = crate::statement(state);
+
         elseifs.push(IfStatementElseIf {
+            span: Span::combine(current.span, statement.span),
             elseif: current.span,
             left_parenthesis,
             condition,
             right_parenthesis,
-            statement: Box::new(crate::statement(state)),
+            statement: Box::new(statement),
         });
 
         current = state.stream.current();
@@ -243,15 +256,23 @@ fn if_statement_statement_body(state: &mut State) -> IfStatementBody {
     let r#else = if current.kind == TokenKind::Else {
         state.stream.next();
 
+        let statement = crate::statement(state);
+
         Some(IfStatementElse {
+            span: Span::combine(current.span, statement.span),
             r#else: current.span,
-            statement: Box::new(crate::statement(state)),
+            statement: Box::new(statement),
         })
     } else {
         None
     };
 
     IfStatementBody::Statement {
+        span: if let Some(r#else) = &r#else {
+            Span::combine(statement.span, r#else.span)
+        } else {
+            statement.span
+        },
         statement,
         elseifs,
         r#else,
@@ -273,16 +294,23 @@ fn if_statement_block_body(state: &mut State) -> IfStatementBody {
         let (left_parenthesis, condition, right_parenthesis) =
             utils::parenthesized(state, &expressions::create);
 
+        let colon = utils::skip(state, TokenKind::Colon);
+
+        let statements = blocks::multiple_statements_until_any(
+            state,
+            &[TokenKind::Else, TokenKind::ElseIf, TokenKind::EndIf],
+        );
+
+        let span = Span::combine(current.span, statements.span());
+
         elseifs.push(IfStatementElseIfBlock {
+            span,
             elseif: current.span,
             left_parenthesis,
             condition,
             right_parenthesis,
-            colon: utils::skip(state, TokenKind::Colon),
-            statements: blocks::multiple_statements_until_any(
-                state,
-                &[TokenKind::Else, TokenKind::ElseIf, TokenKind::EndIf],
-            ),
+            colon,
+            statements,
         });
 
         current = state.stream.current();
@@ -291,21 +319,29 @@ fn if_statement_block_body(state: &mut State) -> IfStatementBody {
     let r#else = if current.kind == TokenKind::Else {
         state.stream.next();
 
+        let colon = utils::skip(state, TokenKind::Colon);
+        let statements = blocks::multiple_statements_until(state, &TokenKind::EndIf);
+
         Some(IfStatementElseBlock {
+            span: Span::combine(current.span, statements.span()),
             r#else: current.span,
-            colon: utils::skip(state, TokenKind::Colon),
-            statements: blocks::multiple_statements_until(state, &TokenKind::EndIf),
+            colon,
+            statements,
         })
     } else {
         None
     };
 
+    let endif = utils::skip(state, TokenKind::EndIf);
+    let ending = utils::skip_ending(state);
+
     IfStatementBody::Block {
+        span: Span::combine(colon, ending.span()),
         colon,
         statements,
         elseifs,
         r#else,
-        endif: utils::skip(state, TokenKind::EndIf),
-        ending: utils::skip_ending(state),
+        endif,
+        ending,
     }
 }

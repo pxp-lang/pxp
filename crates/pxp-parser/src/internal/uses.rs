@@ -9,11 +9,14 @@ use pxp_ast::Use;
 use pxp_ast::UseKind;
 use pxp_ast::UseStatement;
 use pxp_diagnostics::Severity;
+use pxp_span::Span;
 use pxp_token::TokenKind;
 
 use super::names;
 
 pub fn use_statement(state: &mut State) -> StatementKind {
+    let r#use = state.stream.current().span;
+
     state.stream.next();
 
     let kind = match state.stream.current().kind {
@@ -82,9 +85,9 @@ pub fn use_statement(state: &mut State) -> StatementKind {
         }
 
         utils::skip_right_brace(state);
-        utils::skip_semicolon(state);
+        let semicolon = utils::skip_semicolon(state);
 
-        StatementKind::GroupUse(GroupUseStatement { prefix, kind, uses })
+        StatementKind::GroupUse(GroupUseStatement { span: Span::combine(prefix.span, semicolon), prefix, kind, uses })
     } else {
         let mut uses = Vec::new();
         while !state.stream.is_eof() {
@@ -114,6 +117,8 @@ pub fn use_statement(state: &mut State) -> StatementKind {
             break;
         }
 
-        StatementKind::Use(UseStatement { uses, kind })
+        let span = Span::combine(r#use, state.stream.previous().span);
+
+        StatementKind::Use(UseStatement { span, uses, kind })
     }
 }

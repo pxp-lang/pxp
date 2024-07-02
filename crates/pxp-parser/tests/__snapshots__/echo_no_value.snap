@@ -19,13 +19,22 @@
     Statement {
         kind: Echo(
             EchoStatement {
+                span: Span {
+                    start: 7,
+                    end: 12,
+                },
                 echo: Span {
                     start: 7,
                     end: 11,
                 },
                 values: [
                     Expression {
-                        kind: Missing,
+                        kind: Missing(
+                            Span {
+                                start: 11,
+                                end: 12,
+                            },
+                        ),
                         span: Span {
                             start: 11,
                             end: 12,

@@ -4,6 +4,7 @@ use crate::statement;
 use pxp_ast::BlockStatement;
 use pxp_ast::Statement;
 use pxp_ast::StatementKind;
+use pxp_span::Span;
 use pxp_token::OpenTagKind;
 use pxp_token::TokenKind;
 
@@ -13,6 +14,7 @@ pub fn block_statement(state: &mut State) -> StatementKind {
     });
 
     StatementKind::Block(BlockStatement {
+        span: Span::combine(left_brace, right_brace),
         left_brace,
         statements,
         right_brace,

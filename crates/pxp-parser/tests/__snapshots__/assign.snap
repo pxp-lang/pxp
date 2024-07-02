@@ -19,56 +19,70 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 12,
+                    end: 14,
+                },
                 expression: Expression {
                     kind: AssignmentOperation(
-                        Assign {
-                            left: Expression {
-                                kind: Variable(
-                                    SimpleVariable(
-                                        SimpleVariable {
-                                            symbol: Symbol("$a"),
-                                            stripped: Symbol("a"),
-                                            span: Span {
-                                                start: 7,
-                                                end: 9,
+                        AssignmentOperationExpression {
+                            span: Span {
+                                start: 7,
+                                end: 13,
+                            },
+                            kind: Assign {
+                                left: Expression {
+                                    kind: Variable(
+                                        SimpleVariable(
+                                            SimpleVariable {
+                                                symbol: Symbol("$a"),
+                                                stripped: Symbol("a"),
+                                                span: Span {
+                                                    start: 7,
+                                                    end: 9,
+                                                },
                                             },
-                                        },
+                                        ),
                                     ),
-                                ),
-                                span: Span {
-                                    start: 7,
-                                    end: 9,
+                                    span: Span {
+                                        start: 7,
+                                        end: 9,
+                                    },
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
                                 },
-                                comments: CommentGroup {
-                                    comments: [],
+                                equals: Span {
+                                    start: 10,
+                                    end: 11,
                                 },
-                            },
-                            equals: Span {
-                                start: 10,
-                                end: 11,
-                            },
-                            right: Expression {
-                                kind: Literal(
-                                    Literal {
-                                        kind: Integer,
-                                        token: Token {
-                                            kind: LiteralInteger,
+                                right: Expression {
+                                    kind: Literal(
+                                        Literal {
                                             span: Span {
                                                 start: 12,
                                                 end: 13,
                                             },
-                                            symbol: Some(
-                                                Symbol("1"),
-                                            ),
+                                            kind: Integer,
+                                            token: Token {
+                                                kind: LiteralInteger,
+                                                span: Span {
+                                                    start: 12,
+                                                    end: 13,
+                                                },
+                                                symbol: Some(
+                                                    Symbol("1"),
+                                                ),
+                                            },
                                         },
+                                    ),
+                                    span: Span {
+                                        start: 12,
+                                        end: 13,
                                     },
-                                ),
-                                span: Span {
-                                    start: 12,
-                                    end: 13,
-                                },
-                                comments: CommentGroup {
-                                    comments: [],
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
                                 },
                             },
                         },

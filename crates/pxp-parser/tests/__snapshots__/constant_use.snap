@@ -19,12 +19,20 @@
     Statement {
         kind: Use(
             UseStatement {
+                span: Span {
+                    start: 7,
+                    end: 23,
+                },
                 kind: Const,
                 uses: [
                     Use {
                         name: Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 17,
+                                        end: 22,
+                                    },
                                     resolved: Symbol("A\FOO"),
                                     original: Symbol("A\FOO"),
                                 },
@@ -51,6 +59,10 @@
     Statement {
         kind: Echo(
             EchoStatement {
+                span: Span {
+                    start: 25,
+                    end: 34,
+                },
                 echo: Span {
                     start: 25,
                     end: 29,
@@ -61,6 +73,10 @@
                             Name {
                                 kind: Resolved(
                                     ResolvedName {
+                                        span: Span {
+                                            start: 30,
+                                            end: 33,
+                                        },
                                         resolved: Symbol("A\FOO"),
                                         original: Symbol("FOO"),
                                     },

@@ -19,14 +19,26 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 10,
+                    end: 19,
+                },
                 expression: Expression {
                     kind: ConstantFetch(
                         ConstantFetchExpression {
+                            span: Span {
+                                start: 7,
+                                end: 18,
+                            },
                             target: Expression {
                                 kind: Name(
                                     Name {
                                         kind: Resolved(
                                             ResolvedName {
+                                                span: Span {
+                                                    start: 7,
+                                                    end: 10,
+                                                },
                                                 resolved: Symbol("Foo"),
                                                 original: Symbol("Foo"),
                                             },

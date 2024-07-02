@@ -227,8 +227,8 @@ impl Visitor for Indexer {
         let modifiers = node.modifiers.clone();
 
         for entry in node.entries.iter() {
-            let name = entry.variable().stripped;
-            let default = entry.is_initialized();
+            let name = entry.kind.variable().stripped;
+            let default = entry.kind.is_initialized();
 
             self.context.class().properties.push(crate::class_like::Property { name, r#type: r#type.clone(), default, modifiers: modifiers.clone() });
         }
@@ -240,11 +240,11 @@ impl Visitor for Indexer {
         }
 
         let r#type = node.r#type.as_ref().map(|r| r.get_type()).unwrap_or_else(|| &Type::Mixed).clone();
-        let modifiers = PropertyModifierGroup { modifiers: vec![PropertyModifier::Public(Span::default())] };
+        let modifiers = PropertyModifierGroup { span: Span::default(), modifiers: vec![PropertyModifier::Public(Span::default())] };
 
         for entry in node.entries.iter() {
-            let name = entry.variable().stripped;
-            let default = entry.is_initialized();
+            let name = entry.kind.variable().stripped;
+            let default = entry.kind.is_initialized();
 
             self.context.class().properties.push(crate::class_like::Property { name, r#type: r#type.clone(), default, modifiers: modifiers.clone() });
         }

@@ -1,69 +1,69 @@
-use crate::{AssignmentOperationExpression, Expression};
+use crate::{AssignmentOperationKind, Expression};
 use pxp_span::Span;
 
-impl AssignmentOperationExpression {
+impl AssignmentOperationKind {
     pub fn left(&self) -> &Expression {
         match self {
-            AssignmentOperationExpression::Assign { left, .. } => left.as_ref(),
-            AssignmentOperationExpression::Addition { left, .. } => left.as_ref(),
-            AssignmentOperationExpression::Subtraction { left, .. } => left.as_ref(),
-            AssignmentOperationExpression::Multiplication { left, .. } => left.as_ref(),
-            AssignmentOperationExpression::Division { left, .. } => left.as_ref(),
-            AssignmentOperationExpression::Modulo { left, .. } => left.as_ref(),
-            AssignmentOperationExpression::Exponentiation { left, .. } => left.as_ref(),
-            AssignmentOperationExpression::Concat { left, .. } => left.as_ref(),
-            AssignmentOperationExpression::BitwiseAnd { left, .. } => left.as_ref(),
-            AssignmentOperationExpression::BitwiseOr { left, .. } => left.as_ref(),
-            AssignmentOperationExpression::BitwiseXor { left, .. } => left.as_ref(),
-            AssignmentOperationExpression::LeftShift { left, .. } => left.as_ref(),
-            AssignmentOperationExpression::RightShift { left, .. } => left.as_ref(),
-            AssignmentOperationExpression::Coalesce { left, .. } => left.as_ref(),
+            AssignmentOperationKind::Assign { left, .. } => left.as_ref(),
+            AssignmentOperationKind::Addition { left, .. } => left.as_ref(),
+            AssignmentOperationKind::Subtraction { left, .. } => left.as_ref(),
+            AssignmentOperationKind::Multiplication { left, .. } => left.as_ref(),
+            AssignmentOperationKind::Division { left, .. } => left.as_ref(),
+            AssignmentOperationKind::Modulo { left, .. } => left.as_ref(),
+            AssignmentOperationKind::Exponentiation { left, .. } => left.as_ref(),
+            AssignmentOperationKind::Concat { left, .. } => left.as_ref(),
+            AssignmentOperationKind::BitwiseAnd { left, .. } => left.as_ref(),
+            AssignmentOperationKind::BitwiseOr { left, .. } => left.as_ref(),
+            AssignmentOperationKind::BitwiseXor { left, .. } => left.as_ref(),
+            AssignmentOperationKind::LeftShift { left, .. } => left.as_ref(),
+            AssignmentOperationKind::RightShift { left, .. } => left.as_ref(),
+            AssignmentOperationKind::Coalesce { left, .. } => left.as_ref(),
         }
     }
 
     pub fn right(&self) -> &Expression {
         match self {
-            AssignmentOperationExpression::Assign { right, .. } => right.as_ref(),
-            AssignmentOperationExpression::Addition { right, .. } => right.as_ref(),
-            AssignmentOperationExpression::Subtraction { right, .. } => right.as_ref(),
-            AssignmentOperationExpression::Multiplication { right, .. } => right.as_ref(),
-            AssignmentOperationExpression::Division { right, .. } => right.as_ref(),
-            AssignmentOperationExpression::Modulo { right, .. } => right.as_ref(),
-            AssignmentOperationExpression::Exponentiation { right, .. } => right.as_ref(),
-            AssignmentOperationExpression::Concat { right, .. } => right.as_ref(),
-            AssignmentOperationExpression::BitwiseAnd { right, .. } => right.as_ref(),
-            AssignmentOperationExpression::BitwiseOr { right, .. } => right.as_ref(),
-            AssignmentOperationExpression::BitwiseXor { right, .. } => right.as_ref(),
-            AssignmentOperationExpression::LeftShift { right, .. } => right.as_ref(),
-            AssignmentOperationExpression::RightShift { right, .. } => right.as_ref(),
-            AssignmentOperationExpression::Coalesce { right, .. } => right.as_ref(),
+            AssignmentOperationKind::Assign { right, .. } => right.as_ref(),
+            AssignmentOperationKind::Addition { right, .. } => right.as_ref(),
+            AssignmentOperationKind::Subtraction { right, .. } => right.as_ref(),
+            AssignmentOperationKind::Multiplication { right, .. } => right.as_ref(),
+            AssignmentOperationKind::Division { right, .. } => right.as_ref(),
+            AssignmentOperationKind::Modulo { right, .. } => right.as_ref(),
+            AssignmentOperationKind::Exponentiation { right, .. } => right.as_ref(),
+            AssignmentOperationKind::Concat { right, .. } => right.as_ref(),
+            AssignmentOperationKind::BitwiseAnd { right, .. } => right.as_ref(),
+            AssignmentOperationKind::BitwiseOr { right, .. } => right.as_ref(),
+            AssignmentOperationKind::BitwiseXor { right, .. } => right.as_ref(),
+            AssignmentOperationKind::LeftShift { right, .. } => right.as_ref(),
+            AssignmentOperationKind::RightShift { right, .. } => right.as_ref(),
+            AssignmentOperationKind::Coalesce { right, .. } => right.as_ref(),
         }
     }
 
     pub fn operator(&self) -> &Span {
         match self {
-            AssignmentOperationExpression::Assign { equals, .. } => equals,
-            AssignmentOperationExpression::Addition { plus_equals, .. } => plus_equals,
-            AssignmentOperationExpression::Subtraction { minus_equals, .. } => minus_equals,
-            AssignmentOperationExpression::Multiplication {
+            AssignmentOperationKind::Assign { equals, .. } => equals,
+            AssignmentOperationKind::Addition { plus_equals, .. } => plus_equals,
+            AssignmentOperationKind::Subtraction { minus_equals, .. } => minus_equals,
+            AssignmentOperationKind::Multiplication {
                 asterisk_equals, ..
             } => asterisk_equals,
-            AssignmentOperationExpression::Division { slash_equals, .. } => slash_equals,
-            AssignmentOperationExpression::Modulo { percent_equals, .. } => percent_equals,
-            AssignmentOperationExpression::Exponentiation { pow_equals, .. } => pow_equals,
-            AssignmentOperationExpression::Concat { dot_equals, .. } => dot_equals,
-            AssignmentOperationExpression::BitwiseAnd {
+            AssignmentOperationKind::Division { slash_equals, .. } => slash_equals,
+            AssignmentOperationKind::Modulo { percent_equals, .. } => percent_equals,
+            AssignmentOperationKind::Exponentiation { pow_equals, .. } => pow_equals,
+            AssignmentOperationKind::Concat { dot_equals, .. } => dot_equals,
+            AssignmentOperationKind::BitwiseAnd {
                 ampersand_equals, ..
             } => ampersand_equals,
-            AssignmentOperationExpression::BitwiseOr { pipe_equals, .. } => pipe_equals,
-            AssignmentOperationExpression::BitwiseXor { caret_equals, .. } => caret_equals,
-            AssignmentOperationExpression::LeftShift {
+            AssignmentOperationKind::BitwiseOr { pipe_equals, .. } => pipe_equals,
+            AssignmentOperationKind::BitwiseXor { caret_equals, .. } => caret_equals,
+            AssignmentOperationKind::LeftShift {
                 left_shift_equals, ..
             } => left_shift_equals,
-            AssignmentOperationExpression::RightShift {
+            AssignmentOperationKind::RightShift {
                 right_shift_equals, ..
             } => right_shift_equals,
-            AssignmentOperationExpression::Coalesce {
+            AssignmentOperationKind::Coalesce {
                 coalesce_equals, ..
             } => coalesce_equals,
         }

@@ -19,6 +19,10 @@
     Statement {
         kind: Switch(
             SwitchStatement {
+                span: Span {
+                    start: 7,
+                    end: 120,
+                },
                 switch: Span {
                     start: 7,
                     end: 13,
@@ -54,10 +58,18 @@
                 },
                 cases: [
                     Case {
+                        span: Span {
+                            start: 30,
+                            end: 49,
+                        },
                         condition: Some(
                             Expression {
                                 kind: Literal(
                                     Literal {
+                                        span: Span {
+                                            start: 30,
+                                            end: 33,
+                                        },
                                         kind: String,
                                         token: Token {
                                             kind: LiteralSingleQuotedString,
@@ -84,6 +96,10 @@
                             Statement {
                                 kind: Break(
                                     BreakStatement {
+                                        span: Span {
+                                            start: 43,
+                                            end: 49,
+                                        },
                                         break: Span {
                                             start: 43,
                                             end: 48,
@@ -108,10 +124,18 @@
                         ],
                     },
                     Case {
+                        span: Span {
+                            start: 59,
+                            end: 0,
+                        },
                         condition: Some(
                             Expression {
                                 kind: Literal(
                                     Literal {
+                                        span: Span {
+                                            start: 59,
+                                            end: 62,
+                                        },
                                         kind: String,
                                         token: Token {
                                             kind: LiteralSingleQuotedString,
@@ -137,10 +161,18 @@
                         body: [],
                     },
                     Case {
+                        span: Span {
+                            start: 73,
+                            end: 92,
+                        },
                         condition: Some(
                             Expression {
                                 kind: Literal(
                                     Literal {
+                                        span: Span {
+                                            start: 73,
+                                            end: 76,
+                                        },
                                         kind: String,
                                         token: Token {
                                             kind: LiteralSingleQuotedString,
@@ -167,6 +199,10 @@
                             Statement {
                                 kind: Break(
                                     BreakStatement {
+                                        span: Span {
+                                            start: 86,
+                                            end: 92,
+                                        },
                                         break: Span {
                                             start: 86,
                                             end: 91,
@@ -191,11 +227,19 @@
                         ],
                     },
                     Case {
+                        span: Span {
+                            start: 114,
+                            end: 120,
+                        },
                         condition: None,
                         body: [
                             Statement {
                                 kind: Break(
                                     BreakStatement {
+                                        span: Span {
+                                            start: 114,
+                                            end: 120,
+                                        },
                                         break: Span {
                                             start: 114,
                                             end: 119,

@@ -19,32 +19,42 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 7,
+                    end: 11,
+                },
                 expression: Expression {
                     kind: LogicalOperation(
-                        Not {
-                            bang: Span {
+                        LogicalOperationExpression {
+                            span: Span {
                                 start: 7,
-                                end: 8,
+                                end: 10,
                             },
-                            right: Expression {
-                                kind: Variable(
-                                    SimpleVariable(
-                                        SimpleVariable {
-                                            symbol: Symbol("$a"),
-                                            stripped: Symbol("a"),
-                                            span: Span {
-                                                start: 8,
-                                                end: 10,
-                                            },
-                                        },
-                                    ),
-                                ),
-                                span: Span {
-                                    start: 8,
-                                    end: 10,
+                            kind: Not {
+                                bang: Span {
+                                    start: 7,
+                                    end: 8,
                                 },
-                                comments: CommentGroup {
-                                    comments: [],
+                                right: Expression {
+                                    kind: Variable(
+                                        SimpleVariable(
+                                            SimpleVariable {
+                                                symbol: Symbol("$a"),
+                                                stripped: Symbol("a"),
+                                                span: Span {
+                                                    start: 8,
+                                                    end: 10,
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                    span: Span {
+                                        start: 8,
+                                        end: 10,
+                                    },
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
                                 },
                             },
                         },

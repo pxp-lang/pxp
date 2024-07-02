@@ -20,6 +20,10 @@
         kind: Namespace(
             Unbraced(
                 UnbracedNamespace {
+                    span: Span {
+                        start: 7,
+                        end: 39,
+                    },
                     start: Span {
                         start: 7,
                         end: 16,
@@ -27,6 +31,10 @@
                     name: Name {
                         kind: Resolved(
                             ResolvedName {
+                                span: Span {
+                                    start: 17,
+                                    end: 20,
+                                },
                                 resolved: Symbol("Foo"),
                                 original: Symbol("Foo"),
                             },
@@ -44,6 +52,10 @@
                         Statement {
                             kind: Interface(
                                 InterfaceStatement {
+                                    span: Span {
+                                        start: 23,
+                                        end: 39,
+                                    },
                                     attributes: [],
                                     interface: Span {
                                         start: 23,
@@ -52,6 +64,10 @@
                                     name: Name {
                                         kind: Resolved(
                                             ResolvedName {
+                                                span: Span {
+                                                    start: 33,
+                                                    end: 36,
+                                                },
                                                 resolved: Symbol("Foo\Bar"),
                                                 original: Symbol("Bar"),
                                             },
@@ -63,6 +79,10 @@
                                     },
                                     extends: None,
                                     body: InterfaceBody {
+                                        span: Span {
+                                            start: 37,
+                                            end: 39,
+                                        },
                                         left_brace: Span {
                                             start: 37,
                                             end: 38,

@@ -61,7 +61,6 @@ pub fn walk_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &Expression) 
 
 pub fn walk_expression_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &ExpressionKind) {
     match node {
-        ExpressionKind::Missing => {}
         ExpressionKind::Eval(inner) => visitor.visit_eval_expression(inner),
         ExpressionKind::Empty(inner) => visitor.visit_empty_expression(inner),
         ExpressionKind::Die(inner) => visitor.visit_die_expression(inner),
@@ -127,9 +126,6 @@ pub fn walk_expression_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &Express
             visitor.visit_static_property_fetch_expression(inner)
         }
         ExpressionKind::ConstantFetch(inner) => visitor.visit_constant_fetch_expression(inner),
-        ExpressionKind::Static => {}
-        ExpressionKind::Self_ => {}
-        ExpressionKind::Parent => {}
         ExpressionKind::ShortArray(inner) => visitor.visit_short_array_expression(inner),
         ExpressionKind::Array(inner) => visitor.visit_array_expression(inner),
         ExpressionKind::List(inner) => visitor.visit_list_expression(inner),
@@ -145,7 +141,6 @@ pub fn walk_expression_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &Express
         ExpressionKind::AnonymousClass(inner) => visitor.visit_anonymous_class_expression(inner),
         ExpressionKind::Bool(inner) => visitor.visit_bool_expression(inner),
         ExpressionKind::ArrayIndex(inner) => visitor.visit_array_index_expression(inner),
-        ExpressionKind::Null => {}
         ExpressionKind::MagicConstant(inner) => visitor.visit_magic_constant_expression(inner),
         ExpressionKind::ShortTernary(inner) => visitor.visit_short_ternary_expression(inner),
         ExpressionKind::Ternary(inner) => visitor.visit_ternary_expression(inner),
@@ -157,7 +152,6 @@ pub fn walk_expression_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &Express
         ExpressionKind::YieldFrom(inner) => visitor.visit_yield_from_expression(inner),
         ExpressionKind::Cast(inner) => visitor.visit_cast_expression(inner),
         ExpressionKind::Name(inner) => visitor.visit_name(inner),
-        ExpressionKind::Noop => {}
         _ => {}
     }
 }
@@ -176,18 +170,6 @@ pub fn walk_global_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &Global
 pub fn walk_block_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &BlockStatement) {
     for item in &node.statements {
         visitor.visit_statement(item);
-    }
-}
-
-pub fn walk_cast_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &CastKind) {
-    match node {
-        CastKind::Int => {}
-        CastKind::Bool => {}
-        CastKind::Float => {}
-        CastKind::String => {}
-        CastKind::Array => {}
-        CastKind::Object => {}
-        CastKind::Unset => {}
     }
 }
 
@@ -213,6 +195,7 @@ pub fn walk_use_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &UseKind) {
         UseKind::Normal => {}
         UseKind::Function => {}
         UseKind::Const => {}
+        _ => {}
     }
 }
 
@@ -552,6 +535,7 @@ pub fn walk_string_part<V: Visitor + ?Sized>(visitor: &mut V, node: &StringPart)
     match node {
         StringPart::Literal(inner) => visitor.visit_literal_string_part(inner),
         StringPart::Expression(inner) => visitor.visit_expression_string_part(inner),
+        _ => {}
     }
 }
 
@@ -564,17 +548,25 @@ pub fn walk_expression_string_part<V: Visitor + ?Sized>(
 
 pub fn walk_array_item<V: Visitor + ?Sized>(visitor: &mut V, node: &ArrayItem) {
     match node {
-        ArrayItem::Skipped => {}
-        ArrayItem::Value { value } => {
+        ArrayItem::Value { span, value } => {
             visitor.visit_expression(value);
         }
-        ArrayItem::ReferencedValue { ampersand, value } => {
+        ArrayItem::ReferencedValue {
+            span,
+            ampersand,
+            value,
+        } => {
             visitor.visit_expression(value);
         }
-        ArrayItem::SpreadValue { ellipsis, value } => {
+        ArrayItem::SpreadValue {
+            span,
+            ellipsis,
+            value,
+        } => {
             visitor.visit_expression(value);
         }
         ArrayItem::KeyValue {
+            span,
             key,
             double_arrow,
             value,
@@ -583,6 +575,7 @@ pub fn walk_array_item<V: Visitor + ?Sized>(visitor: &mut V, node: &ArrayItem) {
             visitor.visit_expression(value);
         }
         ArrayItem::ReferencedKeyValue {
+            span,
             key,
             double_arrow,
             ampersand,
@@ -591,16 +584,17 @@ pub fn walk_array_item<V: Visitor + ?Sized>(visitor: &mut V, node: &ArrayItem) {
             visitor.visit_expression(key);
             visitor.visit_expression(value);
         }
+        _ => {}
     }
 }
 
 pub fn walk_list_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &ListEntry) {
     match node {
-        ListEntry::Skipped => {}
-        ListEntry::Value { value } => {
+        ListEntry::Value { span, value } => {
             visitor.visit_expression(value);
         }
         ListEntry::KeyValue {
+            span,
             key,
             double_arrow,
             value,
@@ -608,6 +602,7 @@ pub fn walk_list_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &ListEntry) {
             visitor.visit_expression(key);
             visitor.visit_expression(value);
         }
+        _ => {}
     }
 }
 
@@ -624,6 +619,7 @@ pub fn walk_argument<V: Visitor + ?Sized>(visitor: &mut V, node: &Argument) {
     match node {
         Argument::Positional(inner) => visitor.visit_positional_argument(inner),
         Argument::Named(inner) => visitor.visit_named_argument(inner),
+        _ => {}
     }
 }
 
@@ -715,6 +711,7 @@ pub fn walk_classish_member<V: Visitor + ?Sized>(visitor: &mut V, node: &Classis
         ClassishMember::AbstractConstructor(inner) => visitor.visit_abstract_constructor(inner),
         ClassishMember::ConcreteMethod(inner) => visitor.visit_concrete_method(inner),
         ClassishMember::ConcreteConstructor(inner) => visitor.visit_concrete_constructor(inner),
+        _ => {}
     }
 }
 
@@ -758,6 +755,7 @@ pub fn walk_if_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &IfStatemen
 pub fn walk_if_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &IfStatementBody) {
     match node {
         IfStatementBody::Statement {
+            span,
             statement,
             elseifs,
             r#else,
@@ -771,6 +769,7 @@ pub fn walk_if_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &IfSta
             }
         }
         IfStatementBody::Block {
+            span,
             colon,
             statements,
             elseifs,
@@ -789,6 +788,7 @@ pub fn walk_if_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &IfSta
             }
             visitor.visit_ending(ending);
         }
+        _ => {}
     }
 }
 
@@ -835,8 +835,9 @@ pub fn walk_declare_entry_group<V: Visitor + ?Sized>(visitor: &mut V, node: &Dec
 
 pub fn walk_declare_body<V: Visitor + ?Sized>(visitor: &mut V, node: &DeclareBody) {
     match node {
-        DeclareBody::Noop { semicolon } => {}
+        DeclareBody::Noop { span, semicolon } => {}
         DeclareBody::Braced {
+            span,
             left_brace,
             statements,
             right_brace,
@@ -846,20 +847,24 @@ pub fn walk_declare_body<V: Visitor + ?Sized>(visitor: &mut V, node: &DeclareBod
             }
         }
         DeclareBody::Expression {
+            span,
             expression,
             semicolon,
         } => {
             visitor.visit_expression(expression);
         }
         DeclareBody::Block {
+            span,
             colon,
             statements,
-            end,
+            enddeclare,
+            semicolon,
         } => {
             for item in statements {
                 visitor.visit_statement(item);
             }
         }
+        _ => {}
     }
 }
 
@@ -879,6 +884,7 @@ pub fn walk_unit_enum_member<V: Visitor + ?Sized>(visitor: &mut V, node: &UnitEn
     match node {
         UnitEnumMember::Case(inner) => visitor.visit_unit_enum_case(inner),
         UnitEnumMember::Classish(inner) => visitor.visit_classish_member(inner),
+        _ => {}
     }
 }
 
@@ -911,6 +917,7 @@ pub fn walk_backed_enum_member<V: Visitor + ?Sized>(visitor: &mut V, node: &Back
     match node {
         BackedEnumMember::Case(inner) => visitor.visit_backed_enum_case(inner),
         BackedEnumMember::Classish(inner) => visitor.visit_classish_member(inner),
+        _ => {}
     }
 }
 
@@ -1104,6 +1111,7 @@ pub fn walk_identifier<V: Visitor + ?Sized>(visitor: &mut V, node: &Identifier) 
     match node {
         Identifier::SimpleIdentifier(inner) => visitor.visit_simple_identifier(inner),
         Identifier::DynamicIdentifier(inner) => visitor.visit_dynamic_identifier(inner),
+        _ => {}
     }
 }
 
@@ -1144,6 +1152,7 @@ pub fn walk_literal_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &LiteralKin
         LiteralKind::Float => {}
         LiteralKind::String => {}
         LiteralKind::Missing => {}
+        _ => {}
     }
 }
 
@@ -1158,6 +1167,7 @@ pub fn walk_foreach_statement_iterator<V: Visitor + ?Sized>(
 ) {
     match node {
         ForeachStatementIterator::Value {
+            span,
             expression,
             r#as,
             ampersand,
@@ -1167,6 +1177,7 @@ pub fn walk_foreach_statement_iterator<V: Visitor + ?Sized>(
             visitor.visit_expression(value);
         }
         ForeachStatementIterator::KeyAndValue {
+            span,
             expression,
             r#as,
             ampersand,
@@ -1178,6 +1189,7 @@ pub fn walk_foreach_statement_iterator<V: Visitor + ?Sized>(
             visitor.visit_expression(key);
             visitor.visit_expression(value);
         }
+        _ => {}
     }
 }
 
@@ -1186,10 +1198,11 @@ pub fn walk_foreach_statement_body<V: Visitor + ?Sized>(
     node: &ForeachStatementBody,
 ) {
     match node {
-        ForeachStatementBody::Statement { statement } => {
+        ForeachStatementBody::Statement { span, statement } => {
             visitor.visit_statement(statement);
         }
         ForeachStatementBody::Block {
+            span,
             colon,
             statements,
             endforeach,
@@ -1200,6 +1213,7 @@ pub fn walk_foreach_statement_body<V: Visitor + ?Sized>(
             }
             visitor.visit_ending(ending);
         }
+        _ => {}
     }
 }
 
@@ -1225,10 +1239,11 @@ pub fn walk_for_statement_iterator<V: Visitor + ?Sized>(
 
 pub fn walk_for_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &ForStatementBody) {
     match node {
-        ForStatementBody::Statement { statement } => {
+        ForStatementBody::Statement { span, statement } => {
             visitor.visit_statement(statement);
         }
         ForStatementBody::Block {
+            span,
             colon,
             statements,
             endfor,
@@ -1239,6 +1254,7 @@ pub fn walk_for_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &ForS
             }
             visitor.visit_ending(ending);
         }
+        _ => {}
     }
 }
 
@@ -1254,10 +1270,11 @@ pub fn walk_while_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &WhileSt
 
 pub fn walk_while_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &WhileStatementBody) {
     match node {
-        WhileStatementBody::Statement { statement } => {
+        WhileStatementBody::Statement { span, statement } => {
             visitor.visit_statement(statement);
         }
         WhileStatementBody::Block {
+            span,
             colon,
             statements,
             endwhile,
@@ -1268,6 +1285,7 @@ pub fn walk_while_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &Wh
             }
             visitor.visit_ending(ending);
         }
+        _ => {}
     }
 }
 
@@ -1275,10 +1293,12 @@ pub fn walk_level<V: Visitor + ?Sized>(visitor: &mut V, node: &Level) {
     match node {
         Level::Literal(inner) => visitor.visit_literal(inner),
         Level::Parenthesized {
+            span,
             left_parenthesis,
             level,
             right_parenthesis,
         } => {}
+        _ => {}
     }
 }
 
@@ -1359,6 +1379,7 @@ pub fn walk_namespace_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &Nam
     match node {
         NamespaceStatement::Unbraced(inner) => visitor.visit_unbraced_namespace(inner),
         NamespaceStatement::Braced(inner) => visitor.visit_braced_namespace(inner),
+        _ => {}
     }
 }
 
@@ -1366,16 +1387,23 @@ pub fn walk_arithmetic_operation_expression<V: Visitor + ?Sized>(
     visitor: &mut V,
     node: &ArithmeticOperationExpression,
 ) {
+    visitor.visit_arithmetic_operation_kind(&node.kind);
+}
+
+pub fn walk_arithmetic_operation_kind<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &ArithmeticOperationKind,
+) {
     match node {
-        ArithmeticOperationExpression::Addition { left, plus, right } => {
+        ArithmeticOperationKind::Addition { left, plus, right } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ArithmeticOperationExpression::Subtraction { left, minus, right } => {
+        ArithmeticOperationKind::Subtraction { left, minus, right } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ArithmeticOperationExpression::Multiplication {
+        ArithmeticOperationKind::Multiplication {
             left,
             asterisk,
             right,
@@ -1383,11 +1411,11 @@ pub fn walk_arithmetic_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ArithmeticOperationExpression::Division { left, slash, right } => {
+        ArithmeticOperationKind::Division { left, slash, right } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ArithmeticOperationExpression::Modulo {
+        ArithmeticOperationKind::Modulo {
             left,
             percent,
             right,
@@ -1395,28 +1423,29 @@ pub fn walk_arithmetic_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ArithmeticOperationExpression::Exponentiation { left, pow, right } => {
+        ArithmeticOperationKind::Exponentiation { left, pow, right } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ArithmeticOperationExpression::Negative { minus, right } => {
+        ArithmeticOperationKind::Negative { minus, right } => {
             visitor.visit_expression(right);
         }
-        ArithmeticOperationExpression::Positive { plus, right } => {
+        ArithmeticOperationKind::Positive { plus, right } => {
             visitor.visit_expression(right);
         }
-        ArithmeticOperationExpression::PreIncrement { increment, right } => {
+        ArithmeticOperationKind::PreIncrement { increment, right } => {
             visitor.visit_expression(right);
         }
-        ArithmeticOperationExpression::PostIncrement { left, increment } => {
+        ArithmeticOperationKind::PostIncrement { left, increment } => {
             visitor.visit_expression(left);
         }
-        ArithmeticOperationExpression::PreDecrement { decrement, right } => {
+        ArithmeticOperationKind::PreDecrement { decrement, right } => {
             visitor.visit_expression(right);
         }
-        ArithmeticOperationExpression::PostDecrement { left, decrement } => {
+        ArithmeticOperationKind::PostDecrement { left, decrement } => {
             visitor.visit_expression(left);
         }
+        _ => {}
     }
 }
 
@@ -1424,8 +1453,15 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
     visitor: &mut V,
     node: &AssignmentOperationExpression,
 ) {
+    visitor.visit_assignment_operation_kind(&node.kind);
+}
+
+pub fn walk_assignment_operation_kind<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &AssignmentOperationKind,
+) {
     match node {
-        AssignmentOperationExpression::Assign {
+        AssignmentOperationKind::Assign {
             left,
             equals,
             right,
@@ -1433,7 +1469,7 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        AssignmentOperationExpression::Addition {
+        AssignmentOperationKind::Addition {
             left,
             plus_equals,
             right,
@@ -1441,7 +1477,7 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        AssignmentOperationExpression::Subtraction {
+        AssignmentOperationKind::Subtraction {
             left,
             minus_equals,
             right,
@@ -1449,7 +1485,7 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        AssignmentOperationExpression::Multiplication {
+        AssignmentOperationKind::Multiplication {
             left,
             asterisk_equals,
             right,
@@ -1457,7 +1493,7 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        AssignmentOperationExpression::Division {
+        AssignmentOperationKind::Division {
             left,
             slash_equals,
             right,
@@ -1465,7 +1501,7 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        AssignmentOperationExpression::Modulo {
+        AssignmentOperationKind::Modulo {
             left,
             percent_equals,
             right,
@@ -1473,7 +1509,7 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        AssignmentOperationExpression::Exponentiation {
+        AssignmentOperationKind::Exponentiation {
             left,
             pow_equals,
             right,
@@ -1481,7 +1517,7 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        AssignmentOperationExpression::Concat {
+        AssignmentOperationKind::Concat {
             left,
             dot_equals,
             right,
@@ -1489,7 +1525,7 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        AssignmentOperationExpression::BitwiseAnd {
+        AssignmentOperationKind::BitwiseAnd {
             left,
             ampersand_equals,
             right,
@@ -1497,7 +1533,7 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        AssignmentOperationExpression::BitwiseOr {
+        AssignmentOperationKind::BitwiseOr {
             left,
             pipe_equals,
             right,
@@ -1505,7 +1541,7 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        AssignmentOperationExpression::BitwiseXor {
+        AssignmentOperationKind::BitwiseXor {
             left,
             caret_equals,
             right,
@@ -1513,7 +1549,7 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        AssignmentOperationExpression::LeftShift {
+        AssignmentOperationKind::LeftShift {
             left,
             left_shift_equals,
             right,
@@ -1521,7 +1557,7 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        AssignmentOperationExpression::RightShift {
+        AssignmentOperationKind::RightShift {
             left,
             right_shift_equals,
             right,
@@ -1529,7 +1565,7 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        AssignmentOperationExpression::Coalesce {
+        AssignmentOperationKind::Coalesce {
             left,
             coalesce_equals,
             right,
@@ -1537,6 +1573,7 @@ pub fn walk_assignment_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
+        _ => {}
     }
 }
 
@@ -1544,20 +1581,27 @@ pub fn walk_bitwise_operation_expression<V: Visitor + ?Sized>(
     visitor: &mut V,
     node: &BitwiseOperationExpression,
 ) {
+    visitor.visit_bitwise_operation_kind(&node.kind);
+}
+
+pub fn walk_bitwise_operation_kind<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &BitwiseOperationKind,
+) {
     match node {
-        BitwiseOperationExpression::And { left, and, right } => {
+        BitwiseOperationKind::And { left, and, right } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        BitwiseOperationExpression::Or { left, or, right } => {
+        BitwiseOperationKind::Or { left, or, right } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        BitwiseOperationExpression::Xor { left, xor, right } => {
+        BitwiseOperationKind::Xor { left, xor, right } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        BitwiseOperationExpression::LeftShift {
+        BitwiseOperationKind::LeftShift {
             left,
             left_shift,
             right,
@@ -1565,7 +1609,7 @@ pub fn walk_bitwise_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        BitwiseOperationExpression::RightShift {
+        BitwiseOperationKind::RightShift {
             left,
             right_shift,
             right,
@@ -1573,9 +1617,10 @@ pub fn walk_bitwise_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        BitwiseOperationExpression::Not { not, right } => {
+        BitwiseOperationKind::Not { not, right } => {
             visitor.visit_expression(right);
         }
+        _ => {}
     }
 }
 
@@ -1583,8 +1628,15 @@ pub fn walk_comparison_operation_expression<V: Visitor + ?Sized>(
     visitor: &mut V,
     node: &ComparisonOperationExpression,
 ) {
+    visitor.visit_comparison_operation_kind(&node.kind);
+}
+
+pub fn walk_comparison_operation_kind<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &ComparisonOperationKind,
+) {
     match node {
-        ComparisonOperationExpression::Equal {
+        ComparisonOperationKind::Equal {
             left,
             double_equals,
             right,
@@ -1592,7 +1644,7 @@ pub fn walk_comparison_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ComparisonOperationExpression::Identical {
+        ComparisonOperationKind::Identical {
             left,
             triple_equals,
             right,
@@ -1600,7 +1652,7 @@ pub fn walk_comparison_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ComparisonOperationExpression::NotEqual {
+        ComparisonOperationKind::NotEqual {
             left,
             bang_equals,
             right,
@@ -1608,7 +1660,7 @@ pub fn walk_comparison_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ComparisonOperationExpression::AngledNotEqual {
+        ComparisonOperationKind::AngledNotEqual {
             left,
             angled_left_right,
             right,
@@ -1616,7 +1668,7 @@ pub fn walk_comparison_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ComparisonOperationExpression::NotIdentical {
+        ComparisonOperationKind::NotIdentical {
             left,
             bang_double_equals,
             right,
@@ -1624,7 +1676,7 @@ pub fn walk_comparison_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ComparisonOperationExpression::LessThan {
+        ComparisonOperationKind::LessThan {
             left,
             less_than,
             right,
@@ -1632,7 +1684,7 @@ pub fn walk_comparison_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ComparisonOperationExpression::GreaterThan {
+        ComparisonOperationKind::GreaterThan {
             left,
             greater_than,
             right,
@@ -1640,7 +1692,7 @@ pub fn walk_comparison_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ComparisonOperationExpression::LessThanOrEqual {
+        ComparisonOperationKind::LessThanOrEqual {
             left,
             less_than_equals,
             right,
@@ -1648,7 +1700,7 @@ pub fn walk_comparison_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ComparisonOperationExpression::GreaterThanOrEqual {
+        ComparisonOperationKind::GreaterThanOrEqual {
             left,
             greater_than_equals,
             right,
@@ -1656,7 +1708,7 @@ pub fn walk_comparison_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ComparisonOperationExpression::Spaceship {
+        ComparisonOperationKind::Spaceship {
             left,
             spaceship,
             right,
@@ -1664,6 +1716,7 @@ pub fn walk_comparison_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
+        _ => {}
     }
 }
 
@@ -1671,8 +1724,15 @@ pub fn walk_logical_operation_expression<V: Visitor + ?Sized>(
     visitor: &mut V,
     node: &LogicalOperationExpression,
 ) {
+    visitor.visit_logical_operation_kind(&node.kind);
+}
+
+pub fn walk_logical_operation_kind<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &LogicalOperationKind,
+) {
     match node {
-        LogicalOperationExpression::And {
+        LogicalOperationKind::And {
             left,
             double_ampersand,
             right,
@@ -1680,7 +1740,7 @@ pub fn walk_logical_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        LogicalOperationExpression::Or {
+        LogicalOperationKind::Or {
             left,
             double_pipe,
             right,
@@ -1688,21 +1748,22 @@ pub fn walk_logical_operation_expression<V: Visitor + ?Sized>(
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        LogicalOperationExpression::Not { bang, right } => {
+        LogicalOperationKind::Not { bang, right } => {
             visitor.visit_expression(right);
         }
-        LogicalOperationExpression::LogicalAnd { left, and, right } => {
+        LogicalOperationKind::LogicalAnd { left, and, right } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        LogicalOperationExpression::LogicalOr { left, or, right } => {
+        LogicalOperationKind::LogicalOr { left, or, right } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        LogicalOperationExpression::LogicalXor { left, xor, right } => {
+        LogicalOperationKind::LogicalXor { left, xor, right } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
+        _ => {}
     }
 }
 
@@ -1715,19 +1776,12 @@ pub fn walk_name_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &NameKind) {
         NameKind::Special(inner) => visitor.visit_special_name(inner),
         NameKind::Unresolved(inner) => visitor.visit_unresolved_name(inner),
         NameKind::Resolved(inner) => visitor.visit_resolved_name(inner),
+        _ => {}
     }
 }
 
 pub fn walk_special_name<V: Visitor + ?Sized>(visitor: &mut V, node: &SpecialName) {
     visitor.visit_special_name_kind(&node.kind);
-}
-
-pub fn walk_special_name_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &SpecialNameKind) {
-    match node {
-        SpecialNameKind::Self_ => {}
-        SpecialNameKind::Parent => {}
-        SpecialNameKind::Static => {}
-    }
 }
 
 pub fn walk_property<V: Visitor + ?Sized>(visitor: &mut V, node: &Property) {
@@ -1756,11 +1810,15 @@ pub fn walk_variable_property<V: Visitor + ?Sized>(visitor: &mut V, node: &Varia
 }
 
 pub fn walk_property_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &PropertyEntry) {
+    visitor.visit_property_entry_kind(&node.kind);
+}
+
+pub fn walk_property_entry_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &PropertyEntryKind) {
     match node {
-        PropertyEntry::Uninitialized { variable } => {
+        PropertyEntryKind::Uninitialized { variable } => {
             visitor.visit_simple_variable(variable);
         }
-        PropertyEntry::Initialized {
+        PropertyEntryKind::Initialized {
             variable,
             equals,
             value,
@@ -1768,6 +1826,7 @@ pub fn walk_property_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &Property
             visitor.visit_simple_variable(variable);
             visitor.visit_expression(value);
         }
+        _ => {}
     }
 }
 
@@ -1798,8 +1857,15 @@ pub fn walk_trait_usage_adaptation<V: Visitor + ?Sized>(
     visitor: &mut V,
     node: &TraitUsageAdaptation,
 ) {
+    visitor.visit_trait_usage_adaptation_kind(&node.kind);
+}
+
+pub fn walk_trait_usage_adaptation_kind<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &TraitUsageAdaptationKind,
+) {
     match node {
-        TraitUsageAdaptation::Alias {
+        TraitUsageAdaptationKind::Alias {
             r#trait,
             method,
             alias,
@@ -1814,7 +1880,7 @@ pub fn walk_trait_usage_adaptation<V: Visitor + ?Sized>(
                 visitor.visit_visibility_modifier(item);
             }
         }
-        TraitUsageAdaptation::Visibility {
+        TraitUsageAdaptationKind::Visibility {
             r#trait,
             method,
             visibility,
@@ -1825,7 +1891,7 @@ pub fn walk_trait_usage_adaptation<V: Visitor + ?Sized>(
             visitor.visit_simple_identifier(method);
             visitor.visit_visibility_modifier(visibility);
         }
-        TraitUsageAdaptation::Precedence {
+        TraitUsageAdaptationKind::Precedence {
             r#trait,
             method,
             insteadof,
@@ -1838,19 +1904,25 @@ pub fn walk_trait_usage_adaptation<V: Visitor + ?Sized>(
                 visitor.visit_simple_identifier(item);
             }
         }
+        _ => {}
     }
 }
 
 pub fn walk_catch_type<V: Visitor + ?Sized>(visitor: &mut V, node: &CatchType) {
+    visitor.visit_catch_type_kind(&node.kind);
+}
+
+pub fn walk_catch_type_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &CatchTypeKind) {
     match node {
-        CatchType::Identifier { identifier } => {
+        CatchTypeKind::Identifier { identifier } => {
             visitor.visit_simple_identifier(identifier);
         }
-        CatchType::Union { identifiers } => {
+        CatchTypeKind::Union { identifiers } => {
             for item in identifiers {
                 visitor.visit_simple_identifier(item);
             }
         }
+        _ => {}
     }
 }
 
@@ -1881,6 +1953,7 @@ pub fn walk_variable<V: Visitor + ?Sized>(visitor: &mut V, node: &Variable) {
         Variable::SimpleVariable(inner) => visitor.visit_simple_variable(inner),
         Variable::VariableVariable(inner) => visitor.visit_variable_variable(inner),
         Variable::BracedVariableVariable(inner) => visitor.visit_braced_variable_variable(inner),
+        _ => {}
     }
 }
 

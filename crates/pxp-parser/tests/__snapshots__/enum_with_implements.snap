@@ -19,6 +19,10 @@
     Statement {
         kind: UnitEnum(
             UnitEnumStatement {
+                span: Span {
+                    start: 7,
+                    end: 33,
+                },
                 attributes: [],
                 enum: Span {
                     start: 7,
@@ -27,6 +31,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 12,
+                                end: 15,
+                            },
                             resolved: Symbol("Foo"),
                             original: Symbol("Foo"),
                         },
@@ -40,6 +48,10 @@
                     Name {
                         kind: Resolved(
                             ResolvedName {
+                                span: Span {
+                                    start: 27,
+                                    end: 30,
+                                },
                                 resolved: Symbol("Bar"),
                                 original: Symbol("Bar"),
                             },
@@ -51,6 +63,10 @@
                     },
                 ],
                 body: UnitEnumBody {
+                    span: Span {
+                        start: 31,
+                        end: 33,
+                    },
                     left_brace: Span {
                         start: 31,
                         end: 32,

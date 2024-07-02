@@ -3,6 +3,7 @@ use crate::internal::utils;
 use crate::state::State;
 use pxp_ast::*;
 use pxp_ast::StatementKind;
+use pxp_span::Span;
 use pxp_token::TokenKind;
 
 pub fn label_statement(state: &mut State) -> StatementKind {
@@ -11,6 +12,7 @@ pub fn label_statement(state: &mut State) -> StatementKind {
     let colon = utils::skip_colon(state);
 
     StatementKind::Label(LabelStatement {
+        span: Span::combine(label.span, colon),
         comments,
         label,
         colon,
@@ -24,6 +26,7 @@ pub fn goto_statement(state: &mut State) -> StatementKind {
     let semicolon = utils::skip_semicolon(state);
 
     StatementKind::Goto(GotoStatement {
+        span: Span::combine(keyword, semicolon),
         comments,
         keyword,
         label,

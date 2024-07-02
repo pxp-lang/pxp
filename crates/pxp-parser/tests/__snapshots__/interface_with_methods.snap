@@ -19,6 +19,10 @@
     Statement {
         kind: Interface(
             InterfaceStatement {
+                span: Span {
+                    start: 7,
+                    end: 67,
+                },
                 attributes: [],
                 interface: Span {
                     start: 7,
@@ -27,6 +31,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 17,
+                                end: 20,
+                            },
                             resolved: Symbol("Foo"),
                             original: Symbol("Foo"),
                         },
@@ -38,6 +46,10 @@
                 },
                 extends: None,
                 body: InterfaceBody {
+                    span: Span {
+                        start: 21,
+                        end: 67,
+                    },
                     left_brace: Span {
                         start: 21,
                         end: 22,
@@ -45,11 +57,19 @@
                     members: [
                         AbstractMethod(
                             AbstractMethod {
+                                span: Span {
+                                    start: 27,
+                                    end: 40,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    span: Span {
+                                        start: 0,
+                                        end: 0,
+                                    },
                                     modifiers: [],
                                 },
                                 function: Span {
@@ -65,6 +85,10 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    span: Span {
+                                        start: 37,
+                                        end: 39,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -90,11 +114,19 @@
                         ),
                         AbstractMethod(
                             AbstractMethod {
+                                span: Span {
+                                    start: 52,
+                                    end: 65,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    span: Span {
+                                        start: 45,
+                                        end: 51,
+                                    },
                                     modifiers: [
                                         Public(
                                             Span {
@@ -117,6 +149,10 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    span: Span {
+                                        start: 62,
+                                        end: 64,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },

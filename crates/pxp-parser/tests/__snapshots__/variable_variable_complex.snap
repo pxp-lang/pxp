@@ -19,10 +19,18 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 7,
+                    end: 14,
+                },
                 expression: Expression {
                     kind: Variable(
                         BracedVariableVariable(
                             BracedVariableVariable {
+                                span: Span {
+                                    start: 7,
+                                    end: 13,
+                                },
                                 start: Span {
                                     start: 7,
                                     end: 8,
@@ -30,6 +38,10 @@
                                 variable: Expression {
                                     kind: Literal(
                                         Literal {
+                                            span: Span {
+                                                start: 9,
+                                                end: 12,
+                                            },
                                             kind: String,
                                             token: Token {
                                                 kind: LiteralSingleQuotedString,

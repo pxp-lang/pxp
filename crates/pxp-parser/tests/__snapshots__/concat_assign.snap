@@ -19,56 +19,70 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 13,
+                    end: 23,
+                },
                 expression: Expression {
                     kind: AssignmentOperation(
-                        Concat {
-                            left: Expression {
-                                kind: Variable(
-                                    SimpleVariable(
-                                        SimpleVariable {
-                                            symbol: Symbol("$a"),
-                                            stripped: Symbol("a"),
-                                            span: Span {
-                                                start: 7,
-                                                end: 9,
+                        AssignmentOperationExpression {
+                            span: Span {
+                                start: 7,
+                                end: 22,
+                            },
+                            kind: Concat {
+                                left: Expression {
+                                    kind: Variable(
+                                        SimpleVariable(
+                                            SimpleVariable {
+                                                symbol: Symbol("$a"),
+                                                stripped: Symbol("a"),
+                                                span: Span {
+                                                    start: 7,
+                                                    end: 9,
+                                                },
                                             },
-                                        },
+                                        ),
                                     ),
-                                ),
-                                span: Span {
-                                    start: 7,
-                                    end: 9,
+                                    span: Span {
+                                        start: 7,
+                                        end: 9,
+                                    },
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
                                 },
-                                comments: CommentGroup {
-                                    comments: [],
+                                dot_equals: Span {
+                                    start: 10,
+                                    end: 12,
                                 },
-                            },
-                            dot_equals: Span {
-                                start: 10,
-                                end: 12,
-                            },
-                            right: Expression {
-                                kind: Literal(
-                                    Literal {
-                                        kind: String,
-                                        token: Token {
-                                            kind: LiteralSingleQuotedString,
+                                right: Expression {
+                                    kind: Literal(
+                                        Literal {
                                             span: Span {
                                                 start: 13,
                                                 end: 22,
                                             },
-                                            symbol: Some(
-                                                Symbol("'Example'"),
-                                            ),
+                                            kind: String,
+                                            token: Token {
+                                                kind: LiteralSingleQuotedString,
+                                                span: Span {
+                                                    start: 13,
+                                                    end: 22,
+                                                },
+                                                symbol: Some(
+                                                    Symbol("'Example'"),
+                                                ),
+                                            },
                                         },
+                                    ),
+                                    span: Span {
+                                        start: 13,
+                                        end: 22,
                                     },
-                                ),
-                                span: Span {
-                                    start: 13,
-                                    end: 22,
-                                },
-                                comments: CommentGroup {
-                                    comments: [],
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
                                 },
                             },
                         },

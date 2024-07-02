@@ -19,12 +19,20 @@
     Statement {
         kind: Use(
             UseStatement {
+                span: Span {
+                    start: 7,
+                    end: 19,
+                },
                 kind: Normal,
                 uses: [
                     Use {
                         name: Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 11,
+                                        end: 18,
+                                    },
                                     resolved: Symbol("App\Foo"),
                                     original: Symbol("App\Foo"),
                                 },
@@ -51,12 +59,20 @@
     Statement {
         kind: Use(
             UseStatement {
+                span: Span {
+                    start: 20,
+                    end: 43,
+                },
                 kind: Normal,
                 uses: [
                     Use {
                         name: Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 24,
+                                        end: 35,
+                                    },
                                     resolved: Symbol("Foo\Bar\Baz"),
                                     original: Symbol("Foo\Bar\Baz"),
                                 },
@@ -91,6 +107,10 @@
     Statement {
         kind: Function(
             FunctionStatement {
+                span: Span {
+                    start: 45,
+                    end: 105,
+                },
                 comments: CommentGroup {
                     comments: [],
                 },
@@ -103,6 +123,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 54,
+                                end: 55,
+                            },
                             resolved: Symbol("a"),
                             original: Symbol("a"),
                         },
@@ -113,6 +137,10 @@
                     },
                 },
                 parameters: FunctionParameterList {
+                    span: Span {
+                        start: 55,
+                        end: 100,
+                    },
                     comments: CommentGroup {
                         comments: [],
                     },
@@ -123,6 +151,10 @@
                     parameters: CommaSeparated {
                         inner: [
                             FunctionParameter {
+                                span: Span {
+                                    start: 56,
+                                    end: 62,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
@@ -141,6 +173,10 @@
                                             Name {
                                                 kind: Resolved(
                                                     ResolvedName {
+                                                        span: Span {
+                                                            start: 56,
+                                                            end: 59,
+                                                        },
                                                         resolved: Symbol("App\Foo"),
                                                         original: Symbol("Foo"),
                                                     },
@@ -162,6 +198,10 @@
                                 ampersand: None,
                             },
                             FunctionParameter {
+                                span: Span {
+                                    start: 64,
+                                    end: 76,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
@@ -182,6 +222,10 @@
                                                     Name {
                                                         kind: Resolved(
                                                             ResolvedName {
+                                                                span: Span {
+                                                                    start: 64,
+                                                                    end: 67,
+                                                                },
                                                                 resolved: Symbol("App\Foo"),
                                                                 original: Symbol("Foo"),
                                                             },
@@ -196,6 +240,10 @@
                                                     Name {
                                                         kind: Resolved(
                                                             ResolvedName {
+                                                                span: Span {
+                                                                    start: 70,
+                                                                    end: 73,
+                                                                },
                                                                 resolved: Symbol("Foo\Bar\Baz"),
                                                                 original: Symbol("Bar"),
                                                             },
@@ -219,6 +267,10 @@
                                 ampersand: None,
                             },
                             FunctionParameter {
+                                span: Span {
+                                    start: 78,
+                                    end: 90,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
@@ -239,6 +291,10 @@
                                                     Name {
                                                         kind: Resolved(
                                                             ResolvedName {
+                                                                span: Span {
+                                                                    start: 78,
+                                                                    end: 81,
+                                                                },
                                                                 resolved: Symbol("App\Foo"),
                                                                 original: Symbol("Foo"),
                                                             },
@@ -253,6 +309,10 @@
                                                     Name {
                                                         kind: Resolved(
                                                             ResolvedName {
+                                                                span: Span {
+                                                                    start: 84,
+                                                                    end: 87,
+                                                                },
                                                                 resolved: Symbol("Foo\Bar\Baz"),
                                                                 original: Symbol("Bar"),
                                                             },
@@ -276,6 +336,10 @@
                                 ampersand: None,
                             },
                             FunctionParameter {
+                                span: Span {
+                                    start: 92,
+                                    end: 99,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
@@ -295,6 +359,10 @@
                                                 Name {
                                                     kind: Resolved(
                                                         ResolvedName {
+                                                            span: Span {
+                                                                start: 93,
+                                                                end: 96,
+                                                            },
                                                             resolved: Symbol("App\Foo"),
                                                             original: Symbol("Foo"),
                                                         },
@@ -339,6 +407,10 @@
                 },
                 return_type: None,
                 body: FunctionBody {
+                    span: Span {
+                        start: 101,
+                        end: 105,
+                    },
                     comments: CommentGroup {
                         comments: [],
                     },

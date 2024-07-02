@@ -20,6 +20,10 @@
         kind: Namespace(
             Unbraced(
                 UnbracedNamespace {
+                    span: Span {
+                        start: 7,
+                        end: 35,
+                    },
                     start: Span {
                         start: 7,
                         end: 16,
@@ -27,6 +31,10 @@
                     name: Name {
                         kind: Resolved(
                             ResolvedName {
+                                span: Span {
+                                    start: 17,
+                                    end: 20,
+                                },
                                 resolved: Symbol("Foo"),
                                 original: Symbol("Foo"),
                             },
@@ -44,8 +52,16 @@
                         Statement {
                             kind: Class(
                                 ClassStatement {
+                                    span: Span {
+                                        start: 23,
+                                        end: 35,
+                                    },
                                     attributes: [],
                                     modifiers: ClassModifierGroup {
+                                        span: Span {
+                                            start: 0,
+                                            end: 0,
+                                        },
                                         modifiers: [],
                                     },
                                     class: Span {
@@ -55,6 +71,10 @@
                                     name: Name {
                                         kind: Resolved(
                                             ResolvedName {
+                                                span: Span {
+                                                    start: 29,
+                                                    end: 32,
+                                                },
                                                 resolved: Symbol("Foo\Bar"),
                                                 original: Symbol("Bar"),
                                             },
@@ -67,6 +87,10 @@
                                     extends: None,
                                     implements: None,
                                     body: ClassBody {
+                                        span: Span {
+                                            start: 33,
+                                            end: 35,
+                                        },
                                         left_brace: Span {
                                             start: 33,
                                             end: 34,

@@ -19,8 +19,16 @@
     Statement {
         kind: Class(
             ClassStatement {
+                span: Span {
+                    start: 7,
+                    end: 130,
+                },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    span: Span {
+                        start: 0,
+                        end: 0,
+                    },
                     modifiers: [],
                 },
                 class: Span {
@@ -30,6 +38,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 13,
+                                end: 16,
+                            },
                             resolved: Symbol("Foo"),
                             original: Symbol("Foo"),
                         },
@@ -42,6 +54,10 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    span: Span {
+                        start: 17,
+                        end: 130,
+                    },
                     left_brace: Span {
                         start: 17,
                         end: 18,
@@ -49,11 +65,19 @@
                     members: [
                         Constant(
                             ClassishConstant {
+                                span: Span {
+                                    start: 23,
+                                    end: 35,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: ConstantModifierGroup {
+                                    span: Span {
+                                        start: 0,
+                                        end: 0,
+                                    },
                                     modifiers: [],
                                 },
                                 const: Span {
@@ -63,6 +87,10 @@
                                 data_type: None,
                                 entries: [
                                     ClassishConstantEntry {
+                                        span: Span {
+                                            start: 29,
+                                            end: 34,
+                                        },
                                         name: SimpleIdentifier {
                                             symbol: Symbol("A"),
                                             span: Span {
@@ -77,6 +105,10 @@
                                         value: Expression {
                                             kind: Literal(
                                                 Literal {
+                                                    span: Span {
+                                                        start: 33,
+                                                        end: 34,
+                                                    },
                                                     kind: Integer,
                                                     token: Token {
                                                         kind: LiteralInteger,
@@ -108,11 +140,19 @@
                         ),
                         Constant(
                             ClassishConstant {
+                                span: Span {
+                                    start: 40,
+                                    end: 59,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: ConstantModifierGroup {
+                                    span: Span {
+                                        start: 40,
+                                        end: 46,
+                                    },
                                     modifiers: [
                                         Public(
                                             Span {
@@ -129,6 +169,10 @@
                                 data_type: None,
                                 entries: [
                                     ClassishConstantEntry {
+                                        span: Span {
+                                            start: 53,
+                                            end: 58,
+                                        },
                                         name: SimpleIdentifier {
                                             symbol: Symbol("B"),
                                             span: Span {
@@ -143,6 +187,10 @@
                                         value: Expression {
                                             kind: Literal(
                                                 Literal {
+                                                    span: Span {
+                                                        start: 57,
+                                                        end: 58,
+                                                    },
                                                     kind: Integer,
                                                     token: Token {
                                                         kind: LiteralInteger,
@@ -174,11 +222,19 @@
                         ),
                         Constant(
                             ClassishConstant {
+                                span: Span {
+                                    start: 64,
+                                    end: 86,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: ConstantModifierGroup {
+                                    span: Span {
+                                        start: 64,
+                                        end: 73,
+                                    },
                                     modifiers: [
                                         Protected(
                                             Span {
@@ -195,6 +251,10 @@
                                 data_type: None,
                                 entries: [
                                     ClassishConstantEntry {
+                                        span: Span {
+                                            start: 80,
+                                            end: 85,
+                                        },
                                         name: SimpleIdentifier {
                                             symbol: Symbol("C"),
                                             span: Span {
@@ -209,6 +269,10 @@
                                         value: Expression {
                                             kind: Literal(
                                                 Literal {
+                                                    span: Span {
+                                                        start: 84,
+                                                        end: 85,
+                                                    },
                                                     kind: Integer,
                                                     token: Token {
                                                         kind: LiteralInteger,
@@ -240,11 +304,19 @@
                         ),
                         Constant(
                             ClassishConstant {
+                                span: Span {
+                                    start: 91,
+                                    end: 111,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: ConstantModifierGroup {
+                                    span: Span {
+                                        start: 91,
+                                        end: 98,
+                                    },
                                     modifiers: [
                                         Private(
                                             Span {
@@ -261,6 +333,10 @@
                                 data_type: None,
                                 entries: [
                                     ClassishConstantEntry {
+                                        span: Span {
+                                            start: 105,
+                                            end: 110,
+                                        },
                                         name: SimpleIdentifier {
                                             symbol: Symbol("D"),
                                             span: Span {
@@ -275,6 +351,10 @@
                                         value: Expression {
                                             kind: Literal(
                                                 Literal {
+                                                    span: Span {
+                                                        start: 109,
+                                                        end: 110,
+                                                    },
                                                     kind: Integer,
                                                     token: Token {
                                                         kind: LiteralInteger,
@@ -306,11 +386,19 @@
                         ),
                         Constant(
                             ClassishConstant {
+                                span: Span {
+                                    start: 116,
+                                    end: 128,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: ConstantModifierGroup {
+                                    span: Span {
+                                        start: 0,
+                                        end: 0,
+                                    },
                                     modifiers: [],
                                 },
                                 const: Span {
@@ -320,6 +408,10 @@
                                 data_type: None,
                                 entries: [
                                     ClassishConstantEntry {
+                                        span: Span {
+                                            start: 122,
+                                            end: 127,
+                                        },
                                         name: SimpleIdentifier {
                                             symbol: Symbol("E"),
                                             span: Span {
@@ -334,6 +426,10 @@
                                         value: Expression {
                                             kind: Literal(
                                                 Literal {
+                                                    span: Span {
+                                                        start: 126,
+                                                        end: 127,
+                                                    },
                                                     kind: Integer,
                                                     token: Token {
                                                         kind: LiteralInteger,

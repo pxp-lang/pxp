@@ -19,6 +19,10 @@
     Statement {
         kind: Function(
             FunctionStatement {
+                span: Span {
+                    start: 7,
+                    end: 32,
+                },
                 comments: CommentGroup {
                     comments: [],
                 },
@@ -31,6 +35,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 16,
+                                end: 19,
+                            },
                             resolved: Symbol("foo"),
                             original: Symbol("foo"),
                         },
@@ -41,6 +49,10 @@
                     },
                 },
                 parameters: FunctionParameterList {
+                    span: Span {
+                        start: 19,
+                        end: 21,
+                    },
                     comments: CommentGroup {
                         comments: [],
                     },
@@ -59,6 +71,10 @@
                 },
                 return_type: Some(
                     ReturnType {
+                        span: Span {
+                            start: 21,
+                            end: 29,
+                        },
                         colon: Span {
                             start: 21,
                             end: 22,
@@ -73,6 +89,10 @@
                     },
                 ),
                 body: FunctionBody {
+                    span: Span {
+                        start: 30,
+                        end: 32,
+                    },
                     comments: CommentGroup {
                         comments: [],
                     },

@@ -19,12 +19,20 @@
     Statement {
         kind: Use(
             UseStatement {
+                span: Span {
+                    start: 7,
+                    end: 20,
+                },
                 kind: Normal,
                 uses: [
                     Use {
                         name: Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 11,
+                                        end: 19,
+                                    },
                                     resolved: Symbol("Foo\From"),
                                     original: Symbol("Foo\From"),
                                 },
@@ -51,14 +59,26 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 26,
+                    end: 34,
+                },
                 expression: Expression {
                     kind: StaticMethodCall(
                         StaticMethodCallExpression {
+                            span: Span {
+                                start: 22,
+                                end: 33,
+                            },
                             target: Expression {
                                 kind: Name(
                                     Name {
                                         kind: Resolved(
                                             ResolvedName {
+                                                span: Span {
+                                                    start: 22,
+                                                    end: 26,
+                                                },
                                                 resolved: Symbol("Foo\From"),
                                                 original: Symbol("From"),
                                             },
@@ -91,6 +111,10 @@
                                 },
                             ),
                             arguments: ArgumentList {
+                                span: Span {
+                                    start: 31,
+                                    end: 33,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },

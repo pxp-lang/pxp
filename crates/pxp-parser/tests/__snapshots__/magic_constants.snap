@@ -19,6 +19,10 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 7,
+                    end: 15,
+                },
                 expression: Expression {
                     kind: MagicConstant(
                         Directory(
@@ -55,6 +59,10 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 16,
+                    end: 25,
+                },
                 expression: Expression {
                     kind: MagicConstant(
                         File(
@@ -91,6 +99,10 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 26,
+                    end: 35,
+                },
                 expression: Expression {
                     kind: MagicConstant(
                         Line(
@@ -127,6 +139,10 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 36,
+                    end: 49,
+                },
                 expression: Expression {
                     kind: MagicConstant(
                         Function(
@@ -163,6 +179,10 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 50,
+                    end: 60,
+                },
                 expression: Expression {
                     kind: MagicConstant(
                         Class(
@@ -199,6 +219,10 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 61,
+                    end: 71,
+                },
                 expression: Expression {
                     kind: MagicConstant(
                         Trait(
@@ -235,6 +259,10 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 72,
+                    end: 83,
+                },
                 expression: Expression {
                     kind: MagicConstant(
                         Method(
@@ -271,6 +299,10 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 84,
+                    end: 98,
+                },
                 expression: Expression {
                     kind: MagicConstant(
                         Namespace(

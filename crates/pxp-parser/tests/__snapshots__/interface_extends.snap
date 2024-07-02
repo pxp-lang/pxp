@@ -19,12 +19,20 @@
     Statement {
         kind: Use(
             UseStatement {
+                span: Span {
+                    start: 7,
+                    end: 19,
+                },
                 kind: Normal,
                 uses: [
                     Use {
                         name: Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 11,
+                                        end: 18,
+                                    },
                                     resolved: Symbol("Foo\Baz"),
                                     original: Symbol("Foo\Baz"),
                                 },
@@ -51,12 +59,20 @@
     Statement {
         kind: Use(
             UseStatement {
+                span: Span {
+                    start: 20,
+                    end: 39,
+                },
                 kind: Normal,
                 uses: [
                     Use {
                         name: Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 24,
+                                        end: 31,
+                                    },
                                     resolved: Symbol("Baz\Bar"),
                                     original: Symbol("Baz\Bar"),
                                 },
@@ -91,6 +107,10 @@
     Statement {
         kind: Interface(
             InterfaceStatement {
+                span: Span {
+                    start: 41,
+                    end: 86,
+                },
                 attributes: [],
                 interface: Span {
                     start: 41,
@@ -99,6 +119,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 51,
+                                end: 54,
+                            },
                             resolved: Symbol("Foo"),
                             original: Symbol("Foo"),
                         },
@@ -110,6 +134,10 @@
                 },
                 extends: Some(
                     InterfaceExtends {
+                        span: Span {
+                            start: 55,
+                            end: 81,
+                        },
                         extends: Span {
                             start: 55,
                             end: 62,
@@ -119,6 +147,10 @@
                                 Name {
                                     kind: Resolved(
                                         ResolvedName {
+                                            span: Span {
+                                                start: 63,
+                                                end: 66,
+                                            },
                                             resolved: Symbol("Bar"),
                                             original: Symbol("Bar"),
                                         },
@@ -131,6 +163,10 @@
                                 Name {
                                     kind: Resolved(
                                         ResolvedName {
+                                            span: Span {
+                                                start: 68,
+                                                end: 71,
+                                            },
                                             resolved: Symbol("Foo\Baz"),
                                             original: Symbol("Baz"),
                                         },
@@ -143,6 +179,10 @@
                                 Name {
                                     kind: Resolved(
                                         ResolvedName {
+                                            span: Span {
+                                                start: 73,
+                                                end: 81,
+                                            },
                                             resolved: Symbol("Baz\Bar\Test"),
                                             original: Symbol("Qux\Test"),
                                         },
@@ -167,6 +207,10 @@
                     },
                 ),
                 body: InterfaceBody {
+                    span: Span {
+                        start: 82,
+                        end: 86,
+                    },
                     left_brace: Span {
                         start: 82,
                         end: 83,

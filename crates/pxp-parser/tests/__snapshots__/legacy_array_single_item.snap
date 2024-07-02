@@ -19,9 +19,17 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 7,
+                    end: 16,
+                },
                 expression: Expression {
                     kind: Array(
                         ArrayExpression {
+                            span: Span {
+                                start: 7,
+                                end: 15,
+                            },
                             array: Span {
                                 start: 7,
                                 end: 12,
@@ -33,9 +41,17 @@
                             items: CommaSeparated {
                                 inner: [
                                     Value {
+                                        span: Span {
+                                            start: 13,
+                                            end: 14,
+                                        },
                                         value: Expression {
                                             kind: Literal(
                                                 Literal {
+                                                    span: Span {
+                                                        start: 13,
+                                                        end: 14,
+                                                    },
                                                     kind: Integer,
                                                     token: Token {
                                                         kind: LiteralInteger,
@@ -69,7 +85,7 @@
                     ),
                     span: Span {
                         start: 7,
-                        end: 16,
+                        end: 15,
                     },
                     comments: CommentGroup {
                         comments: [],

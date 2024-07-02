@@ -19,8 +19,16 @@
     Statement {
         kind: Class(
             ClassStatement {
+                span: Span {
+                    start: 7,
+                    end: 63,
+                },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    span: Span {
+                        start: 0,
+                        end: 0,
+                    },
                     modifiers: [],
                 },
                 class: Span {
@@ -30,6 +38,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 13,
+                                end: 14,
+                            },
                             resolved: Symbol("A"),
                             original: Symbol("A"),
                         },
@@ -42,6 +54,10 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    span: Span {
+                        start: 15,
+                        end: 63,
+                    },
                     left_brace: Span {
                         start: 15,
                         end: 16,
@@ -49,11 +65,19 @@
                     members: [
                         ConcreteMethod(
                             ConcreteMethod {
+                                span: Span {
+                                    start: 21,
+                                    end: 61,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    span: Span {
+                                        start: 0,
+                                        end: 0,
+                                    },
                                     modifiers: [],
                                 },
                                 function: Span {
@@ -69,6 +93,10 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    span: Span {
+                                        start: 31,
+                                        end: 33,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -87,6 +115,10 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
+                                    span: Span {
+                                        start: 34,
+                                        end: 61,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -98,9 +130,17 @@
                                         Statement {
                                             kind: Expression(
                                                 ExpressionStatement {
+                                                    span: Span {
+                                                        start: 44,
+                                                        end: 55,
+                                                    },
                                                     expression: Expression {
                                                         kind: New(
                                                             NewExpression {
+                                                                span: Span {
+                                                                    start: 44,
+                                                                    end: 54,
+                                                                },
                                                                 new: Span {
                                                                     start: 44,
                                                                     end: 47,
@@ -110,7 +150,16 @@
                                                                         Name {
                                                                             kind: Special(
                                                                                 SpecialName {
-                                                                                    kind: Self_,
+                                                                                    span: Span {
+                                                                                        start: 48,
+                                                                                        end: 52,
+                                                                                    },
+                                                                                    kind: Self_(
+                                                                                        Span {
+                                                                                            start: 48,
+                                                                                            end: 52,
+                                                                                        },
+                                                                                    ),
                                                                                     symbol: Symbol("self"),
                                                                                 },
                                                                             ),
@@ -130,6 +179,10 @@
                                                                 },
                                                                 arguments: Some(
                                                                     ArgumentList {
+                                                                        span: Span {
+                                                                            start: 52,
+                                                                            end: 54,
+                                                                        },
                                                                         comments: CommentGroup {
                                                                             comments: [],
                                                                         },
@@ -148,7 +201,7 @@
                                                         ),
                                                         span: Span {
                                                             start: 44,
-                                                            end: 52,
+                                                            end: 54,
                                                         },
                                                         comments: CommentGroup {
                                                             comments: [],

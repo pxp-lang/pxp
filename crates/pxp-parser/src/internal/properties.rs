@@ -7,6 +7,8 @@ use crate::ParserDiagnostic;
 use pxp_ast::*;
 
 use pxp_diagnostics::Severity;
+use pxp_span::Span;
+use pxp_span::Spanned;
 use pxp_token::TokenKind;
 
 pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
@@ -62,13 +64,19 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
             state.stream.next();
             let value = expressions::create(state);
 
-            entries.push(PropertyEntry::Initialized {
-                variable,
-                equals: current.span,
-                value,
+            entries.push(PropertyEntry {
+                span: Span::combine(variable.span, value.span),
+                kind: PropertyEntryKind::Initialized {
+                    variable,
+                    equals: current.span,
+                    value,
+                }
             });
         } else {
-            entries.push(PropertyEntry::Uninitialized { variable });
+            entries.push(PropertyEntry {
+                span: variable.span,
+                kind: PropertyEntryKind::Uninitialized { variable }
+            });
         }
 
         if state.stream.current().kind == TokenKind::Comma {
@@ -81,6 +89,11 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
     let end = utils::skip_semicolon(state);
 
     Property {
+        span: if ty.is_some() {
+            Span::combine(ty.span(), end)
+        } else {
+            entries.span()
+        },
         r#type: ty,
         modifiers,
         attributes: state.get_attributes(),
@@ -94,7 +107,7 @@ pub fn parse_var(state: &mut State) -> VariableProperty {
 
     let ty = data_type::optional_data_type(state);
 
-    let mut entries = vec![];
+    let mut entries: Vec<PropertyEntry> = vec![];
     let mut type_checked = false;
     loop {
         let variable = variables::simple_variable(state);
@@ -119,13 +132,19 @@ pub fn parse_var(state: &mut State) -> VariableProperty {
             state.stream.next();
             let value = expressions::create(state);
 
-            entries.push(PropertyEntry::Initialized {
-                variable,
-                equals: span,
-                value,
+            entries.push(PropertyEntry{
+                span: Span::combine(variable.span, value.span),
+                kind: PropertyEntryKind::Initialized {
+                    variable,
+                    equals: span,
+                    value,
+                }
             });
         } else {
-            entries.push(PropertyEntry::Uninitialized { variable });
+            entries.push(PropertyEntry {
+                span: variable.span,
+                kind: PropertyEntryKind::Uninitialized { variable }
+            });
         }
 
         if state.stream.current().kind == TokenKind::Comma {
@@ -138,6 +157,11 @@ pub fn parse_var(state: &mut State) -> VariableProperty {
     let end = utils::skip_semicolon(state);
 
     VariableProperty {
+        span: if ty.is_some() {
+            Span::combine(ty.span(), end)
+        } else {
+            entries.span()
+        },
         r#type: ty,
         attributes: state.get_attributes(),
         entries,

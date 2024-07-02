@@ -20,6 +20,10 @@
         kind: Namespace(
             Unbraced(
                 UnbracedNamespace {
+                    span: Span {
+                        start: 7,
+                        end: 35,
+                    },
                     start: Span {
                         start: 7,
                         end: 16,
@@ -27,6 +31,10 @@
                     name: Name {
                         kind: Resolved(
                             ResolvedName {
+                                span: Span {
+                                    start: 17,
+                                    end: 18,
+                                },
                                 resolved: Symbol("A"),
                                 original: Symbol("A"),
                             },
@@ -44,6 +52,10 @@
                         Statement {
                             kind: Constant(
                                 ConstantStatement {
+                                    span: Span {
+                                        start: 21,
+                                        end: 35,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -53,9 +65,17 @@
                                     },
                                     entries: [
                                         ConstantEntry {
+                                            span: Span {
+                                                start: 27,
+                                                end: 34,
+                                            },
                                             name: Name {
                                                 kind: Resolved(
                                                     ResolvedName {
+                                                        span: Span {
+                                                            start: 27,
+                                                            end: 30,
+                                                        },
                                                         resolved: Symbol("A\FOO"),
                                                         original: Symbol("FOO"),
                                                     },
@@ -72,6 +92,10 @@
                                             value: Expression {
                                                 kind: Literal(
                                                     Literal {
+                                                        span: Span {
+                                                            start: 33,
+                                                            end: 34,
+                                                        },
                                                         kind: Integer,
                                                         token: Token {
                                                             kind: LiteralInteger,

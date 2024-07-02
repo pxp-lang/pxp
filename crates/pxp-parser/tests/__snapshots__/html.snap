@@ -2,6 +2,10 @@
     Statement {
         kind: InlineHtml(
             InlineHtmlStatement {
+                span: Span {
+                    start: 0,
+                    end: 47,
+                },
                 html: Token {
                     kind: InlineHtml,
                     span: Span {
