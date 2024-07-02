@@ -19,6 +19,10 @@
     Statement {
         kind: If(
             IfStatement {
+                span: Span {
+                    start: 7,
+                    end: 50,
+                },
                 if: Span {
                     start: 7,
                     end: 9,
@@ -53,9 +57,17 @@
                     end: 14,
                 },
                 body: Statement {
+                    span: Span {
+                        start: 15,
+                        end: 50,
+                    },
                     statement: Statement {
                         kind: Block(
                             BlockStatement {
+                                span: Span {
+                                    start: 15,
+                                    end: 19,
+                                },
                                 left_brace: Span {
                                     start: 15,
                                     end: 16,
@@ -77,6 +89,10 @@
                     },
                     elseifs: [
                         IfStatementElseIf {
+                            span: Span {
+                                start: 20,
+                                end: 36,
+                            },
                             elseif: Span {
                                 start: 20,
                                 end: 26,
@@ -113,6 +129,10 @@
                             statement: Statement {
                                 kind: Block(
                                     BlockStatement {
+                                        span: Span {
+                                            start: 32,
+                                            end: 36,
+                                        },
                                         left_brace: Span {
                                             start: 32,
                                             end: 33,
@@ -136,6 +156,10 @@
                     ],
                     else: Some(
                         IfStatementElse {
+                            span: Span {
+                                start: 37,
+                                end: 50,
+                            },
                             else: Span {
                                 start: 37,
                                 end: 41,
@@ -143,6 +167,10 @@
                             statement: Statement {
                                 kind: Block(
                                     BlockStatement {
+                                        span: Span {
+                                            start: 42,
+                                            end: 50,
+                                        },
                                         left_brace: Span {
                                             start: 42,
                                             end: 43,

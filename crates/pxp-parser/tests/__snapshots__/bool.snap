@@ -19,10 +19,27 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 7,
+                    end: 12,
+                },
                 expression: Expression {
                     kind: Bool(
                         BoolExpression {
-                            value: true,
+                            span: Span {
+                                start: 7,
+                                end: 11,
+                            },
+                            value: Token {
+                                kind: True,
+                                span: Span {
+                                    start: 7,
+                                    end: 11,
+                                },
+                                symbol: Some(
+                                    Symbol("true"),
+                                ),
+                            },
                         },
                     ),
                     span: Span {
@@ -52,10 +69,27 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 13,
+                    end: 19,
+                },
                 expression: Expression {
                     kind: Bool(
                         BoolExpression {
-                            value: false,
+                            span: Span {
+                                start: 13,
+                                end: 18,
+                            },
+                            value: Token {
+                                kind: False,
+                                span: Span {
+                                    start: 13,
+                                    end: 18,
+                                },
+                                symbol: Some(
+                                    Symbol("false"),
+                                ),
+                            },
                         },
                     ),
                     span: Span {

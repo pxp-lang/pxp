@@ -19,8 +19,16 @@
     Statement {
         kind: Class(
             ClassStatement {
+                span: Span {
+                    start: 7,
+                    end: 186,
+                },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    span: Span {
+                        start: 0,
+                        end: 0,
+                    },
                     modifiers: [],
                 },
                 class: Span {
@@ -30,6 +38,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 13,
+                                end: 16,
+                            },
                             resolved: Symbol("Foo"),
                             original: Symbol("Foo"),
                         },
@@ -42,6 +54,10 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    span: Span {
+                        start: 17,
+                        end: 186,
+                    },
                     left_brace: Span {
                         start: 17,
                         end: 18,
@@ -49,11 +65,19 @@
                     members: [
                         ConcreteMethod(
                             ConcreteMethod {
+                                span: Span {
+                                    start: 30,
+                                    end: 45,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    span: Span {
+                                        start: 23,
+                                        end: 29,
+                                    },
                                     modifiers: [
                                         Static(
                                             Span {
@@ -76,6 +100,10 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    span: Span {
+                                        start: 40,
+                                        end: 42,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -94,6 +122,10 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
+                                    span: Span {
+                                        start: 43,
+                                        end: 45,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -111,11 +143,19 @@
                         ),
                         ConcreteMethod(
                             ConcreteMethod {
+                                span: Span {
+                                    start: 64,
+                                    end: 79,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    span: Span {
+                                        start: 50,
+                                        end: 63,
+                                    },
                                     modifiers: [
                                         Public(
                                             Span {
@@ -144,6 +184,10 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    span: Span {
+                                        start: 74,
+                                        end: 76,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -162,6 +206,10 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
+                                    span: Span {
+                                        start: 77,
+                                        end: 79,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -179,11 +227,19 @@
                         ),
                         ConcreteMethod(
                             ConcreteMethod {
+                                span: Span {
+                                    start: 101,
+                                    end: 116,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    span: Span {
+                                        start: 84,
+                                        end: 100,
+                                    },
                                     modifiers: [
                                         Protected(
                                             Span {
@@ -212,6 +268,10 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    span: Span {
+                                        start: 111,
+                                        end: 113,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -230,6 +290,10 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
+                                    span: Span {
+                                        start: 114,
+                                        end: 116,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -247,11 +311,19 @@
                         ),
                         ConcreteMethod(
                             ConcreteMethod {
+                                span: Span {
+                                    start: 136,
+                                    end: 151,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    span: Span {
+                                        start: 121,
+                                        end: 135,
+                                    },
                                     modifiers: [
                                         Private(
                                             Span {
@@ -280,6 +352,10 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    span: Span {
+                                        start: 146,
+                                        end: 148,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -298,6 +374,10 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
+                                    span: Span {
+                                        start: 149,
+                                        end: 151,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -315,11 +395,19 @@
                         ),
                         ConcreteMethod(
                             ConcreteMethod {
+                                span: Span {
+                                    start: 169,
+                                    end: 184,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    span: Span {
+                                        start: 156,
+                                        end: 168,
+                                    },
                                     modifiers: [
                                         Final(
                                             Span {
@@ -348,6 +436,10 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    span: Span {
+                                        start: 179,
+                                        end: 181,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -366,6 +458,10 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
+                                    span: Span {
+                                        start: 182,
+                                        end: 184,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },

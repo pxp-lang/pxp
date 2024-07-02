@@ -19,8 +19,16 @@
     Statement {
         kind: Class(
             ClassStatement {
+                span: Span {
+                    start: 7,
+                    end: 64,
+                },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    span: Span {
+                        start: 0,
+                        end: 0,
+                    },
                     modifiers: [],
                 },
                 class: Span {
@@ -30,6 +38,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 13,
+                                end: 16,
+                            },
                             resolved: Symbol("Foo"),
                             original: Symbol("Foo"),
                         },
@@ -42,6 +54,10 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    span: Span {
+                        start: 17,
+                        end: 64,
+                    },
                     left_brace: Span {
                         start: 17,
                         end: 18,
@@ -49,6 +65,10 @@
                     members: [
                         TraitUsage(
                             TraitUsage {
+                                span: Span {
+                                    start: 23,
+                                    end: 55,
+                                },
                                 use: Span {
                                     start: 23,
                                     end: 26,
@@ -57,6 +77,10 @@
                                     Name {
                                         kind: Resolved(
                                             ResolvedName {
+                                                span: Span {
+                                                    start: 27,
+                                                    end: 30,
+                                                },
                                                 resolved: Symbol("Bar"),
                                                 original: Symbol("Bar"),
                                             },
@@ -68,21 +92,27 @@
                                     },
                                 ],
                                 adaptations: [
-                                    Visibility {
-                                        trait: None,
-                                        method: SimpleIdentifier {
-                                            symbol: Symbol("a"),
-                                            span: Span {
-                                                start: 41,
-                                                end: 42,
-                                            },
+                                    TraitUsageAdaptation {
+                                        span: Span {
+                                            start: 41,
+                                            end: 55,
                                         },
-                                        visibility: Protected(
-                                            Span {
-                                                start: 46,
-                                                end: 55,
+                                        kind: Visibility {
+                                            trait: None,
+                                            method: SimpleIdentifier {
+                                                symbol: Symbol("a"),
+                                                span: Span {
+                                                    start: 41,
+                                                    end: 42,
+                                                },
                                             },
-                                        ),
+                                            visibility: Protected(
+                                                Span {
+                                                    start: 46,
+                                                    end: 55,
+                                                },
+                                            ),
+                                        },
                                     },
                                 ],
                             },

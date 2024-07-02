@@ -20,6 +20,10 @@
         kind: Namespace(
             Unbraced(
                 UnbracedNamespace {
+                    span: Span {
+                        start: 7,
+                        end: 34,
+                    },
                     start: Span {
                         start: 7,
                         end: 16,
@@ -27,6 +31,10 @@
                     name: Name {
                         kind: Resolved(
                             ResolvedName {
+                                span: Span {
+                                    start: 17,
+                                    end: 20,
+                                },
                                 resolved: Symbol("Foo"),
                                 original: Symbol("Foo"),
                             },
@@ -44,6 +52,10 @@
                         Statement {
                             kind: UnitEnum(
                                 UnitEnumStatement {
+                                    span: Span {
+                                        start: 23,
+                                        end: 34,
+                                    },
                                     attributes: [],
                                     enum: Span {
                                         start: 23,
@@ -52,6 +64,10 @@
                                     name: Name {
                                         kind: Resolved(
                                             ResolvedName {
+                                                span: Span {
+                                                    start: 28,
+                                                    end: 31,
+                                                },
                                                 resolved: Symbol("Foo\Bar"),
                                                 original: Symbol("Bar"),
                                             },
@@ -63,6 +79,10 @@
                                     },
                                     implements: [],
                                     body: UnitEnumBody {
+                                        span: Span {
+                                            start: 32,
+                                            end: 34,
+                                        },
                                         left_brace: Span {
                                             start: 32,
                                             end: 33,

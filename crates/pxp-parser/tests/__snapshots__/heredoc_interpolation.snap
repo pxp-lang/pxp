@@ -19,19 +19,35 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 7,
+                    end: 118,
+                },
                 expression: Expression {
                     kind: Heredoc(
                         HeredocExpression {
+                            span: Span {
+                                start: 7,
+                                end: 117,
+                            },
                             label: Symbol("<<<TXT
                             "),
                             parts: [
                                 Literal(
                                     LiteralStringPart {
+                                        span: Span {
+                                            start: 14,
+                                            end: 21,
+                                        },
                                         value: Symbol("Hello, "),
                                     },
                                 ),
                                 Expression(
                                     ExpressionStringPart {
+                                        span: Span {
+                                            start: 21,
+                                            end: 27,
+                                        },
                                         expression: Expression {
                                             kind: Variable(
                                                 SimpleVariable(
@@ -57,12 +73,20 @@
                                 ),
                                 Literal(
                                     LiteralStringPart {
+                                        span: Span {
+                                            start: 27,
+                                            end: 36,
+                                        },
                                         value: Symbol("!
                                         Hello, "),
                                     },
                                 ),
                                 Expression(
                                     ExpressionStringPart {
+                                        span: Span {
+                                            start: 37,
+                                            end: 43,
+                                        },
                                         expression: Expression {
                                             kind: Variable(
                                                 SimpleVariable(
@@ -88,15 +112,27 @@
                                 ),
                                 Literal(
                                     LiteralStringPart {
+                                        span: Span {
+                                            start: 44,
+                                            end: 53,
+                                        },
                                         value: Symbol(".
                                         Hello, "),
                                     },
                                 ),
                                 Expression(
                                     ExpressionStringPart {
+                                        span: Span {
+                                            start: 60,
+                                            end: 66,
+                                        },
                                         expression: Expression {
                                             kind: PropertyFetch(
                                                 PropertyFetchExpression {
+                                                    span: Span {
+                                                        start: 54,
+                                                        end: 66,
+                                                    },
                                                     target: Expression {
                                                         kind: Variable(
                                                             SimpleVariable(
@@ -156,15 +192,27 @@
                                 ),
                                 Literal(
                                     LiteralStringPart {
+                                        span: Span {
+                                            start: 67,
+                                            end: 76,
+                                        },
                                         value: Symbol(".
                                         Hello, "),
                                     },
                                 ),
                                 Expression(
                                     ExpressionStringPart {
+                                        span: Span {
+                                            start: 83,
+                                            end: 91,
+                                        },
                                         expression: Expression {
                                             kind: MethodCall(
                                                 MethodCallExpression {
+                                                    span: Span {
+                                                        start: 77,
+                                                        end: 91,
+                                                    },
                                                     target: Expression {
                                                         kind: Variable(
                                                             SimpleVariable(
@@ -211,6 +259,10 @@
                                                         },
                                                     },
                                                     arguments: ArgumentList {
+                                                        span: Span {
+                                                            start: 89,
+                                                            end: 91,
+                                                        },
                                                         comments: CommentGroup {
                                                             comments: [],
                                                         },
@@ -238,15 +290,27 @@
                                 ),
                                 Literal(
                                     LiteralStringPart {
+                                        span: Span {
+                                            start: 92,
+                                            end: 101,
+                                        },
                                         value: Symbol(".
                                         Hello, "),
                                     },
                                 ),
                                 Expression(
                                     ExpressionStringPart {
+                                        span: Span {
+                                            start: 108,
+                                            end: 111,
+                                        },
                                         expression: Expression {
                                             kind: ArrayIndex(
                                                 ArrayIndexExpression {
+                                                    span: Span {
+                                                        start: 102,
+                                                        end: 111,
+                                                    },
                                                     array: Expression {
                                                         kind: Variable(
                                                             SimpleVariable(
@@ -276,6 +340,10 @@
                                                         Expression {
                                                             kind: Literal(
                                                                 Literal {
+                                                                    span: Span {
+                                                                        start: 109,
+                                                                        end: 110,
+                                                                    },
                                                                     kind: Integer,
                                                                     token: Token {
                                                                         kind: LiteralInteger,
@@ -316,6 +384,10 @@
                                 ),
                                 Literal(
                                     LiteralStringPart {
+                                        span: Span {
+                                            start: 112,
+                                            end: 113,
+                                        },
                                         value: Symbol("."),
                                     },
                                 ),

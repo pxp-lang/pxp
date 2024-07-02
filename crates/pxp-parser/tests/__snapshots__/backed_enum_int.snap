@@ -19,6 +19,10 @@
     Statement {
         kind: BackedEnum(
             BackedEnumStatement {
+                span: Span {
+                    start: 7,
+                    end: 23,
+                },
                 attributes: [],
                 enum: Span {
                     start: 7,
@@ -27,6 +31,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 12,
+                                end: 15,
+                            },
                             resolved: Symbol("Foo"),
                             original: Symbol("Foo"),
                         },
@@ -48,6 +56,10 @@
                 ),
                 implements: [],
                 body: BackedEnumBody {
+                    span: Span {
+                        start: 21,
+                        end: 23,
+                    },
                     left_brace: Span {
                         start: 21,
                         end: 22,

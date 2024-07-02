@@ -19,14 +19,26 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 7,
+                    end: 59,
+                },
                 expression: Expression {
                     kind: Heredoc(
                         HeredocExpression {
+                            span: Span {
+                                start: 7,
+                                end: 58,
+                            },
                             label: Symbol("<<<TXT
                             "),
                             parts: [
                                 Literal(
                                     LiteralStringPart {
+                                        span: Span {
+                                            start: 14,
+                                            end: 54,
+                                        },
                                         value: Symbol("Hello, world!
                                         
                                         This is a heredoc string."),

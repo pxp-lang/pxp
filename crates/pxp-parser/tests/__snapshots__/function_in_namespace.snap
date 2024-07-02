@@ -20,6 +20,10 @@
         kind: Namespace(
             Unbraced(
                 UnbracedNamespace {
+                    span: Span {
+                        start: 7,
+                        end: 40,
+                    },
                     start: Span {
                         start: 7,
                         end: 16,
@@ -27,6 +31,10 @@
                     name: Name {
                         kind: Resolved(
                             ResolvedName {
+                                span: Span {
+                                    start: 17,
+                                    end: 20,
+                                },
                                 resolved: Symbol("Foo"),
                                 original: Symbol("Foo"),
                             },
@@ -44,6 +52,10 @@
                         Statement {
                             kind: Function(
                                 FunctionStatement {
+                                    span: Span {
+                                        start: 23,
+                                        end: 40,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -56,6 +68,10 @@
                                     name: Name {
                                         kind: Resolved(
                                             ResolvedName {
+                                                span: Span {
+                                                    start: 32,
+                                                    end: 35,
+                                                },
                                                 resolved: Symbol("Foo\bar"),
                                                 original: Symbol("bar"),
                                             },
@@ -66,6 +82,10 @@
                                         },
                                     },
                                     parameters: FunctionParameterList {
+                                        span: Span {
+                                            start: 35,
+                                            end: 37,
+                                        },
                                         comments: CommentGroup {
                                             comments: [],
                                         },
@@ -84,6 +104,10 @@
                                     },
                                     return_type: None,
                                     body: FunctionBody {
+                                        span: Span {
+                                            start: 38,
+                                            end: 40,
+                                        },
                                         comments: CommentGroup {
                                             comments: [],
                                         },

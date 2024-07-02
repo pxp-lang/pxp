@@ -19,6 +19,10 @@
     Statement {
         kind: Switch(
             SwitchStatement {
+                span: Span {
+                    start: 7,
+                    end: 0,
+                },
                 switch: Span {
                     start: 7,
                     end: 13,

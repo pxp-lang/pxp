@@ -19,53 +19,63 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 14,
+                    end: 17,
+                },
                 expression: Expression {
                     kind: ComparisonOperation(
-                        NotIdentical {
-                            left: Expression {
-                                kind: Variable(
-                                    SimpleVariable(
-                                        SimpleVariable {
-                                            symbol: Symbol("$a"),
-                                            stripped: Symbol("a"),
-                                            span: Span {
-                                                start: 7,
-                                                end: 9,
-                                            },
-                                        },
-                                    ),
-                                ),
-                                span: Span {
-                                    start: 7,
-                                    end: 9,
-                                },
-                                comments: CommentGroup {
-                                    comments: [],
-                                },
+                        ComparisonOperationExpression {
+                            span: Span {
+                                start: 7,
+                                end: 16,
                             },
-                            bang_double_equals: Span {
-                                start: 10,
-                                end: 13,
-                            },
-                            right: Expression {
-                                kind: Variable(
-                                    SimpleVariable(
-                                        SimpleVariable {
-                                            symbol: Symbol("$b"),
-                                            stripped: Symbol("b"),
-                                            span: Span {
-                                                start: 14,
-                                                end: 16,
+                            kind: NotIdentical {
+                                left: Expression {
+                                    kind: Variable(
+                                        SimpleVariable(
+                                            SimpleVariable {
+                                                symbol: Symbol("$a"),
+                                                stripped: Symbol("a"),
+                                                span: Span {
+                                                    start: 7,
+                                                    end: 9,
+                                                },
                                             },
-                                        },
+                                        ),
                                     ),
-                                ),
-                                span: Span {
-                                    start: 14,
-                                    end: 16,
+                                    span: Span {
+                                        start: 7,
+                                        end: 9,
+                                    },
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
                                 },
-                                comments: CommentGroup {
-                                    comments: [],
+                                bang_double_equals: Span {
+                                    start: 10,
+                                    end: 13,
+                                },
+                                right: Expression {
+                                    kind: Variable(
+                                        SimpleVariable(
+                                            SimpleVariable {
+                                                symbol: Symbol("$b"),
+                                                stripped: Symbol("b"),
+                                                span: Span {
+                                                    start: 14,
+                                                    end: 16,
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                    span: Span {
+                                        start: 14,
+                                        end: 16,
+                                    },
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
                                 },
                             },
                         },

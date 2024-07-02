@@ -19,14 +19,26 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 10,
+                    end: 21,
+                },
                 expression: Expression {
                     kind: FunctionCall(
                         FunctionCallExpression {
+                            span: Span {
+                                start: 7,
+                                end: 20,
+                            },
                             target: Expression {
                                 kind: Name(
                                     Name {
                                         kind: Unresolved(
                                             UnresolvedName {
+                                                span: Span {
+                                                    start: 7,
+                                                    end: 10,
+                                                },
                                                 symbol: Symbol("foo"),
                                                 qualification: Unqualified,
                                             },
@@ -46,6 +58,10 @@
                                 },
                             },
                             arguments: ArgumentList {
+                                span: Span {
+                                    start: 10,
+                                    end: 20,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
@@ -56,6 +72,10 @@
                                 arguments: [
                                     Positional(
                                         PositionalArgument {
+                                            span: Span {
+                                                start: 11,
+                                                end: 12,
+                                            },
                                             comments: CommentGroup {
                                                 comments: [],
                                             },
@@ -63,6 +83,10 @@
                                             value: Expression {
                                                 kind: Literal(
                                                     Literal {
+                                                        span: Span {
+                                                            start: 11,
+                                                            end: 12,
+                                                        },
                                                         kind: Integer,
                                                         token: Token {
                                                             kind: LiteralInteger,
@@ -88,6 +112,10 @@
                                     ),
                                     Positional(
                                         PositionalArgument {
+                                            span: Span {
+                                                start: 14,
+                                                end: 15,
+                                            },
                                             comments: CommentGroup {
                                                 comments: [],
                                             },
@@ -95,6 +123,10 @@
                                             value: Expression {
                                                 kind: Literal(
                                                     Literal {
+                                                        span: Span {
+                                                            start: 14,
+                                                            end: 15,
+                                                        },
                                                         kind: Integer,
                                                         token: Token {
                                                             kind: LiteralInteger,
@@ -120,6 +152,10 @@
                                     ),
                                     Positional(
                                         PositionalArgument {
+                                            span: Span {
+                                                start: 17,
+                                                end: 18,
+                                            },
                                             comments: CommentGroup {
                                                 comments: [],
                                             },
@@ -127,6 +163,10 @@
                                             value: Expression {
                                                 kind: Literal(
                                                     Literal {
+                                                        span: Span {
+                                                            start: 17,
+                                                            end: 18,
+                                                        },
                                                         kind: Integer,
                                                         token: Token {
                                                             kind: LiteralInteger,

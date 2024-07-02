@@ -20,6 +20,10 @@
         kind: Namespace(
             Braced(
                 BracedNamespace {
+                    span: Span {
+                        start: 7,
+                        end: 29,
+                    },
                     namespace: Span {
                         start: 7,
                         end: 16,
@@ -28,6 +32,10 @@
                         Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 17,
+                                        end: 20,
+                                    },
                                     resolved: Symbol("Foo"),
                                     original: Symbol("Foo"),
                                 },
@@ -39,6 +47,10 @@
                         },
                     ),
                     body: BracedNamespaceBody {
+                        span: Span {
+                            start: 21,
+                            end: 29,
+                        },
                         start: Span {
                             start: 21,
                             end: 22,

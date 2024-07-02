@@ -19,9 +19,17 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 7,
+                    end: 13,
+                },
                 expression: Expression {
                     kind: Literal(
                         Literal {
+                            span: Span {
+                                start: 7,
+                                end: 12,
+                            },
                             kind: Float,
                             token: Token {
                                 kind: LiteralFloat,
@@ -62,9 +70,17 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 14,
+                    end: 24,
+                },
                 expression: Expression {
                     kind: Literal(
                         Literal {
+                            span: Span {
+                                start: 14,
+                                end: 23,
+                            },
                             kind: Float,
                             token: Token {
                                 kind: LiteralFloat,

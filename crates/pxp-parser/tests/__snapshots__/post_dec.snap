@@ -19,33 +19,43 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 9,
+                    end: 12,
+                },
                 expression: Expression {
                     kind: ArithmeticOperation(
-                        PostDecrement {
-                            left: Expression {
-                                kind: Variable(
-                                    SimpleVariable(
-                                        SimpleVariable {
-                                            symbol: Symbol("$a"),
-                                            stripped: Symbol("a"),
-                                            span: Span {
-                                                start: 7,
-                                                end: 9,
-                                            },
-                                        },
-                                    ),
-                                ),
-                                span: Span {
-                                    start: 7,
-                                    end: 9,
-                                },
-                                comments: CommentGroup {
-                                    comments: [],
-                                },
-                            },
-                            decrement: Span {
-                                start: 9,
+                        ArithmeticOperationExpression {
+                            span: Span {
+                                start: 7,
                                 end: 11,
+                            },
+                            kind: PostDecrement {
+                                left: Expression {
+                                    kind: Variable(
+                                        SimpleVariable(
+                                            SimpleVariable {
+                                                symbol: Symbol("$a"),
+                                                stripped: Symbol("a"),
+                                                span: Span {
+                                                    start: 7,
+                                                    end: 9,
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                    span: Span {
+                                        start: 7,
+                                        end: 9,
+                                    },
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                },
+                                decrement: Span {
+                                    start: 9,
+                                    end: 11,
+                                },
                             },
                         },
                     ),

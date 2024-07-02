@@ -19,8 +19,16 @@
     Statement {
         kind: Class(
             ClassStatement {
+                span: Span {
+                    start: 7,
+                    end: 28,
+                },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    span: Span {
+                        start: 7,
+                        end: 15,
+                    },
                     modifiers: [
                         Abstract(
                             Span {
@@ -37,6 +45,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 22,
+                                end: 25,
+                            },
                             resolved: Symbol("Foo"),
                             original: Symbol("Foo"),
                         },
@@ -49,6 +61,10 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    span: Span {
+                        start: 26,
+                        end: 28,
+                    },
                     left_brace: Span {
                         start: 26,
                         end: 27,

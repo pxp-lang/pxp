@@ -20,12 +20,20 @@
         kind: Namespace(
             Braced(
                 BracedNamespace {
+                    span: Span {
+                        start: 7,
+                        end: 25,
+                    },
                     namespace: Span {
                         start: 7,
                         end: 16,
                     },
                     name: None,
                     body: BracedNamespaceBody {
+                        span: Span {
+                            start: 17,
+                            end: 25,
+                        },
                         start: Span {
                             start: 17,
                             end: 18,

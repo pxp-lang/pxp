@@ -19,8 +19,16 @@
     Statement {
         kind: Class(
             ClassStatement {
+                span: Span {
+                    start: 7,
+                    end: 62,
+                },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    span: Span {
+                        start: 0,
+                        end: 0,
+                    },
                     modifiers: [],
                 },
                 class: Span {
@@ -30,6 +38,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 13,
+                                end: 14,
+                            },
                             resolved: Symbol("A"),
                             original: Symbol("A"),
                         },
@@ -42,6 +54,10 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    span: Span {
+                        start: 15,
+                        end: 62,
+                    },
                     left_brace: Span {
                         start: 15,
                         end: 16,
@@ -49,11 +65,19 @@
                     members: [
                         ConcreteMethod(
                             ConcreteMethod {
+                                span: Span {
+                                    start: 21,
+                                    end: 60,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    span: Span {
+                                        start: 0,
+                                        end: 0,
+                                    },
                                     modifiers: [],
                                 },
                                 function: Span {
@@ -69,6 +93,10 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    span: Span {
+                                        start: 31,
+                                        end: 43,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -79,6 +107,10 @@
                                     parameters: CommaSeparated {
                                         inner: [
                                             FunctionParameter {
+                                                span: Span {
+                                                    start: 32,
+                                                    end: 38,
+                                                },
                                                 comments: CommentGroup {
                                                     comments: [],
                                                 },
@@ -105,6 +137,10 @@
                                                     Expression {
                                                         kind: Literal(
                                                             Literal {
+                                                                span: Span {
+                                                                    start: 41,
+                                                                    end: 42,
+                                                                },
                                                                 kind: Integer,
                                                                 token: Token {
                                                                     kind: LiteralInteger,
@@ -139,6 +175,10 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
+                                    span: Span {
+                                        start: 44,
+                                        end: 60,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },

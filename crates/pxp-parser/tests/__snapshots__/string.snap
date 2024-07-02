@@ -19,9 +19,17 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 8,
+                    end: 22,
+                },
                 expression: Expression {
                     kind: Literal(
                         Literal {
+                            span: Span {
+                                start: 8,
+                                end: 20,
+                            },
                             kind: String,
                             token: Token {
                                 kind: LiteralDoubleQuotedString,
@@ -62,9 +70,17 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 23,
+                    end: 38,
+                },
                 expression: Expression {
                     kind: Literal(
                         Literal {
+                            span: Span {
+                                start: 23,
+                                end: 37,
+                            },
                             kind: String,
                             token: Token {
                                 kind: LiteralSingleQuotedString,
@@ -105,17 +121,33 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 40,
+                    end: 56,
+                },
                 expression: Expression {
                     kind: InterpolatedString(
                         InterpolatedStringExpression {
+                            span: Span {
+                                start: 40,
+                                end: 56,
+                            },
                             parts: [
                                 Literal(
                                     LiteralStringPart {
+                                        span: Span {
+                                            start: 40,
+                                            end: 47,
+                                        },
                                         value: Symbol("Hello, "),
                                     },
                                 ),
                                 Expression(
                                     ExpressionStringPart {
+                                        span: Span {
+                                            start: 48,
+                                            end: 53,
+                                        },
                                         expression: Expression {
                                             kind: Variable(
                                                 SimpleVariable(
@@ -169,17 +201,33 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 58,
+                    end: 72,
+                },
                 expression: Expression {
                     kind: InterpolatedString(
                         InterpolatedStringExpression {
+                            span: Span {
+                                start: 58,
+                                end: 72,
+                            },
                             parts: [
                                 Literal(
                                     LiteralStringPart {
+                                        span: Span {
+                                            start: 58,
+                                            end: 65,
+                                        },
                                         value: Symbol("Hello, "),
                                     },
                                 ),
                                 Expression(
                                     ExpressionStringPart {
+                                        span: Span {
+                                            start: 65,
+                                            end: 70,
+                                        },
                                         expression: Expression {
                                             kind: Variable(
                                                 SimpleVariable(
@@ -233,20 +281,40 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 74,
+                    end: 96,
+                },
                 expression: Expression {
                     kind: InterpolatedString(
                         InterpolatedStringExpression {
+                            span: Span {
+                                start: 74,
+                                end: 96,
+                            },
                             parts: [
                                 Literal(
                                     LiteralStringPart {
+                                        span: Span {
+                                            start: 74,
+                                            end: 81,
+                                        },
                                         value: Symbol("Hello, "),
                                     },
                                 ),
                                 Expression(
                                     ExpressionStringPart {
+                                        span: Span {
+                                            start: 87,
+                                            end: 93,
+                                        },
                                         expression: Expression {
                                             kind: PropertyFetch(
                                                 PropertyFetchExpression {
+                                                    span: Span {
+                                                        start: 82,
+                                                        end: 93,
+                                                    },
                                                     target: Expression {
                                                         kind: Variable(
                                                             SimpleVariable(
@@ -334,20 +402,40 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 98,
+                    end: 118,
+                },
                 expression: Expression {
                     kind: InterpolatedString(
                         InterpolatedStringExpression {
+                            span: Span {
+                                start: 98,
+                                end: 118,
+                            },
                             parts: [
                                 Literal(
                                     LiteralStringPart {
+                                        span: Span {
+                                            start: 98,
+                                            end: 105,
+                                        },
                                         value: Symbol("Hello, "),
                                     },
                                 ),
                                 Expression(
                                     ExpressionStringPart {
+                                        span: Span {
+                                            start: 105,
+                                            end: 116,
+                                        },
                                         expression: Expression {
                                             kind: PropertyFetch(
                                                 PropertyFetchExpression {
+                                                    span: Span {
+                                                        start: 105,
+                                                        end: 116,
+                                                    },
                                                     target: Expression {
                                                         kind: Variable(
                                                             SimpleVariable(
@@ -435,20 +523,40 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 120,
+                    end: 147,
+                },
                 expression: Expression {
                     kind: InterpolatedString(
                         InterpolatedStringExpression {
+                            span: Span {
+                                start: 120,
+                                end: 147,
+                            },
                             parts: [
                                 Literal(
                                     LiteralStringPart {
+                                        span: Span {
+                                            start: 120,
+                                            end: 127,
+                                        },
                                         value: Symbol("Hello, "),
                                     },
                                 ),
                                 Expression(
                                     ExpressionStringPart {
+                                        span: Span {
+                                            start: 133,
+                                            end: 144,
+                                        },
                                         expression: Expression {
                                             kind: MethodCall(
                                                 MethodCallExpression {
+                                                    span: Span {
+                                                        start: 128,
+                                                        end: 144,
+                                                    },
                                                     target: Expression {
                                                         kind: Variable(
                                                             SimpleVariable(
@@ -495,6 +603,10 @@
                                                         },
                                                     },
                                                     arguments: ArgumentList {
+                                                        span: Span {
+                                                            start: 142,
+                                                            end: 144,
+                                                        },
                                                         comments: CommentGroup {
                                                             comments: [],
                                                         },

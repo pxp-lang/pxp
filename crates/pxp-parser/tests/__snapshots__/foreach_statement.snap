@@ -19,6 +19,10 @@
     Statement {
         kind: Foreach(
             ForeachStatement {
+                span: Span {
+                    start: 7,
+                    end: 44,
+                },
                 foreach: Span {
                     start: 7,
                     end: 14,
@@ -28,6 +32,10 @@
                     end: 16,
                 },
                 iterator: Value {
+                    span: Span {
+                        start: 16,
+                        end: 32,
+                    },
                     expression: Expression {
                         kind: Variable(
                             SimpleVariable(
@@ -81,9 +89,17 @@
                     end: 33,
                 },
                 body: Statement {
+                    span: Span {
+                        start: 34,
+                        end: 44,
+                    },
                     statement: Statement {
                         kind: Block(
                             BlockStatement {
+                                span: Span {
+                                    start: 34,
+                                    end: 44,
+                                },
                                 left_brace: Span {
                                     start: 34,
                                     end: 35,

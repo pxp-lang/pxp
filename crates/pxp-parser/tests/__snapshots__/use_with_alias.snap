@@ -19,12 +19,20 @@
     Statement {
         kind: Use(
             UseStatement {
+                span: Span {
+                    start: 7,
+                    end: 22,
+                },
                 kind: Normal,
                 uses: [
                     Use {
                         name: Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 11,
+                                        end: 14,
+                                    },
                                     resolved: Symbol("Foo"),
                                     original: Symbol("Foo"),
                                 },

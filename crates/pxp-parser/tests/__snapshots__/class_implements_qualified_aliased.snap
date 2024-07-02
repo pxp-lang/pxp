@@ -19,12 +19,20 @@
     Statement {
         kind: Use(
             UseStatement {
+                span: Span {
+                    start: 7,
+                    end: 26,
+                },
                 kind: Normal,
                 uses: [
                     Use {
                         name: Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 11,
+                                        end: 18,
+                                    },
                                     resolved: Symbol("Foo\Bar"),
                                     original: Symbol("Foo\Bar"),
                                 },
@@ -59,8 +67,16 @@
     Statement {
         kind: Class(
             ClassStatement {
+                span: Span {
+                    start: 28,
+                    end: 59,
+                },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    span: Span {
+                        start: 0,
+                        end: 0,
+                    },
                     modifiers: [],
                 },
                 class: Span {
@@ -70,6 +86,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 34,
+                                end: 37,
+                            },
                             resolved: Symbol("Baz"),
                             original: Symbol("Baz"),
                         },
@@ -82,6 +102,10 @@
                 extends: None,
                 implements: Some(
                     ClassImplements {
+                        span: Span {
+                            start: 38,
+                            end: 56,
+                        },
                         implements: Span {
                             start: 38,
                             end: 48,
@@ -91,6 +115,10 @@
                                 Name {
                                     kind: Resolved(
                                         ResolvedName {
+                                            span: Span {
+                                                start: 49,
+                                                end: 56,
+                                            },
                                             resolved: Symbol("Foo\Bar\Foo"),
                                             original: Symbol("Qux\Foo"),
                                         },
@@ -106,6 +134,10 @@
                     },
                 ),
                 body: ClassBody {
+                    span: Span {
+                        start: 57,
+                        end: 59,
+                    },
                     left_brace: Span {
                         start: 57,
                         end: 58,

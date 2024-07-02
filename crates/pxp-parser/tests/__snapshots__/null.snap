@@ -19,8 +19,17 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 7,
+                    end: 12,
+                },
                 expression: Expression {
-                    kind: Null,
+                    kind: Null(
+                        Span {
+                            start: 7,
+                            end: 11,
+                        },
+                    ),
                     span: Span {
                         start: 7,
                         end: 11,

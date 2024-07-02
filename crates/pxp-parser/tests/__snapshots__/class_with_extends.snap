@@ -19,8 +19,16 @@
     Statement {
         kind: Class(
             ClassStatement {
+                span: Span {
+                    start: 7,
+                    end: 31,
+                },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    span: Span {
+                        start: 0,
+                        end: 0,
+                    },
                     modifiers: [],
                 },
                 class: Span {
@@ -30,6 +38,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 13,
+                                end: 16,
+                            },
                             resolved: Symbol("Foo"),
                             original: Symbol("Foo"),
                         },
@@ -41,6 +53,10 @@
                 },
                 extends: Some(
                     ClassExtends {
+                        span: Span {
+                            start: 17,
+                            end: 28,
+                        },
                         extends: Span {
                             start: 17,
                             end: 24,
@@ -48,6 +64,10 @@
                         parent: Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 25,
+                                        end: 28,
+                                    },
                                     resolved: Symbol("Bar"),
                                     original: Symbol("Bar"),
                                 },
@@ -61,6 +81,10 @@
                 ),
                 implements: None,
                 body: ClassBody {
+                    span: Span {
+                        start: 29,
+                        end: 31,
+                    },
                     left_brace: Span {
                         start: 29,
                         end: 30,

@@ -19,6 +19,10 @@
     Statement {
         kind: Echo(
             EchoStatement {
+                span: Span {
+                    start: 7,
+                    end: 28,
+                },
                 echo: Span {
                     start: 7,
                     end: 11,
@@ -27,6 +31,10 @@
                     Expression {
                         kind: Literal(
                             Literal {
+                                span: Span {
+                                    start: 13,
+                                    end: 25,
+                                },
                                 kind: String,
                                 token: Token {
                                     kind: LiteralDoubleQuotedString,
@@ -49,7 +57,12 @@
                         },
                     },
                     Expression {
-                        kind: Missing,
+                        kind: Missing(
+                            Span {
+                                start: 27,
+                                end: 28,
+                            },
+                        ),
                         span: Span {
                             start: 27,
                             end: 28,

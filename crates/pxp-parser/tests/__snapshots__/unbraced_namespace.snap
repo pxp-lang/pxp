@@ -20,6 +20,10 @@
         kind: Namespace(
             Unbraced(
                 UnbracedNamespace {
+                    span: Span {
+                        start: 7,
+                        end: 0,
+                    },
                     start: Span {
                         start: 7,
                         end: 16,
@@ -27,6 +31,10 @@
                     name: Name {
                         kind: Resolved(
                             ResolvedName {
+                                span: Span {
+                                    start: 17,
+                                    end: 20,
+                                },
                                 resolved: Symbol("Foo"),
                                 original: Symbol("Foo"),
                             },

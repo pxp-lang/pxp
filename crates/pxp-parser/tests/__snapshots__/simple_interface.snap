@@ -19,6 +19,10 @@
     Statement {
         kind: Interface(
             InterfaceStatement {
+                span: Span {
+                    start: 7,
+                    end: 23,
+                },
                 attributes: [],
                 interface: Span {
                     start: 7,
@@ -27,6 +31,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 17,
+                                end: 20,
+                            },
                             resolved: Symbol("Foo"),
                             original: Symbol("Foo"),
                         },
@@ -38,6 +46,10 @@
                 },
                 extends: None,
                 body: InterfaceBody {
+                    span: Span {
+                        start: 21,
+                        end: 23,
+                    },
                     left_brace: Span {
                         start: 21,
                         end: 22,

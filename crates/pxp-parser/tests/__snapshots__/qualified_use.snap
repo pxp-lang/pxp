@@ -19,12 +19,20 @@
     Statement {
         kind: Use(
             UseStatement {
+                span: Span {
+                    start: 7,
+                    end: 19,
+                },
                 kind: Normal,
                 uses: [
                     Use {
                         name: Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 11,
+                                        end: 18,
+                                    },
                                     resolved: Symbol("Foo\Bar"),
                                     original: Symbol("Foo\Bar"),
                                 },
@@ -51,12 +59,20 @@
     Statement {
         kind: Use(
             UseStatement {
+                span: Span {
+                    start: 20,
+                    end: 41,
+                },
                 kind: Function,
                 uses: [
                     Use {
                         name: Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 33,
+                                        end: 40,
+                                    },
                                     resolved: Symbol("App\str"),
                                     original: Symbol("App\str"),
                                 },
@@ -83,12 +99,20 @@
     Statement {
         kind: Use(
             UseStatement {
+                span: Span {
+                    start: 42,
+                    end: 59,
+                },
                 kind: Const,
                 uses: [
                     Use {
                         name: Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 52,
+                                        end: 58,
+                                    },
                                     resolved: Symbol("App\PI"),
                                     original: Symbol("App\PI"),
                                 },

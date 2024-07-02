@@ -19,6 +19,10 @@
     Statement {
         kind: Interface(
             InterfaceStatement {
+                span: Span {
+                    start: 7,
+                    end: 40,
+                },
                 attributes: [],
                 interface: Span {
                     start: 7,
@@ -27,6 +31,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 17,
+                                end: 20,
+                            },
                             resolved: Symbol("Foo"),
                             original: Symbol("Foo"),
                         },
@@ -38,6 +46,10 @@
                 },
                 extends: Some(
                     InterfaceExtends {
+                        span: Span {
+                            start: 21,
+                            end: 37,
+                        },
                         extends: Span {
                             start: 21,
                             end: 28,
@@ -47,6 +59,10 @@
                                 Name {
                                     kind: Resolved(
                                         ResolvedName {
+                                            span: Span {
+                                                start: 29,
+                                                end: 32,
+                                            },
                                             resolved: Symbol("Bar"),
                                             original: Symbol("Bar"),
                                         },
@@ -59,6 +75,10 @@
                                 Name {
                                     kind: Resolved(
                                         ResolvedName {
+                                            span: Span {
+                                                start: 34,
+                                                end: 37,
+                                            },
                                             resolved: Symbol("Baz"),
                                             original: Symbol("Baz"),
                                         },
@@ -79,6 +99,10 @@
                     },
                 ),
                 body: InterfaceBody {
+                    span: Span {
+                        start: 38,
+                        end: 40,
+                    },
                     left_brace: Span {
                         start: 38,
                         end: 39,

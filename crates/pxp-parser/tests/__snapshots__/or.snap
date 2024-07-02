@@ -19,53 +19,63 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 13,
+                    end: 16,
+                },
                 expression: Expression {
                     kind: LogicalOperation(
-                        Or {
-                            left: Expression {
-                                kind: Variable(
-                                    SimpleVariable(
-                                        SimpleVariable {
-                                            symbol: Symbol("$a"),
-                                            stripped: Symbol("a"),
-                                            span: Span {
-                                                start: 7,
-                                                end: 9,
-                                            },
-                                        },
-                                    ),
-                                ),
-                                span: Span {
-                                    start: 7,
-                                    end: 9,
-                                },
-                                comments: CommentGroup {
-                                    comments: [],
-                                },
+                        LogicalOperationExpression {
+                            span: Span {
+                                start: 7,
+                                end: 15,
                             },
-                            double_pipe: Span {
-                                start: 10,
-                                end: 12,
-                            },
-                            right: Expression {
-                                kind: Variable(
-                                    SimpleVariable(
-                                        SimpleVariable {
-                                            symbol: Symbol("$b"),
-                                            stripped: Symbol("b"),
-                                            span: Span {
-                                                start: 13,
-                                                end: 15,
+                            kind: Or {
+                                left: Expression {
+                                    kind: Variable(
+                                        SimpleVariable(
+                                            SimpleVariable {
+                                                symbol: Symbol("$a"),
+                                                stripped: Symbol("a"),
+                                                span: Span {
+                                                    start: 7,
+                                                    end: 9,
+                                                },
                                             },
-                                        },
+                                        ),
                                     ),
-                                ),
-                                span: Span {
-                                    start: 13,
-                                    end: 15,
+                                    span: Span {
+                                        start: 7,
+                                        end: 9,
+                                    },
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
                                 },
-                                comments: CommentGroup {
-                                    comments: [],
+                                double_pipe: Span {
+                                    start: 10,
+                                    end: 12,
+                                },
+                                right: Expression {
+                                    kind: Variable(
+                                        SimpleVariable(
+                                            SimpleVariable {
+                                                symbol: Symbol("$b"),
+                                                stripped: Symbol("b"),
+                                                span: Span {
+                                                    start: 13,
+                                                    end: 15,
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                    span: Span {
+                                        start: 13,
+                                        end: 15,
+                                    },
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
                                 },
                             },
                         },

@@ -19,14 +19,26 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 10,
+                    end: 18,
+                },
                 expression: Expression {
                     kind: StaticMethodCall(
                         StaticMethodCallExpression {
+                            span: Span {
+                                start: 7,
+                                end: 17,
+                            },
                             target: Expression {
                                 kind: Name(
                                     Name {
                                         kind: Resolved(
                                             ResolvedName {
+                                                span: Span {
+                                                    start: 7,
+                                                    end: 10,
+                                                },
                                                 resolved: Symbol("A\B"),
                                                 original: Symbol("A\B"),
                                             },
@@ -59,6 +71,10 @@
                                 },
                             ),
                             arguments: ArgumentList {
+                                span: Span {
+                                    start: 15,
+                                    end: 17,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },

@@ -19,6 +19,10 @@
     Statement {
         kind: GroupUse(
             GroupUseStatement {
+                span: Span {
+                    start: 11,
+                    end: 59,
+                },
                 prefix: SimpleIdentifier {
                     symbol: Symbol("Foo\"),
                     span: Span {
@@ -32,6 +36,10 @@
                         name: Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 21,
+                                        end: 24,
+                                    },
                                     resolved: Symbol("Foo\\Bar"),
                                     original: Symbol("Bar"),
                                 },
@@ -48,6 +56,10 @@
                         name: Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 39,
+                                        end: 42,
+                                    },
                                     resolved: Symbol("Foo\\baz"),
                                     original: Symbol("baz"),
                                 },
@@ -66,6 +78,10 @@
                         name: Name {
                             kind: Resolved(
                                 ResolvedName {
+                                    span: Span {
+                                        start: 54,
+                                        end: 56,
+                                    },
                                     resolved: Symbol("Foo\\PI"),
                                     original: Symbol("PI"),
                                 },

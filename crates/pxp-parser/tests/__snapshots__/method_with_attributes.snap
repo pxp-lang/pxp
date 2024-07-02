@@ -19,8 +19,16 @@
     Statement {
         kind: Class(
             ClassStatement {
+                span: Span {
+                    start: 7,
+                    end: 75,
+                },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    span: Span {
+                        start: 0,
+                        end: 0,
+                    },
                     modifiers: [],
                 },
                 class: Span {
@@ -30,6 +38,10 @@
                 name: Name {
                     kind: Resolved(
                         ResolvedName {
+                            span: Span {
+                                start: 13,
+                                end: 14,
+                            },
                             resolved: Symbol("A"),
                             original: Symbol("A"),
                         },
@@ -42,6 +54,10 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    span: Span {
+                        start: 15,
+                        end: 75,
+                    },
                     left_brace: Span {
                         start: 15,
                         end: 16,
@@ -49,6 +65,10 @@
                     members: [
                         ConcreteMethod(
                             ConcreteMethod {
+                                span: Span {
+                                    start: 58,
+                                    end: 73,
+                                },
                                 comments: CommentGroup {
                                     comments: [],
                                 },
@@ -67,6 +87,10 @@
                                                 name: Name {
                                                     kind: Resolved(
                                                         ResolvedName {
+                                                            span: Span {
+                                                                start: 23,
+                                                                end: 24,
+                                                            },
                                                             resolved: Symbol("B"),
                                                             original: Symbol("B"),
                                                         },
@@ -94,6 +118,10 @@
                                                 name: Name {
                                                     kind: Resolved(
                                                         ResolvedName {
+                                                            span: Span {
+                                                                start: 32,
+                                                                end: 33,
+                                                            },
                                                             resolved: Symbol("C"),
                                                             original: Symbol("C"),
                                                         },
@@ -113,6 +141,10 @@
                                                 name: Name {
                                                     kind: Resolved(
                                                         ResolvedName {
+                                                            span: Span {
+                                                                start: 35,
+                                                                end: 36,
+                                                            },
                                                             resolved: Symbol("D"),
                                                             original: Symbol("D"),
                                                         },
@@ -124,6 +156,10 @@
                                                 },
                                                 arguments: Some(
                                                     ArgumentList {
+                                                        span: Span {
+                                                            start: 36,
+                                                            end: 45,
+                                                        },
                                                         comments: CommentGroup {
                                                             comments: [],
                                                         },
@@ -134,6 +170,10 @@
                                                         arguments: [
                                                             Positional(
                                                                 PositionalArgument {
+                                                                    span: Span {
+                                                                        start: 38,
+                                                                        end: 43,
+                                                                    },
                                                                     comments: CommentGroup {
                                                                         comments: [],
                                                                     },
@@ -141,6 +181,10 @@
                                                                     value: Expression {
                                                                         kind: Literal(
                                                                             Literal {
+                                                                                span: Span {
+                                                                                    start: 38,
+                                                                                    end: 43,
+                                                                                },
                                                                                 kind: String,
                                                                                 token: Token {
                                                                                     kind: LiteralDoubleQuotedString,
@@ -176,6 +220,10 @@
                                     },
                                 ],
                                 modifiers: MethodModifierGroup {
+                                    span: Span {
+                                        start: 51,
+                                        end: 57,
+                                    },
                                     modifiers: [
                                         Public(
                                             Span {
@@ -198,6 +246,10 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    span: Span {
+                                        start: 68,
+                                        end: 70,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },
@@ -216,6 +268,10 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
+                                    span: Span {
+                                        start: 71,
+                                        end: 73,
+                                    },
                                     comments: CommentGroup {
                                         comments: [],
                                     },

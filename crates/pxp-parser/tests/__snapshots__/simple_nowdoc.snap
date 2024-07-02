@@ -19,9 +19,17 @@
     Statement {
         kind: Expression(
             ExpressionStatement {
+                span: Span {
+                    start: 7,
+                    end: 51,
+                },
                 expression: Expression {
                     kind: Nowdoc(
                         NowdocExpression {
+                            span: Span {
+                                start: 7,
+                                end: 50,
+                            },
                             label: Token {
                                 kind: StartNowdoc,
                                 span: Span {
