@@ -2,6 +2,7 @@ use std::slice::Iter;
 use std::slice::IterMut;
 
 use pxp_span::Span;
+use pxp_span::Spanned;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -25,6 +26,12 @@ impl<T> CommaSeparated<T> {
 
     pub fn is_empty(&self) -> bool {
         self.inner.is_empty()
+    }
+}
+
+impl<T: Spanned> Spanned for CommaSeparated<T> {
+    fn span(&self) -> Span {
+        self.inner.span()
     }
 }
 

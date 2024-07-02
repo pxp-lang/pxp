@@ -160,7 +160,7 @@ pub fn full_name_including_self(state: &mut State) -> Name {
 
             let symbol = current.symbol.unwrap();
 
-            Name::special(SpecialNameKind::from(current.kind), symbol, current.span)
+            Name::special(SpecialNameKind::from(*current), symbol, current.span)
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(

@@ -11,6 +11,7 @@ use pxp_ast::StatementKind;
 
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
+use pxp_span::Spanned;
 use pxp_token::TokenKind;
 
 pub fn namespace(state: &mut State) -> StatementKind {
@@ -78,6 +79,7 @@ fn unbraced_namespace(state: &mut State, start: Span, name: SimpleIdentifier) ->
     });
 
     StatementKind::Namespace(NamespaceStatement::Unbraced(UnbracedNamespace {
+        span: Span::combine(start, statements.span()),
         start,
         end,
         name: Name::resolved(name.symbol, name.symbol, name.span),
@@ -101,6 +103,7 @@ fn braced_namespace(
         let end = utils::skip_right_brace(state);
 
         BracedNamespaceBody {
+            span: Span::combine(start, end),
             start,
             end,
             statements,
@@ -108,6 +111,7 @@ fn braced_namespace(
     });
 
     StatementKind::Namespace(NamespaceStatement::Braced(BracedNamespace {
+        span: Span::combine(span, body.span),
         namespace: span,
         name: name.map(|n| Name::resolved(n.symbol, n.symbol, n.span)),
         body,

@@ -53,59 +53,77 @@ pub fn anonymous_function(state: &mut State) -> Expression {
     let uses = if current.kind == TokenKind::Use {
         state.stream.next();
 
-        Some(ClosureUse {
-            comments: state.stream.comments(),
-            r#use: current.span,
-            left_parenthesis: utils::skip_left_parenthesis(state),
-            variables: utils::comma_separated::<ClosureUseVariable>(
+        let left_parenthesis = utils::skip_left_parenthesis(state);
+        let variables = utils::comma_separated::<ClosureUseVariable>(
                 state,
                 &|state| {
                     let use_comments = state.stream.comments();
                     let current = state.stream.current();
                     let use_ampersand = if current.kind == TokenKind::Ampersand {
                         state.stream.next();
-
+        
                         Some(current.span)
                     } else {
                         None
                     };
-
+        
                     let var = variables::simple_variable(state);
-
+        
                     ClosureUseVariable {
+                        span: var.span,
                         comments: use_comments,
                         variable: var,
                         ampersand: use_ampersand,
                     }
                 },
                 TokenKind::RightParen,
-            ),
-            right_parenthesis: utils::skip_right_parenthesis(state),
+            );
+
+        let right_parenthesis = utils::skip_right_parenthesis(state);
+
+        Some(ClosureUse {
+            span: Span::combine(current.span, right_parenthesis),
+            comments: state.stream.comments(),
+            r#use: current.span,
+            left_parenthesis,
+            variables,
+            right_parenthesis,
         })
     } else {
         None
     };
 
     let return_type = if state.stream.current().kind == TokenKind::Colon {
+        let colon = utils::skip_colon(state);
+        let data_type = data_type::data_type(state);
+
         Some(ReturnType {
-            colon: utils::skip_colon(state),
-            data_type: data_type::data_type(state),
+            span: Span::combine(colon, data_type.span),
+            colon,
+            data_type,
         })
     } else {
         None
     };
 
+    let body_comments = state.stream.comments();
+    let left_brace = utils::skip_left_brace(state);
+    let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
+    let right_brace = utils::skip_right_brace(state);
+
     let body = FunctionBody {
-        comments: state.stream.comments(),
-        left_brace: utils::skip_left_brace(state),
-        statements: blocks::multiple_statements_until(state, &TokenKind::RightBrace),
-        right_brace: utils::skip_right_brace(state),
+        span: Span::combine(left_brace, right_brace),
+        comments: body_comments,
+        left_brace,
+        statements,
+        right_brace,
     };
 
     let end_span = body.right_brace;
 
     Expression::new(
         ExpressionKind::Closure(ClosureExpression {
+            span: Span::combine(function, body.span),
             comments,
             attributes,
             r#static,
@@ -147,9 +165,13 @@ pub fn arrow_function(state: &mut State) -> Expression {
     let attributes = state.get_attributes();
     let parameters = parameters::function_parameter_list(state);
     let return_type = if state.stream.current().kind == TokenKind::Colon {
+        let colon = utils::skip_colon(state);
+        let data_type = data_type::data_type(state);
+        
         Some(ReturnType {
-            colon: utils::skip_colon(state),
-            data_type: data_type::data_type(state),
+            span: Span::combine(colon, data_type.span),
+            colon,
+            data_type,
         })
     } else {
         None
@@ -162,6 +184,7 @@ pub fn arrow_function(state: &mut State) -> Expression {
 
     Expression::new(
         ExpressionKind::ArrowFunction(ArrowFunctionExpression {
+            span: Span::combine(r#fn, end_span),
             comments,
             attributes,
             r#static,
@@ -199,22 +222,33 @@ pub fn function(state: &mut State) -> StatementKind {
 
     let parameters = parameters::function_parameter_list(state);
     let return_type = if state.stream.current().kind == TokenKind::Colon {
+        let colon = utils::skip_colon(state);
+        let data_type = data_type::data_type(state);
+
         Some(ReturnType {
-            colon: utils::skip_colon(state),
-            data_type: data_type::data_type(state),
+            span: Span::combine(colon, data_type.span),
+            colon,
+            data_type,
         })
     } else {
         None
     };
 
+    let body_comments = state.stream.comments();
+    let left_brace = utils::skip_left_brace(state);
+    let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
+    let right_brace = utils::skip_right_brace(state);
+
     let body = FunctionBody {
-        comments: state.stream.comments(),
-        left_brace: utils::skip_left_brace(state),
-        statements: blocks::multiple_statements_until(state, &TokenKind::RightBrace),
-        right_brace: utils::skip_right_brace(state),
+        span: Span::combine(left_brace, right_brace),
+        comments: body_comments,
+        left_brace,
+        statements,
+        right_brace,
     };
 
     StatementKind::Function(FunctionStatement {
+        span: Span::combine(function, body.span),
         comments,
         function,
         name,
@@ -249,14 +283,21 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
         let parameters = parameters::constructor_parameter_list(state);
 
         return if state.stream.current().kind == TokenKind::LeftBrace {
+            let body_comments = state.stream.comments();
+            let left_brace = utils::skip_left_brace(state);
+            let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
+            let right_brace = utils::skip_right_brace(state);
+
             let body = MethodBody {
-                comments: state.stream.comments(),
-                left_brace: utils::skip_left_brace(state),
-                statements: blocks::multiple_statements_until(state, &TokenKind::RightBrace),
-                right_brace: utils::skip_right_brace(state),
+                span: Span::combine(left_brace, right_brace),
+                comments: body_comments,
+                left_brace,
+                statements,
+                right_brace,
             };
 
             return Method::ConcreteConstructor(ConcreteConstructor {
+                span: Span::combine(function, body.span),
                 comments,
                 attributes,
                 modifiers,
@@ -270,6 +311,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
             let semicolon = utils::skip_semicolon(state);
 
             Method::AbstractConstructor(AbstractConstructor {
+                span: Span::combine(function, semicolon),
                 comments,
                 attributes,
                 modifiers,
@@ -284,16 +326,34 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
 
     let parameters = parameters::function_parameter_list(state);
     let return_type = if state.stream.current().kind == TokenKind::Colon {
+        let colon = utils::skip_colon(state);
+        let data_type = data_type::data_type(state);
+        
         Some(ReturnType {
-            colon: utils::skip_colon(state),
-            data_type: data_type::data_type(state),
+            span: Span::combine(colon, data_type.span),
+            colon,
+            data_type,
         })
     } else {
         None
     };
 
     if state.stream.current().kind == TokenKind::LeftBrace {
+        let body_comments = state.stream.comments();
+        let left_brace = utils::skip_left_brace(state);
+        let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
+        let right_brace = utils::skip_right_brace(state);
+
+        let body = MethodBody {
+            span: Span::combine(left_brace, right_brace),
+            comments: body_comments,
+            left_brace,
+            statements,
+            right_brace,
+        };
+
         Method::Concrete(ConcreteMethod {
+            span: Span::combine(function, body.span),
             comments,
             attributes,
             modifiers,
@@ -302,15 +362,13 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
             name,
             parameters,
             return_type,
-            body: MethodBody {
-                comments: state.stream.comments(),
-                left_brace: utils::skip_left_brace(state),
-                statements: blocks::multiple_statements_until(state, &TokenKind::RightBrace),
-                right_brace: utils::skip_right_brace(state),
-            },
+            body,
         })
     } else {
+        let semicolon = utils::skip_semicolon(state);
+        
         Method::Abstract(AbstractMethod {
+            span: Span::combine(function, semicolon),
             comments,
             attributes,
             modifiers,
@@ -319,7 +377,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
             name,
             parameters,
             return_type,
-            semicolon: utils::skip_semicolon(state),
+            semicolon,
         })
     }
 }

@@ -5,6 +5,7 @@ use crate::ParserDiagnostic;
 use pxp_ast::*;
 
 use pxp_diagnostics::Severity;
+use pxp_span::Span;
 use pxp_symbol::Symbol;
 use pxp_token::TokenKind;
 
@@ -69,6 +70,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
             let end = utils::skip_right_brace(state);
 
             Variable::BracedVariableVariable(BracedVariableVariable {
+                span: Span::combine(start, end),
                 start,
                 variable: Box::new(expr),
                 end,
@@ -84,6 +86,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
             let end = utils::skip_right_brace(state);
 
             Variable::BracedVariableVariable(BracedVariableVariable {
+                span: Span::combine(start, end),
                 start,
                 variable: Box::new(expr),
                 end,

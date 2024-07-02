@@ -3,7 +3,7 @@ use crate::ParserDiagnostic;
 use pxp_ast::*;
 
 use pxp_diagnostics::Severity;
-use pxp_span::Span;
+use pxp_span::{Span, Spanned};
 use pxp_token::TokenKind;
 
 #[inline(always)]
@@ -22,7 +22,7 @@ pub fn class_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ClassMod
         })
         .collect::<Vec<ClassModifier>>();
 
-    let group = ClassModifierGroup { modifiers };
+    let group = ClassModifierGroup { span: modifiers.span(), modifiers };
 
     if group.has_abstract() && group.has_final() {
         let start = input.first().unwrap().0;
@@ -62,7 +62,7 @@ pub fn method_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> MethodM
         })
         .collect::<Vec<MethodModifier>>();
 
-    let group = MethodModifierGroup { modifiers };
+    let group = MethodModifierGroup { span: modifiers.span(), modifiers };
 
     if group.has_abstract() && group.has_final() {
         let start = input.first().unwrap().0;
@@ -101,7 +101,7 @@ pub fn property_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Prope
         })
         .collect::<Vec<PropertyModifier>>();
 
-    PropertyModifierGroup { modifiers }
+    PropertyModifierGroup { span: modifiers.span(), modifiers }
 }
 
 #[inline(always)]
@@ -128,7 +128,7 @@ pub fn promoted_property_group(
         })
         .collect::<Vec<PromotedPropertyModifier>>();
 
-    PromotedPropertyModifierGroup { modifiers }
+    PromotedPropertyModifierGroup { span: modifiers.span(), modifiers }
 }
 
 pub fn constant_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ConstantModifierGroup {
@@ -151,7 +151,7 @@ pub fn constant_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Const
         })
         .collect::<Vec<ConstantModifier>>();
 
-    let group = ConstantModifierGroup { modifiers };
+    let group = ConstantModifierGroup { span: modifiers.span(), modifiers };
 
     if group.has_final() && group.has_private() {
         let start = input.first().unwrap().0;

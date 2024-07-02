@@ -92,22 +92,28 @@ pub fn parse(state: &mut State) -> StatementKind {
 
     let attributes = state.get_attributes();
     if let Some(backed_type) = backed_type {
-        let body = BackedEnumBody {
-            left_brace: utils::skip_left_brace(state),
-            members: {
-                let mut members = Vec::new();
-                while state.stream.current().kind != TokenKind::RightBrace {
-                    if let Some(member) = backed_member(state) {
-                        members.push(member);
-                    }
+        let left_brace = utils::skip_left_brace(state);
+        let members = {
+            let mut members = Vec::new();
+            while state.stream.current().kind != TokenKind::RightBrace {
+                if let Some(member) = backed_member(state) {
+                    members.push(member);
                 }
+            }
 
-                members
-            },
-            right_brace: utils::skip_right_brace(state),
+            members
+        };
+        let right_brace = utils::skip_right_brace(state);
+
+        let body = BackedEnumBody {
+            span: Span::combine(left_brace, right_brace),
+            left_brace,
+            members,
+            right_brace,
         };
 
         StatementKind::BackedEnum(BackedEnumStatement {
+            span: Span::combine(span, body.span),
             r#enum: span,
             name,
             backed_type,
@@ -116,21 +122,28 @@ pub fn parse(state: &mut State) -> StatementKind {
             body,
         })
     } else {
-        let body = UnitEnumBody {
-            left_brace: utils::skip_left_brace(state),
-            members: {
-                let mut members = Vec::new();
-                while state.stream.current().kind != TokenKind::RightBrace {
-                    if let Some(member) = unit_member(state) {
-                        members.push(member);
-                    }
+        let left_brace = utils::skip_left_brace(state);
+        let members = {
+            let mut members = Vec::new();
+            while state.stream.current().kind != TokenKind::RightBrace {
+                if let Some(member) = unit_member(state) {
+                    members.push(member);
                 }
-                members
-            },
-            right_brace: utils::skip_right_brace(state),
+            }
+
+            members
+        };
+        let right_brace = utils::skip_right_brace(state);
+
+        let body = UnitEnumBody {
+            span: Span::combine(left_brace, right_brace),
+            left_brace,
+            members,
+            right_brace,
         };
 
         StatementKind::UnitEnum(UnitEnumStatement {
+            span: Span::combine(span, body.span),
             r#enum: span,
             name,
             attributes,
@@ -171,6 +184,7 @@ fn unit_member(state: &mut State) -> Option<UnitEnumMember> {
         let end = utils::skip_semicolon(state);
 
         return Some(UnitEnumMember::Case(UnitEnumCase {
+            span: Span::combine(start, end),
             start,
             end,
             name,
@@ -214,6 +228,7 @@ fn backed_member(state: &mut State) -> Option<BackedEnumMember> {
         let semicolon = utils::skip_semicolon(state);
 
         return Some(BackedEnumMember::Case(BackedEnumCase {
+            span: Span::combine(case, semicolon),
             attributes,
             case,
             name,

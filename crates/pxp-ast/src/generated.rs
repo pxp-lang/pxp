@@ -297,8 +297,15 @@ impl Spanned for CastKind {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Case {
+    pub span: Span,
     pub condition: Option<Expression>,
     pub body: Block,
+}
+
+impl Spanned for Case {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]

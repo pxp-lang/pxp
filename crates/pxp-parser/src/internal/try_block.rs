@@ -7,6 +7,8 @@ use pxp_ast::*;
 use pxp_ast::StatementKind;
 
 use pxp_diagnostics::Severity;
+use pxp_span::Span;
+use pxp_span::Spanned;
 use pxp_token::TokenKind;
 
 use super::variables;
@@ -49,6 +51,7 @@ pub fn try_block(state: &mut State) -> StatementKind {
         let catch_end = state.stream.current().span;
 
         catches.push(CatchBlock {
+            span: Span::combine(catch_start, catch_body.span()),
             start: catch_start,
             end: catch_end,
             types,
@@ -69,6 +72,7 @@ pub fn try_block(state: &mut State) -> StatementKind {
         let finally_end = state.stream.current().span;
 
         finally = Some(FinallyBlock {
+            span: Span::combine(finally_start, finally_body.span()),
             start: finally_start,
             end: finally_end,
             body: finally_body,
@@ -83,9 +87,10 @@ pub fn try_block(state: &mut State) -> StatementKind {
         );
     }
 
-    let end = state.stream.current().span;
+    let end = state.stream.previous().span;
 
     StatementKind::Try(TryStatement {
+        span: Span::combine(start, end),
         start,
         end,
         body,
@@ -114,8 +119,14 @@ fn catch_type(state: &mut State) -> CatchType {
             state.stream.next();
         }
 
-        return CatchType::Union { identifiers: types };
+        return CatchType {
+            span: types.span(),
+            kind: CatchTypeKind::Union { identifiers: types }
+        };
     }
 
-    CatchType::Identifier { identifier: id }
+    CatchType {
+        span: id.span(),
+        kind: CatchTypeKind::Identifier { identifier: id }
+    }
 }

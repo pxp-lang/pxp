@@ -175,6 +175,7 @@ CastKind:
   Unset: Span
 
 Case:
+  span: Span
   condition: Option<Expression>
   body: Block
 

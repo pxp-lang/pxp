@@ -10,6 +10,8 @@ use crate::ParserDiagnostic;
 use pxp_ast::*;
 
 use pxp_diagnostics::Severity;
+use pxp_span::Span;
+use pxp_span::Spanned;
 use pxp_token::TokenKind;
 
 pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
@@ -49,6 +51,11 @@ pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
             }
 
             FunctionParameter {
+                span: if ty.is_some() {
+                    Span::combine(ty.span(), var.span)
+                } else {
+                    var.span
+                },
                 comments: state.stream.comments(),
                 name: var,
                 attributes: state.get_attributes(),
@@ -64,6 +71,7 @@ pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
     let right_parenthesis = utils::skip_right_parenthesis(state);
 
     FunctionParameterList {
+        span: Span::combine(left_parenthesis, right_parenthesis),
         comments,
         left_parenthesis,
         parameters,
@@ -144,6 +152,11 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
             }
 
             ConstructorParameter {
+                span: if ty.is_some() {
+                    Span::combine(ty.span(), var.span)
+                } else {
+                    var.span
+                },
                 comments: state.stream.comments(),
                 name: var,
                 attributes: state.get_attributes(),
@@ -160,6 +173,7 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
     let right_parenthesis = utils::skip_right_parenthesis(state);
 
     ConstructorParameterList {
+        span: Span::combine(left_parenthesis, right_parenthesis),
         comments,
         left_parenthesis,
         parameters,
@@ -199,6 +213,7 @@ pub fn argument_list(state: &mut State) -> ArgumentList {
     let end = utils::skip_right_parenthesis(state);
 
     ArgumentList {
+        span: Span::combine(start, end),
         comments,
         left_parenthesis: start,
         right_parenthesis: end,
@@ -260,6 +275,7 @@ pub fn single_argument(
     let end = utils::skip_right_parenthesis(state);
 
     Some(SingleArgument {
+        span: Span::combine(start, end),
         comments,
         left_parenthesis: start,
         right_parenthesis: end,
@@ -283,6 +299,7 @@ fn argument(state: &mut State) -> (bool, Argument) {
         return (
             true,
             Argument::Named(NamedArgument {
+                span: Span::combine(name.span, value.span),
                 comments: state.stream.comments(),
                 name,
                 colon,
@@ -303,6 +320,7 @@ fn argument(state: &mut State) -> (bool, Argument) {
     (
         false,
         Argument::Positional(PositionalArgument {
+            span: value.span,
             comments: state.stream.comments(),
             ellipsis,
             value,

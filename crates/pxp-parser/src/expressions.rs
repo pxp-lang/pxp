@@ -28,6 +28,7 @@ use pxp_ast::{
 
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
+use pxp_span::Spanned;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
@@ -780,10 +781,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
 
             let argument = Box::new(parameters::single_argument(state, true, true).unwrap());
             let end_span = state.stream.previous().span;
+            let span = Span::combine(start_span, end_span);
 
             Expression::new(
-                ExpressionKind::Empty(EmptyExpression { empty, argument }),
-                Span::new(start_span.start, end_span.end),
+                ExpressionKind::Empty(EmptyExpression { span, empty, argument }),
+                span,
                 CommentGroup::default(),
             )
         }
@@ -796,10 +798,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let argument = parameters::single_argument(state, false, true).map(Box::new);
 
             let end_span = state.stream.previous().span;
+            let span = Span::combine(start_span, end_span);
 
             Expression::new(
-                ExpressionKind::Die(DieExpression { die, argument }),
-                Span::new(start_span.start, end_span.end),
+                ExpressionKind::Die(DieExpression { span, die, argument }),
+                span,
                 CommentGroup::default(),
             )
         }
@@ -812,10 +815,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let argument = parameters::single_argument(state, false, true).map(Box::new);
 
             let end_span = state.stream.previous().span;
+            let span = Span::combine(start_span, end_span);
 
             Expression::new(
-                ExpressionKind::Exit(ExitExpression { exit, argument }),
-                Span::new(start_span.start, end_span.end),
+                ExpressionKind::Exit(ExitExpression { span, exit, argument }),
+                span,
                 CommentGroup::default(),
             )
         }
@@ -826,10 +830,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             state.stream.next();
             let arguments = parameters::argument_list(state);
             let end_span = state.stream.previous().span;
+            let span = Span::combine(start_span, end_span);
 
             Expression::new(
-                ExpressionKind::Isset(IssetExpression { isset, arguments }),
-                Span::new(start_span.start, end_span.end),
+                ExpressionKind::Isset(IssetExpression { span, isset, arguments }),
+                span,
                 CommentGroup::default(),
             )
         }
@@ -840,10 +845,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             state.stream.next();
             let arguments = parameters::argument_list(state);
             let end_span = state.stream.previous().span;
+            let span = Span::combine(start_span, end_span);
 
             Expression::new(
-                ExpressionKind::Unset(UnsetExpression { unset, arguments }),
-                Span::new(start_span.start, end_span.end),
+                ExpressionKind::Unset(UnsetExpression { span, unset, arguments }),
+                span,
                 CommentGroup::default(),
             )
         }
@@ -863,14 +869,16 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             }
 
             let end_span = state.stream.previous().span;
+            let span = Span::combine(start_span, end_span);
 
             Expression::new(
                 ExpressionKind::Print(PrintExpression {
+                    span,
                     print,
                     value,
                     argument,
                 }),
-                Span::new(start_span.start, end_span.end),
+                span,
                 CommentGroup::default(),
             )
         }
@@ -919,12 +927,14 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             state.stream.next();
             let exception = for_precedence(state, Precedence::Lowest);
             let exception_span = exception.span;
+            let span = Span::combine(start_span, exception_span);
 
             Expression::new(
                 ExpressionKind::Throw(ThrowExpression {
+                    span,
                     value: Box::new(exception),
                 }),
-                Span::new(start_span.start, exception_span.end),
+                span,
                 CommentGroup::default(),
             )
         }
@@ -937,6 +947,8 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             {
                 Expression::new(
                     ExpressionKind::Yield(YieldExpression {
+                        r#yield: start_span,
+                        span: start_span,
                         key: None,
                         value: None,
                     }),
@@ -944,44 +956,47 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                     CommentGroup::default(),
                 )
             } else {
-                let mut from = false;
+                let mut from = Span::default();
 
                 if state.stream.current().kind == TokenKind::From {
+                    from = state.stream.current().span;
                     state.stream.next();
-                    from = true;
                 }
 
                 let mut key = None;
                 let mut value = Box::new(for_precedence(
                     state,
-                    if from {
+                    if !from.is_empty() {
                         Precedence::YieldFrom
                     } else {
                         Precedence::Yield
                     },
                 ));
 
-                if state.stream.current().kind == TokenKind::DoubleArrow && !from {
+                if state.stream.current().kind == TokenKind::DoubleArrow && !from.is_empty() {
                     state.stream.next();
                     key = Some(value.clone());
                     value = Box::new(for_precedence(state, Precedence::Yield));
                 }
 
                 let end_span = state.stream.previous().span;
+                let span = Span::new(start_span.start, end_span.end);
 
-                if from {
+                if !from.is_empty() {
                     Expression::new(
-                        ExpressionKind::YieldFrom(YieldFromExpression { value }),
-                        Span::new(start_span.start, end_span.end),
+                        ExpressionKind::YieldFrom(YieldFromExpression { r#yield: start_span, from, span, value }),
+                        span,
                         CommentGroup::default(),
                     )
                 } else {
                     Expression::new(
                         ExpressionKind::Yield(YieldExpression {
+                            span,
+                            r#yield: start_span,
                             key,
                             value: Some(value),
                         }),
-                        Span::new(start_span.start, end_span.end),
+                        span,
                         CommentGroup::default(),
                     )
                 }
@@ -995,22 +1010,26 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let target = for_precedence(state, Precedence::CloneOrNew);
 
             let end_span = state.stream.previous().span;
+            let span = Span::new(start_span.start, end_span.end);
 
             Expression::new(
                 ExpressionKind::Clone(CloneExpression {
+                    span,
+                    clone: start_span,
                     target: Box::new(target),
                 }),
-                Span::new(start_span.start, end_span.end),
+                span,
                 CommentGroup::default(),
             )
         }
 
         (TokenKind::True, _) => {
             let span = state.stream.current().span;
+            let value = *state.stream.current();
             state.stream.next();
 
             Expression::new(
-                ExpressionKind::Bool(BoolExpression { value: true }),
+                ExpressionKind::Bool(BoolExpression { span, value }),
                 span,
                 CommentGroup::default(),
             )
@@ -1018,10 +1037,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
 
         (TokenKind::False, _) => {
             let span = state.stream.current().span;
+            let value = *state.stream.current();
             state.stream.next();
 
             Expression::new(
-                ExpressionKind::Bool(BoolExpression { value: false }),
+                ExpressionKind::Bool(BoolExpression { span, value }),
                 span,
                 CommentGroup::default(),
             )
@@ -1031,7 +1051,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Expression::new(ExpressionKind::Null, span, CommentGroup::default())
+            Expression::new(ExpressionKind::Null(span), span, CommentGroup::default())
         }
 
         (TokenKind::LiteralInteger, _) => {
@@ -1042,7 +1062,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                 state.stream.next();
 
                 Expression::new(
-                    ExpressionKind::Literal(Literal::new(LiteralKind::Integer, *current)),
+                    ExpressionKind::Literal(Literal::new(LiteralKind::Integer, *current, span)),
                     span,
                     CommentGroup::default(),
                 )
@@ -1059,7 +1079,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                 state.stream.next();
 
                 Expression::new(
-                    ExpressionKind::Literal(Literal::new(LiteralKind::Float, *current)),
+                    ExpressionKind::Literal(Literal::new(LiteralKind::Float, *current, span)),
                     span,
                     CommentGroup::default(),
                 )
@@ -1076,7 +1096,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                 state.stream.next();
 
                 Expression::new(
-                    ExpressionKind::Literal(Literal::new(LiteralKind::String, *current)),
+                    ExpressionKind::Literal(Literal::new(LiteralKind::String, *current, span)),
                     span,
                     CommentGroup::default(),
                 )
@@ -1084,7 +1104,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                 state.stream.next();
 
                 Expression::new(
-                    ExpressionKind::Literal(Literal::new(LiteralKind::String, *current)),
+                    ExpressionKind::Literal(Literal::new(LiteralKind::String, *current, span)),
                     span,
                     CommentGroup::default(),
                 )
@@ -1126,7 +1146,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
         (TokenKind::Static, _) => {
             let span = state.stream.current().span;
             state.stream.next();
-            let expression = Expression::new(ExpressionKind::Static, span, CommentGroup::default());
+            let expression = Expression::new(ExpressionKind::Static(span), span, CommentGroup::default());
 
             postfix(state, expression, &TokenKind::DoubleColon)
         }
@@ -1135,14 +1155,14 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Expression::new(ExpressionKind::Self_, span, CommentGroup::default())
+            Expression::new(ExpressionKind::Self_(span), span, CommentGroup::default())
         }
 
         (TokenKind::Parent, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Expression::new(ExpressionKind::Parent, span, CommentGroup::default())
+            Expression::new(ExpressionKind::Parent(span), span, CommentGroup::default())
         }
 
         (TokenKind::LeftParen, _) => {
@@ -1152,14 +1172,16 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let expr = create(state);
 
             let end = utils::skip_right_parenthesis(state);
+            let span = Span::combine(start, end);
 
             Expression::new(
                 ExpressionKind::Parenthesized(ParenthesizedExpression {
+                    span,
                     start,
                     expr: Box::new(expr),
                     end,
                 }),
-                Span::new(start.start, end.end),
+                span,
                 CommentGroup::default(),
             )
         }
@@ -1190,7 +1212,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
 
                     Expression::new(
                         ExpressionKind::Name(Name::special(
-                            SpecialNameKind::Self_,
+                            SpecialNameKind::Self_(token.span),
                             token.symbol.unwrap(),
                             token.span,
                         )),
@@ -1205,7 +1227,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
 
                     Expression::new(
                         ExpressionKind::Name(Name::special(
-                            SpecialNameKind::Static,
+                            SpecialNameKind::Static(token.span),
                             token.symbol.unwrap(),
                             token.span,
                         )),
@@ -1220,7 +1242,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
 
                     Expression::new(
                         ExpressionKind::Name(Name::special(
-                            SpecialNameKind::Parent,
+                            SpecialNameKind::Parent(token.span),
                             token.symbol.unwrap(),
                             token.span,
                         )),
@@ -1268,13 +1290,16 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                 None
             };
 
+            let span = Span::combine(new, state.stream.previous().span);
+
             Expression::new(
                 ExpressionKind::New(NewExpression {
+                    span,
                     target: Box::new(target),
                     new,
                     arguments,
                 }),
-                Span::new(new.start, current_span.end),
+                span,
                 CommentGroup::default(),
             )
         }
@@ -1387,27 +1412,33 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
         ) => {
             let start_span = state.stream.current().span;
             let current = state.stream.current();
-            let span = current.span;
+            let keyword_span = current.span;
 
             state.stream.next();
 
-            let path = Box::new(create(state));
+            let path = create(state);
+            let span = Span::combine(start_span, path.span);
+            let path = Box::new(path);
 
             let kind = match current.kind {
                 TokenKind::Include => ExpressionKind::Include(IncludeExpression {
-                    include: span,
+                    span,
+                    include: keyword_span,
                     path,
                 }),
                 TokenKind::IncludeOnce => ExpressionKind::IncludeOnce(IncludeOnceExpression {
-                    include_once: span,
+                    span,
+                    include_once: keyword_span,
                     path,
                 }),
                 TokenKind::Require => ExpressionKind::Require(RequireExpression {
-                    require: span,
+                    span,
+                    require: keyword_span,
                     path,
                 }),
                 TokenKind::RequireOnce => ExpressionKind::RequireOnce(RequireOnceExpression {
-                    require_once: span,
+                    span,
+                    require_once: keyword_span,
                     path,
                 }),
                 _ => unreachable!(),
@@ -1440,7 +1471,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let current = state.stream.current();
 
             let span = current.span;
-            let kind = current.kind.into();
+            let kind = (*current).into();
 
             state.stream.next();
 
@@ -1449,7 +1480,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
 
             Expression::new(
                 ExpressionKind::Cast(CastExpression {
-                    cast: span,
+                    span,
                     kind,
                     value: Box::new(rhs),
                 }),
@@ -1462,36 +1493,50 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let start_span = state.stream.current().span;
             let current = state.stream.current();
 
-            let span = current.span;
+            let op_span = current.span;
             let op = current.kind;
 
             state.stream.next();
 
             let right = Box::new(for_precedence(state, Precedence::Prefix));
             let right_span = right.span;
+            let span = Span::combine(start_span, right_span);
+
             let expr = match op {
                 TokenKind::Minus => {
-                    ExpressionKind::ArithmeticOperation(ArithmeticOperationKind::Negative {
-                        minus: span,
-                        right,
+                    ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression {
+                        span,
+                        kind: ArithmeticOperationKind::Negative {
+                            minus: op_span,
+                            right,
+                        }
                     })
                 }
                 TokenKind::Plus => {
-                    ExpressionKind::ArithmeticOperation(ArithmeticOperationKind::Positive {
-                        plus: span,
-                        right,
+                    ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression {
+                        span,
+                        kind: ArithmeticOperationKind::Positive {
+                            plus: op_span,
+                            right,
+                        }
                     })
                 }
                 TokenKind::Decrement => {
-                    ExpressionKind::ArithmeticOperation(ArithmeticOperationKind::PreDecrement {
-                        decrement: span,
-                        right,
+                    ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression {
+                        span,
+                        kind: ArithmeticOperationKind::PreDecrement {
+                            decrement: op_span,
+                            right,
+                        }
                     })
                 }
                 TokenKind::Increment => {
-                    ExpressionKind::ArithmeticOperation(ArithmeticOperationKind::PreIncrement {
-                        increment: span,
-                        right,
+                    ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression {
+                        span,
+                        kind: ArithmeticOperationKind::PreIncrement {
+                            increment: op_span,
+                            right,
+                        }
                     })
                 }
                 _ => unreachable!(),
@@ -1512,11 +1557,15 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
 
             let rhs = for_precedence(state, Precedence::Bang);
             let end_span = rhs.span;
+            let span = Span::combine(start_span, end_span);
 
             Expression::new(
-                ExpressionKind::LogicalOperation(LogicalOperationKind::Not {
-                    bang,
-                    right: Box::new(rhs),
+                ExpressionKind::LogicalOperation(LogicalOperationExpression {
+                    span,
+                    kind: LogicalOperationKind::Not {
+                        bang,
+                        right: Box::new(rhs),
+                    }
                 }),
                 Span::new(start_span.start, end_span.end),
                 CommentGroup::default(),
@@ -1530,9 +1579,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
 
             let rhs = for_precedence(state, Precedence::Prefix);
             let end_span = rhs.span;
+            let span = Span::combine(span, end_span);
 
             Expression::new(
                 ExpressionKind::ErrorSuppress(ErrorSuppressExpression {
+                    span,
                     at: span,
                     expr: Box::new(rhs),
                 }),
@@ -1548,9 +1599,13 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
 
             let right = Box::new(for_precedence(state, Precedence::Prefix));
             let end_span = right.span;
+            let span = Span::combine(span, end_span);
 
             Expression::new(
-                ExpressionKind::BitwiseOperation(BitwiseOperationKind::Not { not: span, right }),
+                ExpressionKind::BitwiseOperation(BitwiseOperationExpression {
+                    span,
+                    kind: BitwiseOperationKind::Not { not: span, right }
+                }),
                 Span::new(span.start, end_span.end),
                 CommentGroup::default(),
             )
@@ -1595,8 +1650,10 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
             state.stream.next();
 
             let rhs = null_coalesce_precedence(state);
+            let span = Span::combine(lhs.span, rhs.span);
 
             ExpressionKind::Coalesce(CoalesceExpression {
+                span,
                 lhs: Box::new(lhs),
                 double_question,
                 rhs: Box::new(rhs),
@@ -1610,40 +1667,54 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                 let start = utils::skip(state, TokenKind::LeftParen);
                 let ellipsis = utils::skip(state, TokenKind::Ellipsis);
                 let end = utils::skip(state, TokenKind::RightParen);
+                let span = Span::combine(start, end);
 
                 let placeholder = ArgumentPlaceholder {
+                    span,
                     comments: state.stream.comments(),
                     left_parenthesis: start,
                     ellipsis,
                     right_parenthesis: end,
                 };
 
+                let span = Span::combine(lhs.span, span);
+
                 ExpressionKind::FunctionClosureCreation(FunctionClosureCreationExpression {
+                    span,
                     target: Box::new(lhs),
                     placeholder,
                 })
             } else {
                 let arguments = parameters::argument_list(state);
+                let span = Span::combine(lhs.span, arguments.span);
 
                 ExpressionKind::FunctionCall(FunctionCallExpression {
+                    span,
                     target: Box::new(lhs),
                     arguments,
                 })
             }
         }
-        TokenKind::LeftBracket => ExpressionKind::ArrayIndex(ArrayIndexExpression {
-            array: Box::new(lhs),
-            left_bracket: utils::skip_left_bracket(state),
-            index: if state.stream.current().kind == TokenKind::RightBracket {
+        TokenKind::LeftBracket => {
+            let left_bracket = utils::skip_left_bracket(state);
+            let index = if state.stream.current().kind == TokenKind::RightBracket {
                 None
             } else {
                 Some(Box::new(create(state)))
-            },
-            right_bracket: utils::skip_right_bracket(state),
-        }),
-        TokenKind::DoubleColon => {
-            let span = utils::skip_double_colon(state);
+            };
+            let right_bracket = utils::skip_right_bracket(state);
+            let span = Span::combine(lhs.span, right_bracket);
 
+            ExpressionKind::ArrayIndex(ArrayIndexExpression {
+                span,
+                array: Box::new(lhs),
+                left_bracket,
+                index,
+                right_bracket,
+            })
+        },
+        TokenKind::DoubleColon => {
+            let double_colon = utils::skip_double_colon(state);
             let current = state.stream.current();
 
             let property = match current.kind {
@@ -1696,10 +1767,11 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
 
                     state.stream.next();
 
-                    ExpressionKind::Missing
+                    ExpressionKind::Missing(current.span)
                 }
             };
 
+            let lhs_span = lhs.span;
             let lhs = Box::new(lhs);
 
             if state.stream.current().kind == TokenKind::LeftParen {
@@ -1709,8 +1781,10 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                     let start = utils::skip(state, TokenKind::LeftParen);
                     let ellipsis = utils::skip(state, TokenKind::Ellipsis);
                     let end = utils::skip(state, TokenKind::RightParen);
+                    let span = Span::combine(start, end);
 
                     let placeholder = ArgumentPlaceholder {
+                        span,
                         comments: state.stream.comments(),
                         left_parenthesis: start,
                         ellipsis,
@@ -1721,8 +1795,9 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                         ExpressionKind::Identifier(identifier) => {
                             ExpressionKind::StaticMethodClosureCreation(
                                 StaticMethodClosureCreationExpression {
+                                    span: Span::combine(lhs.span, placeholder.span),
                                     target: lhs,
-                                    double_colon: span,
+                                    double_colon,
                                     method: identifier,
                                     placeholder,
                                 },
@@ -1731,8 +1806,9 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                         ExpressionKind::Variable(variable) => {
                             ExpressionKind::StaticVariableMethodClosureCreation(
                                 StaticVariableMethodClosureCreationExpression {
+                                    span: Span::combine(lhs.span, placeholder.span),
                                     target: lhs,
-                                    double_colon: span,
+                                    double_colon,
                                     method: variable,
                                     placeholder,
                                 },
@@ -1746,8 +1822,9 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                     match property {
                         ExpressionKind::Identifier(identifier) => {
                             ExpressionKind::StaticMethodCall(StaticMethodCallExpression {
+                                span: Span::combine(lhs.span, arguments.span),
                                 target: lhs,
-                                double_colon: span,
+                                double_colon,
                                 method: identifier,
                                 arguments,
                             })
@@ -1755,8 +1832,9 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                         ExpressionKind::Variable(variable) => {
                             ExpressionKind::StaticVariableMethodCall(
                                 StaticVariableMethodCallExpression {
+                                    span: Span::combine(lhs.span, arguments.span),
                                     target: lhs,
-                                    double_colon: span,
+                                    double_colon,
                                     method: variable,
                                     arguments,
                                 },
@@ -1769,15 +1847,17 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                 match property {
                     ExpressionKind::Identifier(identifier) => {
                         ExpressionKind::ConstantFetch(ConstantFetchExpression {
+                            span: Span::combine(lhs.span, identifier.span()),
                             target: lhs,
-                            double_colon: span,
+                            double_colon,
                             constant: identifier,
                         })
                     }
                     ExpressionKind::Variable(variable) => {
                         ExpressionKind::StaticPropertyFetch(StaticPropertyFetchExpression {
+                            span: Span::combine(lhs.span, variable.span()),
                             target: lhs,
-                            double_colon: span,
+                            double_colon,
                             property: variable,
                         })
                     }
@@ -1861,6 +1941,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                     let arguments = parameters::argument_list(state);
 
                     ExpressionKind::NullsafeMethodCall(NullsafeMethodCallExpression {
+                        span: Span::combine(lhs.span, arguments.span),
                         target: Box::new(lhs),
                         method: Box::new(property),
                         question_arrow: span,
@@ -1874,8 +1955,10 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                         let start = utils::skip(state, TokenKind::LeftParen);
                         let ellipsis = utils::skip(state, TokenKind::Ellipsis);
                         let end = utils::skip(state, TokenKind::RightParen);
+                        let span = Span::combine(start, end);
 
                         let placeholder = ArgumentPlaceholder {
+                            span,
                             comments: state.stream.comments(),
                             left_parenthesis: start,
                             ellipsis,
@@ -1883,6 +1966,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                         };
 
                         ExpressionKind::MethodClosureCreation(MethodClosureCreationExpression {
+                            span: Span::combine(lhs.span, placeholder.span),
                             target: Box::new(lhs),
                             method: Box::new(property),
                             arrow: span,
@@ -1892,6 +1976,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                         let arguments = parameters::argument_list(state);
 
                         ExpressionKind::MethodCall(MethodCallExpression {
+                            span: Span::combine(lhs.span, arguments.span),
                             target: Box::new(lhs),
                             method: Box::new(property),
                             arrow: span,
@@ -1901,12 +1986,14 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                 }
             } else if op == &TokenKind::QuestionArrow {
                 ExpressionKind::NullsafePropertyFetch(NullsafePropertyFetchExpression {
+                    span: Span::combine(lhs.span, property.span),
                     target: Box::new(lhs),
                     question_arrow: span,
                     property: Box::new(property),
                 })
             } else {
                 ExpressionKind::PropertyFetch(PropertyFetchExpression {
+                    span: Span::combine(lhs.span, property.span),
                     target: Box::new(lhs),
                     arrow: span,
                     property: Box::new(property),
@@ -1914,21 +2001,27 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
             }
         }
         TokenKind::Increment => {
-            let span = state.stream.current().span;
+            let op = state.stream.current().span;
             state.stream.next();
 
-            ExpressionKind::ArithmeticOperation(ArithmeticOperationKind::PostIncrement {
-                left: Box::new(lhs),
-                increment: span,
+            ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression {
+                span: Span::combine(lhs.span, op),
+                kind: ArithmeticOperationKind::PostIncrement {
+                    left: Box::new(lhs),
+                    increment: op,
+                }
             })
         }
         TokenKind::Decrement => {
-            let span = state.stream.current().span;
+            let op = state.stream.current().span;
             state.stream.next();
 
-            ExpressionKind::ArithmeticOperation(ArithmeticOperationKind::PostDecrement {
-                left: Box::new(lhs),
-                decrement: span,
+            ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression {
+                span: Span::combine(lhs.span, op),
+                kind: ArithmeticOperationKind::PostDecrement {
+                    left: Box::new(lhs),
+                    decrement: op,
+                }
             })
         }
         _ => unreachable!(),

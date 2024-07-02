@@ -3,6 +3,7 @@ use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
 use pxp_ast::*;
+use pxp_span::Span;
 use pxp_token::TokenKind;
 
 use super::data_type::data_type;
@@ -20,6 +21,7 @@ pub fn parse(state: &mut State) -> ConstantStatement {
         let value = expressions::create(state);
 
         entries.push(ConstantEntry {
+            span: Span::combine(name.span, value.span),
             name,
             equals: span,
             value,
@@ -33,8 +35,10 @@ pub fn parse(state: &mut State) -> ConstantStatement {
     }
 
     let end = utils::skip_semicolon(state);
+    let span = Span::combine(start, end);
 
     ConstantStatement {
+        span,
         comments,
         r#const: start,
         entries,
@@ -62,6 +66,7 @@ pub fn classish(state: &mut State, modifiers: ConstantModifierGroup) -> Classish
         let value = expressions::create(state);
 
         entries.push(ClassishConstantEntry {
+            span: Span::combine(name.span, value.span),
             name,
             equals: span,
             value,
@@ -77,6 +82,11 @@ pub fn classish(state: &mut State, modifiers: ConstantModifierGroup) -> Classish
     let end = utils::skip_semicolon(state);
 
     ClassishConstant {
+        span: if !modifiers.is_empty() {
+            Span::combine(modifiers.span, end)
+        } else {
+            Span::combine(start, end)
+        },
         comments,
         attributes,
         modifiers,

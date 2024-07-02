@@ -13,26 +13,50 @@ use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
 pub fn list_expression(state: &mut State) -> Expression {
-    let start_span = state.stream.current().span;
-    let kind = ExpressionKind::List(ListExpression {
-        list: utils::skip(state, TokenKind::List),
-        start: utils::skip_left_parenthesis(state),
-        items: {
-            let mut items = Vec::new();
-            let mut has_at_least_one_key = false;
+    let list = utils::skip(state, TokenKind::List);
+    let start = utils::skip_left_parenthesis(state);
+    let items = {
+        let mut items = Vec::new();
+        let mut has_at_least_one_key = false;
 
-            let mut current = state.stream.current();
-            while current.kind != TokenKind::RightParen {
-                if current.kind == TokenKind::Comma {
-                    state.stream.next();
+        let mut current = state.stream.current();
+        while current.kind != TokenKind::RightParen {
+            if current.kind == TokenKind::Comma {
+                state.stream.next();
 
-                    items.push(ListEntry::Skipped);
+                items.push(ListEntry::Skipped(current.span));
 
-                    current = state.stream.current();
+                current = state.stream.current();
 
-                    continue;
+                continue;
+            }
+
+            if current.kind == TokenKind::Ellipsis {
+                state.stream.next();
+
+                state.diagnostic(
+                    ParserDiagnostic::InvalidSpreadOperator,
+                    Severity::Error,
+                    current.span,
+                );
+            }
+
+            let mut value = expressions::create(state);
+            current = state.stream.current();
+            if current.kind == TokenKind::DoubleArrow {
+                if !has_at_least_one_key && !items.is_empty() {
+                    state.diagnostic(
+                        ParserDiagnostic::CannotMixKeyedAndUnkeyedListEntries,
+                        Severity::Error,
+                        current.span,
+                    );
                 }
 
+                let double_arrow = current.span;
+
+                state.stream.next();
+
+                current = state.stream.current();
                 if current.kind == TokenKind::Ellipsis {
                     state.stream.next();
 
@@ -43,121 +67,113 @@ pub fn list_expression(state: &mut State) -> Expression {
                     );
                 }
 
-                let mut value = expressions::create(state);
+                let mut key = expressions::create(state);
                 current = state.stream.current();
-                if current.kind == TokenKind::DoubleArrow {
-                    if !has_at_least_one_key && !items.is_empty() {
-                        state.diagnostic(
-                            ParserDiagnostic::CannotMixKeyedAndUnkeyedListEntries,
-                            Severity::Error,
-                            current.span,
-                        );
-                    }
 
-                    let double_arrow = current.span;
+                std::mem::swap(&mut key, &mut value);
 
-                    state.stream.next();
+                items.push(ListEntry::KeyValue {
+                    span: Span::combine(key.span, value.span),
+                    key,
+                    double_arrow,
+                    value,
+                });
 
-                    current = state.stream.current();
-                    if current.kind == TokenKind::Ellipsis {
-                        state.stream.next();
-
-                        state.diagnostic(
-                            ParserDiagnostic::InvalidSpreadOperator,
-                            Severity::Error,
-                            current.span,
-                        );
-                    }
-
-                    let mut key = expressions::create(state);
-                    current = state.stream.current();
-
-                    std::mem::swap(&mut key, &mut value);
-
-                    items.push(ListEntry::KeyValue {
-                        key,
-                        double_arrow,
-                        value,
-                    });
-
-                    has_at_least_one_key = true;
-                } else {
-                    if has_at_least_one_key {
-                        state.diagnostic(
-                            ParserDiagnostic::CannotMixKeyedAndUnkeyedListEntries,
-                            Severity::Error,
-                            current.span,
-                        );
-                    }
-
-                    items.push(ListEntry::Value { value });
+                has_at_least_one_key = true;
+            } else {
+                if has_at_least_one_key {
+                    state.diagnostic(
+                        ParserDiagnostic::CannotMixKeyedAndUnkeyedListEntries,
+                        Severity::Error,
+                        current.span,
+                    );
                 }
 
-                if current.kind == TokenKind::Comma {
-                    state.stream.next();
-                    current = state.stream.current();
-                } else {
-                    break;
-                }
+                items.push(ListEntry::Value { span: value.span, value });
             }
 
             if current.kind == TokenKind::Comma {
                 state.stream.next();
+                current = state.stream.current();
+            } else {
+                break;
             }
+        }
 
-            items
-        },
-        end: utils::skip_right_parenthesis(state),
+        if current.kind == TokenKind::Comma {
+            state.stream.next();
+        }
+
+        items
+    };
+
+    let end = utils::skip_right_parenthesis(state);
+    let span = Span::combine(list, end);
+
+    let kind = ExpressionKind::List(ListExpression {
+        span,
+        list,
+        start,
+        items,
+        end,
     });
-    let end_span = state.stream.current().span;
 
     Expression::new(
         kind,
-        Span::new(start_span.start, end_span.end),
+        span,
         CommentGroup::default(),
     )
 }
 
 pub fn short_array_expression(state: &mut State) -> Expression {
-    let start_span = state.stream.current().span;
+    let start = utils::skip(state, TokenKind::LeftBracket);
+    let items = utils::comma_separated(
+        state,
+        &|state| {
+            let current = state.stream.current();
+            if current.kind == TokenKind::Comma {
+                ArrayItem::Skipped(current.span)
+            } else {
+                array_pair(state)
+            }
+        },
+        TokenKind::RightBracket,
+    );
+    let end = utils::skip(state, TokenKind::RightBracket);
+    let span = Span::combine(start, end);
+
     let kind = ExpressionKind::ShortArray(ShortArrayExpression {
-        start: utils::skip(state, TokenKind::LeftBracket),
-        items: utils::comma_separated(
-            state,
-            &|state| {
-                let current = state.stream.current();
-                if current.kind == TokenKind::Comma {
-                    ArrayItem::Skipped
-                } else {
-                    array_pair(state)
-                }
-            },
-            TokenKind::RightBracket,
-        ),
-        end: utils::skip(state, TokenKind::RightBracket),
+        span,
+        start,
+        items,
+        end,
     });
-    let end_span = state.stream.current().span;
 
     Expression::new(
         kind,
-        Span::new(start_span.start, end_span.end),
+        span,
         CommentGroup::default(),
     )
 }
 
 pub fn array_expression(state: &mut State) -> Expression {
-    let start_span = state.stream.current().span;
+    let array = utils::skip(state, TokenKind::Array);
+    let start = utils::skip_left_parenthesis(state);
+    let items = utils::comma_separated(state, &array_pair, TokenKind::RightParen);
+    let end = utils::skip_right_parenthesis(state);
+    let span = Span::combine(array, end);
+
     let kind = ExpressionKind::Array(ArrayExpression {
-        array: utils::skip(state, TokenKind::Array),
-        start: utils::skip_left_parenthesis(state),
-        items: utils::comma_separated(state, &array_pair, TokenKind::RightParen),
-        end: utils::skip_right_parenthesis(state),
+        span,
+        array,
+        start,
+        items,
+        end,
     });
-    let end_span = state.stream.current().span;
 
     Expression::new(
         kind,
-        Span::new(start_span.start, end_span.end),
+        span,
         CommentGroup::default(),
     )
 }
@@ -193,11 +209,12 @@ fn array_pair(state: &mut State) -> ArrayItem {
             );
         }
 
-        return ArrayItem::SpreadValue { ellipsis, value };
+        return ArrayItem::SpreadValue { span: Span::combine(ellipsis, value.span), ellipsis, value };
     }
 
     if let Some(ampersand) = ampersand {
         return ArrayItem::ReferencedValue {
+            span: Span::combine(ampersand.span, value.span),
             ampersand: ampersand.span,
             value,
         };
@@ -234,12 +251,14 @@ fn array_pair(state: &mut State) -> ArrayItem {
 
         return match ampersand {
             Some(ampersand) => ArrayItem::ReferencedKeyValue {
+                span: Span::combine(key.span, value.span),
                 key,
                 double_arrow,
                 value,
                 ampersand: ampersand.span,
             },
             None => ArrayItem::KeyValue {
+                span: Span::combine(key.span, value.span),
                 key,
                 double_arrow,
                 value,
@@ -247,5 +266,5 @@ fn array_pair(state: &mut State) -> ArrayItem {
         };
     }
 
-    ArrayItem::Value { value }
+    ArrayItem::Value { span: value.span, value }
 }
