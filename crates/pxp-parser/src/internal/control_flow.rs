@@ -22,7 +22,6 @@ use pxp_token::TokenKind;
 
 pub fn match_expression(state: &mut State) -> Expression {
     let keyword = utils::skip(state, TokenKind::Match);
-    let start_span = keyword;
 
     let (left_parenthesis, condition, right_parenthesis) =
         utils::parenthesized(state, &|state: &mut State| {

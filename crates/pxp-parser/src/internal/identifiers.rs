@@ -122,51 +122,6 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
     }
 }
 
-/// Expect an unqualified identifier such as FOO or BAR for a constant name.
-pub fn constant_name(state: &mut State) -> SimpleIdentifier {
-    let current = state.stream.current();
-    match &current.kind {
-        TokenKind::Identifier
-        | TokenKind::Enum
-        | TokenKind::From
-        | TokenKind::Self_
-        | TokenKind::Parent => {
-            state.stream.next();
-
-            let symbol = current.symbol.unwrap();
-
-            SimpleIdentifier::new(symbol, current.span)
-        }
-        t if is_reserved_identifier(t) => {
-            state.diagnostic(
-                ParserDiagnostic::CannotUseReservedKeywordAsConstantName,
-                Severity::Error,
-                current.span,
-            );
-
-            state.stream.next();
-
-            let symbol = current.symbol.unwrap();
-
-            SimpleIdentifier::new(symbol, current.span)
-        }
-        _ => {
-            state.diagnostic(
-                ParserDiagnostic::ExpectedToken {
-                    expected: vec![TokenKind::Identifier],
-                    found: *current,
-                },
-                Severity::Error,
-                current.span,
-            );
-
-            let symbol = current.symbol.unwrap();
-
-            SimpleIdentifier::new(symbol, current.span)
-        }
-    }
-}
-
 /// Expect an unqualified identifier such as Foo or Bar.
 pub fn identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.stream.current();

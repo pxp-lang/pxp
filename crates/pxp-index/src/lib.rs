@@ -14,7 +14,7 @@ mod constant;
 pub use reflection::*;
 pub use indexer::Indexer;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Index {
     classes: HashMap<Symbol, ClassLike>,
     functions: HashMap<Symbol, Function>,

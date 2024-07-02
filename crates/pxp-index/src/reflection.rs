@@ -1,3 +1,4 @@
+#![allow(unused)]
 use std::fmt::Debug;
 
 use pxp_ast::Name;
@@ -138,15 +139,15 @@ impl<'a> ReflectionClass<'a> {
     }
 
     pub fn get_parent(&self) -> Option<ReflectionClass<'a>> {
-        self.class.parent.as_ref().map(|parent| self.index.get_class(*parent)).flatten()
+        self.class.parent.as_ref().and_then(|parent| self.index.get_class(*parent))
     }
 
     pub fn get_interfaces(&self) -> impl Iterator<Item = ReflectionClass> + '_ {
-        self.class.interfaces.iter().map(move |interface| self.index.get_class(*interface)).flatten()
+        self.class.interfaces.iter().filter_map(move |interface| self.index.get_class(*interface))
     }
 
     pub fn get_traits(&self) -> impl Iterator<Item = ReflectionClass> + '_ {
-        self.class.traits.iter().map(move |r#trait| self.index.get_class(*r#trait)).flatten()
+        self.class.traits.iter().filter_map(move |r#trait| self.index.get_class(*r#trait))
     }
 
     pub fn get_methods(&'a self) -> impl Iterator<Item = ReflectionMethod> + 'a {
@@ -315,6 +316,10 @@ impl<'a> ReflectionMethod<'a> {
     pub fn get_name(&self) -> Symbol {
         self.method.name
     }
+
+    pub fn get_class(&self) -> &'a ReflectionClass<'a> {
+        self.class
+    }
 }
 
 impl Debug for ReflectionMethod<'_> {
@@ -332,4 +337,18 @@ impl Debug for ReflectionMethod<'_> {
 pub struct ReflectionConstant<'a> {
     pub(crate) constant: &'a Constant,
     pub(crate) index: &'a Index,
+}
+
+impl<'a> ReflectionConstant<'a> {
+    pub fn get_name(&self) -> Symbol {
+        self.constant.name
+    }
+
+    pub fn get_short_name(&self) -> Symbol {
+        self.constant.short
+    }
+
+    pub fn get_namespace(&self) -> Option<Symbol> {
+        self.constant.namespace
+    }
 }

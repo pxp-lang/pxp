@@ -97,8 +97,8 @@ fn byte_offset_to_line_and_column(source: &[u8], offset: ByteOffset) -> (usize, 
     let mut line = 1;
     let mut column = 1;
 
-    for i in 0..offset {
-        if source[i] == b'\n' {
+    for i in source.iter().take(offset) {
+        if i == &b'\n' {
             line += 1;
             column = 1;
         } else {

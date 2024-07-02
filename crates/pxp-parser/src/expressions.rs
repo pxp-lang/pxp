@@ -198,7 +198,6 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                     })
                 }
                 TokenKind::Instanceof if op.kind == TokenKind::Parent => {
-                    let instanceof = span;
                     state.stream.next();
                     let right = Expression::new(
                         ExpressionKind::Parent(op.span),
@@ -1203,7 +1202,6 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                 return classes::parse_anonymous(state, Some(new));
             };
 
-            let current_span = state.stream.current().span;
             let target = match state.stream.current().kind {
                 TokenKind::Self_ => {
                     let token = state.stream.current();
@@ -1771,7 +1769,6 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                 }
             };
 
-            let lhs_span = lhs.span;
             let lhs = Box::new(lhs);
 
             if state.stream.current().kind == TokenKind::LeftParen {

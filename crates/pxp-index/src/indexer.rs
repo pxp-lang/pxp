@@ -6,7 +6,7 @@ use pxp_ast::{UnbracedNamespace, *};
 
 use crate::{class_like::{ClassConstant, ClassKind, ClassLike, Method}, function::Function, parameter::Parameter, Index};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Indexer {
     index: Index,
     context: IndexerContext,
@@ -106,7 +106,7 @@ impl Visitor for Indexer {
 
         let mut class = ClassLike::new(name.resolved, name.original, self.context.namespace(), ClassKind::Class);
         class.parent = node.extends.as_ref().map(|e| e.parent.as_resolved().unwrap().resolved);
-        class.interfaces = node.implements.as_ref().map(|i| i.interfaces.iter().map(|i| i.as_resolved().unwrap().resolved).collect::<Vec<_>>()).unwrap_or_else(|| Vec::new());
+        class.interfaces = node.implements.as_ref().map(|i| i.interfaces.iter().map(|i| i.as_resolved().unwrap().resolved).collect::<Vec<_>>()).unwrap_or_default();
         class.modifiers = node.modifiers.clone();
 
         self.context.set_class(class);
@@ -269,7 +269,7 @@ impl Visitor for Indexer {
         let name = node.name.as_resolved().unwrap();
 
         let mut class = ClassLike::new(name.resolved, name.original, self.context.namespace(), ClassKind::Interface);
-        class.interfaces = node.extends.as_ref().map(|i| i.parents.inner.iter().map(|i| i.as_resolved().unwrap().resolved).collect::<Vec<_>>()).unwrap_or_else(|| Vec::new());
+        class.interfaces = node.extends.as_ref().map(|i| i.parents.inner.iter().map(|i| i.as_resolved().unwrap().resolved).collect::<Vec<_>>()).unwrap_or_default();
 
         self.context.set_class(class);
         walk_interface_statement(self, node);
