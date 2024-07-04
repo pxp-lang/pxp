@@ -3525,3 +3525,2294 @@ pub enum Node<'a> {
     HaltCompilerStatement(&'a HaltCompilerStatement),
     StaticVar(&'a StaticVar),
 }
+
+impl<'a> Node<'a> {
+    pub fn as_block(self) -> Option<&'a Block> {
+        match self {
+            Node::Block(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_block(&self) -> bool {
+        matches!(self, Node::Block(_))
+    }
+
+    pub fn as_statement(self) -> Option<&'a Statement> {
+        match self {
+            Node::Statement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_statement(&self) -> bool {
+        matches!(self, Node::Statement(_))
+    }
+
+    pub fn as_statement_kind(self) -> Option<&'a StatementKind> {
+        match self {
+            Node::StatementKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_statement_kind(&self) -> bool {
+        matches!(self, Node::StatementKind(_))
+    }
+
+    pub fn as_expression(self) -> Option<&'a Expression> {
+        match self {
+            Node::Expression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_expression(&self) -> bool {
+        matches!(self, Node::Expression(_))
+    }
+
+    pub fn as_expression_kind(self) -> Option<&'a ExpressionKind> {
+        match self {
+            Node::ExpressionKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_expression_kind(&self) -> bool {
+        matches!(self, Node::ExpressionKind(_))
+    }
+
+    pub fn as_inline_html_statement(self) -> Option<&'a InlineHtmlStatement> {
+        match self {
+            Node::InlineHtmlStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_inline_html_statement(&self) -> bool {
+        matches!(self, Node::InlineHtmlStatement(_))
+    }
+
+    pub fn as_full_opening_tag_statement(self) -> Option<&'a FullOpeningTagStatement> {
+        match self {
+            Node::FullOpeningTagStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_full_opening_tag_statement(&self) -> bool {
+        matches!(self, Node::FullOpeningTagStatement(_))
+    }
+
+    pub fn as_short_opening_tag_statement(self) -> Option<&'a ShortOpeningTagStatement> {
+        match self {
+            Node::ShortOpeningTagStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_short_opening_tag_statement(&self) -> bool {
+        matches!(self, Node::ShortOpeningTagStatement(_))
+    }
+
+    pub fn as_echo_opening_tag_statement(self) -> Option<&'a EchoOpeningTagStatement> {
+        match self {
+            Node::EchoOpeningTagStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_echo_opening_tag_statement(&self) -> bool {
+        matches!(self, Node::EchoOpeningTagStatement(_))
+    }
+
+    pub fn as_closing_tag_statement(self) -> Option<&'a ClosingTagStatement> {
+        match self {
+            Node::ClosingTagStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_closing_tag_statement(&self) -> bool {
+        matches!(self, Node::ClosingTagStatement(_))
+    }
+
+    pub fn as_expression_statement(self) -> Option<&'a ExpressionStatement> {
+        match self {
+            Node::ExpressionStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_expression_statement(&self) -> bool {
+        matches!(self, Node::ExpressionStatement(_))
+    }
+
+    pub fn as_global_statement(self) -> Option<&'a GlobalStatement> {
+        match self {
+            Node::GlobalStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_global_statement(&self) -> bool {
+        matches!(self, Node::GlobalStatement(_))
+    }
+
+    pub fn as_block_statement(self) -> Option<&'a BlockStatement> {
+        match self {
+            Node::BlockStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_block_statement(&self) -> bool {
+        matches!(self, Node::BlockStatement(_))
+    }
+
+    pub fn as_cast_kind(self) -> Option<&'a CastKind> {
+        match self {
+            Node::CastKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_cast_kind(&self) -> bool {
+        matches!(self, Node::CastKind(_))
+    }
+
+    pub fn as_case(self) -> Option<&'a Case> {
+        match self {
+            Node::Case(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_case(&self) -> bool {
+        matches!(self, Node::Case(_))
+    }
+
+    pub fn as_use(self) -> Option<&'a Use> {
+        match self {
+            Node::Use(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_use(&self) -> bool {
+        matches!(self, Node::Use(_))
+    }
+
+    pub fn as_use_kind(self) -> Option<&'a UseKind> {
+        match self {
+            Node::UseKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_use_kind(&self) -> bool {
+        matches!(self, Node::UseKind(_))
+    }
+
+    pub fn as_eval_expression(self) -> Option<&'a EvalExpression> {
+        match self {
+            Node::EvalExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_eval_expression(&self) -> bool {
+        matches!(self, Node::EvalExpression(_))
+    }
+
+    pub fn as_empty_expression(self) -> Option<&'a EmptyExpression> {
+        match self {
+            Node::EmptyExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_empty_expression(&self) -> bool {
+        matches!(self, Node::EmptyExpression(_))
+    }
+
+    pub fn as_die_expression(self) -> Option<&'a DieExpression> {
+        match self {
+            Node::DieExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_die_expression(&self) -> bool {
+        matches!(self, Node::DieExpression(_))
+    }
+
+    pub fn as_exit_expression(self) -> Option<&'a ExitExpression> {
+        match self {
+            Node::ExitExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_exit_expression(&self) -> bool {
+        matches!(self, Node::ExitExpression(_))
+    }
+
+    pub fn as_isset_expression(self) -> Option<&'a IssetExpression> {
+        match self {
+            Node::IssetExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_isset_expression(&self) -> bool {
+        matches!(self, Node::IssetExpression(_))
+    }
+
+    pub fn as_unset_expression(self) -> Option<&'a UnsetExpression> {
+        match self {
+            Node::UnsetExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_unset_expression(&self) -> bool {
+        matches!(self, Node::UnsetExpression(_))
+    }
+
+    pub fn as_print_expression(self) -> Option<&'a PrintExpression> {
+        match self {
+            Node::PrintExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_print_expression(&self) -> bool {
+        matches!(self, Node::PrintExpression(_))
+    }
+
+    pub fn as_concat_expression(self) -> Option<&'a ConcatExpression> {
+        match self {
+            Node::ConcatExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_concat_expression(&self) -> bool {
+        matches!(self, Node::ConcatExpression(_))
+    }
+
+    pub fn as_instanceof_expression(self) -> Option<&'a InstanceofExpression> {
+        match self {
+            Node::InstanceofExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_instanceof_expression(&self) -> bool {
+        matches!(self, Node::InstanceofExpression(_))
+    }
+
+    pub fn as_reference_expression(self) -> Option<&'a ReferenceExpression> {
+        match self {
+            Node::ReferenceExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_reference_expression(&self) -> bool {
+        matches!(self, Node::ReferenceExpression(_))
+    }
+
+    pub fn as_parenthesized_expression(self) -> Option<&'a ParenthesizedExpression> {
+        match self {
+            Node::ParenthesizedExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_parenthesized_expression(&self) -> bool {
+        matches!(self, Node::ParenthesizedExpression(_))
+    }
+
+    pub fn as_error_suppress_expression(self) -> Option<&'a ErrorSuppressExpression> {
+        match self {
+            Node::ErrorSuppressExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_error_suppress_expression(&self) -> bool {
+        matches!(self, Node::ErrorSuppressExpression(_))
+    }
+
+    pub fn as_include_expression(self) -> Option<&'a IncludeExpression> {
+        match self {
+            Node::IncludeExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_include_expression(&self) -> bool {
+        matches!(self, Node::IncludeExpression(_))
+    }
+
+    pub fn as_include_once_expression(self) -> Option<&'a IncludeOnceExpression> {
+        match self {
+            Node::IncludeOnceExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_include_once_expression(&self) -> bool {
+        matches!(self, Node::IncludeOnceExpression(_))
+    }
+
+    pub fn as_require_expression(self) -> Option<&'a RequireExpression> {
+        match self {
+            Node::RequireExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_require_expression(&self) -> bool {
+        matches!(self, Node::RequireExpression(_))
+    }
+
+    pub fn as_require_once_expression(self) -> Option<&'a RequireOnceExpression> {
+        match self {
+            Node::RequireOnceExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_require_once_expression(&self) -> bool {
+        matches!(self, Node::RequireOnceExpression(_))
+    }
+
+    pub fn as_function_call_expression(self) -> Option<&'a FunctionCallExpression> {
+        match self {
+            Node::FunctionCallExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_function_call_expression(&self) -> bool {
+        matches!(self, Node::FunctionCallExpression(_))
+    }
+
+    pub fn as_function_closure_creation_expression(
+        self,
+    ) -> Option<&'a FunctionClosureCreationExpression> {
+        match self {
+            Node::FunctionClosureCreationExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_function_closure_creation_expression(&self) -> bool {
+        matches!(self, Node::FunctionClosureCreationExpression(_))
+    }
+
+    pub fn as_method_call_expression(self) -> Option<&'a MethodCallExpression> {
+        match self {
+            Node::MethodCallExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_method_call_expression(&self) -> bool {
+        matches!(self, Node::MethodCallExpression(_))
+    }
+
+    pub fn as_method_closure_creation_expression(
+        self,
+    ) -> Option<&'a MethodClosureCreationExpression> {
+        match self {
+            Node::MethodClosureCreationExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_method_closure_creation_expression(&self) -> bool {
+        matches!(self, Node::MethodClosureCreationExpression(_))
+    }
+
+    pub fn as_nullsafe_method_call_expression(self) -> Option<&'a NullsafeMethodCallExpression> {
+        match self {
+            Node::NullsafeMethodCallExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_nullsafe_method_call_expression(&self) -> bool {
+        matches!(self, Node::NullsafeMethodCallExpression(_))
+    }
+
+    pub fn as_static_method_call_expression(self) -> Option<&'a StaticMethodCallExpression> {
+        match self {
+            Node::StaticMethodCallExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_static_method_call_expression(&self) -> bool {
+        matches!(self, Node::StaticMethodCallExpression(_))
+    }
+
+    pub fn as_static_variable_method_call_expression(
+        self,
+    ) -> Option<&'a StaticVariableMethodCallExpression> {
+        match self {
+            Node::StaticVariableMethodCallExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_static_variable_method_call_expression(&self) -> bool {
+        matches!(self, Node::StaticVariableMethodCallExpression(_))
+    }
+
+    pub fn as_static_method_closure_creation_expression(
+        self,
+    ) -> Option<&'a StaticMethodClosureCreationExpression> {
+        match self {
+            Node::StaticMethodClosureCreationExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_static_method_closure_creation_expression(&self) -> bool {
+        matches!(self, Node::StaticMethodClosureCreationExpression(_))
+    }
+
+    pub fn as_static_variable_method_closure_creation_expression(
+        self,
+    ) -> Option<&'a StaticVariableMethodClosureCreationExpression> {
+        match self {
+            Node::StaticVariableMethodClosureCreationExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_static_variable_method_closure_creation_expression(&self) -> bool {
+        matches!(self, Node::StaticVariableMethodClosureCreationExpression(_))
+    }
+
+    pub fn as_property_fetch_expression(self) -> Option<&'a PropertyFetchExpression> {
+        match self {
+            Node::PropertyFetchExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_property_fetch_expression(&self) -> bool {
+        matches!(self, Node::PropertyFetchExpression(_))
+    }
+
+    pub fn as_nullsafe_property_fetch_expression(
+        self,
+    ) -> Option<&'a NullsafePropertyFetchExpression> {
+        match self {
+            Node::NullsafePropertyFetchExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_nullsafe_property_fetch_expression(&self) -> bool {
+        matches!(self, Node::NullsafePropertyFetchExpression(_))
+    }
+
+    pub fn as_static_property_fetch_expression(self) -> Option<&'a StaticPropertyFetchExpression> {
+        match self {
+            Node::StaticPropertyFetchExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_static_property_fetch_expression(&self) -> bool {
+        matches!(self, Node::StaticPropertyFetchExpression(_))
+    }
+
+    pub fn as_constant_fetch_expression(self) -> Option<&'a ConstantFetchExpression> {
+        match self {
+            Node::ConstantFetchExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_constant_fetch_expression(&self) -> bool {
+        matches!(self, Node::ConstantFetchExpression(_))
+    }
+
+    pub fn as_short_array_expression(self) -> Option<&'a ShortArrayExpression> {
+        match self {
+            Node::ShortArrayExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_short_array_expression(&self) -> bool {
+        matches!(self, Node::ShortArrayExpression(_))
+    }
+
+    pub fn as_array_expression(self) -> Option<&'a ArrayExpression> {
+        match self {
+            Node::ArrayExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_array_expression(&self) -> bool {
+        matches!(self, Node::ArrayExpression(_))
+    }
+
+    pub fn as_list_expression(self) -> Option<&'a ListExpression> {
+        match self {
+            Node::ListExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_list_expression(&self) -> bool {
+        matches!(self, Node::ListExpression(_))
+    }
+
+    pub fn as_new_expression(self) -> Option<&'a NewExpression> {
+        match self {
+            Node::NewExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_new_expression(&self) -> bool {
+        matches!(self, Node::NewExpression(_))
+    }
+
+    pub fn as_interpolated_string_expression(self) -> Option<&'a InterpolatedStringExpression> {
+        match self {
+            Node::InterpolatedStringExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_interpolated_string_expression(&self) -> bool {
+        matches!(self, Node::InterpolatedStringExpression(_))
+    }
+
+    pub fn as_heredoc_expression(self) -> Option<&'a HeredocExpression> {
+        match self {
+            Node::HeredocExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_heredoc_expression(&self) -> bool {
+        matches!(self, Node::HeredocExpression(_))
+    }
+
+    pub fn as_nowdoc_expression(self) -> Option<&'a NowdocExpression> {
+        match self {
+            Node::NowdocExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_nowdoc_expression(&self) -> bool {
+        matches!(self, Node::NowdocExpression(_))
+    }
+
+    pub fn as_shell_exec_expression(self) -> Option<&'a ShellExecExpression> {
+        match self {
+            Node::ShellExecExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_shell_exec_expression(&self) -> bool {
+        matches!(self, Node::ShellExecExpression(_))
+    }
+
+    pub fn as_bool_expression(self) -> Option<&'a BoolExpression> {
+        match self {
+            Node::BoolExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_bool_expression(&self) -> bool {
+        matches!(self, Node::BoolExpression(_))
+    }
+
+    pub fn as_array_index_expression(self) -> Option<&'a ArrayIndexExpression> {
+        match self {
+            Node::ArrayIndexExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_array_index_expression(&self) -> bool {
+        matches!(self, Node::ArrayIndexExpression(_))
+    }
+
+    pub fn as_short_ternary_expression(self) -> Option<&'a ShortTernaryExpression> {
+        match self {
+            Node::ShortTernaryExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_short_ternary_expression(&self) -> bool {
+        matches!(self, Node::ShortTernaryExpression(_))
+    }
+
+    pub fn as_ternary_expression(self) -> Option<&'a TernaryExpression> {
+        match self {
+            Node::TernaryExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_ternary_expression(&self) -> bool {
+        matches!(self, Node::TernaryExpression(_))
+    }
+
+    pub fn as_coalesce_expression(self) -> Option<&'a CoalesceExpression> {
+        match self {
+            Node::CoalesceExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_coalesce_expression(&self) -> bool {
+        matches!(self, Node::CoalesceExpression(_))
+    }
+
+    pub fn as_clone_expression(self) -> Option<&'a CloneExpression> {
+        match self {
+            Node::CloneExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_clone_expression(&self) -> bool {
+        matches!(self, Node::CloneExpression(_))
+    }
+
+    pub fn as_match_expression(self) -> Option<&'a MatchExpression> {
+        match self {
+            Node::MatchExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_match_expression(&self) -> bool {
+        matches!(self, Node::MatchExpression(_))
+    }
+
+    pub fn as_throw_expression(self) -> Option<&'a ThrowExpression> {
+        match self {
+            Node::ThrowExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_throw_expression(&self) -> bool {
+        matches!(self, Node::ThrowExpression(_))
+    }
+
+    pub fn as_yield_expression(self) -> Option<&'a YieldExpression> {
+        match self {
+            Node::YieldExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_yield_expression(&self) -> bool {
+        matches!(self, Node::YieldExpression(_))
+    }
+
+    pub fn as_yield_from_expression(self) -> Option<&'a YieldFromExpression> {
+        match self {
+            Node::YieldFromExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_yield_from_expression(&self) -> bool {
+        matches!(self, Node::YieldFromExpression(_))
+    }
+
+    pub fn as_cast_expression(self) -> Option<&'a CastExpression> {
+        match self {
+            Node::CastExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_cast_expression(&self) -> bool {
+        matches!(self, Node::CastExpression(_))
+    }
+
+    pub fn as_default_match_arm(self) -> Option<&'a DefaultMatchArm> {
+        match self {
+            Node::DefaultMatchArm(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_default_match_arm(&self) -> bool {
+        matches!(self, Node::DefaultMatchArm(_))
+    }
+
+    pub fn as_match_arm(self) -> Option<&'a MatchArm> {
+        match self {
+            Node::MatchArm(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_match_arm(&self) -> bool {
+        matches!(self, Node::MatchArm(_))
+    }
+
+    pub fn as_magic_constant_expression(self) -> Option<&'a MagicConstantExpression> {
+        match self {
+            Node::MagicConstantExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_magic_constant_expression(&self) -> bool {
+        matches!(self, Node::MagicConstantExpression(_))
+    }
+
+    pub fn as_string_part(self) -> Option<&'a StringPart> {
+        match self {
+            Node::StringPart(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_string_part(&self) -> bool {
+        matches!(self, Node::StringPart(_))
+    }
+
+    pub fn as_literal_string_part(self) -> Option<&'a LiteralStringPart> {
+        match self {
+            Node::LiteralStringPart(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_literal_string_part(&self) -> bool {
+        matches!(self, Node::LiteralStringPart(_))
+    }
+
+    pub fn as_expression_string_part(self) -> Option<&'a ExpressionStringPart> {
+        match self {
+            Node::ExpressionStringPart(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_expression_string_part(&self) -> bool {
+        matches!(self, Node::ExpressionStringPart(_))
+    }
+
+    pub fn as_array_item(self) -> Option<&'a ArrayItem> {
+        match self {
+            Node::ArrayItem(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_array_item(&self) -> bool {
+        matches!(self, Node::ArrayItem(_))
+    }
+
+    pub fn as_list_entry(self) -> Option<&'a ListEntry> {
+        match self {
+            Node::ListEntry(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_list_entry(&self) -> bool {
+        matches!(self, Node::ListEntry(_))
+    }
+
+    pub fn as_positional_argument(self) -> Option<&'a PositionalArgument> {
+        match self {
+            Node::PositionalArgument(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_positional_argument(&self) -> bool {
+        matches!(self, Node::PositionalArgument(_))
+    }
+
+    pub fn as_named_argument(self) -> Option<&'a NamedArgument> {
+        match self {
+            Node::NamedArgument(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_named_argument(&self) -> bool {
+        matches!(self, Node::NamedArgument(_))
+    }
+
+    pub fn as_argument(self) -> Option<&'a Argument> {
+        match self {
+            Node::Argument(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_argument(&self) -> bool {
+        matches!(self, Node::Argument(_))
+    }
+
+    pub fn as_argument_list(self) -> Option<&'a ArgumentList> {
+        match self {
+            Node::ArgumentList(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_argument_list(&self) -> bool {
+        matches!(self, Node::ArgumentList(_))
+    }
+
+    pub fn as_single_argument(self) -> Option<&'a SingleArgument> {
+        match self {
+            Node::SingleArgument(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_single_argument(&self) -> bool {
+        matches!(self, Node::SingleArgument(_))
+    }
+
+    pub fn as_argument_placeholder(self) -> Option<&'a ArgumentPlaceholder> {
+        match self {
+            Node::ArgumentPlaceholder(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_argument_placeholder(&self) -> bool {
+        matches!(self, Node::ArgumentPlaceholder(_))
+    }
+
+    pub fn as_attribute(self) -> Option<&'a Attribute> {
+        match self {
+            Node::Attribute(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_attribute(&self) -> bool {
+        matches!(self, Node::Attribute(_))
+    }
+
+    pub fn as_attribute_group(self) -> Option<&'a AttributeGroup> {
+        match self {
+            Node::AttributeGroup(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_attribute_group(&self) -> bool {
+        matches!(self, Node::AttributeGroup(_))
+    }
+
+    pub fn as_class_body(self) -> Option<&'a ClassBody> {
+        match self {
+            Node::ClassBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_class_body(&self) -> bool {
+        matches!(self, Node::ClassBody(_))
+    }
+
+    pub fn as_class_statement(self) -> Option<&'a ClassStatement> {
+        match self {
+            Node::ClassStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_class_statement(&self) -> bool {
+        matches!(self, Node::ClassStatement(_))
+    }
+
+    pub fn as_anonymous_class_body(self) -> Option<&'a AnonymousClassBody> {
+        match self {
+            Node::AnonymousClassBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_anonymous_class_body(&self) -> bool {
+        matches!(self, Node::AnonymousClassBody(_))
+    }
+
+    pub fn as_anonymous_class_expression(self) -> Option<&'a AnonymousClassExpression> {
+        match self {
+            Node::AnonymousClassExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_anonymous_class_expression(&self) -> bool {
+        matches!(self, Node::AnonymousClassExpression(_))
+    }
+
+    pub fn as_class_extends(self) -> Option<&'a ClassExtends> {
+        match self {
+            Node::ClassExtends(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_class_extends(&self) -> bool {
+        matches!(self, Node::ClassExtends(_))
+    }
+
+    pub fn as_class_implements(self) -> Option<&'a ClassImplements> {
+        match self {
+            Node::ClassImplements(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_class_implements(&self) -> bool {
+        matches!(self, Node::ClassImplements(_))
+    }
+
+    pub fn as_classish_member(self) -> Option<&'a ClassishMember> {
+        match self {
+            Node::ClassishMember(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_classish_member(&self) -> bool {
+        matches!(self, Node::ClassishMember(_))
+    }
+
+    pub fn as_constant_entry(self) -> Option<&'a ConstantEntry> {
+        match self {
+            Node::ConstantEntry(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_constant_entry(&self) -> bool {
+        matches!(self, Node::ConstantEntry(_))
+    }
+
+    pub fn as_classish_constant_entry(self) -> Option<&'a ClassishConstantEntry> {
+        match self {
+            Node::ClassishConstantEntry(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_classish_constant_entry(&self) -> bool {
+        matches!(self, Node::ClassishConstantEntry(_))
+    }
+
+    pub fn as_constant_statement(self) -> Option<&'a ConstantStatement> {
+        match self {
+            Node::ConstantStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_constant_statement(&self) -> bool {
+        matches!(self, Node::ConstantStatement(_))
+    }
+
+    pub fn as_classish_constant(self) -> Option<&'a ClassishConstant> {
+        match self {
+            Node::ClassishConstant(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_classish_constant(&self) -> bool {
+        matches!(self, Node::ClassishConstant(_))
+    }
+
+    pub fn as_if_statement(self) -> Option<&'a IfStatement> {
+        match self {
+            Node::IfStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_if_statement(&self) -> bool {
+        matches!(self, Node::IfStatement(_))
+    }
+
+    pub fn as_if_statement_body(self) -> Option<&'a IfStatementBody> {
+        match self {
+            Node::IfStatementBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_if_statement_body(&self) -> bool {
+        matches!(self, Node::IfStatementBody(_))
+    }
+
+    pub fn as_if_statement_else_if(self) -> Option<&'a IfStatementElseIf> {
+        match self {
+            Node::IfStatementElseIf(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_if_statement_else_if(&self) -> bool {
+        matches!(self, Node::IfStatementElseIf(_))
+    }
+
+    pub fn as_if_statement_else(self) -> Option<&'a IfStatementElse> {
+        match self {
+            Node::IfStatementElse(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_if_statement_else(&self) -> bool {
+        matches!(self, Node::IfStatementElse(_))
+    }
+
+    pub fn as_if_statement_else_if_block(self) -> Option<&'a IfStatementElseIfBlock> {
+        match self {
+            Node::IfStatementElseIfBlock(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_if_statement_else_if_block(&self) -> bool {
+        matches!(self, Node::IfStatementElseIfBlock(_))
+    }
+
+    pub fn as_if_statement_else_block(self) -> Option<&'a IfStatementElseBlock> {
+        match self {
+            Node::IfStatementElseBlock(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_if_statement_else_block(&self) -> bool {
+        matches!(self, Node::IfStatementElseBlock(_))
+    }
+
+    pub fn as_data_type(self) -> Option<&'a DataType> {
+        match self {
+            Node::DataType(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_data_type(&self) -> bool {
+        matches!(self, Node::DataType(_))
+    }
+
+    pub fn as_declare_entry(self) -> Option<&'a DeclareEntry> {
+        match self {
+            Node::DeclareEntry(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_declare_entry(&self) -> bool {
+        matches!(self, Node::DeclareEntry(_))
+    }
+
+    pub fn as_declare_entry_group(self) -> Option<&'a DeclareEntryGroup> {
+        match self {
+            Node::DeclareEntryGroup(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_declare_entry_group(&self) -> bool {
+        matches!(self, Node::DeclareEntryGroup(_))
+    }
+
+    pub fn as_declare_body(self) -> Option<&'a DeclareBody> {
+        match self {
+            Node::DeclareBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_declare_body(&self) -> bool {
+        matches!(self, Node::DeclareBody(_))
+    }
+
+    pub fn as_declare_statement(self) -> Option<&'a DeclareStatement> {
+        match self {
+            Node::DeclareStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_declare_statement(&self) -> bool {
+        matches!(self, Node::DeclareStatement(_))
+    }
+
+    pub fn as_unit_enum_case(self) -> Option<&'a UnitEnumCase> {
+        match self {
+            Node::UnitEnumCase(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_unit_enum_case(&self) -> bool {
+        matches!(self, Node::UnitEnumCase(_))
+    }
+
+    pub fn as_unit_enum_member(self) -> Option<&'a UnitEnumMember> {
+        match self {
+            Node::UnitEnumMember(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_unit_enum_member(&self) -> bool {
+        matches!(self, Node::UnitEnumMember(_))
+    }
+
+    pub fn as_unit_enum_body(self) -> Option<&'a UnitEnumBody> {
+        match self {
+            Node::UnitEnumBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_unit_enum_body(&self) -> bool {
+        matches!(self, Node::UnitEnumBody(_))
+    }
+
+    pub fn as_unit_enum_statement(self) -> Option<&'a UnitEnumStatement> {
+        match self {
+            Node::UnitEnumStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_unit_enum_statement(&self) -> bool {
+        matches!(self, Node::UnitEnumStatement(_))
+    }
+
+    pub fn as_backed_enum_case(self) -> Option<&'a BackedEnumCase> {
+        match self {
+            Node::BackedEnumCase(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_backed_enum_case(&self) -> bool {
+        matches!(self, Node::BackedEnumCase(_))
+    }
+
+    pub fn as_backed_enum_member(self) -> Option<&'a BackedEnumMember> {
+        match self {
+            Node::BackedEnumMember(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_backed_enum_member(&self) -> bool {
+        matches!(self, Node::BackedEnumMember(_))
+    }
+
+    pub fn as_backed_enum_body(self) -> Option<&'a BackedEnumBody> {
+        match self {
+            Node::BackedEnumBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_backed_enum_body(&self) -> bool {
+        matches!(self, Node::BackedEnumBody(_))
+    }
+
+    pub fn as_backed_enum_statement(self) -> Option<&'a BackedEnumStatement> {
+        match self {
+            Node::BackedEnumStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_backed_enum_statement(&self) -> bool {
+        matches!(self, Node::BackedEnumStatement(_))
+    }
+
+    pub fn as_return_type(self) -> Option<&'a ReturnType> {
+        match self {
+            Node::ReturnType(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_return_type(&self) -> bool {
+        matches!(self, Node::ReturnType(_))
+    }
+
+    pub fn as_function_parameter(self) -> Option<&'a FunctionParameter> {
+        match self {
+            Node::FunctionParameter(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_function_parameter(&self) -> bool {
+        matches!(self, Node::FunctionParameter(_))
+    }
+
+    pub fn as_function_parameter_list(self) -> Option<&'a FunctionParameterList> {
+        match self {
+            Node::FunctionParameterList(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_function_parameter_list(&self) -> bool {
+        matches!(self, Node::FunctionParameterList(_))
+    }
+
+    pub fn as_function_body(self) -> Option<&'a FunctionBody> {
+        match self {
+            Node::FunctionBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_function_body(&self) -> bool {
+        matches!(self, Node::FunctionBody(_))
+    }
+
+    pub fn as_function_statement(self) -> Option<&'a FunctionStatement> {
+        match self {
+            Node::FunctionStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_function_statement(&self) -> bool {
+        matches!(self, Node::FunctionStatement(_))
+    }
+
+    pub fn as_closure_use_variable(self) -> Option<&'a ClosureUseVariable> {
+        match self {
+            Node::ClosureUseVariable(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_closure_use_variable(&self) -> bool {
+        matches!(self, Node::ClosureUseVariable(_))
+    }
+
+    pub fn as_closure_use(self) -> Option<&'a ClosureUse> {
+        match self {
+            Node::ClosureUse(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_closure_use(&self) -> bool {
+        matches!(self, Node::ClosureUse(_))
+    }
+
+    pub fn as_closure_expression(self) -> Option<&'a ClosureExpression> {
+        match self {
+            Node::ClosureExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_closure_expression(&self) -> bool {
+        matches!(self, Node::ClosureExpression(_))
+    }
+
+    pub fn as_arrow_function_expression(self) -> Option<&'a ArrowFunctionExpression> {
+        match self {
+            Node::ArrowFunctionExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_arrow_function_expression(&self) -> bool {
+        matches!(self, Node::ArrowFunctionExpression(_))
+    }
+
+    pub fn as_constructor_parameter(self) -> Option<&'a ConstructorParameter> {
+        match self {
+            Node::ConstructorParameter(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_constructor_parameter(&self) -> bool {
+        matches!(self, Node::ConstructorParameter(_))
+    }
+
+    pub fn as_constructor_parameter_list(self) -> Option<&'a ConstructorParameterList> {
+        match self {
+            Node::ConstructorParameterList(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_constructor_parameter_list(&self) -> bool {
+        matches!(self, Node::ConstructorParameterList(_))
+    }
+
+    pub fn as_abstract_constructor(self) -> Option<&'a AbstractConstructor> {
+        match self {
+            Node::AbstractConstructor(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_abstract_constructor(&self) -> bool {
+        matches!(self, Node::AbstractConstructor(_))
+    }
+
+    pub fn as_concrete_constructor(self) -> Option<&'a ConcreteConstructor> {
+        match self {
+            Node::ConcreteConstructor(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_concrete_constructor(&self) -> bool {
+        matches!(self, Node::ConcreteConstructor(_))
+    }
+
+    pub fn as_abstract_method(self) -> Option<&'a AbstractMethod> {
+        match self {
+            Node::AbstractMethod(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_abstract_method(&self) -> bool {
+        matches!(self, Node::AbstractMethod(_))
+    }
+
+    pub fn as_concrete_method(self) -> Option<&'a ConcreteMethod> {
+        match self {
+            Node::ConcreteMethod(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_concrete_method(&self) -> bool {
+        matches!(self, Node::ConcreteMethod(_))
+    }
+
+    pub fn as_method_body(self) -> Option<&'a MethodBody> {
+        match self {
+            Node::MethodBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_method_body(&self) -> bool {
+        matches!(self, Node::MethodBody(_))
+    }
+
+    pub fn as_label_statement(self) -> Option<&'a LabelStatement> {
+        match self {
+            Node::LabelStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_label_statement(&self) -> bool {
+        matches!(self, Node::LabelStatement(_))
+    }
+
+    pub fn as_goto_statement(self) -> Option<&'a GotoStatement> {
+        match self {
+            Node::GotoStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_goto_statement(&self) -> bool {
+        matches!(self, Node::GotoStatement(_))
+    }
+
+    pub fn as_identifier(self) -> Option<&'a Identifier> {
+        match self {
+            Node::Identifier(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_identifier(&self) -> bool {
+        matches!(self, Node::Identifier(_))
+    }
+
+    pub fn as_simple_identifier(self) -> Option<&'a SimpleIdentifier> {
+        match self {
+            Node::SimpleIdentifier(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_simple_identifier(&self) -> bool {
+        matches!(self, Node::SimpleIdentifier(_))
+    }
+
+    pub fn as_dynamic_identifier(self) -> Option<&'a DynamicIdentifier> {
+        match self {
+            Node::DynamicIdentifier(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_dynamic_identifier(&self) -> bool {
+        matches!(self, Node::DynamicIdentifier(_))
+    }
+
+    pub fn as_interface_extends(self) -> Option<&'a InterfaceExtends> {
+        match self {
+            Node::InterfaceExtends(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_interface_extends(&self) -> bool {
+        matches!(self, Node::InterfaceExtends(_))
+    }
+
+    pub fn as_interface_body(self) -> Option<&'a InterfaceBody> {
+        match self {
+            Node::InterfaceBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_interface_body(&self) -> bool {
+        matches!(self, Node::InterfaceBody(_))
+    }
+
+    pub fn as_interface_statement(self) -> Option<&'a InterfaceStatement> {
+        match self {
+            Node::InterfaceStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_interface_statement(&self) -> bool {
+        matches!(self, Node::InterfaceStatement(_))
+    }
+
+    pub fn as_literal(self) -> Option<&'a Literal> {
+        match self {
+            Node::Literal(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_literal(&self) -> bool {
+        matches!(self, Node::Literal(_))
+    }
+
+    pub fn as_literal_kind(self) -> Option<&'a LiteralKind> {
+        match self {
+            Node::LiteralKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_literal_kind(&self) -> bool {
+        matches!(self, Node::LiteralKind(_))
+    }
+
+    pub fn as_foreach_statement(self) -> Option<&'a ForeachStatement> {
+        match self {
+            Node::ForeachStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_foreach_statement(&self) -> bool {
+        matches!(self, Node::ForeachStatement(_))
+    }
+
+    pub fn as_foreach_statement_iterator(self) -> Option<&'a ForeachStatementIterator> {
+        match self {
+            Node::ForeachStatementIterator(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_foreach_statement_iterator(&self) -> bool {
+        matches!(self, Node::ForeachStatementIterator(_))
+    }
+
+    pub fn as_foreach_statement_body(self) -> Option<&'a ForeachStatementBody> {
+        match self {
+            Node::ForeachStatementBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_foreach_statement_body(&self) -> bool {
+        matches!(self, Node::ForeachStatementBody(_))
+    }
+
+    pub fn as_for_statement(self) -> Option<&'a ForStatement> {
+        match self {
+            Node::ForStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_for_statement(&self) -> bool {
+        matches!(self, Node::ForStatement(_))
+    }
+
+    pub fn as_for_statement_iterator(self) -> Option<&'a ForStatementIterator> {
+        match self {
+            Node::ForStatementIterator(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_for_statement_iterator(&self) -> bool {
+        matches!(self, Node::ForStatementIterator(_))
+    }
+
+    pub fn as_for_statement_body(self) -> Option<&'a ForStatementBody> {
+        match self {
+            Node::ForStatementBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_for_statement_body(&self) -> bool {
+        matches!(self, Node::ForStatementBody(_))
+    }
+
+    pub fn as_do_while_statement(self) -> Option<&'a DoWhileStatement> {
+        match self {
+            Node::DoWhileStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_do_while_statement(&self) -> bool {
+        matches!(self, Node::DoWhileStatement(_))
+    }
+
+    pub fn as_while_statement(self) -> Option<&'a WhileStatement> {
+        match self {
+            Node::WhileStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_while_statement(&self) -> bool {
+        matches!(self, Node::WhileStatement(_))
+    }
+
+    pub fn as_while_statement_body(self) -> Option<&'a WhileStatementBody> {
+        match self {
+            Node::WhileStatementBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_while_statement_body(&self) -> bool {
+        matches!(self, Node::WhileStatementBody(_))
+    }
+
+    pub fn as_level(self) -> Option<&'a Level> {
+        match self {
+            Node::Level(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_level(&self) -> bool {
+        matches!(self, Node::Level(_))
+    }
+
+    pub fn as_break_statement(self) -> Option<&'a BreakStatement> {
+        match self {
+            Node::BreakStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_break_statement(&self) -> bool {
+        matches!(self, Node::BreakStatement(_))
+    }
+
+    pub fn as_continue_statement(self) -> Option<&'a ContinueStatement> {
+        match self {
+            Node::ContinueStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_continue_statement(&self) -> bool {
+        matches!(self, Node::ContinueStatement(_))
+    }
+
+    pub fn as_visibility_modifier(self) -> Option<&'a VisibilityModifier> {
+        match self {
+            Node::VisibilityModifier(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_visibility_modifier(&self) -> bool {
+        matches!(self, Node::VisibilityModifier(_))
+    }
+
+    pub fn as_promoted_property_modifier(self) -> Option<&'a PromotedPropertyModifier> {
+        match self {
+            Node::PromotedPropertyModifier(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_promoted_property_modifier(&self) -> bool {
+        matches!(self, Node::PromotedPropertyModifier(_))
+    }
+
+    pub fn as_promoted_property_modifier_group(self) -> Option<&'a PromotedPropertyModifierGroup> {
+        match self {
+            Node::PromotedPropertyModifierGroup(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_promoted_property_modifier_group(&self) -> bool {
+        matches!(self, Node::PromotedPropertyModifierGroup(_))
+    }
+
+    pub fn as_property_modifier(self) -> Option<&'a PropertyModifier> {
+        match self {
+            Node::PropertyModifier(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_property_modifier(&self) -> bool {
+        matches!(self, Node::PropertyModifier(_))
+    }
+
+    pub fn as_property_modifier_group(self) -> Option<&'a PropertyModifierGroup> {
+        match self {
+            Node::PropertyModifierGroup(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_property_modifier_group(&self) -> bool {
+        matches!(self, Node::PropertyModifierGroup(_))
+    }
+
+    pub fn as_method_modifier(self) -> Option<&'a MethodModifier> {
+        match self {
+            Node::MethodModifier(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_method_modifier(&self) -> bool {
+        matches!(self, Node::MethodModifier(_))
+    }
+
+    pub fn as_method_modifier_group(self) -> Option<&'a MethodModifierGroup> {
+        match self {
+            Node::MethodModifierGroup(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_method_modifier_group(&self) -> bool {
+        matches!(self, Node::MethodModifierGroup(_))
+    }
+
+    pub fn as_class_modifier(self) -> Option<&'a ClassModifier> {
+        match self {
+            Node::ClassModifier(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_class_modifier(&self) -> bool {
+        matches!(self, Node::ClassModifier(_))
+    }
+
+    pub fn as_class_modifier_group(self) -> Option<&'a ClassModifierGroup> {
+        match self {
+            Node::ClassModifierGroup(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_class_modifier_group(&self) -> bool {
+        matches!(self, Node::ClassModifierGroup(_))
+    }
+
+    pub fn as_constant_modifier(self) -> Option<&'a ConstantModifier> {
+        match self {
+            Node::ConstantModifier(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_constant_modifier(&self) -> bool {
+        matches!(self, Node::ConstantModifier(_))
+    }
+
+    pub fn as_constant_modifier_group(self) -> Option<&'a ConstantModifierGroup> {
+        match self {
+            Node::ConstantModifierGroup(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_constant_modifier_group(&self) -> bool {
+        matches!(self, Node::ConstantModifierGroup(_))
+    }
+
+    pub fn as_unbraced_namespace(self) -> Option<&'a UnbracedNamespace> {
+        match self {
+            Node::UnbracedNamespace(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_unbraced_namespace(&self) -> bool {
+        matches!(self, Node::UnbracedNamespace(_))
+    }
+
+    pub fn as_braced_namespace(self) -> Option<&'a BracedNamespace> {
+        match self {
+            Node::BracedNamespace(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_braced_namespace(&self) -> bool {
+        matches!(self, Node::BracedNamespace(_))
+    }
+
+    pub fn as_braced_namespace_body(self) -> Option<&'a BracedNamespaceBody> {
+        match self {
+            Node::BracedNamespaceBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_braced_namespace_body(&self) -> bool {
+        matches!(self, Node::BracedNamespaceBody(_))
+    }
+
+    pub fn as_namespace_statement(self) -> Option<&'a NamespaceStatement> {
+        match self {
+            Node::NamespaceStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_namespace_statement(&self) -> bool {
+        matches!(self, Node::NamespaceStatement(_))
+    }
+
+    pub fn as_arithmetic_operation_expression(self) -> Option<&'a ArithmeticOperationExpression> {
+        match self {
+            Node::ArithmeticOperationExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_arithmetic_operation_expression(&self) -> bool {
+        matches!(self, Node::ArithmeticOperationExpression(_))
+    }
+
+    pub fn as_arithmetic_operation_kind(self) -> Option<&'a ArithmeticOperationKind> {
+        match self {
+            Node::ArithmeticOperationKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_arithmetic_operation_kind(&self) -> bool {
+        matches!(self, Node::ArithmeticOperationKind(_))
+    }
+
+    pub fn as_assignment_operation_expression(self) -> Option<&'a AssignmentOperationExpression> {
+        match self {
+            Node::AssignmentOperationExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_assignment_operation_expression(&self) -> bool {
+        matches!(self, Node::AssignmentOperationExpression(_))
+    }
+
+    pub fn as_assignment_operation_kind(self) -> Option<&'a AssignmentOperationKind> {
+        match self {
+            Node::AssignmentOperationKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_assignment_operation_kind(&self) -> bool {
+        matches!(self, Node::AssignmentOperationKind(_))
+    }
+
+    pub fn as_bitwise_operation_expression(self) -> Option<&'a BitwiseOperationExpression> {
+        match self {
+            Node::BitwiseOperationExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_bitwise_operation_expression(&self) -> bool {
+        matches!(self, Node::BitwiseOperationExpression(_))
+    }
+
+    pub fn as_bitwise_operation_kind(self) -> Option<&'a BitwiseOperationKind> {
+        match self {
+            Node::BitwiseOperationKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_bitwise_operation_kind(&self) -> bool {
+        matches!(self, Node::BitwiseOperationKind(_))
+    }
+
+    pub fn as_comparison_operation_expression(self) -> Option<&'a ComparisonOperationExpression> {
+        match self {
+            Node::ComparisonOperationExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_comparison_operation_expression(&self) -> bool {
+        matches!(self, Node::ComparisonOperationExpression(_))
+    }
+
+    pub fn as_comparison_operation_kind(self) -> Option<&'a ComparisonOperationKind> {
+        match self {
+            Node::ComparisonOperationKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_comparison_operation_kind(&self) -> bool {
+        matches!(self, Node::ComparisonOperationKind(_))
+    }
+
+    pub fn as_logical_operation_expression(self) -> Option<&'a LogicalOperationExpression> {
+        match self {
+            Node::LogicalOperationExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_logical_operation_expression(&self) -> bool {
+        matches!(self, Node::LogicalOperationExpression(_))
+    }
+
+    pub fn as_logical_operation_kind(self) -> Option<&'a LogicalOperationKind> {
+        match self {
+            Node::LogicalOperationKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_logical_operation_kind(&self) -> bool {
+        matches!(self, Node::LogicalOperationKind(_))
+    }
+
+    pub fn as_name(self) -> Option<&'a Name> {
+        match self {
+            Node::Name(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_name(&self) -> bool {
+        matches!(self, Node::Name(_))
+    }
+
+    pub fn as_name_kind(self) -> Option<&'a NameKind> {
+        match self {
+            Node::NameKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_name_kind(&self) -> bool {
+        matches!(self, Node::NameKind(_))
+    }
+
+    pub fn as_special_name(self) -> Option<&'a SpecialName> {
+        match self {
+            Node::SpecialName(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_special_name(&self) -> bool {
+        matches!(self, Node::SpecialName(_))
+    }
+
+    pub fn as_special_name_kind(self) -> Option<&'a SpecialNameKind> {
+        match self {
+            Node::SpecialNameKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_special_name_kind(&self) -> bool {
+        matches!(self, Node::SpecialNameKind(_))
+    }
+
+    pub fn as_unresolved_name(self) -> Option<&'a UnresolvedName> {
+        match self {
+            Node::UnresolvedName(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_unresolved_name(&self) -> bool {
+        matches!(self, Node::UnresolvedName(_))
+    }
+
+    pub fn as_resolved_name(self) -> Option<&'a ResolvedName> {
+        match self {
+            Node::ResolvedName(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_resolved_name(&self) -> bool {
+        matches!(self, Node::ResolvedName(_))
+    }
+
+    pub fn as_property(self) -> Option<&'a Property> {
+        match self {
+            Node::Property(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_property(&self) -> bool {
+        matches!(self, Node::Property(_))
+    }
+
+    pub fn as_variable_property(self) -> Option<&'a VariableProperty> {
+        match self {
+            Node::VariableProperty(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_variable_property(&self) -> bool {
+        matches!(self, Node::VariableProperty(_))
+    }
+
+    pub fn as_property_entry(self) -> Option<&'a PropertyEntry> {
+        match self {
+            Node::PropertyEntry(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_property_entry(&self) -> bool {
+        matches!(self, Node::PropertyEntry(_))
+    }
+
+    pub fn as_property_entry_kind(self) -> Option<&'a PropertyEntryKind> {
+        match self {
+            Node::PropertyEntryKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_property_entry_kind(&self) -> bool {
+        matches!(self, Node::PropertyEntryKind(_))
+    }
+
+    pub fn as_trait_body(self) -> Option<&'a TraitBody> {
+        match self {
+            Node::TraitBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_trait_body(&self) -> bool {
+        matches!(self, Node::TraitBody(_))
+    }
+
+    pub fn as_trait_statement(self) -> Option<&'a TraitStatement> {
+        match self {
+            Node::TraitStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_trait_statement(&self) -> bool {
+        matches!(self, Node::TraitStatement(_))
+    }
+
+    pub fn as_trait_usage(self) -> Option<&'a TraitUsage> {
+        match self {
+            Node::TraitUsage(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_trait_usage(&self) -> bool {
+        matches!(self, Node::TraitUsage(_))
+    }
+
+    pub fn as_trait_usage_adaptation(self) -> Option<&'a TraitUsageAdaptation> {
+        match self {
+            Node::TraitUsageAdaptation(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_trait_usage_adaptation(&self) -> bool {
+        matches!(self, Node::TraitUsageAdaptation(_))
+    }
+
+    pub fn as_trait_usage_adaptation_kind(self) -> Option<&'a TraitUsageAdaptationKind> {
+        match self {
+            Node::TraitUsageAdaptationKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_trait_usage_adaptation_kind(&self) -> bool {
+        matches!(self, Node::TraitUsageAdaptationKind(_))
+    }
+
+    pub fn as_catch_type(self) -> Option<&'a CatchType> {
+        match self {
+            Node::CatchType(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_catch_type(&self) -> bool {
+        matches!(self, Node::CatchType(_))
+    }
+
+    pub fn as_catch_type_kind(self) -> Option<&'a CatchTypeKind> {
+        match self {
+            Node::CatchTypeKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_catch_type_kind(&self) -> bool {
+        matches!(self, Node::CatchTypeKind(_))
+    }
+
+    pub fn as_try_statement(self) -> Option<&'a TryStatement> {
+        match self {
+            Node::TryStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_try_statement(&self) -> bool {
+        matches!(self, Node::TryStatement(_))
+    }
+
+    pub fn as_catch_block(self) -> Option<&'a CatchBlock> {
+        match self {
+            Node::CatchBlock(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_catch_block(&self) -> bool {
+        matches!(self, Node::CatchBlock(_))
+    }
+
+    pub fn as_finally_block(self) -> Option<&'a FinallyBlock> {
+        match self {
+            Node::FinallyBlock(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_finally_block(&self) -> bool {
+        matches!(self, Node::FinallyBlock(_))
+    }
+
+    pub fn as_variable(self) -> Option<&'a Variable> {
+        match self {
+            Node::Variable(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_variable(&self) -> bool {
+        matches!(self, Node::Variable(_))
+    }
+
+    pub fn as_simple_variable(self) -> Option<&'a SimpleVariable> {
+        match self {
+            Node::SimpleVariable(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_simple_variable(&self) -> bool {
+        matches!(self, Node::SimpleVariable(_))
+    }
+
+    pub fn as_variable_variable(self) -> Option<&'a VariableVariable> {
+        match self {
+            Node::VariableVariable(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_variable_variable(&self) -> bool {
+        matches!(self, Node::VariableVariable(_))
+    }
+
+    pub fn as_braced_variable_variable(self) -> Option<&'a BracedVariableVariable> {
+        match self {
+            Node::BracedVariableVariable(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_braced_variable_variable(&self) -> bool {
+        matches!(self, Node::BracedVariableVariable(_))
+    }
+
+    pub fn as_ending(self) -> Option<&'a Ending> {
+        match self {
+            Node::Ending(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_ending(&self) -> bool {
+        matches!(self, Node::Ending(_))
+    }
+
+    pub fn as_static_statement(self) -> Option<&'a StaticStatement> {
+        match self {
+            Node::StaticStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_static_statement(&self) -> bool {
+        matches!(self, Node::StaticStatement(_))
+    }
+
+    pub fn as_switch_statement(self) -> Option<&'a SwitchStatement> {
+        match self {
+            Node::SwitchStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_switch_statement(&self) -> bool {
+        matches!(self, Node::SwitchStatement(_))
+    }
+
+    pub fn as_echo_statement(self) -> Option<&'a EchoStatement> {
+        match self {
+            Node::EchoStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_echo_statement(&self) -> bool {
+        matches!(self, Node::EchoStatement(_))
+    }
+
+    pub fn as_return_statement(self) -> Option<&'a ReturnStatement> {
+        match self {
+            Node::ReturnStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_return_statement(&self) -> bool {
+        matches!(self, Node::ReturnStatement(_))
+    }
+
+    pub fn as_use_statement(self) -> Option<&'a UseStatement> {
+        match self {
+            Node::UseStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_use_statement(&self) -> bool {
+        matches!(self, Node::UseStatement(_))
+    }
+
+    pub fn as_group_use_statement(self) -> Option<&'a GroupUseStatement> {
+        match self {
+            Node::GroupUseStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_group_use_statement(&self) -> bool {
+        matches!(self, Node::GroupUseStatement(_))
+    }
+
+    pub fn as_halt_compiler_statement(self) -> Option<&'a HaltCompilerStatement> {
+        match self {
+            Node::HaltCompilerStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_halt_compiler_statement(&self) -> bool {
+        matches!(self, Node::HaltCompilerStatement(_))
+    }
+
+    pub fn as_static_var(self) -> Option<&'a StaticVar> {
+        match self {
+            Node::StaticVar(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_static_var(&self) -> bool {
+        matches!(self, Node::StaticVar(_))
+    }
+}

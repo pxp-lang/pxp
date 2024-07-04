@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Str;
 use Symfony\Component\Yaml\Yaml;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -135,6 +136,25 @@ foreach ($ast as $node => $structure) {
 }
 
 $output .= "}\n\n";
+
+$output .= "impl<'a> Node<'a> {\n";
+
+foreach ($ast as $node => $structure) {
+    $kebab = strtolower(Str::snake($node));
+
+    $output .= "    pub fn as_{$kebab}(self) -> Option<&'a {$node}> {\n";
+    $output .= "        match self {\n";
+    $output .= "            Node::{$node}(node) => Some(node),\n";
+    $output .= "            _ => None,\n";
+    $output .= "        }\n";
+    $output .= "    }\n\n";
+
+    $output .= "    pub fn is_{$kebab}(&self) -> bool {\n";
+    $output .= "        matches!(self, Node::{$node}(_))\n";
+    $output .= "    }\n\n";
+}
+
+$output .= "}\n";
 
 file_put_contents(__DIR__ . '/../../crates/pxp-ast/src/generated.rs', $output);
 
