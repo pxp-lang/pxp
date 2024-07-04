@@ -66,15 +66,6 @@ pub enum StatementKind {
     Noop(Span),
 }
 
-impl Spanned for StatementKind {
-    fn span(&self) -> Span {
-        match self {
-            StatementKind::Noop(span) => *span,
-            _ => Span::default(),
-        }
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Expression {
     pub kind: ExpressionKind,
@@ -157,20 +148,6 @@ pub enum ExpressionKind {
     Cast(CastExpression),
     Name(Name),
     Noop(Span),
-}
-
-impl Spanned for ExpressionKind {
-    fn span(&self) -> Span {
-        match self {
-            ExpressionKind::Missing(span) => *span,
-            ExpressionKind::Static(span) => *span,
-            ExpressionKind::Self_(span) => *span,
-            ExpressionKind::Parent(span) => *span,
-            ExpressionKind::Null(span) => *span,
-            ExpressionKind::Noop(span) => *span,
-            _ => Span::default(),
-        }
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]

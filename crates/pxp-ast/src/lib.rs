@@ -6,6 +6,7 @@ pub use generated::*;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::{Token, TokenKind};
+pub use spanned::*;
 
 pub mod data_type;
 pub mod identifiers;
@@ -14,6 +15,7 @@ pub mod modifiers;
 pub mod name;
 pub mod operators;
 pub mod properties;
+mod spanned;
 pub mod utils;
 pub mod variables;
 

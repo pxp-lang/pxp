@@ -24,9 +24,13 @@ RUST;
 
 $reserved = ['as', 'derive'];
 
-function is_spanned(array $structure): bool {
+function is_spanned(string $node, array $structure): bool {
     if (isset($structure['span'])) {
         return true;
+    }
+
+    if ($node === 'StatementKind' || $node === 'ExpressionKind') {
+        return false;
     }
 
     foreach ($structure as $field => $value) {
@@ -97,7 +101,7 @@ foreach ($ast as $node => $structure) {
 
     $output .= "}\n\n";
 
-    if (! is_spanned($structure)) {
+    if (! is_spanned($node, $structure)) {
         continue;
     }
 
