@@ -123,6 +123,15 @@ foreach ($ast as $node => $structure) {
     $output .= "}\n\n";
 }
 
+$output .= "#[derive(Debug, PartialEq, Clone)]\n";
+$output .= "pub enum Node<'a> {\n";
+
+foreach ($ast as $node => $structure) {
+    $output .= "    {$node}(&'a {$node}),\n";
+}
+
+$output .= "}\n\n";
+
 file_put_contents(__DIR__ . '/../../crates/pxp-ast/src/generated.rs', $output);
 
 echo "AST file generated.\n";
