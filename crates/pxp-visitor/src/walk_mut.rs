@@ -623,44 +623,52 @@ pub fn walk_expression_string_part_mut<V: VisitorMut + ?Sized>(
 
 pub fn walk_array_item_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut ArrayItem) {
     match node {
-        ArrayItem::Value { span, value } => {
-            visitor.visit_expression(value);
-        }
-        ArrayItem::ReferencedValue {
-            span,
-            ampersand,
-            value,
-        } => {
-            visitor.visit_expression(value);
-        }
-        ArrayItem::SpreadValue {
-            span,
-            ellipsis,
-            value,
-        } => {
-            visitor.visit_expression(value);
-        }
-        ArrayItem::KeyValue {
-            span,
-            key,
-            double_arrow,
-            value,
-        } => {
-            visitor.visit_expression(key);
-            visitor.visit_expression(value);
-        }
-        ArrayItem::ReferencedKeyValue {
-            span,
-            key,
-            double_arrow,
-            ampersand,
-            value,
-        } => {
-            visitor.visit_expression(key);
-            visitor.visit_expression(value);
+        ArrayItem::Value(inner) => visitor.visit_array_item_value(inner),
+        ArrayItem::ReferencedValue(inner) => visitor.visit_array_item_referenced_value(inner),
+        ArrayItem::SpreadValue(inner) => visitor.visit_array_item_spread_value(inner),
+        ArrayItem::KeyValue(inner) => visitor.visit_array_item_key_value(inner),
+        ArrayItem::ReferencedKeyValue(inner) => {
+            visitor.visit_array_item_referenced_key_value(inner)
         }
         _ => {}
     }
+}
+
+pub fn walk_array_item_value_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ArrayItemValue,
+) {
+    visitor.visit_expression(&mut node.value);
+}
+
+pub fn walk_array_item_referenced_value_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ArrayItemReferencedValue,
+) {
+    visitor.visit_expression(&mut node.value);
+}
+
+pub fn walk_array_item_spread_value_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ArrayItemSpreadValue,
+) {
+    visitor.visit_expression(&mut node.value);
+}
+
+pub fn walk_array_item_key_value_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ArrayItemKeyValue,
+) {
+    visitor.visit_expression(&mut node.key);
+    visitor.visit_expression(&mut node.value);
+}
+
+pub fn walk_array_item_referenced_key_value_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ArrayItemReferencedKeyValue,
+) {
+    visitor.visit_expression(&mut node.key);
+    visitor.visit_expression(&mut node.value);
 }
 
 pub fn walk_list_entry_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut ListEntry) {

@@ -36,108 +36,114 @@
                             },
                             items: CommaSeparated {
                                 inner: [
-                                    Value {
-                                        span: Span {
-                                            start: 8,
-                                            end: 9,
-                                        },
-                                        value: Expression {
-                                            kind: Literal(
-                                                Literal {
-                                                    span: Span {
-                                                        start: 8,
-                                                        end: 9,
-                                                    },
-                                                    kind: Integer,
-                                                    token: Token {
-                                                        kind: LiteralInteger,
-                                                        span: Span {
-                                                            start: 8,
-                                                            end: 9,
-                                                        },
-                                                        symbol: Some(
-                                                            Symbol("1"),
-                                                        ),
-                                                    },
-                                                },
-                                            ),
+                                    Value(
+                                        ArrayItemValue {
                                             span: Span {
                                                 start: 8,
                                                 end: 9,
                                             },
-                                            comments: CommentGroup {
-                                                comments: [],
+                                            value: Expression {
+                                                kind: Literal(
+                                                    Literal {
+                                                        span: Span {
+                                                            start: 8,
+                                                            end: 9,
+                                                        },
+                                                        kind: Integer,
+                                                        token: Token {
+                                                            kind: LiteralInteger,
+                                                            span: Span {
+                                                                start: 8,
+                                                                end: 9,
+                                                            },
+                                                            symbol: Some(
+                                                                Symbol("1"),
+                                                            ),
+                                                        },
+                                                    },
+                                                ),
+                                                span: Span {
+                                                    start: 8,
+                                                    end: 9,
+                                                },
+                                                comments: CommentGroup {
+                                                    comments: [],
+                                                },
                                             },
                                         },
-                                    },
-                                    Value {
-                                        span: Span {
-                                            start: 11,
-                                            end: 12,
-                                        },
-                                        value: Expression {
-                                            kind: Literal(
-                                                Literal {
-                                                    span: Span {
-                                                        start: 11,
-                                                        end: 12,
-                                                    },
-                                                    kind: Integer,
-                                                    token: Token {
-                                                        kind: LiteralInteger,
-                                                        span: Span {
-                                                            start: 11,
-                                                            end: 12,
-                                                        },
-                                                        symbol: Some(
-                                                            Symbol("2"),
-                                                        ),
-                                                    },
-                                                },
-                                            ),
+                                    ),
+                                    Value(
+                                        ArrayItemValue {
                                             span: Span {
                                                 start: 11,
                                                 end: 12,
                                             },
-                                            comments: CommentGroup {
-                                                comments: [],
+                                            value: Expression {
+                                                kind: Literal(
+                                                    Literal {
+                                                        span: Span {
+                                                            start: 11,
+                                                            end: 12,
+                                                        },
+                                                        kind: Integer,
+                                                        token: Token {
+                                                            kind: LiteralInteger,
+                                                            span: Span {
+                                                                start: 11,
+                                                                end: 12,
+                                                            },
+                                                            symbol: Some(
+                                                                Symbol("2"),
+                                                            ),
+                                                        },
+                                                    },
+                                                ),
+                                                span: Span {
+                                                    start: 11,
+                                                    end: 12,
+                                                },
+                                                comments: CommentGroup {
+                                                    comments: [],
+                                                },
                                             },
                                         },
-                                    },
-                                    Value {
-                                        span: Span {
-                                            start: 14,
-                                            end: 15,
-                                        },
-                                        value: Expression {
-                                            kind: Literal(
-                                                Literal {
-                                                    span: Span {
-                                                        start: 14,
-                                                        end: 15,
-                                                    },
-                                                    kind: Integer,
-                                                    token: Token {
-                                                        kind: LiteralInteger,
-                                                        span: Span {
-                                                            start: 14,
-                                                            end: 15,
-                                                        },
-                                                        symbol: Some(
-                                                            Symbol("3"),
-                                                        ),
-                                                    },
-                                                },
-                                            ),
+                                    ),
+                                    Value(
+                                        ArrayItemValue {
                                             span: Span {
                                                 start: 14,
                                                 end: 15,
                                             },
-                                            comments: CommentGroup {
-                                                comments: [],
+                                            value: Expression {
+                                                kind: Literal(
+                                                    Literal {
+                                                        span: Span {
+                                                            start: 14,
+                                                            end: 15,
+                                                        },
+                                                        kind: Integer,
+                                                        token: Token {
+                                                            kind: LiteralInteger,
+                                                            span: Span {
+                                                                start: 14,
+                                                                end: 15,
+                                                            },
+                                                            symbol: Some(
+                                                                Symbol("3"),
+                                                            ),
+                                                        },
+                                                    },
+                                                ),
+                                                span: Span {
+                                                    start: 14,
+                                                    end: 15,
+                                                },
+                                                comments: CommentGroup {
+                                                    comments: [],
+                                                },
                                             },
                                         },
-                                    },
+                                    ),
                                 ],
                                 commas: [
                                     Span {

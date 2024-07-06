@@ -510,28 +510,38 @@ ExpressionStringPart:
 ArrayItem:
   as: Enum
   Skipped: Span
-  Value:
-    span: Span
-    value: Expression
-  ReferencedValue:
-    span: Span
-    ampersand: Span
-    value: Expression
-  SpreadValue:
-    span: Span
-    ellipsis: Span
-    value: Expression
-  KeyValue:
-    span: Span
-    key: Expression
-    double_arrow: Span
-    value: Expression
-  ReferencedKeyValue:
-    span: Span
-    key: Expression
-    double_arrow: Span
-    ampersand: Span
-    value: Expression
+  Value: ArrayItemValue
+  ReferencedValue: ArrayItemReferencedValue
+  SpreadValue: ArrayItemSpreadValue
+  KeyValue: ArrayItemKeyValue
+  ReferencedKeyValue: ArrayItemReferencedKeyValue
+
+ArrayItemValue:
+  span: Span
+  value: Expression
+
+ArrayItemReferencedValue:
+  span: Span
+  ampersand: Span
+  value: Expression
+
+ArrayItemSpreadValue:
+  span: Span
+  ellipsis: Span
+  value: Expression
+
+ArrayItemKeyValue:
+  span: Span
+  key: Expression
+  double_arrow: Span
+  value: Expression
+
+ArrayItemReferencedKeyValue:
+  span: Span
+  key: Expression
+  double_arrow: Span
+  ampersand: Span
+  value: Expression
 
 ListEntry:
   as: Enum

@@ -289,6 +289,26 @@ pub trait Visitor {
         walk_array_item(self, node);
     }
 
+    fn visit_array_item_value(&mut self, node: &ArrayItemValue) {
+        walk_array_item_value(self, node);
+    }
+
+    fn visit_array_item_referenced_value(&mut self, node: &ArrayItemReferencedValue) {
+        walk_array_item_referenced_value(self, node);
+    }
+
+    fn visit_array_item_spread_value(&mut self, node: &ArrayItemSpreadValue) {
+        walk_array_item_spread_value(self, node);
+    }
+
+    fn visit_array_item_key_value(&mut self, node: &ArrayItemKeyValue) {
+        walk_array_item_key_value(self, node);
+    }
+
+    fn visit_array_item_referenced_key_value(&mut self, node: &ArrayItemReferencedKeyValue) {
+        walk_array_item_referenced_key_value(self, node);
+    }
+
     fn visit_list_entry(&mut self, node: &ListEntry) {
         walk_list_entry(self, node);
     }

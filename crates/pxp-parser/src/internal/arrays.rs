@@ -2,6 +2,11 @@ use crate::expressions;
 use crate::internal::utils;
 use crate::state::State;
 use crate::ParserDiagnostic;
+use pxp_ast::ArrayItemKeyValue;
+use pxp_ast::ArrayItemReferencedKeyValue;
+use pxp_ast::ArrayItemReferencedValue;
+use pxp_ast::ArrayItemSpreadValue;
+use pxp_ast::ArrayItemValue;
 use pxp_ast::Expression;
 use pxp_ast::ExpressionKind;
 use pxp_ast::ListEntry;
@@ -209,15 +214,15 @@ fn array_pair(state: &mut State) -> ArrayItem {
             );
         }
 
-        return ArrayItem::SpreadValue { span: Span::combine(ellipsis, value.span), ellipsis, value };
+        return ArrayItem::SpreadValue(ArrayItemSpreadValue { span: Span::combine(ellipsis, value.span), ellipsis, value });
     }
 
     if let Some(ampersand) = ampersand {
-        return ArrayItem::ReferencedValue {
+        return ArrayItem::ReferencedValue(ArrayItemReferencedValue {
             span: Span::combine(ampersand.span, value.span),
             ampersand: ampersand.span,
             value,
-        };
+        });
     }
 
     let mut current = state.stream.current();
@@ -250,21 +255,21 @@ fn array_pair(state: &mut State) -> ArrayItem {
         std::mem::swap(&mut key, &mut value);
 
         return match ampersand {
-            Some(ampersand) => ArrayItem::ReferencedKeyValue {
+            Some(ampersand) => ArrayItem::ReferencedKeyValue(ArrayItemReferencedKeyValue {
                 span: Span::combine(key.span, value.span),
                 key,
                 double_arrow,
                 value,
                 ampersand: ampersand.span,
-            },
-            None => ArrayItem::KeyValue {
+            }),
+            None => ArrayItem::KeyValue(ArrayItemKeyValue {
                 span: Span::combine(key.span, value.span),
                 key,
                 double_arrow,
                 value,
-            },
+            }),
         };
     }
 
-    ArrayItem::Value { span: value.span, value }
+    ArrayItem::Value(ArrayItemValue { span: value.span, value })
 }

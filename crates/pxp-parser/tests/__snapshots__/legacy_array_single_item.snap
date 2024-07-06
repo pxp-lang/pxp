@@ -40,40 +40,42 @@
                             },
                             items: CommaSeparated {
                                 inner: [
-                                    Value {
-                                        span: Span {
-                                            start: 13,
-                                            end: 14,
-                                        },
-                                        value: Expression {
-                                            kind: Literal(
-                                                Literal {
-                                                    span: Span {
-                                                        start: 13,
-                                                        end: 14,
-                                                    },
-                                                    kind: Integer,
-                                                    token: Token {
-                                                        kind: LiteralInteger,
-                                                        span: Span {
-                                                            start: 13,
-                                                            end: 14,
-                                                        },
-                                                        symbol: Some(
-                                                            Symbol("1"),
-                                                        ),
-                                                    },
-                                                },
-                                            ),
+                                    Value(
+                                        ArrayItemValue {
                                             span: Span {
                                                 start: 13,
                                                 end: 14,
                                             },
-                                            comments: CommentGroup {
-                                                comments: [],
+                                            value: Expression {
+                                                kind: Literal(
+                                                    Literal {
+                                                        span: Span {
+                                                            start: 13,
+                                                            end: 14,
+                                                        },
+                                                        kind: Integer,
+                                                        token: Token {
+                                                            kind: LiteralInteger,
+                                                            span: Span {
+                                                                start: 13,
+                                                                end: 14,
+                                                            },
+                                                            symbol: Some(
+                                                                Symbol("1"),
+                                                            ),
+                                                        },
+                                                    },
+                                                ),
+                                                span: Span {
+                                                    start: 13,
+                                                    end: 14,
+                                                },
+                                                comments: CommentGroup {
+                                                    comments: [],
+                                                },
                                             },
                                         },
-                                    },
+                                    ),
                                 ],
                                 commas: [],
                             },

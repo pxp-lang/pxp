@@ -295,6 +295,26 @@ pub trait VisitorMut {
         walk_array_item_mut(self, node);
     }
 
+    fn visit_array_item_value(&mut self, node: &mut ArrayItemValue) {
+        walk_array_item_value_mut(self, node);
+    }
+
+    fn visit_array_item_referenced_value(&mut self, node: &mut ArrayItemReferencedValue) {
+        walk_array_item_referenced_value_mut(self, node);
+    }
+
+    fn visit_array_item_spread_value(&mut self, node: &mut ArrayItemSpreadValue) {
+        walk_array_item_spread_value_mut(self, node);
+    }
+
+    fn visit_array_item_key_value(&mut self, node: &mut ArrayItemKeyValue) {
+        walk_array_item_key_value_mut(self, node);
+    }
+
+    fn visit_array_item_referenced_key_value(&mut self, node: &mut ArrayItemReferencedKeyValue) {
+        walk_array_item_referenced_key_value_mut(self, node);
+    }
+
     fn visit_list_entry(&mut self, node: &mut ListEntry) {
         walk_list_entry_mut(self, node);
     }

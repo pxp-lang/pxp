@@ -1054,46 +1054,86 @@ impl Spanned for ExpressionStringPart {
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ArrayItem {
     Skipped(Span),
-    Value {
-        span: Span,
-        value: Expression,
-    },
-    ReferencedValue {
-        span: Span,
-        ampersand: Span,
-        value: Expression,
-    },
-    SpreadValue {
-        span: Span,
-        ellipsis: Span,
-        value: Expression,
-    },
-    KeyValue {
-        span: Span,
-        key: Expression,
-        double_arrow: Span,
-        value: Expression,
-    },
-    ReferencedKeyValue {
-        span: Span,
-        key: Expression,
-        double_arrow: Span,
-        ampersand: Span,
-        value: Expression,
-    },
+    Value(ArrayItemValue),
+    ReferencedValue(ArrayItemReferencedValue),
+    SpreadValue(ArrayItemSpreadValue),
+    KeyValue(ArrayItemKeyValue),
+    ReferencedKeyValue(ArrayItemReferencedKeyValue),
 }
 
 impl Spanned for ArrayItem {
     fn span(&self) -> Span {
         match self {
             ArrayItem::Skipped(span) => *span,
-            ArrayItem::Value { span, .. } => *span,
-            ArrayItem::ReferencedValue { span, .. } => *span,
-            ArrayItem::SpreadValue { span, .. } => *span,
-            ArrayItem::KeyValue { span, .. } => *span,
-            ArrayItem::ReferencedKeyValue { span, .. } => *span,
             _ => Span::default(),
         }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ArrayItemValue {
+    pub span: Span,
+    pub value: Expression,
+}
+
+impl Spanned for ArrayItemValue {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ArrayItemReferencedValue {
+    pub span: Span,
+    pub ampersand: Span,
+    pub value: Expression,
+}
+
+impl Spanned for ArrayItemReferencedValue {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ArrayItemSpreadValue {
+    pub span: Span,
+    pub ellipsis: Span,
+    pub value: Expression,
+}
+
+impl Spanned for ArrayItemSpreadValue {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ArrayItemKeyValue {
+    pub span: Span,
+    pub key: Expression,
+    pub double_arrow: Span,
+    pub value: Expression,
+}
+
+impl Spanned for ArrayItemKeyValue {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ArrayItemReferencedKeyValue {
+    pub span: Span,
+    pub key: Expression,
+    pub double_arrow: Span,
+    pub ampersand: Span,
+    pub value: Expression,
+}
+
+impl Spanned for ArrayItemReferencedKeyValue {
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -3389,6 +3429,11 @@ pub enum Node<'a> {
     LiteralStringPart(&'a LiteralStringPart),
     ExpressionStringPart(&'a ExpressionStringPart),
     ArrayItem(&'a ArrayItem),
+    ArrayItemValue(&'a ArrayItemValue),
+    ArrayItemReferencedValue(&'a ArrayItemReferencedValue),
+    ArrayItemSpreadValue(&'a ArrayItemSpreadValue),
+    ArrayItemKeyValue(&'a ArrayItemKeyValue),
+    ArrayItemReferencedKeyValue(&'a ArrayItemReferencedKeyValue),
     ListEntry(&'a ListEntry),
     PositionalArgument(&'a PositionalArgument),
     NamedArgument(&'a NamedArgument),
@@ -4329,6 +4374,61 @@ impl<'a> Node<'a> {
 
     pub fn is_array_item(&self) -> bool {
         matches!(self, Node::ArrayItem(_))
+    }
+
+    pub fn as_array_item_value(self) -> Option<&'a ArrayItemValue> {
+        match self {
+            Node::ArrayItemValue(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_array_item_value(&self) -> bool {
+        matches!(self, Node::ArrayItemValue(_))
+    }
+
+    pub fn as_array_item_referenced_value(self) -> Option<&'a ArrayItemReferencedValue> {
+        match self {
+            Node::ArrayItemReferencedValue(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_array_item_referenced_value(&self) -> bool {
+        matches!(self, Node::ArrayItemReferencedValue(_))
+    }
+
+    pub fn as_array_item_spread_value(self) -> Option<&'a ArrayItemSpreadValue> {
+        match self {
+            Node::ArrayItemSpreadValue(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_array_item_spread_value(&self) -> bool {
+        matches!(self, Node::ArrayItemSpreadValue(_))
+    }
+
+    pub fn as_array_item_key_value(self) -> Option<&'a ArrayItemKeyValue> {
+        match self {
+            Node::ArrayItemKeyValue(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_array_item_key_value(&self) -> bool {
+        matches!(self, Node::ArrayItemKeyValue(_))
+    }
+
+    pub fn as_array_item_referenced_key_value(self) -> Option<&'a ArrayItemReferencedKeyValue> {
+        match self {
+            Node::ArrayItemReferencedKeyValue(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_array_item_referenced_key_value(&self) -> bool {
+        matches!(self, Node::ArrayItemReferencedKeyValue(_))
     }
 
     pub fn as_list_entry(self) -> Option<&'a ListEntry> {
