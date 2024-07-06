@@ -10,6 +10,8 @@ use pxp_ast::ArrayItemValue;
 use pxp_ast::Expression;
 use pxp_ast::ExpressionKind;
 use pxp_ast::ListEntry;
+use pxp_ast::ListEntryKeyValue;
+use pxp_ast::ListEntryValue;
 use pxp_ast::{ArrayExpression, ArrayItem, ListExpression, ShortArrayExpression};
 
 use pxp_diagnostics::Severity;
@@ -77,12 +79,12 @@ pub fn list_expression(state: &mut State) -> Expression {
 
                 std::mem::swap(&mut key, &mut value);
 
-                items.push(ListEntry::KeyValue {
+                items.push(ListEntry::KeyValue(ListEntryKeyValue {
                     span: Span::combine(key.span, value.span),
                     key,
                     double_arrow,
                     value,
-                });
+                }));
 
                 has_at_least_one_key = true;
             } else {
@@ -94,7 +96,7 @@ pub fn list_expression(state: &mut State) -> Expression {
                     );
                 }
 
-                items.push(ListEntry::Value { span: value.span, value });
+                items.push(ListEntry::Value(ListEntryValue { span: value.span, value }));
             }
 
             if current.kind == TokenKind::Comma {

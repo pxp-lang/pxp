@@ -1140,26 +1140,42 @@ impl Spanned for ArrayItemReferencedKeyValue {
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ListEntry {
     Skipped(Span),
-    Value {
-        span: Span,
-        value: Expression,
-    },
-    KeyValue {
-        span: Span,
-        key: Expression,
-        double_arrow: Span,
-        value: Expression,
-    },
+    Value(ListEntryValue),
+    KeyValue(ListEntryKeyValue),
 }
 
 impl Spanned for ListEntry {
     fn span(&self) -> Span {
         match self {
             ListEntry::Skipped(span) => *span,
-            ListEntry::Value { span, .. } => *span,
-            ListEntry::KeyValue { span, .. } => *span,
             _ => Span::default(),
         }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ListEntryValue {
+    pub span: Span,
+    pub value: Expression,
+}
+
+impl Spanned for ListEntryValue {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ListEntryKeyValue {
+    pub span: Span,
+    pub key: Expression,
+    pub double_arrow: Span,
+    pub value: Expression,
+}
+
+impl Spanned for ListEntryKeyValue {
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -3435,6 +3451,8 @@ pub enum Node<'a> {
     ArrayItemKeyValue(&'a ArrayItemKeyValue),
     ArrayItemReferencedKeyValue(&'a ArrayItemReferencedKeyValue),
     ListEntry(&'a ListEntry),
+    ListEntryValue(&'a ListEntryValue),
+    ListEntryKeyValue(&'a ListEntryKeyValue),
     PositionalArgument(&'a PositionalArgument),
     NamedArgument(&'a NamedArgument),
     Argument(&'a Argument),
@@ -4440,6 +4458,28 @@ impl<'a> Node<'a> {
 
     pub fn is_list_entry(&self) -> bool {
         matches!(self, Node::ListEntry(_))
+    }
+
+    pub fn as_list_entry_value(self) -> Option<&'a ListEntryValue> {
+        match self {
+            Node::ListEntryValue(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_list_entry_value(&self) -> bool {
+        matches!(self, Node::ListEntryValue(_))
+    }
+
+    pub fn as_list_entry_key_value(self) -> Option<&'a ListEntryKeyValue> {
+        match self {
+            Node::ListEntryKeyValue(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_list_entry_key_value(&self) -> bool {
+        matches!(self, Node::ListEntryKeyValue(_))
     }
 
     pub fn as_positional_argument(self) -> Option<&'a PositionalArgument> {

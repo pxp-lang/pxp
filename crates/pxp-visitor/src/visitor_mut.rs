@@ -319,6 +319,14 @@ pub trait VisitorMut {
         walk_list_entry_mut(self, node);
     }
 
+    fn visit_list_entry_value(&mut self, node: &mut ListEntryValue) {
+        walk_list_entry_value_mut(self, node);
+    }
+
+    fn visit_list_entry_key_value(&mut self, node: &mut ListEntryKeyValue) {
+        walk_list_entry_key_value_mut(self, node);
+    }
+
     fn visit_positional_argument(&mut self, node: &mut PositionalArgument) {
         walk_positional_argument_mut(self, node);
     }

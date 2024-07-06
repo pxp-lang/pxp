@@ -313,6 +313,14 @@ pub trait Visitor {
         walk_list_entry(self, node);
     }
 
+    fn visit_list_entry_value(&mut self, node: &ListEntryValue) {
+        walk_list_entry_value(self, node);
+    }
+
+    fn visit_list_entry_key_value(&mut self, node: &ListEntryKeyValue) {
+        walk_list_entry_key_value(self, node);
+    }
+
     fn visit_positional_argument(&mut self, node: &PositionalArgument) {
         walk_positional_argument(self, node);
     }

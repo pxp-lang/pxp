@@ -546,14 +546,18 @@ ArrayItemReferencedKeyValue:
 ListEntry:
   as: Enum
   Skipped: Span
-  Value:
-    span: Span
-    value: Expression
-  KeyValue:
-    span: Span
-    key: Expression
-    double_arrow: Span
-    value: Expression
+  Value: ListEntryValue
+  KeyValue: ListEntryKeyValue
+
+ListEntryValue:
+  span: Span
+  value: Expression
+
+ListEntryKeyValue:
+  span: Span
+  key: Expression
+  double_arrow: Span
+  value: Expression
 
 PositionalArgument:
   span: Span

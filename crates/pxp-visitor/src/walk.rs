@@ -592,20 +592,19 @@ pub fn walk_array_item_referenced_key_value<V: Visitor + ?Sized>(
 
 pub fn walk_list_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &ListEntry) {
     match node {
-        ListEntry::Value { span, value } => {
-            visitor.visit_expression(value);
-        }
-        ListEntry::KeyValue {
-            span,
-            key,
-            double_arrow,
-            value,
-        } => {
-            visitor.visit_expression(key);
-            visitor.visit_expression(value);
-        }
+        ListEntry::Value(inner) => visitor.visit_list_entry_value(inner),
+        ListEntry::KeyValue(inner) => visitor.visit_list_entry_key_value(inner),
         _ => {}
     }
+}
+
+pub fn walk_list_entry_value<V: Visitor + ?Sized>(visitor: &mut V, node: &ListEntryValue) {
+    visitor.visit_expression(&node.value);
+}
+
+pub fn walk_list_entry_key_value<V: Visitor + ?Sized>(visitor: &mut V, node: &ListEntryKeyValue) {
+    visitor.visit_expression(&node.key);
+    visitor.visit_expression(&node.value);
 }
 
 pub fn walk_positional_argument<V: Visitor + ?Sized>(visitor: &mut V, node: &PositionalArgument) {
