@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,14 +19,17 @@
         },
     },
     Statement {
+        id: 14,
         kind: Class(
             ClassStatement {
+                id: 13,
                 span: Span {
                     start: 7,
                     end: 43,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    id: 3,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -36,8 +41,10 @@
                     end: 12,
                 },
                 name: Name {
+                    id: 4,
                     kind: Resolved(
                         ResolvedName {
+                            id: 4,
                             span: Span {
                                 start: 13,
                                 end: 16,
@@ -54,6 +61,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    id: 12,
                     span: Span {
                         start: 17,
                         end: 43,
@@ -65,6 +73,7 @@
                     members: [
                         Constant(
                             ClassishConstant {
+                                id: 11,
                                 span: Span {
                                     start: 23,
                                     end: 41,
@@ -74,6 +83,7 @@
                                 },
                                 attributes: [],
                                 modifiers: ConstantModifierGroup {
+                                    id: 5,
                                     span: Span {
                                         start: 0,
                                         end: 0,
@@ -86,6 +96,7 @@
                                 },
                                 data_type: Some(
                                     DataType {
+                                        id: 6,
                                         kind: Integer,
                                         span: Span {
                                             start: 29,
@@ -95,11 +106,13 @@
                                 ),
                                 entries: [
                                     ClassishConstantEntry {
+                                        id: 10,
                                         span: Span {
                                             start: 33,
                                             end: 40,
                                         },
                                         name: SimpleIdentifier {
+                                            id: 7,
                                             symbol: Symbol("FOO"),
                                             span: Span {
                                                 start: 33,
@@ -111,8 +124,10 @@
                                             end: 38,
                                         },
                                         value: Expression {
+                                            id: 8,
                                             kind: Literal(
                                                 Literal {
+                                                    id: 9,
                                                     span: Span {
                                                         start: 39,
                                                         end: 40,

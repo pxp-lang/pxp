@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: InlineHtml(
             InlineHtmlStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 4,
@@ -27,8 +29,10 @@
         },
     },
     Statement {
+        id: 4,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 3,
                 span: Span {
                     start: 4,
                     end: 9,
@@ -44,8 +48,10 @@
         },
     },
     Statement {
+        id: 8,
         kind: Echo(
             EchoStatement {
+                id: 7,
                 span: Span {
                     start: 10,
                     end: 33,
@@ -56,8 +62,10 @@
                 },
                 values: [
                     Expression {
+                        id: 5,
                         kind: Literal(
                             Literal {
+                                id: 6,
                                 span: Span {
                                     start: 16,
                                     end: 29,
@@ -101,8 +109,10 @@
         },
     },
     Statement {
+        id: 10,
         kind: InlineHtml(
             InlineHtmlStatement {
+                id: 9,
                 span: Span {
                     start: 33,
                     end: 38,

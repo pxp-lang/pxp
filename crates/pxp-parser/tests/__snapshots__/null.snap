@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,13 +19,16 @@
         },
     },
     Statement {
+        id: 5,
         kind: Expression(
             ExpressionStatement {
+                id: 4,
                 span: Span {
                     start: 7,
                     end: 12,
                 },
                 expression: Expression {
+                    id: 3,
                     kind: Null(
                         Span {
                             start: 7,

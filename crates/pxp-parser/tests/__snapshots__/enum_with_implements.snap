@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 7,
         kind: UnitEnum(
             UnitEnumStatement {
+                id: 6,
                 span: Span {
                     start: 7,
                     end: 33,
@@ -29,8 +33,10 @@
                     end: 11,
                 },
                 name: Name {
+                    id: 3,
                     kind: Resolved(
                         ResolvedName {
+                            id: 3,
                             span: Span {
                                 start: 12,
                                 end: 15,
@@ -46,8 +52,10 @@
                 },
                 implements: [
                     Name {
+                        id: 4,
                         kind: Resolved(
                             ResolvedName {
+                                id: 4,
                                 span: Span {
                                     start: 27,
                                     end: 30,
@@ -63,6 +71,7 @@
                     },
                 ],
                 body: UnitEnumBody {
+                    id: 5,
                     span: Span {
                         start: 31,
                         end: 33,

@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,24 +19,31 @@
         },
     },
     Statement {
+        id: 11,
         kind: Expression(
             ExpressionStatement {
+                id: 10,
                 span: Span {
                     start: 10,
                     end: 19,
                 },
                 expression: Expression {
+                    id: 9,
                     kind: ConstantFetch(
                         ConstantFetchExpression {
+                            id: 8,
                             span: Span {
                                 start: 7,
                                 end: 18,
                             },
                             target: Expression {
+                                id: 4,
                                 kind: Name(
                                     Name {
+                                        id: 3,
                                         kind: Resolved(
                                             ResolvedName {
+                                                id: 3,
                                                 span: Span {
                                                     start: 7,
                                                     end: 10,
@@ -63,14 +72,17 @@
                             },
                             constant: DynamicIdentifier(
                                 DynamicIdentifier {
+                                    id: 7,
                                     span: Span {
                                         start: 12,
                                         end: 18,
                                     },
                                     expr: Expression {
+                                        id: 5,
                                         kind: Variable(
                                             SimpleVariable(
                                                 SimpleVariable {
+                                                    id: 6,
                                                     symbol: Symbol("$foo"),
                                                     stripped: Symbol("foo"),
                                                     span: Span {

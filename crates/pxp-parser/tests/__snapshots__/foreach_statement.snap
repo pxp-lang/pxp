@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 10,
         kind: Foreach(
             ForeachStatement {
+                id: 9,
                 span: Span {
                     start: 7,
                     end: 44,
@@ -37,9 +41,11 @@
                         end: 32,
                     },
                     expression: Expression {
+                        id: 3,
                         kind: Variable(
                             SimpleVariable(
                                 SimpleVariable {
+                                    id: 4,
                                     symbol: Symbol("$array"),
                                     stripped: Symbol("array"),
                                     span: Span {
@@ -63,9 +69,11 @@
                     },
                     ampersand: None,
                     value: Expression {
+                        id: 5,
                         kind: Variable(
                             SimpleVariable(
                                 SimpleVariable {
+                                    id: 6,
                                     symbol: Symbol("$value"),
                                     stripped: Symbol("value"),
                                     span: Span {
@@ -94,8 +102,10 @@
                         end: 44,
                     },
                     statement: Statement {
+                        id: 8,
                         kind: Block(
                             BlockStatement {
+                                id: 7,
                                 span: Span {
                                     start: 34,
                                     end: 44,

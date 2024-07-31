@@ -12,6 +12,7 @@ pub fn label_statement(state: &mut State) -> StatementKind {
     let colon = utils::skip_colon(state);
 
     StatementKind::Label(LabelStatement {
+         id: state.id(), 
         span: Span::combine(label.span, colon),
         comments,
         label,
@@ -26,6 +27,7 @@ pub fn goto_statement(state: &mut State) -> StatementKind {
     let semicolon = utils::skip_semicolon(state);
 
     StatementKind::Goto(GotoStatement {
+         id: state.id(), 
         span: Span::combine(keyword, semicolon),
         comments,
         keyword,

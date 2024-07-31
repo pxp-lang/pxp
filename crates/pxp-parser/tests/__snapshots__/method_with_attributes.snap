@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,14 +19,17 @@
         },
     },
     Statement {
+        id: 24,
         kind: Class(
             ClassStatement {
+                id: 23,
                 span: Span {
                     start: 7,
                     end: 75,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    id: 3,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -36,8 +41,10 @@
                     end: 12,
                 },
                 name: Name {
+                    id: 4,
                     kind: Resolved(
                         ResolvedName {
+                            id: 4,
                             span: Span {
                                 start: 13,
                                 end: 14,
@@ -54,6 +61,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    id: 22,
                     span: Span {
                         start: 15,
                         end: 75,
@@ -65,6 +73,7 @@
                     members: [
                         ConcreteMethod(
                             ConcreteMethod {
+                                id: 21,
                                 span: Span {
                                     start: 58,
                                     end: 73,
@@ -74,19 +83,23 @@
                                 },
                                 attributes: [
                                     AttributeGroup {
+                                        id: 7,
                                         span: Span {
                                             start: 21,
                                             end: 25,
                                         },
                                         members: [
                                             Attribute {
+                                                id: 6,
                                                 span: Span {
                                                     start: 23,
                                                     end: 25,
                                                 },
                                                 name: Name {
+                                                    id: 5,
                                                     kind: Resolved(
                                                         ResolvedName {
+                                                            id: 5,
                                                             span: Span {
                                                                 start: 23,
                                                                 end: 24,
@@ -105,19 +118,23 @@
                                         ],
                                     },
                                     AttributeGroup {
+                                        id: 16,
                                         span: Span {
                                             start: 30,
                                             end: 46,
                                         },
                                         members: [
                                             Attribute {
+                                                id: 9,
                                                 span: Span {
                                                     start: 32,
                                                     end: 34,
                                                 },
                                                 name: Name {
+                                                    id: 8,
                                                     kind: Resolved(
                                                         ResolvedName {
+                                                            id: 8,
                                                             span: Span {
                                                                 start: 32,
                                                                 end: 33,
@@ -134,13 +151,16 @@
                                                 arguments: None,
                                             },
                                             Attribute {
+                                                id: 15,
                                                 span: Span {
                                                     start: 35,
                                                     end: 46,
                                                 },
                                                 name: Name {
+                                                    id: 10,
                                                     kind: Resolved(
                                                         ResolvedName {
+                                                            id: 10,
                                                             span: Span {
                                                                 start: 35,
                                                                 end: 36,
@@ -156,6 +176,7 @@
                                                 },
                                                 arguments: Some(
                                                     ArgumentList {
+                                                        id: 14,
                                                         span: Span {
                                                             start: 36,
                                                             end: 45,
@@ -170,6 +191,7 @@
                                                         arguments: [
                                                             Positional(
                                                                 PositionalArgument {
+                                                                    id: 13,
                                                                     span: Span {
                                                                         start: 38,
                                                                         end: 43,
@@ -179,8 +201,10 @@
                                                                     },
                                                                     ellipsis: None,
                                                                     value: Expression {
+                                                                        id: 11,
                                                                         kind: Literal(
                                                                             Literal {
+                                                                                id: 12,
                                                                                 span: Span {
                                                                                     start: 38,
                                                                                     end: 43,
@@ -220,6 +244,7 @@
                                     },
                                 ],
                                 modifiers: MethodModifierGroup {
+                                    id: 17,
                                     span: Span {
                                         start: 51,
                                         end: 57,
@@ -239,6 +264,7 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
+                                    id: 18,
                                     symbol: Symbol("a"),
                                     span: Span {
                                         start: 67,
@@ -246,6 +272,7 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    id: 19,
                                     span: Span {
                                         start: 68,
                                         end: 70,
@@ -268,6 +295,7 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
+                                    id: 20,
                                     span: Span {
                                         start: 71,
                                         end: 73,

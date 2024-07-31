@@ -79,10 +79,11 @@ fn unbraced_namespace(state: &mut State, start: Span, name: SimpleIdentifier) ->
     });
 
     StatementKind::Namespace(NamespaceStatement::Unbraced(UnbracedNamespace {
+         id: state.id(), 
         span: Span::combine(start, statements.span()),
         start,
         end,
-        name: Name::resolved(name.symbol, name.symbol, name.span),
+        name: Name::resolved(state.id(), name.symbol, name.symbol, name.span),
         statements,
     }))
 }
@@ -103,6 +104,7 @@ fn braced_namespace(
         let end = utils::skip_right_brace(state);
 
         BracedNamespaceBody {
+             id: state.id(), 
             span: Span::combine(start, end),
             start,
             end,
@@ -111,9 +113,10 @@ fn braced_namespace(
     });
 
     StatementKind::Namespace(NamespaceStatement::Braced(BracedNamespace {
+         id: state.id(), 
         span: Span::combine(span, body.span),
         namespace: span,
-        name: name.map(|n| Name::resolved(n.symbol, n.symbol, n.span)),
+        name: name.map(|n| Name::resolved(state.id(), n.symbol, n.symbol, n.span)),
         body,
     }))
 }

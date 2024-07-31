@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,15 +19,19 @@
         },
     },
     Statement {
+        id: 15,
         kind: Expression(
             ExpressionStatement {
+                id: 14,
                 span: Span {
                     start: 7,
                     end: 18,
                 },
                 expression: Expression {
+                    id: 13,
                     kind: ShortArray(
                         ShortArrayExpression {
+                            id: 12,
                             span: Span {
                                 start: 7,
                                 end: 17,
@@ -38,13 +44,16 @@
                                 inner: [
                                     Value(
                                         ArrayItemValue {
+                                            id: 5,
                                             span: Span {
                                                 start: 8,
                                                 end: 9,
                                             },
                                             value: Expression {
+                                                id: 3,
                                                 kind: Literal(
                                                     Literal {
+                                                        id: 4,
                                                         span: Span {
                                                             start: 8,
                                                             end: 9,
@@ -74,13 +83,16 @@
                                     ),
                                     Value(
                                         ArrayItemValue {
+                                            id: 8,
                                             span: Span {
                                                 start: 11,
                                                 end: 12,
                                             },
                                             value: Expression {
+                                                id: 6,
                                                 kind: Literal(
                                                     Literal {
+                                                        id: 7,
                                                         span: Span {
                                                             start: 11,
                                                             end: 12,
@@ -110,13 +122,16 @@
                                     ),
                                     Value(
                                         ArrayItemValue {
+                                            id: 11,
                                             span: Span {
                                                 start: 14,
                                                 end: 15,
                                             },
                                             value: Expression {
+                                                id: 9,
                                                 kind: Literal(
                                                     Literal {
+                                                        id: 10,
                                                         span: Span {
                                                             start: 14,
                                                             end: 15,

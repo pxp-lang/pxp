@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,14 +19,17 @@
         },
     },
     Statement {
+        id: 11,
         kind: Class(
             ClassStatement {
+                id: 10,
                 span: Span {
                     start: 7,
                     end: 64,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    id: 3,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -36,8 +41,10 @@
                     end: 12,
                 },
                 name: Name {
+                    id: 4,
                     kind: Resolved(
                         ResolvedName {
+                            id: 4,
                             span: Span {
                                 start: 13,
                                 end: 16,
@@ -54,6 +61,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    id: 9,
                     span: Span {
                         start: 17,
                         end: 64,
@@ -65,6 +73,7 @@
                     members: [
                         TraitUsage(
                             TraitUsage {
+                                id: 8,
                                 span: Span {
                                     start: 23,
                                     end: 55,
@@ -75,8 +84,10 @@
                                 },
                                 traits: [
                                     Name {
+                                        id: 5,
                                         kind: Resolved(
                                             ResolvedName {
+                                                id: 5,
                                                 span: Span {
                                                     start: 27,
                                                     end: 30,
@@ -93,6 +104,7 @@
                                 ],
                                 adaptations: [
                                     TraitUsageAdaptation {
+                                        id: 7,
                                         span: Span {
                                             start: 41,
                                             end: 55,
@@ -100,6 +112,7 @@
                                         kind: Visibility {
                                             trait: None,
                                             method: SimpleIdentifier {
+                                                id: 6,
                                                 symbol: Symbol("a"),
                                                 span: Span {
                                                     start: 41,

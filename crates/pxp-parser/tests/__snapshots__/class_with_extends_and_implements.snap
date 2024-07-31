@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,14 +19,17 @@
         },
     },
     Statement {
+        id: 12,
         kind: Class(
             ClassStatement {
+                id: 11,
                 span: Span {
                     start: 7,
                     end: 51,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    id: 3,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -36,8 +41,10 @@
                     end: 12,
                 },
                 name: Name {
+                    id: 4,
                     kind: Resolved(
                         ResolvedName {
+                            id: 4,
                             span: Span {
                                 start: 13,
                                 end: 16,
@@ -53,6 +60,7 @@
                 },
                 extends: Some(
                     ClassExtends {
+                        id: 6,
                         span: Span {
                             start: 17,
                             end: 28,
@@ -62,8 +70,10 @@
                             end: 24,
                         },
                         parent: Name {
+                            id: 5,
                             kind: Resolved(
                                 ResolvedName {
+                                    id: 5,
                                     span: Span {
                                         start: 25,
                                         end: 28,
@@ -81,6 +91,7 @@
                 ),
                 implements: Some(
                     ClassImplements {
+                        id: 9,
                         span: Span {
                             start: 29,
                             end: 48,
@@ -92,8 +103,10 @@
                         interfaces: CommaSeparated {
                             inner: [
                                 Name {
+                                    id: 7,
                                     kind: Resolved(
                                         ResolvedName {
+                                            id: 7,
                                             span: Span {
                                                 start: 40,
                                                 end: 43,
@@ -108,8 +121,10 @@
                                     },
                                 },
                                 Name {
+                                    id: 8,
                                     kind: Resolved(
                                         ResolvedName {
+                                            id: 8,
                                             span: Span {
                                                 start: 45,
                                                 end: 48,
@@ -134,6 +149,7 @@
                     },
                 ),
                 body: ClassBody {
+                    id: 10,
                     span: Span {
                         start: 49,
                         end: 51,

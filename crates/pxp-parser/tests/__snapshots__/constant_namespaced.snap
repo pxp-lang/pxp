@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,9 +19,11 @@
         },
     },
     Statement {
+        id: 12,
         kind: Namespace(
             Unbraced(
                 UnbracedNamespace {
+                    id: 10,
                     span: Span {
                         start: 7,
                         end: 35,
@@ -29,8 +33,10 @@
                         end: 16,
                     },
                     name: Name {
+                        id: 11,
                         kind: Resolved(
                             ResolvedName {
+                                id: 11,
                                 span: Span {
                                     start: 17,
                                     end: 18,
@@ -50,8 +56,10 @@
                     },
                     statements: [
                         Statement {
+                            id: 9,
                             kind: Constant(
                                 ConstantStatement {
+                                    id: 8,
                                     span: Span {
                                         start: 21,
                                         end: 35,
@@ -65,13 +73,16 @@
                                     },
                                     entries: [
                                         ConstantEntry {
+                                            id: 7,
                                             span: Span {
                                                 start: 27,
                                                 end: 34,
                                             },
                                             name: Name {
+                                                id: 4,
                                                 kind: Resolved(
                                                     ResolvedName {
+                                                        id: 4,
                                                         span: Span {
                                                             start: 27,
                                                             end: 30,
@@ -90,8 +101,10 @@
                                                 end: 32,
                                             },
                                             value: Expression {
+                                                id: 5,
                                                 kind: Literal(
                                                     Literal {
+                                                        id: 6,
                                                         span: Span {
                                                             start: 33,
                                                             end: 34,

@@ -71,7 +71,8 @@ pub fn use_statement(state: &mut State) -> StatementKind {
             let import_kind = use_kind.unwrap_or(kind);
 
             uses.push(Use {
-                name: Name::resolved(state.symbol_table.coagulate(&[prefix.symbol, name.symbol], Some(b"\\")), name.symbol, name.span),
+                 id: state.id(), 
+                name: Name::resolved(state.id(), state.symbol_table.coagulate(&[prefix.symbol, name.symbol], Some(b"\\")), name.symbol, name.span),
                 kind: use_kind,
                 alias,
             });
@@ -87,7 +88,7 @@ pub fn use_statement(state: &mut State) -> StatementKind {
         utils::skip_right_brace(state);
         let semicolon = utils::skip_semicolon(state);
 
-        StatementKind::GroupUse(GroupUseStatement { span: Span::combine(prefix.span, semicolon), prefix, kind, uses })
+        StatementKind::GroupUse(GroupUseStatement {  id: state.id(), span: Span::combine(prefix.span, semicolon), prefix, kind, uses })
     } else {
         let mut uses = Vec::new();
         while !state.stream.is_eof() {
@@ -101,6 +102,7 @@ pub fn use_statement(state: &mut State) -> StatementKind {
             let alias_symbol = alias.as_ref().map(|a| a.symbol);
 
             uses.push(Use {
+                 id: state.id(), 
                 name,
                 kind: None,
                 alias,
@@ -119,6 +121,6 @@ pub fn use_statement(state: &mut State) -> StatementKind {
 
         let span = Span::combine(r#use, state.stream.previous().span);
 
-        StatementKind::Use(UseStatement { span, uses, kind })
+        StatementKind::Use(UseStatement {  id: state.id(), span, uses, kind })
     }
 }

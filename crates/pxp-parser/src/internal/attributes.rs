@@ -29,6 +29,7 @@ pub fn gather_attributes(state: &mut State) -> bool {
         let span = Span::new(start.start, end.end);
 
         members.push(Attribute {
+             id: state.id(), 
             span,
             name,
             arguments,
@@ -50,7 +51,8 @@ pub fn gather_attributes(state: &mut State) -> bool {
     let end = utils::skip_right_bracket(state);
     let span = Span::new(start.start, end.end);
 
-    state.attribute(AttributeGroup { span, members });
+    let id = state.id();
+    state.attribute(AttributeGroup { id, span, members });
 
     // recursive, looking for multiple attribute brackets after each other.
     gather_attributes(state)

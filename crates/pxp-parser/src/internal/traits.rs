@@ -89,6 +89,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
 
                             if state.stream.current().kind == TokenKind::SemiColon {
                                 adaptations.push(TraitUsageAdaptation {
+                                     id: state.id(), 
                                     span: if r#trait.is_some() {
                                         Span::combine(r#trait.span(), visibility.span())
                                     } else {
@@ -103,6 +104,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
                             } else {
                                 let alias: SimpleIdentifier = identifiers::name(state);
                                 adaptations.push(TraitUsageAdaptation {
+                                     id: state.id(), 
                                     span: if r#trait.is_some() {
                                         Span::combine(r#trait.span(), visibility.span())
                                     } else {
@@ -120,6 +122,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
                         _ => {
                             let alias: SimpleIdentifier = identifiers::name(state);
                             adaptations.push(TraitUsageAdaptation {
+                                 id: state.id(), 
                                 span: if r#trait.is_some() {
                                     Span::combine(r#trait.span(), alias.span())
                                 } else {
@@ -169,6 +172,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
                     }
 
                     adaptations.push(TraitUsageAdaptation {
+                         id: state.id(), 
                         span: if r#trait.is_some() {
                             Span::combine(r#trait.span(), insteadof.span())
                         } else {
@@ -193,6 +197,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
     }
 
     TraitUsage {
+         id: state.id(), 
         span: Span::combine(span, adaptations.span()),
         r#use: span,
         traits,
@@ -216,6 +221,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     let right_brace = utils::skip_right_brace(state);
 
     let body = TraitBody {
+         id: state.id(), 
         span: Span::combine(left_brace, right_brace),
         left_brace,
         members,
@@ -223,6 +229,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     };
 
     StatementKind::Trait(TraitStatement {
+         id: state.id(), 
         span: Span::combine(span, body.span),
         r#trait: span,
         name,

@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,9 +19,11 @@
         },
     },
     Statement {
+        id: 11,
         kind: Namespace(
             Unbraced(
                 UnbracedNamespace {
+                    id: 9,
                     span: Span {
                         start: 7,
                         end: 40,
@@ -29,8 +33,10 @@
                         end: 16,
                     },
                     name: Name {
+                        id: 10,
                         kind: Resolved(
                             ResolvedName {
+                                id: 10,
                                 span: Span {
                                     start: 17,
                                     end: 20,
@@ -50,8 +56,10 @@
                     },
                     statements: [
                         Statement {
+                            id: 8,
                             kind: Function(
                                 FunctionStatement {
+                                    id: 7,
                                     span: Span {
                                         start: 23,
                                         end: 40,
@@ -66,8 +74,10 @@
                                     },
                                     ampersand: None,
                                     name: Name {
+                                        id: 4,
                                         kind: Resolved(
                                             ResolvedName {
+                                                id: 4,
                                                 span: Span {
                                                     start: 32,
                                                     end: 35,
@@ -82,6 +92,7 @@
                                         },
                                     },
                                     parameters: FunctionParameterList {
+                                        id: 5,
                                         span: Span {
                                             start: 35,
                                             end: 37,
@@ -104,6 +115,7 @@
                                     },
                                     return_type: None,
                                     body: FunctionBody {
+                                        id: 6,
                                         span: Span {
                                             start: 38,
                                             end: 40,

@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,14 +19,17 @@
         },
     },
     Statement {
+        id: 9,
         kind: Class(
             ClassStatement {
+                id: 8,
                 span: Span {
                     start: 7,
                     end: 34,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    id: 3,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -36,8 +41,10 @@
                     end: 12,
                 },
                 name: Name {
+                    id: 4,
                     kind: Resolved(
                         ResolvedName {
+                            id: 4,
                             span: Span {
                                 start: 13,
                                 end: 16,
@@ -54,6 +61,7 @@
                 extends: None,
                 implements: Some(
                     ClassImplements {
+                        id: 6,
                         span: Span {
                             start: 17,
                             end: 31,
@@ -65,8 +73,10 @@
                         interfaces: CommaSeparated {
                             inner: [
                                 Name {
+                                    id: 5,
                                     kind: Resolved(
                                         ResolvedName {
+                                            id: 5,
                                             span: Span {
                                                 start: 28,
                                                 end: 31,
@@ -86,6 +96,7 @@
                     },
                 ),
                 body: ClassBody {
+                    id: 7,
                     span: Span {
                         start: 32,
                         end: 34,

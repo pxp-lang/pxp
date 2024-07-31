@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,9 +19,11 @@
         },
     },
     Statement {
+        id: 11,
         kind: Namespace(
             Unbraced(
                 UnbracedNamespace {
+                    id: 9,
                     span: Span {
                         start: 7,
                         end: 35,
@@ -29,8 +33,10 @@
                         end: 16,
                     },
                     name: Name {
+                        id: 10,
                         kind: Resolved(
                             ResolvedName {
+                                id: 10,
                                 span: Span {
                                     start: 17,
                                     end: 20,
@@ -50,14 +56,17 @@
                     },
                     statements: [
                         Statement {
+                            id: 8,
                             kind: Class(
                                 ClassStatement {
+                                    id: 7,
                                     span: Span {
                                         start: 23,
                                         end: 35,
                                     },
                                     attributes: [],
                                     modifiers: ClassModifierGroup {
+                                        id: 4,
                                         span: Span {
                                             start: 0,
                                             end: 0,
@@ -69,8 +78,10 @@
                                         end: 28,
                                     },
                                     name: Name {
+                                        id: 5,
                                         kind: Resolved(
                                             ResolvedName {
+                                                id: 5,
                                                 span: Span {
                                                     start: 29,
                                                     end: 32,
@@ -87,6 +98,7 @@
                                     extends: None,
                                     implements: None,
                                     body: ClassBody {
+                                        id: 6,
                                         span: Span {
                                             start: 33,
                                             end: 35,

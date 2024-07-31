@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 8,
         kind: Use(
             UseStatement {
+                id: 7,
                 span: Span {
                     start: 7,
                     end: 27,
@@ -26,9 +30,12 @@
                 kind: Normal,
                 uses: [
                     Use {
+                        id: 6,
                         name: Name {
+                            id: 4,
                             kind: Resolved(
                                 ResolvedName {
+                                    id: 4,
                                     span: Span {
                                         start: 11,
                                         end: 18,
@@ -44,6 +51,7 @@
                         },
                         alias: Some(
                             SimpleIdentifier {
+                                id: 5,
                                 symbol: Symbol("From"),
                                 span: Span {
                                     start: 22,
@@ -65,24 +73,31 @@
         },
     },
     Statement {
+        id: 16,
         kind: Expression(
             ExpressionStatement {
+                id: 15,
                 span: Span {
                     start: 33,
                     end: 41,
                 },
                 expression: Expression {
+                    id: 14,
                     kind: StaticMethodCall(
                         StaticMethodCallExpression {
+                            id: 13,
                             span: Span {
                                 start: 29,
                                 end: 40,
                             },
                             target: Expression {
+                                id: 10,
                                 kind: Name(
                                     Name {
+                                        id: 9,
                                         kind: Resolved(
                                             ResolvedName {
+                                                id: 9,
                                                 span: Span {
                                                     start: 29,
                                                     end: 33,
@@ -111,6 +126,7 @@
                             },
                             method: SimpleIdentifier(
                                 SimpleIdentifier {
+                                    id: 11,
                                     symbol: Symbol("foo"),
                                     span: Span {
                                         start: 35,
@@ -119,6 +135,7 @@
                                 },
                             ),
                             arguments: ArgumentList {
+                                id: 12,
                                 span: Span {
                                     start: 38,
                                     end: 40,

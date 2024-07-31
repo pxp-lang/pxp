@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 7,
         kind: Use(
             UseStatement {
+                id: 6,
                 span: Span {
                     start: 7,
                     end: 19,
@@ -26,9 +30,12 @@
                 kind: Normal,
                 uses: [
                     Use {
+                        id: 5,
                         name: Name {
+                            id: 4,
                             kind: Resolved(
                                 ResolvedName {
+                                    id: 4,
                                     span: Span {
                                         start: 11,
                                         end: 18,
@@ -57,8 +64,10 @@
         },
     },
     Statement {
+        id: 13,
         kind: Use(
             UseStatement {
+                id: 12,
                 span: Span {
                     start: 20,
                     end: 39,
@@ -66,9 +75,12 @@
                 kind: Normal,
                 uses: [
                     Use {
+                        id: 11,
                         name: Name {
+                            id: 9,
                             kind: Resolved(
                                 ResolvedName {
+                                    id: 9,
                                     span: Span {
                                         start: 24,
                                         end: 31,
@@ -84,6 +96,7 @@
                         },
                         alias: Some(
                             SimpleIdentifier {
+                                id: 10,
                                 symbol: Symbol("Qux"),
                                 span: Span {
                                     start: 35,
@@ -105,8 +118,10 @@
         },
     },
     Statement {
+        id: 21,
         kind: Interface(
             InterfaceStatement {
+                id: 20,
                 span: Span {
                     start: 41,
                     end: 86,
@@ -117,8 +132,10 @@
                     end: 50,
                 },
                 name: Name {
+                    id: 14,
                     kind: Resolved(
                         ResolvedName {
+                            id: 14,
                             span: Span {
                                 start: 51,
                                 end: 54,
@@ -134,6 +151,7 @@
                 },
                 extends: Some(
                     InterfaceExtends {
+                        id: 18,
                         span: Span {
                             start: 55,
                             end: 81,
@@ -145,8 +163,10 @@
                         parents: CommaSeparated {
                             inner: [
                                 Name {
+                                    id: 15,
                                     kind: Resolved(
                                         ResolvedName {
+                                            id: 15,
                                             span: Span {
                                                 start: 63,
                                                 end: 66,
@@ -161,8 +181,10 @@
                                     },
                                 },
                                 Name {
+                                    id: 16,
                                     kind: Resolved(
                                         ResolvedName {
+                                            id: 16,
                                             span: Span {
                                                 start: 68,
                                                 end: 71,
@@ -177,8 +199,10 @@
                                     },
                                 },
                                 Name {
+                                    id: 17,
                                     kind: Resolved(
                                         ResolvedName {
+                                            id: 17,
                                             span: Span {
                                                 start: 73,
                                                 end: 81,
@@ -207,6 +231,7 @@
                     },
                 ),
                 body: InterfaceBody {
+                    id: 19,
                     span: Span {
                         start: 82,
                         end: 86,

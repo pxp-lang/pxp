@@ -38,6 +38,7 @@ pub fn parse(state: &mut State) -> StatementKind {
         let parent = names::full_name(state, UseKind::Normal);
 
         Some(ClassExtends {
+             id: state.id(), 
             span: Span::combine(span, parent.span),
             extends: span,
             parent,
@@ -58,6 +59,7 @@ pub fn parse(state: &mut State) -> StatementKind {
             });
 
         Some(ClassImplements {
+             id: state.id(), 
             span: Span::combine(span, interfaces.span()),
             implements: span,
             interfaces,
@@ -83,6 +85,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     let right_brace = utils::skip_right_brace(state);
 
     let body = ClassBody {
+         id: state.id(), 
         span: Span::combine(left_brace, right_brace),
         left_brace,
         members,
@@ -96,6 +99,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     };
 
     StatementKind::Class(ClassStatement {
+         id: state.id(), 
         span,
         class,
         name,
@@ -135,6 +139,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
         let parent = names::full_name(state, UseKind::Normal);
 
         Some(ClassExtends {
+             id: state.id(), 
             span: Span::combine(extends, parent.span),
             extends,
             parent
@@ -154,6 +159,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
             });
 
         Some(ClassImplements {
+             id: state.id(), 
             span: Span::combine(implements, interfaces.span()),
             implements,
             interfaces,
@@ -174,6 +180,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
     let span = Span::combine(left_brace, right_brace);
 
     let body = AnonymousClassBody {
+         id: state.id(), 
         span,
         left_brace,
         members,
@@ -182,8 +189,9 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
 
     let end_span = body.right_brace;
 
-    let anonymous_class = Expression::new(
+    let anonymous_class = Expression::new(state.id(),
         ExpressionKind::AnonymousClass(AnonymousClassExpression {
+             id: state.id(), 
             span: Span::combine(class, body.span),
             class,
             extends,
@@ -195,8 +203,9 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
         CommentGroup::default(),
     );
 
-    Expression::new(
+    Expression::new(state.id(),
         ExpressionKind::New(NewExpression {
+             id: state.id(), 
             span: Span::combine(new, arguments.span()),
             target: Box::new(anonymous_class),
             new,

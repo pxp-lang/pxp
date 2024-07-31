@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,13 +19,16 @@
         },
     },
     Statement {
+        id: 11,
         kind: GroupUse(
             GroupUseStatement {
+                id: 10,
                 span: Span {
                     start: 11,
                     end: 36,
                 },
                 prefix: SimpleIdentifier {
+                    id: 3,
                     symbol: Symbol("Foo\"),
                     span: Span {
                         start: 11,
@@ -33,9 +38,12 @@
                 kind: Normal,
                 uses: [
                     Use {
+                        id: 5,
                         name: Name {
+                            id: 6,
                             kind: Resolved(
                                 ResolvedName {
+                                    id: 6,
                                     span: Span {
                                         start: 21,
                                         end: 24,
@@ -53,9 +61,12 @@
                         kind: None,
                     },
                     Use {
+                        id: 8,
                         name: Name {
+                            id: 9,
                             kind: Resolved(
                                 ResolvedName {
+                                    id: 9,
                                     span: Span {
                                         start: 30,
                                         end: 33,

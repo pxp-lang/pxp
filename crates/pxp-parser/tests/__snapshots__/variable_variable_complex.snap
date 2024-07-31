@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,16 +19,20 @@
         },
     },
     Statement {
+        id: 8,
         kind: Expression(
             ExpressionStatement {
+                id: 7,
                 span: Span {
                     start: 7,
                     end: 14,
                 },
                 expression: Expression {
+                    id: 3,
                     kind: Variable(
                         BracedVariableVariable(
                             BracedVariableVariable {
+                                id: 6,
                                 span: Span {
                                     start: 7,
                                     end: 13,
@@ -36,8 +42,10 @@
                                     end: 8,
                                 },
                                 variable: Expression {
+                                    id: 4,
                                     kind: Literal(
                                         Literal {
+                                            id: 5,
                                             span: Span {
                                                 start: 9,
                                                 end: 12,

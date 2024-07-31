@@ -54,6 +54,7 @@ impl<'a, 'b> State<'a, 'b> {
         }
     }
 
+    #[inline(always)]
     pub fn id(&mut self) -> u32 {
         self.id += 1;
         self.id
@@ -100,13 +101,14 @@ impl<'a, 'b> State<'a, 'b> {
             _ => unreachable!(),
         };
 
+        let id = self.id();
         let map = self.imports.get(&kind).unwrap();
 
         // We found an import that matches the first part of the identifier, so we can resolve it.
         if let Some(imported) = map.get(&part) {
             match &token.kind {
                 TokenKind::Identifier | TokenKind::From | TokenKind::Enum => {
-                    Name::resolved(*imported, symbol, token.span)
+                    Name::resolved(id, *imported, symbol, token.span)
                 },
                 TokenKind::QualifiedIdentifier => {
                     // Qualified identifiers might be aliased, so we need to take the full un-aliased import and
@@ -116,7 +118,7 @@ impl<'a, 'b> State<'a, 'b> {
                     let rest = self.symbol_table.intern(parts[1]);
                     let coagulated = self.symbol_table.coagulate(&[*imported, rest], Some(b"\\"));
 
-                    Name::resolved(coagulated, symbol, token.span)
+                    Name::resolved(id, coagulated, symbol, token.span)
                 },
                 _ => unreachable!()
             }
@@ -126,9 +128,9 @@ impl<'a, 'b> State<'a, 'b> {
         // Additionally, if the name we're trying to resolve is qualified, then PHP's name resolution rules say that
         // we should just prepend the current namespace if the import map doesn't contain the first part.
         } else if kind == UseKind::Normal || token.kind == TokenKind::QualifiedIdentifier {
-            Name::resolved(self.join_with_namespace(symbol), symbol, token.span)
+            Name::resolved(id, self.join_with_namespace(symbol), symbol, token.span)
         } else {
-            Name::unresolved(symbol, token.kind.into(), token.span)
+            Name::unresolved(id, symbol, token.kind.into(), token.span)
         }
     }
 

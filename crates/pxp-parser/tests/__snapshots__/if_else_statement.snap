@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 11,
         kind: If(
             IfStatement {
+                id: 10,
                 span: Span {
                     start: 7,
                     end: 37,
@@ -32,9 +36,11 @@
                     end: 11,
                 },
                 condition: Expression {
+                    id: 3,
                     kind: Variable(
                         SimpleVariable(
                             SimpleVariable {
+                                id: 4,
                                 symbol: Symbol("$a"),
                                 stripped: Symbol("a"),
                                 span: Span {
@@ -62,8 +68,10 @@
                         end: 37,
                     },
                     statement: Statement {
+                        id: 6,
                         kind: Block(
                             BlockStatement {
+                                id: 5,
                                 span: Span {
                                     start: 15,
                                     end: 23,
@@ -90,6 +98,7 @@
                     elseifs: [],
                     else: Some(
                         IfStatementElse {
+                            id: 9,
                             span: Span {
                                 start: 24,
                                 end: 37,
@@ -99,8 +108,10 @@
                                 end: 28,
                             },
                             statement: Statement {
+                                id: 8,
                                 kind: Block(
                                     BlockStatement {
+                                        id: 7,
                                         span: Span {
                                             start: 29,
                                             end: 37,

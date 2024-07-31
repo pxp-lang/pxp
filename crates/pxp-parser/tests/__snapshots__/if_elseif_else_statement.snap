@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 16,
         kind: If(
             IfStatement {
+                id: 15,
                 span: Span {
                     start: 7,
                     end: 50,
@@ -32,9 +36,11 @@
                     end: 11,
                 },
                 condition: Expression {
+                    id: 3,
                     kind: Variable(
                         SimpleVariable(
                             SimpleVariable {
+                                id: 4,
                                 symbol: Symbol("$a"),
                                 stripped: Symbol("a"),
                                 span: Span {
@@ -62,8 +68,10 @@
                         end: 50,
                     },
                     statement: Statement {
+                        id: 6,
                         kind: Block(
                             BlockStatement {
+                                id: 5,
                                 span: Span {
                                     start: 15,
                                     end: 19,
@@ -89,6 +97,7 @@
                     },
                     elseifs: [
                         IfStatementElseIf {
+                            id: 11,
                             span: Span {
                                 start: 20,
                                 end: 36,
@@ -102,9 +111,11 @@
                                 end: 28,
                             },
                             condition: Expression {
+                                id: 7,
                                 kind: Variable(
                                     SimpleVariable(
                                         SimpleVariable {
+                                            id: 8,
                                             symbol: Symbol("$b"),
                                             stripped: Symbol("b"),
                                             span: Span {
@@ -127,8 +138,10 @@
                                 end: 31,
                             },
                             statement: Statement {
+                                id: 10,
                                 kind: Block(
                                     BlockStatement {
+                                        id: 9,
                                         span: Span {
                                             start: 32,
                                             end: 36,
@@ -156,6 +169,7 @@
                     ],
                     else: Some(
                         IfStatementElse {
+                            id: 14,
                             span: Span {
                                 start: 37,
                                 end: 50,
@@ -165,8 +179,10 @@
                                 end: 41,
                             },
                             statement: Statement {
+                                id: 13,
                                 kind: Block(
                                     BlockStatement {
+                                        id: 12,
                                         span: Span {
                                             start: 42,
                                             end: 50,

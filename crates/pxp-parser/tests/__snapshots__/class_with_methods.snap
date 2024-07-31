@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,14 +19,17 @@
         },
     },
     Statement {
+        id: 32,
         kind: Class(
             ClassStatement {
+                id: 31,
                 span: Span {
                     start: 7,
                     end: 152,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    id: 3,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -36,8 +41,10 @@
                     end: 12,
                 },
                 name: Name {
+                    id: 4,
                     kind: Resolved(
                         ResolvedName {
+                            id: 4,
                             span: Span {
                                 start: 13,
                                 end: 16,
@@ -54,6 +61,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    id: 30,
                     span: Span {
                         start: 17,
                         end: 152,
@@ -65,6 +73,7 @@
                     members: [
                         ConcreteMethod(
                             ConcreteMethod {
+                                id: 9,
                                 span: Span {
                                     start: 23,
                                     end: 38,
@@ -74,6 +83,7 @@
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    id: 5,
                                     span: Span {
                                         start: 0,
                                         end: 0,
@@ -86,6 +96,7 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
+                                    id: 6,
                                     symbol: Symbol("a"),
                                     span: Span {
                                         start: 32,
@@ -93,6 +104,7 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    id: 7,
                                     span: Span {
                                         start: 33,
                                         end: 35,
@@ -115,6 +127,7 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
+                                    id: 8,
                                     span: Span {
                                         start: 36,
                                         end: 38,
@@ -136,6 +149,7 @@
                         ),
                         ConcreteMethod(
                             ConcreteMethod {
+                                id: 14,
                                 span: Span {
                                     start: 50,
                                     end: 65,
@@ -145,6 +159,7 @@
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    id: 10,
                                     span: Span {
                                         start: 43,
                                         end: 49,
@@ -164,6 +179,7 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
+                                    id: 11,
                                     symbol: Symbol("b"),
                                     span: Span {
                                         start: 59,
@@ -171,6 +187,7 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    id: 12,
                                     span: Span {
                                         start: 60,
                                         end: 62,
@@ -193,6 +210,7 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
+                                    id: 13,
                                     span: Span {
                                         start: 63,
                                         end: 65,
@@ -214,6 +232,7 @@
                         ),
                         ConcreteMethod(
                             ConcreteMethod {
+                                id: 19,
                                 span: Span {
                                     start: 80,
                                     end: 95,
@@ -223,6 +242,7 @@
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    id: 15,
                                     span: Span {
                                         start: 70,
                                         end: 79,
@@ -242,6 +262,7 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
+                                    id: 16,
                                     symbol: Symbol("c"),
                                     span: Span {
                                         start: 89,
@@ -249,6 +270,7 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    id: 17,
                                     span: Span {
                                         start: 90,
                                         end: 92,
@@ -271,6 +293,7 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
+                                    id: 18,
                                     span: Span {
                                         start: 93,
                                         end: 95,
@@ -292,6 +315,7 @@
                         ),
                         ConcreteMethod(
                             ConcreteMethod {
+                                id: 24,
                                 span: Span {
                                     start: 108,
                                     end: 123,
@@ -301,6 +325,7 @@
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    id: 20,
                                     span: Span {
                                         start: 100,
                                         end: 107,
@@ -320,6 +345,7 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
+                                    id: 21,
                                     symbol: Symbol("d"),
                                     span: Span {
                                         start: 117,
@@ -327,6 +353,7 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    id: 22,
                                     span: Span {
                                         start: 118,
                                         end: 120,
@@ -349,6 +376,7 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
+                                    id: 23,
                                     span: Span {
                                         start: 121,
                                         end: 123,
@@ -370,6 +398,7 @@
                         ),
                         ConcreteMethod(
                             ConcreteMethod {
+                                id: 29,
                                 span: Span {
                                     start: 135,
                                     end: 150,
@@ -379,6 +408,7 @@
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    id: 25,
                                     span: Span {
                                         start: 128,
                                         end: 134,
@@ -398,6 +428,7 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
+                                    id: 26,
                                     symbol: Symbol("e"),
                                     span: Span {
                                         start: 144,
@@ -405,6 +436,7 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    id: 27,
                                     span: Span {
                                         start: 145,
                                         end: 147,
@@ -427,6 +459,7 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
+                                    id: 28,
                                     span: Span {
                                         start: 148,
                                         end: 150,

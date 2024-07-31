@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,27 +19,33 @@
         },
     },
     Statement {
+        id: 9,
         kind: UnitEnum(
             UnitEnumStatement {
+                id: 8,
                 span: Span {
                     start: 14,
                     end: 31,
                 },
                 attributes: [
                     AttributeGroup {
+                        id: 5,
                         span: Span {
                             start: 7,
                             end: 13,
                         },
                         members: [
                             Attribute {
+                                id: 4,
                                 span: Span {
                                     start: 9,
                                     end: 13,
                                 },
                                 name: Name {
+                                    id: 3,
                                     kind: Resolved(
                                         ResolvedName {
+                                            id: 3,
                                             span: Span {
                                                 start: 9,
                                                 end: 12,
@@ -61,8 +69,10 @@
                     end: 18,
                 },
                 name: Name {
+                    id: 6,
                     kind: Resolved(
                         ResolvedName {
+                            id: 6,
                             span: Span {
                                 start: 19,
                                 end: 22,
@@ -78,6 +88,7 @@
                 },
                 implements: [],
                 body: UnitEnumBody {
+                    id: 7,
                     span: Span {
                         start: 23,
                         end: 31,

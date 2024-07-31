@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 30,
         kind: UnitEnum(
             UnitEnumStatement {
+                id: 29,
                 span: Span {
                     start: 7,
                     end: 112,
@@ -29,8 +33,10 @@
                     end: 11,
                 },
                 name: Name {
+                    id: 3,
                     kind: Resolved(
                         ResolvedName {
+                            id: 3,
                             span: Span {
                                 start: 12,
                                 end: 15,
@@ -46,6 +52,7 @@
                 },
                 implements: [],
                 body: UnitEnumBody {
+                    id: 28,
                     span: Span {
                         start: 16,
                         end: 112,
@@ -58,6 +65,7 @@
                         Classish(
                             Constant(
                                 ClassishConstant {
+                                    id: 9,
                                     span: Span {
                                         start: 22,
                                         end: 34,
@@ -67,6 +75,7 @@
                                     },
                                     attributes: [],
                                     modifiers: ConstantModifierGroup {
+                                        id: 4,
                                         span: Span {
                                             start: 0,
                                             end: 0,
@@ -80,11 +89,13 @@
                                     data_type: None,
                                     entries: [
                                         ClassishConstantEntry {
+                                            id: 8,
                                             span: Span {
                                                 start: 28,
                                                 end: 33,
                                             },
                                             name: SimpleIdentifier {
+                                                id: 5,
                                                 symbol: Symbol("A"),
                                                 span: Span {
                                                     start: 28,
@@ -96,8 +107,10 @@
                                                 end: 31,
                                             },
                                             value: Expression {
+                                                id: 6,
                                                 kind: Literal(
                                                     Literal {
+                                                        id: 7,
                                                         span: Span {
                                                             start: 32,
                                                             end: 33,
@@ -135,6 +148,7 @@
                         Classish(
                             Constant(
                                 ClassishConstant {
+                                    id: 15,
                                     span: Span {
                                         start: 39,
                                         end: 58,
@@ -144,6 +158,7 @@
                                     },
                                     attributes: [],
                                     modifiers: ConstantModifierGroup {
+                                        id: 10,
                                         span: Span {
                                             start: 39,
                                             end: 45,
@@ -164,11 +179,13 @@
                                     data_type: None,
                                     entries: [
                                         ClassishConstantEntry {
+                                            id: 14,
                                             span: Span {
                                                 start: 52,
                                                 end: 57,
                                             },
                                             name: SimpleIdentifier {
+                                                id: 11,
                                                 symbol: Symbol("B"),
                                                 span: Span {
                                                     start: 52,
@@ -180,8 +197,10 @@
                                                 end: 55,
                                             },
                                             value: Expression {
+                                                id: 12,
                                                 kind: Literal(
                                                     Literal {
+                                                        id: 13,
                                                         span: Span {
                                                             start: 56,
                                                             end: 57,
@@ -219,6 +238,7 @@
                         Classish(
                             Constant(
                                 ClassishConstant {
+                                    id: 21,
                                     span: Span {
                                         start: 63,
                                         end: 85,
@@ -228,6 +248,7 @@
                                     },
                                     attributes: [],
                                     modifiers: ConstantModifierGroup {
+                                        id: 16,
                                         span: Span {
                                             start: 63,
                                             end: 72,
@@ -248,11 +269,13 @@
                                     data_type: None,
                                     entries: [
                                         ClassishConstantEntry {
+                                            id: 20,
                                             span: Span {
                                                 start: 79,
                                                 end: 84,
                                             },
                                             name: SimpleIdentifier {
+                                                id: 17,
                                                 symbol: Symbol("C"),
                                                 span: Span {
                                                     start: 79,
@@ -264,8 +287,10 @@
                                                 end: 82,
                                             },
                                             value: Expression {
+                                                id: 18,
                                                 kind: Literal(
                                                     Literal {
+                                                        id: 19,
                                                         span: Span {
                                                             start: 83,
                                                             end: 84,
@@ -303,6 +328,7 @@
                         Classish(
                             Constant(
                                 ClassishConstant {
+                                    id: 27,
                                     span: Span {
                                         start: 90,
                                         end: 110,
@@ -312,6 +338,7 @@
                                     },
                                     attributes: [],
                                     modifiers: ConstantModifierGroup {
+                                        id: 22,
                                         span: Span {
                                             start: 90,
                                             end: 97,
@@ -332,11 +359,13 @@
                                     data_type: None,
                                     entries: [
                                         ClassishConstantEntry {
+                                            id: 26,
                                             span: Span {
                                                 start: 104,
                                                 end: 109,
                                             },
                                             name: SimpleIdentifier {
+                                                id: 23,
                                                 symbol: Symbol("D"),
                                                 span: Span {
                                                     start: 104,
@@ -348,8 +377,10 @@
                                                 end: 107,
                                             },
                                             value: Expression {
+                                                id: 24,
                                                 kind: Literal(
                                                     Literal {
+                                                        id: 25,
                                                         span: Span {
                                                             start: 108,
                                                             end: 109,

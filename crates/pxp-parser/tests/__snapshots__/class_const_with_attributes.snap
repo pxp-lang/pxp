@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,14 +19,17 @@
         },
     },
     Statement {
+        id: 16,
         kind: Class(
             ClassStatement {
+                id: 15,
                 span: Span {
                     start: 7,
                     end: 48,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    id: 3,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -36,8 +41,10 @@
                     end: 12,
                 },
                 name: Name {
+                    id: 4,
                     kind: Resolved(
                         ResolvedName {
+                            id: 4,
                             span: Span {
                                 start: 13,
                                 end: 16,
@@ -54,6 +61,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    id: 14,
                     span: Span {
                         start: 17,
                         end: 48,
@@ -65,6 +73,7 @@
                     members: [
                         Constant(
                             ClassishConstant {
+                                id: 13,
                                 span: Span {
                                     start: 34,
                                     end: 46,
@@ -74,19 +83,23 @@
                                 },
                                 attributes: [
                                     AttributeGroup {
+                                        id: 7,
                                         span: Span {
                                             start: 23,
                                             end: 29,
                                         },
                                         members: [
                                             Attribute {
+                                                id: 6,
                                                 span: Span {
                                                     start: 25,
                                                     end: 29,
                                                 },
                                                 name: Name {
+                                                    id: 5,
                                                     kind: Resolved(
                                                         ResolvedName {
+                                                            id: 5,
                                                             span: Span {
                                                                 start: 25,
                                                                 end: 28,
@@ -106,6 +119,7 @@
                                     },
                                 ],
                                 modifiers: ConstantModifierGroup {
+                                    id: 8,
                                     span: Span {
                                         start: 0,
                                         end: 0,
@@ -119,11 +133,13 @@
                                 data_type: None,
                                 entries: [
                                     ClassishConstantEntry {
+                                        id: 12,
                                         span: Span {
                                             start: 40,
                                             end: 45,
                                         },
                                         name: SimpleIdentifier {
+                                            id: 9,
                                             symbol: Symbol("A"),
                                             span: Span {
                                                 start: 40,
@@ -135,8 +151,10 @@
                                             end: 43,
                                         },
                                         value: Expression {
+                                            id: 10,
                                             kind: Literal(
                                                 Literal {
+                                                    id: 11,
                                                     span: Span {
                                                         start: 44,
                                                         end: 45,

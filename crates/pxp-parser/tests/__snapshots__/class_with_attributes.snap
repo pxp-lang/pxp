@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,27 +19,33 @@
         },
     },
     Statement {
+        id: 15,
         kind: Class(
             ClassStatement {
+                id: 14,
                 span: Span {
                     start: 26,
                     end: 44,
                 },
                 attributes: [
                     AttributeGroup {
+                        id: 5,
                         span: Span {
                             start: 7,
                             end: 13,
                         },
                         members: [
                             Attribute {
+                                id: 4,
                                 span: Span {
                                     start: 9,
                                     end: 13,
                                 },
                                 name: Name {
+                                    id: 3,
                                     kind: Resolved(
                                         ResolvedName {
+                                            id: 3,
                                             span: Span {
                                                 start: 9,
                                                 end: 12,
@@ -56,19 +64,23 @@
                         ],
                     },
                     AttributeGroup {
+                        id: 10,
                         span: Span {
                             start: 14,
                             end: 25,
                         },
                         members: [
                             Attribute {
+                                id: 7,
                                 span: Span {
                                     start: 16,
                                     end: 20,
                                 },
                                 name: Name {
+                                    id: 6,
                                     kind: Resolved(
                                         ResolvedName {
+                                            id: 6,
                                             span: Span {
                                                 start: 16,
                                                 end: 19,
@@ -85,13 +97,16 @@
                                 arguments: None,
                             },
                             Attribute {
+                                id: 9,
                                 span: Span {
                                     start: 21,
                                     end: 25,
                                 },
                                 name: Name {
+                                    id: 8,
                                     kind: Resolved(
                                         ResolvedName {
+                                            id: 8,
                                             span: Span {
                                                 start: 21,
                                                 end: 24,
@@ -111,6 +126,7 @@
                     },
                 ],
                 modifiers: ClassModifierGroup {
+                    id: 11,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -122,8 +138,10 @@
                     end: 31,
                 },
                 name: Name {
+                    id: 12,
                     kind: Resolved(
                         ResolvedName {
+                            id: 12,
                             span: Span {
                                 start: 32,
                                 end: 35,
@@ -140,6 +158,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    id: 13,
                     span: Span {
                         start: 36,
                         end: 44,

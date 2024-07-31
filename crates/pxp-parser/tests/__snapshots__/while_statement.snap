@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 12,
         kind: While(
             WhileStatement {
+                id: 11,
                 span: Span {
                     start: 7,
                     end: 34,
@@ -32,9 +36,11 @@
                     end: 14,
                 },
                 condition: Expression {
+                    id: 3,
                     kind: Variable(
                         SimpleVariable(
                             SimpleVariable {
+                                id: 4,
                                 symbol: Symbol("$a"),
                                 stripped: Symbol("a"),
                                 span: Span {
@@ -62,8 +68,10 @@
                         end: 34,
                     },
                     statement: Statement {
+                        id: 10,
                         kind: Block(
                             BlockStatement {
+                                id: 9,
                                 span: Span {
                                     start: 18,
                                     end: 34,
@@ -74,8 +82,10 @@
                                 },
                                 statements: [
                                     Statement {
+                                        id: 8,
                                         kind: Echo(
                                             EchoStatement {
+                                                id: 7,
                                                 span: Span {
                                                     start: 24,
                                                     end: 32,
@@ -86,9 +96,11 @@
                                                 },
                                                 values: [
                                                     Expression {
+                                                        id: 5,
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
+                                                                    id: 6,
                                                                     symbol: Symbol("$a"),
                                                                     stripped: Symbol("a"),
                                                                     span: Span {

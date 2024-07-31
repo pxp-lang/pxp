@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,14 +19,17 @@
         },
     },
     Statement {
+        id: 19,
         kind: Class(
             ClassStatement {
+                id: 18,
                 span: Span {
                     start: 7,
                     end: 65,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    id: 3,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -36,8 +41,10 @@
                     end: 12,
                 },
                 name: Name {
+                    id: 4,
                     kind: Resolved(
                         ResolvedName {
+                            id: 4,
                             span: Span {
                                 start: 13,
                                 end: 14,
@@ -54,6 +61,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    id: 17,
                     span: Span {
                         start: 15,
                         end: 65,
@@ -65,6 +73,7 @@
                     members: [
                         ConcreteMethod(
                             ConcreteMethod {
+                                id: 16,
                                 span: Span {
                                     start: 21,
                                     end: 63,
@@ -74,6 +83,7 @@
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    id: 5,
                                     span: Span {
                                         start: 0,
                                         end: 0,
@@ -86,6 +96,7 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
+                                    id: 6,
                                     symbol: Symbol("a"),
                                     span: Span {
                                         start: 30,
@@ -93,6 +104,7 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    id: 7,
                                     span: Span {
                                         start: 31,
                                         end: 33,
@@ -115,6 +127,7 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
+                                    id: 15,
                                     span: Span {
                                         start: 34,
                                         end: 63,
@@ -128,15 +141,19 @@
                                     },
                                     statements: [
                                         Statement {
+                                            id: 14,
                                             kind: Expression(
                                                 ExpressionStatement {
+                                                    id: 13,
                                                     span: Span {
                                                         start: 44,
                                                         end: 57,
                                                     },
                                                     expression: Expression {
+                                                        id: 11,
                                                         kind: New(
                                                             NewExpression {
+                                                                id: 12,
                                                                 span: Span {
                                                                     start: 44,
                                                                     end: 56,
@@ -146,10 +163,13 @@
                                                                     end: 47,
                                                                 },
                                                                 target: Expression {
+                                                                    id: 8,
                                                                     kind: Name(
                                                                         Name {
+                                                                            id: 9,
                                                                             kind: Special(
                                                                                 SpecialName {
+                                                                                    id: 9,
                                                                                     span: Span {
                                                                                         start: 48,
                                                                                         end: 54,
@@ -179,6 +199,7 @@
                                                                 },
                                                                 arguments: Some(
                                                                     ArgumentList {
+                                                                        id: 10,
                                                                         span: Span {
                                                                             start: 54,
                                                                             end: 56,

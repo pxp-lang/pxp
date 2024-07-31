@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,13 +19,16 @@
         },
     },
     Statement {
+        id: 5,
         kind: Expression(
             ExpressionStatement {
+                id: 4,
                 span: Span {
                     start: 7,
                     end: 15,
                 },
                 expression: Expression {
+                    id: 3,
                     kind: MagicConstant(
                         Directory(
                             Span {
@@ -57,13 +62,16 @@
         },
     },
     Statement {
+        id: 8,
         kind: Expression(
             ExpressionStatement {
+                id: 7,
                 span: Span {
                     start: 16,
                     end: 25,
                 },
                 expression: Expression {
+                    id: 6,
                     kind: MagicConstant(
                         File(
                             Span {
@@ -97,13 +105,16 @@
         },
     },
     Statement {
+        id: 11,
         kind: Expression(
             ExpressionStatement {
+                id: 10,
                 span: Span {
                     start: 26,
                     end: 35,
                 },
                 expression: Expression {
+                    id: 9,
                     kind: MagicConstant(
                         Line(
                             Span {
@@ -137,13 +148,16 @@
         },
     },
     Statement {
+        id: 14,
         kind: Expression(
             ExpressionStatement {
+                id: 13,
                 span: Span {
                     start: 36,
                     end: 49,
                 },
                 expression: Expression {
+                    id: 12,
                     kind: MagicConstant(
                         Function(
                             Span {
@@ -177,13 +191,16 @@
         },
     },
     Statement {
+        id: 17,
         kind: Expression(
             ExpressionStatement {
+                id: 16,
                 span: Span {
                     start: 50,
                     end: 60,
                 },
                 expression: Expression {
+                    id: 15,
                     kind: MagicConstant(
                         Class(
                             Span {
@@ -217,13 +234,16 @@
         },
     },
     Statement {
+        id: 20,
         kind: Expression(
             ExpressionStatement {
+                id: 19,
                 span: Span {
                     start: 61,
                     end: 71,
                 },
                 expression: Expression {
+                    id: 18,
                     kind: MagicConstant(
                         Trait(
                             Span {
@@ -257,13 +277,16 @@
         },
     },
     Statement {
+        id: 23,
         kind: Expression(
             ExpressionStatement {
+                id: 22,
                 span: Span {
                     start: 72,
                     end: 83,
                 },
                 expression: Expression {
+                    id: 21,
                     kind: MagicConstant(
                         Method(
                             Span {
@@ -297,13 +320,16 @@
         },
     },
     Statement {
+        id: 26,
         kind: Expression(
             ExpressionStatement {
+                id: 25,
                 span: Span {
                     start: 84,
                     end: 98,
                 },
                 expression: Expression {
+                    id: 24,
                     kind: MagicConstant(
                         Namespace(
                             Span {

@@ -21,6 +21,7 @@ pub fn parse(state: &mut State) -> ConstantStatement {
         let value = expressions::create(state);
 
         entries.push(ConstantEntry {
+             id: state.id(), 
             span: Span::combine(name.span, value.span),
             name,
             equals: span,
@@ -38,6 +39,7 @@ pub fn parse(state: &mut State) -> ConstantStatement {
     let span = Span::combine(start, end);
 
     ConstantStatement {
+         id: state.id(), 
         span,
         comments,
         r#const: start,
@@ -66,6 +68,7 @@ pub fn classish(state: &mut State, modifiers: ConstantModifierGroup) -> Classish
         let value = expressions::create(state);
 
         entries.push(ClassishConstantEntry {
+             id: state.id(), 
             span: Span::combine(name.span, value.span),
             name,
             equals: span,
@@ -82,6 +85,7 @@ pub fn classish(state: &mut State, modifiers: ConstantModifierGroup) -> Classish
     let end = utils::skip_semicolon(state);
 
     ClassishConstant {
+         id: state.id(), 
         span: if !modifiers.is_empty() {
             Span::combine(modifiers.span, end)
         } else {

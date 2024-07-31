@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,24 +19,31 @@
         },
     },
     Statement {
+        id: 10,
         kind: Expression(
             ExpressionStatement {
+                id: 9,
                 span: Span {
                     start: 8,
                     end: 16,
                 },
                 expression: Expression {
+                    id: 8,
                     kind: StaticMethodCall(
                         StaticMethodCallExpression {
+                            id: 7,
                             span: Span {
                                 start: 7,
                                 end: 15,
                             },
                             target: Expression {
+                                id: 4,
                                 kind: Name(
                                     Name {
+                                        id: 3,
                                         kind: Resolved(
                                             ResolvedName {
+                                                id: 3,
                                                 span: Span {
                                                     start: 7,
                                                     end: 8,
@@ -63,6 +72,7 @@
                             },
                             method: SimpleIdentifier(
                                 SimpleIdentifier {
+                                    id: 5,
                                     symbol: Symbol("foo"),
                                     span: Span {
                                         start: 10,
@@ -71,6 +81,7 @@
                                 },
                             ),
                             arguments: ArgumentList {
+                                id: 6,
                                 span: Span {
                                     start: 13,
                                     end: 15,

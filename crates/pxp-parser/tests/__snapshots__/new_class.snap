@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 7,
         kind: Use(
             UseStatement {
+                id: 6,
                 span: Span {
                     start: 7,
                     end: 19,
@@ -26,9 +30,12 @@
                 kind: Normal,
                 uses: [
                     Use {
+                        id: 5,
                         name: Name {
+                            id: 4,
                             kind: Resolved(
                                 ResolvedName {
+                                    id: 4,
                                     span: Span {
                                         start: 11,
                                         end: 18,
@@ -57,15 +64,19 @@
         },
     },
     Statement {
+        id: 14,
         kind: Expression(
             ExpressionStatement {
+                id: 13,
                 span: Span {
                     start: 21,
                     end: 31,
                 },
                 expression: Expression {
+                    id: 11,
                     kind: New(
                         NewExpression {
+                            id: 12,
                             span: Span {
                                 start: 21,
                                 end: 30,
@@ -75,10 +86,13 @@
                                 end: 24,
                             },
                             target: Expression {
+                                id: 8,
                                 kind: Name(
                                     Name {
+                                        id: 9,
                                         kind: Resolved(
                                             ResolvedName {
+                                                id: 9,
                                                 span: Span {
                                                     start: 25,
                                                     end: 28,
@@ -103,6 +117,7 @@
                             },
                             arguments: Some(
                                 ArgumentList {
+                                    id: 10,
                                     span: Span {
                                         start: 28,
                                         end: 30,

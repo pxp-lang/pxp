@@ -89,6 +89,7 @@ pub fn foreach_statement(state: &mut State) -> StatementKind {
     };
 
     StatementKind::Foreach(ForeachStatement {
+         id: state.id(), 
         span: Span::combine(foreach, body.span()),
         foreach,
         left_parenthesis,
@@ -122,6 +123,7 @@ pub fn for_statement(state: &mut State) -> StatementKind {
         );
 
         ForStatementIterator {
+             id: state.id(), 
             span: Span::combine(initializations.span(), r#loop.span()),
             initializations,
             initializations_semicolon,
@@ -154,6 +156,7 @@ pub fn for_statement(state: &mut State) -> StatementKind {
     };
 
     StatementKind::For(ForStatement {
+         id: state.id(), 
         span: Span::combine(r#for, body.span()),
         r#for,
         left_parenthesis,
@@ -176,6 +179,7 @@ pub fn do_while_statement(state: &mut State) -> StatementKind {
         });
 
     StatementKind::DoWhile(DoWhileStatement {
+         id: state.id(), 
         span: Span::combine(r#do, right_parenthesis),
         r#do,
         body,
@@ -216,6 +220,7 @@ pub fn while_statement(state: &mut State) -> StatementKind {
     };
 
     StatementKind::While(WhileStatement {
+         id: state.id(), 
         span: Span::combine(r#while, body.span()),
         r#while,
         left_parenthesis,
@@ -231,6 +236,7 @@ pub fn continue_statement(state: &mut State) -> StatementKind {
     let ending = utils::skip_ending(state);
 
     StatementKind::Continue(ContinueStatement {
+         id: state.id(), 
         span: Span::combine(r#continue, ending.span()),
         r#continue,
         level,
@@ -244,6 +250,7 @@ pub fn break_statement(state: &mut State) -> StatementKind {
     let ending = utils::skip_ending(state);
 
     StatementKind::Break(BreakStatement {
+         id: state.id(), 
         span: Span::combine(r#break, ending.span()),
         r#break,
         level,
@@ -271,7 +278,7 @@ fn loop_level(state: &mut State) -> Level {
     {
         state.stream.next();
 
-        return Level::Literal(Literal::new(LiteralKind::Integer, *current, current.span));
+        return Level::Literal(Literal::new(state.id(), LiteralKind::Integer, *current, current.span));
     }
 
     let (left_parenthesis, level, right_parenthesis) =

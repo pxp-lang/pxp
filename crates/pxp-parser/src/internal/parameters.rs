@@ -51,6 +51,7 @@ pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
             }
 
             FunctionParameter {
+                 id: state.id(), 
                 span: if ty.is_some() {
                     Span::combine(ty.span(), var.span)
                 } else {
@@ -71,6 +72,7 @@ pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
     let right_parenthesis = utils::skip_right_parenthesis(state);
 
     FunctionParameterList {
+         id: state.id(), 
         span: Span::combine(left_parenthesis, right_parenthesis),
         comments,
         left_parenthesis,
@@ -152,6 +154,7 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
             }
 
             ConstructorParameter {
+                 id: state.id(), 
                 span: if ty.is_some() {
                     Span::combine(ty.span(), var.span)
                 } else {
@@ -173,6 +176,7 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
     let right_parenthesis = utils::skip_right_parenthesis(state);
 
     ConstructorParameterList {
+         id: state.id(), 
         span: Span::combine(left_parenthesis, right_parenthesis),
         comments,
         left_parenthesis,
@@ -213,6 +217,7 @@ pub fn argument_list(state: &mut State) -> ArgumentList {
     let end = utils::skip_right_parenthesis(state);
 
     ArgumentList {
+         id: state.id(), 
         span: Span::combine(start, end),
         comments,
         left_parenthesis: start,
@@ -275,6 +280,7 @@ pub fn single_argument(
     let end = utils::skip_right_parenthesis(state);
 
     Some(SingleArgument {
+         id: state.id(), 
         span: Span::combine(start, end),
         comments,
         left_parenthesis: start,
@@ -299,6 +305,7 @@ fn argument(state: &mut State) -> (bool, Argument) {
         return (
             true,
             Argument::Named(NamedArgument {
+                 id: state.id(), 
                 span: Span::combine(name.span, value.span),
                 comments: state.stream.comments(),
                 name,
@@ -320,6 +327,7 @@ fn argument(state: &mut State) -> (bool, Argument) {
     (
         false,
         Argument::Positional(PositionalArgument {
+             id: state.id(), 
             span: value.span,
             comments: state.stream.comments(),
             ellipsis,

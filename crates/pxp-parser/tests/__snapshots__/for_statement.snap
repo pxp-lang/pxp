@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 27,
         kind: For(
             ForStatement {
+                id: 26,
                 span: Span {
                     start: 7,
                     end: 51,
@@ -32,6 +36,7 @@
                     end: 12,
                 },
                 iterator: ForStatementIterator {
+                    id: 19,
                     span: Span {
                         start: 17,
                         end: 33,
@@ -39,17 +44,21 @@
                     initializations: CommaSeparated {
                         inner: [
                             Expression {
+                                id: 8,
                                 kind: AssignmentOperation(
                                     AssignmentOperationExpression {
+                                        id: 7,
                                         span: Span {
                                             start: 12,
                                             end: 18,
                                         },
                                         kind: Assign {
                                             left: Expression {
+                                                id: 3,
                                                 kind: Variable(
                                                     SimpleVariable(
                                                         SimpleVariable {
+                                                            id: 4,
                                                             symbol: Symbol("$i"),
                                                             stripped: Symbol("i"),
                                                             span: Span {
@@ -72,8 +81,10 @@
                                                 end: 16,
                                             },
                                             right: Expression {
+                                                id: 5,
                                                 kind: Literal(
                                                     Literal {
+                                                        id: 6,
                                                         span: Span {
                                                             start: 17,
                                                             end: 18,
@@ -120,17 +131,21 @@
                     conditions: CommaSeparated {
                         inner: [
                             Expression {
+                                id: 14,
                                 kind: ComparisonOperation(
                                     ComparisonOperationExpression {
+                                        id: 13,
                                         span: Span {
                                             start: 20,
                                             end: 27,
                                         },
                                         kind: LessThan {
                                             left: Expression {
+                                                id: 9,
                                                 kind: Variable(
                                                     SimpleVariable(
                                                         SimpleVariable {
+                                                            id: 10,
                                                             symbol: Symbol("$i"),
                                                             stripped: Symbol("i"),
                                                             span: Span {
@@ -153,8 +168,10 @@
                                                 end: 24,
                                             },
                                             right: Expression {
+                                                id: 11,
                                                 kind: Literal(
                                                     Literal {
+                                                        id: 12,
                                                         span: Span {
                                                             start: 25,
                                                             end: 27,
@@ -201,17 +218,21 @@
                     loop: CommaSeparated {
                         inner: [
                             Expression {
+                                id: 18,
                                 kind: ArithmeticOperation(
                                     ArithmeticOperationExpression {
+                                        id: 17,
                                         span: Span {
                                             start: 29,
                                             end: 33,
                                         },
                                         kind: PostIncrement {
                                             left: Expression {
+                                                id: 15,
                                                 kind: Variable(
                                                     SimpleVariable(
                                                         SimpleVariable {
+                                                            id: 16,
                                                             symbol: Symbol("$i"),
                                                             stripped: Symbol("i"),
                                                             span: Span {
@@ -258,8 +279,10 @@
                         end: 51,
                     },
                     statement: Statement {
+                        id: 25,
                         kind: Block(
                             BlockStatement {
+                                id: 24,
                                 span: Span {
                                     start: 35,
                                     end: 51,
@@ -270,8 +293,10 @@
                                 },
                                 statements: [
                                     Statement {
+                                        id: 23,
                                         kind: Echo(
                                             EchoStatement {
+                                                id: 22,
                                                 span: Span {
                                                     start: 41,
                                                     end: 49,
@@ -282,9 +307,11 @@
                                                 },
                                                 values: [
                                                     Expression {
+                                                        id: 20,
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
+                                                                    id: 21,
                                                                     symbol: Symbol("$i"),
                                                                     stripped: Symbol("i"),
                                                                     span: Span {

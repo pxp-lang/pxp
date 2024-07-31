@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,24 +19,30 @@
         },
     },
     Statement {
+        id: 14,
         kind: Expression(
             ExpressionStatement {
+                id: 13,
                 span: Span {
                     start: 12,
                     end: 19,
                 },
                 expression: Expression {
+                    id: 12,
                     kind: AssignmentOperation(
                         AssignmentOperationExpression {
+                            id: 11,
                             span: Span {
                                 start: 7,
                                 end: 18,
                             },
                             kind: Assign {
                                 left: Expression {
+                                    id: 3,
                                     kind: Variable(
                                         SimpleVariable(
                                             SimpleVariable {
+                                                id: 4,
                                                 symbol: Symbol("$a"),
                                                 stripped: Symbol("a"),
                                                 span: Span {
@@ -57,17 +65,21 @@
                                     end: 11,
                                 },
                                 right: Expression {
+                                    id: 10,
                                     kind: AssignmentOperation(
                                         AssignmentOperationExpression {
+                                            id: 9,
                                             span: Span {
                                                 start: 12,
                                                 end: 18,
                                             },
                                             kind: Assign {
                                                 left: Expression {
+                                                    id: 5,
                                                     kind: Variable(
                                                         SimpleVariable(
                                                             SimpleVariable {
+                                                                id: 6,
                                                                 symbol: Symbol("$b"),
                                                                 stripped: Symbol("b"),
                                                                 span: Span {
@@ -90,8 +102,10 @@
                                                     end: 16,
                                                 },
                                                 right: Expression {
+                                                    id: 7,
                                                     kind: Literal(
                                                         Literal {
+                                                            id: 8,
                                                             span: Span {
                                                                 start: 17,
                                                                 end: 18,

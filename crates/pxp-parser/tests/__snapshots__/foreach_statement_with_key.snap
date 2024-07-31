@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 12,
         kind: Foreach(
             ForeachStatement {
+                id: 11,
                 span: Span {
                     start: 7,
                     end: 52,
@@ -37,9 +41,11 @@
                         end: 40,
                     },
                     expression: Expression {
+                        id: 3,
                         kind: Variable(
                             SimpleVariable(
                                 SimpleVariable {
+                                    id: 4,
                                     symbol: Symbol("$array"),
                                     stripped: Symbol("array"),
                                     span: Span {
@@ -63,9 +69,11 @@
                     },
                     ampersand: None,
                     key: Expression {
+                        id: 5,
                         kind: Variable(
                             SimpleVariable(
                                 SimpleVariable {
+                                    id: 6,
                                     symbol: Symbol("$key"),
                                     stripped: Symbol("key"),
                                     span: Span {
@@ -88,9 +96,11 @@
                         end: 33,
                     },
                     value: Expression {
+                        id: 7,
                         kind: Variable(
                             SimpleVariable(
                                 SimpleVariable {
+                                    id: 8,
                                     symbol: Symbol("$value"),
                                     stripped: Symbol("value"),
                                     span: Span {
@@ -119,8 +129,10 @@
                         end: 52,
                     },
                     statement: Statement {
+                        id: 10,
                         kind: Block(
                             BlockStatement {
+                                id: 9,
                                 span: Span {
                                     start: 42,
                                     end: 52,

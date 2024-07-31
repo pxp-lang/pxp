@@ -240,7 +240,7 @@ impl Visitor for Indexer {
         }
 
         let r#type = node.r#type.as_ref().map(|r| r.get_type()).unwrap_or_else(|| &Type::Mixed).clone();
-        let modifiers = PropertyModifierGroup { span: Span::default(), modifiers: vec![PropertyModifier::Public(Span::default())] };
+        let modifiers = PropertyModifierGroup { id: 0, span: Span::default(), modifiers: vec![PropertyModifier::Public(Span::default())] };
 
         for entry in node.entries.iter() {
             let name = entry.kind.variable().stripped;

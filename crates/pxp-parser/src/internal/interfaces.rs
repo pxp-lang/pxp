@@ -27,6 +27,7 @@ pub fn parse(state: &mut State) -> StatementKind {
             });
 
         Some(InterfaceExtends {
+             id: state.id(), 
             span: Span::combine(span, parents.span()),
             extends: span,
             parents,
@@ -49,6 +50,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     let right_brace = utils::skip_right_brace(state);
 
     let body = InterfaceBody {
+         id: state.id(), 
         span: Span::combine(left_brace, right_brace),
         left_brace,
         members,
@@ -56,6 +58,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     };
 
     StatementKind::Interface(InterfaceStatement {
+         id: state.id(), 
         span: Span::combine(span, body.span),
         interface: span,
         name,

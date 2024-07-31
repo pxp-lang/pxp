@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,15 +19,19 @@
         },
     },
     Statement {
+        id: 23,
         kind: Expression(
             ExpressionStatement {
+                id: 22,
                 span: Span {
                     start: 7,
                     end: 92,
                 },
                 expression: Expression {
+                    id: 20,
                     kind: Match(
                         MatchExpression {
+                            id: 21,
                             span: Span {
                                 start: 7,
                                 end: 91,
@@ -39,9 +45,11 @@
                                 end: 14,
                             },
                             condition: Expression {
+                                id: 3,
                                 kind: Variable(
                                     SimpleVariable(
                                         SimpleVariable {
+                                            id: 4,
                                             symbol: Symbol("$foo"),
                                             stripped: Symbol("foo"),
                                             span: Span {
@@ -69,6 +77,7 @@
                             },
                             default: Some(
                                 DefaultMatchArm {
+                                    id: 19,
                                     span: Span {
                                         start: 70,
                                         end: 88,
@@ -82,8 +91,10 @@
                                         end: 80,
                                     },
                                     body: Expression {
+                                        id: 17,
                                         kind: Literal(
                                             Literal {
+                                                id: 18,
                                                 span: Span {
                                                     start: 81,
                                                     end: 88,
@@ -113,14 +124,17 @@
                             ),
                             arms: [
                                 MatchArm {
+                                    id: 9,
                                     span: Span {
                                         start: 26,
                                         end: 36,
                                     },
                                     conditions: [
                                         Expression {
+                                            id: 5,
                                             kind: Literal(
                                                 Literal {
+                                                    id: 6,
                                                     span: Span {
                                                         start: 26,
                                                         end: 27,
@@ -152,8 +166,10 @@
                                         end: 30,
                                     },
                                     body: Expression {
+                                        id: 7,
                                         kind: Literal(
                                             Literal {
+                                                id: 8,
                                                 span: Span {
                                                     start: 31,
                                                     end: 36,
@@ -181,14 +197,17 @@
                                     },
                                 },
                                 MatchArm {
+                                    id: 16,
                                     span: Span {
                                         start: 42,
                                         end: 64,
                                     },
                                     conditions: [
                                         Expression {
+                                            id: 10,
                                             kind: Literal(
                                                 Literal {
+                                                    id: 11,
                                                     span: Span {
                                                         start: 42,
                                                         end: 43,
@@ -215,8 +234,10 @@
                                             },
                                         },
                                         Expression {
+                                            id: 12,
                                             kind: Literal(
                                                 Literal {
+                                                    id: 13,
                                                     span: Span {
                                                         start: 45,
                                                         end: 46,
@@ -248,8 +269,10 @@
                                         end: 49,
                                     },
                                     body: Expression {
+                                        id: 14,
                                         kind: Literal(
                                             Literal {
+                                                id: 15,
                                                 span: Span {
                                                     start: 50,
                                                     end: 64,

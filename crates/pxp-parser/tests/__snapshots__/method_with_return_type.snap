@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,14 +19,17 @@
         },
     },
     Statement {
+        id: 14,
         kind: Class(
             ClassStatement {
+                id: 13,
                 span: Span {
                     start: 7,
                     end: 50,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    id: 3,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -36,8 +41,10 @@
                     end: 12,
                 },
                 name: Name {
+                    id: 4,
                     kind: Resolved(
                         ResolvedName {
+                            id: 4,
                             span: Span {
                                 start: 13,
                                 end: 14,
@@ -54,6 +61,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    id: 12,
                     span: Span {
                         start: 15,
                         end: 50,
@@ -65,6 +73,7 @@
                     members: [
                         ConcreteMethod(
                             ConcreteMethod {
+                                id: 11,
                                 span: Span {
                                     start: 28,
                                     end: 48,
@@ -74,6 +83,7 @@
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    id: 5,
                                     span: Span {
                                         start: 21,
                                         end: 27,
@@ -93,6 +103,7 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
+                                    id: 6,
                                     symbol: Symbol("a"),
                                     span: Span {
                                         start: 37,
@@ -100,6 +111,7 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    id: 7,
                                     span: Span {
                                         start: 38,
                                         end: 40,
@@ -122,6 +134,7 @@
                                 },
                                 return_type: Some(
                                     ReturnType {
+                                        id: 9,
                                         span: Span {
                                             start: 40,
                                             end: 45,
@@ -131,6 +144,7 @@
                                             end: 41,
                                         },
                                         data_type: DataType {
+                                            id: 8,
                                             kind: Integer,
                                             span: Span {
                                                 start: 42,
@@ -140,6 +154,7 @@
                                     },
                                 ),
                                 body: MethodBody {
+                                    id: 10,
                                     span: Span {
                                         start: 46,
                                         end: 48,

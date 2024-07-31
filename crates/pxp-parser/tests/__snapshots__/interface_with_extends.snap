@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 9,
         kind: Interface(
             InterfaceStatement {
+                id: 8,
                 span: Span {
                     start: 7,
                     end: 40,
@@ -29,8 +33,10 @@
                     end: 16,
                 },
                 name: Name {
+                    id: 3,
                     kind: Resolved(
                         ResolvedName {
+                            id: 3,
                             span: Span {
                                 start: 17,
                                 end: 20,
@@ -46,6 +52,7 @@
                 },
                 extends: Some(
                     InterfaceExtends {
+                        id: 6,
                         span: Span {
                             start: 21,
                             end: 37,
@@ -57,8 +64,10 @@
                         parents: CommaSeparated {
                             inner: [
                                 Name {
+                                    id: 4,
                                     kind: Resolved(
                                         ResolvedName {
+                                            id: 4,
                                             span: Span {
                                                 start: 29,
                                                 end: 32,
@@ -73,8 +82,10 @@
                                     },
                                 },
                                 Name {
+                                    id: 5,
                                     kind: Resolved(
                                         ResolvedName {
+                                            id: 5,
                                             span: Span {
                                                 start: 34,
                                                 end: 37,
@@ -99,6 +110,7 @@
                     },
                 ),
                 body: InterfaceBody {
+                    id: 7,
                     span: Span {
                         start: 38,
                         end: 40,

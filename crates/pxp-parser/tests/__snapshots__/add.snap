@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,23 +19,29 @@
         },
     },
     Statement {
+        id: 10,
         kind: Expression(
             ExpressionStatement {
+                id: 9,
                 span: Span {
                     start: 11,
                     end: 13,
                 },
                 expression: Expression {
+                    id: 8,
                     kind: ArithmeticOperation(
                         ArithmeticOperationExpression {
+                            id: 7,
                             span: Span {
                                 start: 7,
                                 end: 12,
                             },
                             kind: Addition {
                                 left: Expression {
+                                    id: 3,
                                     kind: Literal(
                                         Literal {
+                                            id: 4,
                                             span: Span {
                                                 start: 7,
                                                 end: 8,
@@ -64,8 +72,10 @@
                                     end: 10,
                                 },
                                 right: Expression {
+                                    id: 5,
                                     kind: Literal(
                                         Literal {
+                                            id: 6,
                                             span: Span {
                                                 start: 11,
                                                 end: 12,

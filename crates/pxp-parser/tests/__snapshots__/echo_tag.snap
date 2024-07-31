@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: EchoOpeningTag(
             EchoOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 3,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 4,
         kind: ClosingTag(
             ClosingTagStatement {
+                id: 3,
                 span: Span {
                     start: 5,
                     end: 7,

@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 14,
         kind: Interface(
             InterfaceStatement {
+                id: 13,
                 span: Span {
                     start: 7,
                     end: 67,
@@ -29,8 +33,10 @@
                     end: 16,
                 },
                 name: Name {
+                    id: 3,
                     kind: Resolved(
                         ResolvedName {
+                            id: 3,
                             span: Span {
                                 start: 17,
                                 end: 20,
@@ -46,6 +52,7 @@
                 },
                 extends: None,
                 body: InterfaceBody {
+                    id: 12,
                     span: Span {
                         start: 21,
                         end: 67,
@@ -57,6 +64,7 @@
                     members: [
                         AbstractMethod(
                             AbstractMethod {
+                                id: 7,
                                 span: Span {
                                     start: 27,
                                     end: 40,
@@ -66,6 +74,7 @@
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    id: 4,
                                     span: Span {
                                         start: 0,
                                         end: 0,
@@ -78,6 +87,7 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
+                                    id: 5,
                                     symbol: Symbol("a"),
                                     span: Span {
                                         start: 36,
@@ -85,6 +95,7 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    id: 6,
                                     span: Span {
                                         start: 37,
                                         end: 39,
@@ -114,6 +125,7 @@
                         ),
                         AbstractMethod(
                             AbstractMethod {
+                                id: 11,
                                 span: Span {
                                     start: 52,
                                     end: 65,
@@ -123,6 +135,7 @@
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
+                                    id: 8,
                                     span: Span {
                                         start: 45,
                                         end: 51,
@@ -142,6 +155,7 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
+                                    id: 9,
                                     symbol: Symbol("b"),
                                     span: Span {
                                         start: 61,
@@ -149,6 +163,7 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
+                                    id: 10,
                                     span: Span {
                                         start: 62,
                                         end: 64,

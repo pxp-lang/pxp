@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,24 +19,31 @@
         },
     },
     Statement {
+        id: 15,
         kind: Expression(
             ExpressionStatement {
+                id: 14,
                 span: Span {
                     start: 10,
                     end: 17,
                 },
                 expression: Expression {
+                    id: 13,
                     kind: FunctionCall(
                         FunctionCallExpression {
+                            id: 12,
                             span: Span {
                                 start: 7,
                                 end: 16,
                             },
                             target: Expression {
+                                id: 4,
                                 kind: Name(
                                     Name {
+                                        id: 3,
                                         kind: Unresolved(
                                             UnresolvedName {
+                                                id: 3,
                                                 span: Span {
                                                     start: 7,
                                                     end: 10,
@@ -58,6 +67,7 @@
                                 },
                             },
                             arguments: ArgumentList {
+                                id: 11,
                                 span: Span {
                                     start: 10,
                                     end: 16,
@@ -72,6 +82,7 @@
                                 arguments: [
                                     Positional(
                                         PositionalArgument {
+                                            id: 7,
                                             span: Span {
                                                 start: 11,
                                                 end: 12,
@@ -81,8 +92,10 @@
                                             },
                                             ellipsis: None,
                                             value: Expression {
+                                                id: 5,
                                                 kind: Literal(
                                                     Literal {
+                                                        id: 6,
                                                         span: Span {
                                                             start: 11,
                                                             end: 12,
@@ -112,6 +125,7 @@
                                     ),
                                     Positional(
                                         PositionalArgument {
+                                            id: 10,
                                             span: Span {
                                                 start: 14,
                                                 end: 15,
@@ -121,8 +135,10 @@
                                             },
                                             ellipsis: None,
                                             value: Expression {
+                                                id: 8,
                                                 kind: Literal(
                                                     Literal {
+                                                        id: 9,
                                                         span: Span {
                                                             start: 14,
                                                             end: 15,

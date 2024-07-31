@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 25,
         kind: Function(
             FunctionStatement {
+                id: 24,
                 span: Span {
                     start: 7,
                     end: 67,
@@ -33,8 +37,10 @@
                 },
                 ampersand: None,
                 name: Name {
+                    id: 3,
                     kind: Resolved(
                         ResolvedName {
+                            id: 3,
                             span: Span {
                                 start: 16,
                                 end: 17,
@@ -49,6 +55,7 @@
                     },
                 },
                 parameters: FunctionParameterList {
+                    id: 22,
                     span: Span {
                         start: 17,
                         end: 62,
@@ -63,6 +70,7 @@
                     parameters: CommaSeparated {
                         inner: [
                             FunctionParameter {
+                                id: 7,
                                 span: Span {
                                     start: 18,
                                     end: 24,
@@ -71,6 +79,7 @@
                                     comments: [],
                                 },
                                 name: SimpleVariable {
+                                    id: 6,
                                     symbol: Symbol("$a"),
                                     stripped: Symbol("a"),
                                     span: Span {
@@ -81,10 +90,13 @@
                                 attributes: [],
                                 data_type: Some(
                                     DataType {
+                                        id: 5,
                                         kind: Named(
                                             Name {
+                                                id: 4,
                                                 kind: Resolved(
                                                     ResolvedName {
+                                                        id: 4,
                                                         span: Span {
                                                             start: 18,
                                                             end: 21,
@@ -110,6 +122,7 @@
                                 ampersand: None,
                             },
                             FunctionParameter {
+                                id: 12,
                                 span: Span {
                                     start: 26,
                                     end: 38,
@@ -118,6 +131,7 @@
                                     comments: [],
                                 },
                                 name: SimpleVariable {
+                                    id: 11,
                                     symbol: Symbol("$b"),
                                     stripped: Symbol("b"),
                                     span: Span {
@@ -128,12 +142,15 @@
                                 attributes: [],
                                 data_type: Some(
                                     DataType {
+                                        id: 10,
                                         kind: Union(
                                             [
                                                 Named(
                                                     Name {
+                                                        id: 8,
                                                         kind: Resolved(
                                                             ResolvedName {
+                                                                id: 8,
                                                                 span: Span {
                                                                     start: 26,
                                                                     end: 29,
@@ -150,8 +167,10 @@
                                                 ),
                                                 Named(
                                                     Name {
+                                                        id: 9,
                                                         kind: Resolved(
                                                             ResolvedName {
+                                                                id: 9,
                                                                 span: Span {
                                                                     start: 32,
                                                                     end: 35,
@@ -179,6 +198,7 @@
                                 ampersand: None,
                             },
                             FunctionParameter {
+                                id: 17,
                                 span: Span {
                                     start: 40,
                                     end: 52,
@@ -187,6 +207,7 @@
                                     comments: [],
                                 },
                                 name: SimpleVariable {
+                                    id: 16,
                                     symbol: Symbol("$c"),
                                     stripped: Symbol("c"),
                                     span: Span {
@@ -197,12 +218,15 @@
                                 attributes: [],
                                 data_type: Some(
                                     DataType {
+                                        id: 15,
                                         kind: Intersection(
                                             [
                                                 Named(
                                                     Name {
+                                                        id: 13,
                                                         kind: Resolved(
                                                             ResolvedName {
+                                                                id: 13,
                                                                 span: Span {
                                                                     start: 40,
                                                                     end: 43,
@@ -219,8 +243,10 @@
                                                 ),
                                                 Named(
                                                     Name {
+                                                        id: 14,
                                                         kind: Resolved(
                                                             ResolvedName {
+                                                                id: 14,
                                                                 span: Span {
                                                                     start: 46,
                                                                     end: 49,
@@ -248,6 +274,7 @@
                                 ampersand: None,
                             },
                             FunctionParameter {
+                                id: 21,
                                 span: Span {
                                     start: 54,
                                     end: 61,
@@ -256,6 +283,7 @@
                                     comments: [],
                                 },
                                 name: SimpleVariable {
+                                    id: 20,
                                     symbol: Symbol("$d"),
                                     stripped: Symbol("d"),
                                     span: Span {
@@ -266,11 +294,14 @@
                                 attributes: [],
                                 data_type: Some(
                                     DataType {
+                                        id: 19,
                                         kind: Nullable(
                                             Named(
                                                 Name {
+                                                    id: 18,
                                                     kind: Resolved(
                                                         ResolvedName {
+                                                            id: 18,
                                                             span: Span {
                                                                 start: 55,
                                                                 end: 58,
@@ -319,6 +350,7 @@
                 },
                 return_type: None,
                 body: FunctionBody {
+                    id: 23,
                     span: Span {
                         start: 63,
                         end: 67,

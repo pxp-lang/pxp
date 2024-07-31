@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,14 +19,17 @@
         },
     },
     Statement {
+        id: 7,
         kind: Class(
             ClassStatement {
+                id: 6,
                 span: Span {
                     start: 7,
                     end: 25,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
+                    id: 3,
                     span: Span {
                         start: 7,
                         end: 12,
@@ -43,8 +48,10 @@
                     end: 18,
                 },
                 name: Name {
+                    id: 4,
                     kind: Resolved(
                         ResolvedName {
+                            id: 4,
                             span: Span {
                                 start: 19,
                                 end: 22,
@@ -61,6 +68,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    id: 5,
                     span: Span {
                         start: 23,
                         end: 25,

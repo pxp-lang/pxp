@@ -51,6 +51,7 @@ pub fn try_block(state: &mut State) -> StatementKind {
         let catch_end = state.stream.current().span;
 
         catches.push(CatchBlock {
+             id: state.id(), 
             span: Span::combine(catch_start, catch_body.span()),
             start: catch_start,
             end: catch_end,
@@ -72,6 +73,7 @@ pub fn try_block(state: &mut State) -> StatementKind {
         let finally_end = state.stream.current().span;
 
         finally = Some(FinallyBlock {
+             id: state.id(), 
             span: Span::combine(finally_start, finally_body.span()),
             start: finally_start,
             end: finally_end,
@@ -90,6 +92,7 @@ pub fn try_block(state: &mut State) -> StatementKind {
     let end = state.stream.previous().span;
 
     StatementKind::Try(TryStatement {
+         id: state.id(), 
         span: Span::combine(start, end),
         start,
         end,
@@ -120,12 +123,14 @@ fn catch_type(state: &mut State) -> CatchType {
         }
 
         return CatchType {
+             id: state.id(), 
             span: types.span(),
             kind: CatchTypeKind::Union { identifiers: types }
         };
     }
 
     CatchType {
+        id: state.id(), 
         span: id.span(),
         kind: CatchTypeKind::Identifier { identifier: id }
     }

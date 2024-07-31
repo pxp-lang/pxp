@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,15 +19,19 @@
         },
     },
     Statement {
+        id: 12,
         kind: Expression(
             ExpressionStatement {
+                id: 11,
                 span: Span {
                     start: 7,
                     end: 13,
                 },
                 expression: Expression {
+                    id: 10,
                     kind: ShortArray(
                         ShortArrayExpression {
+                            id: 9,
                             span: Span {
                                 start: 7,
                                 end: 12,
@@ -38,13 +44,16 @@
                                 inner: [
                                     Value(
                                         ArrayItemValue {
+                                            id: 8,
                                             span: Span {
                                                 start: 8,
                                                 end: 11,
                                             },
                                             value: Expression {
+                                                id: 7,
                                                 kind: ShortArray(
                                                     ShortArrayExpression {
+                                                        id: 6,
                                                         span: Span {
                                                             start: 8,
                                                             end: 11,
@@ -57,13 +66,16 @@
                                                             inner: [
                                                                 Value(
                                                                     ArrayItemValue {
+                                                                        id: 5,
                                                                         span: Span {
                                                                             start: 9,
                                                                             end: 10,
                                                                         },
                                                                         value: Expression {
+                                                                            id: 3,
                                                                             kind: Literal(
                                                                                 Literal {
+                                                                                    id: 4,
                                                                                     span: Span {
                                                                                         start: 9,
                                                                                         end: 10,

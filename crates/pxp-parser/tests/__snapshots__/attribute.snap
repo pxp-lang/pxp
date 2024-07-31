@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,27 +19,33 @@
         },
     },
     Statement {
+        id: 10,
         kind: Class(
             ClassStatement {
+                id: 9,
                 span: Span {
                     start: 14,
                     end: 26,
                 },
                 attributes: [
                     AttributeGroup {
+                        id: 5,
                         span: Span {
                             start: 7,
                             end: 13,
                         },
                         members: [
                             Attribute {
+                                id: 4,
                                 span: Span {
                                     start: 9,
                                     end: 13,
                                 },
                                 name: Name {
+                                    id: 3,
                                     kind: Resolved(
                                         ResolvedName {
+                                            id: 3,
                                             span: Span {
                                                 start: 9,
                                                 end: 12,
@@ -57,6 +65,7 @@
                     },
                 ],
                 modifiers: ClassModifierGroup {
+                    id: 6,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -68,8 +77,10 @@
                     end: 19,
                 },
                 name: Name {
+                    id: 7,
                     kind: Resolved(
                         ResolvedName {
+                            id: 7,
                             span: Span {
                                 start: 20,
                                 end: 23,
@@ -86,6 +97,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
+                    id: 8,
                     span: Span {
                         start: 24,
                         end: 26,

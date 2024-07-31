@@ -70,6 +70,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
                     let var = variables::simple_variable(state);
         
                     ClosureUseVariable {
+                         id: state.id(), 
                         span: var.span,
                         comments: use_comments,
                         variable: var,
@@ -82,6 +83,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
         let right_parenthesis = utils::skip_right_parenthesis(state);
 
         Some(ClosureUse {
+             id: state.id(), 
             span: Span::combine(current.span, right_parenthesis),
             comments: state.stream.comments(),
             r#use: current.span,
@@ -98,6 +100,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
         let data_type = data_type::data_type(state);
 
         Some(ReturnType {
+             id: state.id(), 
             span: Span::combine(colon, data_type.span),
             colon,
             data_type,
@@ -112,6 +115,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
     let right_brace = utils::skip_right_brace(state);
 
     let body = FunctionBody {
+         id: state.id(), 
         span: Span::combine(left_brace, right_brace),
         comments: body_comments,
         left_brace,
@@ -122,7 +126,9 @@ pub fn anonymous_function(state: &mut State) -> Expression {
     let end_span = body.right_brace;
 
     Expression::new(
+        state.id(),
         ExpressionKind::Closure(ClosureExpression {
+             id: state.id(), 
             span: Span::combine(function, body.span),
             comments,
             attributes,
@@ -169,6 +175,7 @@ pub fn arrow_function(state: &mut State) -> Expression {
         let data_type = data_type::data_type(state);
         
         Some(ReturnType {
+             id: state.id(), 
             span: Span::combine(colon, data_type.span),
             colon,
             data_type,
@@ -183,7 +190,9 @@ pub fn arrow_function(state: &mut State) -> Expression {
     let end_span = body.span;
 
     Expression::new(
+        state.id(),
         ExpressionKind::ArrowFunction(ArrowFunctionExpression {
+             id: state.id(), 
             span: Span::combine(r#fn, end_span),
             comments,
             attributes,
@@ -226,6 +235,7 @@ pub fn function(state: &mut State) -> StatementKind {
         let data_type = data_type::data_type(state);
 
         Some(ReturnType {
+             id: state.id(), 
             span: Span::combine(colon, data_type.span),
             colon,
             data_type,
@@ -240,6 +250,7 @@ pub fn function(state: &mut State) -> StatementKind {
     let right_brace = utils::skip_right_brace(state);
 
     let body = FunctionBody {
+         id: state.id(), 
         span: Span::combine(left_brace, right_brace),
         comments: body_comments,
         left_brace,
@@ -248,6 +259,7 @@ pub fn function(state: &mut State) -> StatementKind {
     };
 
     StatementKind::Function(FunctionStatement {
+         id: state.id(), 
         span: Span::combine(function, body.span),
         comments,
         function,
@@ -289,6 +301,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
             let right_brace = utils::skip_right_brace(state);
 
             let body = MethodBody {
+                 id: state.id(), 
                 span: Span::combine(left_brace, right_brace),
                 comments: body_comments,
                 left_brace,
@@ -297,6 +310,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
             };
 
             return Method::ConcreteConstructor(ConcreteConstructor {
+                 id: state.id(), 
                 span: Span::combine(function, body.span),
                 comments,
                 attributes,
@@ -311,6 +325,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
             let semicolon = utils::skip_semicolon(state);
 
             Method::AbstractConstructor(AbstractConstructor {
+                 id: state.id(), 
                 span: Span::combine(function, semicolon),
                 comments,
                 attributes,
@@ -330,6 +345,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
         let data_type = data_type::data_type(state);
         
         Some(ReturnType {
+             id: state.id(), 
             span: Span::combine(colon, data_type.span),
             colon,
             data_type,
@@ -345,6 +361,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
         let right_brace = utils::skip_right_brace(state);
 
         let body = MethodBody {
+             id: state.id(), 
             span: Span::combine(left_brace, right_brace),
             comments: body_comments,
             left_brace,
@@ -353,6 +370,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
         };
 
         Method::Concrete(ConcreteMethod {
+             id: state.id(), 
             span: Span::combine(function, body.span),
             comments,
             attributes,
@@ -368,6 +386,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
         let semicolon = utils::skip_semicolon(state);
         
         Method::Abstract(AbstractMethod {
+             id: state.id(), 
             span: Span::combine(function, semicolon),
             comments,
             attributes,

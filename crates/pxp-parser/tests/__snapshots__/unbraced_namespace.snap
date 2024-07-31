@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,9 +19,11 @@
         },
     },
     Statement {
+        id: 6,
         kind: Namespace(
             Unbraced(
                 UnbracedNamespace {
+                    id: 4,
                     span: Span {
                         start: 7,
                         end: 0,
@@ -29,8 +33,10 @@
                         end: 16,
                     },
                     name: Name {
+                        id: 5,
                         kind: Resolved(
                             ResolvedName {
+                                id: 5,
                                 span: Span {
                                     start: 17,
                                     end: 20,

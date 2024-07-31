@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 22,
         kind: Switch(
             SwitchStatement {
+                id: 21,
                 span: Span {
                     start: 7,
                     end: 120,
@@ -32,9 +36,11 @@
                     end: 15,
                 },
                 condition: Expression {
+                    id: 3,
                     kind: Variable(
                         SimpleVariable(
                             SimpleVariable {
+                                id: 4,
                                 symbol: Symbol("$a"),
                                 stripped: Symbol("a"),
                                 span: Span {
@@ -58,14 +64,17 @@
                 },
                 cases: [
                     Case {
+                        id: 9,
                         span: Span {
                             start: 30,
                             end: 49,
                         },
                         condition: Some(
                             Expression {
+                                id: 5,
                                 kind: Literal(
                                     Literal {
+                                        id: 6,
                                         span: Span {
                                             start: 30,
                                             end: 33,
@@ -94,8 +103,10 @@
                         ),
                         body: [
                             Statement {
+                                id: 8,
                                 kind: Break(
                                     BreakStatement {
+                                        id: 7,
                                         span: Span {
                                             start: 43,
                                             end: 49,
@@ -124,14 +135,17 @@
                         ],
                     },
                     Case {
+                        id: 12,
                         span: Span {
                             start: 59,
                             end: 0,
                         },
                         condition: Some(
                             Expression {
+                                id: 10,
                                 kind: Literal(
                                     Literal {
+                                        id: 11,
                                         span: Span {
                                             start: 59,
                                             end: 62,
@@ -161,14 +175,17 @@
                         body: [],
                     },
                     Case {
+                        id: 17,
                         span: Span {
                             start: 73,
                             end: 92,
                         },
                         condition: Some(
                             Expression {
+                                id: 13,
                                 kind: Literal(
                                     Literal {
+                                        id: 14,
                                         span: Span {
                                             start: 73,
                                             end: 76,
@@ -197,8 +214,10 @@
                         ),
                         body: [
                             Statement {
+                                id: 16,
                                 kind: Break(
                                     BreakStatement {
+                                        id: 15,
                                         span: Span {
                                             start: 86,
                                             end: 92,
@@ -227,6 +246,7 @@
                         ],
                     },
                     Case {
+                        id: 20,
                         span: Span {
                             start: 114,
                             end: 120,
@@ -234,8 +254,10 @@
                         condition: None,
                         body: [
                             Statement {
+                                id: 19,
                                 kind: Break(
                                     BreakStatement {
+                                        id: 18,
                                         span: Span {
                                             start: 114,
                                             end: 120,

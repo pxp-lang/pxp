@@ -106,6 +106,7 @@ pub fn parse(state: &mut State) -> StatementKind {
         let right_brace = utils::skip_right_brace(state);
 
         let body = BackedEnumBody {
+             id: state.id(), 
             span: Span::combine(left_brace, right_brace),
             left_brace,
             members,
@@ -113,6 +114,7 @@ pub fn parse(state: &mut State) -> StatementKind {
         };
 
         StatementKind::BackedEnum(BackedEnumStatement {
+             id: state.id(), 
             span: Span::combine(span, body.span),
             r#enum: span,
             name,
@@ -136,6 +138,7 @@ pub fn parse(state: &mut State) -> StatementKind {
         let right_brace = utils::skip_right_brace(state);
 
         let body = UnitEnumBody {
+             id: state.id(), 
             span: Span::combine(left_brace, right_brace),
             left_brace,
             members,
@@ -143,6 +146,7 @@ pub fn parse(state: &mut State) -> StatementKind {
         };
 
         StatementKind::UnitEnum(UnitEnumStatement {
+             id: state.id(), 
             span: Span::combine(span, body.span),
             r#enum: span,
             name,
@@ -184,6 +188,7 @@ fn unit_member(state: &mut State) -> Option<UnitEnumMember> {
         let end = utils::skip_semicolon(state);
 
         return Some(UnitEnumMember::Case(UnitEnumCase {
+             id: state.id(), 
             span: Span::combine(start, end),
             start,
             end,
@@ -228,6 +233,7 @@ fn backed_member(state: &mut State) -> Option<BackedEnumMember> {
         let semicolon = utils::skip_semicolon(state);
 
         return Some(BackedEnumMember::Case(BackedEnumCase {
+             id: state.id(), 
             span: Span::combine(case, semicolon),
             attributes,
             case,

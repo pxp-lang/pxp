@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 8,
         kind: Constant(
             ConstantStatement {
+                id: 7,
                 span: Span {
                     start: 7,
                     end: 21,
@@ -32,13 +36,16 @@
                 },
                 entries: [
                     ConstantEntry {
+                        id: 6,
                         span: Span {
                             start: 13,
                             end: 20,
                         },
                         name: Name {
+                            id: 3,
                             kind: Resolved(
                                 ResolvedName {
+                                    id: 3,
                                     span: Span {
                                         start: 13,
                                         end: 16,
@@ -57,8 +64,10 @@
                             end: 18,
                         },
                         value: Expression {
+                            id: 4,
                             kind: Literal(
                                 Literal {
+                                    id: 5,
                                     span: Span {
                                         start: 19,
                                         end: 20,

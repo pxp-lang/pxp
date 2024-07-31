@@ -37,11 +37,12 @@ pub fn expect_literal(state: &mut State) -> Literal {
                 token.span,
             );
 
-            return Literal::missing(token.span);
+            return Literal::missing(state.id(), token.span);
         }
     };
 
     Literal {
+         id: state.id(), 
         span: token.span,
         kind,
         token: *token,

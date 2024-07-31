@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,15 +19,19 @@
         },
     },
     Statement {
+        id: 41,
         kind: Expression(
             ExpressionStatement {
+                id: 40,
                 span: Span {
                     start: 7,
                     end: 118,
                 },
                 expression: Expression {
+                    id: 38,
                     kind: Heredoc(
                         HeredocExpression {
+                            id: 39,
                             span: Span {
                                 start: 7,
                                 end: 117,
@@ -35,6 +41,7 @@
                             parts: [
                                 Literal(
                                     LiteralStringPart {
+                                        id: 3,
                                         span: Span {
                                             start: 14,
                                             end: 21,
@@ -44,14 +51,17 @@
                                 ),
                                 Expression(
                                     ExpressionStringPart {
+                                        id: 6,
                                         span: Span {
                                             start: 21,
                                             end: 27,
                                         },
                                         expression: Expression {
+                                            id: 7,
                                             kind: Variable(
                                                 SimpleVariable(
                                                     SimpleVariable {
+                                                        id: 4,
                                                         symbol: Symbol("$world"),
                                                         stripped: Symbol("world"),
                                                         span: Span {
@@ -73,6 +83,7 @@
                                 ),
                                 Literal(
                                     LiteralStringPart {
+                                        id: 8,
                                         span: Span {
                                             start: 27,
                                             end: 36,
@@ -83,14 +94,17 @@
                                 ),
                                 Expression(
                                     ExpressionStringPart {
+                                        id: 11,
                                         span: Span {
                                             start: 37,
                                             end: 43,
                                         },
                                         expression: Expression {
+                                            id: 9,
                                             kind: Variable(
                                                 SimpleVariable(
                                                     SimpleVariable {
+                                                        id: 10,
                                                         symbol: Symbol("$world"),
                                                         stripped: Symbol("world"),
                                                         span: Span {
@@ -112,6 +126,7 @@
                                 ),
                                 Literal(
                                     LiteralStringPart {
+                                        id: 12,
                                         span: Span {
                                             start: 44,
                                             end: 53,
@@ -122,21 +137,26 @@
                                 ),
                                 Expression(
                                     ExpressionStringPart {
+                                        id: 19,
                                         span: Span {
                                             start: 60,
                                             end: 66,
                                         },
                                         expression: Expression {
+                                            id: 18,
                                             kind: PropertyFetch(
                                                 PropertyFetchExpression {
+                                                    id: 17,
                                                     span: Span {
                                                         start: 54,
                                                         end: 66,
                                                     },
                                                     target: Expression {
+                                                        id: 13,
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
+                                                                    id: 14,
                                                                     symbol: Symbol("$world"),
                                                                     stripped: Symbol("world"),
                                                                     span: Span {
@@ -159,9 +179,11 @@
                                                         end: 62,
                                                     },
                                                     property: Expression {
+                                                        id: 16,
                                                         kind: Identifier(
                                                             SimpleIdentifier(
                                                                 SimpleIdentifier {
+                                                                    id: 15,
                                                                     symbol: Symbol("name"),
                                                                     span: Span {
                                                                         start: 62,
@@ -192,6 +214,7 @@
                                 ),
                                 Literal(
                                     LiteralStringPart {
+                                        id: 20,
                                         span: Span {
                                             start: 67,
                                             end: 76,
@@ -202,21 +225,26 @@
                                 ),
                                 Expression(
                                     ExpressionStringPart {
+                                        id: 28,
                                         span: Span {
                                             start: 83,
                                             end: 91,
                                         },
                                         expression: Expression {
+                                            id: 27,
                                             kind: MethodCall(
                                                 MethodCallExpression {
+                                                    id: 26,
                                                     span: Span {
                                                         start: 77,
                                                         end: 91,
                                                     },
                                                     target: Expression {
+                                                        id: 21,
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
+                                                                    id: 22,
                                                                     symbol: Symbol("$world"),
                                                                     stripped: Symbol("world"),
                                                                     span: Span {
@@ -239,9 +267,11 @@
                                                         end: 85,
                                                     },
                                                     method: Expression {
+                                                        id: 24,
                                                         kind: Identifier(
                                                             SimpleIdentifier(
                                                                 SimpleIdentifier {
+                                                                    id: 23,
                                                                     symbol: Symbol("name"),
                                                                     span: Span {
                                                                         start: 85,
@@ -259,6 +289,7 @@
                                                         },
                                                     },
                                                     arguments: ArgumentList {
+                                                        id: 25,
                                                         span: Span {
                                                             start: 89,
                                                             end: 91,
@@ -290,6 +321,7 @@
                                 ),
                                 Literal(
                                     LiteralStringPart {
+                                        id: 29,
                                         span: Span {
                                             start: 92,
                                             end: 101,
@@ -300,21 +332,26 @@
                                 ),
                                 Expression(
                                     ExpressionStringPart {
+                                        id: 36,
                                         span: Span {
                                             start: 108,
                                             end: 111,
                                         },
                                         expression: Expression {
+                                            id: 35,
                                             kind: ArrayIndex(
                                                 ArrayIndexExpression {
+                                                    id: 34,
                                                     span: Span {
                                                         start: 102,
                                                         end: 111,
                                                     },
                                                     array: Expression {
+                                                        id: 30,
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
+                                                                    id: 31,
                                                                     symbol: Symbol("$world"),
                                                                     stripped: Symbol("world"),
                                                                     span: Span {
@@ -338,8 +375,10 @@
                                                     },
                                                     index: Some(
                                                         Expression {
+                                                            id: 32,
                                                             kind: Literal(
                                                                 Literal {
+                                                                    id: 33,
                                                                     span: Span {
                                                                         start: 109,
                                                                         end: 110,
@@ -384,6 +423,7 @@
                                 ),
                                 Literal(
                                     LiteralStringPart {
+                                        id: 37,
                                         span: Span {
                                             start: 112,
                                             end: 113,

@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,8 +19,10 @@
         },
     },
     Statement {
+        id: 8,
         kind: Echo(
             EchoStatement {
+                id: 7,
                 span: Span {
                     start: 7,
                     end: 30,
@@ -29,8 +33,10 @@
                 },
                 values: [
                     Expression {
+                        id: 3,
                         kind: Literal(
                             Literal {
+                                id: 4,
                                 span: Span {
                                     start: 13,
                                     end: 18,
@@ -57,8 +63,10 @@
                         },
                     },
                     Expression {
+                        id: 5,
                         kind: Literal(
                             Literal {
+                                id: 6,
                                 span: Span {
                                     start: 22,
                                     end: 28,

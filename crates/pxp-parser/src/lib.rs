@@ -109,12 +109,13 @@ fn top_level_statement(state: &mut State) -> Statement {
                         (start, None)
                     };
 
-                    StatementKind::HaltCompiler(HaltCompilerStatement { span, content })
+                    StatementKind::HaltCompiler(HaltCompilerStatement { id: state.id(), span, content })
                 }
                 _ => unreachable!(),
             };
 
             Statement::new(
+                state.id(),
                 kind,
                 Span::new(start_span.start, state.stream.previous().span.end),
                 comments,
@@ -161,10 +162,11 @@ fn statement(state: &mut State) -> Statement {
 
                         let span = Span::combine(start_span, ending_span);
                         let kind =
-                            StatementKind::Expression(ExpressionStatement { span, expression, ending });
+                            StatementKind::Expression(ExpressionStatement { id: state.id(), span, expression, ending });
                             
 
                         return Statement::new(
+                            state.id(),
                             kind,
                             span,
                             comments,
@@ -183,6 +185,7 @@ fn statement(state: &mut State) -> Statement {
                 let ending_span = ending.span();
 
                 StatementKind::Expression(ExpressionStatement {
+                    id: state.id(),
                     span: Span::combine(start, ending_span),
                     expression,
                     ending
@@ -195,25 +198,25 @@ fn statement(state: &mut State) -> Statement {
                 let span = current.span;
                 state.stream.next();
 
-                StatementKind::EchoOpeningTag(EchoOpeningTagStatement { span })
+                StatementKind::EchoOpeningTag(EchoOpeningTagStatement { id: state.id(), span })
             }
             TokenKind::OpenTag(OpenTagKind::Full) => {
                 let span = current.span;
                 state.stream.next();
 
-                StatementKind::FullOpeningTag(FullOpeningTagStatement { span })
+                StatementKind::FullOpeningTag(FullOpeningTagStatement { id: state.id(), span })
             }
             TokenKind::OpenTag(OpenTagKind::Short) => {
                 let span = current.span;
                 state.stream.next();
 
-                StatementKind::ShortOpeningTag(ShortOpeningTagStatement { span })
+                StatementKind::ShortOpeningTag(ShortOpeningTagStatement { id: state.id(), span })
             }
             TokenKind::CloseTag => {
                 let span = current.span;
                 state.stream.next();
 
-                StatementKind::ClosingTag(ClosingTagStatement { span })
+                StatementKind::ClosingTag(ClosingTagStatement { id: state.id(), span })
             }
             TokenKind::Abstract => classes::parse(state),
             TokenKind::Readonly if peek.kind != TokenKind::LeftParen => classes::parse(state),
@@ -244,9 +247,10 @@ fn statement(state: &mut State) -> Statement {
                         let span = Span::combine(start_span, ending_span);
 
                         let kind =
-                            StatementKind::Expression(ExpressionStatement { span, expression, ending });
+                            StatementKind::Expression(ExpressionStatement { id: state.id(), span, expression, ending });
 
                         return Statement::new(
+                            state.id(),
                             kind,
                             span,
                             comments,
@@ -279,6 +283,7 @@ fn statement(state: &mut State) -> Statement {
                         let end = value.span;
 
                         entries.push(DeclareEntry {
+                            id: state.id(),
                             span: Span::combine(start, end),
                             key,
                             equals,
@@ -296,6 +301,7 @@ fn statement(state: &mut State) -> Statement {
                     let span = Span::combine(start, end);
 
                     DeclareEntryGroup {
+                        id: state.id(),
                         span,
                         left_parenthesis: start,
                         entries,
@@ -353,6 +359,7 @@ fn statement(state: &mut State) -> Statement {
                 let span = Span::combine(declare, body.span());
 
                 StatementKind::Declare(DeclareStatement {
+                    id: state.id(),
                     span,
                     declare,
                     entries,
@@ -379,6 +386,7 @@ fn statement(state: &mut State) -> Statement {
                 let span = Span::combine(global, semicolon);
 
                 StatementKind::Global(GlobalStatement {
+                    id: state.id(),
                     span,
                     global,
                     variables,
@@ -408,6 +416,7 @@ fn statement(state: &mut State) -> Statement {
                     };
 
                     vars.push(StaticVar {
+                        id: state.id(),
                         span,
                         var: Variable::SimpleVariable(var),
                         default,
@@ -423,13 +432,13 @@ fn statement(state: &mut State) -> Statement {
                 let semicolon = utils::skip_semicolon(state);
                 let span = Span::combine(current.span, semicolon);
 
-                StatementKind::Static(StaticStatement { span, vars, semicolon })
+                StatementKind::Static(StaticStatement { id: state.id(), span, vars, semicolon })
             }
             TokenKind::InlineHtml => {
                 let html = *state.stream.current();
                 state.stream.next();
 
-                StatementKind::InlineHtml(InlineHtmlStatement { span: html.span, html })
+                StatementKind::InlineHtml(InlineHtmlStatement { id: state.id(), span: html.span, html })
             }
             TokenKind::Do => loops::do_while_statement(state),
             TokenKind::While => loops::while_statement(state),
@@ -471,6 +480,7 @@ fn statement(state: &mut State) -> Statement {
                 let end = ending.span();
 
                 StatementKind::Echo(EchoStatement {
+                    id: state.id(), 
                     span: Span::combine(echo, end),
                     echo,
                     values,
@@ -495,6 +505,7 @@ fn statement(state: &mut State) -> Statement {
                 let end = ending.span();
 
                 StatementKind::Return(ReturnStatement {
+                    id: state.id(),
                     span: Span::combine(r#return, end),
                     r#return,
                     value,
@@ -506,6 +517,7 @@ fn statement(state: &mut State) -> Statement {
                 let ending = utils::skip_ending(state);
 
                 StatementKind::Expression(ExpressionStatement {
+                    id: state.id(), 
                     span: Span::combine(expression.span, ending.span()),
                     expression,
                     ending
@@ -515,6 +527,7 @@ fn statement(state: &mut State) -> Statement {
     };
 
     Statement::new(
+        state.id(),
         statement,
         Span::new(start_span.start, state.stream.previous().span.end),
         comments,

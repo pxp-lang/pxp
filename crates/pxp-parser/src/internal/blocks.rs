@@ -14,6 +14,7 @@ pub fn block_statement(state: &mut State) -> StatementKind {
     });
 
     StatementKind::Block(BlockStatement {
+         id: state.id(), 
         span: Span::combine(left_brace, right_brace),
         left_brace,
         statements,

@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: ShortOpeningTag(
             ShortOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 2,

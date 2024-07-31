@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,9 +19,11 @@
         },
     },
     Statement {
+        id: 10,
         kind: Namespace(
             Unbraced(
                 UnbracedNamespace {
+                    id: 8,
                     span: Span {
                         start: 7,
                         end: 34,
@@ -29,8 +33,10 @@
                         end: 16,
                     },
                     name: Name {
+                        id: 9,
                         kind: Resolved(
                             ResolvedName {
+                                id: 9,
                                 span: Span {
                                     start: 17,
                                     end: 20,
@@ -50,8 +56,10 @@
                     },
                     statements: [
                         Statement {
+                            id: 7,
                             kind: UnitEnum(
                                 UnitEnumStatement {
+                                    id: 6,
                                     span: Span {
                                         start: 23,
                                         end: 34,
@@ -62,8 +70,10 @@
                                         end: 27,
                                     },
                                     name: Name {
+                                        id: 4,
                                         kind: Resolved(
                                             ResolvedName {
+                                                id: 4,
                                                 span: Span {
                                                     start: 28,
                                                     end: 31,
@@ -79,6 +89,7 @@
                                     },
                                     implements: [],
                                     body: UnitEnumBody {
+                                        id: 5,
                                         span: Span {
                                             start: 32,
                                             end: 34,

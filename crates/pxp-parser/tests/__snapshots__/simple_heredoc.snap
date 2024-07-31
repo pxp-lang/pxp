@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,15 +19,19 @@
         },
     },
     Statement {
+        id: 7,
         kind: Expression(
             ExpressionStatement {
+                id: 6,
                 span: Span {
                     start: 7,
                     end: 59,
                 },
                 expression: Expression {
+                    id: 4,
                     kind: Heredoc(
                         HeredocExpression {
+                            id: 5,
                             span: Span {
                                 start: 7,
                                 end: 58,
@@ -35,6 +41,7 @@
                             parts: [
                                 Literal(
                                     LiteralStringPart {
+                                        id: 3,
                                         span: Span {
                                             start: 14,
                                             end: 54,

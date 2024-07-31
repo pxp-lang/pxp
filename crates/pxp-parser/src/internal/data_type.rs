@@ -32,7 +32,7 @@ pub fn data_type(state: &mut State) -> DataType {
     
     let end = state.stream.previous().span;
     
-    DataType::new(kind, Span::new(start.start, end.end))
+    DataType::new(state.id(), kind, Span::new(start.start, end.end))
 }
 
 pub fn optional_data_type(state: &mut State) -> Option<DataType> {
@@ -65,7 +65,7 @@ pub fn optional_data_type(state: &mut State) -> Option<DataType> {
 
     let end = state.stream.previous().span;
 
-    Some(DataType::new(kind, Span::new(start.start, end.end)))
+    Some(DataType::new(state.id(), kind, Span::new(start.start, end.end)))
 }
 
 fn dnf(state: &mut State) -> Type<Name> {
@@ -179,7 +179,7 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
             let symbol = current.symbol.unwrap();
             let resolved = state.strip_leading_namespace_qualifier(symbol);
 
-            Some(Type::Named(Name::resolved(resolved, symbol, current.span)))
+            Some(Type::Named(Name::resolved(state.id(), resolved, symbol, current.span)))
         },
         TokenKind::QualifiedIdentifier => {
             state.stream.next();

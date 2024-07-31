@@ -1,7 +1,9 @@
 [
     Statement {
+        id: 2,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
+                id: 1,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -17,15 +19,19 @@
         },
     },
     Statement {
+        id: 8,
         kind: Expression(
             ExpressionStatement {
+                id: 7,
                 span: Span {
                     start: 7,
                     end: 12,
                 },
                 expression: Expression {
+                    id: 6,
                     kind: ArithmeticOperation(
                         ArithmeticOperationExpression {
+                            id: 5,
                             span: Span {
                                 start: 7,
                                 end: 11,
@@ -36,9 +42,11 @@
                                     end: 9,
                                 },
                                 right: Expression {
+                                    id: 3,
                                     kind: Variable(
                                         SimpleVariable(
                                             SimpleVariable {
+                                                id: 4,
                                                 symbol: Symbol("$a"),
                                                 stripped: Symbol("a"),
                                                 span: Span {
