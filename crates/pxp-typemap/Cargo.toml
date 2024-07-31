@@ -1,0 +1,11 @@
+[package]
+name = "pxp-typemap"
+version = "0.1.0"
+edition = "2021"
+license-file.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+pxp-ast = { version = "0.1.0", path = "../pxp-ast" }
+pxp-syntax = { version = "0.1.0", path = "../pxp-syntax" }
+pxp-type = { version = "0.1.0", path = "../pxp-type" }
