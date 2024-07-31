@@ -31,6 +31,7 @@ pub struct State<'a, 'b> {
     pub namespace: Option<Symbol>,
     pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
     pub imports: HashMap<UseKind, HashMap<Symbol, Symbol>>,
+    id: u32,
 }
 
 impl<'a, 'b> State<'a, 'b> {
@@ -49,7 +50,13 @@ impl<'a, 'b> State<'a, 'b> {
             diagnostics: vec![],
             namespace: None,
             imports,
+            id: 0,
         }
+    }
+
+    pub fn id(&mut self) -> u32 {
+        self.id += 1;
+        self.id
     }
 
     pub fn attribute(&mut self, attr: AttributeGroup) {
