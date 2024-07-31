@@ -10,6 +10,7 @@
 #
 # AST nodes should not be modified directly. All changes should be made in this file.
 
+NodeId: u32
 Block: Vec<Statement>
 
 Statement:

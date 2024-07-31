@@ -91,6 +91,8 @@ foreach ($ast as $node => $structure) {
             }
         }
     } else {
+        $output .= "    pub id: NodeId,\n";
+        
         foreach ($structure as $field => $type) {
             if (in_array($field, $reserved, true)) {
                 continue;

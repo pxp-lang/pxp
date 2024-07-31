@@ -11,10 +11,13 @@ use pxp_syntax::name::NameQualification;
 use pxp_token::Token;
 use pxp_type::Type;
 
+pub type NodeId = u32;
+
 pub type Block = Vec<Statement>;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Statement {
+    pub id: NodeId,
     pub kind: StatementKind,
     pub span: Span,
     pub comments: CommentGroup,
@@ -68,6 +71,7 @@ pub enum StatementKind {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Expression {
+    pub id: NodeId,
     pub kind: ExpressionKind,
     pub span: Span,
     pub comments: CommentGroup,
@@ -152,6 +156,7 @@ pub enum ExpressionKind {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InlineHtmlStatement {
+    pub id: NodeId,
     pub span: Span,
     pub html: Token,
 }
@@ -164,6 +169,7 @@ impl Spanned for InlineHtmlStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FullOpeningTagStatement {
+    pub id: NodeId,
     pub span: Span,
 }
 
@@ -175,6 +181,7 @@ impl Spanned for FullOpeningTagStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ShortOpeningTagStatement {
+    pub id: NodeId,
     pub span: Span,
 }
 
@@ -186,6 +193,7 @@ impl Spanned for ShortOpeningTagStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct EchoOpeningTagStatement {
+    pub id: NodeId,
     pub span: Span,
 }
 
@@ -197,6 +205,7 @@ impl Spanned for EchoOpeningTagStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClosingTagStatement {
+    pub id: NodeId,
     pub span: Span,
 }
 
@@ -208,6 +217,7 @@ impl Spanned for ClosingTagStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ExpressionStatement {
+    pub id: NodeId,
     pub span: Span,
     pub expression: Expression,
     pub ending: Ending,
@@ -221,6 +231,7 @@ impl Spanned for ExpressionStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct GlobalStatement {
+    pub id: NodeId,
     pub span: Span,
     pub global: Span,
     pub variables: Vec<Variable>,
@@ -235,6 +246,7 @@ impl Spanned for GlobalStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BlockStatement {
+    pub id: NodeId,
     pub span: Span,
     pub left_brace: Span,
     pub statements: Vec<Statement>,
@@ -275,6 +287,7 @@ impl Spanned for CastKind {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Case {
+    pub id: NodeId,
     pub span: Span,
     pub condition: Option<Expression>,
     pub body: Block,
@@ -288,6 +301,7 @@ impl Spanned for Case {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Use {
+    pub id: NodeId,
     pub name: Name,
     pub alias: Option<SimpleIdentifier>,
     pub kind: Option<UseKind>,
@@ -302,6 +316,7 @@ pub enum UseKind {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct EvalExpression {
+    pub id: NodeId,
     pub span: Span,
     pub eval: Span,
     pub argument: Box<SingleArgument>,
@@ -315,6 +330,7 @@ impl Spanned for EvalExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct EmptyExpression {
+    pub id: NodeId,
     pub span: Span,
     pub empty: Span,
     pub argument: Box<SingleArgument>,
@@ -328,6 +344,7 @@ impl Spanned for EmptyExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DieExpression {
+    pub id: NodeId,
     pub span: Span,
     pub die: Span,
     pub argument: Option<Box<SingleArgument>>,
@@ -341,6 +358,7 @@ impl Spanned for DieExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ExitExpression {
+    pub id: NodeId,
     pub span: Span,
     pub exit: Span,
     pub argument: Option<Box<SingleArgument>>,
@@ -354,6 +372,7 @@ impl Spanned for ExitExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IssetExpression {
+    pub id: NodeId,
     pub span: Span,
     pub isset: Span,
     pub arguments: ArgumentList,
@@ -367,6 +386,7 @@ impl Spanned for IssetExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UnsetExpression {
+    pub id: NodeId,
     pub span: Span,
     pub unset: Span,
     pub arguments: ArgumentList,
@@ -380,6 +400,7 @@ impl Spanned for UnsetExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PrintExpression {
+    pub id: NodeId,
     pub span: Span,
     pub print: Span,
     pub value: Option<Box<Expression>>,
@@ -394,6 +415,7 @@ impl Spanned for PrintExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConcatExpression {
+    pub id: NodeId,
     pub span: Span,
     pub left: Box<Expression>,
     pub dot: Span,
@@ -408,6 +430,7 @@ impl Spanned for ConcatExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InstanceofExpression {
+    pub id: NodeId,
     pub span: Span,
     pub left: Box<Expression>,
     pub instanceof: Span,
@@ -422,6 +445,7 @@ impl Spanned for InstanceofExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ReferenceExpression {
+    pub id: NodeId,
     pub span: Span,
     pub ampersand: Span,
     pub right: Box<Expression>,
@@ -435,6 +459,7 @@ impl Spanned for ReferenceExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ParenthesizedExpression {
+    pub id: NodeId,
     pub span: Span,
     pub start: Span,
     pub expr: Box<Expression>,
@@ -449,6 +474,7 @@ impl Spanned for ParenthesizedExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ErrorSuppressExpression {
+    pub id: NodeId,
     pub span: Span,
     pub at: Span,
     pub expr: Box<Expression>,
@@ -462,6 +488,7 @@ impl Spanned for ErrorSuppressExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IncludeExpression {
+    pub id: NodeId,
     pub span: Span,
     pub include: Span,
     pub path: Box<Expression>,
@@ -475,6 +502,7 @@ impl Spanned for IncludeExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IncludeOnceExpression {
+    pub id: NodeId,
     pub span: Span,
     pub include_once: Span,
     pub path: Box<Expression>,
@@ -488,6 +516,7 @@ impl Spanned for IncludeOnceExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct RequireExpression {
+    pub id: NodeId,
     pub span: Span,
     pub require: Span,
     pub path: Box<Expression>,
@@ -501,6 +530,7 @@ impl Spanned for RequireExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct RequireOnceExpression {
+    pub id: NodeId,
     pub span: Span,
     pub require_once: Span,
     pub path: Box<Expression>,
@@ -514,6 +544,7 @@ impl Spanned for RequireOnceExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionCallExpression {
+    pub id: NodeId,
     pub span: Span,
     pub target: Box<Expression>,
     pub arguments: ArgumentList,
@@ -527,6 +558,7 @@ impl Spanned for FunctionCallExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionClosureCreationExpression {
+    pub id: NodeId,
     pub span: Span,
     pub target: Box<Expression>,
     pub placeholder: ArgumentPlaceholder,
@@ -540,6 +572,7 @@ impl Spanned for FunctionClosureCreationExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MethodCallExpression {
+    pub id: NodeId,
     pub span: Span,
     pub target: Box<Expression>,
     pub arrow: Span,
@@ -555,6 +588,7 @@ impl Spanned for MethodCallExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MethodClosureCreationExpression {
+    pub id: NodeId,
     pub span: Span,
     pub target: Box<Expression>,
     pub arrow: Span,
@@ -570,6 +604,7 @@ impl Spanned for MethodClosureCreationExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NullsafeMethodCallExpression {
+    pub id: NodeId,
     pub span: Span,
     pub target: Box<Expression>,
     pub question_arrow: Span,
@@ -585,6 +620,7 @@ impl Spanned for NullsafeMethodCallExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticMethodCallExpression {
+    pub id: NodeId,
     pub span: Span,
     pub target: Box<Expression>,
     pub double_colon: Span,
@@ -600,6 +636,7 @@ impl Spanned for StaticMethodCallExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticVariableMethodCallExpression {
+    pub id: NodeId,
     pub span: Span,
     pub target: Box<Expression>,
     pub double_colon: Span,
@@ -615,6 +652,7 @@ impl Spanned for StaticVariableMethodCallExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticMethodClosureCreationExpression {
+    pub id: NodeId,
     pub span: Span,
     pub target: Box<Expression>,
     pub double_colon: Span,
@@ -630,6 +668,7 @@ impl Spanned for StaticMethodClosureCreationExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticVariableMethodClosureCreationExpression {
+    pub id: NodeId,
     pub span: Span,
     pub target: Box<Expression>,
     pub double_colon: Span,
@@ -645,6 +684,7 @@ impl Spanned for StaticVariableMethodClosureCreationExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PropertyFetchExpression {
+    pub id: NodeId,
     pub span: Span,
     pub target: Box<Expression>,
     pub arrow: Span,
@@ -659,6 +699,7 @@ impl Spanned for PropertyFetchExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NullsafePropertyFetchExpression {
+    pub id: NodeId,
     pub span: Span,
     pub target: Box<Expression>,
     pub question_arrow: Span,
@@ -673,6 +714,7 @@ impl Spanned for NullsafePropertyFetchExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticPropertyFetchExpression {
+    pub id: NodeId,
     pub span: Span,
     pub target: Box<Expression>,
     pub double_colon: Span,
@@ -687,6 +729,7 @@ impl Spanned for StaticPropertyFetchExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstantFetchExpression {
+    pub id: NodeId,
     pub span: Span,
     pub target: Box<Expression>,
     pub double_colon: Span,
@@ -701,6 +744,7 @@ impl Spanned for ConstantFetchExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ShortArrayExpression {
+    pub id: NodeId,
     pub span: Span,
     pub start: Span,
     pub items: CommaSeparated<ArrayItem>,
@@ -715,6 +759,7 @@ impl Spanned for ShortArrayExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArrayExpression {
+    pub id: NodeId,
     pub span: Span,
     pub array: Span,
     pub start: Span,
@@ -730,6 +775,7 @@ impl Spanned for ArrayExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ListExpression {
+    pub id: NodeId,
     pub span: Span,
     pub list: Span,
     pub start: Span,
@@ -745,6 +791,7 @@ impl Spanned for ListExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NewExpression {
+    pub id: NodeId,
     pub span: Span,
     pub new: Span,
     pub target: Box<Expression>,
@@ -759,6 +806,7 @@ impl Spanned for NewExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InterpolatedStringExpression {
+    pub id: NodeId,
     pub span: Span,
     pub parts: Vec<StringPart>,
 }
@@ -771,6 +819,7 @@ impl Spanned for InterpolatedStringExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct HeredocExpression {
+    pub id: NodeId,
     pub span: Span,
     pub label: Symbol,
     pub parts: Vec<StringPart>,
@@ -784,6 +833,7 @@ impl Spanned for HeredocExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NowdocExpression {
+    pub id: NodeId,
     pub span: Span,
     pub label: Token,
     pub value: Token,
@@ -797,6 +847,7 @@ impl Spanned for NowdocExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ShellExecExpression {
+    pub id: NodeId,
     pub span: Span,
     pub parts: Vec<StringPart>,
 }
@@ -809,6 +860,7 @@ impl Spanned for ShellExecExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BoolExpression {
+    pub id: NodeId,
     pub span: Span,
     pub value: Token,
 }
@@ -821,6 +873,7 @@ impl Spanned for BoolExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArrayIndexExpression {
+    pub id: NodeId,
     pub span: Span,
     pub array: Box<Expression>,
     pub left_bracket: Span,
@@ -836,6 +889,7 @@ impl Spanned for ArrayIndexExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ShortTernaryExpression {
+    pub id: NodeId,
     pub span: Span,
     pub condition: Box<Expression>,
     pub question_colon: Span,
@@ -850,6 +904,7 @@ impl Spanned for ShortTernaryExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TernaryExpression {
+    pub id: NodeId,
     pub span: Span,
     pub condition: Box<Expression>,
     pub question: Span,
@@ -866,6 +921,7 @@ impl Spanned for TernaryExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CoalesceExpression {
+    pub id: NodeId,
     pub span: Span,
     pub lhs: Box<Expression>,
     pub double_question: Span,
@@ -880,6 +936,7 @@ impl Spanned for CoalesceExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CloneExpression {
+    pub id: NodeId,
     pub span: Span,
     pub clone: Span,
     pub target: Box<Expression>,
@@ -893,6 +950,7 @@ impl Spanned for CloneExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MatchExpression {
+    pub id: NodeId,
     pub span: Span,
     pub keyword: Span,
     pub left_parenthesis: Span,
@@ -912,6 +970,7 @@ impl Spanned for MatchExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ThrowExpression {
+    pub id: NodeId,
     pub span: Span,
     pub value: Box<Expression>,
 }
@@ -924,6 +983,7 @@ impl Spanned for ThrowExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct YieldExpression {
+    pub id: NodeId,
     pub span: Span,
     pub r#yield: Span,
     pub key: Option<Box<Expression>>,
@@ -938,6 +998,7 @@ impl Spanned for YieldExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct YieldFromExpression {
+    pub id: NodeId,
     pub span: Span,
     pub r#yield: Span,
     pub from: Span,
@@ -952,6 +1013,7 @@ impl Spanned for YieldFromExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CastExpression {
+    pub id: NodeId,
     pub span: Span,
     pub kind: CastKind,
     pub value: Box<Expression>,
@@ -965,6 +1027,7 @@ impl Spanned for CastExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DefaultMatchArm {
+    pub id: NodeId,
     pub span: Span,
     pub keyword: Span,
     pub double_arrow: Span,
@@ -979,6 +1042,7 @@ impl Spanned for DefaultMatchArm {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MatchArm {
+    pub id: NodeId,
     pub span: Span,
     pub conditions: Vec<Expression>,
     pub arrow: Span,
@@ -1029,6 +1093,7 @@ pub enum StringPart {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct LiteralStringPart {
+    pub id: NodeId,
     pub span: Span,
     pub value: Symbol,
 }
@@ -1041,6 +1106,7 @@ impl Spanned for LiteralStringPart {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ExpressionStringPart {
+    pub id: NodeId,
     pub span: Span,
     pub expression: Box<Expression>,
 }
@@ -1072,6 +1138,7 @@ impl Spanned for ArrayItem {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArrayItemValue {
+    pub id: NodeId,
     pub span: Span,
     pub value: Expression,
 }
@@ -1084,6 +1151,7 @@ impl Spanned for ArrayItemValue {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArrayItemReferencedValue {
+    pub id: NodeId,
     pub span: Span,
     pub ampersand: Span,
     pub value: Expression,
@@ -1097,6 +1165,7 @@ impl Spanned for ArrayItemReferencedValue {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArrayItemSpreadValue {
+    pub id: NodeId,
     pub span: Span,
     pub ellipsis: Span,
     pub value: Expression,
@@ -1110,6 +1179,7 @@ impl Spanned for ArrayItemSpreadValue {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArrayItemKeyValue {
+    pub id: NodeId,
     pub span: Span,
     pub key: Expression,
     pub double_arrow: Span,
@@ -1124,6 +1194,7 @@ impl Spanned for ArrayItemKeyValue {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArrayItemReferencedKeyValue {
+    pub id: NodeId,
     pub span: Span,
     pub key: Expression,
     pub double_arrow: Span,
@@ -1155,6 +1226,7 @@ impl Spanned for ListEntry {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ListEntryValue {
+    pub id: NodeId,
     pub span: Span,
     pub value: Expression,
 }
@@ -1167,6 +1239,7 @@ impl Spanned for ListEntryValue {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ListEntryKeyValue {
+    pub id: NodeId,
     pub span: Span,
     pub key: Expression,
     pub double_arrow: Span,
@@ -1181,6 +1254,7 @@ impl Spanned for ListEntryKeyValue {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PositionalArgument {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub ellipsis: Option<Span>,
@@ -1195,6 +1269,7 @@ impl Spanned for PositionalArgument {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct NamedArgument {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub name: SimpleIdentifier,
@@ -1217,6 +1292,7 @@ pub enum Argument {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArgumentList {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub left_parenthesis: Span,
@@ -1232,6 +1308,7 @@ impl Spanned for ArgumentList {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct SingleArgument {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub left_parenthesis: Span,
@@ -1247,6 +1324,7 @@ impl Spanned for SingleArgument {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArgumentPlaceholder {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub left_parenthesis: Span,
@@ -1262,6 +1340,7 @@ impl Spanned for ArgumentPlaceholder {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Attribute {
+    pub id: NodeId,
     pub span: Span,
     pub name: Name,
     pub arguments: Option<ArgumentList>,
@@ -1275,6 +1354,7 @@ impl Spanned for Attribute {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct AttributeGroup {
+    pub id: NodeId,
     pub span: Span,
     pub members: Vec<Attribute>,
 }
@@ -1287,6 +1367,7 @@ impl Spanned for AttributeGroup {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassBody {
+    pub id: NodeId,
     pub span: Span,
     pub left_brace: Span,
     pub members: Vec<ClassishMember>,
@@ -1301,6 +1382,7 @@ impl Spanned for ClassBody {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassStatement {
+    pub id: NodeId,
     pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub modifiers: ClassModifierGroup,
@@ -1319,6 +1401,7 @@ impl Spanned for ClassStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct AnonymousClassBody {
+    pub id: NodeId,
     pub span: Span,
     pub left_brace: Span,
     pub members: Vec<ClassishMember>,
@@ -1333,6 +1416,7 @@ impl Spanned for AnonymousClassBody {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct AnonymousClassExpression {
+    pub id: NodeId,
     pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub class: Span,
@@ -1349,6 +1433,7 @@ impl Spanned for AnonymousClassExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassExtends {
+    pub id: NodeId,
     pub span: Span,
     pub extends: Span,
     pub parent: Name,
@@ -1362,6 +1447,7 @@ impl Spanned for ClassExtends {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassImplements {
+    pub id: NodeId,
     pub span: Span,
     pub implements: Span,
     pub interfaces: CommaSeparated<Name>,
@@ -1387,6 +1473,7 @@ pub enum ClassishMember {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstantEntry {
+    pub id: NodeId,
     pub span: Span,
     pub name: Name,
     pub equals: Span,
@@ -1401,6 +1488,7 @@ impl Spanned for ConstantEntry {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassishConstantEntry {
+    pub id: NodeId,
     pub span: Span,
     pub name: SimpleIdentifier,
     pub equals: Span,
@@ -1415,6 +1503,7 @@ impl Spanned for ClassishConstantEntry {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstantStatement {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub r#const: Span,
@@ -1430,6 +1519,7 @@ impl Spanned for ConstantStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClassishConstant {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
@@ -1448,6 +1538,7 @@ impl Spanned for ClassishConstant {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IfStatement {
+    pub id: NodeId,
     pub span: Span,
     pub r#if: Span,
     pub left_parenthesis: Span,
@@ -1493,6 +1584,7 @@ impl Spanned for IfStatementBody {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IfStatementElseIf {
+    pub id: NodeId,
     pub span: Span,
     pub elseif: Span,
     pub left_parenthesis: Span,
@@ -1509,6 +1601,7 @@ impl Spanned for IfStatementElseIf {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IfStatementElse {
+    pub id: NodeId,
     pub span: Span,
     pub r#else: Span,
     pub statement: Box<Statement>,
@@ -1522,6 +1615,7 @@ impl Spanned for IfStatementElse {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IfStatementElseIfBlock {
+    pub id: NodeId,
     pub span: Span,
     pub elseif: Span,
     pub left_parenthesis: Span,
@@ -1539,6 +1633,7 @@ impl Spanned for IfStatementElseIfBlock {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct IfStatementElseBlock {
+    pub id: NodeId,
     pub span: Span,
     pub r#else: Span,
     pub colon: Span,
@@ -1553,6 +1648,7 @@ impl Spanned for IfStatementElseBlock {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DataType {
+    pub id: NodeId,
     pub kind: Type<Name>,
     pub span: Span,
 }
@@ -1565,6 +1661,7 @@ impl Spanned for DataType {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DeclareEntry {
+    pub id: NodeId,
     pub span: Span,
     pub key: SimpleIdentifier,
     pub equals: Span,
@@ -1579,6 +1676,7 @@ impl Spanned for DeclareEntry {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DeclareEntryGroup {
+    pub id: NodeId,
     pub span: Span,
     pub left_parenthesis: Span,
     pub right_parenthesis: Span,
@@ -1631,6 +1729,7 @@ impl Spanned for DeclareBody {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DeclareStatement {
+    pub id: NodeId,
     pub span: Span,
     pub declare: Span,
     pub entries: DeclareEntryGroup,
@@ -1645,6 +1744,7 @@ impl Spanned for DeclareStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UnitEnumCase {
+    pub id: NodeId,
     pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub start: Span,
@@ -1666,6 +1766,7 @@ pub enum UnitEnumMember {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UnitEnumBody {
+    pub id: NodeId,
     pub span: Span,
     pub left_brace: Span,
     pub members: Vec<UnitEnumMember>,
@@ -1680,6 +1781,7 @@ impl Spanned for UnitEnumBody {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UnitEnumStatement {
+    pub id: NodeId,
     pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub r#enum: Span,
@@ -1696,6 +1798,7 @@ impl Spanned for UnitEnumStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BackedEnumCase {
+    pub id: NodeId,
     pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub case: Span,
@@ -1719,6 +1822,7 @@ pub enum BackedEnumMember {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BackedEnumBody {
+    pub id: NodeId,
     pub span: Span,
     pub left_brace: Span,
     pub members: Vec<BackedEnumMember>,
@@ -1733,6 +1837,7 @@ impl Spanned for BackedEnumBody {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BackedEnumStatement {
+    pub id: NodeId,
     pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub r#enum: Span,
@@ -1750,6 +1855,7 @@ impl Spanned for BackedEnumStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ReturnType {
+    pub id: NodeId,
     pub span: Span,
     pub colon: Span,
     pub data_type: DataType,
@@ -1763,6 +1869,7 @@ impl Spanned for ReturnType {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionParameter {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub name: SimpleVariable,
@@ -1781,6 +1888,7 @@ impl Spanned for FunctionParameter {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionParameterList {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub left_parenthesis: Span,
@@ -1796,6 +1904,7 @@ impl Spanned for FunctionParameterList {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionBody {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub left_brace: Span,
@@ -1811,6 +1920,7 @@ impl Spanned for FunctionBody {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FunctionStatement {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
@@ -1830,6 +1940,7 @@ impl Spanned for FunctionStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClosureUseVariable {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub ampersand: Option<Span>,
@@ -1844,6 +1955,7 @@ impl Spanned for ClosureUseVariable {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClosureUse {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub r#use: Span,
@@ -1860,6 +1972,7 @@ impl Spanned for ClosureUse {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ClosureExpression {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
@@ -1880,6 +1993,7 @@ impl Spanned for ClosureExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArrowFunctionExpression {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub r#static: Option<Span>,
@@ -1900,6 +2014,7 @@ impl Spanned for ArrowFunctionExpression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstructorParameter {
+    pub id: NodeId,
     pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub comments: CommentGroup,
@@ -1919,6 +2034,7 @@ impl Spanned for ConstructorParameter {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstructorParameterList {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub left_parenthesis: Span,
@@ -1934,6 +2050,7 @@ impl Spanned for ConstructorParameterList {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct AbstractConstructor {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
@@ -1953,6 +2070,7 @@ impl Spanned for AbstractConstructor {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConcreteConstructor {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
@@ -1972,6 +2090,7 @@ impl Spanned for ConcreteConstructor {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct AbstractMethod {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
@@ -1992,6 +2111,7 @@ impl Spanned for AbstractMethod {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConcreteMethod {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub attributes: Vec<AttributeGroup>,
@@ -2012,6 +2132,7 @@ impl Spanned for ConcreteMethod {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct MethodBody {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub left_brace: Span,
@@ -2027,6 +2148,7 @@ impl Spanned for MethodBody {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct LabelStatement {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub label: SimpleIdentifier,
@@ -2041,6 +2163,7 @@ impl Spanned for LabelStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct GotoStatement {
+    pub id: NodeId,
     pub span: Span,
     pub comments: CommentGroup,
     pub keyword: Span,
@@ -2062,6 +2185,7 @@ pub enum Identifier {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct SimpleIdentifier {
+    pub id: NodeId,
     pub symbol: Symbol,
     pub span: Span,
 }
@@ -2074,6 +2198,7 @@ impl Spanned for SimpleIdentifier {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DynamicIdentifier {
+    pub id: NodeId,
     pub span: Span,
     pub expr: Box<Expression>,
 }
@@ -2086,6 +2211,7 @@ impl Spanned for DynamicIdentifier {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InterfaceExtends {
+    pub id: NodeId,
     pub span: Span,
     pub extends: Span,
     pub parents: CommaSeparated<Name>,
@@ -2099,6 +2225,7 @@ impl Spanned for InterfaceExtends {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InterfaceBody {
+    pub id: NodeId,
     pub span: Span,
     pub left_brace: Span,
     pub members: Vec<ClassishMember>,
@@ -2113,6 +2240,7 @@ impl Spanned for InterfaceBody {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct InterfaceStatement {
+    pub id: NodeId,
     pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub interface: Span,
@@ -2129,6 +2257,7 @@ impl Spanned for InterfaceStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Literal {
+    pub id: NodeId,
     pub span: Span,
     pub kind: LiteralKind,
     pub token: Token,
@@ -2150,6 +2279,7 @@ pub enum LiteralKind {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ForeachStatement {
+    pub id: NodeId,
     pub span: Span,
     pub foreach: Span,
     pub left_parenthesis: Span,
@@ -2221,6 +2351,7 @@ impl Spanned for ForeachStatementBody {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ForStatement {
+    pub id: NodeId,
     pub span: Span,
     pub r#for: Span,
     pub left_parenthesis: Span,
@@ -2237,6 +2368,7 @@ impl Spanned for ForStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ForStatementIterator {
+    pub id: NodeId,
     pub span: Span,
     pub initializations: CommaSeparated<Expression>,
     pub initializations_semicolon: Span,
@@ -2278,6 +2410,7 @@ impl Spanned for ForStatementBody {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DoWhileStatement {
+    pub id: NodeId,
     pub span: Span,
     pub r#do: Span,
     pub body: Box<Statement>,
@@ -2296,6 +2429,7 @@ impl Spanned for DoWhileStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct WhileStatement {
+    pub id: NodeId,
     pub span: Span,
     pub r#while: Span,
     pub left_parenthesis: Span,
@@ -2357,6 +2491,7 @@ impl Spanned for Level {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BreakStatement {
+    pub id: NodeId,
     pub span: Span,
     pub r#break: Span,
     pub level: Option<Level>,
@@ -2371,6 +2506,7 @@ impl Spanned for BreakStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ContinueStatement {
+    pub id: NodeId,
     pub span: Span,
     pub r#continue: Span,
     pub level: Option<Level>,
@@ -2423,6 +2559,7 @@ impl Spanned for PromotedPropertyModifier {
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct PromotedPropertyModifierGroup {
+    pub id: NodeId,
     pub span: Span,
     pub modifiers: Vec<PromotedPropertyModifier>,
 }
@@ -2457,6 +2594,7 @@ impl Spanned for PropertyModifier {
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct PropertyModifierGroup {
+    pub id: NodeId,
     pub span: Span,
     pub modifiers: Vec<PropertyModifier>,
 }
@@ -2493,6 +2631,7 @@ impl Spanned for MethodModifier {
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct MethodModifierGroup {
+    pub id: NodeId,
     pub span: Span,
     pub modifiers: Vec<MethodModifier>,
 }
@@ -2523,6 +2662,7 @@ impl Spanned for ClassModifier {
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct ClassModifierGroup {
+    pub id: NodeId,
     pub span: Span,
     pub modifiers: Vec<ClassModifier>,
 }
@@ -2555,6 +2695,7 @@ impl Spanned for ConstantModifier {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ConstantModifierGroup {
+    pub id: NodeId,
     pub span: Span,
     pub modifiers: Vec<ConstantModifier>,
 }
@@ -2567,6 +2708,7 @@ impl Spanned for ConstantModifierGroup {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UnbracedNamespace {
+    pub id: NodeId,
     pub span: Span,
     pub start: Span,
     pub name: Name,
@@ -2582,6 +2724,7 @@ impl Spanned for UnbracedNamespace {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BracedNamespace {
+    pub id: NodeId,
     pub span: Span,
     pub namespace: Span,
     pub name: Option<Name>,
@@ -2596,6 +2739,7 @@ impl Spanned for BracedNamespace {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BracedNamespaceBody {
+    pub id: NodeId,
     pub span: Span,
     pub start: Span,
     pub end: Span,
@@ -2616,6 +2760,7 @@ pub enum NamespaceStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArithmeticOperationExpression {
+    pub id: NodeId,
     pub span: Span,
     pub kind: ArithmeticOperationKind,
 }
@@ -2686,6 +2831,7 @@ pub enum ArithmeticOperationKind {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct AssignmentOperationExpression {
+    pub id: NodeId,
     pub span: Span,
     pub kind: AssignmentOperationKind,
 }
@@ -2772,6 +2918,7 @@ pub enum AssignmentOperationKind {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BitwiseOperationExpression {
+    pub id: NodeId,
     pub span: Span,
     pub kind: BitwiseOperationKind,
 }
@@ -2817,6 +2964,7 @@ pub enum BitwiseOperationKind {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ComparisonOperationExpression {
+    pub id: NodeId,
     pub span: Span,
     pub kind: ComparisonOperationKind,
 }
@@ -2883,6 +3031,7 @@ pub enum ComparisonOperationKind {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct LogicalOperationExpression {
+    pub id: NodeId,
     pub span: Span,
     pub kind: LogicalOperationKind,
 }
@@ -2928,6 +3077,7 @@ pub enum LogicalOperationKind {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Name {
+    pub id: NodeId,
     pub kind: NameKind,
     pub span: Span,
 }
@@ -2947,6 +3097,7 @@ pub enum NameKind {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct SpecialName {
+    pub id: NodeId,
     pub span: Span,
     pub kind: SpecialNameKind,
     pub symbol: Symbol,
@@ -2978,6 +3129,7 @@ impl Spanned for SpecialNameKind {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct UnresolvedName {
+    pub id: NodeId,
     pub span: Span,
     pub symbol: Symbol,
     pub qualification: NameQualification,
@@ -2991,6 +3143,7 @@ impl Spanned for UnresolvedName {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct ResolvedName {
+    pub id: NodeId,
     pub span: Span,
     pub resolved: Symbol,
     pub original: Symbol,
@@ -3004,6 +3157,7 @@ impl Spanned for ResolvedName {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Property {
+    pub id: NodeId,
     pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub modifiers: PropertyModifierGroup,
@@ -3020,6 +3174,7 @@ impl Spanned for Property {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct VariableProperty {
+    pub id: NodeId,
     pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub r#type: Option<DataType>,
@@ -3035,6 +3190,7 @@ impl Spanned for VariableProperty {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PropertyEntry {
+    pub id: NodeId,
     pub span: Span,
     pub kind: PropertyEntryKind,
 }
@@ -3059,6 +3215,7 @@ pub enum PropertyEntryKind {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TraitBody {
+    pub id: NodeId,
     pub span: Span,
     pub left_brace: Span,
     pub members: Vec<ClassishMember>,
@@ -3073,6 +3230,7 @@ impl Spanned for TraitBody {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TraitStatement {
+    pub id: NodeId,
     pub span: Span,
     pub r#trait: Span,
     pub name: Name,
@@ -3088,6 +3246,7 @@ impl Spanned for TraitStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TraitUsage {
+    pub id: NodeId,
     pub span: Span,
     pub r#use: Span,
     pub traits: Vec<Name>,
@@ -3102,6 +3261,7 @@ impl Spanned for TraitUsage {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TraitUsageAdaptation {
+    pub id: NodeId,
     pub span: Span,
     pub kind: TraitUsageAdaptationKind,
 }
@@ -3134,6 +3294,7 @@ pub enum TraitUsageAdaptationKind {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CatchType {
+    pub id: NodeId,
     pub span: Span,
     pub kind: CatchTypeKind,
 }
@@ -3152,6 +3313,7 @@ pub enum CatchTypeKind {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct TryStatement {
+    pub id: NodeId,
     pub span: Span,
     pub start: Span,
     pub end: Span,
@@ -3168,6 +3330,7 @@ impl Spanned for TryStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct CatchBlock {
+    pub id: NodeId,
     pub span: Span,
     pub start: Span,
     pub end: Span,
@@ -3184,6 +3347,7 @@ impl Spanned for CatchBlock {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct FinallyBlock {
+    pub id: NodeId,
     pub span: Span,
     pub start: Span,
     pub end: Span,
@@ -3205,6 +3369,7 @@ pub enum Variable {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct SimpleVariable {
+    pub id: NodeId,
     pub symbol: Symbol,
     pub stripped: Symbol,
     pub span: Span,
@@ -3218,6 +3383,7 @@ impl Spanned for SimpleVariable {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct VariableVariable {
+    pub id: NodeId,
     pub span: Span,
     pub variable: Box<Variable>,
 }
@@ -3230,6 +3396,7 @@ impl Spanned for VariableVariable {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct BracedVariableVariable {
+    pub id: NodeId,
     pub span: Span,
     pub start: Span,
     pub variable: Box<Expression>,
@@ -3262,6 +3429,7 @@ impl Spanned for Ending {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticStatement {
+    pub id: NodeId,
     pub span: Span,
     pub vars: Vec<StaticVar>,
     pub semicolon: Span,
@@ -3275,6 +3443,7 @@ impl Spanned for StaticStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct SwitchStatement {
+    pub id: NodeId,
     pub span: Span,
     pub switch: Span,
     pub left_parenthesis: Span,
@@ -3291,6 +3460,7 @@ impl Spanned for SwitchStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct EchoStatement {
+    pub id: NodeId,
     pub span: Span,
     pub echo: Span,
     pub values: Vec<Expression>,
@@ -3305,6 +3475,7 @@ impl Spanned for EchoStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ReturnStatement {
+    pub id: NodeId,
     pub span: Span,
     pub r#return: Span,
     pub value: Option<Expression>,
@@ -3319,6 +3490,7 @@ impl Spanned for ReturnStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct UseStatement {
+    pub id: NodeId,
     pub span: Span,
     pub kind: UseKind,
     pub uses: Vec<Use>,
@@ -3332,6 +3504,7 @@ impl Spanned for UseStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct GroupUseStatement {
+    pub id: NodeId,
     pub span: Span,
     pub prefix: SimpleIdentifier,
     pub kind: UseKind,
@@ -3346,6 +3519,7 @@ impl Spanned for GroupUseStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct HaltCompilerStatement {
+    pub id: NodeId,
     pub span: Span,
     pub content: Option<Token>,
 }
@@ -3358,6 +3532,7 @@ impl Spanned for HaltCompilerStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct StaticVar {
+    pub id: NodeId,
     pub span: Span,
     pub var: Variable,
     pub default: Option<Expression>,
@@ -3371,6 +3546,7 @@ impl Spanned for StaticVar {
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Node<'a> {
+    NodeId(&'a NodeId),
     Block(&'a Block),
     Statement(&'a Statement),
     StatementKind(&'a StatementKind),
@@ -3590,6 +3766,17 @@ pub enum Node<'a> {
 }
 
 impl<'a> Node<'a> {
+    pub fn as_node_id(self) -> Option<&'a NodeId> {
+        match self {
+            Node::NodeId(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_node_id(&self) -> bool {
+        matches!(self, Node::NodeId(_))
+    }
+
     pub fn as_block(self) -> Option<&'a Block> {
         match self {
             Node::Block(node) => Some(node),
