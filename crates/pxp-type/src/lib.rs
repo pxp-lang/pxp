@@ -3,7 +3,7 @@ use std::fmt::{Debug, Display};
 use pxp_symbol::Symbol;
 use serde::{Serialize, Deserialize};
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Hash)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Hash, Default)]
 
 pub enum Type<N: Debug + Display = Symbol> {
     Named(N),
@@ -23,6 +23,7 @@ pub enum Type<N: Debug + Display = Symbol> {
     GenericArray(Box<Type<N>>, Box<Type<N>>),
     EmptyArray,
     Object,
+    #[default]
     Mixed,
     Callable,
     Iterable,
@@ -30,12 +31,6 @@ pub enum Type<N: Debug + Display = Symbol> {
     SelfReference,
     ParentReference,
     Missing,
-}
-
-impl<N: Debug + Display> Default for Type<N> {
-    fn default() -> Self {
-        Self::Missing
-    }
 }
 
 impl<N: Debug + Display> Type<N> {
