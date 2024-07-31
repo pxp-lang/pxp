@@ -7,5 +7,7 @@ rust-version.workspace = true
 
 [dependencies]
 pxp-ast = { version = "0.1.0", path = "../pxp-ast" }
+pxp-index = { version = "0.1.0", path = "../pxp-index" }
 pxp-syntax = { version = "0.1.0", path = "../pxp-syntax" }
 pxp-type = { version = "0.1.0", path = "../pxp-type" }
+pxp-visitor = { version = "0.1.0", path = "../pxp-visitor" }

@@ -1,14 +1,10 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+use pxp_ast::Statement;
+use pxp_index::Index;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub struct TypeMapGenerator;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+impl TypeMapGenerator {
+    pub fn generate(index: &Index, ast: &[Statement]) {
+
     }
 }
