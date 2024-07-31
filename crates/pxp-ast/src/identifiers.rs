@@ -1,11 +1,11 @@
 use pxp_span::{Span, Spanned};
 use pxp_symbol::Symbol;
 
-use crate::{Identifier, SimpleIdentifier};
+use crate::{Identifier, NodeId, SimpleIdentifier};
 
 impl Identifier {
-    pub fn missing() -> Self {
-        Self::SimpleIdentifier(SimpleIdentifier::new(Symbol::missing(), Span::default()))
+    pub fn missing(id: NodeId, span: Span) -> Self {
+        Self::SimpleIdentifier(SimpleIdentifier::new(id, Symbol::missing(), span))
     }
 
     pub fn is_simple(&self) -> bool {
@@ -33,7 +33,7 @@ impl Spanned for Identifier {
 }
 
 impl SimpleIdentifier {
-    pub fn new(symbol: Symbol, span: Span) -> Self {
-        Self { symbol, span }
+    pub fn new(id: NodeId, symbol: Symbol, span: Span) -> Self {
+        Self { id, symbol, span }
     }
 }

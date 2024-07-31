@@ -1,10 +1,11 @@
-use crate::{SimpleVariable, Variable};
+use crate::{NodeId, SimpleVariable, Variable};
 use pxp_span::{Span, Spanned};
 use pxp_symbol::Symbol;
 
 impl SimpleVariable {
-    pub fn missing(span: Span) -> Self {
+    pub fn missing(id: NodeId, span: Span) -> Self {
         Self {
+            id,
             symbol: Symbol::missing(),
             stripped: Symbol::missing(),
             span,

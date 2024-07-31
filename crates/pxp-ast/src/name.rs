@@ -4,7 +4,7 @@ use pxp_span::Span;
 use pxp_symbol::Symbol;
 use pxp_syntax::name::NameQualification;
 
-use crate::{Name, NameKind, ResolvedName, SpecialName, SpecialNameKind, UnresolvedName};
+use crate::{Name, NameKind, NodeId, ResolvedName, SpecialName, SpecialNameKind, UnresolvedName};
 
 impl Display for Name {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -17,13 +17,15 @@ impl Display for Name {
 }
 
 impl Name {
-    pub fn new(kind: NameKind, span: Span) -> Self {
-        Self { kind, span }
+    pub fn new(id: NodeId, kind: NameKind, span: Span) -> Self {
+        Self { id, kind, span }
     }
 
-    pub fn missing(span: Span) -> Self {
+    pub fn missing(id: NodeId, span: Span) -> Self {
         Self::new(
+            id,
             NameKind::Resolved(ResolvedName {
+                id,
                 resolved: Symbol::missing(),
                 original: Symbol::missing(),
                 span,
@@ -32,9 +34,11 @@ impl Name {
         )
     }
 
-    pub fn resolved(symbol: Symbol, original: Symbol, span: Span) -> Self {
+    pub fn resolved(id: NodeId, symbol: Symbol, original: Symbol, span: Span) -> Self {
         Self::new(
+            id,
             NameKind::Resolved(ResolvedName {
+                id,
                 resolved: symbol,
                 original,
                 span,
@@ -43,9 +47,11 @@ impl Name {
         )
     }
 
-    pub fn unresolved(symbol: Symbol, qualification: NameQualification, span: Span) -> Self {
+    pub fn unresolved(id: NodeId, symbol: Symbol, qualification: NameQualification, span: Span) -> Self {
         Self::new(
+            id,
             NameKind::Unresolved(UnresolvedName {
+                id,
                 symbol,
                 qualification,
                 span,
@@ -54,8 +60,8 @@ impl Name {
         )
     }
 
-    pub fn special(kind: SpecialNameKind, symbol: Symbol, span: Span) -> Self {
-        Self::new(NameKind::Special(SpecialName { kind, symbol, span }), span)
+    pub fn special(id: NodeId, kind: SpecialNameKind, symbol: Symbol, span: Span) -> Self {
+        Self::new(id, NameKind::Special(SpecialName { id, kind, symbol, span }), span)
     }
 
     pub fn symbol(&self) -> Symbol {

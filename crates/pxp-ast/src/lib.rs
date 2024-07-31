@@ -39,8 +39,9 @@ impl Ending {
 }
 
 impl Statement {
-    pub fn new(kind: StatementKind, span: Span, comments: CommentGroup) -> Self {
+    pub fn new(id: NodeId, kind: StatementKind, span: Span, comments: CommentGroup) -> Self {
         Self {
+            id,
             span,
             kind,
             comments,
@@ -49,20 +50,21 @@ impl Statement {
 }
 
 impl Expression {
-    pub fn new(kind: ExpressionKind, span: Span, comments: CommentGroup) -> Self {
+    pub fn new(id: NodeId, kind: ExpressionKind, span: Span, comments: CommentGroup) -> Self {
         Self {
+            id,
             span,
             kind,
             comments,
         }
     }
 
-    pub fn missing(span: Span) -> Self {
-        Self::new(ExpressionKind::Missing(span), span, CommentGroup::default())
+    pub fn missing(id: NodeId, span: Span) -> Self {
+        Self::new(id, ExpressionKind::Missing(span), span, CommentGroup::default())
     }
 
-    pub fn noop(span: Span) -> Self {
-        Self::new(ExpressionKind::Noop(span), span, CommentGroup::default())
+    pub fn noop(id: NodeId, span: Span) -> Self {
+        Self::new(id, ExpressionKind::Noop(span), span, CommentGroup::default())
     }
 }
 

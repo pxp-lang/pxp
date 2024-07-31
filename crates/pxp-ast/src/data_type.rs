@@ -1,11 +1,11 @@
 use pxp_span::Span;
 use pxp_type::Type;
 
-use crate::{DataType, Name};
+use crate::{DataType, Name, NodeId};
 
 impl DataType {
-    pub fn new(kind: Type<Name>, span: Span) -> Self {
-        Self { kind, span }
+    pub fn new(id: NodeId, kind: Type<Name>, span: Span) -> Self {
+        Self { id, kind, span }
     }
 
     pub fn get_type(&self) -> &Type<Name> {
