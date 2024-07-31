@@ -3,13 +3,26 @@ use std::collections::HashMap;
 use pxp_ast::{NodeId, Statement};
 use pxp_index::Index;
 use pxp_type::Type;
+use pxp_visitor::Visitor;
 
 pub struct TypeMapGenerator;
 
 impl TypeMapGenerator {
-    pub fn generate(index: &Index, ast: &[Statement]) {
+    pub fn generate(index: &Index, ast: &[Statement]) -> TypeMap {
+        let mut visitor = TypeMapVisitor { index, map: TypeMap::new() };
 
+        visitor.visit(ast);
+        visitor.map
     }
+}
+
+struct TypeMapVisitor<'a> {
+    index: &'a Index,
+    map: TypeMap,
+}
+
+impl<'a> Visitor for TypeMapVisitor<'a> {
+
 }
 
 #[derive(Default, Debug)]
