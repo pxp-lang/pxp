@@ -131,7 +131,14 @@ foreach ($ast as $node => $structure) {
 }
 
 $output .= "#[derive(Debug, PartialEq, Clone)]\n";
-$output .= "pub enum Node<'a> {\n";
+$output .= "pub struct Node<'a> {\n";
+$output .= "    pub id: NodeId,\n";
+$output .= "    pub kind: NodeKind<'a>,\n";
+$output .= "    pub span: Span,\n";
+$output .= "}\n\n";
+
+$output .= "#[derive(Debug, PartialEq, Clone)]\n";
+$output .= "pub enum NodeKind<'a> {\n";
 
 foreach ($ast as $node => $structure) {
     if ($node === 'NodeId') {
@@ -161,14 +168,14 @@ foreach ($ast as $node => $structure) {
     $kebab = strtolower(Str::snake($node));
 
     $output .= "    pub fn as_{$kebab}(self) -> Option<&'a {$node}> {\n";
-    $output .= "        match self {\n";
-    $output .= "            Node::{$node}(node) => Some(node),\n";
+    $output .= "        match &self.kind {\n";
+    $output .= "            NodeKind::{$node}(node) => Some(node),\n";
     $output .= "            _ => None,\n";
     $output .= "        }\n";
     $output .= "    }\n\n";
 
     $output .= "    pub fn is_{$kebab}(&self) -> bool {\n";
-    $output .= "        matches!(self, Node::{$node}(_))\n";
+    $output .= "        matches!(&self.kind, NodeKind::{$node}(_))\n";
     $output .= "    }\n\n";
 }
 
