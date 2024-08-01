@@ -2,8 +2,8 @@
 // Do not modify this file directly.
 #![allow(unused)]
 
-use crate::walk_mut::*;
-use pxp_ast::*;
+use super::*;
+use crate::*;
 use pxp_span::Span;
 use pxp_syntax::comments::Comment;
 use pxp_type::Type;

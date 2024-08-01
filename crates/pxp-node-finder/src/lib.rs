@@ -1,6 +1,5 @@
-use pxp_ast::{Node, Statement};
+use pxp_ast::{Node, Statement, visitor::Visitor};
 use pxp_span::ByteOffset;
-use pxp_visitor::Visitor;
 
 pub struct NodeFinder;
 

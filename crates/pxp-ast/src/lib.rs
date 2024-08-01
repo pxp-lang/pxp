@@ -1,6 +1,7 @@
 use std::fmt::{Display, Formatter};
 
 mod generated;
+pub mod visitor;
 
 pub use generated::*;
 use pxp_span::Span;

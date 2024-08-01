@@ -13,7 +13,7 @@ generate-ast:
 
 generate-visitor:
     php ./meta/scripts/generate-visitor.php
-    cargo fmt --package pxp-visitor
+    cargo fmt --package pxp-ast
 
 generate-node-finder:
     php ./meta/scripts/generate-node-finder.php

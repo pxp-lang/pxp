@@ -13,9 +13,9 @@ pxp-token = { path = "../pxp-token" }
 pxp-parser = { path = "../pxp-parser" }
 discoverer = "0.2.0"
 rustyline = "13.0.0"
-pxp-visitor = { version = "0.1.0", path = "../pxp-visitor" }
 pxp-index = { version = "0.1.0", path = "../pxp-index" }
 indicatif = "0.17.8"
+pxp-ast = { version = "0.1.0", path = "../pxp-ast" }
 
 [[bin]]
 name = "tokenise"

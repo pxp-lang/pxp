@@ -9,4 +9,3 @@ rust-version.workspace = true
 pxp-ast = { version = "0.1.0", path = "../pxp-ast" }
 pxp-span = { version = "0.1.0", path = "../pxp-span" }
 pxp-syntax = { version = "0.1.0", path = "../pxp-syntax" }
-pxp-visitor = { version = "0.1.0", path = "../pxp-visitor" }

@@ -1,8 +1,7 @@
 use pxp_span::Span;
 use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
-use pxp_visitor::{walk_backed_enum_statement, walk_braced_namespace, walk_class_statement, walk_interface_statement, walk_trait_statement, walk_unbraced_namespace, walk_unit_enum_statement, Visitor};
-use pxp_ast::{UnbracedNamespace, *};
+use pxp_ast::{UnbracedNamespace, visitor::*, *};
 
 use crate::{class_like::{ClassConstant, ClassKind, ClassLike, Method}, function::Function, parameter::Parameter, Index};
 

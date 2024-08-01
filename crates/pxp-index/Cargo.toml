@@ -11,7 +11,6 @@ pxp-parser = { version = "0.1.0", path = "../pxp-parser" }
 pxp-span = { version = "0.1.0", path = "../pxp-span" }
 pxp-symbol = { version = "0.1.0", path = "../pxp-symbol" }
 pxp-type = { version = "0.1.0", path = "../pxp-type" }
-pxp-visitor = { version = "0.1.0", path = "../pxp-visitor" }
 
 [dev-dependencies]
 discoverer = "0.2.0"

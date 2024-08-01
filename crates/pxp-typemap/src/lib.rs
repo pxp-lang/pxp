@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use pxp_ast::{Literal, *};
 use pxp_index::Index;
 use pxp_type::Type;
-use pxp_visitor::Visitor;
+use pxp_ast::visitor::Visitor;
 
 pub struct TypeMapGenerator;
 

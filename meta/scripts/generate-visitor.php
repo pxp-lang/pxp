@@ -27,14 +27,14 @@ class VisitorGenerator
         $methods = $this->generateVisitorMethods($template);
         $visitor = sprintf($template->getVisitorTemplate(), implode("\n\n", $methods));
 
-        file_put_contents(__DIR__ . '/../../crates/pxp-visitor/src/' . $template->getVisitorFilename(), $visitor);
+        file_put_contents(__DIR__ . '/../../crates/pxp-ast/src/visitor/' . $template->getVisitorFilename(), $visitor);
 
         echo "Generated " . class_basename($template) . ", saved to " . $template->getVisitorFilename() . "\n";
 
         $walkers = $this->generateWalkerFunctions($template);
         $walk = sprintf($template->getWalkTemplate(), implode("\n\n", $walkers));
 
-        file_put_contents(__DIR__ . '/../../crates/pxp-visitor/src/' . $template->getWalkFilename(), $walk);
+        file_put_contents(__DIR__ . '/../../crates/pxp-ast/src/visitor/' . $template->getWalkFilename(), $walk);
 
         echo "Generated " . class_basename($template) . ", saved to " . $template->getWalkFilename() . "\n";
     }
@@ -295,8 +295,8 @@ class VisitorMut implements VisitorTemplate
 // Do not modify this file directly.
 #![allow(unused)]
 
-use pxp_ast::*;
-use crate::walk_mut::*;
+use crate::*;
+use super::*;
 use pxp_span::Span;
 use pxp_syntax::comments::Comment;
 use pxp_type::Type;
@@ -338,8 +338,8 @@ RUST;
 // Do not modify this file directly.
 #![allow(unused)]
 
-use crate::visitor_mut::VisitorMut;
-use pxp_ast::*;
+use super::VisitorMut;
+use crate::*;
 
 pub fn walk_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut [Statement]) {
     for statement in node {
@@ -371,8 +371,8 @@ class Visitor implements VisitorTemplate
 // Do not modify this file directly.
 #![allow(unused)]
 
-use pxp_ast::*;
-use crate::walk::*;
+use crate::*;
+use super::*;
 use pxp_span::Span;
 use pxp_syntax::comments::Comment;
 use pxp_type::Type;
@@ -411,8 +411,8 @@ RUST;
 // Do not modify this file directly.
 #![allow(unused)]
 
-use crate::visitor::Visitor;
-use pxp_ast::*;
+use super::Visitor;
+use crate::*;
 
 pub fn walk<V: Visitor + ?Sized>(visitor: &mut V, node: &[Statement]) {
     for statement in node {
