@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use pxp_ast::{NodeId, Statement};
+use pxp_ast::{Literal, *};
 use pxp_index::Index;
 use pxp_type::Type;
 use pxp_visitor::Visitor;
@@ -22,7 +22,14 @@ struct TypeMapVisitor<'a> {
 }
 
 impl<'a> Visitor for TypeMapVisitor<'a> {
-
+    fn visit_literal(&mut self, node: &Literal) {
+        self.map.insert(node.id, match &node.kind {
+            LiteralKind::Integer => Type::Integer,
+            LiteralKind::Float => Type::Float,
+            LiteralKind::String => Type::String,
+            LiteralKind::Missing => Type::Missing,
+        });
+    }
 }
 
 #[derive(Default, Debug)]
@@ -33,6 +40,10 @@ pub struct TypeMap {
 impl TypeMap {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    fn insert(&mut self, id: NodeId, ty: Type) {
+        self.map.insert(id, ty);
     }
 
     pub fn get_type(&self, id: NodeId) -> &Type {
