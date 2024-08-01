@@ -14,12 +14,14 @@ NodeId: u32
 Block: Vec<Statement>
 
 Statement:
+  children: [kind]
   kind: StatementKind
   span: Span
   comments: CommentGroup
 
 StatementKind:
   as: Enum
+  children: [self]
   FullOpeningTag: FullOpeningTagStatement
   ShortOpeningTag: ShortOpeningTagStatement
   EchoOpeningTag: EchoOpeningTagStatement
@@ -58,12 +60,14 @@ StatementKind:
   Noop: Span
 
 Expression:
+  children: [kind]
   kind: ExpressionKind
   span: Span
   comments: CommentGroup
 
 ExpressionKind:
   as: Enum
+  children: [self]
   Missing: Span 
   Eval: EvalExpression
   Empty: EmptyExpression
@@ -149,17 +153,20 @@ ClosingTagStatement:
   span: Span
 
 ExpressionStatement:
+  children: [expression, ending]
   span: Span
   expression: Expression
   ending: Ending
 
 GlobalStatement:
+  children: [variables]
   span: Span
   global: Span
   variables: Vec<Variable>
   semicolon: Span
 
 BlockStatement:
+  children: [statements]
   span: Span
   left_brace: Span
   statements: Vec<Statement>
@@ -177,11 +184,13 @@ CastKind:
   Unset: Span
 
 Case:
+  children: [condition?, body]
   span: Span
   condition: Option<Expression>
   body: Block
 
 Use:
+  children: [name, alias?]
   name: Name
   alias: Option<SimpleIdentifier>
   kind: Option<UseKind>
@@ -195,100 +204,119 @@ UseKind:
   Const: ''
 
 EvalExpression:
+  children: [argument]
   span: Span
   eval: Span
   argument: Box<SingleArgument>
 
 EmptyExpression:
+  children: [argument]
   span: Span
   empty: Span
   argument: Box<SingleArgument>
 
 DieExpression:
+  children: [argument?]
   span: Span
   die: Span
   argument: Option<Box<SingleArgument>>
 
 ExitExpression:
+  children: [argument?]
   span: Span
   exit: Span
   argument: Option<Box<SingleArgument>>
 
 IssetExpression:
+  children: [arguments]
   span: Span
   isset: Span
   arguments: ArgumentList
 
 UnsetExpression:
+  children: [arguments]
   span: Span
   unset: Span
   arguments: ArgumentList
 
 PrintExpression:
+  children: [value?, argument?]
   span: Span
   print: Span
   value: Option<Box<Expression>>
   argument: Option<Box<SingleArgument>>
 
 ConcatExpression:
+  children: [left, right]
   span: Span
   left: Box<Expression>
   dot: Span
   right: Box<Expression>
 
 InstanceofExpression:
+  children: [left, right]
   span: Span
   left: Box<Expression>
   instanceof: Span
   right: Box<Expression>
 
 ReferenceExpression:
+  children: [right]
   span: Span
   ampersand: Span
   right: Box<Expression>
 
 ParenthesizedExpression:
+  children: [expr]
   span: Span
   start: Span
   expr: Box<Expression>
   end: Span
 
 ErrorSuppressExpression:
+  children: [expr]
   span: Span
   at: Span
   expr: Box<Expression>
 
 IncludeExpression:
+  children: [path]
   span: Span
   include: Span
   path: Box<Expression>
 
 IncludeOnceExpression:
+  children: [path]
   span: Span
   include_once: Span
   path: Box<Expression>
 
 RequireExpression:
+  children: [path]
   span: Span
   require: Span
   path: Box<Expression>
 
 RequireOnceExpression:
+  children: [path]
   span: Span
   require_once: Span
   path: Box<Expression>
 
 FunctionCallExpression:
+  children: [target, arguments]
   span: Span
   target: Box<Expression>
   arguments: ArgumentList
 
 FunctionClosureCreationExpression:
+  children: [target, placeholder]
   span: Span
   target: Box<Expression>
   placeholder: ArgumentPlaceholder
 
 MethodCallExpression:
+  children: [target, method, arguments]
   span: Span
   target: Box<Expression>
   arrow: Span
@@ -296,6 +324,7 @@ MethodCallExpression:
   arguments: ArgumentList
 
 MethodClosureCreationExpression:
+  children: [target, method]
   span: Span
   target: Box<Expression>
   arrow: Span
@@ -303,6 +332,7 @@ MethodClosureCreationExpression:
   placeholder: ArgumentPlaceholder
 
 NullsafeMethodCallExpression:
+  children: [target, method, arguments]
   span: Span
   target: Box<Expression>
   question_arrow: Span
@@ -310,6 +340,7 @@ NullsafeMethodCallExpression:
   arguments: ArgumentList
 
 StaticMethodCallExpression:
+  children: [target, method, arguments]
   span: Span
   target: Box<Expression>
   double_colon: Span
@@ -317,6 +348,7 @@ StaticMethodCallExpression:
   arguments: ArgumentList
 
 StaticVariableMethodCallExpression:
+  children: [target, method, arguments]
   span: Span
   target: Box<Expression>
   double_colon: Span
@@ -324,6 +356,7 @@ StaticVariableMethodCallExpression:
   arguments: ArgumentList
 
 StaticMethodClosureCreationExpression:
+  children: [target, method]
   span: Span
   target: Box<Expression>
   double_colon: Span
@@ -331,6 +364,7 @@ StaticMethodClosureCreationExpression:
   placeholder: ArgumentPlaceholder
 
 StaticVariableMethodClosureCreationExpression:
+  children: [target, method]
   span: Span
   target: Box<Expression>
   double_colon: Span
@@ -338,36 +372,42 @@ StaticVariableMethodClosureCreationExpression:
   placeholder: ArgumentPlaceholder
 
 PropertyFetchExpression:
+  children: [target, property]
   span: Span
   target: Box<Expression>
   arrow: Span
   property: Box<Expression>
 
 NullsafePropertyFetchExpression:
+  children: [target, property]
   span: Span
   target: Box<Expression>
   question_arrow: Span
   property: Box<Expression>
 
 StaticPropertyFetchExpression:
+  children: [target, property]
   span: Span
   target: Box<Expression>
   double_colon: Span
   property: Variable
 
 ConstantFetchExpression:
+  children: [target, constant]
   span: Span
   target: Box<Expression>
   double_colon: Span
   constant: Identifier
 
 ShortArrayExpression:
+  children: [items]
   span: Span
   start: Span
   items: CommaSeparated<ArrayItem>
   end: Span
 
 ArrayExpression:
+  children: [items]
   span: Span
   array: Span
   start: Span
@@ -375,6 +415,7 @@ ArrayExpression:
   end: Span
 
 ListExpression:
+  children: [items]
   span: Span
   list: Span
   start: Span
@@ -382,16 +423,19 @@ ListExpression:
   end: Span
 
 NewExpression:
+  children: [target, arguments]
   span: Span
   new: Span
   target: Box<Expression>
   arguments: Option<ArgumentList>
 
 InterpolatedStringExpression:
+  children: [parts]
   span: Span
   parts: Vec<StringPart>
 
 HeredocExpression:
+  children: [parts]
   span: Span
   label: Symbol
   parts: Vec<StringPart>
@@ -402,6 +446,7 @@ NowdocExpression:
   value: Token
 
 ShellExecExpression:
+  children: [parts]
   span: Span
   parts: Vec<StringPart>
 
@@ -410,6 +455,7 @@ BoolExpression:
   value: Token
 
 ArrayIndexExpression:
+  children: [array, index?]
   span: Span
   array: Box<Expression>
   left_bracket: Span
@@ -417,12 +463,14 @@ ArrayIndexExpression:
   right_bracket: Span
 
 ShortTernaryExpression:
+  children: [condition, r#else]
   span: Span
   condition: Box<Expression>
   question_colon: Span
   r#else: Box<Expression>
 
 TernaryExpression:
+  children: [condition, then, r#else]
   span: Span
   condition: Box<Expression>
   question: Span
@@ -431,17 +479,20 @@ TernaryExpression:
   r#else: Box<Expression>
 
 CoalesceExpression:
+  children: [lhs, rhs]
   span: Span
   lhs: Box<Expression>
   double_question: Span
   rhs: Box<Expression>
 
 CloneExpression:
+  children: [target]
   span: Span
   clone: Span
   target: Box<Expression>
 
 MatchExpression:
+  children: [condition, arms, default?]
   span: Span
   keyword: Span
   left_parenthesis: Span
@@ -453,33 +504,39 @@ MatchExpression:
   right_brace: Span
 
 ThrowExpression:
+  children: [value]
   span: Span
   value: Box<Expression>
 
 YieldExpression:
+  children: [key?, value?]
   span: Span
   r#yield: Span
   key: Option<Box<Expression>>
   value: Option<Box<Expression>>
 
 YieldFromExpression:
+  children: [value]
   span: Span
   r#yield: Span
   from: Span
   value: Box<Expression>
 
 CastExpression:
+  children: [value]
   span: Span
   kind: CastKind
   value: Box<Expression>
 
 DefaultMatchArm:
+  children: [body]
   span: Span
   keyword: Span
   double_arrow: Span
   body: Expression
 
 MatchArm:
+  children: [conditions, body]
   span: Span
   conditions: Vec<Expression>
   arrow: Span
@@ -498,6 +555,7 @@ MagicConstantExpression:
   CompilerHaltOffset: Span
 
 StringPart:
+  children: [self]
   as: Enum
   Literal: LiteralStringPart
   Expression: ExpressionStringPart
@@ -507,10 +565,12 @@ LiteralStringPart:
   value: Symbol
 
 ExpressionStringPart:
+  children: [expression]
   span: Span
   expression: Box<Expression>
 
 ArrayItem:
+  children: [self]
   as: Enum
   Skipped: Span
   Value: ArrayItemValue
@@ -520,26 +580,31 @@ ArrayItem:
   ReferencedKeyValue: ArrayItemReferencedKeyValue
 
 ArrayItemValue:
+  children: [value]
   span: Span
   value: Expression
 
 ArrayItemReferencedValue:
+  children: [value]
   span: Span
   ampersand: Span
   value: Expression
 
 ArrayItemSpreadValue:
+  children: [value]
   span: Span
   ellipsis: Span
   value: Expression
 
 ArrayItemKeyValue:
+  children: [key, value]
   span: Span
   key: Expression
   double_arrow: Span
   value: Expression
 
 ArrayItemReferencedKeyValue:
+  children: [key, value]
   span: Span
   key: Expression
   double_arrow: Span
@@ -547,28 +612,33 @@ ArrayItemReferencedKeyValue:
   value: Expression
 
 ListEntry:
+  children: [self]
   as: Enum
   Skipped: Span
   Value: ListEntryValue
   KeyValue: ListEntryKeyValue
 
 ListEntryValue:
+  children: [value]
   span: Span
   value: Expression
 
 ListEntryKeyValue:
+  children: [key, value]
   span: Span
   key: Expression
   double_arrow: Span
   value: Expression
 
 PositionalArgument:
+  children: [value]
   span: Span
   comments: CommentGroup
   ellipsis: Option<Span>
   value: Expression
 
 NamedArgument:
+  children: [name, value]
   span: Span
   comments: CommentGroup
   name: SimpleIdentifier
@@ -577,11 +647,13 @@ NamedArgument:
   value: Expression
 
 Argument:
+  children: [self]
   as: Enum
   Positional: PositionalArgument
   Named: NamedArgument
 
 ArgumentList:
+  children: [arguments]
   span: Span
   comments: CommentGroup
   left_parenthesis: Span
@@ -589,6 +661,7 @@ ArgumentList:
   right_parenthesis: Span
 
 SingleArgument:
+  children: [argument]
   span: Span
   comments: CommentGroup
   left_parenthesis: Span
@@ -603,21 +676,25 @@ ArgumentPlaceholder:
   right_parenthesis: Span
 
 Attribute:
+  children: [name, arguments?]
   span: Span
   name: Name
   arguments: Option<ArgumentList>
 
 AttributeGroup:
+  children: [members]
   span: Span
   members: Vec<Attribute>
 
 ClassBody:
+  children: [members]
   span: Span
   left_brace: Span
   members: Vec<ClassishMember>
   right_brace: Span
 
 ClassStatement:
+  children: [name, extends?, implements?, body]
   span: Span
   attributes: Vec<AttributeGroup>
   modifiers: ClassModifierGroup
@@ -628,12 +705,14 @@ ClassStatement:
   body: ClassBody
 
 AnonymousClassBody:
+  children: [members]
   span: Span
   left_brace: Span
   members: Vec<ClassishMember>
   right_brace: Span
 
 AnonymousClassExpression:
+  children: [extends?, implements?, body]
   span: Span
   attributes: Vec<AttributeGroup>
   class: Span
@@ -642,16 +721,19 @@ AnonymousClassExpression:
   body: AnonymousClassBody
 
 ClassExtends:
+  children: [parent]
   span: Span
   extends: Span
   parent: Name
 
 ClassImplements:
+  children: [interfaces]
   span: Span
   implements: Span
   interfaces: CommaSeparated<Name>
 
 ClassishMember:
+  children: [self]
   as: Enum
   Constant: ClassishConstant
   TraitUsage: TraitUsage
@@ -663,18 +745,21 @@ ClassishMember:
   ConcreteConstructor: ConcreteConstructor
 
 ConstantEntry:
+  children: [name, value]
   span: Span
   name: Name
   equals: Span
   value: Expression
 
 ClassishConstantEntry:
+  children: [name, value]
   span: Span
   name: SimpleIdentifier
   equals: Span
   value: Expression
 
 ConstantStatement:
+  children: [entries]
   span: Span
   comments: CommentGroup
   r#const: Span
@@ -682,6 +767,7 @@ ConstantStatement:
   semicolon: Span
 
 ClassishConstant:
+  children: [attributes, data_type?, entries]
   span: Span
   comments: CommentGroup
   attributes: Vec<AttributeGroup>
@@ -692,6 +778,7 @@ ClassishConstant:
   semicolon: Span
 
 IfStatement:
+  children: [condition, body]
   span: Span
   r#if: Span
   left_parenthesis: Span
@@ -700,22 +787,30 @@ IfStatement:
   body: IfStatementBody
 
 IfStatementBody:
+  children: [self]
   as: Enum
-  Statement:
-    span: Span
-    statement: Box<Statement>
-    elseifs: Vec<IfStatementElseIf>
-    r#else: Option<IfStatementElse>
-  Block:
-    span: Span
-    colon: Span
-    statements: Vec<Statement>
-    elseifs: Vec<IfStatementElseIfBlock>
-    r#else: Option<IfStatementElseBlock>
-    endif: Span
-    ending: Ending
+  Statement: IfStatementBodyStatement
+  Block: IfStatementBodyBlock
+
+IfStatementBodyStatement:
+  children: [statement, elseifs, r#else?]
+  span: Span
+  statement: Box<Statement>
+  elseifs: Vec<IfStatementElseIf>
+  r#else: Option<IfStatementElse>
+
+IfStatementBodyBlock:
+  children: [statements, elseifs, r#else?, ending]
+  span: Span
+  colon: Span
+  statements: Vec<Statement>
+  elseifs: Vec<IfStatementElseIfBlock>
+  r#else: Option<IfStatementElseBlock>
+  endif: Span
+  ending: Ending
 
 IfStatementElseIf:
+  children: [condition, statement]
   span: Span
   elseif: Span
   left_parenthesis: Span
@@ -724,11 +819,13 @@ IfStatementElseIf:
   statement: Box<Statement>
 
 IfStatementElse:
+  children: [statement]
   span: Span
   r#else: Span
   statement: Box<Statement>
 
 IfStatementElseIfBlock:
+  children: [condition, statements]
   span: Span
   elseif: Span
   left_parenthesis: Span
@@ -738,6 +835,7 @@ IfStatementElseIfBlock:
   statements: Vec<Statement>
 
 IfStatementElseBlock:
+  children: [statements]
   span: Span
   r#else: Span
   colon: Span
@@ -748,45 +846,61 @@ DataType:
   span: Span
 
 DeclareEntry:
+  children: [key, value]
   span: Span
   key: SimpleIdentifier
   equals: Span
   value: Literal
 
 DeclareEntryGroup:
+  children: [entries]
   span: Span
   left_parenthesis: Span
   right_parenthesis: Span
   entries: Vec<DeclareEntry>
 
 DeclareBody:
+  children: [self]
   as: Enum
-  Noop:
-    span: Span
-    semicolon: Span
-  Braced:
-    span: Span
-    left_brace: Span
-    statements: Vec<Statement>
-    right_brace: Span
-  Expression:
-    span: Span
-    expression: Expression
-    semicolon: Span
-  Block:
-    span: Span
-    colon: Span
-    statements: Vec<Statement>
-    enddeclare: Span
-    semicolon: Span
+  Noop: DeclareBodyNoop
+  Braced: DeclareBodyBraced
+  Expression: DeclareBodyExpression
+  Block: DeclareBodyBlock
+
+DeclareBodyNoop:
+  span: Span
+  semicolon: Span
+
+DeclareBodyBraced:
+  children: [statements]
+  span: Span
+  left_brace: Span
+  statements: Vec<Statement>
+  right_brace: Span
+
+DeclareBodyExpression:
+  children: [expression]
+  span: Span
+  expression: Expression
+  semicolon: Span
+
+DeclareBodyBlock:
+  children: [statements]
+  span: Span
+  colon: Span
+  statements: Vec<Statement>
+  enddeclare: Span
+  semicolon: Span
 
 DeclareStatement:
+  children: [entries, body]
   span: Span
   declare: Span
   entries: DeclareEntryGroup
   body: DeclareBody
 
 UnitEnumCase:
+  children: [attributes, name]
   span: Span
   attributes: Vec<AttributeGroup>
   start: Span
@@ -794,17 +908,20 @@ UnitEnumCase:
   end: Span
 
 UnitEnumMember:
+  children: [self]
   as: Enum
   Case: UnitEnumCase
   Classish: ClassishMember
 
 UnitEnumBody:
+  children: [members]
   span: Span
   left_brace: Span
   members: Vec<UnitEnumMember>
   right_brace: Span
 
 UnitEnumStatement:
+  children: [name, implements, body]
   span: Span
   attributes: Vec<AttributeGroup>
   r#enum: Span
@@ -813,6 +930,7 @@ UnitEnumStatement:
   body: UnitEnumBody
 
 BackedEnumCase:
+  children: [attributes, name, value]
   span: Span
   attributes: Vec<AttributeGroup>
   case: Span
@@ -822,17 +940,20 @@ BackedEnumCase:
   semicolon: Span
 
 BackedEnumMember:
+  children: [self]
   as: Enum
   Case: BackedEnumCase
   Classish: ClassishMember
 
 BackedEnumBody:
+  children: [members]
   span: Span
   left_brace: Span
   members: Vec<BackedEnumMember>
   right_brace: Span
 
 BackedEnumStatement:
+  children: [attributes, name, implements, body]
   span: Span
   attributes: Vec<AttributeGroup>
   r#enum: Span
@@ -842,11 +963,13 @@ BackedEnumStatement:
   body: BackedEnumBody
 
 ReturnType:
+  children: [data_type]
   span: Span
   colon: Span
   data_type: DataType
 
 FunctionParameter:
+  children: [name, data_type?, default?]
   span: Span
   comments: CommentGroup
   name: SimpleVariable
@@ -857,6 +980,7 @@ FunctionParameter:
   ampersand: Option<Span>
 
 FunctionParameterList:
+  children: [parameters]
   span: Span
   comments: CommentGroup
   left_parenthesis: Span
@@ -864,6 +988,7 @@ FunctionParameterList:
   right_parenthesis: Span
 
 FunctionBody:
+  children: [statements]
   span: Span
   comments: CommentGroup
   left_brace: Span
@@ -871,6 +996,7 @@ FunctionBody:
   right_brace: Span
 
 FunctionStatement:
+  children: [attributes, name, parameters, return_type?, body]
   span: Span
   comments: CommentGroup
   attributes: Vec<AttributeGroup>
@@ -882,12 +1008,14 @@ FunctionStatement:
   body: FunctionBody
 
 ClosureUseVariable:
+  children: [variable]
   span: Span
   comments: CommentGroup
   ampersand: Option<Span>
   variable: SimpleVariable
 
 ClosureUse:
+  children: [variables]
   span: Span
   comments: CommentGroup
   r#use: Span
@@ -896,6 +1024,7 @@ ClosureUse:
   right_parenthesis: Span
 
 ClosureExpression:
+  children: [attributes, parameters, uses?, return_type?, body]
   span: Span
   comments: CommentGroup
   attributes: Vec<AttributeGroup>
@@ -908,6 +1037,7 @@ ClosureExpression:
   body: FunctionBody
 
 ArrowFunctionExpression:
+  children: [attributes, parameters, return_type?, body]
   span: Span
   comments: CommentGroup
   r#static: Option<Span>
@@ -920,6 +1050,7 @@ ArrowFunctionExpression:
   body: Box<Expression>
 
 ConstructorParameter:
+  children: [name, data_type?, default?]
   span: Span
   attributes: Vec<AttributeGroup>
   comments: CommentGroup
@@ -931,6 +1062,7 @@ ConstructorParameter:
   modifiers: PromotedPropertyModifierGroup
 
 ConstructorParameterList:
+  children: [parameters]
   span: Span
   comments: CommentGroup
   left_parenthesis: Span
@@ -938,6 +1070,7 @@ ConstructorParameterList:
   right_parenthesis: Span
 
 AbstractConstructor:
+  children: [attributes, name, parameters]
   span: Span
   comments: CommentGroup
   attributes: Vec<AttributeGroup>
@@ -949,6 +1082,7 @@ AbstractConstructor:
   semicolon: Span
 
 ConcreteConstructor:
+  children: [attributes, name, parameters, body]
   span: Span
   comments: CommentGroup
   attributes: Vec<AttributeGroup>
@@ -960,6 +1094,7 @@ ConcreteConstructor:
   body: MethodBody
 
 AbstractMethod:
+  children: [attributes, name, parameters, return_type]
   span: Span
   comments: CommentGroup
   attributes: Vec<AttributeGroup>
@@ -972,6 +1107,7 @@ AbstractMethod:
   semicolon: Span
 
 ConcreteMethod:
+  children: [attributes, name, parameters, return_type?, body]
   span: Span
   comments: CommentGroup
   attributes: Vec<AttributeGroup>
@@ -984,6 +1120,7 @@ ConcreteMethod:
   body: MethodBody
 
 MethodBody:
+  children: [statements]
   span: Span
   comments: CommentGroup
   left_brace: Span
@@ -991,12 +1128,14 @@ MethodBody:
   right_brace: Span
 
 LabelStatement:
+  children: [label]
   span: Span
   comments: CommentGroup
   label: SimpleIdentifier
   colon: Span
 
 GotoStatement:
+  children: [label]
   span: Span
   comments: CommentGroup
   keyword: Span
@@ -1004,6 +1143,7 @@ GotoStatement:
   semicolon: Span
 
 Identifier:
+  children: [self]
   as: Enum
   SimpleIdentifier: SimpleIdentifier
   DynamicIdentifier: DynamicIdentifier
@@ -1013,21 +1153,25 @@ SimpleIdentifier:
   span: Span
 
 DynamicIdentifier:
+  children: [expression]
   span: Span
   expr: Box<Expression>
 
 InterfaceExtends:
+  children: [parents]
   span: Span
   extends: Span
   parents: CommaSeparated<Name>
 
 InterfaceBody:
+  children: [members]
   span: Span
   left_brace: Span
   members: Vec<ClassishMember>
   right_brace: Span
 
 InterfaceStatement:
+  children: [attributes, name, extends?, body]
   span: Span
   attributes: Vec<AttributeGroup>
   interface: Span
@@ -1049,6 +1193,7 @@ LiteralKind:
   Missing: ""
 
 ForeachStatement:
+  children: [iterator, body]
   span: Span
   foreach: Span
   left_parenthesis: Span
@@ -1057,35 +1202,49 @@ ForeachStatement:
   body: ForeachStatementBody
 
 ForeachStatementIterator:
+  children: [self]
   as: Enum
-  Value:
-    span: Span
-    expression: Expression
-    r#as: Span
-    ampersand: Option<Span>
-    value: Expression
-  KeyAndValue:
-    span: Span
-    expression: Expression
-    r#as: Span
-    ampersand: Option<Span>
-    key: Expression
-    double_arrow: Span
-    value: Expression
+  Value: ForeachStatementIteratorValue
+  KeyAndValue: ForeachStatementIteratorKeyAndValue
+
+ForeachStatementIteratorValue:
+  children: [expression, value]
+  span: Span
+  expression: Expression
+  r#as: Span
+  ampersand: Option<Span>
+  value: Expression
+
+ForeachStatementIteratorKeyAndValue:
+  children: [expression, key, value]
+  span: Span
+  expression: Expression
+  r#as: Span
+  ampersand: Option<Span>
+  key: Expression
+  double_arrow: Span
+  value: Expression
 
 ForeachStatementBody:
   as: Enum
-  Statement:
-    span: Span
-    statement: Box<Statement>
-  Block:
-    span: Span
-    colon: Span
-    statements: Vec<Statement>
-    endforeach: Span
-    ending: Ending
+  Statement: ForeachStatementBodyStatement
+  Block: ForeachStatementBodyBlock
+  
+ForeachStatementBodyStatement:
+  children: [statement]
+  span: Span
+  statement: Box<Statement>
+
+ForeachStatementBodyBlock:
+  children: [statements, ending]
+  span: Span
+  colon: Span
+  statements: Vec<Statement>
+  endforeach: Span
+  ending: Ending
 
 ForStatement:
+  children: [iterator, body]
   span: Span
   r#for: Span
   left_parenthesis: Span
@@ -1094,6 +1253,7 @@ ForStatement:
   body: ForStatementBody
 
 ForStatementIterator:
+  children: [initializations, conditions, r#loop]
   span: Span
   initializations: CommaSeparated<Expression>
   initializations_semicolon: Span
@@ -1103,17 +1263,24 @@ ForStatementIterator:
 
 ForStatementBody:
   as: Enum
-  Statement:
-    span: Span
-    statement: Box<Statement>
-  Block:
-    span: Span
-    colon: Span
-    statements: Vec<Statement>
-    endfor: Span
-    ending: Ending
+  Statement: ForStatementBodyStatement
+  Block: ForStatementBodyBlock
+
+ForStatementBodyStatement:
+  children: [statement]
+  span: Span
+  statement: Box<Statement>
+
+ForStatementBodyBlock:
+  children: [statements, ending]
+  span: Span
+  colon: Span
+  statements: Vec<Statement>
+  endfor: Span
+  ending: Ending
 
 DoWhileStatement:
+  children: [condition, body]
   span: Span
   r#do: Span
   body: Box<Statement>
@@ -1124,6 +1291,7 @@ DoWhileStatement:
   semicolon: Span
 
 WhileStatement:
+  children: [condition, body]
   span: Span
   r#while: Span
   left_parenthesis: Span
@@ -1132,33 +1300,48 @@ WhileStatement:
   body: WhileStatementBody
 
 WhileStatementBody:
+  children: [self]
   as: Enum
-  Statement:
-    span: Span
-    statement: Box<Statement>
-  Block:
-    span: Span
-    colon: Span
-    statements: Vec<Statement>
-    endwhile: Span
-    ending: Ending
+  Statement: WhileStatementBodyStatement
+  Block: WhileStatementBodyBlock
+  
+WhileStatementBodyStatement:
+  children: [statement]
+  span: Span
+  statement: Box<Statement>
+
+WhileStatementBodyBlock:
+  children: [statements, ending]
+  span: Span
+  colon: Span
+  statements: Vec<Statement>
+  endwhile: Span
+  ending: Ending
 
 Level:
   as: Enum
-  Literal: Literal
-  Parenthesized:
-    span: Span
-    left_parenthesis: Span
-    level: Box<Level>
-    right_parenthesis: Span
+  Literal: LiteralLevel
+  Parenthesized: ParenthesizedLevel
+
+LiteralLevel:
+  literal: Literal
+
+ParenthesizedLevel:
+  children: [level]
+  span: Span
+  left_parenthesis: Span
+  level: Box<Level>
+  right_parenthesis: Span
 
 BreakStatement:
+  children: [level?, ending]
   span: Span
   r#break: Span
   level: Option<Level>
   ending: Ending
 
 ContinueStatement:
+  children: [level?, ending]
   span: Span
   r#continue: Span
   level: Option<Level>
@@ -1232,6 +1415,7 @@ ConstantModifierGroup:
   modifiers: Vec<ConstantModifier>
 
 UnbracedNamespace:
+  children: [statements]
   span: Span
   start: Span
   name: Name
@@ -1239,27 +1423,32 @@ UnbracedNamespace:
   statements: Vec<Statement>
 
 BracedNamespace:
+  children: [name?, body]
   span: Span
   namespace: Span
   name: Option<Name>
   body: BracedNamespaceBody
 
 BracedNamespaceBody:
+  children: [statements]
   span: Span
   start: Span
   end: Span
   statements: Vec<Statement>
 
 NamespaceStatement:
+  children: [self]
   as: Enum
   Unbraced: UnbracedNamespace
   Braced: BracedNamespace
 
 ArithmeticOperationExpression:
+  children: [kind]
   span: Span
   kind: ArithmeticOperationKind
 
 ArithmeticOperationKind:
+  children: [left!, right!]
   as: Enum
   Addition:
     left: Box<Expression>
@@ -1305,10 +1494,12 @@ ArithmeticOperationKind:
     decrement: Span
 
 AssignmentOperationExpression:
+  children: [kind]
   span: Span
   kind: AssignmentOperationKind
 
 AssignmentOperationKind:
+  children: [left!, right!]
   as: Enum
   Assign:
     left: Box<Expression>
@@ -1368,10 +1559,12 @@ AssignmentOperationKind:
     right: Box<Expression>
 
 BitwiseOperationExpression:
+  children: [kind]
   span: Span
   kind: BitwiseOperationKind
 
 BitwiseOperationKind:
+  children: [left!, right!]
   as: Enum
   And:
     left: Box<Expression>
@@ -1398,10 +1591,12 @@ BitwiseOperationKind:
     right: Box<Expression>
 
 ComparisonOperationExpression:
+  children: [kind]
   span: Span
   kind: ComparisonOperationKind
 
 ComparisonOperationKind:
+  children: [left!, right!]
   as: Enum
   Equal:
     left: Box<Expression>
@@ -1445,10 +1640,12 @@ ComparisonOperationKind:
     right: Box<Expression>
 
 LogicalOperationExpression:
+  children: [kind]
   span: Span
   kind: LogicalOperationKind
 
 LogicalOperationKind:
+  children: [left!, right!]
   as: Enum
   And:
     left: Box<Expression>
@@ -1480,6 +1677,7 @@ Name:
   span: Span
 
 NameKind:
+  children: [self]
   as: Enum
   derive: Copy
   Special: SpecialName
@@ -1512,6 +1710,7 @@ ResolvedName:
   original: Symbol
 
 Property:
+  children: [attributes, r#type?, entries]
   span: Span
   attributes: Vec<AttributeGroup>
   modifiers: PropertyModifierGroup
@@ -1519,7 +1718,8 @@ Property:
   entries: Vec<PropertyEntry>
   end: Span
 
-VariableProperty:
+VariableProperty: 
+  children: [attributes, r#type?, entries]
   span: Span
   attributes: Vec<AttributeGroup>
   r#type: Option<DataType>
@@ -1527,25 +1727,34 @@ VariableProperty:
   end: Span
 
 PropertyEntry:
+  children: [kind]
   span: Span
   kind: PropertyEntryKind
 
 PropertyEntryKind:
   as: Enum
-  Uninitialized:
-    variable: SimpleVariable
-  Initialized:
-    variable: SimpleVariable
-    equals: Span
-    value: Expression
+  Uninitialized: UninitializedPropertyEntry
+  Initialized: InitializedPropertyEntry
+
+UninitializedPropertyEntry:
+  children: [variable]
+  variable: SimpleVariable
+
+InitializedPropertyEntry:
+  children: [variable, value]
+  variable: SimpleVariable
+  equals: Span
+  value: Expression
 
 TraitBody:
+  children: [members]
   span: Span
   left_brace: Span
   members: Vec<ClassishMember>
   right_brace: Span
 
 TraitStatement:
+  children: [name, attributes, body]
   span: Span
   r#trait: Span
   name: Name
@@ -1553,43 +1762,64 @@ TraitStatement:
   body: TraitBody
 
 TraitUsage:
+  children: [traits, adaptations]
   span: Span
   r#use: Span
   traits: Vec<Name>
   adaptations: Vec<TraitUsageAdaptation>
 
 TraitUsageAdaptation:
+  children: [kind]
   span: Span
   kind: TraitUsageAdaptationKind
 
 TraitUsageAdaptationKind:
   as: Enum
-  Alias:
-    r#trait: Option<Name>
-    method: SimpleIdentifier
-    alias: SimpleIdentifier
-    visibility: Option<VisibilityModifier>
-  Visibility:
-    r#trait: Option<Name>
-    method: SimpleIdentifier
-    visibility: VisibilityModifier
-  Precedence:
-    r#trait: Option<Name>
-    method: SimpleIdentifier
-    insteadof: Vec<SimpleIdentifier>
+  Alias: TraitUsageAdaptationAlias
+  Visibility: TraitUsageAdaptationVisibility
+  Precedence: TraitUsageAdaptationPrecedence
+
+TraitUsageAdaptationAlias:
+  children: [r#trait?, method, alias, visibility?]
+  r#trait: Option<Name>
+  method: SimpleIdentifier
+  alias: SimpleIdentifier
+  visibility: Option<VisibilityModifier>
+
+TraitUsageAdaptationVisibility:
+  children: [r#trait?, method, visibility]
+  r#trait: Option<Name>
+  method: SimpleIdentifier
+  visibility: VisibilityModifier
+
+TraitUsageAdaptationPrecedence:
+  children: [r#trait?, method, insteadof]
+  r#trait: Option<Name>
+  method: SimpleIdentifier
+  insteadof: Vec<SimpleIdentifier>
 
 CatchType:
+  children: [kind]
   span: Span
   kind: CatchTypeKind
 
 CatchTypeKind:
   as: Enum
-  Identifier:
-    identifier: SimpleIdentifier
-  Union:
-    identifiers: Vec<SimpleIdentifier>
+  Identifier: CatchTypeKindIdentifier
+  Union: CatchTypeKindUnion
+
+CatchTypeKindIdentifier:
+  children: [identifier]
+  span: Span
+  identifier: SimpleIdentifier
+
+CatchTypeKindUnion:
+  children: [identifiers]
+  span: Span
+  identifiers: Vec<SimpleIdentifier>
 
 TryStatement:
+  children: [body, catches, finally?]
   span: Span
   start: Span
   end: Span
@@ -1598,6 +1828,7 @@ TryStatement:
   finally: Option<FinallyBlock>
 
 CatchBlock:
+  children: [types, var?, body]
   span: Span
   start: Span
   end: Span
@@ -1606,12 +1837,14 @@ CatchBlock:
   body: Block
 
 FinallyBlock:
+  children: [body]
   span: Span
   start: Span
   end: Span
   body: Block
 
 Variable:
+  children: [self]
   as: Enum
   SimpleVariable: SimpleVariable
   VariableVariable: VariableVariable
@@ -1623,10 +1856,12 @@ SimpleVariable:
   span: Span
 
 VariableVariable:
+  children: [variable]
   span: Span
   variable: Box<Variable>
 
 BracedVariableVariable:
+  children: [variable]
   span: Span
   start: Span
   variable: Box<Expression>
@@ -1639,11 +1874,13 @@ Ending:
   CloseTag: Span
 
 StaticStatement:
+  children: [vars]
   span: Span
   vars: Vec<StaticVar>
   semicolon: Span
 
 SwitchStatement:
+  children: [condition, cases]
   span: Span
   switch: Span
   left_parenthesis: Span
@@ -1652,23 +1889,27 @@ SwitchStatement:
   cases: Vec<Case>
 
 EchoStatement:
+  children: [values, ending]
   span: Span
   echo: Span
   values: Vec<Expression>
   ending: Ending
 
 ReturnStatement:
+  children: [value?, ending]
   span: Span
   r#return: Span
   value: Option<Expression>
   ending: Ending
 
 UseStatement:
+  children: [uses]
   span: Span
   kind: UseKind
   uses: Vec<Use>
 
 GroupUseStatement:
+  children: [prefix, uses]
   span: Span
   prefix: SimpleIdentifier
   kind: UseKind
@@ -1679,6 +1920,7 @@ HaltCompilerStatement:
   content: Option<Token>
 
 StaticVar:
+  children: [var, default?]
   span: Span
   var: Variable
   default: Option<Expression>

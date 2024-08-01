@@ -1130,6 +1130,7 @@ pub enum ArrayItem {
 impl Spanned for ArrayItem {
     fn span(&self) -> Span {
         match self {
+            ArrayItem::children { span, .. } => *span,
             ArrayItem::Skipped(span) => *span,
             _ => Span::default(),
         }
@@ -1218,6 +1219,7 @@ pub enum ListEntry {
 impl Spanned for ListEntry {
     fn span(&self) -> Span {
         match self {
+            ListEntry::children { span, .. } => *span,
             ListEntry::Skipped(span) => *span,
             _ => Span::default(),
         }
@@ -1555,30 +1557,40 @@ impl Spanned for IfStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum IfStatementBody {
-    Statement {
-        span: Span,
-        statement: Box<Statement>,
-        elseifs: Vec<IfStatementElseIf>,
-        r#else: Option<IfStatementElse>,
-    },
-    Block {
-        span: Span,
-        colon: Span,
-        statements: Vec<Statement>,
-        elseifs: Vec<IfStatementElseIfBlock>,
-        r#else: Option<IfStatementElseBlock>,
-        endif: Span,
-        ending: Ending,
-    },
+    Statement(IfStatementBodyStatement),
+    Block(IfStatementBodyBlock),
 }
 
-impl Spanned for IfStatementBody {
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct IfStatementBodyStatement {
+    pub id: NodeId,
+    pub span: Span,
+    pub statement: Box<Statement>,
+    pub elseifs: Vec<IfStatementElseIf>,
+    pub r#else: Option<IfStatementElse>,
+}
+
+impl Spanned for IfStatementBodyStatement {
     fn span(&self) -> Span {
-        match self {
-            IfStatementBody::Statement { span, .. } => *span,
-            IfStatementBody::Block { span, .. } => *span,
-            _ => Span::default(),
-        }
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct IfStatementBodyBlock {
+    pub id: NodeId,
+    pub span: Span,
+    pub colon: Span,
+    pub statements: Vec<Statement>,
+    pub elseifs: Vec<IfStatementElseIfBlock>,
+    pub r#else: Option<IfStatementElseBlock>,
+    pub endif: Span,
+    pub ending: Ending,
+}
+
+impl Spanned for IfStatementBodyBlock {
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -1691,39 +1703,67 @@ impl Spanned for DeclareEntryGroup {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum DeclareBody {
-    Noop {
-        span: Span,
-        semicolon: Span,
-    },
-    Braced {
-        span: Span,
-        left_brace: Span,
-        statements: Vec<Statement>,
-        right_brace: Span,
-    },
-    Expression {
-        span: Span,
-        expression: Expression,
-        semicolon: Span,
-    },
-    Block {
-        span: Span,
-        colon: Span,
-        statements: Vec<Statement>,
-        enddeclare: Span,
-        semicolon: Span,
-    },
+    Noop(DeclareBodyNoop),
+    Braced(DeclareBodyBraced),
+    Expression(DeclareBodyExpression),
+    Block(DeclareBodyBlock),
 }
 
-impl Spanned for DeclareBody {
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DeclareBodyNoop {
+    pub id: NodeId,
+    pub span: Span,
+    pub semicolon: Span,
+}
+
+impl Spanned for DeclareBodyNoop {
     fn span(&self) -> Span {
-        match self {
-            DeclareBody::Noop { span, .. } => *span,
-            DeclareBody::Braced { span, .. } => *span,
-            DeclareBody::Expression { span, .. } => *span,
-            DeclareBody::Block { span, .. } => *span,
-            _ => Span::default(),
-        }
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DeclareBodyBraced {
+    pub id: NodeId,
+    pub span: Span,
+    pub left_brace: Span,
+    pub statements: Vec<Statement>,
+    pub right_brace: Span,
+}
+
+impl Spanned for DeclareBodyBraced {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DeclareBodyExpression {
+    pub id: NodeId,
+    pub span: Span,
+    pub expression: Expression,
+    pub semicolon: Span,
+}
+
+impl Spanned for DeclareBodyExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DeclareBodyBlock {
+    pub id: NodeId,
+    pub span: Span,
+    pub colon: Span,
+    pub statements: Vec<Statement>,
+    pub enddeclare: Span,
+    pub semicolon: Span,
+}
+
+impl Spanned for DeclareBodyBlock {
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -2296,56 +2336,76 @@ impl Spanned for ForeachStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ForeachStatementIterator {
-    Value {
-        span: Span,
-        expression: Expression,
-        r#as: Span,
-        ampersand: Option<Span>,
-        value: Expression,
-    },
-    KeyAndValue {
-        span: Span,
-        expression: Expression,
-        r#as: Span,
-        ampersand: Option<Span>,
-        key: Expression,
-        double_arrow: Span,
-        value: Expression,
-    },
+    Value(ForeachStatementIteratorValue),
+    KeyAndValue(ForeachStatementIteratorKeyAndValue),
 }
 
-impl Spanned for ForeachStatementIterator {
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ForeachStatementIteratorValue {
+    pub id: NodeId,
+    pub span: Span,
+    pub expression: Expression,
+    pub r#as: Span,
+    pub ampersand: Option<Span>,
+    pub value: Expression,
+}
+
+impl Spanned for ForeachStatementIteratorValue {
     fn span(&self) -> Span {
-        match self {
-            ForeachStatementIterator::Value { span, .. } => *span,
-            ForeachStatementIterator::KeyAndValue { span, .. } => *span,
-            _ => Span::default(),
-        }
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ForeachStatementIteratorKeyAndValue {
+    pub id: NodeId,
+    pub span: Span,
+    pub expression: Expression,
+    pub r#as: Span,
+    pub ampersand: Option<Span>,
+    pub key: Expression,
+    pub double_arrow: Span,
+    pub value: Expression,
+}
+
+impl Spanned for ForeachStatementIteratorKeyAndValue {
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ForeachStatementBody {
-    Statement {
-        span: Span,
-        statement: Box<Statement>,
-    },
-    Block {
-        span: Span,
-        colon: Span,
-        statements: Vec<Statement>,
-        endforeach: Span,
-        ending: Ending,
-    },
+    Statement(ForeachStatementBodyStatement),
+    Block(ForeachStatementBodyBlock),
 }
 
-impl Spanned for ForeachStatementBody {
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ForeachStatementBodyStatement {
+    pub id: NodeId,
+    pub span: Span,
+    pub statement: Box<Statement>,
+}
+
+impl Spanned for ForeachStatementBodyStatement {
     fn span(&self) -> Span {
-        match self {
-            ForeachStatementBody::Statement { span, .. } => *span,
-            ForeachStatementBody::Block { span, .. } => *span,
-            _ => Span::default(),
-        }
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ForeachStatementBodyBlock {
+    pub id: NodeId,
+    pub span: Span,
+    pub colon: Span,
+    pub statements: Vec<Statement>,
+    pub endforeach: Span,
+    pub ending: Ending,
+}
+
+impl Spanned for ForeachStatementBodyBlock {
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -2385,26 +2445,36 @@ impl Spanned for ForStatementIterator {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ForStatementBody {
-    Statement {
-        span: Span,
-        statement: Box<Statement>,
-    },
-    Block {
-        span: Span,
-        colon: Span,
-        statements: Vec<Statement>,
-        endfor: Span,
-        ending: Ending,
-    },
+    Statement(ForStatementBodyStatement),
+    Block(ForStatementBodyBlock),
 }
 
-impl Spanned for ForStatementBody {
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ForStatementBodyStatement {
+    pub id: NodeId,
+    pub span: Span,
+    pub statement: Box<Statement>,
+}
+
+impl Spanned for ForStatementBodyStatement {
     fn span(&self) -> Span {
-        match self {
-            ForStatementBody::Statement { span, .. } => *span,
-            ForStatementBody::Block { span, .. } => *span,
-            _ => Span::default(),
-        }
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ForStatementBodyBlock {
+    pub id: NodeId,
+    pub span: Span,
+    pub colon: Span,
+    pub statements: Vec<Statement>,
+    pub endfor: Span,
+    pub ending: Ending,
+}
+
+impl Spanned for ForStatementBodyBlock {
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -2446,46 +2516,63 @@ impl Spanned for WhileStatement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum WhileStatementBody {
-    Statement {
-        span: Span,
-        statement: Box<Statement>,
-    },
-    Block {
-        span: Span,
-        colon: Span,
-        statements: Vec<Statement>,
-        endwhile: Span,
-        ending: Ending,
-    },
+    Statement(WhileStatementBodyStatement),
+    Block(WhileStatementBodyBlock),
 }
 
-impl Spanned for WhileStatementBody {
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct WhileStatementBodyStatement {
+    pub id: NodeId,
+    pub span: Span,
+    pub statement: Box<Statement>,
+}
+
+impl Spanned for WhileStatementBodyStatement {
     fn span(&self) -> Span {
-        match self {
-            WhileStatementBody::Statement { span, .. } => *span,
-            WhileStatementBody::Block { span, .. } => *span,
-            _ => Span::default(),
-        }
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct WhileStatementBodyBlock {
+    pub id: NodeId,
+    pub span: Span,
+    pub colon: Span,
+    pub statements: Vec<Statement>,
+    pub endwhile: Span,
+    pub ending: Ending,
+}
+
+impl Spanned for WhileStatementBodyBlock {
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Level {
-    Literal(Literal),
-    Parenthesized {
-        span: Span,
-        left_parenthesis: Span,
-        level: Box<Level>,
-        right_parenthesis: Span,
-    },
+    Literal(LiteralLevel),
+    Parenthesized(ParenthesizedLevel),
 }
 
-impl Spanned for Level {
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct LiteralLevel {
+    pub id: NodeId,
+    pub literal: Literal,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ParenthesizedLevel {
+    pub id: NodeId,
+    pub span: Span,
+    pub left_parenthesis: Span,
+    pub level: Box<Level>,
+    pub right_parenthesis: Span,
+}
+
+impl Spanned for ParenthesizedLevel {
     fn span(&self) -> Span {
-        match self {
-            Level::Parenthesized { span, .. } => *span,
-            _ => Span::default(),
-        }
+        self.span
     }
 }
 
@@ -3203,14 +3290,26 @@ impl Spanned for PropertyEntry {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum PropertyEntryKind {
-    Uninitialized {
-        variable: SimpleVariable,
-    },
-    Initialized {
-        variable: SimpleVariable,
-        equals: Span,
-        value: Expression,
-    },
+    Uninitialized(UninitializedPropertyEntry),
+    Initialized(InitializedPropertyEntry),
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct UninitializedPropertyEntry {
+    pub id: NodeId,
+    pub variable: SimpleVariable,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct InitializedPropertyEntry {
+    pub id: NodeId,
+    pub variable: SimpleVariable,
+    pub equals: Span,
+    pub value: Expression,
+}
+
+impl Spanned for InitializedPropertyEntry {
+    fn span(&self) -> Span {}
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -3274,22 +3373,34 @@ impl Spanned for TraitUsageAdaptation {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum TraitUsageAdaptationKind {
-    Alias {
-        r#trait: Option<Name>,
-        method: SimpleIdentifier,
-        alias: SimpleIdentifier,
-        visibility: Option<VisibilityModifier>,
-    },
-    Visibility {
-        r#trait: Option<Name>,
-        method: SimpleIdentifier,
-        visibility: VisibilityModifier,
-    },
-    Precedence {
-        r#trait: Option<Name>,
-        method: SimpleIdentifier,
-        insteadof: Vec<SimpleIdentifier>,
-    },
+    Alias(TraitUsageAdaptationAlias),
+    Visibility(TraitUsageAdaptationVisibility),
+    Precedence(TraitUsageAdaptationPrecedence),
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct TraitUsageAdaptationAlias {
+    pub id: NodeId,
+    pub r#trait: Option<Name>,
+    pub method: SimpleIdentifier,
+    pub alias: SimpleIdentifier,
+    pub visibility: Option<VisibilityModifier>,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct TraitUsageAdaptationVisibility {
+    pub id: NodeId,
+    pub r#trait: Option<Name>,
+    pub method: SimpleIdentifier,
+    pub visibility: VisibilityModifier,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct TraitUsageAdaptationPrecedence {
+    pub id: NodeId,
+    pub r#trait: Option<Name>,
+    pub method: SimpleIdentifier,
+    pub insteadof: Vec<SimpleIdentifier>,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -3307,8 +3418,34 @@ impl Spanned for CatchType {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum CatchTypeKind {
-    Identifier { identifier: SimpleIdentifier },
-    Union { identifiers: Vec<SimpleIdentifier> },
+    Identifier(CatchTypeKindIdentifier),
+    Union(CatchTypeKindUnion),
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct CatchTypeKindIdentifier {
+    pub id: NodeId,
+    pub span: Span,
+    pub identifier: SimpleIdentifier,
+}
+
+impl Spanned for CatchTypeKindIdentifier {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct CatchTypeKindUnion {
+    pub id: NodeId,
+    pub span: Span,
+    pub identifiers: Vec<SimpleIdentifier>,
+}
+
+impl Spanned for CatchTypeKindUnion {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -3654,6 +3791,8 @@ pub enum NodeKind<'a> {
     ClassishConstant(&'a ClassishConstant),
     IfStatement(&'a IfStatement),
     IfStatementBody(&'a IfStatementBody),
+    IfStatementBodyStatement(&'a IfStatementBodyStatement),
+    IfStatementBodyBlock(&'a IfStatementBodyBlock),
     IfStatementElseIf(&'a IfStatementElseIf),
     IfStatementElse(&'a IfStatementElse),
     IfStatementElseIfBlock(&'a IfStatementElseIfBlock),
@@ -3662,6 +3801,10 @@ pub enum NodeKind<'a> {
     DeclareEntry(&'a DeclareEntry),
     DeclareEntryGroup(&'a DeclareEntryGroup),
     DeclareBody(&'a DeclareBody),
+    DeclareBodyNoop(&'a DeclareBodyNoop),
+    DeclareBodyBraced(&'a DeclareBodyBraced),
+    DeclareBodyExpression(&'a DeclareBodyExpression),
+    DeclareBodyBlock(&'a DeclareBodyBlock),
     DeclareStatement(&'a DeclareStatement),
     UnitEnumCase(&'a UnitEnumCase),
     UnitEnumMember(&'a UnitEnumMember),
@@ -3698,14 +3841,24 @@ pub enum NodeKind<'a> {
     Literal(&'a Literal),
     ForeachStatement(&'a ForeachStatement),
     ForeachStatementIterator(&'a ForeachStatementIterator),
+    ForeachStatementIteratorValue(&'a ForeachStatementIteratorValue),
+    ForeachStatementIteratorKeyAndValue(&'a ForeachStatementIteratorKeyAndValue),
     ForeachStatementBody(&'a ForeachStatementBody),
+    ForeachStatementBodyStatement(&'a ForeachStatementBodyStatement),
+    ForeachStatementBodyBlock(&'a ForeachStatementBodyBlock),
     ForStatement(&'a ForStatement),
     ForStatementIterator(&'a ForStatementIterator),
     ForStatementBody(&'a ForStatementBody),
+    ForStatementBodyStatement(&'a ForStatementBodyStatement),
+    ForStatementBodyBlock(&'a ForStatementBodyBlock),
     DoWhileStatement(&'a DoWhileStatement),
     WhileStatement(&'a WhileStatement),
     WhileStatementBody(&'a WhileStatementBody),
+    WhileStatementBodyStatement(&'a WhileStatementBodyStatement),
+    WhileStatementBodyBlock(&'a WhileStatementBodyBlock),
     Level(&'a Level),
+    LiteralLevel(&'a LiteralLevel),
+    ParenthesizedLevel(&'a ParenthesizedLevel),
     BreakStatement(&'a BreakStatement),
     ContinueStatement(&'a ContinueStatement),
     VisibilityModifier(&'a VisibilityModifier),
@@ -3743,13 +3896,20 @@ pub enum NodeKind<'a> {
     VariableProperty(&'a VariableProperty),
     PropertyEntry(&'a PropertyEntry),
     PropertyEntryKind(&'a PropertyEntryKind),
+    UninitializedPropertyEntry(&'a UninitializedPropertyEntry),
+    InitializedPropertyEntry(&'a InitializedPropertyEntry),
     TraitBody(&'a TraitBody),
     TraitStatement(&'a TraitStatement),
     TraitUsage(&'a TraitUsage),
     TraitUsageAdaptation(&'a TraitUsageAdaptation),
     TraitUsageAdaptationKind(&'a TraitUsageAdaptationKind),
+    TraitUsageAdaptationAlias(&'a TraitUsageAdaptationAlias),
+    TraitUsageAdaptationVisibility(&'a TraitUsageAdaptationVisibility),
+    TraitUsageAdaptationPrecedence(&'a TraitUsageAdaptationPrecedence),
     CatchType(&'a CatchType),
     CatchTypeKind(&'a CatchTypeKind),
+    CatchTypeKindIdentifier(&'a CatchTypeKindIdentifier),
+    CatchTypeKindUnion(&'a CatchTypeKindUnion),
     TryStatement(&'a TryStatement),
     CatchBlock(&'a CatchBlock),
     FinallyBlock(&'a FinallyBlock),
@@ -4876,6 +5036,28 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::IfStatementBody(_))
     }
 
+    pub fn as_if_statement_body_statement(self) -> Option<&'a IfStatementBodyStatement> {
+        match &self.kind {
+            NodeKind::IfStatementBodyStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_if_statement_body_statement(&self) -> bool {
+        matches!(&self.kind, NodeKind::IfStatementBodyStatement(_))
+    }
+
+    pub fn as_if_statement_body_block(self) -> Option<&'a IfStatementBodyBlock> {
+        match &self.kind {
+            NodeKind::IfStatementBodyBlock(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_if_statement_body_block(&self) -> bool {
+        matches!(&self.kind, NodeKind::IfStatementBodyBlock(_))
+    }
+
     pub fn as_if_statement_else_if(self) -> Option<&'a IfStatementElseIf> {
         match &self.kind {
             NodeKind::IfStatementElseIf(node) => Some(node),
@@ -4962,6 +5144,50 @@ impl<'a> Node<'a> {
 
     pub fn is_declare_body(&self) -> bool {
         matches!(&self.kind, NodeKind::DeclareBody(_))
+    }
+
+    pub fn as_declare_body_noop(self) -> Option<&'a DeclareBodyNoop> {
+        match &self.kind {
+            NodeKind::DeclareBodyNoop(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_declare_body_noop(&self) -> bool {
+        matches!(&self.kind, NodeKind::DeclareBodyNoop(_))
+    }
+
+    pub fn as_declare_body_braced(self) -> Option<&'a DeclareBodyBraced> {
+        match &self.kind {
+            NodeKind::DeclareBodyBraced(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_declare_body_braced(&self) -> bool {
+        matches!(&self.kind, NodeKind::DeclareBodyBraced(_))
+    }
+
+    pub fn as_declare_body_expression(self) -> Option<&'a DeclareBodyExpression> {
+        match &self.kind {
+            NodeKind::DeclareBodyExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_declare_body_expression(&self) -> bool {
+        matches!(&self.kind, NodeKind::DeclareBodyExpression(_))
+    }
+
+    pub fn as_declare_body_block(self) -> Option<&'a DeclareBodyBlock> {
+        match &self.kind {
+            NodeKind::DeclareBodyBlock(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_declare_body_block(&self) -> bool {
+        matches!(&self.kind, NodeKind::DeclareBodyBlock(_))
     }
 
     pub fn as_declare_statement(self) -> Option<&'a DeclareStatement> {
@@ -5360,6 +5586,30 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::ForeachStatementIterator(_))
     }
 
+    pub fn as_foreach_statement_iterator_value(self) -> Option<&'a ForeachStatementIteratorValue> {
+        match &self.kind {
+            NodeKind::ForeachStatementIteratorValue(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_foreach_statement_iterator_value(&self) -> bool {
+        matches!(&self.kind, NodeKind::ForeachStatementIteratorValue(_))
+    }
+
+    pub fn as_foreach_statement_iterator_key_and_value(
+        self,
+    ) -> Option<&'a ForeachStatementIteratorKeyAndValue> {
+        match &self.kind {
+            NodeKind::ForeachStatementIteratorKeyAndValue(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_foreach_statement_iterator_key_and_value(&self) -> bool {
+        matches!(&self.kind, NodeKind::ForeachStatementIteratorKeyAndValue(_))
+    }
+
     pub fn as_foreach_statement_body(self) -> Option<&'a ForeachStatementBody> {
         match &self.kind {
             NodeKind::ForeachStatementBody(node) => Some(node),
@@ -5369,6 +5619,28 @@ impl<'a> Node<'a> {
 
     pub fn is_foreach_statement_body(&self) -> bool {
         matches!(&self.kind, NodeKind::ForeachStatementBody(_))
+    }
+
+    pub fn as_foreach_statement_body_statement(self) -> Option<&'a ForeachStatementBodyStatement> {
+        match &self.kind {
+            NodeKind::ForeachStatementBodyStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_foreach_statement_body_statement(&self) -> bool {
+        matches!(&self.kind, NodeKind::ForeachStatementBodyStatement(_))
+    }
+
+    pub fn as_foreach_statement_body_block(self) -> Option<&'a ForeachStatementBodyBlock> {
+        match &self.kind {
+            NodeKind::ForeachStatementBodyBlock(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_foreach_statement_body_block(&self) -> bool {
+        matches!(&self.kind, NodeKind::ForeachStatementBodyBlock(_))
     }
 
     pub fn as_for_statement(self) -> Option<&'a ForStatement> {
@@ -5404,6 +5676,28 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::ForStatementBody(_))
     }
 
+    pub fn as_for_statement_body_statement(self) -> Option<&'a ForStatementBodyStatement> {
+        match &self.kind {
+            NodeKind::ForStatementBodyStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_for_statement_body_statement(&self) -> bool {
+        matches!(&self.kind, NodeKind::ForStatementBodyStatement(_))
+    }
+
+    pub fn as_for_statement_body_block(self) -> Option<&'a ForStatementBodyBlock> {
+        match &self.kind {
+            NodeKind::ForStatementBodyBlock(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_for_statement_body_block(&self) -> bool {
+        matches!(&self.kind, NodeKind::ForStatementBodyBlock(_))
+    }
+
     pub fn as_do_while_statement(self) -> Option<&'a DoWhileStatement> {
         match &self.kind {
             NodeKind::DoWhileStatement(node) => Some(node),
@@ -5437,6 +5731,28 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::WhileStatementBody(_))
     }
 
+    pub fn as_while_statement_body_statement(self) -> Option<&'a WhileStatementBodyStatement> {
+        match &self.kind {
+            NodeKind::WhileStatementBodyStatement(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_while_statement_body_statement(&self) -> bool {
+        matches!(&self.kind, NodeKind::WhileStatementBodyStatement(_))
+    }
+
+    pub fn as_while_statement_body_block(self) -> Option<&'a WhileStatementBodyBlock> {
+        match &self.kind {
+            NodeKind::WhileStatementBodyBlock(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_while_statement_body_block(&self) -> bool {
+        matches!(&self.kind, NodeKind::WhileStatementBodyBlock(_))
+    }
+
     pub fn as_level(self) -> Option<&'a Level> {
         match &self.kind {
             NodeKind::Level(node) => Some(node),
@@ -5446,6 +5762,28 @@ impl<'a> Node<'a> {
 
     pub fn is_level(&self) -> bool {
         matches!(&self.kind, NodeKind::Level(_))
+    }
+
+    pub fn as_literal_level(self) -> Option<&'a LiteralLevel> {
+        match &self.kind {
+            NodeKind::LiteralLevel(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_literal_level(&self) -> bool {
+        matches!(&self.kind, NodeKind::LiteralLevel(_))
+    }
+
+    pub fn as_parenthesized_level(self) -> Option<&'a ParenthesizedLevel> {
+        match &self.kind {
+            NodeKind::ParenthesizedLevel(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_parenthesized_level(&self) -> bool {
+        matches!(&self.kind, NodeKind::ParenthesizedLevel(_))
     }
 
     pub fn as_break_statement(self) -> Option<&'a BreakStatement> {
@@ -5855,6 +6193,28 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::PropertyEntryKind(_))
     }
 
+    pub fn as_uninitialized_property_entry(self) -> Option<&'a UninitializedPropertyEntry> {
+        match &self.kind {
+            NodeKind::UninitializedPropertyEntry(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_uninitialized_property_entry(&self) -> bool {
+        matches!(&self.kind, NodeKind::UninitializedPropertyEntry(_))
+    }
+
+    pub fn as_initialized_property_entry(self) -> Option<&'a InitializedPropertyEntry> {
+        match &self.kind {
+            NodeKind::InitializedPropertyEntry(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_initialized_property_entry(&self) -> bool {
+        matches!(&self.kind, NodeKind::InitializedPropertyEntry(_))
+    }
+
     pub fn as_trait_body(self) -> Option<&'a TraitBody> {
         match &self.kind {
             NodeKind::TraitBody(node) => Some(node),
@@ -5910,6 +6270,43 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::TraitUsageAdaptationKind(_))
     }
 
+    pub fn as_trait_usage_adaptation_alias(self) -> Option<&'a TraitUsageAdaptationAlias> {
+        match &self.kind {
+            NodeKind::TraitUsageAdaptationAlias(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_trait_usage_adaptation_alias(&self) -> bool {
+        matches!(&self.kind, NodeKind::TraitUsageAdaptationAlias(_))
+    }
+
+    pub fn as_trait_usage_adaptation_visibility(
+        self,
+    ) -> Option<&'a TraitUsageAdaptationVisibility> {
+        match &self.kind {
+            NodeKind::TraitUsageAdaptationVisibility(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_trait_usage_adaptation_visibility(&self) -> bool {
+        matches!(&self.kind, NodeKind::TraitUsageAdaptationVisibility(_))
+    }
+
+    pub fn as_trait_usage_adaptation_precedence(
+        self,
+    ) -> Option<&'a TraitUsageAdaptationPrecedence> {
+        match &self.kind {
+            NodeKind::TraitUsageAdaptationPrecedence(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_trait_usage_adaptation_precedence(&self) -> bool {
+        matches!(&self.kind, NodeKind::TraitUsageAdaptationPrecedence(_))
+    }
+
     pub fn as_catch_type(self) -> Option<&'a CatchType> {
         match &self.kind {
             NodeKind::CatchType(node) => Some(node),
@@ -5930,6 +6327,28 @@ impl<'a> Node<'a> {
 
     pub fn is_catch_type_kind(&self) -> bool {
         matches!(&self.kind, NodeKind::CatchTypeKind(_))
+    }
+
+    pub fn as_catch_type_kind_identifier(self) -> Option<&'a CatchTypeKindIdentifier> {
+        match &self.kind {
+            NodeKind::CatchTypeKindIdentifier(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_catch_type_kind_identifier(&self) -> bool {
+        matches!(&self.kind, NodeKind::CatchTypeKindIdentifier(_))
+    }
+
+    pub fn as_catch_type_kind_union(self) -> Option<&'a CatchTypeKindUnion> {
+        match &self.kind {
+            NodeKind::CatchTypeKindUnion(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_catch_type_kind_union(&self) -> bool {
+        matches!(&self.kind, NodeKind::CatchTypeKindUnion(_))
     }
 
     pub fn as_try_statement(self) -> Option<&'a TryStatement> {

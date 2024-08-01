@@ -1,13 +1,9 @@
 use crate::{Node, NodeKind, Statement};
 
 pub trait NodeVisitor {
-    fn enter(&mut self, node: &Node) {
+    fn enter(&mut self, node: &Node) {}
 
-    }
-
-    fn leave(&mut self, node: &Node) {
-
-    }
+    fn leave(&mut self, node: &Node) {}
 
     fn visit(&mut self, node: &Node) {
         self.enter(node);
@@ -19,7 +15,11 @@ pub trait NodeVisitor {
 
     fn traverse(&mut self, ast: &[Statement]) {
         for statement in ast {
-            self.visit(&Node::new(statement.id, NodeKind::Statement(statement), statement.span));
+            self.visit(&Node::new(
+                statement.id,
+                NodeKind::Statement(statement),
+                statement.span,
+            ));
         }
-    }   
+    }
 }

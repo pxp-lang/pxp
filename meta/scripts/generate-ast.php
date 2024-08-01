@@ -23,7 +23,7 @@ use pxp_syntax::name::NameQualification;
 
 RUST;
 
-$reserved = ['as', 'derive', 'node'];
+$reserved = ['as', 'derive', 'node', 'children'];
 
 function is_spanned(string $node, array $structure): bool {
     if (isset($structure['span'])) {
