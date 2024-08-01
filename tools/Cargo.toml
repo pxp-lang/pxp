@@ -7,15 +7,15 @@ license-file.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-pxp-lexer = { path = "../pxp-lexer" }
-pxp-symbol = { path = "../pxp-symbol" }
-pxp-token = { path = "../pxp-token" }
-pxp-parser = { path = "../pxp-parser" }
+pxp-lexer = { path = "../crates/pxp-lexer" }
+pxp-symbol = { path = "../crates/pxp-symbol" }
+pxp-token = { path = "../crates/pxp-token" }
+pxp-parser = { path = "../crates/pxp-parser" }
 discoverer = "0.2.0"
 rustyline = "13.0.0"
-pxp-index = { version = "0.1.0", path = "../pxp-index" }
+pxp-index = { version = "0.1.0", path = "../crates/pxp-index" }
 indicatif = "0.17.8"
-pxp-ast = { version = "0.1.0", path = "../pxp-ast" }
+pxp-ast = { version = "0.1.0", path = "../crates/pxp-ast" }
 
 [[bin]]
 name = "tokenise"
