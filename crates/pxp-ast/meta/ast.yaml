@@ -166,6 +166,7 @@ BlockStatement:
   right_brace: Span
 
 CastKind:
+  node: false
   as: Enum
   Int: Span
   Bool: Span
@@ -186,6 +187,7 @@ Use:
   kind: Option<UseKind>
 
 UseKind:
+  node: false
   as: Enum
   derive: Hash, Copy
   Normal: ''
@@ -1040,6 +1042,7 @@ Literal:
 
 LiteralKind:
   as: Enum
+  node: false
   Integer: ""
   Float: ""
   String: ""

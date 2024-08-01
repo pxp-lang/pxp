@@ -343,12 +343,6 @@ pub enum CastKind {
     Unset(Span),
 }
 
-impl Nodeable for CastKind {
-    fn as_node(&self) -> Node {
-        Node::CastKind(self)
-    }
-}
-
 impl Spanned for CastKind {
     fn span(&self) -> Span {
         match self {
@@ -403,12 +397,6 @@ pub enum UseKind {
     Normal,
     Function,
     Const,
-}
-
-impl Nodeable for UseKind {
-    fn as_node(&self) -> Node {
-        Node::UseKind(self)
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -3130,12 +3118,6 @@ pub enum LiteralKind {
     Missing,
 }
 
-impl Nodeable for LiteralKind {
-    fn as_node(&self) -> Node {
-        Node::LiteralKind(self)
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ForeachStatement {
     pub id: NodeId,
@@ -4838,10 +4820,8 @@ pub enum Node<'a> {
     ExpressionStatement(&'a ExpressionStatement),
     GlobalStatement(&'a GlobalStatement),
     BlockStatement(&'a BlockStatement),
-    CastKind(&'a CastKind),
     Case(&'a Case),
     Use(&'a Use),
-    UseKind(&'a UseKind),
     EvalExpression(&'a EvalExpression),
     EmptyExpression(&'a EmptyExpression),
     DieExpression(&'a DieExpression),
@@ -4970,7 +4950,6 @@ pub enum Node<'a> {
     InterfaceBody(&'a InterfaceBody),
     InterfaceStatement(&'a InterfaceStatement),
     Literal(&'a Literal),
-    LiteralKind(&'a LiteralKind),
     ForeachStatement(&'a ForeachStatement),
     ForeachStatementIterator(&'a ForeachStatementIterator),
     ForeachStatementBody(&'a ForeachStatementBody),
@@ -5187,17 +5166,6 @@ impl<'a> Node<'a> {
         matches!(self, Node::BlockStatement(_))
     }
 
-    pub fn as_cast_kind(self) -> Option<&'a CastKind> {
-        match self {
-            Node::CastKind(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_cast_kind(&self) -> bool {
-        matches!(self, Node::CastKind(_))
-    }
-
     pub fn as_case(self) -> Option<&'a Case> {
         match self {
             Node::Case(node) => Some(node),
@@ -5218,17 +5186,6 @@ impl<'a> Node<'a> {
 
     pub fn is_use(&self) -> bool {
         matches!(self, Node::Use(_))
-    }
-
-    pub fn as_use_kind(self) -> Option<&'a UseKind> {
-        match self {
-            Node::UseKind(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_use_kind(&self) -> bool {
-        matches!(self, Node::UseKind(_))
     }
 
     pub fn as_eval_expression(self) -> Option<&'a EvalExpression> {
@@ -6627,17 +6584,6 @@ impl<'a> Node<'a> {
 
     pub fn is_literal(&self) -> bool {
         matches!(self, Node::Literal(_))
-    }
-
-    pub fn as_literal_kind(self) -> Option<&'a LiteralKind> {
-        match self {
-            Node::LiteralKind(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_literal_kind(&self) -> bool {
-        matches!(self, Node::LiteralKind(_))
     }
 
     pub fn as_foreach_statement(self) -> Option<&'a ForeachStatement> {

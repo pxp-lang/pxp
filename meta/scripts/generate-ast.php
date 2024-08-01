@@ -24,7 +24,7 @@ use super::Nodeable;
 
 RUST;
 
-$reserved = ['as', 'derive'];
+$reserved = ['as', 'derive', 'node'];
 
 function is_spanned(string $node, array $structure): bool {
     if (isset($structure['span'])) {
@@ -105,11 +105,13 @@ foreach ($ast as $node => $structure) {
 
     $output .= "}\n\n";
 
-    $output .= "impl Nodeable for {$node} {\n";
-    $output .= "    fn as_node(&self) -> Node {\n";
-    $output .= "        Node::{$node}(self)\n";
-    $output .= "    }\n";
-    $output .= "}\n\n";
+    if (!isset($structure['node'])) {
+        $output .= "impl Nodeable for {$node} {\n";
+        $output .= "    fn as_node(&self) -> Node {\n";
+        $output .= "        Node::{$node}(self)\n";
+        $output .= "    }\n";
+        $output .= "}\n\n";
+    }
 
     if (! is_spanned($node, $structure)) {
         continue;
@@ -145,6 +147,10 @@ foreach ($ast as $node => $structure) {
         continue;
     }
 
+    if (isset($structure['node']) && $structure['node'] === false) {
+        continue;
+    }
+
     $output .= "    {$node}(&'a {$node}),\n";
 }
 
@@ -154,6 +160,10 @@ $output .= "impl<'a> Node<'a> {\n";
 
 foreach ($ast as $node => $structure) {
     if ($node === 'NodeId') {
+        continue;
+    }
+
+    if (isset($structure['node']) && $structure['node'] === false) {
         continue;
     }
 
