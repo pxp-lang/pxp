@@ -102,3 +102,9 @@ impl From<Token> for SpecialNameKind {
         }
     }
 }
+
+impl<'a> Node<'a> {
+    pub fn new(id: NodeId, kind: NodeKind<'a>, span: Span) -> Self {
+        Self { id, kind, span }
+    }
+}
