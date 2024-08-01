@@ -9,15 +9,15 @@ use pxp_syntax::comments::Comment;
 use pxp_type::Type;
 
 pub trait VisitorMut {
-    fn before<T: ?Sized>(&mut self, node: &mut T) {
+    fn before<T: Nodeable + ?Sized>(&mut self, node: &mut T) {
         // This method is called before visiting a node.
     }
 
-    fn after<T: ?Sized>(&mut self, node: &mut T) {
+    fn after<T: Nodeable + ?Sized>(&mut self, node: &mut T) {
         // This method is called after visiting a node.
     }
 
-    fn visit(&mut self, node: &mut [Statement]) {
+    fn visit(&mut self, node: &mut Vec<Statement>) {
         self.before(node);
         walk_mut(self, node);
         self.after(node);

@@ -5,7 +5,7 @@ use pxp_visitor::Visitor;
 pub struct NodeFinder;
 
 impl NodeFinder {
-    pub fn find_at_offset<'a>(offset: ByteOffset, ast: &'a [Statement]) -> Option<Node<'a>> {
+    pub fn find_at_offset<'a>(offset: ByteOffset, ast: &'a Vec<Statement>) -> Option<Node<'a>> {
         let mut visitor = NodeFindingVisitor::new(offset);
 
         visitor.visit(ast);

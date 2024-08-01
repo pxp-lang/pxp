@@ -8,7 +8,7 @@ use pxp_visitor::Visitor;
 pub struct TypeMapGenerator;
 
 impl TypeMapGenerator {
-    pub fn generate(index: &Index, ast: &[Statement]) -> TypeMap {
+    pub fn generate(index: &Index, ast: &Vec<Statement>) -> TypeMap {
         let mut visitor = TypeMapVisitor { index, map: TypeMap::new() };
 
         visitor.visit(ast);
