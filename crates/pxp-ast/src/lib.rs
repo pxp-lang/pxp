@@ -111,3 +111,7 @@ impl From<Token> for SpecialNameKind {
         }
     }
 }
+
+pub trait Nodeable {
+    fn as_node(&self) -> Node;
+}
