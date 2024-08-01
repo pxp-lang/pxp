@@ -134,6 +134,10 @@ $output .= "#[derive(Debug, PartialEq, Clone)]\n";
 $output .= "pub enum Node<'a> {\n";
 
 foreach ($ast as $node => $structure) {
+    if ($node === 'NodeId') {
+        continue;
+    }
+
     $output .= "    {$node}(&'a {$node}),\n";
 }
 

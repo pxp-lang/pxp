@@ -60,11 +60,21 @@ impl Expression {
     }
 
     pub fn missing(id: NodeId, span: Span) -> Self {
-        Self::new(id, ExpressionKind::Missing(span), span, CommentGroup::default())
+        Self::new(
+            id,
+            ExpressionKind::Missing(span),
+            span,
+            CommentGroup::default(),
+        )
     }
 
     pub fn noop(id: NodeId, span: Span) -> Self {
-        Self::new(id, ExpressionKind::Noop(span), span, CommentGroup::default())
+        Self::new(
+            id,
+            ExpressionKind::Noop(span),
+            span,
+            CommentGroup::default(),
+        )
     }
 }
 

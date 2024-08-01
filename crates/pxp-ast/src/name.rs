@@ -47,7 +47,12 @@ impl Name {
         )
     }
 
-    pub fn unresolved(id: NodeId, symbol: Symbol, qualification: NameQualification, span: Span) -> Self {
+    pub fn unresolved(
+        id: NodeId,
+        symbol: Symbol,
+        qualification: NameQualification,
+        span: Span,
+    ) -> Self {
         Self::new(
             id,
             NameKind::Unresolved(UnresolvedName {
@@ -61,7 +66,16 @@ impl Name {
     }
 
     pub fn special(id: NodeId, kind: SpecialNameKind, symbol: Symbol, span: Span) -> Self {
-        Self::new(id, NameKind::Special(SpecialName { id, kind, symbol, span }), span)
+        Self::new(
+            id,
+            NameKind::Special(SpecialName {
+                id,
+                kind,
+                symbol,
+                span,
+            }),
+            span,
+        )
     }
 
     pub fn symbol(&self) -> Symbol {

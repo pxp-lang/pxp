@@ -3546,7 +3546,6 @@ impl Spanned for StaticVar {
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Node<'a> {
-    NodeId(&'a NodeId),
     Block(&'a Block),
     Statement(&'a Statement),
     StatementKind(&'a StatementKind),
