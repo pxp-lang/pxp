@@ -15,6 +15,10 @@ generate-visitor:
     php ./meta/scripts/generate-visitor.php
     cargo fmt --package pxp-visitor
 
+generate-node-finder:
+    php ./meta/scripts/generate-node-finder.php
+    cargo fmt --package pxp-node-finder
+
 bench-parser:
     cargo build --release --bin parse
     hyperfine --warmup=1 --runs=1 \
