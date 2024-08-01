@@ -29,16 +29,6 @@ impl Display for UseKind {
     }
 }
 
-impl Ending {
-    pub fn span(&self) -> Span {
-        match self {
-            Ending::Semicolon(span) => *span,
-            Ending::CloseTag(span) => *span,
-            Ending::Missing(span) => *span,
-        }
-    }
-}
-
 impl Statement {
     pub fn new(id: NodeId, kind: StatementKind, span: Span, comments: CommentGroup) -> Self {
         Self {
