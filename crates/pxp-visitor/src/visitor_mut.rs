@@ -9,829 +9,1289 @@ use pxp_syntax::comments::Comment;
 use pxp_type::Type;
 
 pub trait VisitorMut {
+    fn before<T: ?Sized>(&mut self, node: &mut T) {
+        // This method is called before visiting a node.
+    }
+
+    fn after<T: ?Sized>(&mut self, node: &mut T) {
+        // This method is called after visiting a node.
+    }
+
     fn visit(&mut self, node: &mut [Statement]) {
+        self.before(node);
         walk_mut(self, node);
+        self.after(node);
     }
 
     fn visit_statement(&mut self, node: &mut Statement) {
+        self.before(node);
         walk_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_statement_kind(&mut self, node: &mut StatementKind) {
+        self.before(node);
         walk_statement_kind_mut(self, node);
+        self.after(node);
     }
 
     fn visit_expression(&mut self, node: &mut Expression) {
+        self.before(node);
         walk_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_expression_kind(&mut self, node: &mut ExpressionKind) {
+        self.before(node);
         walk_expression_kind_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_inline_html_statement(&mut self, node: &mut InlineHtmlStatement) {}
+    fn visit_inline_html_statement(&mut self, node: &mut InlineHtmlStatement) {
+        self.before(node);
+        self.after(node);
+    }
 
-    fn visit_full_opening_tag_statement(&mut self, node: &mut FullOpeningTagStatement) {}
+    fn visit_full_opening_tag_statement(&mut self, node: &mut FullOpeningTagStatement) {
+        self.before(node);
+        self.after(node);
+    }
 
-    fn visit_short_opening_tag_statement(&mut self, node: &mut ShortOpeningTagStatement) {}
+    fn visit_short_opening_tag_statement(&mut self, node: &mut ShortOpeningTagStatement) {
+        self.before(node);
+        self.after(node);
+    }
 
-    fn visit_echo_opening_tag_statement(&mut self, node: &mut EchoOpeningTagStatement) {}
+    fn visit_echo_opening_tag_statement(&mut self, node: &mut EchoOpeningTagStatement) {
+        self.before(node);
+        self.after(node);
+    }
 
-    fn visit_closing_tag_statement(&mut self, node: &mut ClosingTagStatement) {}
+    fn visit_closing_tag_statement(&mut self, node: &mut ClosingTagStatement) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_expression_statement(&mut self, node: &mut ExpressionStatement) {
+        self.before(node);
         walk_expression_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_global_statement(&mut self, node: &mut GlobalStatement) {
+        self.before(node);
         walk_global_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_block_statement(&mut self, node: &mut BlockStatement) {
+        self.before(node);
         walk_block_statement_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_cast_kind(&mut self, node: &mut CastKind) {}
+    fn visit_cast_kind(&mut self, node: &mut CastKind) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_case(&mut self, node: &mut Case) {
+        self.before(node);
         walk_case_mut(self, node);
+        self.after(node);
     }
 
     fn visit_use(&mut self, node: &mut Use) {
+        self.before(node);
         walk_use_mut(self, node);
+        self.after(node);
     }
 
     fn visit_use_kind(&mut self, node: &mut UseKind) {
+        self.before(node);
         walk_use_kind_mut(self, node);
+        self.after(node);
     }
 
     fn visit_eval_expression(&mut self, node: &mut EvalExpression) {
+        self.before(node);
         walk_eval_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_empty_expression(&mut self, node: &mut EmptyExpression) {
+        self.before(node);
         walk_empty_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_die_expression(&mut self, node: &mut DieExpression) {
+        self.before(node);
         walk_die_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_exit_expression(&mut self, node: &mut ExitExpression) {
+        self.before(node);
         walk_exit_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_isset_expression(&mut self, node: &mut IssetExpression) {
+        self.before(node);
         walk_isset_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_unset_expression(&mut self, node: &mut UnsetExpression) {
+        self.before(node);
         walk_unset_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_print_expression(&mut self, node: &mut PrintExpression) {
+        self.before(node);
         walk_print_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_concat_expression(&mut self, node: &mut ConcatExpression) {
+        self.before(node);
         walk_concat_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_instanceof_expression(&mut self, node: &mut InstanceofExpression) {
+        self.before(node);
         walk_instanceof_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_reference_expression(&mut self, node: &mut ReferenceExpression) {
+        self.before(node);
         walk_reference_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_parenthesized_expression(&mut self, node: &mut ParenthesizedExpression) {
+        self.before(node);
         walk_parenthesized_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_error_suppress_expression(&mut self, node: &mut ErrorSuppressExpression) {
+        self.before(node);
         walk_error_suppress_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_include_expression(&mut self, node: &mut IncludeExpression) {
+        self.before(node);
         walk_include_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_include_once_expression(&mut self, node: &mut IncludeOnceExpression) {
+        self.before(node);
         walk_include_once_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_require_expression(&mut self, node: &mut RequireExpression) {
+        self.before(node);
         walk_require_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_require_once_expression(&mut self, node: &mut RequireOnceExpression) {
+        self.before(node);
         walk_require_once_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_function_call_expression(&mut self, node: &mut FunctionCallExpression) {
+        self.before(node);
         walk_function_call_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_function_closure_creation_expression(
         &mut self,
         node: &mut FunctionClosureCreationExpression,
     ) {
+        self.before(node);
         walk_function_closure_creation_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_method_call_expression(&mut self, node: &mut MethodCallExpression) {
+        self.before(node);
         walk_method_call_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_method_closure_creation_expression(
         &mut self,
         node: &mut MethodClosureCreationExpression,
     ) {
+        self.before(node);
         walk_method_closure_creation_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_nullsafe_method_call_expression(&mut self, node: &mut NullsafeMethodCallExpression) {
+        self.before(node);
         walk_nullsafe_method_call_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_static_method_call_expression(&mut self, node: &mut StaticMethodCallExpression) {
+        self.before(node);
         walk_static_method_call_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_static_variable_method_call_expression(
         &mut self,
         node: &mut StaticVariableMethodCallExpression,
     ) {
+        self.before(node);
         walk_static_variable_method_call_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_static_method_closure_creation_expression(
         &mut self,
         node: &mut StaticMethodClosureCreationExpression,
     ) {
+        self.before(node);
         walk_static_method_closure_creation_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_static_variable_method_closure_creation_expression(
         &mut self,
         node: &mut StaticVariableMethodClosureCreationExpression,
     ) {
+        self.before(node);
         walk_static_variable_method_closure_creation_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_property_fetch_expression(&mut self, node: &mut PropertyFetchExpression) {
+        self.before(node);
         walk_property_fetch_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_nullsafe_property_fetch_expression(
         &mut self,
         node: &mut NullsafePropertyFetchExpression,
     ) {
+        self.before(node);
         walk_nullsafe_property_fetch_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_static_property_fetch_expression(&mut self, node: &mut StaticPropertyFetchExpression) {
+        self.before(node);
         walk_static_property_fetch_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_constant_fetch_expression(&mut self, node: &mut ConstantFetchExpression) {
+        self.before(node);
         walk_constant_fetch_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_short_array_expression(&mut self, node: &mut ShortArrayExpression) {
+        self.before(node);
         walk_short_array_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_array_expression(&mut self, node: &mut ArrayExpression) {
+        self.before(node);
         walk_array_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_list_expression(&mut self, node: &mut ListExpression) {
+        self.before(node);
         walk_list_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_new_expression(&mut self, node: &mut NewExpression) {
+        self.before(node);
         walk_new_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_interpolated_string_expression(&mut self, node: &mut InterpolatedStringExpression) {
+        self.before(node);
         walk_interpolated_string_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_heredoc_expression(&mut self, node: &mut HeredocExpression) {
+        self.before(node);
         walk_heredoc_expression_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_nowdoc_expression(&mut self, node: &mut NowdocExpression) {}
+    fn visit_nowdoc_expression(&mut self, node: &mut NowdocExpression) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_shell_exec_expression(&mut self, node: &mut ShellExecExpression) {
+        self.before(node);
         walk_shell_exec_expression_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_bool_expression(&mut self, node: &mut BoolExpression) {}
+    fn visit_bool_expression(&mut self, node: &mut BoolExpression) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_array_index_expression(&mut self, node: &mut ArrayIndexExpression) {
+        self.before(node);
         walk_array_index_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_short_ternary_expression(&mut self, node: &mut ShortTernaryExpression) {
+        self.before(node);
         walk_short_ternary_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_ternary_expression(&mut self, node: &mut TernaryExpression) {
+        self.before(node);
         walk_ternary_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_coalesce_expression(&mut self, node: &mut CoalesceExpression) {
+        self.before(node);
         walk_coalesce_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_clone_expression(&mut self, node: &mut CloneExpression) {
+        self.before(node);
         walk_clone_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_match_expression(&mut self, node: &mut MatchExpression) {
+        self.before(node);
         walk_match_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_throw_expression(&mut self, node: &mut ThrowExpression) {
+        self.before(node);
         walk_throw_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_yield_expression(&mut self, node: &mut YieldExpression) {
+        self.before(node);
         walk_yield_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_yield_from_expression(&mut self, node: &mut YieldFromExpression) {
+        self.before(node);
         walk_yield_from_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_cast_expression(&mut self, node: &mut CastExpression) {
+        self.before(node);
         walk_cast_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_default_match_arm(&mut self, node: &mut DefaultMatchArm) {
+        self.before(node);
         walk_default_match_arm_mut(self, node);
+        self.after(node);
     }
 
     fn visit_match_arm(&mut self, node: &mut MatchArm) {
+        self.before(node);
         walk_match_arm_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_magic_constant_expression(&mut self, node: &mut MagicConstantExpression) {}
+    fn visit_magic_constant_expression(&mut self, node: &mut MagicConstantExpression) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_string_part(&mut self, node: &mut StringPart) {
+        self.before(node);
         walk_string_part_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_literal_string_part(&mut self, node: &mut LiteralStringPart) {}
+    fn visit_literal_string_part(&mut self, node: &mut LiteralStringPart) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_expression_string_part(&mut self, node: &mut ExpressionStringPart) {
+        self.before(node);
         walk_expression_string_part_mut(self, node);
+        self.after(node);
     }
 
     fn visit_array_item(&mut self, node: &mut ArrayItem) {
+        self.before(node);
         walk_array_item_mut(self, node);
+        self.after(node);
     }
 
     fn visit_array_item_value(&mut self, node: &mut ArrayItemValue) {
+        self.before(node);
         walk_array_item_value_mut(self, node);
+        self.after(node);
     }
 
     fn visit_array_item_referenced_value(&mut self, node: &mut ArrayItemReferencedValue) {
+        self.before(node);
         walk_array_item_referenced_value_mut(self, node);
+        self.after(node);
     }
 
     fn visit_array_item_spread_value(&mut self, node: &mut ArrayItemSpreadValue) {
+        self.before(node);
         walk_array_item_spread_value_mut(self, node);
+        self.after(node);
     }
 
     fn visit_array_item_key_value(&mut self, node: &mut ArrayItemKeyValue) {
+        self.before(node);
         walk_array_item_key_value_mut(self, node);
+        self.after(node);
     }
 
     fn visit_array_item_referenced_key_value(&mut self, node: &mut ArrayItemReferencedKeyValue) {
+        self.before(node);
         walk_array_item_referenced_key_value_mut(self, node);
+        self.after(node);
     }
 
     fn visit_list_entry(&mut self, node: &mut ListEntry) {
+        self.before(node);
         walk_list_entry_mut(self, node);
+        self.after(node);
     }
 
     fn visit_list_entry_value(&mut self, node: &mut ListEntryValue) {
+        self.before(node);
         walk_list_entry_value_mut(self, node);
+        self.after(node);
     }
 
     fn visit_list_entry_key_value(&mut self, node: &mut ListEntryKeyValue) {
+        self.before(node);
         walk_list_entry_key_value_mut(self, node);
+        self.after(node);
     }
 
     fn visit_positional_argument(&mut self, node: &mut PositionalArgument) {
+        self.before(node);
         walk_positional_argument_mut(self, node);
+        self.after(node);
     }
 
     fn visit_named_argument(&mut self, node: &mut NamedArgument) {
+        self.before(node);
         walk_named_argument_mut(self, node);
+        self.after(node);
     }
 
     fn visit_argument(&mut self, node: &mut Argument) {
+        self.before(node);
         walk_argument_mut(self, node);
+        self.after(node);
     }
 
     fn visit_argument_list(&mut self, node: &mut ArgumentList) {
+        self.before(node);
         walk_argument_list_mut(self, node);
+        self.after(node);
     }
 
     fn visit_single_argument(&mut self, node: &mut SingleArgument) {
+        self.before(node);
         walk_single_argument_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_argument_placeholder(&mut self, node: &mut ArgumentPlaceholder) {}
+    fn visit_argument_placeholder(&mut self, node: &mut ArgumentPlaceholder) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_attribute(&mut self, node: &mut Attribute) {
+        self.before(node);
         walk_attribute_mut(self, node);
+        self.after(node);
     }
 
     fn visit_attribute_group(&mut self, node: &mut AttributeGroup) {
+        self.before(node);
         walk_attribute_group_mut(self, node);
+        self.after(node);
     }
 
     fn visit_class_body(&mut self, node: &mut ClassBody) {
+        self.before(node);
         walk_class_body_mut(self, node);
+        self.after(node);
     }
 
     fn visit_class_statement(&mut self, node: &mut ClassStatement) {
+        self.before(node);
         walk_class_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_anonymous_class_body(&mut self, node: &mut AnonymousClassBody) {
+        self.before(node);
         walk_anonymous_class_body_mut(self, node);
+        self.after(node);
     }
 
     fn visit_anonymous_class_expression(&mut self, node: &mut AnonymousClassExpression) {
+        self.before(node);
         walk_anonymous_class_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_class_extends(&mut self, node: &mut ClassExtends) {
+        self.before(node);
         walk_class_extends_mut(self, node);
+        self.after(node);
     }
 
     fn visit_class_implements(&mut self, node: &mut ClassImplements) {
+        self.before(node);
         walk_class_implements_mut(self, node);
+        self.after(node);
     }
 
     fn visit_classish_member(&mut self, node: &mut ClassishMember) {
+        self.before(node);
         walk_classish_member_mut(self, node);
+        self.after(node);
     }
 
     fn visit_constant_entry(&mut self, node: &mut ConstantEntry) {
+        self.before(node);
         walk_constant_entry_mut(self, node);
+        self.after(node);
     }
 
     fn visit_classish_constant_entry(&mut self, node: &mut ClassishConstantEntry) {
+        self.before(node);
         walk_classish_constant_entry_mut(self, node);
+        self.after(node);
     }
 
     fn visit_constant_statement(&mut self, node: &mut ConstantStatement) {
+        self.before(node);
         walk_constant_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_classish_constant(&mut self, node: &mut ClassishConstant) {
+        self.before(node);
         walk_classish_constant_mut(self, node);
+        self.after(node);
     }
 
     fn visit_if_statement(&mut self, node: &mut IfStatement) {
+        self.before(node);
         walk_if_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_if_statement_body(&mut self, node: &mut IfStatementBody) {
+        self.before(node);
         walk_if_statement_body_mut(self, node);
+        self.after(node);
     }
 
     fn visit_if_statement_else_if(&mut self, node: &mut IfStatementElseIf) {
+        self.before(node);
         walk_if_statement_else_if_mut(self, node);
+        self.after(node);
     }
 
     fn visit_if_statement_else(&mut self, node: &mut IfStatementElse) {
+        self.before(node);
         walk_if_statement_else_mut(self, node);
+        self.after(node);
     }
 
     fn visit_if_statement_else_if_block(&mut self, node: &mut IfStatementElseIfBlock) {
+        self.before(node);
         walk_if_statement_else_if_block_mut(self, node);
+        self.after(node);
     }
 
     fn visit_if_statement_else_block(&mut self, node: &mut IfStatementElseBlock) {
+        self.before(node);
         walk_if_statement_else_block_mut(self, node);
+        self.after(node);
     }
 
     fn visit_data_type(&mut self, node: &mut DataType) {
+        self.before(node);
         walk_data_type_mut(self, node);
+        self.after(node);
     }
 
     fn visit_declare_entry(&mut self, node: &mut DeclareEntry) {
+        self.before(node);
         walk_declare_entry_mut(self, node);
+        self.after(node);
     }
 
     fn visit_declare_entry_group(&mut self, node: &mut DeclareEntryGroup) {
+        self.before(node);
         walk_declare_entry_group_mut(self, node);
+        self.after(node);
     }
 
     fn visit_declare_body(&mut self, node: &mut DeclareBody) {
+        self.before(node);
         walk_declare_body_mut(self, node);
+        self.after(node);
     }
 
     fn visit_declare_statement(&mut self, node: &mut DeclareStatement) {
+        self.before(node);
         walk_declare_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_unit_enum_case(&mut self, node: &mut UnitEnumCase) {
+        self.before(node);
         walk_unit_enum_case_mut(self, node);
+        self.after(node);
     }
 
     fn visit_unit_enum_member(&mut self, node: &mut UnitEnumMember) {
+        self.before(node);
         walk_unit_enum_member_mut(self, node);
+        self.after(node);
     }
 
     fn visit_unit_enum_body(&mut self, node: &mut UnitEnumBody) {
+        self.before(node);
         walk_unit_enum_body_mut(self, node);
+        self.after(node);
     }
 
     fn visit_unit_enum_statement(&mut self, node: &mut UnitEnumStatement) {
+        self.before(node);
         walk_unit_enum_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_backed_enum_case(&mut self, node: &mut BackedEnumCase) {
+        self.before(node);
         walk_backed_enum_case_mut(self, node);
+        self.after(node);
     }
 
     fn visit_backed_enum_member(&mut self, node: &mut BackedEnumMember) {
+        self.before(node);
         walk_backed_enum_member_mut(self, node);
+        self.after(node);
     }
 
     fn visit_backed_enum_body(&mut self, node: &mut BackedEnumBody) {
+        self.before(node);
         walk_backed_enum_body_mut(self, node);
+        self.after(node);
     }
 
     fn visit_backed_enum_statement(&mut self, node: &mut BackedEnumStatement) {
+        self.before(node);
         walk_backed_enum_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_return_type(&mut self, node: &mut ReturnType) {
+        self.before(node);
         walk_return_type_mut(self, node);
+        self.after(node);
     }
 
     fn visit_function_parameter(&mut self, node: &mut FunctionParameter) {
+        self.before(node);
         walk_function_parameter_mut(self, node);
+        self.after(node);
     }
 
     fn visit_function_parameter_list(&mut self, node: &mut FunctionParameterList) {
+        self.before(node);
         walk_function_parameter_list_mut(self, node);
+        self.after(node);
     }
 
     fn visit_function_body(&mut self, node: &mut FunctionBody) {
+        self.before(node);
         walk_function_body_mut(self, node);
+        self.after(node);
     }
 
     fn visit_function_statement(&mut self, node: &mut FunctionStatement) {
+        self.before(node);
         walk_function_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_closure_use_variable(&mut self, node: &mut ClosureUseVariable) {
+        self.before(node);
         walk_closure_use_variable_mut(self, node);
+        self.after(node);
     }
 
     fn visit_closure_use(&mut self, node: &mut ClosureUse) {
+        self.before(node);
         walk_closure_use_mut(self, node);
+        self.after(node);
     }
 
     fn visit_closure_expression(&mut self, node: &mut ClosureExpression) {
+        self.before(node);
         walk_closure_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_arrow_function_expression(&mut self, node: &mut ArrowFunctionExpression) {
+        self.before(node);
         walk_arrow_function_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_constructor_parameter(&mut self, node: &mut ConstructorParameter) {
+        self.before(node);
         walk_constructor_parameter_mut(self, node);
+        self.after(node);
     }
 
     fn visit_constructor_parameter_list(&mut self, node: &mut ConstructorParameterList) {
+        self.before(node);
         walk_constructor_parameter_list_mut(self, node);
+        self.after(node);
     }
 
     fn visit_abstract_constructor(&mut self, node: &mut AbstractConstructor) {
+        self.before(node);
         walk_abstract_constructor_mut(self, node);
+        self.after(node);
     }
 
     fn visit_concrete_constructor(&mut self, node: &mut ConcreteConstructor) {
+        self.before(node);
         walk_concrete_constructor_mut(self, node);
+        self.after(node);
     }
 
     fn visit_abstract_method(&mut self, node: &mut AbstractMethod) {
+        self.before(node);
         walk_abstract_method_mut(self, node);
+        self.after(node);
     }
 
     fn visit_concrete_method(&mut self, node: &mut ConcreteMethod) {
+        self.before(node);
         walk_concrete_method_mut(self, node);
+        self.after(node);
     }
 
     fn visit_method_body(&mut self, node: &mut MethodBody) {
+        self.before(node);
         walk_method_body_mut(self, node);
+        self.after(node);
     }
 
     fn visit_label_statement(&mut self, node: &mut LabelStatement) {
+        self.before(node);
         walk_label_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_goto_statement(&mut self, node: &mut GotoStatement) {
+        self.before(node);
         walk_goto_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_identifier(&mut self, node: &mut Identifier) {
+        self.before(node);
         walk_identifier_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_simple_identifier(&mut self, node: &mut SimpleIdentifier) {}
+    fn visit_simple_identifier(&mut self, node: &mut SimpleIdentifier) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_dynamic_identifier(&mut self, node: &mut DynamicIdentifier) {
+        self.before(node);
         walk_dynamic_identifier_mut(self, node);
+        self.after(node);
     }
 
     fn visit_interface_extends(&mut self, node: &mut InterfaceExtends) {
+        self.before(node);
         walk_interface_extends_mut(self, node);
+        self.after(node);
     }
 
     fn visit_interface_body(&mut self, node: &mut InterfaceBody) {
+        self.before(node);
         walk_interface_body_mut(self, node);
+        self.after(node);
     }
 
     fn visit_interface_statement(&mut self, node: &mut InterfaceStatement) {
+        self.before(node);
         walk_interface_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_literal(&mut self, node: &mut Literal) {
+        self.before(node);
         walk_literal_mut(self, node);
+        self.after(node);
     }
 
     fn visit_literal_kind(&mut self, node: &mut LiteralKind) {
+        self.before(node);
         walk_literal_kind_mut(self, node);
+        self.after(node);
     }
 
     fn visit_foreach_statement(&mut self, node: &mut ForeachStatement) {
+        self.before(node);
         walk_foreach_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_foreach_statement_iterator(&mut self, node: &mut ForeachStatementIterator) {
+        self.before(node);
         walk_foreach_statement_iterator_mut(self, node);
+        self.after(node);
     }
 
     fn visit_foreach_statement_body(&mut self, node: &mut ForeachStatementBody) {
+        self.before(node);
         walk_foreach_statement_body_mut(self, node);
+        self.after(node);
     }
 
     fn visit_for_statement(&mut self, node: &mut ForStatement) {
+        self.before(node);
         walk_for_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_for_statement_iterator(&mut self, node: &mut ForStatementIterator) {
+        self.before(node);
         walk_for_statement_iterator_mut(self, node);
+        self.after(node);
     }
 
     fn visit_for_statement_body(&mut self, node: &mut ForStatementBody) {
+        self.before(node);
         walk_for_statement_body_mut(self, node);
+        self.after(node);
     }
 
     fn visit_do_while_statement(&mut self, node: &mut DoWhileStatement) {
+        self.before(node);
         walk_do_while_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_while_statement(&mut self, node: &mut WhileStatement) {
+        self.before(node);
         walk_while_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_while_statement_body(&mut self, node: &mut WhileStatementBody) {
+        self.before(node);
         walk_while_statement_body_mut(self, node);
+        self.after(node);
     }
 
     fn visit_level(&mut self, node: &mut Level) {
+        self.before(node);
         walk_level_mut(self, node);
+        self.after(node);
     }
 
     fn visit_break_statement(&mut self, node: &mut BreakStatement) {
+        self.before(node);
         walk_break_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_continue_statement(&mut self, node: &mut ContinueStatement) {
+        self.before(node);
         walk_continue_statement_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_visibility_modifier(&mut self, node: &mut VisibilityModifier) {}
+    fn visit_visibility_modifier(&mut self, node: &mut VisibilityModifier) {
+        self.before(node);
+        self.after(node);
+    }
 
-    fn visit_promoted_property_modifier(&mut self, node: &mut PromotedPropertyModifier) {}
+    fn visit_promoted_property_modifier(&mut self, node: &mut PromotedPropertyModifier) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_promoted_property_modifier_group(&mut self, node: &mut PromotedPropertyModifierGroup) {
+        self.before(node);
         walk_promoted_property_modifier_group_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_property_modifier(&mut self, node: &mut PropertyModifier) {}
+    fn visit_property_modifier(&mut self, node: &mut PropertyModifier) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_property_modifier_group(&mut self, node: &mut PropertyModifierGroup) {
+        self.before(node);
         walk_property_modifier_group_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_method_modifier(&mut self, node: &mut MethodModifier) {}
+    fn visit_method_modifier(&mut self, node: &mut MethodModifier) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_method_modifier_group(&mut self, node: &mut MethodModifierGroup) {
+        self.before(node);
         walk_method_modifier_group_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_class_modifier(&mut self, node: &mut ClassModifier) {}
+    fn visit_class_modifier(&mut self, node: &mut ClassModifier) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_class_modifier_group(&mut self, node: &mut ClassModifierGroup) {
+        self.before(node);
         walk_class_modifier_group_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_constant_modifier(&mut self, node: &mut ConstantModifier) {}
+    fn visit_constant_modifier(&mut self, node: &mut ConstantModifier) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_constant_modifier_group(&mut self, node: &mut ConstantModifierGroup) {
+        self.before(node);
         walk_constant_modifier_group_mut(self, node);
+        self.after(node);
     }
 
     fn visit_unbraced_namespace(&mut self, node: &mut UnbracedNamespace) {
+        self.before(node);
         walk_unbraced_namespace_mut(self, node);
+        self.after(node);
     }
 
     fn visit_braced_namespace(&mut self, node: &mut BracedNamespace) {
+        self.before(node);
         walk_braced_namespace_mut(self, node);
+        self.after(node);
     }
 
     fn visit_braced_namespace_body(&mut self, node: &mut BracedNamespaceBody) {
+        self.before(node);
         walk_braced_namespace_body_mut(self, node);
+        self.after(node);
     }
 
     fn visit_namespace_statement(&mut self, node: &mut NamespaceStatement) {
+        self.before(node);
         walk_namespace_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_arithmetic_operation_expression(&mut self, node: &mut ArithmeticOperationExpression) {
+        self.before(node);
         walk_arithmetic_operation_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_arithmetic_operation_kind(&mut self, node: &mut ArithmeticOperationKind) {
+        self.before(node);
         walk_arithmetic_operation_kind_mut(self, node);
+        self.after(node);
     }
 
     fn visit_assignment_operation_expression(&mut self, node: &mut AssignmentOperationExpression) {
+        self.before(node);
         walk_assignment_operation_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_assignment_operation_kind(&mut self, node: &mut AssignmentOperationKind) {
+        self.before(node);
         walk_assignment_operation_kind_mut(self, node);
+        self.after(node);
     }
 
     fn visit_bitwise_operation_expression(&mut self, node: &mut BitwiseOperationExpression) {
+        self.before(node);
         walk_bitwise_operation_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_bitwise_operation_kind(&mut self, node: &mut BitwiseOperationKind) {
+        self.before(node);
         walk_bitwise_operation_kind_mut(self, node);
+        self.after(node);
     }
 
     fn visit_comparison_operation_expression(&mut self, node: &mut ComparisonOperationExpression) {
+        self.before(node);
         walk_comparison_operation_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_comparison_operation_kind(&mut self, node: &mut ComparisonOperationKind) {
+        self.before(node);
         walk_comparison_operation_kind_mut(self, node);
+        self.after(node);
     }
 
     fn visit_logical_operation_expression(&mut self, node: &mut LogicalOperationExpression) {
+        self.before(node);
         walk_logical_operation_expression_mut(self, node);
+        self.after(node);
     }
 
     fn visit_logical_operation_kind(&mut self, node: &mut LogicalOperationKind) {
+        self.before(node);
         walk_logical_operation_kind_mut(self, node);
+        self.after(node);
     }
 
     fn visit_name(&mut self, node: &mut Name) {
+        self.before(node);
         walk_name_mut(self, node);
+        self.after(node);
     }
 
     fn visit_name_kind(&mut self, node: &mut NameKind) {
+        self.before(node);
         walk_name_kind_mut(self, node);
+        self.after(node);
     }
 
     fn visit_special_name(&mut self, node: &mut SpecialName) {
+        self.before(node);
         walk_special_name_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_special_name_kind(&mut self, node: &mut SpecialNameKind) {}
+    fn visit_special_name_kind(&mut self, node: &mut SpecialNameKind) {
+        self.before(node);
+        self.after(node);
+    }
 
-    fn visit_unresolved_name(&mut self, node: &mut UnresolvedName) {}
+    fn visit_unresolved_name(&mut self, node: &mut UnresolvedName) {
+        self.before(node);
+        self.after(node);
+    }
 
-    fn visit_resolved_name(&mut self, node: &mut ResolvedName) {}
+    fn visit_resolved_name(&mut self, node: &mut ResolvedName) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_property(&mut self, node: &mut Property) {
+        self.before(node);
         walk_property_mut(self, node);
+        self.after(node);
     }
 
     fn visit_variable_property(&mut self, node: &mut VariableProperty) {
+        self.before(node);
         walk_variable_property_mut(self, node);
+        self.after(node);
     }
 
     fn visit_property_entry(&mut self, node: &mut PropertyEntry) {
+        self.before(node);
         walk_property_entry_mut(self, node);
+        self.after(node);
     }
 
     fn visit_property_entry_kind(&mut self, node: &mut PropertyEntryKind) {
+        self.before(node);
         walk_property_entry_kind_mut(self, node);
+        self.after(node);
     }
 
     fn visit_trait_body(&mut self, node: &mut TraitBody) {
+        self.before(node);
         walk_trait_body_mut(self, node);
+        self.after(node);
     }
 
     fn visit_trait_statement(&mut self, node: &mut TraitStatement) {
+        self.before(node);
         walk_trait_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_trait_usage(&mut self, node: &mut TraitUsage) {
+        self.before(node);
         walk_trait_usage_mut(self, node);
+        self.after(node);
     }
 
     fn visit_trait_usage_adaptation(&mut self, node: &mut TraitUsageAdaptation) {
+        self.before(node);
         walk_trait_usage_adaptation_mut(self, node);
+        self.after(node);
     }
 
     fn visit_trait_usage_adaptation_kind(&mut self, node: &mut TraitUsageAdaptationKind) {
+        self.before(node);
         walk_trait_usage_adaptation_kind_mut(self, node);
+        self.after(node);
     }
 
     fn visit_catch_type(&mut self, node: &mut CatchType) {
+        self.before(node);
         walk_catch_type_mut(self, node);
+        self.after(node);
     }
 
     fn visit_catch_type_kind(&mut self, node: &mut CatchTypeKind) {
+        self.before(node);
         walk_catch_type_kind_mut(self, node);
+        self.after(node);
     }
 
     fn visit_try_statement(&mut self, node: &mut TryStatement) {
+        self.before(node);
         walk_try_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_catch_block(&mut self, node: &mut CatchBlock) {
+        self.before(node);
         walk_catch_block_mut(self, node);
+        self.after(node);
     }
 
     fn visit_finally_block(&mut self, node: &mut FinallyBlock) {
+        self.before(node);
         walk_finally_block_mut(self, node);
+        self.after(node);
     }
 
     fn visit_variable(&mut self, node: &mut Variable) {
+        self.before(node);
         walk_variable_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_simple_variable(&mut self, node: &mut SimpleVariable) {}
+    fn visit_simple_variable(&mut self, node: &mut SimpleVariable) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_variable_variable(&mut self, node: &mut VariableVariable) {
+        self.before(node);
         walk_variable_variable_mut(self, node);
+        self.after(node);
     }
 
     fn visit_braced_variable_variable(&mut self, node: &mut BracedVariableVariable) {
+        self.before(node);
         walk_braced_variable_variable_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_ending(&mut self, node: &mut Ending) {}
+    fn visit_ending(&mut self, node: &mut Ending) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_static_statement(&mut self, node: &mut StaticStatement) {
+        self.before(node);
         walk_static_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_switch_statement(&mut self, node: &mut SwitchStatement) {
+        self.before(node);
         walk_switch_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_echo_statement(&mut self, node: &mut EchoStatement) {
+        self.before(node);
         walk_echo_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_return_statement(&mut self, node: &mut ReturnStatement) {
+        self.before(node);
         walk_return_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_use_statement(&mut self, node: &mut UseStatement) {
+        self.before(node);
         walk_use_statement_mut(self, node);
+        self.after(node);
     }
 
     fn visit_group_use_statement(&mut self, node: &mut GroupUseStatement) {
+        self.before(node);
         walk_group_use_statement_mut(self, node);
+        self.after(node);
     }
 
-    fn visit_halt_compiler_statement(&mut self, node: &mut HaltCompilerStatement) {}
+    fn visit_halt_compiler_statement(&mut self, node: &mut HaltCompilerStatement) {
+        self.before(node);
+        self.after(node);
+    }
 
     fn visit_static_var(&mut self, node: &mut StaticVar) {
+        self.before(node);
         walk_static_var_mut(self, node);
+        self.after(node);
     }
 }

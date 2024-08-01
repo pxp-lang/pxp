@@ -3765,17 +3765,6 @@ pub enum Node<'a> {
 }
 
 impl<'a> Node<'a> {
-    pub fn as_node_id(self) -> Option<&'a NodeId> {
-        match self {
-            Node::NodeId(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_node_id(&self) -> bool {
-        matches!(self, Node::NodeId(_))
-    }
-
     pub fn as_block(self) -> Option<&'a Block> {
         match self {
             Node::Block(node) => Some(node),

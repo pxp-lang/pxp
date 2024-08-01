@@ -146,6 +146,10 @@ $output .= "}\n\n";
 $output .= "impl<'a> Node<'a> {\n";
 
 foreach ($ast as $node => $structure) {
+    if ($node === 'NodeId') {
+        continue;
+    }
+
     $kebab = strtolower(Str::snake($node));
 
     $output .= "    pub fn as_{$kebab}(self) -> Option<&'a {$node}> {\n";

@@ -51,9 +51,13 @@ class VisitorGenerator
             $method = sprintf("fn %s(&mut self, node: %s%s) {\n", $this->generateVisitorMethodName($type), $template->getNodeTypePrefix(), $this->stripTypeToRoot($type));
             $fields = $this->getAllVisitableFields($fields);
 
+            $method .= "self.before(node);\n";
+
             if (count($fields) > 0) {
                 $method .= sprintf("%s(self, node);\n", $this->generateWalkMethodName($type, $template));
             }
+
+            $method .= "self.after(node);\n";
 
             close_method:
             $method .= "}\n";
@@ -298,8 +302,18 @@ use pxp_syntax::comments::Comment;
 use pxp_type::Type;
 
 pub trait VisitorMut {
+    fn before<T: ?Sized>(&mut self, node: &mut T) {
+        // This method is called before visiting a node.
+    }
+
+    fn after<T: ?Sized>(&mut self, node: &mut T) {
+        // This method is called after visiting a node.
+    }
+
     fn visit(&mut self, node: &mut [Statement]) {
+        self.before(node);
         walk_mut(self, node);
+        self.after(node);
     }
 
     %s
@@ -364,8 +378,18 @@ use pxp_syntax::comments::Comment;
 use pxp_type::Type;
 
 pub trait Visitor {
+    fn before<T: ?Sized>(&mut self, node: &T) {
+        // This method is called before visiting a node.
+    }
+
+    fn after<T: ?Sized>(&mut self, node: &T) {
+        // This method is called after visiting a node.
+    }
+
     fn visit(&mut self, node: &[Statement]) {
+        self.before(node);
         walk(self, node);
+        self.after(node);
     }
 
     %s
