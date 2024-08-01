@@ -102,13 +102,3 @@ impl From<Token> for SpecialNameKind {
         }
     }
 }
-
-pub trait Nodeable {
-    fn as_node(&self) -> Node;
-}
-
-impl Nodeable for Vec<Statement> {
-    fn as_node(&self) -> Node {
-        Node::Block(self)
-    }
-}

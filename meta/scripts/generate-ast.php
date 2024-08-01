@@ -19,7 +19,6 @@ use pxp_span::{Span, Spanned};
 use pxp_symbol::Symbol;
 use pxp_syntax::backed_enum_type::BackedEnumType;
 use pxp_syntax::name::NameQualification;
-use super::Nodeable;
 
 
 RUST;
@@ -104,14 +103,6 @@ foreach ($ast as $node => $structure) {
     }
 
     $output .= "}\n\n";
-
-    if (!isset($structure['node'])) {
-        $output .= "impl Nodeable for {$node} {\n";
-        $output .= "    fn as_node(&self) -> Node {\n";
-        $output .= "        Node::{$node}(self)\n";
-        $output .= "    }\n";
-        $output .= "}\n\n";
-    }
 
     if (! is_spanned($node, $structure)) {
         continue;
