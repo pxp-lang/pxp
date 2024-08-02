@@ -19,10 +19,10 @@
         },
     },
     Statement {
-        id: 8,
+        id: 9,
         kind: If(
             IfStatement {
-                id: 7,
+                id: 8,
                 span: Span {
                     start: 7,
                     end: 23,
@@ -62,42 +62,45 @@
                     start: 13,
                     end: 14,
                 },
-                body: Statement {
-                    span: Span {
-                        start: 15,
-                        end: 23,
-                    },
-                    statement: Statement {
-                        id: 6,
-                        kind: Block(
-                            BlockStatement {
-                                id: 5,
-                                span: Span {
-                                    start: 15,
-                                    end: 23,
-                                },
-                                left_brace: Span {
-                                    start: 15,
-                                    end: 16,
-                                },
-                                statements: [],
-                                right_brace: Span {
-                                    start: 22,
-                                    end: 23,
-                                },
-                            },
-                        ),
+                body: Statement(
+                    IfStatementBodyStatement {
+                        id: 7,
                         span: Span {
                             start: 15,
                             end: 23,
                         },
-                        comments: CommentGroup {
-                            comments: [],
+                        statement: Statement {
+                            id: 6,
+                            kind: Block(
+                                BlockStatement {
+                                    id: 5,
+                                    span: Span {
+                                        start: 15,
+                                        end: 23,
+                                    },
+                                    left_brace: Span {
+                                        start: 15,
+                                        end: 16,
+                                    },
+                                    statements: [],
+                                    right_brace: Span {
+                                        start: 22,
+                                        end: 23,
+                                    },
+                                },
+                            ),
+                            span: Span {
+                                start: 15,
+                                end: 23,
+                            },
+                            comments: CommentGroup {
+                                comments: [],
+                            },
                         },
+                        elseifs: [],
+                        else: None,
                     },
-                    elseifs: [],
-                    else: None,
-                },
+                ),
             },
         ),
         span: Span {

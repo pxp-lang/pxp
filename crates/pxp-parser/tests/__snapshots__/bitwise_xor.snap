@@ -19,24 +19,25 @@
         },
     },
     Statement {
-        id: 14,
+        id: 16,
         kind: Expression(
             ExpressionStatement {
-                id: 13,
+                id: 15,
                 span: Span {
                     start: 12,
                     end: 18,
                 },
                 expression: Expression {
-                    id: 12,
+                    id: 14,
                     kind: AssignmentOperation(
                         AssignmentOperationExpression {
-                            id: 11,
+                            id: 12,
                             span: Span {
                                 start: 7,
                                 end: 17,
                             },
                             kind: Assign {
+                                id: 13,
                                 left: Expression {
                                     id: 3,
                                     kind: Variable(
@@ -65,7 +66,7 @@
                                     end: 11,
                                 },
                                 right: Expression {
-                                    id: 10,
+                                    id: 11,
                                     kind: BitwiseOperation(
                                         BitwiseOperationExpression {
                                             id: 9,
@@ -74,6 +75,7 @@
                                                 end: 17,
                                             },
                                             kind: Xor {
+                                                id: 10,
                                                 left: Expression {
                                                     id: 5,
                                                     kind: Literal(

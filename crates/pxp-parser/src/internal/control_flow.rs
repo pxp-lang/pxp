@@ -276,7 +276,8 @@ fn if_statement_statement_body(state: &mut State) -> IfStatementBody {
         None
     };
 
-    IfStatementBody::Statement {
+    IfStatementBody::Statement(IfStatementBodyStatement {
+        id: state.id(),
         span: if let Some(r#else) = &r#else {
             Span::combine(statement.span, r#else.span)
         } else {
@@ -285,7 +286,7 @@ fn if_statement_statement_body(state: &mut State) -> IfStatementBody {
         statement,
         elseifs,
         r#else,
-    }
+    })
 }
 
 fn if_statement_block_body(state: &mut State) -> IfStatementBody {
@@ -346,7 +347,8 @@ fn if_statement_block_body(state: &mut State) -> IfStatementBody {
     let endif = utils::skip(state, TokenKind::EndIf);
     let ending = utils::skip_ending(state);
 
-    IfStatementBody::Block {
+    IfStatementBody::Block(IfStatementBodyBlock {
+        id: state.id(),
         span: Span::combine(colon, ending.span()),
         colon,
         statements,
@@ -354,5 +356,5 @@ fn if_statement_block_body(state: &mut State) -> IfStatementBody {
         r#else,
         endif,
         ending,
-    }
+    })
 }

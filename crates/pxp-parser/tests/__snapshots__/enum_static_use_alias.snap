@@ -31,6 +31,10 @@
                 uses: [
                     Use {
                         id: 6,
+                        span: Span {
+                            start: 11,
+                            end: 26,
+                        },
                         name: Name {
                             id: 4,
                             kind: Resolved(

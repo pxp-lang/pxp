@@ -19,10 +19,10 @@
         },
     },
     Statement {
-        id: 14,
+        id: 15,
         kind: Class(
             ClassStatement {
-                id: 13,
+                id: 14,
                 span: Span {
                     start: 7,
                     end: 75,
@@ -61,7 +61,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
-                    id: 12,
+                    id: 13,
                     span: Span {
                         start: 17,
                         end: 75,
@@ -73,7 +73,7 @@
                     members: [
                         TraitUsage(
                             TraitUsage {
-                                id: 11,
+                                id: 12,
                                 span: Span {
                                     start: 23,
                                     end: 66,
@@ -127,46 +127,53 @@
                                             start: 46,
                                             end: 66,
                                         },
-                                        kind: Precedence {
-                                            trait: Some(
-                                                Name {
-                                                    id: 7,
-                                                    kind: Resolved(
-                                                        ResolvedName {
-                                                            id: 7,
-                                                            span: Span {
-                                                                start: 46,
-                                                                end: 49,
-                                                            },
-                                                            resolved: Symbol("Bar"),
-                                                            original: Symbol("Bar"),
-                                                        },
-                                                    ),
-                                                    span: Span {
-                                                        start: 46,
-                                                        end: 49,
-                                                    },
-                                                },
-                                            ),
-                                            method: SimpleIdentifier {
-                                                id: 8,
-                                                symbol: Symbol("a"),
+                                        kind: Precedence(
+                                            TraitUsageAdaptationPrecedence {
+                                                id: 11,
                                                 span: Span {
-                                                    start: 51,
-                                                    end: 52,
+                                                    start: 46,
+                                                    end: 66,
                                                 },
-                                            },
-                                            insteadof: [
-                                                SimpleIdentifier {
-                                                    id: 9,
-                                                    symbol: Symbol("Baz"),
+                                                trait: Some(
+                                                    Name {
+                                                        id: 7,
+                                                        kind: Resolved(
+                                                            ResolvedName {
+                                                                id: 7,
+                                                                span: Span {
+                                                                    start: 46,
+                                                                    end: 49,
+                                                                },
+                                                                resolved: Symbol("Bar"),
+                                                                original: Symbol("Bar"),
+                                                            },
+                                                        ),
+                                                        span: Span {
+                                                            start: 46,
+                                                            end: 49,
+                                                        },
+                                                    },
+                                                ),
+                                                method: SimpleIdentifier {
+                                                    id: 8,
+                                                    symbol: Symbol("a"),
                                                     span: Span {
-                                                        start: 63,
-                                                        end: 66,
+                                                        start: 51,
+                                                        end: 52,
                                                     },
                                                 },
-                                            ],
-                                        },
+                                                insteadof: [
+                                                    SimpleIdentifier {
+                                                        id: 9,
+                                                        symbol: Symbol("Baz"),
+                                                        span: Span {
+                                                            start: 63,
+                                                            end: 66,
+                                                        },
+                                                    },
+                                                ],
+                                            },
+                                        ),
                                     },
                                 ],
                             },

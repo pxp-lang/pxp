@@ -19,10 +19,10 @@
         },
     },
     Statement {
-        id: 5,
+        id: 6,
         kind: Expression(
             ExpressionStatement {
-                id: 4,
+                id: 5,
                 span: Span {
                     start: 7,
                     end: 15,
@@ -30,12 +30,14 @@
                 expression: Expression {
                     id: 3,
                     kind: MagicConstant(
-                        Directory(
-                            Span {
+                        MagicConstantExpression {
+                            id: 4,
+                            span: Span {
                                 start: 7,
                                 end: 14,
                             },
-                        ),
+                            kind: Directory,
+                        },
                     ),
                     span: Span {
                         start: 7,
@@ -62,23 +64,25 @@
         },
     },
     Statement {
-        id: 8,
+        id: 10,
         kind: Expression(
             ExpressionStatement {
-                id: 7,
+                id: 9,
                 span: Span {
                     start: 16,
                     end: 25,
                 },
                 expression: Expression {
-                    id: 6,
+                    id: 7,
                     kind: MagicConstant(
-                        File(
-                            Span {
+                        MagicConstantExpression {
+                            id: 8,
+                            span: Span {
                                 start: 16,
                                 end: 24,
                             },
-                        ),
+                            kind: File,
+                        },
                     ),
                     span: Span {
                         start: 16,
@@ -105,23 +109,25 @@
         },
     },
     Statement {
-        id: 11,
+        id: 14,
         kind: Expression(
             ExpressionStatement {
-                id: 10,
+                id: 13,
                 span: Span {
                     start: 26,
                     end: 35,
                 },
                 expression: Expression {
-                    id: 9,
+                    id: 11,
                     kind: MagicConstant(
-                        Line(
-                            Span {
+                        MagicConstantExpression {
+                            id: 12,
+                            span: Span {
                                 start: 26,
                                 end: 34,
                             },
-                        ),
+                            kind: Line,
+                        },
                     ),
                     span: Span {
                         start: 26,
@@ -148,23 +154,25 @@
         },
     },
     Statement {
-        id: 14,
+        id: 18,
         kind: Expression(
             ExpressionStatement {
-                id: 13,
+                id: 17,
                 span: Span {
                     start: 36,
                     end: 49,
                 },
                 expression: Expression {
-                    id: 12,
+                    id: 15,
                     kind: MagicConstant(
-                        Function(
-                            Span {
+                        MagicConstantExpression {
+                            id: 16,
+                            span: Span {
                                 start: 36,
                                 end: 48,
                             },
-                        ),
+                            kind: Function,
+                        },
                     ),
                     span: Span {
                         start: 36,
@@ -191,23 +199,25 @@
         },
     },
     Statement {
-        id: 17,
+        id: 22,
         kind: Expression(
             ExpressionStatement {
-                id: 16,
+                id: 21,
                 span: Span {
                     start: 50,
                     end: 60,
                 },
                 expression: Expression {
-                    id: 15,
+                    id: 19,
                     kind: MagicConstant(
-                        Class(
-                            Span {
+                        MagicConstantExpression {
+                            id: 20,
+                            span: Span {
                                 start: 50,
                                 end: 59,
                             },
-                        ),
+                            kind: Class,
+                        },
                     ),
                     span: Span {
                         start: 50,
@@ -234,23 +244,25 @@
         },
     },
     Statement {
-        id: 20,
+        id: 26,
         kind: Expression(
             ExpressionStatement {
-                id: 19,
+                id: 25,
                 span: Span {
                     start: 61,
                     end: 71,
                 },
                 expression: Expression {
-                    id: 18,
+                    id: 23,
                     kind: MagicConstant(
-                        Trait(
-                            Span {
+                        MagicConstantExpression {
+                            id: 24,
+                            span: Span {
                                 start: 61,
                                 end: 70,
                             },
-                        ),
+                            kind: Trait,
+                        },
                     ),
                     span: Span {
                         start: 61,
@@ -277,23 +289,25 @@
         },
     },
     Statement {
-        id: 23,
+        id: 30,
         kind: Expression(
             ExpressionStatement {
-                id: 22,
+                id: 29,
                 span: Span {
                     start: 72,
                     end: 83,
                 },
                 expression: Expression {
-                    id: 21,
+                    id: 27,
                     kind: MagicConstant(
-                        Method(
-                            Span {
+                        MagicConstantExpression {
+                            id: 28,
+                            span: Span {
                                 start: 72,
                                 end: 82,
                             },
-                        ),
+                            kind: Method,
+                        },
                     ),
                     span: Span {
                         start: 72,
@@ -320,23 +334,25 @@
         },
     },
     Statement {
-        id: 26,
+        id: 34,
         kind: Expression(
             ExpressionStatement {
-                id: 25,
+                id: 33,
                 span: Span {
                     start: 84,
                     end: 98,
                 },
                 expression: Expression {
-                    id: 24,
+                    id: 31,
                     kind: MagicConstant(
-                        Namespace(
-                            Span {
+                        MagicConstantExpression {
+                            id: 32,
+                            span: Span {
                                 start: 84,
                                 end: 97,
                             },
-                        ),
+                            kind: Namespace,
+                        },
                     ),
                     span: Span {
                         start: 84,

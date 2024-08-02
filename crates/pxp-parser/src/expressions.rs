@@ -170,6 +170,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                          id: state.id(), 
                         span,
                         kind: AssignmentOperationKind::Assign {
+                            id: state.id(),
                             left: Box::new(left),
                             equals: span,
                             right: Box::new(Expression::new(state.id(),
@@ -189,7 +190,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                     let self_span = op.span;
                     state.stream.next();
                     let right = Expression::new(state.id(),
-                        ExpressionKind::Self_(self_span),
+                        ExpressionKind::Self_(SelfExpression { id: state.id(), span: self_span }),
                         self_span,
                         CommentGroup::default(),
                     );
@@ -206,7 +207,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                 TokenKind::Instanceof if op.kind == TokenKind::Parent => {
                     state.stream.next();
                     let right = Expression::new(state.id(),
-                        ExpressionKind::Parent(op.span),
+                        ExpressionKind::Parent(ParentExpression { id: state.id(), span: op.span }),
                         op.span,
                         CommentGroup::default(),
                     );
@@ -224,7 +225,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                     let instanceof = span;
                     state.stream.next();
                     let right = Expression::new(state.id(),
-                        ExpressionKind::Static(op.span),
+                        ExpressionKind::Static(StaticExpression { id: state.id(), span: op.span }),
                         op.span,
                         CommentGroup::default(),
                     );
@@ -288,6 +289,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ArithmeticOperationKind::Addition {
+                                    id: state.id(),
                                     left,
                                     plus: op_span,
                                     right,
@@ -299,6 +301,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ArithmeticOperationKind::Subtraction {
+                                    id: state.id(),
                                     left,
                                     minus: op_span,
                                     right,
@@ -310,6 +313,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ArithmeticOperationKind::Multiplication {
+                                    id: state.id(),
                                     left,
                                     asterisk: op_span,
                                     right,
@@ -321,6 +325,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ArithmeticOperationKind::Division {
+                                    id: state.id(),
                                     left,
                                     slash: op_span,
                                     right,
@@ -332,6 +337,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ArithmeticOperationKind::Modulo {
+                                    id: state.id(),
                                     left,
                                     percent: op_span,
                                     right,
@@ -343,6 +349,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ArithmeticOperationKind::Exponentiation {
+                                    id: state.id(),
                                     left,
                                     pow: op_span,
                                     right,
@@ -354,6 +361,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: AssignmentOperationKind::Assign {
+                                    id: state.id(),
                                     left,
                                     equals: op_span,
                                     right,
@@ -365,6 +373,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: AssignmentOperationKind::Addition {
+                                    id: state.id(),
                                     left,
                                     plus_equals: op_span,
                                     right,
@@ -376,6 +385,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: AssignmentOperationKind::Subtraction {
+                                    id: state.id(),
                                     left,
                                     minus_equals: op_span,
                                     right,
@@ -387,6 +397,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: AssignmentOperationKind::Multiplication {
+                                    id: state.id(),
                                     left,
                                     asterisk_equals: op_span,
                                     right,
@@ -398,6 +409,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: AssignmentOperationKind::Division {
+                                    id: state.id(),
                                     left,
                                     slash_equals: op_span,
                                     right,
@@ -409,6 +421,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: AssignmentOperationKind::Modulo {
+                                    id: state.id(),
                                     left,
                                     percent_equals: op_span,
                                     right,
@@ -420,6 +433,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: AssignmentOperationKind::Exponentiation {
+                                    id: state.id(),
                                     left,
                                     pow_equals: op_span,
                                     right,
@@ -431,6 +445,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: AssignmentOperationKind::BitwiseAnd {
+                                    id: state.id(),
                                     left,
                                     ampersand_equals: op_span,
                                     right,
@@ -442,6 +457,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: AssignmentOperationKind::BitwiseOr {
+                                    id: state.id(),
                                     left,
                                     pipe_equals: op_span,
                                     right,
@@ -453,6 +469,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: AssignmentOperationKind::BitwiseXor {
+                                    id: state.id(),
                                     left,
                                     caret_equals: op_span,
                                     right,
@@ -464,6 +481,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: AssignmentOperationKind::LeftShift {
+                                    id: state.id(),
                                     left,
                                     left_shift_equals: op_span,
                                     right,
@@ -475,6 +493,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: AssignmentOperationKind::RightShift {
+                                    id: state.id(),
                                     left,
                                     right_shift_equals: op_span,
                                     right,
@@ -486,6 +505,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: AssignmentOperationKind::Coalesce {
+                                    id: state.id(),
                                     left,
                                     coalesce_equals: op_span,
                                     right,
@@ -497,6 +517,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: AssignmentOperationKind::Concat {
+                                    id: state.id(),
                                     left,
                                     dot_equals: op_span,
                                     right,
@@ -508,6 +529,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: BitwiseOperationKind::And {
+                                    id: state.id(),
                                     left,
                                     and: op_span,
                                     right,
@@ -519,6 +541,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: BitwiseOperationKind::Or {
+                                    id: state.id(),
                                     left,
                                     or: op_span,
                                     right,
@@ -530,6 +553,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: BitwiseOperationKind::Xor {
+                                    id: state.id(),
                                     left,
                                     xor: op_span,
                                     right,
@@ -541,6 +565,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: BitwiseOperationKind::LeftShift {
+                                    id: state.id(),
                                     left,
                                     left_shift: op_span,
                                     right,
@@ -552,6 +577,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: BitwiseOperationKind::RightShift {
+                                    id: state.id(),
                                     left,
                                     right_shift: op_span,
                                     right,
@@ -563,6 +589,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ComparisonOperationKind::Equal {
+                                    id: state.id(),
                                     left,
                                     double_equals: op_span,
                                     right,
@@ -574,6 +601,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ComparisonOperationKind::Identical {
+                                    id: state.id(),
                                     left,
                                     triple_equals: op_span,
                                     right,
@@ -585,6 +613,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ComparisonOperationKind::NotEqual {
+                                    id: state.id(),
                                     left,
                                     bang_equals: op_span,
                                     right,
@@ -596,6 +625,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ComparisonOperationKind::AngledNotEqual {
+                                    id: state.id(),
                                     left,
                                     angled_left_right: op_span,
                                     right,
@@ -607,6 +637,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ComparisonOperationKind::NotIdentical {
+                                    id: state.id(),
                                     left,
                                     bang_double_equals: op_span,
                                     right,
@@ -618,6 +649,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ComparisonOperationKind::LessThan {
+                                    id: state.id(),
                                     left,
                                     less_than: op_span,
                                     right,
@@ -629,6 +661,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ComparisonOperationKind::GreaterThan {
+                                    id: state.id(),
                                     left,
                                     greater_than: op_span,
                                     right,
@@ -640,6 +673,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ComparisonOperationKind::LessThanOrEqual {
+                                    id: state.id(),
                                     left,
                                     less_than_equals: op_span,
                                     right,
@@ -651,6 +685,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ComparisonOperationKind::GreaterThanOrEqual {
+                                    id: state.id(),
                                     left,
                                     greater_than_equals: op_span,
                                     right,
@@ -662,6 +697,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: ComparisonOperationKind::Spaceship {
+                                    id: state.id(),
                                     left,
                                     spaceship: op_span,
                                     right,
@@ -673,6 +709,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: LogicalOperationKind::And {
+                                    id: state.id(),
                                     left,
                                     double_ampersand: op_span,
                                     right,
@@ -684,6 +721,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: LogicalOperationKind::Or {
+                                    id: state.id(),
                                     left,
                                     double_pipe: op_span,
                                     right,
@@ -695,6 +733,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: LogicalOperationKind::LogicalAnd {
+                                    id: state.id(),
                                     left,
                                     and: op_span,
                                     right,
@@ -706,6 +745,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: LogicalOperationKind::LogicalOr {
+                                    id: state.id(),
                                     left,
                                     or: op_span,
                                     right,
@@ -717,6 +757,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                                  id: state.id(), 
                                 span,
                                 kind: LogicalOperationKind::LogicalXor {
+                                    id: state.id(),
                                     left,
                                     xor: op_span,
                                     right,
@@ -1202,7 +1243,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
         (TokenKind::Static, _) => {
             let span = state.stream.current().span;
             state.stream.next();
-            let expression = Expression::new(state.id(),ExpressionKind::Static(span), span, CommentGroup::default());
+            let expression = Expression::new(state.id(),ExpressionKind::Static(StaticExpression { id: state.id(), span }), span, CommentGroup::default());
 
             postfix(state, expression, &TokenKind::DoubleColon)
         }
@@ -1211,14 +1252,14 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Expression::new(state.id(),ExpressionKind::Self_(span), span, CommentGroup::default())
+            Expression::new(state.id(),ExpressionKind::Self_(SelfExpression { id: state.id(), span }), span, CommentGroup::default())
         }
 
         (TokenKind::Parent, _) => {
             let span = state.stream.current().span;
             state.stream.next();
 
-            Expression::new(state.id(),ExpressionKind::Parent(span), span, CommentGroup::default())
+            Expression::new(state.id(),ExpressionKind::Parent(ParentExpression { id: state.id(), span }), span, CommentGroup::default())
         }
 
         (TokenKind::LeftParen, _) => {
@@ -1369,7 +1410,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             state.stream.next();
 
             Expression::new(state.id(),
-                ExpressionKind::MagicConstant(MagicConstantExpression::Directory(span)),
+                ExpressionKind::MagicConstant(MagicConstantExpression {
+                    id: state.id(),
+                    span,
+                    kind: MagicConstantKind::Directory,
+                }),
                 span,
                 CommentGroup::default(),
             )
@@ -1380,7 +1425,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             state.stream.next();
 
             Expression::new(state.id(),
-                ExpressionKind::MagicConstant(MagicConstantExpression::File(span)),
+                ExpressionKind::MagicConstant(MagicConstantExpression {
+                    id: state.id(),
+                    span,
+                    kind: MagicConstantKind::File,
+                }),
                 span,
                 CommentGroup::default(),
             )
@@ -1391,7 +1440,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             state.stream.next();
 
             Expression::new(state.id(),
-                ExpressionKind::MagicConstant(MagicConstantExpression::Line(span)),
+                ExpressionKind::MagicConstant(MagicConstantExpression {
+                    id: state.id(),
+                    span,
+                    kind: MagicConstantKind::Line,
+                }),
                 span,
                 CommentGroup::default(),
             )
@@ -1402,7 +1455,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             state.stream.next();
 
             Expression::new(state.id(),
-                ExpressionKind::MagicConstant(MagicConstantExpression::Function(span)),
+                ExpressionKind::MagicConstant(MagicConstantExpression {
+                    id: state.id(),
+                    span,
+                    kind: MagicConstantKind::Function,
+                }),
                 span,
                 CommentGroup::default(),
             )
@@ -1413,7 +1470,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             state.stream.next();
 
             Expression::new(state.id(),
-                ExpressionKind::MagicConstant(MagicConstantExpression::Class(span)),
+                ExpressionKind::MagicConstant(MagicConstantExpression {
+                    id: state.id(),
+                    span,
+                    kind: MagicConstantKind::Class,
+                }),
                 span,
                 CommentGroup::default(),
             )
@@ -1424,7 +1485,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             state.stream.next();
 
             Expression::new(state.id(),
-                ExpressionKind::MagicConstant(MagicConstantExpression::Method(span)),
+                ExpressionKind::MagicConstant(MagicConstantExpression {
+                    id: state.id(),
+                    span,
+                    kind: MagicConstantKind::Method,
+                }),
                 span,
                 CommentGroup::default(),
             )
@@ -1435,7 +1500,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             state.stream.next();
 
             Expression::new(state.id(),
-                ExpressionKind::MagicConstant(MagicConstantExpression::Namespace(span)),
+                ExpressionKind::MagicConstant(MagicConstantExpression {
+                    id: state.id(),
+                    span,
+                    kind: MagicConstantKind::Namespace,
+                }),
                 span,
                 CommentGroup::default(),
             )
@@ -1446,7 +1515,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             state.stream.next();
 
             Expression::new(state.id(),
-                ExpressionKind::MagicConstant(MagicConstantExpression::Trait(span)),
+                ExpressionKind::MagicConstant(MagicConstantExpression {
+                    id: state.id(),
+                    span,
+                    kind: MagicConstantKind::Trait,
+                }),
                 span,
                 CommentGroup::default(),
             )
@@ -1457,7 +1530,11 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
             state.stream.next();
 
             Expression::new(state.id(),
-                ExpressionKind::MagicConstant(MagicConstantExpression::CompilerHaltOffset(span)),
+                ExpressionKind::MagicConstant(MagicConstantExpression {
+                    id: state.id(),
+                    span,
+                    kind: MagicConstantKind::CompilerHaltOffset,
+                }),
                 span,
                 CommentGroup::default(),
             )
@@ -1573,6 +1650,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                          id: state.id(), 
                         span,
                         kind: ArithmeticOperationKind::Negative {
+                            id: state.id(),
                             minus: op_span,
                             right,
                         }
@@ -1583,6 +1661,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                          id: state.id(), 
                         span,
                         kind: ArithmeticOperationKind::Positive {
+                            id: state.id(),
                             plus: op_span,
                             right,
                         }
@@ -1593,6 +1672,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                          id: state.id(), 
                         span,
                         kind: ArithmeticOperationKind::PreDecrement {
+                            id: state.id(),
                             decrement: op_span,
                             right,
                         }
@@ -1603,6 +1683,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                          id: state.id(), 
                         span,
                         kind: ArithmeticOperationKind::PreIncrement {
+                            id: state.id(),
                             increment: op_span,
                             right,
                         }
@@ -1633,6 +1714,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                      id: state.id(), 
                     span,
                     kind: LogicalOperationKind::Not {
+                        id: state.id(),
                         bang,
                         right: Box::new(rhs),
                     }
@@ -1673,9 +1755,9 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
 
             Expression::new(state.id(),
                 ExpressionKind::BitwiseOperation(BitwiseOperationExpression {
-                     id: state.id(), 
                     span,
-                    kind: BitwiseOperationKind::Not { not: span, right }
+                    kind: BitwiseOperationKind::Not { id: state.id(), not: span, right },
+                    id: state.id(),
                 }),
                 Span::new(span.start, end_span.end),
                 CommentGroup::default(),
@@ -2097,6 +2179,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                  id: state.id(), 
                 span: Span::combine(lhs.span, op),
                 kind: ArithmeticOperationKind::PostIncrement {
+                    id: state.id(),
                     left: Box::new(lhs),
                     increment: op,
                 }
@@ -2110,6 +2193,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                  id: state.id(), 
                 span: Span::combine(lhs.span, op),
                 kind: ArithmeticOperationKind::PostDecrement {
+                    id: state.id(),
                     left: Box::new(lhs),
                     decrement: op,
                 }

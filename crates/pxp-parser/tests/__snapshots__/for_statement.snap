@@ -19,10 +19,10 @@
         },
     },
     Statement {
-        id: 27,
+        id: 31,
         kind: For(
             ForStatement {
-                id: 26,
+                id: 30,
                 span: Span {
                     start: 7,
                     end: 51,
@@ -36,7 +36,7 @@
                     end: 12,
                 },
                 iterator: ForStatementIterator {
-                    id: 19,
+                    id: 22,
                     span: Span {
                         start: 17,
                         end: 33,
@@ -44,7 +44,7 @@
                     initializations: CommaSeparated {
                         inner: [
                             Expression {
-                                id: 8,
+                                id: 9,
                                 kind: AssignmentOperation(
                                     AssignmentOperationExpression {
                                         id: 7,
@@ -53,6 +53,7 @@
                                             end: 18,
                                         },
                                         kind: Assign {
+                                            id: 8,
                                             left: Expression {
                                                 id: 3,
                                                 kind: Variable(
@@ -131,21 +132,22 @@
                     conditions: CommaSeparated {
                         inner: [
                             Expression {
-                                id: 14,
+                                id: 16,
                                 kind: ComparisonOperation(
                                     ComparisonOperationExpression {
-                                        id: 13,
+                                        id: 14,
                                         span: Span {
                                             start: 20,
                                             end: 27,
                                         },
                                         kind: LessThan {
+                                            id: 15,
                                             left: Expression {
-                                                id: 9,
+                                                id: 10,
                                                 kind: Variable(
                                                     SimpleVariable(
                                                         SimpleVariable {
-                                                            id: 10,
+                                                            id: 11,
                                                             symbol: Symbol("$i"),
                                                             stripped: Symbol("i"),
                                                             span: Span {
@@ -168,10 +170,10 @@
                                                 end: 24,
                                             },
                                             right: Expression {
-                                                id: 11,
+                                                id: 12,
                                                 kind: Literal(
                                                     Literal {
-                                                        id: 12,
+                                                        id: 13,
                                                         span: Span {
                                                             start: 25,
                                                             end: 27,
@@ -218,21 +220,22 @@
                     loop: CommaSeparated {
                         inner: [
                             Expression {
-                                id: 18,
+                                id: 21,
                                 kind: ArithmeticOperation(
                                     ArithmeticOperationExpression {
-                                        id: 17,
+                                        id: 19,
                                         span: Span {
                                             start: 29,
                                             end: 33,
                                         },
                                         kind: PostIncrement {
+                                            id: 20,
                                             left: Expression {
-                                                id: 15,
+                                                id: 17,
                                                 kind: Variable(
                                                     SimpleVariable(
                                                         SimpleVariable {
-                                                            id: 16,
+                                                            id: 18,
                                                             symbol: Symbol("$i"),
                                                             stripped: Symbol("i"),
                                                             span: Span {
@@ -273,95 +276,98 @@
                     start: 33,
                     end: 34,
                 },
-                body: Statement {
-                    span: Span {
-                        start: 35,
-                        end: 51,
-                    },
-                    statement: Statement {
-                        id: 25,
-                        kind: Block(
-                            BlockStatement {
-                                id: 24,
-                                span: Span {
-                                    start: 35,
-                                    end: 51,
-                                },
-                                left_brace: Span {
-                                    start: 35,
-                                    end: 36,
-                                },
-                                statements: [
-                                    Statement {
-                                        id: 23,
-                                        kind: Echo(
-                                            EchoStatement {
-                                                id: 22,
-                                                span: Span {
-                                                    start: 41,
-                                                    end: 49,
-                                                },
-                                                echo: Span {
-                                                    start: 41,
-                                                    end: 45,
-                                                },
-                                                values: [
-                                                    Expression {
-                                                        id: 20,
-                                                        kind: Variable(
-                                                            SimpleVariable(
-                                                                SimpleVariable {
-                                                                    id: 21,
-                                                                    symbol: Symbol("$i"),
-                                                                    stripped: Symbol("i"),
-                                                                    span: Span {
-                                                                        start: 46,
-                                                                        end: 48,
-                                                                    },
-                                                                },
-                                                            ),
-                                                        ),
-                                                        span: Span {
-                                                            start: 46,
-                                                            end: 48,
-                                                        },
-                                                        comments: CommentGroup {
-                                                            comments: [],
-                                                        },
-                                                    },
-                                                ],
-                                                ending: Semicolon(
-                                                    Span {
-                                                        start: 48,
-                                                        end: 49,
-                                                    },
-                                                ),
-                                            },
-                                        ),
-                                        span: Span {
-                                            start: 41,
-                                            end: 49,
-                                        },
-                                        comments: CommentGroup {
-                                            comments: [],
-                                        },
-                                    },
-                                ],
-                                right_brace: Span {
-                                    start: 50,
-                                    end: 51,
-                                },
-                            },
-                        ),
+                body: Statement(
+                    ForStatementBodyStatement {
+                        id: 29,
                         span: Span {
                             start: 35,
                             end: 51,
                         },
-                        comments: CommentGroup {
-                            comments: [],
+                        statement: Statement {
+                            id: 28,
+                            kind: Block(
+                                BlockStatement {
+                                    id: 27,
+                                    span: Span {
+                                        start: 35,
+                                        end: 51,
+                                    },
+                                    left_brace: Span {
+                                        start: 35,
+                                        end: 36,
+                                    },
+                                    statements: [
+                                        Statement {
+                                            id: 26,
+                                            kind: Echo(
+                                                EchoStatement {
+                                                    id: 25,
+                                                    span: Span {
+                                                        start: 41,
+                                                        end: 49,
+                                                    },
+                                                    echo: Span {
+                                                        start: 41,
+                                                        end: 45,
+                                                    },
+                                                    values: [
+                                                        Expression {
+                                                            id: 23,
+                                                            kind: Variable(
+                                                                SimpleVariable(
+                                                                    SimpleVariable {
+                                                                        id: 24,
+                                                                        symbol: Symbol("$i"),
+                                                                        stripped: Symbol("i"),
+                                                                        span: Span {
+                                                                            start: 46,
+                                                                            end: 48,
+                                                                        },
+                                                                    },
+                                                                ),
+                                                            ),
+                                                            span: Span {
+                                                                start: 46,
+                                                                end: 48,
+                                                            },
+                                                            comments: CommentGroup {
+                                                                comments: [],
+                                                            },
+                                                        },
+                                                    ],
+                                                    ending: Semicolon(
+                                                        Span {
+                                                            start: 48,
+                                                            end: 49,
+                                                        },
+                                                    ),
+                                                },
+                                            ),
+                                            span: Span {
+                                                start: 41,
+                                                end: 49,
+                                            },
+                                            comments: CommentGroup {
+                                                comments: [],
+                                            },
+                                        },
+                                    ],
+                                    right_brace: Span {
+                                        start: 50,
+                                        end: 51,
+                                    },
+                                },
+                            ),
+                            span: Span {
+                                start: 35,
+                                end: 51,
+                            },
+                            comments: CommentGroup {
+                                comments: [],
+                            },
                         },
                     },
-                },
+                ),
             },
         ),
         span: Span {

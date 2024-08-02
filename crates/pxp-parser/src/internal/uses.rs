@@ -39,6 +39,7 @@ pub fn use_statement(state: &mut State) -> StatementKind {
         
         let mut uses = Vec::new();
         while state.stream.current().kind != TokenKind::RightBrace {
+            let start_span = state.stream.current().span;
             let use_kind = match state.stream.current().kind {
                 TokenKind::Function => {
                     if kind != UseKind::Normal {
@@ -69,9 +70,11 @@ pub fn use_statement(state: &mut State) -> StatementKind {
             let symbol = name.symbol;
             let alias_symbol = alias.as_ref().map(|a| a.symbol);
             let import_kind = use_kind.unwrap_or(kind);
+            let end_span = state.stream.previous().span;
 
             uses.push(Use {
-                 id: state.id(), 
+                id: state.id(),
+                span: Span::combine(start_span, end_span),
                 name: Name::resolved(state.id(), state.symbol_table.coagulate(&[prefix.symbol, name.symbol], Some(b"\\")), name.symbol, name.span),
                 kind: use_kind,
                 alias,
@@ -92,6 +95,7 @@ pub fn use_statement(state: &mut State) -> StatementKind {
     } else {
         let mut uses = Vec::new();
         while !state.stream.is_eof() {
+            let start_span = state.stream.current().span;
             let name = names::use_name(state);
             let mut alias = None;
             if state.stream.current().kind == TokenKind::As {
@@ -100,9 +104,11 @@ pub fn use_statement(state: &mut State) -> StatementKind {
             }
 
             let alias_symbol = alias.as_ref().map(|a| a.symbol);
+            let end_span = state.stream.previous().span;
 
             uses.push(Use {
                  id: state.id(), 
+                span: Span::combine(start_span, end_span),
                 name,
                 kind: None,
                 alias,

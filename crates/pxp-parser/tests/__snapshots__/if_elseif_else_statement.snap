@@ -19,10 +19,10 @@
         },
     },
     Statement {
-        id: 16,
+        id: 17,
         kind: If(
             IfStatement {
-                id: 15,
+                id: 16,
                 span: Span {
                     start: 7,
                     end: 50,
@@ -62,153 +62,156 @@
                     start: 13,
                     end: 14,
                 },
-                body: Statement {
-                    span: Span {
-                        start: 15,
-                        end: 50,
-                    },
-                    statement: Statement {
-                        id: 6,
-                        kind: Block(
-                            BlockStatement {
-                                id: 5,
-                                span: Span {
-                                    start: 15,
-                                    end: 19,
-                                },
-                                left_brace: Span {
-                                    start: 15,
-                                    end: 16,
-                                },
-                                statements: [],
-                                right_brace: Span {
-                                    start: 18,
-                                    end: 19,
-                                },
-                            },
-                        ),
+                body: Statement(
+                    IfStatementBodyStatement {
+                        id: 15,
                         span: Span {
                             start: 15,
-                            end: 19,
+                            end: 50,
                         },
-                        comments: CommentGroup {
-                            comments: [],
-                        },
-                    },
-                    elseifs: [
-                        IfStatementElseIf {
-                            id: 11,
+                        statement: Statement {
+                            id: 6,
+                            kind: Block(
+                                BlockStatement {
+                                    id: 5,
+                                    span: Span {
+                                        start: 15,
+                                        end: 19,
+                                    },
+                                    left_brace: Span {
+                                        start: 15,
+                                        end: 16,
+                                    },
+                                    statements: [],
+                                    right_brace: Span {
+                                        start: 18,
+                                        end: 19,
+                                    },
+                                },
+                            ),
                             span: Span {
-                                start: 20,
-                                end: 36,
+                                start: 15,
+                                end: 19,
                             },
-                            elseif: Span {
-                                start: 20,
-                                end: 26,
+                            comments: CommentGroup {
+                                comments: [],
                             },
-                            left_parenthesis: Span {
-                                start: 27,
-                                end: 28,
-                            },
-                            condition: Expression {
-                                id: 7,
-                                kind: Variable(
-                                    SimpleVariable(
-                                        SimpleVariable {
-                                            id: 8,
-                                            symbol: Symbol("$b"),
-                                            stripped: Symbol("b"),
+                        },
+                        elseifs: [
+                            IfStatementElseIf {
+                                id: 11,
+                                span: Span {
+                                    start: 20,
+                                    end: 36,
+                                },
+                                elseif: Span {
+                                    start: 20,
+                                    end: 26,
+                                },
+                                left_parenthesis: Span {
+                                    start: 27,
+                                    end: 28,
+                                },
+                                condition: Expression {
+                                    id: 7,
+                                    kind: Variable(
+                                        SimpleVariable(
+                                            SimpleVariable {
+                                                id: 8,
+                                                symbol: Symbol("$b"),
+                                                stripped: Symbol("b"),
+                                                span: Span {
+                                                    start: 28,
+                                                    end: 30,
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                    span: Span {
+                                        start: 28,
+                                        end: 30,
+                                    },
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                },
+                                right_parenthesis: Span {
+                                    start: 30,
+                                    end: 31,
+                                },
+                                statement: Statement {
+                                    id: 10,
+                                    kind: Block(
+                                        BlockStatement {
+                                            id: 9,
                                             span: Span {
-                                                start: 28,
-                                                end: 30,
+                                                start: 32,
+                                                end: 36,
+                                            },
+                                            left_brace: Span {
+                                                start: 32,
+                                                end: 33,
+                                            },
+                                            statements: [],
+                                            right_brace: Span {
+                                                start: 35,
+                                                end: 36,
                                             },
                                         },
                                     ),
-                                ),
-                                span: Span {
-                                    start: 28,
-                                    end: 30,
-                                },
-                                comments: CommentGroup {
-                                    comments: [],
-                                },
-                            },
-                            right_parenthesis: Span {
-                                start: 30,
-                                end: 31,
-                            },
-                            statement: Statement {
-                                id: 10,
-                                kind: Block(
-                                    BlockStatement {
-                                        id: 9,
-                                        span: Span {
-                                            start: 32,
-                                            end: 36,
-                                        },
-                                        left_brace: Span {
-                                            start: 32,
-                                            end: 33,
-                                        },
-                                        statements: [],
-                                        right_brace: Span {
-                                            start: 35,
-                                            end: 36,
-                                        },
+                                    span: Span {
+                                        start: 32,
+                                        end: 36,
                                     },
-                                ),
-                                span: Span {
-                                    start: 32,
-                                    end: 36,
-                                },
-                                comments: CommentGroup {
-                                    comments: [],
-                                },
-                            },
-                        },
-                    ],
-                    else: Some(
-                        IfStatementElse {
-                            id: 14,
-                            span: Span {
-                                start: 37,
-                                end: 50,
-                            },
-                            else: Span {
-                                start: 37,
-                                end: 41,
-                            },
-                            statement: Statement {
-                                id: 13,
-                                kind: Block(
-                                    BlockStatement {
-                                        id: 12,
-                                        span: Span {
-                                            start: 42,
-                                            end: 50,
-                                        },
-                                        left_brace: Span {
-                                            start: 42,
-                                            end: 43,
-                                        },
-                                        statements: [],
-                                        right_brace: Span {
-                                            start: 49,
-                                            end: 50,
-                                        },
+                                    comments: CommentGroup {
+                                        comments: [],
                                     },
-                                ),
+                                },
+                            },
+                        ],
+                        else: Some(
+                            IfStatementElse {
+                                id: 14,
                                 span: Span {
-                                    start: 42,
+                                    start: 37,
                                     end: 50,
                                 },
-                                comments: CommentGroup {
-                                    comments: [],
+                                else: Span {
+                                    start: 37,
+                                    end: 41,
+                                },
+                                statement: Statement {
+                                    id: 13,
+                                    kind: Block(
+                                        BlockStatement {
+                                            id: 12,
+                                            span: Span {
+                                                start: 42,
+                                                end: 50,
+                                            },
+                                            left_brace: Span {
+                                                start: 42,
+                                                end: 43,
+                                            },
+                                            statements: [],
+                                            right_brace: Span {
+                                                start: 49,
+                                                end: 50,
+                                            },
+                                        },
+                                    ),
+                                    span: Span {
+                                        start: 42,
+                                        end: 50,
+                                    },
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
                                 },
                             },
-                        },
-                    ),
-                },
+                        ),
+                    },
+                ),
             },
         ),
         span: Span {

@@ -122,16 +122,18 @@ fn catch_type(state: &mut State) -> CatchType {
             state.stream.next();
         }
 
+        let span = types.span();
+
         return CatchType {
              id: state.id(), 
-            span: types.span(),
-            kind: CatchTypeKind::Union { identifiers: types }
+            span,
+            kind: CatchTypeKind::Union(CatchTypeKindUnion { id: state.id(), span, identifiers: types })
         };
     }
 
     CatchType {
         id: state.id(), 
         span: id.span(),
-        kind: CatchTypeKind::Identifier { identifier: id }
+        kind: CatchTypeKind::Identifier(CatchTypeKindIdentifier { id: state.id(), span: id.span(), identifier: id })
     }
 }

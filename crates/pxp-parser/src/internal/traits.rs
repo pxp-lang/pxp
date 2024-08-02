@@ -88,52 +88,63 @@ pub fn usage(state: &mut State) -> TraitUsage {
                             state.stream.next();
 
                             if state.stream.current().kind == TokenKind::SemiColon {
+                                let span = if r#trait.is_some() {
+                                    Span::combine(r#trait.span(), visibility.span())
+                                } else {
+                                    Span::combine(method.span, visibility.span())
+                                };
                                 adaptations.push(TraitUsageAdaptation {
-                                     id: state.id(), 
-                                    span: if r#trait.is_some() {
-                                        Span::combine(r#trait.span(), visibility.span())
-                                    } else {
-                                        Span::combine(method.span, visibility.span())
-                                    },
-                                    kind: TraitUsageAdaptationKind::Visibility {
+                                    id: state.id(), 
+                                    span,
+                                    kind: TraitUsageAdaptationKind::Visibility(TraitUsageAdaptationVisibility {
+                                        id: state.id(),
+                                        span,
                                         r#trait,
                                         method,
                                         visibility,
-                                    }
+                                    })
                                 });
                             } else {
                                 let alias: SimpleIdentifier = identifiers::name(state);
+                                let span = if r#trait.is_some() {
+                                    Span::combine(r#trait.span(), visibility.span())
+                                } else {
+                                    Span::combine(method.span, visibility.span())
+                                };
+
                                 adaptations.push(TraitUsageAdaptation {
-                                     id: state.id(), 
-                                    span: if r#trait.is_some() {
-                                        Span::combine(r#trait.span(), visibility.span())
-                                    } else {
-                                        Span::combine(method.span, visibility.span())
-                                    },
-                                    kind: TraitUsageAdaptationKind::Alias {
+                                    id: state.id(), 
+                                    span,
+                                    kind: TraitUsageAdaptationKind::Alias(TraitUsageAdaptationAlias {
+                                        id: state.id(),
+                                        span,
                                         r#trait,
                                         method,
                                         alias,
                                         visibility: Some(visibility),
-                                    }
+                                    })
                                 });
                             }
                         }
                         _ => {
                             let alias: SimpleIdentifier = identifiers::name(state);
+                            let span = if r#trait.is_some() {
+                                Span::combine(r#trait.span(), alias.span())
+                            } else {
+                                Span::combine(method.span, alias.span())
+                            };
+
                             adaptations.push(TraitUsageAdaptation {
-                                 id: state.id(), 
-                                span: if r#trait.is_some() {
-                                    Span::combine(r#trait.span(), alias.span())
-                                } else {
-                                    Span::combine(method.span, alias.span())
-                                },
-                                kind: TraitUsageAdaptationKind::Alias {
+                                id: state.id(), 
+                                span,
+                                kind: TraitUsageAdaptationKind::Alias(TraitUsageAdaptationAlias {
+                                    id: state.id(),
+                                    span,
                                     r#trait,
                                     method,
                                     alias,
                                     visibility: None,
-                                }
+                                })
                             });
                         }
                     }
@@ -171,18 +182,22 @@ pub fn usage(state: &mut State) -> TraitUsage {
                         }
                     }
 
+                    let span = if r#trait.is_some() {
+                        Span::combine(r#trait.span(), insteadof.span())
+                    } else {
+                        Span::combine(method.span, insteadof.span())
+                    };
+
                     adaptations.push(TraitUsageAdaptation {
-                         id: state.id(), 
-                        span: if r#trait.is_some() {
-                            Span::combine(r#trait.span(), insteadof.span())
-                        } else {
-                            Span::combine(method.span, insteadof.span())
-                        },
-                        kind: TraitUsageAdaptationKind::Precedence {
+                        id: state.id(), 
+                        span,
+                        kind: TraitUsageAdaptationKind::Precedence(TraitUsageAdaptationPrecedence {
+                            id: state.id(),
+                            span,
                             r#trait,
                             method,
                             insteadof,
-                        }
+                        })
                     });
                 },
                 _ => unreachable!("{:?}", state.stream.current())

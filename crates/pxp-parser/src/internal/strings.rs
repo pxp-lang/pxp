@@ -349,6 +349,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                                      id: state.id(), 
                                     span: Span::combine(span, expression.span),
                                     kind: ArithmeticOperationKind::Negative {
+                                        id: state.id(),
                                         minus: span,
                                         right: Box::new(expression),
                                     }

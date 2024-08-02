@@ -19,16 +19,16 @@
         },
     },
     Statement {
-        id: 8,
+        id: 9,
         kind: Expression(
             ExpressionStatement {
-                id: 7,
+                id: 8,
                 span: Span {
                     start: 7,
                     end: 12,
                 },
                 expression: Expression {
-                    id: 6,
+                    id: 7,
                     kind: ArithmeticOperation(
                         ArithmeticOperationExpression {
                             id: 5,
@@ -37,6 +37,7 @@
                                 end: 11,
                             },
                             kind: PreIncrement {
+                                id: 6,
                                 increment: Span {
                                     start: 7,
                                     end: 9,

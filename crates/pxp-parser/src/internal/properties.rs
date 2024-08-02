@@ -63,21 +63,24 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
 
             state.stream.next();
             let value = expressions::create(state);
+            let span = Span::combine(variable.span, value.span);
 
             entries.push(PropertyEntry {
-                 id: state.id(), 
-                span: Span::combine(variable.span, value.span),
-                kind: PropertyEntryKind::Initialized {
+                id: state.id(), 
+                span,
+                kind: PropertyEntryKind::Initialized(InitializedPropertyEntry {
+                    id: state.id(),
+                    span,
                     variable,
                     equals: current.span,
                     value,
-                }
+                })
             });
         } else {
             entries.push(PropertyEntry {
-                 id: state.id(), 
+                id: state.id(), 
                 span: variable.span,
-                kind: PropertyEntryKind::Uninitialized { variable }
+                kind: PropertyEntryKind::Uninitialized(UninitializedPropertyEntry { id: state.id(), span: variable.span, variable })
             });
         }
 
@@ -134,21 +137,24 @@ pub fn parse_var(state: &mut State) -> VariableProperty {
             let span = current.span;
             state.stream.next();
             let value = expressions::create(state);
+            let span = Span::combine(variable.span, value.span);
 
             entries.push(PropertyEntry{
                  id: state.id(), 
-                span: Span::combine(variable.span, value.span),
-                kind: PropertyEntryKind::Initialized {
+                span,
+                kind: PropertyEntryKind::Initialized(InitializedPropertyEntry {
+                    id: state.id(),
+                    span,
                     variable,
                     equals: span,
                     value,
-                }
+                })
             });
         } else {
             entries.push(PropertyEntry {
-                 id: state.id(), 
+                id: state.id(), 
                 span: variable.span,
-                kind: PropertyEntryKind::Uninitialized { variable }
+                kind: PropertyEntryKind::Uninitialized(UninitializedPropertyEntry { id: state.id(), span: variable.span, variable })
             });
         }
 

@@ -19,10 +19,10 @@
         },
     },
     Statement {
-        id: 8,
+        id: 9,
         kind: Expression(
             ExpressionStatement {
-                id: 7,
+                id: 8,
                 span: Span {
                     start: 7,
                     end: 11,
@@ -37,6 +37,7 @@
                                 end: 10,
                             },
                             kind: Not {
+                                id: 7,
                                 bang: Span {
                                     start: 7,
                                     end: 8,

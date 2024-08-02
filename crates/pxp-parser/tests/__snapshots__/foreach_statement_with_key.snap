@@ -19,10 +19,10 @@
         },
     },
     Statement {
-        id: 12,
+        id: 14,
         kind: Foreach(
             ForeachStatement {
-                id: 11,
+                id: 13,
                 span: Span {
                     start: 7,
                     end: 52,
@@ -35,128 +35,134 @@
                     start: 15,
                     end: 16,
                 },
-                iterator: KeyAndValue {
-                    span: Span {
-                        start: 16,
-                        end: 40,
-                    },
-                    expression: Expression {
-                        id: 3,
-                        kind: Variable(
-                            SimpleVariable(
-                                SimpleVariable {
-                                    id: 4,
-                                    symbol: Symbol("$array"),
-                                    stripped: Symbol("array"),
-                                    span: Span {
-                                        start: 16,
-                                        end: 22,
-                                    },
-                                },
-                            ),
-                        ),
+                iterator: KeyAndValue(
+                    ForeachStatementIteratorKeyAndValue {
+                        id: 9,
                         span: Span {
                             start: 16,
-                            end: 22,
-                        },
-                        comments: CommentGroup {
-                            comments: [],
-                        },
-                    },
-                    as: Span {
-                        start: 23,
-                        end: 25,
-                    },
-                    ampersand: None,
-                    key: Expression {
-                        id: 5,
-                        kind: Variable(
-                            SimpleVariable(
-                                SimpleVariable {
-                                    id: 6,
-                                    symbol: Symbol("$key"),
-                                    stripped: Symbol("key"),
-                                    span: Span {
-                                        start: 26,
-                                        end: 30,
-                                    },
-                                },
-                            ),
-                        ),
-                        span: Span {
-                            start: 26,
-                            end: 30,
-                        },
-                        comments: CommentGroup {
-                            comments: [],
-                        },
-                    },
-                    double_arrow: Span {
-                        start: 31,
-                        end: 33,
-                    },
-                    value: Expression {
-                        id: 7,
-                        kind: Variable(
-                            SimpleVariable(
-                                SimpleVariable {
-                                    id: 8,
-                                    symbol: Symbol("$value"),
-                                    stripped: Symbol("value"),
-                                    span: Span {
-                                        start: 34,
-                                        end: 40,
-                                    },
-                                },
-                            ),
-                        ),
-                        span: Span {
-                            start: 34,
                             end: 40,
                         },
-                        comments: CommentGroup {
-                            comments: [],
+                        expression: Expression {
+                            id: 3,
+                            kind: Variable(
+                                SimpleVariable(
+                                    SimpleVariable {
+                                        id: 4,
+                                        symbol: Symbol("$array"),
+                                        stripped: Symbol("array"),
+                                        span: Span {
+                                            start: 16,
+                                            end: 22,
+                                        },
+                                    },
+                                ),
+                            ),
+                            span: Span {
+                                start: 16,
+                                end: 22,
+                            },
+                            comments: CommentGroup {
+                                comments: [],
+                            },
+                        },
+                        as: Span {
+                            start: 23,
+                            end: 25,
+                        },
+                        ampersand: None,
+                        key: Expression {
+                            id: 5,
+                            kind: Variable(
+                                SimpleVariable(
+                                    SimpleVariable {
+                                        id: 6,
+                                        symbol: Symbol("$key"),
+                                        stripped: Symbol("key"),
+                                        span: Span {
+                                            start: 26,
+                                            end: 30,
+                                        },
+                                    },
+                                ),
+                            ),
+                            span: Span {
+                                start: 26,
+                                end: 30,
+                            },
+                            comments: CommentGroup {
+                                comments: [],
+                            },
+                        },
+                        double_arrow: Span {
+                            start: 31,
+                            end: 33,
+                        },
+                        value: Expression {
+                            id: 7,
+                            kind: Variable(
+                                SimpleVariable(
+                                    SimpleVariable {
+                                        id: 8,
+                                        symbol: Symbol("$value"),
+                                        stripped: Symbol("value"),
+                                        span: Span {
+                                            start: 34,
+                                            end: 40,
+                                        },
+                                    },
+                                ),
+                            ),
+                            span: Span {
+                                start: 34,
+                                end: 40,
+                            },
+                            comments: CommentGroup {
+                                comments: [],
+                            },
                         },
                     },
-                },
+                ),
                 right_parenthesis: Span {
                     start: 40,
                     end: 41,
                 },
-                body: Statement {
-                    span: Span {
-                        start: 42,
-                        end: 52,
-                    },
-                    statement: Statement {
-                        id: 10,
-                        kind: Block(
-                            BlockStatement {
-                                id: 9,
-                                span: Span {
-                                    start: 42,
-                                    end: 52,
-                                },
-                                left_brace: Span {
-                                    start: 42,
-                                    end: 43,
-                                },
-                                statements: [],
-                                right_brace: Span {
-                                    start: 51,
-                                    end: 52,
-                                },
-                            },
-                        ),
+                body: Statement(
+                    ForeachStatementBodyStatement {
+                        id: 12,
                         span: Span {
                             start: 42,
                             end: 52,
                         },
-                        comments: CommentGroup {
-                            comments: [],
+                        statement: Statement {
+                            id: 11,
+                            kind: Block(
+                                BlockStatement {
+                                    id: 10,
+                                    span: Span {
+                                        start: 42,
+                                        end: 52,
+                                    },
+                                    left_brace: Span {
+                                        start: 42,
+                                        end: 43,
+                                    },
+                                    statements: [],
+                                    right_brace: Span {
+                                        start: 51,
+                                        end: 52,
+                                    },
+                                },
+                            ),
+                            span: Span {
+                                start: 42,
+                                end: 52,
+                            },
+                            comments: CommentGroup {
+                                comments: [],
+                            },
                         },
                     },
-                },
+                ),
             },
         ),
         span: Span {

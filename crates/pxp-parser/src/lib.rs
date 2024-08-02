@@ -313,7 +313,7 @@ fn statement(state: &mut State) -> Statement {
                     TokenKind::SemiColon => {
                         let span = utils::skip_semicolon(state);
 
-                        DeclareBody::Noop { span, semicolon: span }
+                        DeclareBody::Noop(DeclareBodyNoop { id: state.id(), span, semicolon: span })
                     }
                     TokenKind::LeftBrace => {
                         let start = utils::skip_left_brace(state);
@@ -321,12 +321,13 @@ fn statement(state: &mut State) -> Statement {
                             blocks::multiple_statements_until(state, &TokenKind::RightBrace);
                         let end = utils::skip_right_brace(state);
 
-                        DeclareBody::Braced {
+                        DeclareBody::Braced(DeclareBodyBraced {
+                            id: state.id(),
                             span: Span::combine(start, end),
                             left_brace: start,
                             statements,
                             right_brace: end,
-                        }
+                        })
                     }
                     TokenKind::Colon => {
                         let start = utils::skip_colon(state);
@@ -335,24 +336,26 @@ fn statement(state: &mut State) -> Statement {
                         let enddeclare = utils::skip(state, TokenKind::EndDeclare);
                         let semicolon = utils::skip_semicolon(state);
 
-                        DeclareBody::Block {
+                        DeclareBody::Block(DeclareBodyBlock {
+                            id: state.id(),
                             span: Span::combine(start, semicolon),
                             colon: start,
                             statements,
                             enddeclare,
                             semicolon
-                        }
+                        })
                     }
                     _ => {
                         let expression = expressions::create(state);
                         let end = utils::skip_semicolon(state);
                         let span = Span::combine(expression.span(), end.span());
 
-                        DeclareBody::Expression {
+                        DeclareBody::Expression(DeclareBodyExpression {
+                            id: state.id(),
                             span,
                             expression,
                             semicolon: end,
-                        }
+                        })
                     }
                 };
 

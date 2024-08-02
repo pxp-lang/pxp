@@ -46,7 +46,8 @@ pub fn foreach_statement(state: &mut State) -> StatementKind {
 
                 std::mem::swap(&mut value, &mut key);
 
-                ForeachStatementIterator::KeyAndValue {
+                ForeachStatementIterator::KeyAndValue(ForeachStatementIteratorKeyAndValue {
+                    id: state.id(),
                     span: Span::combine(expression.span, value.span),
                     expression,
                     r#as,
@@ -54,15 +55,16 @@ pub fn foreach_statement(state: &mut State) -> StatementKind {
                     double_arrow: arrow,
                     ampersand,
                     value,
-                }
+                })
             } else {
-                ForeachStatementIterator::Value {
+                ForeachStatementIterator::Value(ForeachStatementIteratorValue {
+                    id: state.id(),
                     span: Span::combine(expression.span, value.span),
                     expression,
                     r#as,
                     ampersand,
                     value,
-                }
+                })
             }
         });
 
@@ -72,20 +74,22 @@ pub fn foreach_statement(state: &mut State) -> StatementKind {
         let endforeach = utils::skip(state, TokenKind::EndForeach);
         let ending = utils::skip_ending(state);
 
-        ForeachStatementBody::Block {
+        ForeachStatementBody::Block(ForeachStatementBodyBlock {
+            id: state.id(),
             span: Span::combine(colon, ending.span()),
             colon,
             statements,
             endforeach,
             ending,
-        }
+        })
     } else {
         let statement = statement(state);
 
-        ForeachStatementBody::Statement {
+        ForeachStatementBody::Statement(ForeachStatementBodyStatement {
+            id: state.id(),
             span: statement.span,
             statement: Box::new(statement),
-        }
+        })
     };
 
     StatementKind::Foreach(ForeachStatement {
@@ -139,20 +143,22 @@ pub fn for_statement(state: &mut State) -> StatementKind {
         let endfor = utils::skip(state, TokenKind::EndFor);
         let ending = utils::skip_ending(state);
 
-        ForStatementBody::Block {
+        ForStatementBody::Block(ForStatementBodyBlock {
+            id: state.id(),
             span: Span::combine(colon, ending.span()),
             colon,
             statements,
             endfor,
             ending,
-        }
+        })
     } else {
         let x = statement(state);
 
-        ForStatementBody::Statement {
+        ForStatementBody::Statement(ForStatementBodyStatement {
+            id: state.id(),
             span: x.span,
             statement: Box::new(x),
-        }
+        })
     };
 
     StatementKind::For(ForStatement {
@@ -203,20 +209,22 @@ pub fn while_statement(state: &mut State) -> StatementKind {
         let endwhile = utils::skip(state, TokenKind::EndWhile);
         let ending = utils::skip_ending(state);
 
-        WhileStatementBody::Block {
+        WhileStatementBody::Block(WhileStatementBodyBlock {
+            id: state.id(),
             span: Span::combine(colon, ending.span()),
             colon,
             statements,
             endwhile,
             ending,
-        }
+        })
     } else {
         let x = statement(state);
 
-        WhileStatementBody::Statement {
+        WhileStatementBody::Statement(WhileStatementBodyStatement {
+            id: state.id(),
             span: x.span,
             statement: Box::new(x),
-        }
+        })
     };
 
     StatementKind::While(WhileStatement {
@@ -278,16 +286,20 @@ fn loop_level(state: &mut State) -> Level {
     {
         state.stream.next();
 
-        return Level::Literal(Literal::new(state.id(), LiteralKind::Integer, *current, current.span));
+        return Level::Literal(LiteralLevel {
+            id: state.id(),
+            literal: Literal::new(state.id(), LiteralKind::Integer, *current, current.span)
+        });
     }
 
     let (left_parenthesis, level, right_parenthesis) =
         utils::parenthesized(state, &|state| Box::new(loop_level(state)));
 
-    Level::Parenthesized {
+    Level::Parenthesized(ParenthesizedLevel {
+        id: state.id(),
         span: Span::combine(left_parenthesis, right_parenthesis),
         left_parenthesis,
         level,
         right_parenthesis,
-    }
+    })
 }
