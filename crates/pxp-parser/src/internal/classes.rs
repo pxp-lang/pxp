@@ -240,7 +240,7 @@ pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
 
         return match method {
             Method::Abstract(method) => {
-                if !has_abstract {
+                if !has_abstract && method.modifiers.has_abstract() {
                     state.diagnostic(
                         ParserDiagnostic::AbstractMethodInNonAbstractClass,
                         Severity::Error,

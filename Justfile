@@ -7,6 +7,9 @@ tokenise +args:
 parse +args:
     RUSTFLAGS=-Awarnings cargo run -q --package pxp-tools --bin parse --release -- {{args}}
 
+node-finder +args:
+    RUSTFLAGS=-Awarnings cargo run -q --package pxp-tools --bin node-finder --release -- {{args}}
+
 generate-ast:
     php ./meta/scripts/generate-ast.php
     cargo fmt --package pxp-ast

@@ -553,10 +553,12 @@ fn statement(state: &mut State) -> Statement {
         }
     };
 
+    let span = statement.span();
+
     Statement::new(
         state.id(),
         statement,
-        Span::new(start_span.start, state.stream.previous().span.end),
+        span,
         comments,
     )
 }

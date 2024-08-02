@@ -1,13 +1,13 @@
 use pxp_ast::{visitor::{NodeVisitor, NodeVisitorEscapeHatch}, Node, Statement};
 use pxp_span::ByteOffset;
 
-pub struct NodeFinder<'s, 'a> {
+pub struct NodeFinder<'a> {
     offset: ByteOffset,
-    found: Option<&'s Node<'a>>,
+    found: Option<Node<'a>>,
 }
 
-impl<'s, 'a> NodeFinder<'s, 'a> {
-    pub fn find_at_byte_offset(ast: &'s [Statement], offset: ByteOffset) -> Option<&'s Node<'a>> {
+impl<'a> NodeFinder<'a> {
+    pub fn find_at_byte_offset(ast: &'a [Statement], offset: ByteOffset) -> Option<Node<'a>> {
         let mut finder = NodeFinder {
             offset,
             found: None,
@@ -18,7 +18,7 @@ impl<'s, 'a> NodeFinder<'s, 'a> {
     }
 }
 
-impl<'s, 'a> NodeVisitor for NodeFinder<'s, 'a> {
+impl<'a> NodeVisitor for NodeFinder<'a> {
     fn enter(&mut self, node: &Node) -> NodeVisitorEscapeHatch {
         let span = node.span;
 
@@ -36,8 +36,8 @@ impl<'s, 'a> NodeVisitor for NodeFinder<'s, 'a> {
 
         // If the current node contains the offset we're interested in,
         // we should keep track of it and continue traversing the AST.
-        if span.contains_offset(self.offset) {
-            todo!("figure out lifetimes so that I can store the node in self.found");
+        if span.contains_offset(self.offset) {            
+            todo!()
         }
 
         NodeVisitorEscapeHatch::Continue

@@ -16,6 +16,7 @@ rustyline = "13.0.0"
 pxp-index = { version = "0.1.0", path = "../crates/pxp-index" }
 indicatif = "0.17.8"
 pxp-ast = { version = "0.1.0", path = "../crates/pxp-ast" }
+pxp-node-finder = { version = "0.1.0", path = "../crates/pxp-node-finder" }
 
 [[bin]]
 name = "tokenise"
@@ -32,3 +33,7 @@ path = "bin/visit.rs"
 [[bin]]
 name = "index"
 path = "bin/index.rs"
+
+[[bin]]
+name = "node-finder"
+path = "bin/node_finder.rs"

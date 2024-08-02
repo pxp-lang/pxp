@@ -20,6 +20,7 @@ use pxp_span::{Span, Spanned};
 use pxp_symbol::Symbol;
 use pxp_syntax::backed_enum_type::BackedEnumType;
 use pxp_syntax::name::NameQualification;
+use std::ptr::NonNull;
 
 
 RUST;
@@ -351,6 +352,24 @@ $output .= "        _ => {}\n";
 $output .= "    }\n";
 
 $output .= "    children\n";
+$output .= "}\n\n";
+
+$output .= "pub fn as_ptr(&self) -> NonNull<()> {\n";
+$output .= "match &self.kind {\n";
+
+foreach ($ast as $node => $structure) {
+    if ($node === 'NodeId') {
+        continue;
+    }
+
+    if (isset($structure['node']) && $structure['node'] === false) {
+        continue;
+    }
+
+    $output .= "NodeKind::{$node}(node) => NonNull::from(node).cast(),\n";
+}
+
+$output .= "}\n";
 $output .= "}\n";
 
 $output .= "}\n\n";

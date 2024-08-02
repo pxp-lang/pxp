@@ -28,7 +28,7 @@ impl Span {
     }
 
     pub fn is_before_offset(&self, offset: ByteOffset) -> bool {
-        self.end <= offset
+        self.end < offset
     }
 
     pub fn is_after_offset(&self, offset: ByteOffset) -> bool {
