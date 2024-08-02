@@ -5,7 +5,13 @@ use pxp_ast::Name;
 use pxp_symbol::Symbol;
 use pxp_type::Type;
 
-use crate::{class_like::{ClassConstant, ClassKind, ClassLike, Method, Property}, constant::Constant, function::Function, parameter::Parameter, Index};
+use crate::{
+    class_like::{ClassConstant, ClassKind, ClassLike, Method, Property},
+    constant::Constant,
+    function::Function,
+    parameter::Parameter,
+    Index,
+};
 
 #[derive(Clone)]
 pub struct ReflectionFunction<'a> {
@@ -35,11 +41,24 @@ impl<'a> ReflectionFunction<'a> {
     }
 
     pub fn get_parameters(&'a self) -> impl Iterator<Item = ReflectionParameter> + 'a {
-        self.function.parameters.iter().map(|parameter| ReflectionParameter { parameter, index: self.index })
+        self.function
+            .parameters
+            .iter()
+            .map(|parameter| ReflectionParameter {
+                parameter,
+                index: self.index,
+            })
     }
 
     pub fn get_parameter(&self, name: Symbol) -> Option<ReflectionParameter> {
-        self.function.parameters.iter().find(|parameter| parameter.name == name).map(|parameter| ReflectionParameter { parameter, index: self.index })
+        self.function
+            .parameters
+            .iter()
+            .find(|parameter| parameter.name == name)
+            .map(|parameter| ReflectionParameter {
+                parameter,
+                index: self.index,
+            })
     }
 }
 
@@ -107,23 +126,41 @@ impl<'a> ReflectionClass<'a> {
     }
 
     pub fn get_properties(&'a self) -> impl Iterator<Item = ReflectionProperty> + 'a {
-        self.class.properties.iter().map(|property| ReflectionProperty { class: self, property, index: self.index })
+        self.class
+            .properties
+            .iter()
+            .map(|property| ReflectionProperty {
+                class: self,
+                property,
+                index: self.index,
+            })
     }
 
     pub fn get_property(&self, name: Symbol) -> Option<ReflectionProperty> {
-        self.class.properties.iter().find(|property| property.name == name).map(|property| ReflectionProperty { class: self, property, index: self.index })
+        self.class
+            .properties
+            .iter()
+            .find(|property| property.name == name)
+            .map(|property| ReflectionProperty {
+                class: self,
+                property,
+                index: self.index,
+            })
     }
 
     pub fn get_public_properties(&self) -> impl Iterator<Item = ReflectionProperty> + '_ {
-        self.get_properties().filter(|property| property.is_public())
+        self.get_properties()
+            .filter(|property| property.is_public())
     }
 
     pub fn get_protected_properties(&self) -> impl Iterator<Item = ReflectionProperty> + '_ {
-        self.get_properties().filter(|property| property.is_protected())
+        self.get_properties()
+            .filter(|property| property.is_protected())
     }
 
     pub fn get_private_properties(&self) -> impl Iterator<Item = ReflectionProperty> + '_ {
-        self.get_properties().filter(|property| property.is_private())
+        self.get_properties()
+            .filter(|property| property.is_private())
     }
 
     pub fn get_name(&self) -> Symbol {
@@ -139,23 +176,44 @@ impl<'a> ReflectionClass<'a> {
     }
 
     pub fn get_parent(&self) -> Option<ReflectionClass<'a>> {
-        self.class.parent.as_ref().and_then(|parent| self.index.get_class(*parent))
+        self.class
+            .parent
+            .as_ref()
+            .and_then(|parent| self.index.get_class(*parent))
     }
 
     pub fn get_interfaces(&self) -> impl Iterator<Item = ReflectionClass> + '_ {
-        self.class.interfaces.iter().filter_map(move |interface| self.index.get_class(*interface))
+        self.class
+            .interfaces
+            .iter()
+            .filter_map(move |interface| self.index.get_class(*interface))
     }
 
     pub fn get_traits(&self) -> impl Iterator<Item = ReflectionClass> + '_ {
-        self.class.traits.iter().filter_map(move |r#trait| self.index.get_class(*r#trait))
+        self.class
+            .traits
+            .iter()
+            .filter_map(move |r#trait| self.index.get_class(*r#trait))
     }
 
     pub fn get_methods(&'a self) -> impl Iterator<Item = ReflectionMethod> + 'a {
-        self.class.methods.iter().map(|method| ReflectionMethod { class: self, method, index: self.index })
+        self.class.methods.iter().map(|method| ReflectionMethod {
+            class: self,
+            method,
+            index: self.index,
+        })
     }
 
     pub fn get_method(&self, name: Symbol) -> Option<ReflectionMethod> {
-        self.class.methods.iter().find(|method| method.name == name).map(|method| ReflectionMethod { class: self, method, index: self.index })
+        self.class
+            .methods
+            .iter()
+            .find(|method| method.name == name)
+            .map(|method| ReflectionMethod {
+                class: self,
+                method,
+                index: self.index,
+            })
     }
 
     pub fn get_public_methods(&self) -> impl Iterator<Item = ReflectionMethod> + '_ {
@@ -171,11 +229,22 @@ impl<'a> ReflectionClass<'a> {
     }
 
     pub fn get_cases(&self) -> impl Iterator<Item = ReflectionCase> + '_ {
-        self.class.cases.iter().map(|case| ReflectionCase { r#enum: self, case: *case, index: self.index })
+        self.class.cases.iter().map(|case| ReflectionCase {
+            r#enum: self,
+            case: *case,
+            index: self.index,
+        })
     }
 
     pub fn get_constants(&self) -> impl Iterator<Item = ReflectionClassConstant> + '_ {
-        self.class.constants.iter().map(|constant| ReflectionClassConstant { class: self, constant, index: self.index })
+        self.class
+            .constants
+            .iter()
+            .map(|constant| ReflectionClassConstant {
+                class: self,
+                constant,
+                index: self.index,
+            })
     }
 }
 

@@ -19,9 +19,8 @@ pub fn full_name(state: &mut State, kind: UseKind) -> Name {
             let resolved = state.strip_leading_namespace_qualifier(symbol);
 
             Name::resolved(state.id(), resolved, symbol, current.span)
-        },
-        TokenKind::Identifier
-        | TokenKind::QualifiedIdentifier => {
+        }
+        TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
             state.stream.next();
 
             state.maybe_resolve_identifier(*current, kind)
@@ -118,7 +117,12 @@ pub fn type_name(state: &mut State) -> Name {
                 current.span,
             );
 
-            Name::resolved(state.id(), Symbol::missing(), Symbol::missing(), current.span)
+            Name::resolved(
+                state.id(),
+                Symbol::missing(),
+                Symbol::missing(),
+                current.span,
+            )
         }
     }
 }
@@ -131,7 +135,12 @@ pub fn use_name(state: &mut State) -> Name {
         return Name::missing(state.id(), identifier.span);
     }
 
-    Name::resolved(state.id(), identifier.symbol, identifier.symbol, identifier.span)
+    Name::resolved(
+        state.id(),
+        identifier.symbol,
+        identifier.symbol,
+        identifier.span,
+    )
 }
 
 pub fn full_name_including_self(state: &mut State) -> Name {
@@ -144,7 +153,7 @@ pub fn full_name_including_self(state: &mut State) -> Name {
             let resolved = state.strip_leading_namespace_qualifier(symbol);
 
             Name::resolved(state.id(), resolved, symbol, current.span)
-        },
+        }
         TokenKind::Identifier
         | TokenKind::QualifiedIdentifier
         | TokenKind::Enum
@@ -153,14 +162,17 @@ pub fn full_name_including_self(state: &mut State) -> Name {
 
             state.maybe_resolve_identifier(*current, UseKind::Normal)
         }
-        TokenKind::Self_
-        | TokenKind::Static
-        | TokenKind::Parent => {
+        TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
             state.stream.next();
 
             let symbol = current.symbol.unwrap();
 
-            Name::special(state.id(), SpecialNameKind::from(*current), symbol, current.span)
+            Name::special(
+                state.id(),
+                SpecialNameKind::from(*current),
+                symbol,
+                current.span,
+            )
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
@@ -173,7 +185,12 @@ pub fn full_name_including_self(state: &mut State) -> Name {
 
             let symbol = current.symbol.unwrap();
 
-            Name::unresolved(state.id(), symbol, NameQualification::Unqualified, current.span)
+            Name::unresolved(
+                state.id(),
+                symbol,
+                NameQualification::Unqualified,
+                current.span,
+            )
         }
         _ => {
             state.diagnostic(

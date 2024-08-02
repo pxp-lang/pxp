@@ -21,7 +21,12 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
             let name = state.symbol_table.must_resolve(symbol).to_bytestring();
             let stripped = state.symbol_table.intern(&name[1..]);
 
-            SimpleVariable { id: state.id(),  symbol: current.symbol.unwrap(), stripped, span: current.span }
+            SimpleVariable {
+                id: state.id(),
+                symbol: current.symbol.unwrap(),
+                stripped,
+                span: current.span,
+            }
         }
         TokenKind::Dollar => {
             state.stream.next();
@@ -32,7 +37,12 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
                 current.span,
             );
 
-            SimpleVariable {  id: state.id(), symbol: current.symbol.unwrap(), stripped: Symbol::missing(), span: current.span }
+            SimpleVariable {
+                id: state.id(),
+                symbol: current.symbol.unwrap(),
+                stripped: Symbol::missing(),
+                span: current.span,
+            }
         }
         _ => {
             state.diagnostic(
@@ -59,7 +69,12 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
             let name = state.symbol_table.must_resolve(symbol).to_bytestring();
             let stripped = state.symbol_table.intern(&name[1..]);
 
-            Variable::SimpleVariable(SimpleVariable { id: state.id(),  symbol: current.symbol.unwrap(), stripped, span: current.span })
+            Variable::SimpleVariable(SimpleVariable {
+                id: state.id(),
+                symbol: current.symbol.unwrap(),
+                stripped,
+                span: current.span,
+            })
         }
         TokenKind::DollarLeftBrace => {
             let start = current.span;
@@ -70,7 +85,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
             let end = utils::skip_right_brace(state);
 
             Variable::BracedVariableVariable(BracedVariableVariable {
-                 id: state.id(), 
+                id: state.id(),
                 span: Span::combine(start, end),
                 start,
                 variable: Box::new(expr),
@@ -87,7 +102,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
             let end = utils::skip_right_brace(state);
 
             Variable::BracedVariableVariable(BracedVariableVariable {
-                 id: state.id(), 
+                id: state.id(),
                 span: Span::combine(start, end),
                 start,
                 variable: Box::new(expr),
@@ -103,7 +118,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
                     let variable = dynamic_variable(state);
 
                     Variable::VariableVariable(VariableVariable {
-                         id: state.id(), 
+                        id: state.id(),
                         span,
                         variable: Box::new(variable),
                     })

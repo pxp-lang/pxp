@@ -292,11 +292,7 @@ impl Token {
 
     pub fn dbg(&self) -> String {
         if let Some(symbol) = self.symbol {
-            format!(
-                "{} ({:?})",
-                symbol,
-                self.kind
-            )
+            format!("{} ({:?})", symbol, self.kind)
         } else {
             format!("{} ({:?})", self.kind, self.kind)
         }

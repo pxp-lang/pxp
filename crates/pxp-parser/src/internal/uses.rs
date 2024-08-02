@@ -2,12 +2,12 @@ use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
 use crate::ParserDiagnostic;
-use pxp_ast::*;
 use pxp_ast::GroupUseStatement;
 use pxp_ast::StatementKind;
 use pxp_ast::Use;
 use pxp_ast::UseKind;
 use pxp_ast::UseStatement;
+use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
@@ -36,14 +36,18 @@ pub fn use_statement(state: &mut State) -> StatementKind {
         let prefix_symbol = prefix.symbol;
 
         state.stream.next();
-        
+
         let mut uses = Vec::new();
         while state.stream.current().kind != TokenKind::RightBrace {
             let start_span = state.stream.current().span;
             let use_kind = match state.stream.current().kind {
                 TokenKind::Function => {
                     if kind != UseKind::Normal {
-                        state.diagnostic(ParserDiagnostic::MixedImportTypes, Severity::Error, state.stream.current().span);
+                        state.diagnostic(
+                            ParserDiagnostic::MixedImportTypes,
+                            Severity::Error,
+                            state.stream.current().span,
+                        );
                     }
 
                     state.stream.next();
@@ -51,7 +55,11 @@ pub fn use_statement(state: &mut State) -> StatementKind {
                 }
                 TokenKind::Const => {
                     if kind != UseKind::Normal {
-                        state.diagnostic(ParserDiagnostic::MixedImportTypes, Severity::Error, state.stream.current().span);
+                        state.diagnostic(
+                            ParserDiagnostic::MixedImportTypes,
+                            Severity::Error,
+                            state.stream.current().span,
+                        );
                     }
 
                     state.stream.next();
@@ -75,7 +83,14 @@ pub fn use_statement(state: &mut State) -> StatementKind {
             uses.push(Use {
                 id: state.id(),
                 span: Span::combine(start_span, end_span),
-                name: Name::resolved(state.id(), state.symbol_table.coagulate(&[prefix.symbol, name.symbol], Some(b"\\")), name.symbol, name.span),
+                name: Name::resolved(
+                    state.id(),
+                    state
+                        .symbol_table
+                        .coagulate(&[prefix.symbol, name.symbol], Some(b"\\")),
+                    name.symbol,
+                    name.span,
+                ),
                 kind: use_kind,
                 alias,
             });
@@ -91,7 +106,13 @@ pub fn use_statement(state: &mut State) -> StatementKind {
         utils::skip_right_brace(state);
         let semicolon = utils::skip_semicolon(state);
 
-        StatementKind::GroupUse(GroupUseStatement {  id: state.id(), span: Span::combine(prefix.span, semicolon), prefix, kind, uses })
+        StatementKind::GroupUse(GroupUseStatement {
+            id: state.id(),
+            span: Span::combine(prefix.span, semicolon),
+            prefix,
+            kind,
+            uses,
+        })
     } else {
         let mut uses = Vec::new();
         while !state.stream.is_eof() {
@@ -107,7 +128,7 @@ pub fn use_statement(state: &mut State) -> StatementKind {
             let end_span = state.stream.previous().span;
 
             uses.push(Use {
-                 id: state.id(), 
+                id: state.id(),
                 span: Span::combine(start_span, end_span),
                 name,
                 kind: None,
@@ -127,6 +148,11 @@ pub fn use_statement(state: &mut State) -> StatementKind {
 
         let span = Span::combine(r#use, state.stream.previous().span);
 
-        StatementKind::Use(UseStatement {  id: state.id(), span, uses, kind })
+        StatementKind::Use(UseStatement {
+            id: state.id(),
+            span,
+            uses,
+            kind,
+        })
     }
 }

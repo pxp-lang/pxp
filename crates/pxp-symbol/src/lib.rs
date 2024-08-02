@@ -1,7 +1,12 @@
-use std::{collections::HashMap, fmt::{Debug, Display}, mem::MaybeUninit, sync::Once};
+use std::{
+    collections::HashMap,
+    fmt::{Debug, Display},
+    mem::MaybeUninit,
+    sync::Once,
+};
 
 use pxp_bytestring::ByteStr;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
 pub struct Symbol {
@@ -95,7 +100,10 @@ impl SymbolTable {
 
         let symbol = self.vec.len() as u32;
 
-        self.map.insert(contents.to_vec(), Symbol::new(symbol, contents.len() as u32));
+        self.map.insert(
+            contents.to_vec(),
+            Symbol::new(symbol, contents.len() as u32),
+        );
         self.vec.push(contents.to_vec());
 
         Symbol::new(symbol, contents.len() as u32)
@@ -106,7 +114,8 @@ impl SymbolTable {
     }
 
     pub fn must_find(&self, contents: &[u8]) -> Symbol {
-        self.find(contents).unwrap_or_else(|| panic!("Symbol for {} not found", ByteStr::from(contents)))
+        self.find(contents)
+            .unwrap_or_else(|| panic!("Symbol for {} not found", ByteStr::from(contents)))
     }
 
     pub fn resolve(&self, symbol: Symbol) -> Option<ByteStr> {
@@ -114,7 +123,8 @@ impl SymbolTable {
     }
 
     pub fn must_resolve(&self, symbol: Symbol) -> ByteStr {
-        self.resolve(symbol).unwrap_or_else(|| panic!("Symbol {} not found", symbol))
+        self.resolve(symbol)
+            .unwrap_or_else(|| panic!("Symbol {} not found", symbol))
     }
 
     pub fn coagulate(&mut self, symbols: &[Symbol], with: Option<&[u8]>) -> Symbol {
@@ -152,10 +162,7 @@ mod tests {
         let mut symbols = SymbolTable::new();
         let sample_text = b"Hello, world!";
 
-        assert_eq!(symbols.intern(sample_text), Symbol {
-            id: 1,
-            len: 13,
-        });
+        assert_eq!(symbols.intern(sample_text), Symbol { id: 1, len: 13 });
     }
 
     #[test]

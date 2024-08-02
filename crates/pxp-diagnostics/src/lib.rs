@@ -24,10 +24,6 @@ impl<K: Display> Diagnostic<K> {
 
 impl<K: Display> Display for Diagnostic<K> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{} {}",
-            self.severity, self.kind
-        )
+        write!(f, "{} {}", self.severity, self.kind)
     }
 }

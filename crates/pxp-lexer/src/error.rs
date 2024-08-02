@@ -46,13 +46,12 @@ impl Display for SyntaxError {
             ),
             Self::UnexpectedError(_) => write!(
                 f,
-                "Syntax Error: unexpected error",
-                
+                "Syntax Error: unexpected error"                
             ),
             Self::UnexpectedCharacter(char, _) => write!(
                 f,
                 "Syntax Error: unexpected character `{:?}`",
-                *char as char, 
+                *char as char,
             ),
             Self::InvalidHaltCompiler(_) => write!(
                 f,

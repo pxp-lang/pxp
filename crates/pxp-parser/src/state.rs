@@ -92,11 +92,15 @@ impl<'a, 'b> State<'a, 'b> {
         let part = match &token.kind {
             TokenKind::Identifier | TokenKind::Enum | TokenKind::From => token.symbol.unwrap(),
             TokenKind::QualifiedIdentifier => {
-                let bytestring = self.symbol_table.resolve(token.symbol.unwrap()).unwrap().to_bytestring();
+                let bytestring = self
+                    .symbol_table
+                    .resolve(token.symbol.unwrap())
+                    .unwrap()
+                    .to_bytestring();
                 let parts = bytestring.split(|c| *c == b'\\').collect::<Vec<_>>();
 
                 self.symbol_table.intern(parts.first().unwrap())
-            },
+            }
             _ if is_soft_reserved_identifier(&token.kind) => token.symbol.unwrap(),
             _ => unreachable!(),
         };
@@ -109,7 +113,7 @@ impl<'a, 'b> State<'a, 'b> {
             match &token.kind {
                 TokenKind::Identifier | TokenKind::From | TokenKind::Enum => {
                     Name::resolved(id, *imported, symbol, token.span)
-                },
+                }
                 TokenKind::QualifiedIdentifier => {
                     // Qualified identifiers might be aliased, so we need to take the full un-aliased import and
                     // concatenate that with everything after the first part of the qualified identifier.
@@ -119,8 +123,8 @@ impl<'a, 'b> State<'a, 'b> {
                     let coagulated = self.symbol_table.coagulate(&[*imported, rest], Some(b"\\"));
 
                     Name::resolved(id, coagulated, symbol, token.span)
-                },
-                _ => unreachable!()
+                }
+                _ => unreachable!(),
             }
         // We didn't find an import, but since we're trying to resolve the name of a class like, we can
         // follow PHP's name resolution rules and just prepend the current namespace.
@@ -134,7 +138,13 @@ impl<'a, 'b> State<'a, 'b> {
         }
     }
 
-    pub fn add_prefixed_import(&mut self, kind: &UseKind, prefix: Symbol, name: Symbol, alias: Option<Symbol>) {
+    pub fn add_prefixed_import(
+        &mut self,
+        kind: &UseKind,
+        prefix: Symbol,
+        name: Symbol,
+        alias: Option<Symbol>,
+    ) {
         let coagulated = self.symbol_table.coagulate(&[prefix, name], Some(b"\\"));
 
         self.add_import(kind, coagulated, alias);
@@ -170,12 +180,12 @@ impl<'a, 'b> State<'a, 'b> {
 
     pub fn join_with_namespace(&mut self, name: Symbol) -> Symbol {
         match self.namespace() {
-            Some(Scope::Namespace(namespace)) => {
-                self.symbol_table.coagulate(&[*namespace, name], Some(b"\\"))
-            },
-            Some(Scope::BracedNamespace(Some(namespace))) => {
-                self.symbol_table.coagulate(&[*namespace, name], Some(b"\\"))
-            },
+            Some(Scope::Namespace(namespace)) => self
+                .symbol_table
+                .coagulate(&[*namespace, name], Some(b"\\")),
+            Some(Scope::BracedNamespace(Some(namespace))) => self
+                .symbol_table
+                .coagulate(&[*namespace, name], Some(b"\\")),
             _ => name,
         }
     }

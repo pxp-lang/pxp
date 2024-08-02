@@ -1,7 +1,7 @@
 use std::fmt::{Debug, Display};
 
 use pxp_symbol::Symbol;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Hash, Default)]
 

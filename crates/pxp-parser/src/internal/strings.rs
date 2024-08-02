@@ -4,11 +4,11 @@ use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
 use crate::ParserDiagnostic;
-use pxp_ast::*;
 use pxp_ast::Expression;
 use pxp_ast::ExpressionStringPart;
 use pxp_ast::LiteralStringPart;
 use pxp_ast::StringPart;
+use pxp_ast::*;
 use pxp_ast::{
     ArrayIndexExpression, ExpressionKind, HeredocExpression, InterpolatedStringExpression,
     NowdocExpression, NullsafePropertyFetchExpression, PropertyFetchExpression,
@@ -35,8 +35,13 @@ pub fn interpolated(state: &mut State) -> Expression {
 
     let end_span = state.stream.current().span;
 
-    Expression::new(state.id(),
-        ExpressionKind::InterpolatedString(InterpolatedStringExpression { id: state.id(),  span: Span::combine(start_span, end_span), parts }),
+    Expression::new(
+        state.id(),
+        ExpressionKind::InterpolatedString(InterpolatedStringExpression {
+            id: state.id(),
+            span: Span::combine(start_span, end_span),
+            parts,
+        }),
         Span::combine(start_span, end_span),
         CommentGroup::default(),
     )
@@ -59,8 +64,13 @@ pub fn shell_exec(state: &mut State) -> Expression {
 
     let end_span = state.stream.current().span;
 
-    Expression::new(state.id(),
-        ExpressionKind::ShellExec(ShellExecExpression {  id: state.id(), span: Span::combine(start_span, end_span), parts }),
+    Expression::new(
+        state.id(),
+        ExpressionKind::ShellExec(ShellExecExpression {
+            id: state.id(),
+            span: Span::combine(start_span, end_span),
+            parts,
+        }),
         Span::combine(start_span, end_span),
         CommentGroup::default(),
     )
@@ -159,8 +169,14 @@ pub fn heredoc(state: &mut State) -> Expression {
 
     let end_span = state.stream.previous().span;
 
-    Expression::new(state.id(),
-        ExpressionKind::Heredoc(HeredocExpression {  id: state.id(), span: Span::combine(span, end_span), label, parts }),
+    Expression::new(
+        state.id(),
+        ExpressionKind::Heredoc(HeredocExpression {
+            id: state.id(),
+            span: Span::combine(span, end_span),
+            label,
+            parts,
+        }),
         Span::combine(span, end_span),
         CommentGroup::default(),
     )
@@ -250,9 +266,10 @@ pub fn nowdoc(state: &mut State) -> Expression {
     state.stream.next();
     let end_span = state.stream.previous().span;
 
-    Expression::new(state.id(),
+    Expression::new(
+        state.id(),
         ExpressionKind::Nowdoc(NowdocExpression {
-             id: state.id(), 
+            id: state.id(),
             span: Span::combine(span, end_span),
             label,
             value: string_part,
@@ -268,7 +285,7 @@ fn part(state: &mut State) -> Option<StringPart> {
             let s = *state.stream.current();
             let part = if !s.span.is_empty() {
                 Some(StringPart::Literal(LiteralStringPart {
-                     id: state.id(), 
+                    id: state.id(),
                     span: s.span,
                     value: s.symbol.unwrap(),
                 }))
@@ -282,14 +299,15 @@ fn part(state: &mut State) -> Option<StringPart> {
         TokenKind::DollarLeftBrace => {
             let start_span = state.stream.current().span;
             let variable = variables::dynamic_variable(state);
-            let expression = Expression::new(state.id(),
+            let expression = Expression::new(
+                state.id(),
                 ExpressionKind::Variable(variable),
                 Span::new(start_span.start, state.stream.previous().span.end),
                 CommentGroup::default(),
             );
 
             Some(StringPart::Expression(ExpressionStringPart {
-                 id: state.id(), 
+                id: state.id(),
                 span: expression.span,
                 expression: Box::new(expression),
             }))
@@ -300,7 +318,7 @@ fn part(state: &mut State) -> Option<StringPart> {
             let e = create(state);
             utils::skip_right_brace(state);
             Some(StringPart::Expression(ExpressionStringPart {
-                 id: state.id(), 
+                id: state.id(),
                 span: e.span,
                 expression: Box::new(e),
             }))
@@ -310,7 +328,7 @@ fn part(state: &mut State) -> Option<StringPart> {
             let variable_span = state.stream.current().span;
             let variable = ExpressionKind::Variable(variables::dynamic_variable(state));
             let variable =
-                Expression::new(state.id(),variable, variable_span, CommentGroup::default());
+                Expression::new(state.id(), variable, variable_span, CommentGroup::default());
 
             let current = state.stream.current();
             let e = match &current.kind {
@@ -325,7 +343,12 @@ fn part(state: &mut State) -> Option<StringPart> {
                         TokenKind::LiteralInteger => {
                             state.stream.next();
 
-                            ExpressionKind::Literal(Literal::new(state.id(), LiteralKind::Integer, *current, current.span))
+                            ExpressionKind::Literal(Literal::new(
+                                state.id(),
+                                LiteralKind::Integer,
+                                *current,
+                                current.span,
+                            ))
                         }
                         TokenKind::Minus => {
                             state.stream.next();
@@ -339,20 +362,21 @@ fn part(state: &mut State) -> Option<StringPart> {
                                     *literal,
                                     literal.span,
                                 ));
-                                let expression = Expression::new(state.id(),
+                                let expression = Expression::new(
+                                    state.id(),
                                     kind,
                                     span,
                                     CommentGroup::default(),
                                 );
 
                                 ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression {
-                                     id: state.id(), 
+                                    id: state.id(),
                                     span: Span::combine(span, expression.span),
                                     kind: ArithmeticOperationKind::Negative {
                                         id: state.id(),
                                         minus: span,
                                         right: Box::new(expression),
-                                    }
+                                    },
                                 })
                             } else {
                                 state.diagnostic(
@@ -372,7 +396,12 @@ fn part(state: &mut State) -> Option<StringPart> {
                         TokenKind::Identifier => {
                             state.stream.next();
 
-                            ExpressionKind::Literal(Literal::new(state.id(), LiteralKind::String, *current, current.span))
+                            ExpressionKind::Literal(Literal::new(
+                                state.id(),
+                                LiteralKind::String,
+                                *current,
+                                current.span,
+                            ))
                         }
                         TokenKind::Variable => ExpressionKind::Variable(Variable::SimpleVariable(
                             variables::simple_variable(state),
@@ -397,7 +426,8 @@ fn part(state: &mut State) -> Option<StringPart> {
                         }
                     };
                     let index_end_span = state.stream.previous().span;
-                    let index = Expression::new(state.id(),
+                    let index = Expression::new(
+                        state.id(),
                         index,
                         Span::new(index_start_span.start, index_end_span.end),
                         CommentGroup::default(),
@@ -406,7 +436,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                     let right_bracket = utils::skip_right_bracket(state);
 
                     ExpressionKind::ArrayIndex(ArrayIndexExpression {
-                         id: state.id(), 
+                        id: state.id(),
                         span: Span::combine(variable.span, right_bracket),
                         array: Box::new(variable),
                         left_bracket,
@@ -423,10 +453,10 @@ fn part(state: &mut State) -> Option<StringPart> {
                     let id_span = identifier.span;
                     let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier));
                     let identifier_expression =
-                        Expression::new(state.id(),kind, id_span, CommentGroup::default());
+                        Expression::new(state.id(), kind, id_span, CommentGroup::default());
 
                     ExpressionKind::PropertyFetch(PropertyFetchExpression {
-                         id: state.id(), 
+                        id: state.id(),
                         span: Span::combine(variable.span, identifier_expression.span),
                         target: Box::new(variable),
                         arrow: span,
@@ -442,11 +472,12 @@ fn part(state: &mut State) -> Option<StringPart> {
                     let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(ident));
 
                     ExpressionKind::NullsafePropertyFetch(NullsafePropertyFetchExpression {
-                         id: state.id(), 
+                        id: state.id(),
                         span: Span::combine(variable.span, ident_span),
                         target: Box::new(variable),
                         question_arrow: span,
-                        property: Box::new(Expression::new(state.id(),
+                        property: Box::new(Expression::new(
+                            state.id(),
                             kind,
                             ident_span,
                             CommentGroup::default(),
@@ -458,9 +489,10 @@ fn part(state: &mut State) -> Option<StringPart> {
             };
 
             Some(StringPart::Expression(ExpressionStringPart {
-                 id: state.id(), 
+                id: state.id(),
                 span: Span::combine(variable_span, state.stream.previous().span),
-                expression: Box::new(Expression::new(state.id(),
+                expression: Box::new(Expression::new(
+                    state.id(),
                     e,
                     Span::new(variable_span.start, state.stream.previous().span.end),
                     CommentGroup::default(),
@@ -472,11 +504,16 @@ fn part(state: &mut State) -> Option<StringPart> {
 
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
-                    expected: vec![TokenKind::LeftBrace, TokenKind::DollarLeftBrace, TokenKind::DoubleQuote, TokenKind::Variable],
+                    expected: vec![
+                        TokenKind::LeftBrace,
+                        TokenKind::DollarLeftBrace,
+                        TokenKind::DoubleQuote,
+                        TokenKind::Variable,
+                    ],
                     found: *state.stream.current(),
                 },
                 Severity::Error,
-                span
+                span,
             );
 
             state.stream.next();

@@ -66,7 +66,7 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
             let span = Span::combine(variable.span, value.span);
 
             entries.push(PropertyEntry {
-                id: state.id(), 
+                id: state.id(),
                 span,
                 kind: PropertyEntryKind::Initialized(InitializedPropertyEntry {
                     id: state.id(),
@@ -74,13 +74,17 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
                     variable,
                     equals: current.span,
                     value,
-                })
+                }),
             });
         } else {
             entries.push(PropertyEntry {
-                id: state.id(), 
+                id: state.id(),
                 span: variable.span,
-                kind: PropertyEntryKind::Uninitialized(UninitializedPropertyEntry { id: state.id(), span: variable.span, variable })
+                kind: PropertyEntryKind::Uninitialized(UninitializedPropertyEntry {
+                    id: state.id(),
+                    span: variable.span,
+                    variable,
+                }),
             });
         }
 
@@ -94,7 +98,7 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
     let end = utils::skip_semicolon(state);
 
     Property {
-         id: state.id(), 
+        id: state.id(),
         span: if ty.is_some() {
             Span::combine(ty.span(), end)
         } else {
@@ -139,8 +143,8 @@ pub fn parse_var(state: &mut State) -> VariableProperty {
             let value = expressions::create(state);
             let span = Span::combine(variable.span, value.span);
 
-            entries.push(PropertyEntry{
-                 id: state.id(), 
+            entries.push(PropertyEntry {
+                id: state.id(),
                 span,
                 kind: PropertyEntryKind::Initialized(InitializedPropertyEntry {
                     id: state.id(),
@@ -148,13 +152,17 @@ pub fn parse_var(state: &mut State) -> VariableProperty {
                     variable,
                     equals: span,
                     value,
-                })
+                }),
             });
         } else {
             entries.push(PropertyEntry {
-                id: state.id(), 
+                id: state.id(),
                 span: variable.span,
-                kind: PropertyEntryKind::Uninitialized(UninitializedPropertyEntry { id: state.id(), span: variable.span, variable })
+                kind: PropertyEntryKind::Uninitialized(UninitializedPropertyEntry {
+                    id: state.id(),
+                    span: variable.span,
+                    variable,
+                }),
             });
         }
 
@@ -168,7 +176,7 @@ pub fn parse_var(state: &mut State) -> VariableProperty {
     let end = utils::skip_semicolon(state);
 
     VariableProperty {
-         id: state.id(), 
+        id: state.id(),
         span: if ty.is_some() {
             Span::combine(ty.span(), end)
         } else {

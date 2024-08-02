@@ -29,7 +29,7 @@ pub fn gather_attributes(state: &mut State) -> bool {
         let span = Span::new(start.start, end.end);
 
         members.push(Attribute {
-             id: state.id(), 
+            id: state.id(),
             span,
             name,
             arguments,

@@ -80,7 +80,7 @@ pub fn list_expression(state: &mut State) -> Expression {
                 std::mem::swap(&mut key, &mut value);
 
                 items.push(ListEntry::KeyValue(ListEntryKeyValue {
-                     id: state.id(), 
+                    id: state.id(),
                     span: Span::combine(key.span, value.span),
                     key,
                     double_arrow,
@@ -97,7 +97,11 @@ pub fn list_expression(state: &mut State) -> Expression {
                     );
                 }
 
-                items.push(ListEntry::Value(ListEntryValue { id: state.id(),  span: value.span, value }));
+                items.push(ListEntry::Value(ListEntryValue {
+                    id: state.id(),
+                    span: value.span,
+                    value,
+                }));
             }
 
             if current.kind == TokenKind::Comma {
@@ -119,7 +123,7 @@ pub fn list_expression(state: &mut State) -> Expression {
     let span = Span::combine(list, end);
 
     let kind = ExpressionKind::List(ListExpression {
-         id: state.id(), 
+        id: state.id(),
         span,
         list,
         start,
@@ -127,12 +131,7 @@ pub fn list_expression(state: &mut State) -> Expression {
         end,
     });
 
-    Expression::new(
-        state.id(),
-        kind,
-        span,
-        CommentGroup::default(),
-    )
+    Expression::new(state.id(), kind, span, CommentGroup::default())
 }
 
 pub fn short_array_expression(state: &mut State) -> Expression {
@@ -153,19 +152,14 @@ pub fn short_array_expression(state: &mut State) -> Expression {
     let span = Span::combine(start, end);
 
     let kind = ExpressionKind::ShortArray(ShortArrayExpression {
-         id: state.id(), 
+        id: state.id(),
         span,
         start,
         items,
         end,
     });
 
-    Expression::new(
-        state.id(),
-        kind,
-        span,
-        CommentGroup::default(),
-    )
+    Expression::new(state.id(), kind, span, CommentGroup::default())
 }
 
 pub fn array_expression(state: &mut State) -> Expression {
@@ -176,7 +170,7 @@ pub fn array_expression(state: &mut State) -> Expression {
     let span = Span::combine(array, end);
 
     let kind = ExpressionKind::Array(ArrayExpression {
-         id: state.id(), 
+        id: state.id(),
         span,
         array,
         start,
@@ -184,12 +178,7 @@ pub fn array_expression(state: &mut State) -> Expression {
         end,
     });
 
-    Expression::new(
-        state.id(),
-        kind,
-        span,
-        CommentGroup::default(),
-    )
+    Expression::new(state.id(), kind, span, CommentGroup::default())
 }
 
 fn array_pair(state: &mut State) -> ArrayItem {
@@ -223,12 +212,17 @@ fn array_pair(state: &mut State) -> ArrayItem {
             );
         }
 
-        return ArrayItem::SpreadValue(ArrayItemSpreadValue { id: state.id(),  span: Span::combine(ellipsis, value.span), ellipsis, value });
+        return ArrayItem::SpreadValue(ArrayItemSpreadValue {
+            id: state.id(),
+            span: Span::combine(ellipsis, value.span),
+            ellipsis,
+            value,
+        });
     }
 
     if let Some(ampersand) = ampersand {
         return ArrayItem::ReferencedValue(ArrayItemReferencedValue {
-             id: state.id(), 
+            id: state.id(),
             span: Span::combine(ampersand.span, value.span),
             ampersand: ampersand.span,
             value,
@@ -266,7 +260,7 @@ fn array_pair(state: &mut State) -> ArrayItem {
 
         return match ampersand {
             Some(ampersand) => ArrayItem::ReferencedKeyValue(ArrayItemReferencedKeyValue {
-                 id: state.id(), 
+                id: state.id(),
                 span: Span::combine(key.span, value.span),
                 key,
                 double_arrow,
@@ -274,7 +268,7 @@ fn array_pair(state: &mut State) -> ArrayItem {
                 ampersand: ampersand.span,
             }),
             None => ArrayItem::KeyValue(ArrayItemKeyValue {
-                 id: state.id(), 
+                id: state.id(),
                 span: Span::combine(key.span, value.span),
                 key,
                 double_arrow,
@@ -283,5 +277,9 @@ fn array_pair(state: &mut State) -> ArrayItem {
         };
     }
 
-    ArrayItem::Value(ArrayItemValue { id: state.id(),  span: value.span, value })
+    ArrayItem::Value(ArrayItemValue {
+        id: state.id(),
+        span: value.span,
+        value,
+    })
 }

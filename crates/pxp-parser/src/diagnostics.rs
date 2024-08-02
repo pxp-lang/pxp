@@ -58,7 +58,9 @@ pub enum ParserDiagnostic {
 impl Display for ParserDiagnostic {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ParserDiagnostic::UnexpectedToken { token } => write!(f, "unexpected token {}", token.kind),
+            ParserDiagnostic::UnexpectedToken { token } => {
+                write!(f, "unexpected token {}", token.kind)
+            }
             ParserDiagnostic::ExpectedToken { expected, found } => {
                 if expected.len() == 1 {
                     write!(
@@ -170,7 +172,9 @@ impl Display for ParserDiagnostic {
             ParserDiagnostic::TryMustHaveCatchOrFinally => {
                 write!(f, "try must have catch or finally")
             }
-            ParserDiagnostic::DynamicVariableNotAllowed => write!(f, "dynamic variable not allowed"),
+            ParserDiagnostic::DynamicVariableNotAllowed => {
+                write!(f, "dynamic variable not allowed")
+            }
             ParserDiagnostic::UnexpectedEndOfFile => write!(f, "unexpected end of file"),
             ParserDiagnostic::UnexpectedEndOfFileExpected { expected } => {
                 if expected.len() == 1 {
@@ -190,7 +194,7 @@ impl Display for ParserDiagnostic {
                             .join(", ")
                     )
                 }
-            },
+            }
             ParserDiagnostic::MixedImportTypes => write!(f, "cannot mix import types"),
         }
     }

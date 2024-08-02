@@ -5,9 +5,9 @@ use crate::state::NamespaceType;
 use crate::state::Scope;
 use crate::state::State;
 use crate::ParserDiagnostic;
-use pxp_ast::*;
 use pxp_ast::Block;
 use pxp_ast::StatementKind;
+use pxp_ast::*;
 
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
@@ -79,7 +79,7 @@ fn unbraced_namespace(state: &mut State, start: Span, name: SimpleIdentifier) ->
     });
 
     StatementKind::Namespace(NamespaceStatement::Unbraced(UnbracedNamespace {
-         id: state.id(), 
+        id: state.id(),
         span: Span::combine(start, statements.span()),
         start,
         end,
@@ -93,27 +93,31 @@ fn braced_namespace(
     span: Span,
     name: Option<SimpleIdentifier>,
 ) -> StatementKind {
-    let body = scoped!(state, Scope::BracedNamespace(name.as_ref().map(|n| n.symbol)), {
-        let start = utils::skip_left_brace(state);
+    let body = scoped!(
+        state,
+        Scope::BracedNamespace(name.as_ref().map(|n| n.symbol)),
+        {
+            let start = utils::skip_left_brace(state);
 
-        let mut statements = Block::new();
-        while state.stream.current().kind != TokenKind::RightBrace && !state.stream.is_eof() {
-            statements.push(crate::top_level_statement(state));
+            let mut statements = Block::new();
+            while state.stream.current().kind != TokenKind::RightBrace && !state.stream.is_eof() {
+                statements.push(crate::top_level_statement(state));
+            }
+
+            let end = utils::skip_right_brace(state);
+
+            BracedNamespaceBody {
+                id: state.id(),
+                span: Span::combine(start, end),
+                start,
+                end,
+                statements,
+            }
         }
-
-        let end = utils::skip_right_brace(state);
-
-        BracedNamespaceBody {
-             id: state.id(), 
-            span: Span::combine(start, end),
-            start,
-            end,
-            statements,
-        }
-    });
+    );
 
     StatementKind::Namespace(NamespaceStatement::Braced(BracedNamespace {
-         id: state.id(), 
+        id: state.id(),
         span: Span::combine(span, body.span),
         namespace: span,
         name: name.map(|n| Name::resolved(state.id(), n.symbol, n.symbol, n.span)),

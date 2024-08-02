@@ -19,7 +19,7 @@ fn it_indexes_classes() {
     assert!(b.get_name() == name(b"B"));
     assert!(b.get_short_name() == name(b"B"));
     assert!(b.get_namespace() == None);
-    
+
     let parent = b.get_parent().unwrap();
     assert!(parent.get_name() == name(b"A"));
 
@@ -335,7 +335,7 @@ fn it_indexes_enums() {
     let methods = color.get_methods().collect::<Vec<_>>();
 
     assert!(methods.len() == 1);
-    
+
     let get_hex = &methods[0];
 
     assert!(get_hex.get_name() == name(b"getHex"));
@@ -352,7 +352,10 @@ fn index() -> Index {
     let files = discover(&["php"], &["tests/fixtures"]).expect("failed to discover files");
 
     for file in files.iter() {
-        let result = parse(&std::fs::read(&file).expect("failed to read file"), SymbolTable::the());
+        let result = parse(
+            &std::fs::read(&file).expect("failed to read file"),
+            SymbolTable::the(),
+        );
         indexer.index(&result.ast);
     }
 

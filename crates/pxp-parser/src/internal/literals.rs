@@ -42,7 +42,7 @@ pub fn expect_literal(state: &mut State) -> Literal {
     };
 
     Literal {
-         id: state.id(), 
+        id: state.id(),
         span: token.span,
         kind,
         token: *token,

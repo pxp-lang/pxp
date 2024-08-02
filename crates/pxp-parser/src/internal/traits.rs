@@ -2,9 +2,9 @@ use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
 use crate::ParserDiagnostic;
-use pxp_ast::*;
-use pxp_ast::TraitUsageAdaptation;
 use pxp_ast::StatementKind;
+use pxp_ast::TraitUsageAdaptation;
+use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_span::Spanned;
@@ -47,18 +47,23 @@ pub fn usage(state: &mut State) -> TraitUsage {
         utils::skip_left_brace(state);
 
         while state.stream.current().kind != TokenKind::RightBrace {
-            let (r#trait, method): (Option<Name>, SimpleIdentifier) =
-                match state.stream.peek().kind {
-                    TokenKind::DoubleColon => {
-                        let r#trait = names::full_name_including_self(state);
-                        state.stream.next();
-                        let method = identifiers::identifier(state);
-                        (Some(r#trait), method)
-                    }
-                    _ => (None, identifiers::identifier(state)),
-                };
+            let (r#trait, method): (Option<Name>, SimpleIdentifier) = match state.stream.peek().kind
+            {
+                TokenKind::DoubleColon => {
+                    let r#trait = names::full_name_including_self(state);
+                    state.stream.next();
+                    let method = identifiers::identifier(state);
+                    (Some(r#trait), method)
+                }
+                _ => (None, identifiers::identifier(state)),
+            };
 
-            while !state.stream.is_eof() && !matches!(state.stream.current().kind, TokenKind::As | TokenKind::Insteadof) {
+            while !state.stream.is_eof()
+                && !matches!(
+                    state.stream.current().kind,
+                    TokenKind::As | TokenKind::Insteadof
+                )
+            {
                 let token = state.stream.current();
                 state.stream.next();
 
@@ -75,9 +80,13 @@ pub fn usage(state: &mut State) -> TraitUsage {
             match state.stream.current().kind {
                 TokenKind::As => {
                     state.stream.next();
-                    
+
                     match state.stream.current() {
-                        Token { kind: TokenKind::Public | TokenKind::Protected | TokenKind::Private, span, .. }=> {
+                        Token {
+                            kind: TokenKind::Public | TokenKind::Protected | TokenKind::Private,
+                            span,
+                            ..
+                        } => {
                             let visibility = match state.stream.current().kind {
                                 TokenKind::Public => VisibilityModifier::Public(*span),
                                 TokenKind::Protected => VisibilityModifier::Protected(*span),
@@ -94,15 +103,17 @@ pub fn usage(state: &mut State) -> TraitUsage {
                                     Span::combine(method.span, visibility.span())
                                 };
                                 adaptations.push(TraitUsageAdaptation {
-                                    id: state.id(), 
+                                    id: state.id(),
                                     span,
-                                    kind: TraitUsageAdaptationKind::Visibility(TraitUsageAdaptationVisibility {
-                                        id: state.id(),
-                                        span,
-                                        r#trait,
-                                        method,
-                                        visibility,
-                                    })
+                                    kind: TraitUsageAdaptationKind::Visibility(
+                                        TraitUsageAdaptationVisibility {
+                                            id: state.id(),
+                                            span,
+                                            r#trait,
+                                            method,
+                                            visibility,
+                                        },
+                                    ),
                                 });
                             } else {
                                 let alias: SimpleIdentifier = identifiers::name(state);
@@ -113,16 +124,18 @@ pub fn usage(state: &mut State) -> TraitUsage {
                                 };
 
                                 adaptations.push(TraitUsageAdaptation {
-                                    id: state.id(), 
+                                    id: state.id(),
                                     span,
-                                    kind: TraitUsageAdaptationKind::Alias(TraitUsageAdaptationAlias {
-                                        id: state.id(),
-                                        span,
-                                        r#trait,
-                                        method,
-                                        alias,
-                                        visibility: Some(visibility),
-                                    })
+                                    kind: TraitUsageAdaptationKind::Alias(
+                                        TraitUsageAdaptationAlias {
+                                            id: state.id(),
+                                            span,
+                                            r#trait,
+                                            method,
+                                            alias,
+                                            visibility: Some(visibility),
+                                        },
+                                    ),
                                 });
                             }
                         }
@@ -135,7 +148,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
                             };
 
                             adaptations.push(TraitUsageAdaptation {
-                                id: state.id(), 
+                                id: state.id(),
                                 span,
                                 kind: TraitUsageAdaptationKind::Alias(TraitUsageAdaptationAlias {
                                     id: state.id(),
@@ -144,17 +157,15 @@ pub fn usage(state: &mut State) -> TraitUsage {
                                     method,
                                     alias,
                                     visibility: None,
-                                })
+                                }),
                             });
                         }
                     }
-                },
+                }
                 TokenKind::Insteadof => {
                     state.stream.next();
 
-                    let mut insteadof = vec![
-                        identifiers::full_type_name(state)
-                    ];
+                    let mut insteadof = vec![identifiers::full_type_name(state)];
 
                     if state.stream.current().kind == TokenKind::Comma {
                         if state.stream.peek().kind == TokenKind::SemiColon {
@@ -189,18 +200,20 @@ pub fn usage(state: &mut State) -> TraitUsage {
                     };
 
                     adaptations.push(TraitUsageAdaptation {
-                        id: state.id(), 
+                        id: state.id(),
                         span,
-                        kind: TraitUsageAdaptationKind::Precedence(TraitUsageAdaptationPrecedence {
-                            id: state.id(),
-                            span,
-                            r#trait,
-                            method,
-                            insteadof,
-                        })
+                        kind: TraitUsageAdaptationKind::Precedence(
+                            TraitUsageAdaptationPrecedence {
+                                id: state.id(),
+                                span,
+                                r#trait,
+                                method,
+                                insteadof,
+                            },
+                        ),
                     });
-                },
-                _ => unreachable!("{:?}", state.stream.current())
+                }
+                _ => unreachable!("{:?}", state.stream.current()),
             };
 
             utils::skip_semicolon(state);
@@ -212,7 +225,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
     }
 
     TraitUsage {
-         id: state.id(), 
+        id: state.id(),
         span: Span::combine(span, adaptations.span()),
         r#use: span,
         traits,
@@ -236,7 +249,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     let right_brace = utils::skip_right_brace(state);
 
     let body = TraitBody {
-         id: state.id(), 
+        id: state.id(),
         span: Span::combine(left_brace, right_brace),
         left_brace,
         members,
@@ -244,7 +257,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     };
 
     StatementKind::Trait(TraitStatement {
-         id: state.id(), 
+        id: state.id(),
         span: Span::combine(span, body.span),
         r#trait: span,
         name,

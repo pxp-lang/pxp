@@ -32,7 +32,11 @@ fn main() {
             let contents = std::fs::read(file).unwrap();
             let mut lexer = Lexer::new(&contents[..], symbol_table);
 
-            match if immediate { lexer.tokenize_in_immediate_mode() } else { lexer.tokenize() } {
+            match if immediate {
+                lexer.tokenize_in_immediate_mode()
+            } else {
+                lexer.tokenize()
+            } {
                 Ok(_) => {
                     if !no_output {
                         print!(".");
@@ -63,7 +67,11 @@ fn main() {
     } else {
         let contents = std::fs::read(path).unwrap();
         let mut lexer = Lexer::new(&contents[..], symbol_table);
-        let tokens = match if immediate { lexer.tokenize_in_immediate_mode() } else { lexer.tokenize() } {
+        let tokens = match if immediate {
+            lexer.tokenize_in_immediate_mode()
+        } else {
+            lexer.tokenize()
+        } {
             Ok(tokens) => tokens,
             Err(err) => {
                 eprintln!("{}", err);

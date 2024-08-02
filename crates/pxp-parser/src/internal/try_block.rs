@@ -3,8 +3,8 @@ use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
 use crate::ParserDiagnostic;
-use pxp_ast::*;
 use pxp_ast::StatementKind;
+use pxp_ast::*;
 
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
@@ -51,7 +51,7 @@ pub fn try_block(state: &mut State) -> StatementKind {
         let catch_end = state.stream.current().span;
 
         catches.push(CatchBlock {
-             id: state.id(), 
+            id: state.id(),
             span: Span::combine(catch_start, catch_body.span()),
             start: catch_start,
             end: catch_end,
@@ -73,7 +73,7 @@ pub fn try_block(state: &mut State) -> StatementKind {
         let finally_end = state.stream.current().span;
 
         finally = Some(FinallyBlock {
-             id: state.id(), 
+            id: state.id(),
             span: Span::combine(finally_start, finally_body.span()),
             start: finally_start,
             end: finally_end,
@@ -92,7 +92,7 @@ pub fn try_block(state: &mut State) -> StatementKind {
     let end = state.stream.previous().span;
 
     StatementKind::Try(TryStatement {
-         id: state.id(), 
+        id: state.id(),
         span: Span::combine(start, end),
         start,
         end,
@@ -125,15 +125,23 @@ fn catch_type(state: &mut State) -> CatchType {
         let span = types.span();
 
         return CatchType {
-             id: state.id(), 
+            id: state.id(),
             span,
-            kind: CatchTypeKind::Union(CatchTypeKindUnion { id: state.id(), span, identifiers: types })
+            kind: CatchTypeKind::Union(CatchTypeKindUnion {
+                id: state.id(),
+                span,
+                identifiers: types,
+            }),
         };
     }
 
     CatchType {
-        id: state.id(), 
+        id: state.id(),
         span: id.span(),
-        kind: CatchTypeKind::Identifier(CatchTypeKindIdentifier { id: state.id(), span: id.span(), identifier: id })
+        kind: CatchTypeKind::Identifier(CatchTypeKindIdentifier {
+            id: state.id(),
+            span: id.span(),
+            identifier: id,
+        }),
     }
 }

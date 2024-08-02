@@ -1,5 +1,5 @@
-use crate::{internal::utils, ParserDiagnostic};
 use crate::state::State;
+use crate::{internal::utils, ParserDiagnostic};
 use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
@@ -29,9 +29,9 @@ pub fn data_type(state: &mut State) -> DataType {
             ty
         }
     };
-    
+
     let end = state.stream.previous().span;
-    
+
     DataType::new(state.id(), kind, Span::new(start.start, end.end))
 }
 
@@ -65,7 +65,11 @@ pub fn optional_data_type(state: &mut State) -> Option<DataType> {
 
     let end = state.stream.previous().span;
 
-    Some(DataType::new(state.id(), kind, Span::new(start.start, end.end)))
+    Some(DataType::new(
+        state.id(),
+        kind,
+        Span::new(start.start, end.end),
+    ))
 }
 
 fn dnf(state: &mut State) -> Type<Name> {
@@ -80,17 +84,19 @@ fn dnf(state: &mut State) -> Type<Name> {
             utils::skip_right_parenthesis(state);
 
             intersection(state, union, false)
-        },
+        }
         TokenKind::Ampersand => {
             let intersection = intersection(state, ty, true);
 
             utils::skip_right_parenthesis(state);
 
             union(state, intersection, false)
-        },
+        }
         _ => {
             state.diagnostic(
-                ParserDiagnostic::UnexpectedToken { token: *state.stream.current() },
+                ParserDiagnostic::UnexpectedToken {
+                    token: *state.stream.current(),
+                },
                 Severity::Error,
                 state.stream.current().span,
             );
@@ -147,7 +153,9 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
         TokenKind::Enum | TokenKind::From => {
             state.stream.next();
 
-            Some(Type::Named(state.maybe_resolve_identifier(*current, UseKind::Normal)))
+            Some(Type::Named(
+                state.maybe_resolve_identifier(*current, UseKind::Normal),
+            ))
         }
         TokenKind::Identifier => {
             let id = state.symbol_table.resolve(current.symbol.unwrap()).unwrap();
@@ -170,7 +178,9 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
                 b"false" => Some(Type::False),
                 b"array" => Some(Type::Array),
                 b"callable" => Some(Type::Callable),
-                _ => Some(Type::Named(state.maybe_resolve_identifier(*current, UseKind::Normal))),
+                _ => Some(Type::Named(
+                    state.maybe_resolve_identifier(*current, UseKind::Normal),
+                )),
             }
         }
         TokenKind::FullyQualifiedIdentifier => {
@@ -179,8 +189,13 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
             let symbol = current.symbol.unwrap();
             let resolved = state.strip_leading_namespace_qualifier(symbol);
 
-            Some(Type::Named(Name::resolved(state.id(), resolved, symbol, current.span)))
-        },
+            Some(Type::Named(Name::resolved(
+                state.id(),
+                resolved,
+                symbol,
+                current.span,
+            )))
+        }
         TokenKind::QualifiedIdentifier => {
             state.stream.next();
 
@@ -192,7 +207,7 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
     }
 }
 
-fn simple_data_type(state: &mut State) -> Type<Name> {    
+fn simple_data_type(state: &mut State) -> Type<Name> {
     match optional_simple_data_type(state) {
         Some(ty) => ty,
         None => {

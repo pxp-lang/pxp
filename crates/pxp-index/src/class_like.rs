@@ -1,4 +1,6 @@
-use pxp_ast::{ClassModifierGroup, ConstantModifierGroup, MethodModifierGroup, Name, PropertyModifierGroup};
+use pxp_ast::{
+    ClassModifierGroup, ConstantModifierGroup, MethodModifierGroup, Name, PropertyModifierGroup,
+};
 use pxp_symbol::Symbol;
 use pxp_type::Type;
 

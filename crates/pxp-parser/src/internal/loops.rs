@@ -3,8 +3,8 @@ use crate::internal::blocks;
 use crate::internal::utils;
 use crate::state::State;
 use crate::statement;
-use pxp_ast::*;
 use pxp_ast::StatementKind;
+use pxp_ast::*;
 use pxp_span::Span;
 use pxp_span::Spanned;
 use pxp_token::Token;
@@ -93,7 +93,7 @@ pub fn foreach_statement(state: &mut State) -> StatementKind {
     };
 
     StatementKind::Foreach(ForeachStatement {
-         id: state.id(), 
+        id: state.id(),
         span: Span::combine(foreach, body.span()),
         foreach,
         left_parenthesis,
@@ -120,14 +120,11 @@ pub fn for_statement(state: &mut State) -> StatementKind {
             utils::comma_separated_no_trailing(state, &expressions::create, TokenKind::SemiColon)
         });
 
-        let r#loop = utils::comma_separated_no_trailing(
-            state,
-            &expressions::create,
-            TokenKind::RightParen,
-        );
+        let r#loop =
+            utils::comma_separated_no_trailing(state, &expressions::create, TokenKind::RightParen);
 
         ForStatementIterator {
-             id: state.id(), 
+            id: state.id(),
             span: Span::combine(initializations.span(), r#loop.span()),
             initializations,
             initializations_semicolon,
@@ -162,7 +159,7 @@ pub fn for_statement(state: &mut State) -> StatementKind {
     };
 
     StatementKind::For(ForStatement {
-         id: state.id(), 
+        id: state.id(),
         span: Span::combine(r#for, body.span()),
         r#for,
         left_parenthesis,
@@ -185,7 +182,7 @@ pub fn do_while_statement(state: &mut State) -> StatementKind {
         });
 
     StatementKind::DoWhile(DoWhileStatement {
-         id: state.id(), 
+        id: state.id(),
         span: Span::combine(r#do, right_parenthesis),
         r#do,
         body,
@@ -228,7 +225,7 @@ pub fn while_statement(state: &mut State) -> StatementKind {
     };
 
     StatementKind::While(WhileStatement {
-         id: state.id(), 
+        id: state.id(),
         span: Span::combine(r#while, body.span()),
         r#while,
         left_parenthesis,
@@ -244,7 +241,7 @@ pub fn continue_statement(state: &mut State) -> StatementKind {
     let ending = utils::skip_ending(state);
 
     StatementKind::Continue(ContinueStatement {
-         id: state.id(), 
+        id: state.id(),
         span: Span::combine(r#continue, ending.span()),
         r#continue,
         level,
@@ -258,7 +255,7 @@ pub fn break_statement(state: &mut State) -> StatementKind {
     let ending = utils::skip_ending(state);
 
     StatementKind::Break(BreakStatement {
-         id: state.id(), 
+        id: state.id(),
         span: Span::combine(r#break, ending.span()),
         r#break,
         level,
@@ -288,7 +285,7 @@ fn loop_level(state: &mut State) -> Level {
 
         return Level::Literal(LiteralLevel {
             id: state.id(),
-            literal: Literal::new(state.id(), LiteralKind::Integer, *current, current.span)
+            literal: Literal::new(state.id(), LiteralKind::Integer, *current, current.span),
         });
     }
 

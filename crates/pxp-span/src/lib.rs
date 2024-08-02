@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Default, Serialize, Deserialize, Hash)]
 pub struct Span {
@@ -55,7 +55,10 @@ impl<T: Spanned> Spanned for Vec<T> {
         if self.is_empty() {
             Span::default()
         } else {
-            Span::new(self.first().unwrap().span().start, self.last().unwrap().span().end)
+            Span::new(
+                self.first().unwrap().span().start,
+                self.last().unwrap().span().end,
+            )
         }
     }
 }

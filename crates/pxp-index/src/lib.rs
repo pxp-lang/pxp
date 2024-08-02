@@ -1,18 +1,18 @@
-use std::collections::HashMap;
 use class_like::ClassLike;
 use constant::Constant;
 use function::Function;
 use pxp_symbol::Symbol;
+use std::collections::HashMap;
 
 mod class_like;
+mod constant;
+mod function;
+mod indexer;
 mod parameter;
 mod reflection;
-mod indexer;
-mod function;
-mod constant;
 
-pub use reflection::*;
 pub use indexer::Indexer;
+pub use reflection::*;
 
 #[derive(Debug, Clone, Default)]
 pub struct Index {
@@ -43,14 +43,26 @@ impl Index {
     }
 
     pub fn get_class(&self, name: Symbol) -> Option<ReflectionClass> {
-        self.classes.get(&name).map(|class| ReflectionClass { class, index: self })
+        self.classes
+            .get(&name)
+            .map(|class| ReflectionClass { class, index: self })
     }
 
     pub fn get_function(&self, name: Symbol) -> Option<ReflectionFunction> {
-        self.functions.get(&name).map(|function| ReflectionFunction { function, index: self })
+        self.functions
+            .get(&name)
+            .map(|function| ReflectionFunction {
+                function,
+                index: self,
+            })
     }
 
     pub fn get_constant(&self, name: Symbol) -> Option<ReflectionConstant> {
-        self.constants.get(&name).map(|constant| ReflectionConstant { constant, index: self })
+        self.constants
+            .get(&name)
+            .map(|constant| ReflectionConstant {
+                constant,
+                index: self,
+            })
     }
 }

@@ -1,4 +1,3 @@
-use pxp_span::Spanned;
 use crate::internal::attributes;
 use crate::internal::blocks;
 use crate::internal::classes;
@@ -18,13 +17,14 @@ use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
 use internal::literals::expect_literal;
-use pxp_ast::*;
 use pxp_ast::Statement;
+use pxp_ast::*;
 use pxp_ast::{StatementKind, StaticVar};
 use pxp_diagnostics::Diagnostic;
 use pxp_lexer::stream::TokenStream;
 use pxp_lexer::Lexer;
 use pxp_span::Span;
+use pxp_span::Spanned;
 use pxp_symbol::SymbolTable;
 use pxp_token::OpenTagKind;
 use pxp_token::Token;
@@ -42,11 +42,11 @@ use pxp_ast::ReturnStatement;
 use pxp_ast::ShortOpeningTagStatement;
 use pxp_ast::StaticStatement;
 
+mod diagnostics;
 mod expressions;
 mod internal;
 mod macros;
 mod state;
-mod diagnostics;
 
 pub use diagnostics::ParserDiagnostic;
 
@@ -56,10 +56,7 @@ pub struct ParseResult {
     pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
 }
 
-pub fn parse<B: Sized + AsRef<[u8]>>(
-    input: &B,
-    symbol_table: &mut SymbolTable,
-) -> ParseResult {
+pub fn parse<B: Sized + AsRef<[u8]>>(input: &B, symbol_table: &mut SymbolTable) -> ParseResult {
     let mut lexer = Lexer::new(input, symbol_table);
     let tokens = match lexer.tokenize() {
         Ok(tokens) => tokens,
@@ -101,7 +98,8 @@ fn top_level_statement(state: &mut State) -> Statement {
 
                     state.stream.next();
 
-                    let (span, content) = if let TokenKind::InlineHtml = state.stream.current().kind {
+                    let (span, content) = if let TokenKind::InlineHtml = state.stream.current().kind
+                    {
                         let content = *state.stream.current();
                         state.stream.next();
                         (Span::combine(start, content.span), Some(content))
@@ -109,7 +107,11 @@ fn top_level_statement(state: &mut State) -> Statement {
                         (start, None)
                     };
 
-                    StatementKind::HaltCompiler(HaltCompilerStatement { id: state.id(), span, content })
+                    StatementKind::HaltCompiler(HaltCompilerStatement {
+                        id: state.id(),
+                        span,
+                        content,
+                    })
                 }
                 _ => unreachable!(),
             };
@@ -161,16 +163,14 @@ fn statement(state: &mut State) -> Statement {
                         let ending_span = ending.span();
 
                         let span = Span::combine(start_span, ending_span);
-                        let kind =
-                            StatementKind::Expression(ExpressionStatement { id: state.id(), span, expression, ending });
-                            
-
-                        return Statement::new(
-                            state.id(),
-                            kind,
+                        let kind = StatementKind::Expression(ExpressionStatement {
+                            id: state.id(),
                             span,
-                            comments,
-                        );
+                            expression,
+                            ending,
+                        });
+
+                        return Statement::new(state.id(), kind, span, comments);
                     }
 
                     functions::function(state)
@@ -188,9 +188,9 @@ fn statement(state: &mut State) -> Statement {
                     id: state.id(),
                     span: Span::combine(start, ending_span),
                     expression,
-                    ending
+                    ending,
                 })
-            },
+            }
         }
     } else {
         match &current.kind {
@@ -198,25 +198,37 @@ fn statement(state: &mut State) -> Statement {
                 let span = current.span;
                 state.stream.next();
 
-                StatementKind::EchoOpeningTag(EchoOpeningTagStatement { id: state.id(), span })
+                StatementKind::EchoOpeningTag(EchoOpeningTagStatement {
+                    id: state.id(),
+                    span,
+                })
             }
             TokenKind::OpenTag(OpenTagKind::Full) => {
                 let span = current.span;
                 state.stream.next();
 
-                StatementKind::FullOpeningTag(FullOpeningTagStatement { id: state.id(), span })
+                StatementKind::FullOpeningTag(FullOpeningTagStatement {
+                    id: state.id(),
+                    span,
+                })
             }
             TokenKind::OpenTag(OpenTagKind::Short) => {
                 let span = current.span;
                 state.stream.next();
 
-                StatementKind::ShortOpeningTag(ShortOpeningTagStatement { id: state.id(), span })
+                StatementKind::ShortOpeningTag(ShortOpeningTagStatement {
+                    id: state.id(),
+                    span,
+                })
             }
             TokenKind::CloseTag => {
                 let span = current.span;
                 state.stream.next();
 
-                StatementKind::ClosingTag(ClosingTagStatement { id: state.id(), span })
+                StatementKind::ClosingTag(ClosingTagStatement {
+                    id: state.id(),
+                    span,
+                })
             }
             TokenKind::Abstract => classes::parse(state),
             TokenKind::Readonly if peek.kind != TokenKind::LeftParen => classes::parse(state),
@@ -246,15 +258,14 @@ fn statement(state: &mut State) -> Statement {
 
                         let span = Span::combine(start_span, ending_span);
 
-                        let kind =
-                            StatementKind::Expression(ExpressionStatement { id: state.id(), span, expression, ending });
-
-                        return Statement::new(
-                            state.id(),
-                            kind,
+                        let kind = StatementKind::Expression(ExpressionStatement {
+                            id: state.id(),
                             span,
-                            comments,
-                        );
+                            expression,
+                            ending,
+                        });
+
+                        return Statement::new(state.id(), kind, span, comments);
                     }
 
                     functions::function(state)
@@ -313,7 +324,11 @@ fn statement(state: &mut State) -> Statement {
                     TokenKind::SemiColon => {
                         let span = utils::skip_semicolon(state);
 
-                        DeclareBody::Noop(DeclareBodyNoop { id: state.id(), span, semicolon: span })
+                        DeclareBody::Noop(DeclareBodyNoop {
+                            id: state.id(),
+                            span,
+                            semicolon: span,
+                        })
                     }
                     TokenKind::LeftBrace => {
                         let start = utils::skip_left_brace(state);
@@ -342,7 +357,7 @@ fn statement(state: &mut State) -> Statement {
                             colon: start,
                             statements,
                             enddeclare,
-                            semicolon
+                            semicolon,
                         })
                     }
                     _ => {
@@ -393,7 +408,7 @@ fn statement(state: &mut State) -> Statement {
                     span,
                     global,
                     variables,
-                    semicolon
+                    semicolon,
                 })
             }
             TokenKind::Static if matches!(peek.kind, TokenKind::Variable) => {
@@ -435,13 +450,22 @@ fn statement(state: &mut State) -> Statement {
                 let semicolon = utils::skip_semicolon(state);
                 let span = Span::combine(current.span, semicolon);
 
-                StatementKind::Static(StaticStatement { id: state.id(), span, vars, semicolon })
+                StatementKind::Static(StaticStatement {
+                    id: state.id(),
+                    span,
+                    vars,
+                    semicolon,
+                })
             }
             TokenKind::InlineHtml => {
                 let html = *state.stream.current();
                 state.stream.next();
 
-                StatementKind::InlineHtml(InlineHtmlStatement { id: state.id(), span: html.span, html })
+                StatementKind::InlineHtml(InlineHtmlStatement {
+                    id: state.id(),
+                    span: html.span,
+                    html,
+                })
             }
             TokenKind::Do => loops::do_while_statement(state),
             TokenKind::While => loops::while_statement(state),
@@ -483,7 +507,7 @@ fn statement(state: &mut State) -> Statement {
                 let end = ending.span();
 
                 StatementKind::Echo(EchoStatement {
-                    id: state.id(), 
+                    id: state.id(),
                     span: Span::combine(echo, end),
                     echo,
                     values,
@@ -520,12 +544,12 @@ fn statement(state: &mut State) -> Statement {
                 let ending = utils::skip_ending(state);
 
                 StatementKind::Expression(ExpressionStatement {
-                    id: state.id(), 
+                    id: state.id(),
                     span: Span::combine(expression.span, ending.span()),
                     expression,
-                    ending
+                    ending,
                 })
-            },
+            }
         }
     };
 

@@ -1,9 +1,9 @@
 use std::{env::args, path::Path, process::exit};
 
 use discoverer::discover;
+use pxp_ast::visitor::Visitor;
 use pxp_parser::parse;
 use pxp_symbol::SymbolTable;
-use pxp_ast::visitor::Visitor;
 
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();

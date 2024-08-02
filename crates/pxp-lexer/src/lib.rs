@@ -1135,7 +1135,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
             match self.state.source.read(3) {
                 [b'\\', b'"' | b'\\' | b'$', ..] => {
                     self.state.source.skip(2);
-                },
+                }
                 [b'$', b'{', ..] => {
                     buffer_span = Some(self.state.source.span());
                     self.state.source.start_token();

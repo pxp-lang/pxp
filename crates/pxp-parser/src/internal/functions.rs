@@ -6,10 +6,10 @@ use crate::internal::parameters;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
-use pxp_ast::*;
 use pxp_ast::Expression;
 use pxp_ast::ExpressionKind;
 use pxp_ast::StatementKind;
+use pxp_ast::*;
 use pxp_span::Span;
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
@@ -55,35 +55,35 @@ pub fn anonymous_function(state: &mut State) -> Expression {
 
         let left_parenthesis = utils::skip_left_parenthesis(state);
         let variables = utils::comma_separated::<ClosureUseVariable>(
-                state,
-                &|state| {
-                    let use_comments = state.stream.comments();
-                    let current = state.stream.current();
-                    let use_ampersand = if current.kind == TokenKind::Ampersand {
-                        state.stream.next();
-        
-                        Some(current.span)
-                    } else {
-                        None
-                    };
-        
-                    let var = variables::simple_variable(state);
-        
-                    ClosureUseVariable {
-                         id: state.id(), 
-                        span: var.span,
-                        comments: use_comments,
-                        variable: var,
-                        ampersand: use_ampersand,
-                    }
-                },
-                TokenKind::RightParen,
-            );
+            state,
+            &|state| {
+                let use_comments = state.stream.comments();
+                let current = state.stream.current();
+                let use_ampersand = if current.kind == TokenKind::Ampersand {
+                    state.stream.next();
+
+                    Some(current.span)
+                } else {
+                    None
+                };
+
+                let var = variables::simple_variable(state);
+
+                ClosureUseVariable {
+                    id: state.id(),
+                    span: var.span,
+                    comments: use_comments,
+                    variable: var,
+                    ampersand: use_ampersand,
+                }
+            },
+            TokenKind::RightParen,
+        );
 
         let right_parenthesis = utils::skip_right_parenthesis(state);
 
         Some(ClosureUse {
-             id: state.id(), 
+            id: state.id(),
             span: Span::combine(current.span, right_parenthesis),
             comments: state.stream.comments(),
             r#use: current.span,
@@ -100,7 +100,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
         let data_type = data_type::data_type(state);
 
         Some(ReturnType {
-             id: state.id(), 
+            id: state.id(),
             span: Span::combine(colon, data_type.span),
             colon,
             data_type,
@@ -115,7 +115,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
     let right_brace = utils::skip_right_brace(state);
 
     let body = FunctionBody {
-         id: state.id(), 
+        id: state.id(),
         span: Span::combine(left_brace, right_brace),
         comments: body_comments,
         left_brace,
@@ -128,7 +128,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
     Expression::new(
         state.id(),
         ExpressionKind::Closure(ClosureExpression {
-             id: state.id(), 
+            id: state.id(),
             span: Span::combine(function, body.span),
             comments,
             attributes,
@@ -173,9 +173,9 @@ pub fn arrow_function(state: &mut State) -> Expression {
     let return_type = if state.stream.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
         let data_type = data_type::data_type(state);
-        
+
         Some(ReturnType {
-             id: state.id(), 
+            id: state.id(),
             span: Span::combine(colon, data_type.span),
             colon,
             data_type,
@@ -192,7 +192,7 @@ pub fn arrow_function(state: &mut State) -> Expression {
     Expression::new(
         state.id(),
         ExpressionKind::ArrowFunction(ArrowFunctionExpression {
-             id: state.id(), 
+            id: state.id(),
             span: Span::combine(r#fn, end_span),
             comments,
             attributes,
@@ -235,7 +235,7 @@ pub fn function(state: &mut State) -> StatementKind {
         let data_type = data_type::data_type(state);
 
         Some(ReturnType {
-             id: state.id(), 
+            id: state.id(),
             span: Span::combine(colon, data_type.span),
             colon,
             data_type,
@@ -250,7 +250,7 @@ pub fn function(state: &mut State) -> StatementKind {
     let right_brace = utils::skip_right_brace(state);
 
     let body = FunctionBody {
-         id: state.id(), 
+        id: state.id(),
         span: Span::combine(left_brace, right_brace),
         comments: body_comments,
         left_brace,
@@ -259,7 +259,7 @@ pub fn function(state: &mut State) -> StatementKind {
     };
 
     StatementKind::Function(FunctionStatement {
-         id: state.id(), 
+        id: state.id(),
         span: Span::combine(function, body.span),
         comments,
         function,
@@ -301,7 +301,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
             let right_brace = utils::skip_right_brace(state);
 
             let body = MethodBody {
-                 id: state.id(), 
+                id: state.id(),
                 span: Span::combine(left_brace, right_brace),
                 comments: body_comments,
                 left_brace,
@@ -310,7 +310,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
             };
 
             return Method::ConcreteConstructor(ConcreteConstructor {
-                 id: state.id(), 
+                id: state.id(),
                 span: Span::combine(function, body.span),
                 comments,
                 attributes,
@@ -325,7 +325,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
             let semicolon = utils::skip_semicolon(state);
 
             Method::AbstractConstructor(AbstractConstructor {
-                 id: state.id(), 
+                id: state.id(),
                 span: Span::combine(function, semicolon),
                 comments,
                 attributes,
@@ -343,9 +343,9 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
     let return_type = if state.stream.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
         let data_type = data_type::data_type(state);
-        
+
         Some(ReturnType {
-             id: state.id(), 
+            id: state.id(),
             span: Span::combine(colon, data_type.span),
             colon,
             data_type,
@@ -361,7 +361,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
         let right_brace = utils::skip_right_brace(state);
 
         let body = MethodBody {
-             id: state.id(), 
+            id: state.id(),
             span: Span::combine(left_brace, right_brace),
             comments: body_comments,
             left_brace,
@@ -370,7 +370,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
         };
 
         Method::Concrete(ConcreteMethod {
-             id: state.id(), 
+            id: state.id(),
             span: Span::combine(function, body.span),
             comments,
             attributes,
@@ -384,9 +384,9 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
         })
     } else {
         let semicolon = utils::skip_semicolon(state);
-        
+
         Method::Abstract(AbstractMethod {
-             id: state.id(), 
+            id: state.id(),
             span: Span::combine(function, semicolon),
             comments,
             attributes,

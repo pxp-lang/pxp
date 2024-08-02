@@ -15,14 +15,22 @@ pub fn class_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ClassMod
             TokenKind::Final => Some(ClassModifier::Final(*span)),
             TokenKind::Abstract => Some(ClassModifier::Abstract(*span)),
             _ => {
-                state.diagnostic(ParserDiagnostic::InvalidClassModifier, Severity::Error, *span);
+                state.diagnostic(
+                    ParserDiagnostic::InvalidClassModifier,
+                    Severity::Error,
+                    *span,
+                );
 
                 None
             }
         })
         .collect::<Vec<ClassModifier>>();
 
-    let group = ClassModifierGroup { id: state.id(),  span: modifiers.span(), modifiers };
+    let group = ClassModifierGroup {
+        id: state.id(),
+        span: modifiers.span(),
+        modifiers,
+    };
 
     if group.has_abstract() && group.has_final() {
         let start = input.first().unwrap().0;
@@ -62,7 +70,11 @@ pub fn method_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> MethodM
         })
         .collect::<Vec<MethodModifier>>();
 
-    let group = MethodModifierGroup { id: state.id(),  span: modifiers.span(), modifiers };
+    let group = MethodModifierGroup {
+        id: state.id(),
+        span: modifiers.span(),
+        modifiers,
+    };
 
     if group.has_abstract() && group.has_final() {
         let start = input.first().unwrap().0;
@@ -101,7 +113,11 @@ pub fn property_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Prope
         })
         .collect::<Vec<PropertyModifier>>();
 
-    PropertyModifierGroup { id: state.id(),  span: modifiers.span(), modifiers }
+    PropertyModifierGroup {
+        id: state.id(),
+        span: modifiers.span(),
+        modifiers,
+    }
 }
 
 #[inline(always)]
@@ -128,7 +144,11 @@ pub fn promoted_property_group(
         })
         .collect::<Vec<PromotedPropertyModifier>>();
 
-    PromotedPropertyModifierGroup {  id: state.id(), span: modifiers.span(), modifiers }
+    PromotedPropertyModifierGroup {
+        id: state.id(),
+        span: modifiers.span(),
+        modifiers,
+    }
 }
 
 pub fn constant_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ConstantModifierGroup {
@@ -151,7 +171,11 @@ pub fn constant_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Const
         })
         .collect::<Vec<ConstantModifier>>();
 
-    let group = ConstantModifierGroup { id: state.id(),  span: modifiers.span(), modifiers };
+    let group = ConstantModifierGroup {
+        id: state.id(),
+        span: modifiers.span(),
+        modifiers,
+    };
 
     if group.has_final() && group.has_private() {
         let start = input.first().unwrap().0;

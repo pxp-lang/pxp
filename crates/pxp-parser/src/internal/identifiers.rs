@@ -13,7 +13,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
 
             let symbol = current.symbol.unwrap();
 
-            SimpleIdentifier::new(state.id(),symbol, current.span)
+            SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         TokenKind::Enum | TokenKind::From => {
             state.stream.next();
@@ -150,7 +150,10 @@ pub fn name(state: &mut State) -> SimpleIdentifier {
             let span = state.stream.current().span;
 
             state.diagnostic(
-                ParserDiagnostic::ExpectedToken { expected: vec![TokenKind::Identifier, TokenKind::QualifiedIdentifier], found: *state.stream.current() },
+                ParserDiagnostic::ExpectedToken {
+                    expected: vec![TokenKind::Identifier, TokenKind::QualifiedIdentifier],
+                    found: *state.stream.current(),
+                },
                 Severity::Error,
                 span,
             );
