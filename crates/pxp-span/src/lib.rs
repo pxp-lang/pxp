@@ -22,6 +22,18 @@ impl Span {
     pub fn combine(start: Span, end: Span) -> Span {
         Span::new(start.start, end.end)
     }
+
+    pub fn contains_offset(&self, offset: ByteOffset) -> bool {
+        offset >= self.start && offset < self.end
+    }
+
+    pub fn is_before_offset(&self, offset: ByteOffset) -> bool {
+        self.end <= offset
+    }
+
+    pub fn is_after_offset(&self, offset: ByteOffset) -> bool {
+        self.start >= offset
+    }
 }
 
 pub type ByteOffset = usize;

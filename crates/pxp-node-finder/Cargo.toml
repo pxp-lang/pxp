@@ -1,0 +1,14 @@
+[package]
+name = "pxp-node-finder"
+version = "0.1.0"
+edition = "2021"
+license-file.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+pxp-ast = { version = "0.1.0", path = "../pxp-ast" }
+pxp-span = { version = "0.1.0", path = "../pxp-span" }
+
+[dev-dependencies]
+pxp-parser = { path = "../pxp-parser" }
+pxp-symbol = { path = "../pxp-symbol" }

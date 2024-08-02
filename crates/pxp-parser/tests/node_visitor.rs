@@ -1,4 +1,4 @@
-use pxp_ast::visitor::{NodeVisitor, NodeVisitorEscapeHatch};
+use pxp_ast::{visitor::{NodeVisitor, NodeVisitorEscapeHatch}, Node};
 use pxp_parser::parse;
 use pxp_symbol::SymbolTable;
 
@@ -7,13 +7,13 @@ struct TestVisitor {
 }
 
 impl NodeVisitor for TestVisitor {
-    fn enter(&mut self, node: &pxp_ast::Node) -> NodeVisitorEscapeHatch {
+    fn enter(&mut self, node: &Node) -> NodeVisitorEscapeHatch {
         self.output.push(format!("Enter {}", node.name()));
 
         NodeVisitorEscapeHatch::Continue
     }
 
-    fn leave(&mut self, node: &pxp_ast::Node) -> NodeVisitorEscapeHatch {
+    fn leave(&mut self, node: &Node) -> NodeVisitorEscapeHatch {
         self.output.push(format!("Leave {}", node.name()));
 
         NodeVisitorEscapeHatch::Continue
