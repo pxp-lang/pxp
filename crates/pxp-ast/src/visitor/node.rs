@@ -8,7 +8,9 @@ pub trait NodeVisitor {
     fn visit(&mut self, node: &Node) {
         self.enter(node);
 
-        // TODO: Traverse children of the node here.
+        for child in node.children() {
+            self.visit(&child);
+        }
 
         self.leave(node);
     }
