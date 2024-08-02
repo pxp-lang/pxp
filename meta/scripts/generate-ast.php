@@ -215,6 +215,24 @@ foreach ($ast as $node => $structure) {
     $output .= "    }\n\n";
 }
 
+$output .= "pub fn name(&self) -> &'static str {\n";
+$output .= "    match &self.kind {\n";
+
+foreach ($ast as $node => $structure) {
+    if ($node === 'NodeId') {
+        continue;
+    }
+
+    if (isset($structure['node']) && $structure['node'] === false) {
+        continue;
+    }
+
+    $output .= "    NodeKind::{$node}(_) => \"{$node}\",\n";
+}
+
+$output .= "    }\n";
+$output .= "}\n";
+
 $output .= "pub fn children(&self) -> Vec<Node> {\n";
 $output .= "    let mut children: Vec<Node> = Vec::new();\n";
 $output .= "    match &self.kind {\n";
