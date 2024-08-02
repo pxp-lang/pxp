@@ -56,7 +56,7 @@ mod tests {
         let (result, offset) = parse_with_offset_indicator(&r#"
         <?php
 
-        echo (new A)->^^
+        echo (new A)->§
         "#);
 
         let node = NodeFinder::find_at_byte_offset(&result.ast[..], offset);
@@ -65,8 +65,8 @@ mod tests {
     }
 
     fn parse_with_offset_indicator(input: &str) -> (ParseResult, ByteOffset) {
-        let offset = input.find("^^").unwrap();
-        let input = input.replace("^^", "");
+        let offset = input.find("§").unwrap() + 1;
+        let input = input.replace("§", "");
         let result = parse(&input, SymbolTable::the());
 
         (result, offset)
