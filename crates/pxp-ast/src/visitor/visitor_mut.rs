@@ -29,6 +29,14 @@ pub trait VisitorMut {
         walk_expression_kind_mut(self, node);
     }
 
+    fn visit_static_expression(&mut self, node: &mut StaticExpression) {}
+
+    fn visit_self_expression(&mut self, node: &mut SelfExpression) {}
+
+    fn visit_parent_expression(&mut self, node: &mut ParentExpression) {}
+
+    fn visit_comment_statement(&mut self, node: &mut CommentStatement) {}
+
     fn visit_inline_html_statement(&mut self, node: &mut InlineHtmlStatement) {}
 
     fn visit_full_opening_tag_statement(&mut self, node: &mut FullOpeningTagStatement) {}
@@ -279,7 +287,13 @@ pub trait VisitorMut {
         walk_match_arm_mut(self, node);
     }
 
-    fn visit_magic_constant_expression(&mut self, node: &mut MagicConstantExpression) {}
+    fn visit_magic_constant_expression(&mut self, node: &mut MagicConstantExpression) {
+        walk_magic_constant_expression_mut(self, node);
+    }
+
+    fn visit_magic_constant_kind(&mut self, node: &mut MagicConstantKind) {
+        walk_magic_constant_kind_mut(self, node);
+    }
 
     fn visit_string_part(&mut self, node: &mut StringPart) {
         walk_string_part_mut(self, node);
@@ -409,6 +423,14 @@ pub trait VisitorMut {
         walk_if_statement_body_mut(self, node);
     }
 
+    fn visit_if_statement_body_statement(&mut self, node: &mut IfStatementBodyStatement) {
+        walk_if_statement_body_statement_mut(self, node);
+    }
+
+    fn visit_if_statement_body_block(&mut self, node: &mut IfStatementBodyBlock) {
+        walk_if_statement_body_block_mut(self, node);
+    }
+
     fn visit_if_statement_else_if(&mut self, node: &mut IfStatementElseIf) {
         walk_if_statement_else_if_mut(self, node);
     }
@@ -439,6 +461,20 @@ pub trait VisitorMut {
 
     fn visit_declare_body(&mut self, node: &mut DeclareBody) {
         walk_declare_body_mut(self, node);
+    }
+
+    fn visit_declare_body_noop(&mut self, node: &mut DeclareBodyNoop) {}
+
+    fn visit_declare_body_braced(&mut self, node: &mut DeclareBodyBraced) {
+        walk_declare_body_braced_mut(self, node);
+    }
+
+    fn visit_declare_body_expression(&mut self, node: &mut DeclareBodyExpression) {
+        walk_declare_body_expression_mut(self, node);
+    }
+
+    fn visit_declare_body_block(&mut self, node: &mut DeclareBodyBlock) {
+        walk_declare_body_block_mut(self, node);
     }
 
     fn visit_declare_statement(&mut self, node: &mut DeclareStatement) {
@@ -587,8 +623,27 @@ pub trait VisitorMut {
         walk_foreach_statement_iterator_mut(self, node);
     }
 
+    fn visit_foreach_statement_iterator_value(&mut self, node: &mut ForeachStatementIteratorValue) {
+        walk_foreach_statement_iterator_value_mut(self, node);
+    }
+
+    fn visit_foreach_statement_iterator_key_and_value(
+        &mut self,
+        node: &mut ForeachStatementIteratorKeyAndValue,
+    ) {
+        walk_foreach_statement_iterator_key_and_value_mut(self, node);
+    }
+
     fn visit_foreach_statement_body(&mut self, node: &mut ForeachStatementBody) {
         walk_foreach_statement_body_mut(self, node);
+    }
+
+    fn visit_foreach_statement_body_statement(&mut self, node: &mut ForeachStatementBodyStatement) {
+        walk_foreach_statement_body_statement_mut(self, node);
+    }
+
+    fn visit_foreach_statement_body_block(&mut self, node: &mut ForeachStatementBodyBlock) {
+        walk_foreach_statement_body_block_mut(self, node);
     }
 
     fn visit_for_statement(&mut self, node: &mut ForStatement) {
@@ -603,6 +658,14 @@ pub trait VisitorMut {
         walk_for_statement_body_mut(self, node);
     }
 
+    fn visit_for_statement_body_statement(&mut self, node: &mut ForStatementBodyStatement) {
+        walk_for_statement_body_statement_mut(self, node);
+    }
+
+    fn visit_for_statement_body_block(&mut self, node: &mut ForStatementBodyBlock) {
+        walk_for_statement_body_block_mut(self, node);
+    }
+
     fn visit_do_while_statement(&mut self, node: &mut DoWhileStatement) {
         walk_do_while_statement_mut(self, node);
     }
@@ -615,9 +678,23 @@ pub trait VisitorMut {
         walk_while_statement_body_mut(self, node);
     }
 
+    fn visit_while_statement_body_statement(&mut self, node: &mut WhileStatementBodyStatement) {
+        walk_while_statement_body_statement_mut(self, node);
+    }
+
+    fn visit_while_statement_body_block(&mut self, node: &mut WhileStatementBodyBlock) {
+        walk_while_statement_body_block_mut(self, node);
+    }
+
     fn visit_level(&mut self, node: &mut Level) {
         walk_level_mut(self, node);
     }
+
+    fn visit_literal_level(&mut self, node: &mut LiteralLevel) {
+        walk_literal_level_mut(self, node);
+    }
+
+    fn visit_parenthesized_level(&mut self, node: &mut ParenthesizedLevel) {}
 
     fn visit_break_statement(&mut self, node: &mut BreakStatement) {
         walk_break_statement_mut(self, node);
@@ -749,6 +826,14 @@ pub trait VisitorMut {
         walk_property_entry_kind_mut(self, node);
     }
 
+    fn visit_uninitialized_property_entry(&mut self, node: &mut UninitializedPropertyEntry) {
+        walk_uninitialized_property_entry_mut(self, node);
+    }
+
+    fn visit_initialized_property_entry(&mut self, node: &mut InitializedPropertyEntry) {
+        walk_initialized_property_entry_mut(self, node);
+    }
+
     fn visit_trait_body(&mut self, node: &mut TraitBody) {
         walk_trait_body_mut(self, node);
     }
@@ -769,12 +854,38 @@ pub trait VisitorMut {
         walk_trait_usage_adaptation_kind_mut(self, node);
     }
 
+    fn visit_trait_usage_adaptation_alias(&mut self, node: &mut TraitUsageAdaptationAlias) {
+        walk_trait_usage_adaptation_alias_mut(self, node);
+    }
+
+    fn visit_trait_usage_adaptation_visibility(
+        &mut self,
+        node: &mut TraitUsageAdaptationVisibility,
+    ) {
+        walk_trait_usage_adaptation_visibility_mut(self, node);
+    }
+
+    fn visit_trait_usage_adaptation_precedence(
+        &mut self,
+        node: &mut TraitUsageAdaptationPrecedence,
+    ) {
+        walk_trait_usage_adaptation_precedence_mut(self, node);
+    }
+
     fn visit_catch_type(&mut self, node: &mut CatchType) {
         walk_catch_type_mut(self, node);
     }
 
     fn visit_catch_type_kind(&mut self, node: &mut CatchTypeKind) {
         walk_catch_type_kind_mut(self, node);
+    }
+
+    fn visit_catch_type_kind_identifier(&mut self, node: &mut CatchTypeKindIdentifier) {
+        walk_catch_type_kind_identifier_mut(self, node);
+    }
+
+    fn visit_catch_type_kind_union(&mut self, node: &mut CatchTypeKindUnion) {
+        walk_catch_type_kind_union_mut(self, node);
     }
 
     fn visit_try_statement(&mut self, node: &mut TryStatement) {

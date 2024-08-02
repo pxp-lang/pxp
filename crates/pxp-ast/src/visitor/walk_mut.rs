@@ -129,6 +129,9 @@ pub fn walk_expression_kind_mut<V: VisitorMut + ?Sized>(
             visitor.visit_static_property_fetch_expression(inner)
         }
         ExpressionKind::ConstantFetch(inner) => visitor.visit_constant_fetch_expression(inner),
+        ExpressionKind::Static(inner) => visitor.visit_static_expression(inner),
+        ExpressionKind::Self_(inner) => visitor.visit_self_expression(inner),
+        ExpressionKind::Parent(inner) => visitor.visit_parent_expression(inner),
         ExpressionKind::ShortArray(inner) => visitor.visit_short_array_expression(inner),
         ExpressionKind::Array(inner) => visitor.visit_array_expression(inner),
         ExpressionKind::List(inner) => visitor.visit_list_expression(inner),
@@ -606,6 +609,31 @@ pub fn walk_match_arm_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Ma
     visitor.visit_expression(&mut node.body);
 }
 
+pub fn walk_magic_constant_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut MagicConstantExpression,
+) {
+    visitor.visit_magic_constant_kind(&mut node.kind);
+}
+
+pub fn walk_magic_constant_kind_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut MagicConstantKind,
+) {
+    match node {
+        MagicConstantKind::Directory => {}
+        MagicConstantKind::File => {}
+        MagicConstantKind::Line => {}
+        MagicConstantKind::Function => {}
+        MagicConstantKind::Class => {}
+        MagicConstantKind::Method => {}
+        MagicConstantKind::Namespace => {}
+        MagicConstantKind::Trait => {}
+        MagicConstantKind::CompilerHaltOffset => {}
+        _ => {}
+    }
+}
+
 pub fn walk_string_part_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut StringPart) {
     match node {
         StringPart::Literal(inner) => visitor.visit_literal_string_part(inner),
@@ -872,42 +900,39 @@ pub fn walk_if_statement_body_mut<V: VisitorMut + ?Sized>(
     node: &mut IfStatementBody,
 ) {
     match node {
-        IfStatementBody::Statement {
-            span,
-            statement,
-            elseifs,
-            r#else,
-        } => {
-            visitor.visit_statement(statement);
-            for item in elseifs {
-                visitor.visit_if_statement_else_if(item);
-            }
-            if let Some(item) = r#else {
-                visitor.visit_if_statement_else(item);
-            }
-        }
-        IfStatementBody::Block {
-            span,
-            colon,
-            statements,
-            elseifs,
-            r#else,
-            endif,
-            ending,
-        } => {
-            for item in statements {
-                visitor.visit_statement(item);
-            }
-            for item in elseifs {
-                visitor.visit_if_statement_else_if_block(item);
-            }
-            if let Some(item) = r#else {
-                visitor.visit_if_statement_else_block(item);
-            }
-            visitor.visit_ending(ending);
-        }
+        IfStatementBody::Statement(inner) => visitor.visit_if_statement_body_statement(inner),
+        IfStatementBody::Block(inner) => visitor.visit_if_statement_body_block(inner),
         _ => {}
     }
+}
+
+pub fn walk_if_statement_body_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut IfStatementBodyStatement,
+) {
+    visitor.visit_statement(&mut node.statement);
+    for item in &mut node.elseifs {
+        visitor.visit_if_statement_else_if(item);
+    }
+    if let Some(item) = &mut node.r#else {
+        visitor.visit_if_statement_else(item);
+    }
+}
+
+pub fn walk_if_statement_body_block_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut IfStatementBodyBlock,
+) {
+    for item in &mut node.statements {
+        visitor.visit_statement(item);
+    }
+    for item in &mut node.elseifs {
+        visitor.visit_if_statement_else_if_block(item);
+    }
+    if let Some(item) = &mut node.r#else {
+        visitor.visit_if_statement_else_block(item);
+    }
+    visitor.visit_ending(&mut node.ending);
 }
 
 pub fn walk_if_statement_else_if_mut<V: VisitorMut + ?Sized>(
@@ -962,36 +987,36 @@ pub fn walk_declare_entry_group_mut<V: VisitorMut + ?Sized>(
 
 pub fn walk_declare_body_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut DeclareBody) {
     match node {
-        DeclareBody::Noop { span, semicolon } => {}
-        DeclareBody::Braced {
-            span,
-            left_brace,
-            statements,
-            right_brace,
-        } => {
-            for item in statements {
-                visitor.visit_statement(item);
-            }
-        }
-        DeclareBody::Expression {
-            span,
-            expression,
-            semicolon,
-        } => {
-            visitor.visit_expression(expression);
-        }
-        DeclareBody::Block {
-            span,
-            colon,
-            statements,
-            enddeclare,
-            semicolon,
-        } => {
-            for item in statements {
-                visitor.visit_statement(item);
-            }
-        }
+        DeclareBody::Noop(inner) => visitor.visit_declare_body_noop(inner),
+        DeclareBody::Braced(inner) => visitor.visit_declare_body_braced(inner),
+        DeclareBody::Expression(inner) => visitor.visit_declare_body_expression(inner),
+        DeclareBody::Block(inner) => visitor.visit_declare_body_block(inner),
         _ => {}
+    }
+}
+
+pub fn walk_declare_body_braced_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut DeclareBodyBraced,
+) {
+    for item in &mut node.statements {
+        visitor.visit_statement(item);
+    }
+}
+
+pub fn walk_declare_body_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut DeclareBodyExpression,
+) {
+    visitor.visit_expression(&mut node.expression);
+}
+
+pub fn walk_declare_body_block_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut DeclareBodyBlock,
+) {
+    for item in &mut node.statements {
+        visitor.visit_statement(item);
     }
 }
 
@@ -1350,31 +1375,31 @@ pub fn walk_foreach_statement_iterator_mut<V: VisitorMut + ?Sized>(
     node: &mut ForeachStatementIterator,
 ) {
     match node {
-        ForeachStatementIterator::Value {
-            span,
-            expression,
-            r#as,
-            ampersand,
-            value,
-        } => {
-            visitor.visit_expression(expression);
-            visitor.visit_expression(value);
+        ForeachStatementIterator::Value(inner) => {
+            visitor.visit_foreach_statement_iterator_value(inner)
         }
-        ForeachStatementIterator::KeyAndValue {
-            span,
-            expression,
-            r#as,
-            ampersand,
-            key,
-            double_arrow,
-            value,
-        } => {
-            visitor.visit_expression(expression);
-            visitor.visit_expression(key);
-            visitor.visit_expression(value);
+        ForeachStatementIterator::KeyAndValue(inner) => {
+            visitor.visit_foreach_statement_iterator_key_and_value(inner)
         }
         _ => {}
     }
+}
+
+pub fn walk_foreach_statement_iterator_value_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ForeachStatementIteratorValue,
+) {
+    visitor.visit_expression(&mut node.expression);
+    visitor.visit_expression(&mut node.value);
+}
+
+pub fn walk_foreach_statement_iterator_key_and_value_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ForeachStatementIteratorKeyAndValue,
+) {
+    visitor.visit_expression(&mut node.expression);
+    visitor.visit_expression(&mut node.key);
+    visitor.visit_expression(&mut node.value);
 }
 
 pub fn walk_foreach_statement_body_mut<V: VisitorMut + ?Sized>(
@@ -1382,23 +1407,29 @@ pub fn walk_foreach_statement_body_mut<V: VisitorMut + ?Sized>(
     node: &mut ForeachStatementBody,
 ) {
     match node {
-        ForeachStatementBody::Statement { span, statement } => {
-            visitor.visit_statement(statement);
+        ForeachStatementBody::Statement(inner) => {
+            visitor.visit_foreach_statement_body_statement(inner)
         }
-        ForeachStatementBody::Block {
-            span,
-            colon,
-            statements,
-            endforeach,
-            ending,
-        } => {
-            for item in statements {
-                visitor.visit_statement(item);
-            }
-            visitor.visit_ending(ending);
-        }
+        ForeachStatementBody::Block(inner) => visitor.visit_foreach_statement_body_block(inner),
         _ => {}
     }
+}
+
+pub fn walk_foreach_statement_body_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ForeachStatementBodyStatement,
+) {
+    visitor.visit_statement(&mut node.statement);
+}
+
+pub fn walk_foreach_statement_body_block_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ForeachStatementBodyBlock,
+) {
+    for item in &mut node.statements {
+        visitor.visit_statement(item);
+    }
+    visitor.visit_ending(&mut node.ending);
 }
 
 pub fn walk_for_statement_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut ForStatement) {
@@ -1426,23 +1457,27 @@ pub fn walk_for_statement_body_mut<V: VisitorMut + ?Sized>(
     node: &mut ForStatementBody,
 ) {
     match node {
-        ForStatementBody::Statement { span, statement } => {
-            visitor.visit_statement(statement);
-        }
-        ForStatementBody::Block {
-            span,
-            colon,
-            statements,
-            endfor,
-            ending,
-        } => {
-            for item in statements {
-                visitor.visit_statement(item);
-            }
-            visitor.visit_ending(ending);
-        }
+        ForStatementBody::Statement(inner) => visitor.visit_for_statement_body_statement(inner),
+        ForStatementBody::Block(inner) => visitor.visit_for_statement_body_block(inner),
         _ => {}
     }
+}
+
+pub fn walk_for_statement_body_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ForStatementBodyStatement,
+) {
+    visitor.visit_statement(&mut node.statement);
+}
+
+pub fn walk_for_statement_body_block_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ForStatementBodyBlock,
+) {
+    for item in &mut node.statements {
+        visitor.visit_statement(item);
+    }
+    visitor.visit_ending(&mut node.ending);
 }
 
 pub fn walk_do_while_statement_mut<V: VisitorMut + ?Sized>(
@@ -1466,36 +1501,39 @@ pub fn walk_while_statement_body_mut<V: VisitorMut + ?Sized>(
     node: &mut WhileStatementBody,
 ) {
     match node {
-        WhileStatementBody::Statement { span, statement } => {
-            visitor.visit_statement(statement);
-        }
-        WhileStatementBody::Block {
-            span,
-            colon,
-            statements,
-            endwhile,
-            ending,
-        } => {
-            for item in statements {
-                visitor.visit_statement(item);
-            }
-            visitor.visit_ending(ending);
-        }
+        WhileStatementBody::Statement(inner) => visitor.visit_while_statement_body_statement(inner),
+        WhileStatementBody::Block(inner) => visitor.visit_while_statement_body_block(inner),
         _ => {}
     }
 }
 
+pub fn walk_while_statement_body_statement_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut WhileStatementBodyStatement,
+) {
+    visitor.visit_statement(&mut node.statement);
+}
+
+pub fn walk_while_statement_body_block_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut WhileStatementBodyBlock,
+) {
+    for item in &mut node.statements {
+        visitor.visit_statement(item);
+    }
+    visitor.visit_ending(&mut node.ending);
+}
+
 pub fn walk_level_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Level) {
     match node {
-        Level::Literal(inner) => visitor.visit_literal(inner),
-        Level::Parenthesized {
-            span,
-            left_parenthesis,
-            level,
-            right_parenthesis,
-        } => {}
+        Level::Literal(inner) => visitor.visit_literal_level(inner),
+        Level::Parenthesized(inner) => visitor.visit_parenthesized_level(inner),
         _ => {}
     }
+}
+
+pub fn walk_literal_level_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut LiteralLevel) {
+    visitor.visit_literal(&mut node.literal);
 }
 
 pub fn walk_break_statement_mut<V: VisitorMut + ?Sized>(
@@ -1609,11 +1647,15 @@ pub fn walk_arithmetic_operation_kind_mut<V: VisitorMut + ?Sized>(
     node: &mut ArithmeticOperationKind,
 ) {
     match node {
-        ArithmeticOperationKind::Addition { left, plus, right } => {
+        ArithmeticOperationKind::Addition {
+            left, plus, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::Subtraction { left, minus, right } => {
+        ArithmeticOperationKind::Subtraction {
+            left, minus, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
@@ -1621,11 +1663,14 @@ pub fn walk_arithmetic_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             asterisk,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::Division { left, slash, right } => {
+        ArithmeticOperationKind::Division {
+            left, slash, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
@@ -1633,30 +1678,41 @@ pub fn walk_arithmetic_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             percent,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::Exponentiation { left, pow, right } => {
+        ArithmeticOperationKind::Exponentiation {
+            left, pow, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::Negative { minus, right } => {
+        ArithmeticOperationKind::Negative { minus, right, .. } => {
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::Positive { plus, right } => {
+        ArithmeticOperationKind::Positive { plus, right, .. } => {
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::PreIncrement { increment, right } => {
+        ArithmeticOperationKind::PreIncrement {
+            increment, right, ..
+        } => {
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::PostIncrement { left, increment } => {
+        ArithmeticOperationKind::PostIncrement {
+            left, increment, ..
+        } => {
             visitor.visit_expression(left);
         }
-        ArithmeticOperationKind::PreDecrement { decrement, right } => {
+        ArithmeticOperationKind::PreDecrement {
+            decrement, right, ..
+        } => {
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::PostDecrement { left, decrement } => {
+        ArithmeticOperationKind::PostDecrement {
+            left, decrement, ..
+        } => {
             visitor.visit_expression(left);
         }
         _ => {}
@@ -1679,6 +1735,7 @@ pub fn walk_assignment_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1687,6 +1744,7 @@ pub fn walk_assignment_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             plus_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1695,6 +1753,7 @@ pub fn walk_assignment_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             minus_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1703,6 +1762,7 @@ pub fn walk_assignment_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             asterisk_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1711,6 +1771,7 @@ pub fn walk_assignment_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             slash_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1719,6 +1780,7 @@ pub fn walk_assignment_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             percent_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1727,6 +1789,7 @@ pub fn walk_assignment_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             pow_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1735,6 +1798,7 @@ pub fn walk_assignment_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             dot_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1743,6 +1807,7 @@ pub fn walk_assignment_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             ampersand_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1751,6 +1816,7 @@ pub fn walk_assignment_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             pipe_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1759,6 +1825,7 @@ pub fn walk_assignment_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             caret_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1767,6 +1834,7 @@ pub fn walk_assignment_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             left_shift_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1775,6 +1843,7 @@ pub fn walk_assignment_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             right_shift_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1783,6 +1852,7 @@ pub fn walk_assignment_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             coalesce_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1803,15 +1873,21 @@ pub fn walk_bitwise_operation_kind_mut<V: VisitorMut + ?Sized>(
     node: &mut BitwiseOperationKind,
 ) {
     match node {
-        BitwiseOperationKind::And { left, and, right } => {
+        BitwiseOperationKind::And {
+            left, and, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        BitwiseOperationKind::Or { left, or, right } => {
+        BitwiseOperationKind::Or {
+            left, or, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        BitwiseOperationKind::Xor { left, xor, right } => {
+        BitwiseOperationKind::Xor {
+            left, xor, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
@@ -1819,6 +1895,7 @@ pub fn walk_bitwise_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             left_shift,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1827,11 +1904,12 @@ pub fn walk_bitwise_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             right_shift,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        BitwiseOperationKind::Not { not, right } => {
+        BitwiseOperationKind::Not { not, right, .. } => {
             visitor.visit_expression(right);
         }
         _ => {}
@@ -1854,6 +1932,7 @@ pub fn walk_comparison_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             double_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1862,6 +1941,7 @@ pub fn walk_comparison_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             triple_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1870,6 +1950,7 @@ pub fn walk_comparison_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             bang_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1878,6 +1959,7 @@ pub fn walk_comparison_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             angled_left_right,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1886,6 +1968,7 @@ pub fn walk_comparison_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             bang_double_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1894,6 +1977,7 @@ pub fn walk_comparison_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             less_than,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1902,6 +1986,7 @@ pub fn walk_comparison_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             greater_than,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1910,6 +1995,7 @@ pub fn walk_comparison_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             less_than_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1918,6 +2004,7 @@ pub fn walk_comparison_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             greater_than_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1926,6 +2013,7 @@ pub fn walk_comparison_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             spaceship,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1950,6 +2038,7 @@ pub fn walk_logical_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             double_ampersand,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1958,22 +2047,29 @@ pub fn walk_logical_operation_kind_mut<V: VisitorMut + ?Sized>(
             left,
             double_pipe,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        LogicalOperationKind::Not { bang, right } => {
+        LogicalOperationKind::Not { bang, right, .. } => {
             visitor.visit_expression(right);
         }
-        LogicalOperationKind::LogicalAnd { left, and, right } => {
+        LogicalOperationKind::LogicalAnd {
+            left, and, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        LogicalOperationKind::LogicalOr { left, or, right } => {
+        LogicalOperationKind::LogicalOr {
+            left, or, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        LogicalOperationKind::LogicalXor { left, xor, right } => {
+        LogicalOperationKind::LogicalXor {
+            left, xor, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
@@ -2035,19 +2131,27 @@ pub fn walk_property_entry_kind_mut<V: VisitorMut + ?Sized>(
     node: &mut PropertyEntryKind,
 ) {
     match node {
-        PropertyEntryKind::Uninitialized { variable } => {
-            visitor.visit_simple_variable(variable);
+        PropertyEntryKind::Uninitialized(inner) => {
+            visitor.visit_uninitialized_property_entry(inner)
         }
-        PropertyEntryKind::Initialized {
-            variable,
-            equals,
-            value,
-        } => {
-            visitor.visit_simple_variable(variable);
-            visitor.visit_expression(value);
-        }
+        PropertyEntryKind::Initialized(inner) => visitor.visit_initialized_property_entry(inner),
         _ => {}
     }
+}
+
+pub fn walk_uninitialized_property_entry_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut UninitializedPropertyEntry,
+) {
+    visitor.visit_simple_variable(&mut node.variable);
+}
+
+pub fn walk_initialized_property_entry_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut InitializedPropertyEntry,
+) {
+    visitor.visit_simple_variable(&mut node.variable);
+    visitor.visit_expression(&mut node.value);
 }
 
 pub fn walk_trait_body_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut TraitBody) {
@@ -2088,46 +2192,52 @@ pub fn walk_trait_usage_adaptation_kind_mut<V: VisitorMut + ?Sized>(
     node: &mut TraitUsageAdaptationKind,
 ) {
     match node {
-        TraitUsageAdaptationKind::Alias {
-            r#trait,
-            method,
-            alias,
-            visibility,
-        } => {
-            if let Some(item) = r#trait {
-                visitor.visit_name(item);
-            }
-            visitor.visit_simple_identifier(method);
-            visitor.visit_simple_identifier(alias);
-            if let Some(item) = visibility {
-                visitor.visit_visibility_modifier(item);
-            }
+        TraitUsageAdaptationKind::Alias(inner) => visitor.visit_trait_usage_adaptation_alias(inner),
+        TraitUsageAdaptationKind::Visibility(inner) => {
+            visitor.visit_trait_usage_adaptation_visibility(inner)
         }
-        TraitUsageAdaptationKind::Visibility {
-            r#trait,
-            method,
-            visibility,
-        } => {
-            if let Some(item) = r#trait {
-                visitor.visit_name(item);
-            }
-            visitor.visit_simple_identifier(method);
-            visitor.visit_visibility_modifier(visibility);
-        }
-        TraitUsageAdaptationKind::Precedence {
-            r#trait,
-            method,
-            insteadof,
-        } => {
-            if let Some(item) = r#trait {
-                visitor.visit_name(item);
-            }
-            visitor.visit_simple_identifier(method);
-            for item in insteadof {
-                visitor.visit_simple_identifier(item);
-            }
+        TraitUsageAdaptationKind::Precedence(inner) => {
+            visitor.visit_trait_usage_adaptation_precedence(inner)
         }
         _ => {}
+    }
+}
+
+pub fn walk_trait_usage_adaptation_alias_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut TraitUsageAdaptationAlias,
+) {
+    if let Some(item) = &mut node.r#trait {
+        visitor.visit_name(item);
+    }
+    visitor.visit_simple_identifier(&mut node.method);
+    visitor.visit_simple_identifier(&mut node.alias);
+    if let Some(item) = &mut node.visibility {
+        visitor.visit_visibility_modifier(item);
+    }
+}
+
+pub fn walk_trait_usage_adaptation_visibility_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut TraitUsageAdaptationVisibility,
+) {
+    if let Some(item) = &mut node.r#trait {
+        visitor.visit_name(item);
+    }
+    visitor.visit_simple_identifier(&mut node.method);
+    visitor.visit_visibility_modifier(&mut node.visibility);
+}
+
+pub fn walk_trait_usage_adaptation_precedence_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut TraitUsageAdaptationPrecedence,
+) {
+    if let Some(item) = &mut node.r#trait {
+        visitor.visit_name(item);
+    }
+    visitor.visit_simple_identifier(&mut node.method);
+    for item in &mut node.insteadof {
+        visitor.visit_simple_identifier(item);
     }
 }
 
@@ -2137,15 +2247,25 @@ pub fn walk_catch_type_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut C
 
 pub fn walk_catch_type_kind_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut CatchTypeKind) {
     match node {
-        CatchTypeKind::Identifier { identifier } => {
-            visitor.visit_simple_identifier(identifier);
-        }
-        CatchTypeKind::Union { identifiers } => {
-            for item in identifiers {
-                visitor.visit_simple_identifier(item);
-            }
-        }
+        CatchTypeKind::Identifier(inner) => visitor.visit_catch_type_kind_identifier(inner),
+        CatchTypeKind::Union(inner) => visitor.visit_catch_type_kind_union(inner),
         _ => {}
+    }
+}
+
+pub fn walk_catch_type_kind_identifier_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut CatchTypeKindIdentifier,
+) {
+    visitor.visit_simple_identifier(&mut node.identifier);
+}
+
+pub fn walk_catch_type_kind_union_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut CatchTypeKindUnion,
+) {
+    for item in &mut node.identifiers {
+        visitor.visit_simple_identifier(item);
     }
 }
 

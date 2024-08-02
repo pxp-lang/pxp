@@ -126,6 +126,9 @@ pub fn walk_expression_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &Express
             visitor.visit_static_property_fetch_expression(inner)
         }
         ExpressionKind::ConstantFetch(inner) => visitor.visit_constant_fetch_expression(inner),
+        ExpressionKind::Static(inner) => visitor.visit_static_expression(inner),
+        ExpressionKind::Self_(inner) => visitor.visit_self_expression(inner),
+        ExpressionKind::Parent(inner) => visitor.visit_parent_expression(inner),
         ExpressionKind::ShortArray(inner) => visitor.visit_short_array_expression(inner),
         ExpressionKind::Array(inner) => visitor.visit_array_expression(inner),
         ExpressionKind::List(inner) => visitor.visit_list_expression(inner),
@@ -531,6 +534,28 @@ pub fn walk_match_arm<V: Visitor + ?Sized>(visitor: &mut V, node: &MatchArm) {
     visitor.visit_expression(&node.body);
 }
 
+pub fn walk_magic_constant_expression<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &MagicConstantExpression,
+) {
+    visitor.visit_magic_constant_kind(&node.kind);
+}
+
+pub fn walk_magic_constant_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &MagicConstantKind) {
+    match node {
+        MagicConstantKind::Directory => {}
+        MagicConstantKind::File => {}
+        MagicConstantKind::Line => {}
+        MagicConstantKind::Function => {}
+        MagicConstantKind::Class => {}
+        MagicConstantKind::Method => {}
+        MagicConstantKind::Namespace => {}
+        MagicConstantKind::Trait => {}
+        MagicConstantKind::CompilerHaltOffset => {}
+        _ => {}
+    }
+}
+
 pub fn walk_string_part<V: Visitor + ?Sized>(visitor: &mut V, node: &StringPart) {
     match node {
         StringPart::Literal(inner) => visitor.visit_literal_string_part(inner),
@@ -755,42 +780,39 @@ pub fn walk_if_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &IfStatemen
 
 pub fn walk_if_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &IfStatementBody) {
     match node {
-        IfStatementBody::Statement {
-            span,
-            statement,
-            elseifs,
-            r#else,
-        } => {
-            visitor.visit_statement(statement);
-            for item in elseifs {
-                visitor.visit_if_statement_else_if(item);
-            }
-            if let Some(item) = r#else {
-                visitor.visit_if_statement_else(item);
-            }
-        }
-        IfStatementBody::Block {
-            span,
-            colon,
-            statements,
-            elseifs,
-            r#else,
-            endif,
-            ending,
-        } => {
-            for item in statements {
-                visitor.visit_statement(item);
-            }
-            for item in elseifs {
-                visitor.visit_if_statement_else_if_block(item);
-            }
-            if let Some(item) = r#else {
-                visitor.visit_if_statement_else_block(item);
-            }
-            visitor.visit_ending(ending);
-        }
+        IfStatementBody::Statement(inner) => visitor.visit_if_statement_body_statement(inner),
+        IfStatementBody::Block(inner) => visitor.visit_if_statement_body_block(inner),
         _ => {}
     }
+}
+
+pub fn walk_if_statement_body_statement<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &IfStatementBodyStatement,
+) {
+    visitor.visit_statement(&node.statement);
+    for item in &node.elseifs {
+        visitor.visit_if_statement_else_if(item);
+    }
+    if let Some(item) = &node.r#else {
+        visitor.visit_if_statement_else(item);
+    }
+}
+
+pub fn walk_if_statement_body_block<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &IfStatementBodyBlock,
+) {
+    for item in &node.statements {
+        visitor.visit_statement(item);
+    }
+    for item in &node.elseifs {
+        visitor.visit_if_statement_else_if_block(item);
+    }
+    if let Some(item) = &node.r#else {
+        visitor.visit_if_statement_else_block(item);
+    }
+    visitor.visit_ending(&node.ending);
 }
 
 pub fn walk_if_statement_else_if<V: Visitor + ?Sized>(visitor: &mut V, node: &IfStatementElseIf) {
@@ -836,36 +858,30 @@ pub fn walk_declare_entry_group<V: Visitor + ?Sized>(visitor: &mut V, node: &Dec
 
 pub fn walk_declare_body<V: Visitor + ?Sized>(visitor: &mut V, node: &DeclareBody) {
     match node {
-        DeclareBody::Noop { span, semicolon } => {}
-        DeclareBody::Braced {
-            span,
-            left_brace,
-            statements,
-            right_brace,
-        } => {
-            for item in statements {
-                visitor.visit_statement(item);
-            }
-        }
-        DeclareBody::Expression {
-            span,
-            expression,
-            semicolon,
-        } => {
-            visitor.visit_expression(expression);
-        }
-        DeclareBody::Block {
-            span,
-            colon,
-            statements,
-            enddeclare,
-            semicolon,
-        } => {
-            for item in statements {
-                visitor.visit_statement(item);
-            }
-        }
+        DeclareBody::Noop(inner) => visitor.visit_declare_body_noop(inner),
+        DeclareBody::Braced(inner) => visitor.visit_declare_body_braced(inner),
+        DeclareBody::Expression(inner) => visitor.visit_declare_body_expression(inner),
+        DeclareBody::Block(inner) => visitor.visit_declare_body_block(inner),
         _ => {}
+    }
+}
+
+pub fn walk_declare_body_braced<V: Visitor + ?Sized>(visitor: &mut V, node: &DeclareBodyBraced) {
+    for item in &node.statements {
+        visitor.visit_statement(item);
+    }
+}
+
+pub fn walk_declare_body_expression<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &DeclareBodyExpression,
+) {
+    visitor.visit_expression(&node.expression);
+}
+
+pub fn walk_declare_body_block<V: Visitor + ?Sized>(visitor: &mut V, node: &DeclareBodyBlock) {
+    for item in &node.statements {
+        visitor.visit_statement(item);
     }
 }
 
@@ -1167,31 +1183,31 @@ pub fn walk_foreach_statement_iterator<V: Visitor + ?Sized>(
     node: &ForeachStatementIterator,
 ) {
     match node {
-        ForeachStatementIterator::Value {
-            span,
-            expression,
-            r#as,
-            ampersand,
-            value,
-        } => {
-            visitor.visit_expression(expression);
-            visitor.visit_expression(value);
+        ForeachStatementIterator::Value(inner) => {
+            visitor.visit_foreach_statement_iterator_value(inner)
         }
-        ForeachStatementIterator::KeyAndValue {
-            span,
-            expression,
-            r#as,
-            ampersand,
-            key,
-            double_arrow,
-            value,
-        } => {
-            visitor.visit_expression(expression);
-            visitor.visit_expression(key);
-            visitor.visit_expression(value);
+        ForeachStatementIterator::KeyAndValue(inner) => {
+            visitor.visit_foreach_statement_iterator_key_and_value(inner)
         }
         _ => {}
     }
+}
+
+pub fn walk_foreach_statement_iterator_value<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &ForeachStatementIteratorValue,
+) {
+    visitor.visit_expression(&node.expression);
+    visitor.visit_expression(&node.value);
+}
+
+pub fn walk_foreach_statement_iterator_key_and_value<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &ForeachStatementIteratorKeyAndValue,
+) {
+    visitor.visit_expression(&node.expression);
+    visitor.visit_expression(&node.key);
+    visitor.visit_expression(&node.value);
 }
 
 pub fn walk_foreach_statement_body<V: Visitor + ?Sized>(
@@ -1199,23 +1215,29 @@ pub fn walk_foreach_statement_body<V: Visitor + ?Sized>(
     node: &ForeachStatementBody,
 ) {
     match node {
-        ForeachStatementBody::Statement { span, statement } => {
-            visitor.visit_statement(statement);
+        ForeachStatementBody::Statement(inner) => {
+            visitor.visit_foreach_statement_body_statement(inner)
         }
-        ForeachStatementBody::Block {
-            span,
-            colon,
-            statements,
-            endforeach,
-            ending,
-        } => {
-            for item in statements {
-                visitor.visit_statement(item);
-            }
-            visitor.visit_ending(ending);
-        }
+        ForeachStatementBody::Block(inner) => visitor.visit_foreach_statement_body_block(inner),
         _ => {}
     }
+}
+
+pub fn walk_foreach_statement_body_statement<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &ForeachStatementBodyStatement,
+) {
+    visitor.visit_statement(&node.statement);
+}
+
+pub fn walk_foreach_statement_body_block<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &ForeachStatementBodyBlock,
+) {
+    for item in &node.statements {
+        visitor.visit_statement(item);
+    }
+    visitor.visit_ending(&node.ending);
 }
 
 pub fn walk_for_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &ForStatement) {
@@ -1240,23 +1262,27 @@ pub fn walk_for_statement_iterator<V: Visitor + ?Sized>(
 
 pub fn walk_for_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &ForStatementBody) {
     match node {
-        ForStatementBody::Statement { span, statement } => {
-            visitor.visit_statement(statement);
-        }
-        ForStatementBody::Block {
-            span,
-            colon,
-            statements,
-            endfor,
-            ending,
-        } => {
-            for item in statements {
-                visitor.visit_statement(item);
-            }
-            visitor.visit_ending(ending);
-        }
+        ForStatementBody::Statement(inner) => visitor.visit_for_statement_body_statement(inner),
+        ForStatementBody::Block(inner) => visitor.visit_for_statement_body_block(inner),
         _ => {}
     }
+}
+
+pub fn walk_for_statement_body_statement<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &ForStatementBodyStatement,
+) {
+    visitor.visit_statement(&node.statement);
+}
+
+pub fn walk_for_statement_body_block<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &ForStatementBodyBlock,
+) {
+    for item in &node.statements {
+        visitor.visit_statement(item);
+    }
+    visitor.visit_ending(&node.ending);
 }
 
 pub fn walk_do_while_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &DoWhileStatement) {
@@ -1271,36 +1297,39 @@ pub fn walk_while_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &WhileSt
 
 pub fn walk_while_statement_body<V: Visitor + ?Sized>(visitor: &mut V, node: &WhileStatementBody) {
     match node {
-        WhileStatementBody::Statement { span, statement } => {
-            visitor.visit_statement(statement);
-        }
-        WhileStatementBody::Block {
-            span,
-            colon,
-            statements,
-            endwhile,
-            ending,
-        } => {
-            for item in statements {
-                visitor.visit_statement(item);
-            }
-            visitor.visit_ending(ending);
-        }
+        WhileStatementBody::Statement(inner) => visitor.visit_while_statement_body_statement(inner),
+        WhileStatementBody::Block(inner) => visitor.visit_while_statement_body_block(inner),
         _ => {}
     }
 }
 
+pub fn walk_while_statement_body_statement<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &WhileStatementBodyStatement,
+) {
+    visitor.visit_statement(&node.statement);
+}
+
+pub fn walk_while_statement_body_block<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &WhileStatementBodyBlock,
+) {
+    for item in &node.statements {
+        visitor.visit_statement(item);
+    }
+    visitor.visit_ending(&node.ending);
+}
+
 pub fn walk_level<V: Visitor + ?Sized>(visitor: &mut V, node: &Level) {
     match node {
-        Level::Literal(inner) => visitor.visit_literal(inner),
-        Level::Parenthesized {
-            span,
-            left_parenthesis,
-            level,
-            right_parenthesis,
-        } => {}
+        Level::Literal(inner) => visitor.visit_literal_level(inner),
+        Level::Parenthesized(inner) => visitor.visit_parenthesized_level(inner),
         _ => {}
     }
+}
+
+pub fn walk_literal_level<V: Visitor + ?Sized>(visitor: &mut V, node: &LiteralLevel) {
+    visitor.visit_literal(&node.literal);
 }
 
 pub fn walk_break_statement<V: Visitor + ?Sized>(visitor: &mut V, node: &BreakStatement) {
@@ -1396,11 +1425,15 @@ pub fn walk_arithmetic_operation_kind<V: Visitor + ?Sized>(
     node: &ArithmeticOperationKind,
 ) {
     match node {
-        ArithmeticOperationKind::Addition { left, plus, right } => {
+        ArithmeticOperationKind::Addition {
+            left, plus, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::Subtraction { left, minus, right } => {
+        ArithmeticOperationKind::Subtraction {
+            left, minus, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
@@ -1408,11 +1441,14 @@ pub fn walk_arithmetic_operation_kind<V: Visitor + ?Sized>(
             left,
             asterisk,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::Division { left, slash, right } => {
+        ArithmeticOperationKind::Division {
+            left, slash, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
@@ -1420,30 +1456,41 @@ pub fn walk_arithmetic_operation_kind<V: Visitor + ?Sized>(
             left,
             percent,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::Exponentiation { left, pow, right } => {
+        ArithmeticOperationKind::Exponentiation {
+            left, pow, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::Negative { minus, right } => {
+        ArithmeticOperationKind::Negative { minus, right, .. } => {
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::Positive { plus, right } => {
+        ArithmeticOperationKind::Positive { plus, right, .. } => {
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::PreIncrement { increment, right } => {
+        ArithmeticOperationKind::PreIncrement {
+            increment, right, ..
+        } => {
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::PostIncrement { left, increment } => {
+        ArithmeticOperationKind::PostIncrement {
+            left, increment, ..
+        } => {
             visitor.visit_expression(left);
         }
-        ArithmeticOperationKind::PreDecrement { decrement, right } => {
+        ArithmeticOperationKind::PreDecrement {
+            decrement, right, ..
+        } => {
             visitor.visit_expression(right);
         }
-        ArithmeticOperationKind::PostDecrement { left, decrement } => {
+        ArithmeticOperationKind::PostDecrement {
+            left, decrement, ..
+        } => {
             visitor.visit_expression(left);
         }
         _ => {}
@@ -1466,6 +1513,7 @@ pub fn walk_assignment_operation_kind<V: Visitor + ?Sized>(
             left,
             equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1474,6 +1522,7 @@ pub fn walk_assignment_operation_kind<V: Visitor + ?Sized>(
             left,
             plus_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1482,6 +1531,7 @@ pub fn walk_assignment_operation_kind<V: Visitor + ?Sized>(
             left,
             minus_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1490,6 +1540,7 @@ pub fn walk_assignment_operation_kind<V: Visitor + ?Sized>(
             left,
             asterisk_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1498,6 +1549,7 @@ pub fn walk_assignment_operation_kind<V: Visitor + ?Sized>(
             left,
             slash_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1506,6 +1558,7 @@ pub fn walk_assignment_operation_kind<V: Visitor + ?Sized>(
             left,
             percent_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1514,6 +1567,7 @@ pub fn walk_assignment_operation_kind<V: Visitor + ?Sized>(
             left,
             pow_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1522,6 +1576,7 @@ pub fn walk_assignment_operation_kind<V: Visitor + ?Sized>(
             left,
             dot_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1530,6 +1585,7 @@ pub fn walk_assignment_operation_kind<V: Visitor + ?Sized>(
             left,
             ampersand_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1538,6 +1594,7 @@ pub fn walk_assignment_operation_kind<V: Visitor + ?Sized>(
             left,
             pipe_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1546,6 +1603,7 @@ pub fn walk_assignment_operation_kind<V: Visitor + ?Sized>(
             left,
             caret_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1554,6 +1612,7 @@ pub fn walk_assignment_operation_kind<V: Visitor + ?Sized>(
             left,
             left_shift_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1562,6 +1621,7 @@ pub fn walk_assignment_operation_kind<V: Visitor + ?Sized>(
             left,
             right_shift_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1570,6 +1630,7 @@ pub fn walk_assignment_operation_kind<V: Visitor + ?Sized>(
             left,
             coalesce_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1590,15 +1651,21 @@ pub fn walk_bitwise_operation_kind<V: Visitor + ?Sized>(
     node: &BitwiseOperationKind,
 ) {
     match node {
-        BitwiseOperationKind::And { left, and, right } => {
+        BitwiseOperationKind::And {
+            left, and, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        BitwiseOperationKind::Or { left, or, right } => {
+        BitwiseOperationKind::Or {
+            left, or, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        BitwiseOperationKind::Xor { left, xor, right } => {
+        BitwiseOperationKind::Xor {
+            left, xor, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
@@ -1606,6 +1673,7 @@ pub fn walk_bitwise_operation_kind<V: Visitor + ?Sized>(
             left,
             left_shift,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1614,11 +1682,12 @@ pub fn walk_bitwise_operation_kind<V: Visitor + ?Sized>(
             left,
             right_shift,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        BitwiseOperationKind::Not { not, right } => {
+        BitwiseOperationKind::Not { not, right, .. } => {
             visitor.visit_expression(right);
         }
         _ => {}
@@ -1641,6 +1710,7 @@ pub fn walk_comparison_operation_kind<V: Visitor + ?Sized>(
             left,
             double_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1649,6 +1719,7 @@ pub fn walk_comparison_operation_kind<V: Visitor + ?Sized>(
             left,
             triple_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1657,6 +1728,7 @@ pub fn walk_comparison_operation_kind<V: Visitor + ?Sized>(
             left,
             bang_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1665,6 +1737,7 @@ pub fn walk_comparison_operation_kind<V: Visitor + ?Sized>(
             left,
             angled_left_right,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1673,6 +1746,7 @@ pub fn walk_comparison_operation_kind<V: Visitor + ?Sized>(
             left,
             bang_double_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1681,6 +1755,7 @@ pub fn walk_comparison_operation_kind<V: Visitor + ?Sized>(
             left,
             less_than,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1689,6 +1764,7 @@ pub fn walk_comparison_operation_kind<V: Visitor + ?Sized>(
             left,
             greater_than,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1697,6 +1773,7 @@ pub fn walk_comparison_operation_kind<V: Visitor + ?Sized>(
             left,
             less_than_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1705,6 +1782,7 @@ pub fn walk_comparison_operation_kind<V: Visitor + ?Sized>(
             left,
             greater_than_equals,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1713,6 +1791,7 @@ pub fn walk_comparison_operation_kind<V: Visitor + ?Sized>(
             left,
             spaceship,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1737,6 +1816,7 @@ pub fn walk_logical_operation_kind<V: Visitor + ?Sized>(
             left,
             double_ampersand,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
@@ -1745,22 +1825,29 @@ pub fn walk_logical_operation_kind<V: Visitor + ?Sized>(
             left,
             double_pipe,
             right,
+            ..
         } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        LogicalOperationKind::Not { bang, right } => {
+        LogicalOperationKind::Not { bang, right, .. } => {
             visitor.visit_expression(right);
         }
-        LogicalOperationKind::LogicalAnd { left, and, right } => {
+        LogicalOperationKind::LogicalAnd {
+            left, and, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        LogicalOperationKind::LogicalOr { left, or, right } => {
+        LogicalOperationKind::LogicalOr {
+            left, or, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
-        LogicalOperationKind::LogicalXor { left, xor, right } => {
+        LogicalOperationKind::LogicalXor {
+            left, xor, right, ..
+        } => {
             visitor.visit_expression(left);
             visitor.visit_expression(right);
         }
@@ -1816,19 +1903,27 @@ pub fn walk_property_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &Property
 
 pub fn walk_property_entry_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &PropertyEntryKind) {
     match node {
-        PropertyEntryKind::Uninitialized { variable } => {
-            visitor.visit_simple_variable(variable);
+        PropertyEntryKind::Uninitialized(inner) => {
+            visitor.visit_uninitialized_property_entry(inner)
         }
-        PropertyEntryKind::Initialized {
-            variable,
-            equals,
-            value,
-        } => {
-            visitor.visit_simple_variable(variable);
-            visitor.visit_expression(value);
-        }
+        PropertyEntryKind::Initialized(inner) => visitor.visit_initialized_property_entry(inner),
         _ => {}
     }
+}
+
+pub fn walk_uninitialized_property_entry<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &UninitializedPropertyEntry,
+) {
+    visitor.visit_simple_variable(&node.variable);
+}
+
+pub fn walk_initialized_property_entry<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &InitializedPropertyEntry,
+) {
+    visitor.visit_simple_variable(&node.variable);
+    visitor.visit_expression(&node.value);
 }
 
 pub fn walk_trait_body<V: Visitor + ?Sized>(visitor: &mut V, node: &TraitBody) {
@@ -1866,46 +1961,52 @@ pub fn walk_trait_usage_adaptation_kind<V: Visitor + ?Sized>(
     node: &TraitUsageAdaptationKind,
 ) {
     match node {
-        TraitUsageAdaptationKind::Alias {
-            r#trait,
-            method,
-            alias,
-            visibility,
-        } => {
-            if let Some(item) = r#trait {
-                visitor.visit_name(item);
-            }
-            visitor.visit_simple_identifier(method);
-            visitor.visit_simple_identifier(alias);
-            if let Some(item) = visibility {
-                visitor.visit_visibility_modifier(item);
-            }
+        TraitUsageAdaptationKind::Alias(inner) => visitor.visit_trait_usage_adaptation_alias(inner),
+        TraitUsageAdaptationKind::Visibility(inner) => {
+            visitor.visit_trait_usage_adaptation_visibility(inner)
         }
-        TraitUsageAdaptationKind::Visibility {
-            r#trait,
-            method,
-            visibility,
-        } => {
-            if let Some(item) = r#trait {
-                visitor.visit_name(item);
-            }
-            visitor.visit_simple_identifier(method);
-            visitor.visit_visibility_modifier(visibility);
-        }
-        TraitUsageAdaptationKind::Precedence {
-            r#trait,
-            method,
-            insteadof,
-        } => {
-            if let Some(item) = r#trait {
-                visitor.visit_name(item);
-            }
-            visitor.visit_simple_identifier(method);
-            for item in insteadof {
-                visitor.visit_simple_identifier(item);
-            }
+        TraitUsageAdaptationKind::Precedence(inner) => {
+            visitor.visit_trait_usage_adaptation_precedence(inner)
         }
         _ => {}
+    }
+}
+
+pub fn walk_trait_usage_adaptation_alias<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &TraitUsageAdaptationAlias,
+) {
+    if let Some(item) = &node.r#trait {
+        visitor.visit_name(item);
+    }
+    visitor.visit_simple_identifier(&node.method);
+    visitor.visit_simple_identifier(&node.alias);
+    if let Some(item) = &node.visibility {
+        visitor.visit_visibility_modifier(item);
+    }
+}
+
+pub fn walk_trait_usage_adaptation_visibility<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &TraitUsageAdaptationVisibility,
+) {
+    if let Some(item) = &node.r#trait {
+        visitor.visit_name(item);
+    }
+    visitor.visit_simple_identifier(&node.method);
+    visitor.visit_visibility_modifier(&node.visibility);
+}
+
+pub fn walk_trait_usage_adaptation_precedence<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &TraitUsageAdaptationPrecedence,
+) {
+    if let Some(item) = &node.r#trait {
+        visitor.visit_name(item);
+    }
+    visitor.visit_simple_identifier(&node.method);
+    for item in &node.insteadof {
+        visitor.visit_simple_identifier(item);
     }
 }
 
@@ -1915,15 +2016,22 @@ pub fn walk_catch_type<V: Visitor + ?Sized>(visitor: &mut V, node: &CatchType) {
 
 pub fn walk_catch_type_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &CatchTypeKind) {
     match node {
-        CatchTypeKind::Identifier { identifier } => {
-            visitor.visit_simple_identifier(identifier);
-        }
-        CatchTypeKind::Union { identifiers } => {
-            for item in identifiers {
-                visitor.visit_simple_identifier(item);
-            }
-        }
+        CatchTypeKind::Identifier(inner) => visitor.visit_catch_type_kind_identifier(inner),
+        CatchTypeKind::Union(inner) => visitor.visit_catch_type_kind_union(inner),
         _ => {}
+    }
+}
+
+pub fn walk_catch_type_kind_identifier<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &CatchTypeKindIdentifier,
+) {
+    visitor.visit_simple_identifier(&node.identifier);
+}
+
+pub fn walk_catch_type_kind_union<V: Visitor + ?Sized>(visitor: &mut V, node: &CatchTypeKindUnion) {
+    for item in &node.identifiers {
+        visitor.visit_simple_identifier(item);
     }
 }
 

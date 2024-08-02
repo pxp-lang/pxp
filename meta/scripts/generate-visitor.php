@@ -129,10 +129,10 @@ class VisitorGenerator
                 }
                 
                 $function = rtrim($function, ', ');
-                $function .= " } => {\n";
+                $function .= ", .. } => {\n";
                 
                 foreach ($field as $subfield => $subtype) {
-                    if (in_array($subtype, ['CommentGroup', 'BackedEnumType', 'Type', 'Type<Name>', 'Span', 'Option<Span>', 'Symbol', 'Token', 'bool', 'NameQualification', '(Span, Span)', 'Level', 'Box<Level>'])) {
+                    if (in_array($subtype, ['Comment', 'CommentGroup', 'BackedEnumType', 'Type', 'Type<Name>', 'Span', 'Option<Span>', 'Symbol', 'Token', 'bool', 'NameQualification', '(Span, Span)', 'Level', 'Box<Level>'])) {
                         continue;
                     }
 
@@ -156,7 +156,11 @@ class VisitorGenerator
                 continue;
             }
 
-            $function .= $this->generateWalkLogicForType($field, $type, $template, prefix: true);
+            try {
+                $function .= $this->generateWalkLogicForType($field, $type, $template, prefix: true);
+            } catch (TypeError $e) {
+                dd($function, $field, $type, $e->getMessage());
+            }
         }
 
         return $function;
@@ -216,14 +220,14 @@ class VisitorGenerator
         return collect($fields)
             ->filter(function (mixed $field, string $key) {
                 // These are reserved keys.
-                if (in_array($key, ['as', 'derive', 'node'])) {
+                if (in_array($key, ['as', 'derive', 'node', 'children'])) {
                     return false;
                 }
 
                 if (is_string($field)) {
                     $stripped = $this->stripTypeToRoot($field);
 
-                    return !in_array($stripped, ['CommentGroup', 'BackedEnumType', 'Type', 'Type<Name>', 'Span', 'Option<Span>', 'Symbol', 'Token', 'bool', 'NameQualification', '(Span, Span)', 'Level', 'Box<Level>'], true);
+                    return !in_array($stripped, ['Comment', 'CommentGroup', 'BackedEnumType', 'Type', 'Type<Name>', 'Span', 'Option<Span>', 'Symbol', 'Token', 'bool', 'NameQualification', '(Span, Span)', 'Level', 'Box<Level>'], true);
                 }
 
                 return true;

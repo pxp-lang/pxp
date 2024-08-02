@@ -1,9 +1,9 @@
 use crate::{Node, NodeKind, Statement};
 
 pub trait NodeVisitor {
-    fn enter(&mut self, node: &Node) {}
+    fn enter(&mut self, _: &Node) {}
 
-    fn leave(&mut self, node: &Node) {}
+    fn leave(&mut self, _: &Node) {}
 
     fn visit(&mut self, node: &Node) {
         self.enter(node);
