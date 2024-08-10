@@ -39,3 +39,13 @@ bench-indexer:
     cargo build --release --bin index
     hyperfine --warmup=1 --runs=1 \
         --command-name="Indexer (Release)" "./target/release/index ./playground/laravel-framework --no-output"
+
+bench-visitor:
+    cargo build --release --bin visit
+    hyperfine --warmup=1 --runs=1 \
+        --command-name="Visitor (Release)" "./target/release/visit ./playground/laravel-framework --no-output"
+
+bench-node-visitor:
+    cargo build --release --bin node-visit
+    hyperfine --warmup=1 --runs=1 \
+        --command-name="Node Visitor (Release)" "./target/release/node-visit ./playground/laravel-framework --no-output"

@@ -1,7 +1,7 @@
 use std::{env::args, path::Path, process::exit};
 
 use discoverer::discover;
-use pxp_ast::visitor::Visitor;
+use pxp_ast::visitor::NodeVisitor;
 use pxp_parser::parse;
 use pxp_symbol::SymbolTable;
 
@@ -9,7 +9,7 @@ fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
 
     if args.is_empty() {
-        eprintln!("Usage: visit <path>");
+        eprintln!("Usage: parse <path> [--debug]");
         exit(1);
     }
 
@@ -49,11 +49,11 @@ fn main() {
             }
 
             let mut visitor = NullVisitor;
-            visitor.visit(&ast.ast);
+            visitor.traverse(&ast.ast);
         }
     }
 }
 
 struct NullVisitor;
 
-impl Visitor for NullVisitor {}
+impl NodeVisitor<'_> for NullVisitor {}

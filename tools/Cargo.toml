@@ -37,3 +37,8 @@ path = "bin/index.rs"
 [[bin]]
 name = "node-finder"
 path = "bin/node_finder.rs"
+
+
+[[bin]]
+name = "node-visit"
+path = "bin/node_visit.rs"
