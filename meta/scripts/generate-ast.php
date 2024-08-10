@@ -234,8 +234,8 @@ foreach ($ast as $node => $structure) {
 $output .= "    }\n";
 $output .= "}\n";
 
-$output .= "pub fn children(&self) -> Vec<Node> {\n";
-$output .= "    let mut children: Vec<Node> = Vec::new();\n";
+$output .= "pub fn children(&self) -> Vec<Node<'a>> {\n";
+$output .= "    let mut children: Vec<Node<'a>> = Vec::new();\n";
 $output .= "    match &self.kind {\n";
 
 foreach ($ast as $node => $structure) {

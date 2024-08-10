@@ -176,7 +176,7 @@
         ),
         span: Span {
             start: 7,
-            end: 40,
+            end: 19,
         },
         comments: CommentGroup {
             comments: [],

@@ -18,8 +18,8 @@ impl<'a> NodeFinder<'a> {
     }
 }
 
-impl<'a> NodeVisitor for NodeFinder<'a> {
-    fn enter(&mut self, node: &Node) -> NodeVisitorEscapeHatch {
+impl<'a> NodeVisitor<'a> for NodeFinder<'a> {
+    fn enter(&mut self, node: Node<'a>) -> NodeVisitorEscapeHatch {
         let span = node.span;
 
         // If the current node is before the offset we're interested in,
@@ -37,7 +37,7 @@ impl<'a> NodeVisitor for NodeFinder<'a> {
         // If the current node contains the offset we're interested in,
         // we should keep track of it and continue traversing the AST.
         if span.contains_offset(self.offset) {            
-            todo!()
+            self.found = Some(node.clone());
         }
 
         NodeVisitorEscapeHatch::Continue
@@ -46,6 +46,7 @@ impl<'a> NodeVisitor for NodeFinder<'a> {
 
 #[cfg(test)]
 mod tests {
+    use pxp_ast::ExpressionKind;
     use pxp_parser::{parse, ParseResult};
     use pxp_symbol::SymbolTable;
 
@@ -59,16 +60,22 @@ mod tests {
         echo (new A)->§
         "#);
 
-        let node = NodeFinder::find_at_byte_offset(&result.ast[..], offset);
+        let node = NodeFinder::find_at_byte_offset(&result.ast[..], offset).unwrap();
 
-        panic!("{:#?}", node);
+        assert!(node.is_property_fetch_expression());
+
+        let property_fetch = node.as_property_fetch_expression().unwrap();
+
+        assert!(
+            matches!(property_fetch.target.kind, ExpressionKind::Parenthesized(_))
+        );
     }
 
-    fn parse_with_offset_indicator(input: &str) -> (ParseResult, ByteOffset) {
+    fn parse_with_offset_indicator(input: &'static str) -> (ParseResult, ByteOffset) {
         let offset = input.find("§").unwrap() + 1;
         let input = input.replace("§", "");
         let result = parse(&input, SymbolTable::the());
 
         (result, offset)
-    }
+    } 
 }

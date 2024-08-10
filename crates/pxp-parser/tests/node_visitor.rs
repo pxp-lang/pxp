@@ -6,14 +6,14 @@ struct TestVisitor {
     output: Vec<String>,
 }
 
-impl NodeVisitor for TestVisitor {
-    fn enter(&mut self, node: &Node) -> NodeVisitorEscapeHatch {
+impl NodeVisitor<'_> for TestVisitor {
+    fn enter(&mut self, node: Node) -> NodeVisitorEscapeHatch {
         self.output.push(format!("Enter {}", node.name()));
 
         NodeVisitorEscapeHatch::Continue
     }
 
-    fn leave(&mut self, node: &Node) -> NodeVisitorEscapeHatch {
+    fn leave(&mut self, node: Node) -> NodeVisitorEscapeHatch {
         self.output.push(format!("Leave {}", node.name()));
 
         NodeVisitorEscapeHatch::Continue

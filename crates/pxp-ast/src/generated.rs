@@ -8628,8 +8628,8 @@ impl<'a> Node<'a> {
             NodeKind::StaticVar(_) => "StaticVar",
         }
     }
-    pub fn children(&self) -> Vec<Node> {
-        let mut children: Vec<Node> = Vec::new();
+    pub fn children(&self) -> Vec<Node<'a>> {
+        let mut children: Vec<Node<'a>> = Vec::new();
         match &self.kind {
             NodeKind::Statement(node) => {
                 let x = &node.kind;

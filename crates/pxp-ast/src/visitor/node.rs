@@ -7,21 +7,21 @@ pub enum NodeVisitorEscapeHatch {
     Continue,
 }
 
-pub trait NodeVisitor {
-    fn enter(&mut self, _: &Node) -> NodeVisitorEscapeHatch {
+pub trait NodeVisitor<'a> {
+    fn enter(&mut self, _: Node<'a>) -> NodeVisitorEscapeHatch {
         NodeVisitorEscapeHatch::Continue
     }
 
-    fn leave(&mut self, _: &Node) -> NodeVisitorEscapeHatch {
+    fn leave(&mut self, _: Node<'a>) -> NodeVisitorEscapeHatch {
         NodeVisitorEscapeHatch::Continue
     }
 
-    fn visit(&mut self, node: &Node) -> NodeVisitorEscapeHatch {
-        let escape = self.enter(node);
+    fn visit(&mut self, node: Node<'a>) -> NodeVisitorEscapeHatch {
+        let escape = self.enter(node.clone());
 
         if escape != NodeVisitorEscapeHatch::SkipChildren {
             for child in node.children() {
-                self.visit(&child);
+                self.visit(child);
             }
         }
 
@@ -29,12 +29,12 @@ pub trait NodeVisitor {
             return NodeVisitorEscapeHatch::Stop;
         }
 
-        self.leave(node)
+        self.leave(node) 
     }
 
-    fn traverse(&mut self, ast: &[Statement]) {
+    fn traverse(&mut self, ast: &'a [Statement]) {
         for statement in ast {
-            let escape = self.visit(&Node::new(
+            let escape = self.visit(Node::new(
                 statement.id,
                 NodeKind::Statement(statement),
                 statement.span,

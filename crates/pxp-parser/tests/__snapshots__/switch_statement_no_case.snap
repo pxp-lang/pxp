@@ -67,7 +67,7 @@
         ),
         span: Span {
             start: 7,
-            end: 27,
+            end: 0,
         },
         comments: CommentGroup {
             comments: [],
