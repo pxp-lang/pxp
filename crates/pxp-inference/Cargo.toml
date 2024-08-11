@@ -10,3 +10,7 @@ pxp-ast = { version = "0.1.0", path = "../pxp-ast" }
 pxp-index = { version = "0.1.0", path = "../pxp-index" }
 pxp-symbol = { version = "0.1.0", path = "../pxp-symbol" }
 pxp-type = { version = "0.1.0", path = "../pxp-type" }
+
+[dev-dependencies]
+pxp-node-finder = { path = "../pxp-node-finder" }
+pxp-parser = { path = "../pxp-parser" }

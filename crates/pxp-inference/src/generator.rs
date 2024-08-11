@@ -1,4 +1,5 @@
-use pxp_ast::{visitor::Visitor, Statement};
+use pxp_ast::{*, visitor::Visitor};
+use pxp_type::Type;
 
 use crate::TypeMap;
 
@@ -29,5 +30,16 @@ impl TypeMapGenerator {
 
 /// Handles traversing the AST and generating a `TypeMap`.
 impl Visitor for TypeMapGenerator {
+    fn visit_literal(&mut self, node: &Literal) {
+        self.map.types.insert(node.id(), match node.kind {
+            LiteralKind::String => Type::String,
+            LiteralKind::Integer => Type::Integer,
+            LiteralKind::Float => Type::Float,
+            _ => Type::Mixed,
+        });
+    }
 
+    fn visit_bool_expression(&mut self, node: &BoolExpression) {
+        self.map.types.insert(node.id(), Type::Boolean);
+    }
 }

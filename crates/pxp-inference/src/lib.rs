@@ -49,7 +49,54 @@ impl TypeMap {
         }
     }
 
+    /// Use the given `NodeId` to resolve the type of the node.
+    /// 
+    /// In cases where the type is not found, `Type::Mixed` is returned.
     pub fn resolve(&self, id: NodeId) -> &Type<Symbol> {
         self.types.get(&id).unwrap_or_else(|| &Type::Mixed)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use pxp_node_finder::NodeFinder;
+    use pxp_parser::parse;
+    use pxp_symbol::SymbolTable;
+
+    use super::*;
+
+    #[test]
+    fn string_literals() {
+        assert_eq!(infer("<?php 'Hello, world§';", None), Type::String);
+    }
+
+    #[test]
+    fn integer_literals() {
+        assert_eq!(infer("<?php 42§;", None), Type::Integer);
+    }
+
+    #[test]
+    fn float_literals() {
+        assert_eq!(infer("<?php 42.0§;", None), Type::Float);
+    }
+
+    #[test]
+    fn boolean_literals() {
+        assert_eq!(infer("<?php true§;", None), Type::Boolean);
+        assert_eq!(infer("<?php false§;", None), Type::Boolean);
+    }
+
+    /// Infer the type using the given input.
+    /// The cursor position (denoted by the § character) is used to determine the target node.
+    fn infer(input: &str, index: Option<Index>) -> Type<Symbol> {
+        let offset = input.find('§').expect("failed to locate cursor marker");
+        let input = input.replace('§', "");
+        let result = parse(&input, SymbolTable::the());
+        let index = index.unwrap_or_default();
+        let engine = InferenceEngine::new(&index);
+        let map = engine.map(&result.ast[..]);
+        let node = NodeFinder::find_at_byte_offset(&result.ast[..], offset).expect("failed to locate node");
+
+        map.resolve(node.id).clone()
     }
 }
