@@ -11,6 +11,14 @@ use pxp_type::Type;
 /// 
 /// This uses an `Index` to perform type inference based on the various structures
 /// that are discovered inside of a project or workspace.
+/// 
+/// The main usage of the type inference engine is inside of the static analyser and
+/// language server. That has directly impacted the design of this crate.
+/// 
+/// Generating a `TypeMap` is relatively low-cost, so when you need to provide a completion (for example),
+/// you can take the latest version of the AST, get the `TypeMap` and then for the same AST, get the
+/// type of `Node` that you are interested in. Using the same AST will ensure that the `NodeId` values
+/// are the same, making lookups cheap.
 #[derive(Debug, Clone, Copy)]
 pub struct InferenceEngine<'i> {
     index: &'i Index,
