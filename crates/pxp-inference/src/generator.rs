@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use pxp_ast::{*, visitor::Visitor};
 use pxp_symbol::Symbol;
 use pxp_type::Type;
-use visitor::{walk_assignment_operation_expression, walk_expression, walk_variable};
+use visitor::{walk_assignment_operation_expression, walk_expression, walk_function_statement, walk_variable};
 
 use crate::TypeMap;
 
@@ -79,6 +79,12 @@ impl TypeMapGenerator {
 
         self.map.clone()
     }
+
+    fn scoped(&mut self, f: impl FnOnce(&mut Self)) {
+        self.scopes.push();
+        f(self);
+        self.scopes.pop();
+    }
 }
 
 /// Handles traversing the AST and generating a `TypeMap`.
@@ -130,5 +136,11 @@ impl Visitor for TypeMapGenerator {
 
         self.scopes.scope_mut().insert(variable, ty.clone());
         self.map.insert(node.id(), ty.clone());
+    }
+
+    fn visit_function_statement(&mut self, node: &FunctionStatement) {
+        self.scoped(|this| {
+            walk_function_statement(this, node);
+        });
     }
 }

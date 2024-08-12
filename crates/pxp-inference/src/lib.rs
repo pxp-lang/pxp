@@ -107,6 +107,18 @@ mod tests {
         ", None), Type::Integer);
     }
 
+    #[test]
+    fn simple_variables_with_scope_change() {
+        assert_eq!(infer("<?php
+        $name = 'Ryan';
+
+        function name() {
+            $name = 123;
+        }
+
+        $name§;", None), Type::String);
+    }
+
     /// Infer the type using the given input.
     /// The cursor position (denoted by the § character) is used to determine the target node.
     fn infer(input: &str, index: Option<Index>) -> Type<Symbol> {
