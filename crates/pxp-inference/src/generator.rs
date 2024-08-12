@@ -44,15 +44,15 @@ impl ScopeStack {
 
 #[derive(Debug)]
 struct Scope {
-    variables: HashMap<Symbol, Type<Symbol>>,
+    variables: HashMap<Symbol, Type<Name>>,
 }
 
 impl Scope {
-    fn insert(&mut self, variable: Symbol, ty: Type<Symbol>) {
+    fn insert(&mut self, variable: Symbol, ty: Type<Name>) {
         self.variables.insert(variable, ty);
     }
 
-    fn get(&self, variable: Symbol) -> &Type<Symbol> {
+    fn get(&self, variable: Symbol) -> &Type<Name> {
         self.variables.get(&variable).unwrap_or_else(|| &Type::Mixed)
     }
 }
@@ -140,6 +140,12 @@ impl Visitor for TypeMapGenerator {
 
     fn visit_function_statement(&mut self, node: &FunctionStatement) {
         self.scoped(|this| {
+            // Insert function parameters into the current scope.
+            for parameter in node.parameters.iter() {
+                // FIXME: Make this look nicer...
+                this.scopes.scope_mut().insert(parameter.name.symbol, parameter.data_type.as_ref().map(|d| d.get_type().clone()).unwrap_or_else(|| Type::Mixed));
+            }
+
             walk_function_statement(this, node);
         });
     }

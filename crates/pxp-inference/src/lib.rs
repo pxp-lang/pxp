@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 mod generator;
 
-use pxp_ast::{Node, NodeId, Statement};
+use pxp_ast::{Name, Node, NodeId, Statement};
 use pxp_index::Index;
 use pxp_symbol::Symbol;
 use pxp_type::Type;
@@ -39,7 +39,7 @@ impl<'i> InferenceEngine<'i> {
 /// A map of `NodeId` values to their associated types.
 #[derive(Debug, Clone)]
 pub struct TypeMap {
-    types: HashMap<NodeId, Type<Symbol>>,
+    types: HashMap<NodeId, Type<Name>>,
 }
 
 impl TypeMap {
@@ -49,20 +49,21 @@ impl TypeMap {
         }
     }
 
-    pub(crate) fn insert(&mut self, id: NodeId, ty: Type<Symbol>) {
+    pub(crate) fn insert(&mut self, id: NodeId, ty: Type<Name>) {
         self.types.insert(id, ty);
     }
 
     /// Use the given `NodeId` to resolve the type of the node.
     /// 
     /// In cases where the type is not found, `Type::Mixed` is returned.
-    pub fn resolve(&self, id: NodeId) -> &Type<Symbol> {
+    pub fn resolve(&self, id: NodeId) -> &Type<Name> {
         self.types.get(&id).unwrap_or_else(|| &Type::Mixed)
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use pxp_ast::Name;
     use pxp_node_finder::NodeFinder;
     use pxp_parser::parse;
     use pxp_symbol::SymbolTable;
@@ -119,9 +120,18 @@ mod tests {
         $name§;", None), Type::String);
     }
 
+    #[test]
+    fn function_parameters() {
+        assert_eq!(infer("<?php
+        function greet(string $name) {
+            $name§;
+        }
+        ", None), Type::String);
+    }
+
     /// Infer the type using the given input.
     /// The cursor position (denoted by the § character) is used to determine the target node.
-    fn infer(input: &str, index: Option<Index>) -> Type<Symbol> {
+    fn infer(input: &str, index: Option<Index>) -> Type<Name> {
         let offset = input.find('§').expect("failed to locate cursor marker");
         let input = input.replace('§', "");
         let result = parse(&input, SymbolTable::the());
