@@ -17,6 +17,7 @@ pxp-index = { version = "0.1.0", path = "../crates/pxp-index" }
 indicatif = "0.17.8"
 pxp-ast = { version = "0.1.0", path = "../crates/pxp-ast" }
 pxp-node-finder = { version = "0.1.0", path = "../crates/pxp-node-finder" }
+pxp-inference = { version = "0.1.0", path = "../crates/pxp-inference" }
 
 [[bin]]
 name = "tokenise"
@@ -38,7 +39,10 @@ path = "bin/index.rs"
 name = "node-finder"
 path = "bin/node_finder.rs"
 
-
 [[bin]]
 name = "node-visit"
 path = "bin/node_visit.rs"
+
+[[bin]]
+name = "infer"
+path = "bin/infer.rs"

@@ -10,6 +10,9 @@ parse +args:
 node-finder +args:
     RUSTFLAGS=-Awarnings cargo run -q --package pxp-tools --bin node-finder --release -- {{args}}
 
+infer +args:
+    RUSTFLAGS=-Awarnings cargo run -q --package pxp-tools --bin infer --release -- {{args}}
+
 generate-ast:
     php ./meta/scripts/generate-ast.php
     cargo fmt --package pxp-ast

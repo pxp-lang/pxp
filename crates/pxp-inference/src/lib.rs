@@ -49,6 +49,10 @@ impl TypeMap {
         }
     }
 
+    pub(crate) fn insert(&mut self, id: NodeId, ty: Type<Symbol>) {
+        self.types.insert(id, ty);
+    }
+
     /// Use the given `NodeId` to resolve the type of the node.
     /// 
     /// In cases where the type is not found, `Type::Mixed` is returned.
@@ -84,6 +88,14 @@ mod tests {
     fn boolean_literals() {
         assert_eq!(infer("<?php true§;", None), Type::Boolean);
         assert_eq!(infer("<?php false§;", None), Type::Boolean);
+    }
+
+    #[test]
+    fn simple_variables_post_assignment() {
+        assert_eq!(infer("<?php
+        $name = 'Ryan';
+        $name§;
+        ", None), Type::String);
     }
 
     /// Infer the type using the given input.
