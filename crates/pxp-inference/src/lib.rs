@@ -98,6 +98,15 @@ mod tests {
         ", None), Type::String);
     }
 
+    #[test]
+    fn simple_variables_multi_assignments() {
+        assert_eq!(infer("<?php
+        $name = 'Ryan';
+        $name = 42;
+        $name§;
+        ", None), Type::Integer);
+    }
+
     /// Infer the type using the given input.
     /// The cursor position (denoted by the § character) is used to determine the target node.
     fn infer(input: &str, index: Option<Index>) -> Type<Symbol> {
