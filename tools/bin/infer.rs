@@ -1,4 +1,4 @@
-use pxp_index::Index;
+use pxp_index::{Index, Indexer};
 use pxp_inference::InferenceEngine;
 use pxp_node_finder::NodeFinder;
 use pxp_parser::parse;
@@ -14,7 +14,10 @@ fn main() {
     let result = parse(&input, SymbolTable::the());
     let node = NodeFinder::find_at_byte_offset(&result.ast, offset_marker);
 
-    let index = Index::new();
+    let mut indexer = Indexer::new();
+    indexer.index(&result.ast);
+    
+    let index = indexer.get_index();
     let inference_engine = InferenceEngine::new(&index);
     let map = inference_engine.map(&result.ast[..]);
 

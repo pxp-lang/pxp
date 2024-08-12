@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use pxp_ast::{*, visitor::Visitor};
+use pxp_index::Index;
 use pxp_symbol::Symbol;
 use pxp_type::Type;
 use visitor::{walk_assignment_operation_expression, walk_expression, walk_function_statement, walk_variable};
@@ -10,7 +11,8 @@ use crate::TypeMap;
 /// An internal set of methods for generating a `TypeMap` from an AST.
 /// 
 /// This is used internally by the `InferenceEngine` to generate a `TypeMap` from an AST.
-pub(super) struct TypeMapGenerator {
+pub(super) struct TypeMapGenerator<'i> {
+    index: &'i Index,
     map: TypeMap,
     scopes: ScopeStack,
 }
@@ -57,14 +59,15 @@ impl Scope {
     }
 }
 
-impl TypeMapGenerator {
-    pub fn new() -> Self {
+impl<'i> TypeMapGenerator<'i> {
+    pub fn new(index: &'i Index) -> Self {
         // We initialise the ScopeStack with a single `Scope` to
         // represent the global scope. This scope should never be popped.
         let mut scopes = ScopeStack::new();
         scopes.push();
 
         TypeMapGenerator {
+            index,
             map: TypeMap::new(),
             scopes,
         }
@@ -88,7 +91,7 @@ impl TypeMapGenerator {
 }
 
 /// Handles traversing the AST and generating a `TypeMap`.
-impl Visitor for TypeMapGenerator {
+impl Visitor for TypeMapGenerator<'_> {
     // All top-level expressions have the same type as their child.
     fn visit_expression(&mut self, node: &Expression) {
         walk_expression(self, node);
@@ -148,5 +151,27 @@ impl Visitor for TypeMapGenerator {
 
             walk_function_statement(this, node);
         });
+    }
+
+    fn visit_function_call_expression(&mut self, node: &FunctionCallExpression) {
+        // FIXME: Add support for calling `Closure` objects and `__invoke`able objects.
+        if ! matches!(node.target.kind, ExpressionKind::Name(_)) {
+            return;
+        }
+
+        let name = match node.target.kind {
+            ExpressionKind::Name(name) => name,
+            _ => unreachable!(),
+        };
+
+        let return_type = if name.is_resolved() {
+            let symbol = name.as_resolved().unwrap().resolved;
+
+            self.index.get_function(symbol).map(|f| f.get_return_type().clone()).unwrap_or_else(|| Type::Mixed)
+        } else {
+            todo!("do checks for resolved and unresolved names");
+        };
+
+        self.map.insert(node.id, return_type);
     }
 }

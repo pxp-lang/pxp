@@ -133,6 +133,10 @@ impl<'a, 'b> State<'a, 'b> {
         // we should just prepend the current namespace if the import map doesn't contain the first part.
         } else if kind == UseKind::Normal || token.kind == TokenKind::QualifiedIdentifier {
             Name::resolved(id, self.join_with_namespace(symbol), symbol, token.span)
+        // Unqualified names in the global namespace can be resolved without any imports, since we can
+        // only be referencing something else inside of the global namespace.
+        } else if (kind == UseKind::Function || kind == UseKind::Const) && token.kind == TokenKind::Identifier && self.namespace.is_none() {
+            Name::resolved(id, symbol, symbol, token.span)
         } else {
             Name::unresolved(id, symbol, token.kind.into(), token.span)
         }

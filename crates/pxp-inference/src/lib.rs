@@ -31,7 +31,7 @@ impl<'i> InferenceEngine<'i> {
 
     /// Generate a `TypeMap` from the given AST.
     pub fn map(&self, ast: &[Statement]) -> TypeMap {
-        let mut generator = generator::TypeMapGenerator::new(); 
+        let mut generator = generator::TypeMapGenerator::new(&self.index); 
         generator.generate(ast)
     }
 }
@@ -64,6 +64,7 @@ impl TypeMap {
 #[cfg(test)]
 mod tests {
     use pxp_ast::Name;
+    use pxp_index::Indexer;
     use pxp_node_finder::NodeFinder;
     use pxp_parser::parse;
     use pxp_symbol::SymbolTable;
@@ -129,13 +130,32 @@ mod tests {
         ", None), Type::String);
     }
 
+    #[test]
+    fn function_return_type() {
+        assert_eq!(infer("<?php
+        function greet(): string {
+            
+        }
+
+        $name = greet();
+        $name§;
+        ", None), Type::String);
+    }
+
     /// Infer the type using the given input.
     /// The cursor position (denoted by the § character) is used to determine the target node.
     fn infer(input: &str, index: Option<Index>) -> Type<Name> {
         let offset = input.find('§').expect("failed to locate cursor marker");
         let input = input.replace('§', "");
         let result = parse(&input, SymbolTable::the());
-        let index = index.unwrap_or_default();
+        let index = index.unwrap_or_else(|| {
+            let mut indexer = Indexer::new();
+            let ast = result.ast.to_vec();
+
+            indexer.index(&ast);
+            indexer.get_index().clone()
+        });
+        
         let engine = InferenceEngine::new(&index);
         let map = engine.map(&result.ast[..]);
         let node = NodeFinder::find_at_byte_offset(&result.ast[..], offset).expect("failed to locate node");
