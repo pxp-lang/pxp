@@ -1,5 +1,6 @@
 [package]
-name = "pxp-tools"
+name = "pxp-internal"
+description = "A set of internal tools for testing various parts of the PXP project."
 version = "0.1.0"
 edition = "2021"
 license-file.workspace = true
