@@ -11,7 +11,7 @@ impl Span {
         Self { start, end }
     }
 
-    pub fn len(&self) -> usize {
+    pub fn len(&self) -> ByteOffset {
         self.end - self.start
     }
 
@@ -41,22 +41,22 @@ pub type ByteOffset = usize;
 pub trait Spanned {
     fn span(&self) -> Span;
 
-    fn start_line(&self, source: &[u8]) -> usize {
+    fn start_line(&self, source: &[u8]) -> ByteOffset {
         let (line, _) = byte_offset_to_line_and_column(source, self.span().start);
         line
     }
 
-    fn start_column(&self, source: &[u8]) -> usize {
+    fn start_column(&self, source: &[u8]) -> ByteOffset {
         let (_, column) = byte_offset_to_line_and_column(source, self.span().start);
         column
     }
 
-    fn end_line(&self, source: &[u8]) -> usize {
+    fn end_line(&self, source: &[u8]) -> ByteOffset {
         let (line, _) = byte_offset_to_line_and_column(source, self.span().end);
         line
     }
 
-    fn end_column(&self, source: &[u8]) -> usize {
+    fn end_column(&self, source: &[u8]) -> ByteOffset {
         let (_, column) = byte_offset_to_line_and_column(source, self.span().end);
         column
     }
