@@ -54,7 +54,7 @@ mod tests {
 
     #[test]
     fn it_can_find_a_node_at_offset() {
-        let (result, offset) = parse_with_offset_indicator(&r#"
+        let (result, offset) = parse_with_offset_indicator(r#"
         <?php
 
         echo (new A)->§
@@ -72,8 +72,8 @@ mod tests {
     }
 
     fn parse_with_offset_indicator(input: &'static str) -> (ParseResult, ByteOffset) {
-        let offset = input.find("§").unwrap() + 1;
-        let input = input.replace("§", "");
+        let offset = input.find('§').unwrap() + 1;
+        let input = input.replace('§', "");
         let result = parse(&input);
 
         (result, offset)

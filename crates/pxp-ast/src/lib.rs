@@ -9,7 +9,6 @@ pub use id::HasId;
 use pxp_span::{Span, Spanned};
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::{Token, TokenKind};
-use utils::CommaSeparated;
 
 pub mod data_type;
 pub mod identifiers;

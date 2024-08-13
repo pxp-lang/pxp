@@ -6,11 +6,11 @@ use pxp_parser::parse;
 
 fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
-    let path = args.get(0).expect("missing path to file");
+    let path = args.first().expect("missing path to file");
     let input = std::fs::read_to_string(path).expect("failed to read file");
-    let offset_marker = input.find("§").expect("missing offset marker");
+    let offset_marker = input.find('§').expect("missing offset marker");
 
-    let input = input.replace("§", "");
+    let input = input.replace('§', "");
     let result = parse(&input);
     let node = NodeFinder::find_at_byte_offset(&result.ast, offset_marker);
 
@@ -18,7 +18,7 @@ fn main() {
     indexer.index(&result.ast);
     
     let index = indexer.get_index();
-    let inference_engine = InferenceEngine::new(&index);
+    let inference_engine = InferenceEngine::new(index);
     let map = inference_engine.map(&result.ast[..]);
 
     println!("Node: {:#?}", &node);

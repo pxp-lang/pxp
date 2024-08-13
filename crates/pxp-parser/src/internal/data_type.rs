@@ -154,7 +154,7 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
             state.stream.next();
 
             Some(Type::Named(
-                state.maybe_resolve_identifier(&current, UseKind::Normal),
+                state.maybe_resolve_identifier(current, UseKind::Normal),
             ))
         }
         TokenKind::Identifier => {
@@ -187,7 +187,7 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
             state.stream.next();
 
             let symbol = current.symbol.as_ref().unwrap();
-            let resolved = state.strip_leading_namespace_qualifier(&symbol);
+            let resolved = state.strip_leading_namespace_qualifier(symbol);
 
             Some(Type::Named(Name::resolved(
                 state.id(),

@@ -31,7 +31,7 @@ impl<'i> InferenceEngine<'i> {
 
     /// Generate a `TypeMap` from the given AST.
     pub fn map(&self, ast: &[Statement]) -> TypeMap {
-        let mut generator = generator::TypeMapGenerator::new(&self.index); 
+        let mut generator = generator::TypeMapGenerator::new(self.index); 
         generator.generate(ast)
     }
 }

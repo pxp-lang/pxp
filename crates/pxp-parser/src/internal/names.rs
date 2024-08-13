@@ -150,7 +150,7 @@ pub fn full_name_including_self(state: &mut State) -> Name {
             state.stream.next();
 
             let symbol = current.symbol.as_ref().unwrap();
-            let resolved = state.strip_leading_namespace_qualifier(&symbol);
+            let resolved = state.strip_leading_namespace_qualifier(symbol);
 
             Name::resolved(state.id(), resolved, symbol.clone(), current.span)
         }

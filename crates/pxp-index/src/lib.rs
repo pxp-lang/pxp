@@ -45,13 +45,13 @@ impl Index {
 
     pub fn get_class(&self, name: &ByteString) -> Option<ReflectionClass> {
         self.classes
-            .get(&name)
+            .get(name)
             .map(|class| ReflectionClass { class, index: self })
     }
 
     pub fn get_function(&self, name: &ByteString) -> Option<ReflectionFunction> {
         self.functions
-            .get(&name)
+            .get(name)
             .map(|function| ReflectionFunction {
                 function,
                 index: self,
@@ -60,7 +60,7 @@ impl Index {
 
     pub fn get_constant(&self, name: &ByteString) -> Option<ReflectionConstant> {
         self.constants
-            .get(&name)
+            .get(name)
             .map(|constant| ReflectionConstant {
                 constant,
                 index: self,

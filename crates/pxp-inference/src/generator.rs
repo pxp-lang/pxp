@@ -167,7 +167,7 @@ impl Visitor for TypeMapGenerator<'_> {
         let return_type = if name.is_resolved() {
             let symbol = &name.as_resolved().unwrap().resolved;
 
-            self.index.get_function(&symbol).map(|f| f.get_return_type().clone()).unwrap_or_else(|| Type::Mixed)
+            self.index.get_function(symbol).map(|f| f.get_return_type().clone()).unwrap_or_else(|| Type::Mixed)
         } else {
             todo!("do checks for resolved and unresolved names");
         };

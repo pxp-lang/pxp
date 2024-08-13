@@ -1,11 +1,11 @@
 use std::collections::{HashMap, VecDeque};
 
 use pxp_ast::*;
-use pxp_bytestring::{ByteStr, ByteString};
+use pxp_bytestring::{ByteString};
 use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::stream::TokenStream;
 use pxp_span::Span;
-use pxp_symbol::{Symbol, SymbolTable};
+use pxp_symbol::{Symbol};
 use pxp_token::{Token, TokenKind};
 
 use crate::{internal::identifiers::is_soft_reserved_identifier, ParserDiagnostic};

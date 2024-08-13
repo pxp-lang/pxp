@@ -2,7 +2,6 @@ use std::fmt::Display;
 
 use pxp_bytestring::ByteString;
 use pxp_span::{Span, Spanned};
-use pxp_symbol::{Symbol, SymbolTable};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 

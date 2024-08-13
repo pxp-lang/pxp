@@ -138,7 +138,6 @@ pub fn parse_var(state: &mut State) -> VariableProperty {
 
         let current = state.stream.current();
         if current.kind == TokenKind::Equals {
-            let span = current.span;
             state.stream.next();
             let value = expressions::create(state);
             let span = Span::combine(variable.span, value.span);

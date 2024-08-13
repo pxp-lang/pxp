@@ -20,7 +20,7 @@ impl NodeVisitor<'_> for TestVisitor {
     }
 }
 
-const CODE: &'static str = r#"<?php
+const CODE: &str = r#"<?php
 
 namespace A;
 

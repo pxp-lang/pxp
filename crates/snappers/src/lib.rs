@@ -56,7 +56,7 @@ mod tests {
     snap!(snapper, it_can_say_hello_world, say_hello("world"));
 
     fn say_hello(name: &str) -> String {
-        return format!("Hello, {name}!");
+        format!("Hello, {name}!")
     }
 
     fn snapper() -> Snapper {

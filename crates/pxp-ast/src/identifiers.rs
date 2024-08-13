@@ -1,4 +1,4 @@
-use pxp_bytestring::{ByteStr, ByteString};
+use pxp_bytestring::{ByteString};
 use pxp_span::{Span, Spanned};
 
 
