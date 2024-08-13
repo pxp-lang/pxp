@@ -4,9 +4,9 @@ use crate::state::State;
 use crate::ParserDiagnostic;
 use pxp_ast::*;
 
+use pxp_bytestring::ByteString;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
-use pxp_symbol::Symbol;
 use pxp_token::TokenKind;
 
 pub fn simple_variable(state: &mut State) -> SimpleVariable {
@@ -16,14 +16,14 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
         TokenKind::Variable => {
             state.stream.next();
 
-            let symbol = current.symbol.unwrap();
+            let symbol = current.symbol.as_ref().unwrap();
 
-            let name = state.symbol_table.must_resolve(symbol).to_bytestring();
-            let stripped = state.symbol_table.intern(&name[1..]);
+            let name = symbol.clone();
+            let stripped = ByteString::from(&name[1..]);
 
             SimpleVariable {
                 id: state.id(),
-                symbol: current.symbol.unwrap(),
+                symbol: current.symbol.as_ref().unwrap().clone(),
                 stripped,
                 span: current.span,
             }
@@ -39,8 +39,8 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
 
             SimpleVariable {
                 id: state.id(),
-                symbol: current.symbol.unwrap(),
-                stripped: Symbol::missing(),
+                symbol: current.symbol.as_ref().unwrap().clone(),
+                stripped: ByteString::empty(),
                 span: current.span,
             }
         }
@@ -48,7 +48,7 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Variable],
-                    found: *current,
+                    found: current.clone(),
                 },
                 Severity::Error,
                 current.span,
@@ -65,13 +65,13 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
         TokenKind::Variable => {
             state.stream.next();
 
-            let symbol = current.symbol.unwrap();
-            let name = state.symbol_table.must_resolve(symbol).to_bytestring();
-            let stripped = state.symbol_table.intern(&name[1..]);
+            let symbol = current.symbol.as_ref().unwrap();
+            let name = symbol.clone();
+            let stripped = ByteString::from(&name[1..]);
 
             Variable::SimpleVariable(SimpleVariable {
                 id: state.id(),
-                symbol: current.symbol.unwrap(),
+                symbol: current.symbol.as_ref().unwrap().clone(),
                 stripped,
                 span: current.span,
             })
@@ -128,7 +128,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
                     state.diagnostic(
                         ParserDiagnostic::ExpectedToken {
                             expected: vec![TokenKind::Variable],
-                            found: *current,
+                            found: current.clone(),
                         },
                         Severity::Error,
                         current.span,
@@ -142,7 +142,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Variable],
-                    found: *current,
+                    found: current.clone(),
                 },
                 Severity::Error,
                 current.span,

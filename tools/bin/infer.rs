@@ -1,8 +1,8 @@
-use pxp_index::{Index, Indexer};
+use pxp_index::Indexer;
 use pxp_inference::InferenceEngine;
 use pxp_node_finder::NodeFinder;
 use pxp_parser::parse;
-use pxp_symbol::SymbolTable;
+
 
 fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
@@ -11,7 +11,7 @@ fn main() {
     let offset_marker = input.find("§").expect("missing offset marker");
 
     let input = input.replace("§", "");
-    let result = parse(&input, SymbolTable::the());
+    let result = parse(&input);
     let node = NodeFinder::find_at_byte_offset(&result.ast, offset_marker);
 
     let mut indexer = Indexer::new();

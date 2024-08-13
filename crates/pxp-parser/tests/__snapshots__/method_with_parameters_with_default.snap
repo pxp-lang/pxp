@@ -49,8 +49,8 @@
                                 start: 13,
                                 end: 14,
                             },
-                            resolved: Symbol("A"),
-                            original: Symbol("A"),
+                            resolved: "A",
+                            original: "A",
                         },
                     ),
                     span: Span {
@@ -97,7 +97,7 @@
                                 ampersand: None,
                                 name: SimpleIdentifier {
                                     id: 6,
-                                    symbol: Symbol("a"),
+                                    symbol: "a",
                                     span: Span {
                                         start: 30,
                                         end: 31,
@@ -129,8 +129,8 @@
                                                 },
                                                 name: SimpleVariable {
                                                     id: 7,
-                                                    symbol: Symbol("$a"),
-                                                    stripped: Symbol("a"),
+                                                    symbol: "$a",
+                                                    stripped: "a",
                                                     span: Span {
                                                         start: 32,
                                                         end: 34,
@@ -157,7 +157,7 @@
                                                                         end: 38,
                                                                     },
                                                                     symbol: Some(
-                                                                        Symbol("1"),
+                                                                        "1",
                                                                     ),
                                                                 },
                                                             },
@@ -184,8 +184,8 @@
                                                 },
                                                 name: SimpleVariable {
                                                     id: 11,
-                                                    symbol: Symbol("$b"),
-                                                    stripped: Symbol("b"),
+                                                    symbol: "$b",
+                                                    stripped: "b",
                                                     span: Span {
                                                         start: 40,
                                                         end: 42,
@@ -212,7 +212,7 @@
                                                                         end: 46,
                                                                     },
                                                                     symbol: Some(
-                                                                        Symbol("2"),
+                                                                        "2",
                                                                     ),
                                                                 },
                                                             },

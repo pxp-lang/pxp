@@ -1,11 +1,11 @@
 use std::fmt::{Debug, Display};
 
-use pxp_symbol::Symbol;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Hash, Default)]
 
-pub enum Type<N: Debug + Display = Symbol> {
+pub enum Type<N: Debug + Display> {
     Named(N),
     Nullable(Box<Type<N>>),
     Union(Vec<Type<N>>),

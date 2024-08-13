@@ -2,15 +2,15 @@ use std::env::args;
 
 use discoverer::discover;
 use indicatif::ProgressBar;
+use pxp_bytestring::ByteString;
 use pxp_index::Indexer;
 use pxp_parser::parse;
-use pxp_symbol::SymbolTable;
+
 use rustyline::DefaultEditor;
 
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
     let directory = args.first().expect("error: no directory provided");
-    let symbol_table = SymbolTable::the();
     let with_output = args.iter().any(|arg| arg == "--output");
     let files = discover(&["php"], &[directory]).unwrap();
     let mut indexer = Indexer::new();
@@ -23,7 +23,7 @@ fn main() {
         let bar = ProgressBar::new(files.len() as u64);
 
         for file in files.iter() {
-            let result = parse(&std::fs::read(file).unwrap(), symbol_table);
+            let result = parse(&std::fs::read(file).unwrap());
             indexer.index(&result.ast);
 
             if with_output {
@@ -39,8 +39,8 @@ fn main() {
             match readline {
                 Ok(line) => match line.split_whitespace().collect::<Vec<_>>().as_slice() {
                     &["class", name] => {
-                        let name = symbol_table.intern(name.as_bytes());
-                        match indexer.get_index().get_class(name) {
+                        let name = ByteString::from(name.as_bytes());
+                        match indexer.get_index().get_class(&name) {
                             Some(class) => {
                                 dbg!(class);
                             }
@@ -56,7 +56,7 @@ fn main() {
         }
     } else {
         for file in files.iter() {
-            let result = parse(&std::fs::read(file).unwrap(), symbol_table);
+            let result = parse(&std::fs::read(file).unwrap());
             indexer.index(&result.ast);
         }
     }

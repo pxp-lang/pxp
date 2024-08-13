@@ -29,7 +29,7 @@ pub trait NodeVisitor<'a> {
             return NodeVisitorEscapeHatch::Stop;
         }
 
-        self.leave(node) 
+        self.leave(node)
     }
 
     fn traverse(&mut self, ast: &'a [Statement]) {

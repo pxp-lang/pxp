@@ -50,8 +50,8 @@
                                                 start: 9,
                                                 end: 12,
                                             },
-                                            resolved: Symbol("Bar"),
-                                            original: Symbol("Bar"),
+                                            resolved: "Bar",
+                                            original: "Bar",
                                         },
                                     ),
                                     span: Span {
@@ -85,8 +85,8 @@
                                                 start: 16,
                                                 end: 19,
                                             },
-                                            resolved: Symbol("Baz"),
-                                            original: Symbol("Baz"),
+                                            resolved: "Baz",
+                                            original: "Baz",
                                         },
                                     ),
                                     span: Span {
@@ -111,8 +111,8 @@
                                                 start: 21,
                                                 end: 24,
                                             },
-                                            resolved: Symbol("Qux"),
-                                            original: Symbol("Qux"),
+                                            resolved: "Qux",
+                                            original: "Qux",
                                         },
                                     ),
                                     span: Span {
@@ -146,8 +146,8 @@
                                 start: 32,
                                 end: 35,
                             },
-                            resolved: Symbol("Foo"),
-                            original: Symbol("Foo"),
+                            resolved: "Foo",
+                            original: "Foo",
                         },
                     ),
                     span: Span {

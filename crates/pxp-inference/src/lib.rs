@@ -2,9 +2,9 @@ use std::collections::HashMap;
 
 mod generator;
 
-use pxp_ast::{Name, Node, NodeId, Statement};
+use pxp_ast::{Name, NodeId, Statement};
 use pxp_index::Index;
-use pxp_symbol::Symbol;
+
 use pxp_type::Type;
 
 /// The main type inference engine.
@@ -67,7 +67,7 @@ mod tests {
     use pxp_index::Indexer;
     use pxp_node_finder::NodeFinder;
     use pxp_parser::parse;
-    use pxp_symbol::SymbolTable;
+    
 
     use super::*;
 
@@ -147,7 +147,7 @@ mod tests {
     fn infer(input: &str, index: Option<Index>) -> Type<Name> {
         let offset = input.find('§').expect("failed to locate cursor marker");
         let input = input.replace('§', "");
-        let result = parse(&input, SymbolTable::the());
+        let result = parse(&input);
         let index = index.unwrap_or_else(|| {
             let mut indexer = Indexer::new();
             let ast = result.ast.to_vec();

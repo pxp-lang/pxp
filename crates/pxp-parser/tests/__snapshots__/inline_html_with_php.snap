@@ -15,7 +15,7 @@
                         end: 4,
                     },
                     symbol: Some(
-                        Symbol("<h1>"),
+                        "<h1>",
                     ),
                 },
             },
@@ -78,7 +78,7 @@
                                         end: 29,
                                     },
                                     symbol: Some(
-                                        Symbol("Hello, world!"),
+                                        "Hello, world!",
                                     ),
                                 },
                             },
@@ -124,7 +124,7 @@
                         end: 38,
                     },
                     symbol: Some(
-                        Symbol("</h1>"),
+                        "</h1>",
                     ),
                 },
             },

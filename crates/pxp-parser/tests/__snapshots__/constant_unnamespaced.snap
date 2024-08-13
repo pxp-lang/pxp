@@ -50,8 +50,8 @@
                                         start: 13,
                                         end: 16,
                                     },
-                                    resolved: Symbol("FOO"),
-                                    original: Symbol("FOO"),
+                                    resolved: "FOO",
+                                    original: "FOO",
                                 },
                             ),
                             span: Span {
@@ -80,7 +80,7 @@
                                             end: 20,
                                         },
                                         symbol: Some(
-                                            Symbol("1"),
+                                            "1",
                                         ),
                                     },
                                 },

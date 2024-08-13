@@ -4,7 +4,7 @@ use crate::state::source::Source;
 use crate::state::StackFrame;
 use crate::state::State;
 use pxp_bytestring::ByteString;
-use pxp_symbol::SymbolTable;
+
 use pxp_token::DocStringIndentationKind;
 use pxp_token::OpenTagKind;
 use pxp_token::Token;
@@ -16,16 +16,14 @@ pub mod state;
 pub mod stream;
 
 #[derive(Debug)]
-pub struct Lexer<'a, 'b> {
+pub struct Lexer<'a> {
     state: State<'a>,
-    symbol_table: &'b mut SymbolTable,
 }
 
-impl<'a, 'b> Lexer<'a, 'b> {
-    pub fn new<B: ?Sized + AsRef<[u8]>>(input: &'a B, symbol_table: &'b mut SymbolTable) -> Self {
+impl<'a, 'b> Lexer<'a> {
+    pub fn new<B: ?Sized + AsRef<[u8]>>(input: &'a B) -> Self {
         Self {
             state: State::new(Source::new(input.as_ref())),
-            symbol_table,
         }
     }
 
@@ -68,12 +66,12 @@ impl<'a, 'b> Lexer<'a, 'b> {
                 // In this state, all the text that follows is no longer parsed as PHP as is collected
                 // into a single "InlineHtml" token (kind of cheating, oh well).
                 StackFrame::Halted => {
-                    let symbol = self.symbol_table.intern(self.state.source.read_remaining());
+                    let symbol = self.state.source.read_remaining();
 
                     tokens.push(Token::new_with_symbol(
                         TokenKind::InlineHtml,
                         self.state.source.span(),
-                        symbol,
+                        ByteString::from(symbol),
                     ));
                     break;
                 }
@@ -164,8 +162,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                     tokens.push(Token::new_with_symbol(
                         TokenKind::InlineHtml,
                         inline_span,
-                        self.symbol_table
-                            .intern(self.state.source.span_range(inline_span)),
+                        ByteString::from(self.state.source.span_range(inline_span)),
                     ));
                 }
 
@@ -189,8 +186,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                     tokens.push(Token::new_with_symbol(
                         TokenKind::InlineHtml,
                         inline_span,
-                        self.symbol_table
-                            .intern(self.state.source.span_range(inline_span)),
+                        ByteString::from(self.state.source.span_range(inline_span)),
                     ));
                 }
 
@@ -213,8 +209,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                     tokens.push(Token::new_with_symbol(
                         TokenKind::InlineHtml,
                         inline_span,
-                        self.symbol_table
-                            .intern(self.state.source.span_range(inline_span)),
+                        ByteString::from(self.state.source.span_range(inline_span)),
                     ));
                 }
 
@@ -234,8 +229,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
         tokens.push(Token::new_with_symbol(
             TokenKind::InlineHtml,
             inline_span,
-            self.symbol_table
-                .intern(self.state.source.span_range(inline_span)),
+            ByteString::from(self.state.source.span_range(inline_span)),
         ));
 
         Ok(())
@@ -895,7 +889,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
             kind,
             span,
             match with_symbol {
-                true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+                true => Some(ByteString::from(self.state.source.span_range(span))),
                 false => None,
             },
         ))
@@ -1036,8 +1030,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
             tokens.push(Token::new_with_symbol(
                 TokenKind::StringPart,
                 buffer_span,
-                self.symbol_table
-                    .intern(self.state.source.span_range(buffer_span)),
+                ByteString::from(self.state.source.span_range(buffer_span)),
             ));
         }
 
@@ -1045,7 +1038,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
             kind,
             span,
             match with_symbol {
-                true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+                true => Some(ByteString::from(self.state.source.span_range(span))),
                 false => None,
             },
         ));
@@ -1108,8 +1101,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
             tokens.push(Token::new_with_symbol(
                 TokenKind::StringPart,
                 buffer_span,
-                self.symbol_table
-                    .intern(self.state.source.span_range(buffer_span)),
+                ByteString::from(self.state.source.span_range(buffer_span)),
             ))
         }
 
@@ -1118,7 +1110,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
             kind,
             span,
             match with_symbol {
-                true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+                true => Some(ByteString::from(self.state.source.span_range(span))),
                 false => None,
             },
         ));
@@ -1246,8 +1238,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
             tokens.push(Token::new_with_symbol(
                 TokenKind::StringPart,
                 buffer_span,
-                self.symbol_table
-                    .intern(self.state.source.span_range(buffer_span)),
+                ByteString::from(self.state.source.span_range(buffer_span)),
             ));
         }
 
@@ -1256,7 +1247,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
             kind,
             span,
             match with_symbol {
-                true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+                true => Some(ByteString::from(self.state.source.span_range(span))),
                 false => None,
             },
         ));
@@ -1351,8 +1342,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
         tokens.push(Token::new_with_symbol(
             TokenKind::StringPart,
             buffer_span,
-            self.symbol_table
-                .intern(self.state.source.span_range(buffer_span)),
+            ByteString::from(self.state.source.span_range(buffer_span)),
         ));
 
         let span = self.state.source.span();
@@ -1361,7 +1351,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
             kind,
             span,
             match with_symbol {
-                true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+                true => Some(ByteString::from(self.state.source.span_range(span))),
                 false => None,
             },
         ));
@@ -1380,7 +1370,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                 return Ok(Some(Token::new_with_symbol(
                     TokenKind::Identifier,
                     span,
-                    self.symbol_table.intern(self.state.source.span_range(span)),
+                    ByteString::from(self.state.source.span_range(span)),
                 )));
             }
         }
@@ -1415,7 +1405,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
             kind,
             span,
             match with_symbol {
-                true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+                true => Some(ByteString::from(self.state.source.span_range(span))),
                 false => None,
             },
         ))
@@ -1457,7 +1447,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
             kind,
             span,
             match with_symbol {
-                true => Some(self.symbol_table.intern(self.state.source.span_range(span))),
+                true => Some(ByteString::from(self.state.source.span_range(span))),
                 false => None,
             },
         ))
@@ -1807,7 +1797,7 @@ enum NumberKind {
 #[cfg(test)]
 mod tests {
     use super::Lexer;
-    use pxp_symbol::SymbolTable;
+    
     use pxp_token::{DocStringIndentationKind, OpenTagKind, Token, TokenKind};
 
     #[test]
@@ -2170,8 +2160,7 @@ mod tests {
     }
 
     fn tokenise(input: &str) -> Vec<Token> {
-        let mut symbol_table = SymbolTable::new();
-        let mut lexer = Lexer::new(input, &mut symbol_table);
+        let mut lexer = Lexer::new(input);
 
         lexer.tokenize().unwrap()
     }

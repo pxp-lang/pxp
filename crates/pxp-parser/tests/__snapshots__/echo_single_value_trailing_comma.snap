@@ -49,7 +49,7 @@
                                         end: 25,
                                     },
                                     symbol: Some(
-                                        Symbol("Hello, world"),
+                                        "Hello, world",
                                     ),
                                 },
                             },

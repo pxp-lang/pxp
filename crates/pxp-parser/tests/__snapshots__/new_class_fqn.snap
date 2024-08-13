@@ -52,8 +52,8 @@
                                                     start: 11,
                                                     end: 23,
                                                 },
-                                                resolved: Symbol("Foo\Bar\Baz"),
-                                                original: Symbol("\Foo\Bar\Baz"),
+                                                resolved: "Foo\Bar\Baz",
+                                                original: "\Foo\Bar\Baz",
                                             },
                                         ),
                                         span: Span {

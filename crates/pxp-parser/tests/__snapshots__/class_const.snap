@@ -49,8 +49,8 @@
                                 start: 13,
                                 end: 16,
                             },
-                            resolved: Symbol("Foo"),
-                            original: Symbol("Foo"),
+                            resolved: "Foo",
+                            original: "Foo",
                         },
                     ),
                     span: Span {
@@ -104,7 +104,7 @@
                                         },
                                         name: SimpleIdentifier {
                                             id: 6,
-                                            symbol: Symbol("FOO"),
+                                            symbol: "FOO",
                                             span: Span {
                                                 start: 29,
                                                 end: 32,
@@ -131,7 +131,7 @@
                                                             end: 36,
                                                         },
                                                         symbol: Some(
-                                                            Symbol("1"),
+                                                            "1",
                                                         ),
                                                     },
                                                 },

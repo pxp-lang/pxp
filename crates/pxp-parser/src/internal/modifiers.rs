@@ -205,7 +205,7 @@ pub fn collect(state: &mut State) -> Vec<(Span, TokenKind)> {
         TokenKind::Readonly,
     ];
 
-    let mut current = *state.stream.current();
+    let mut current = state.stream.current().clone();
     let mut current_kind = current.kind;
     let mut current_span = current.span;
 
@@ -237,7 +237,7 @@ pub fn collect(state: &mut State) -> Vec<(Span, TokenKind)> {
 
         state.stream.next();
 
-        current = *state.stream.current();
+        current = state.stream.current().clone();
         current_kind = current.kind;
         current_span = current.span;
     }

@@ -48,8 +48,8 @@
                                                     start: 7,
                                                     end: 8,
                                                 },
-                                                resolved: Symbol("A"),
-                                                original: Symbol("A"),
+                                                resolved: "A",
+                                                original: "A",
                                             },
                                         ),
                                         span: Span {
@@ -73,7 +73,7 @@
                             method: SimpleIdentifier(
                                 SimpleIdentifier {
                                     id: 5,
-                                    symbol: Symbol("foo"),
+                                    symbol: "foo",
                                     span: Span {
                                         start: 10,
                                         end: 13,

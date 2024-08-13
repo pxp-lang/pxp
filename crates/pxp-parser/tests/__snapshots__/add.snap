@@ -55,7 +55,7 @@
                                                     end: 8,
                                                 },
                                                 symbol: Some(
-                                                    Symbol("1"),
+                                                    "1",
                                                 ),
                                             },
                                         },
@@ -89,7 +89,7 @@
                                                     end: 12,
                                                 },
                                                 symbol: Some(
-                                                    Symbol("1"),
+                                                    "1",
                                                 ),
                                             },
                                         },

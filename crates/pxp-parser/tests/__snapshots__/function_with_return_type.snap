@@ -45,8 +45,8 @@
                                 start: 16,
                                 end: 19,
                             },
-                            resolved: Symbol("foo"),
-                            original: Symbol("foo"),
+                            resolved: "foo",
+                            original: "foo",
                         },
                     ),
                     span: Span {

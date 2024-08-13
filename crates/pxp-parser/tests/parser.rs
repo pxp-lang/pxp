@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use pxp_parser::parse;
-use pxp_symbol::SymbolTable;
+
 use snappers::{snap, Snapper};
 
 // Tags
@@ -943,8 +943,7 @@ fn process(string_or_file: &str) -> String {
         string_or_file.as_bytes().to_vec()
     };
 
-    let mut symbol_table = SymbolTable::the();
-    let result = parse(&input, &mut symbol_table);
+    let result = parse(&input);
     let mut output = format!("{:#?}\n---\n", result.ast);
 
     if !result.diagnostics.is_empty() {

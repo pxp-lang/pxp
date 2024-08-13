@@ -1,6 +1,6 @@
 use pxp_ast::*;
+use pxp_bytestring::ByteString;
 use pxp_diagnostics::Severity;
-use pxp_symbol::Symbol;
 use pxp_syntax::name::NameQualification;
 use pxp_token::TokenKind;
 
@@ -15,21 +15,21 @@ pub fn full_name(state: &mut State, kind: UseKind) -> Name {
         TokenKind::FullyQualifiedIdentifier => {
             state.stream.next();
 
-            let symbol = current.symbol.unwrap();
+            let symbol = current.symbol.as_ref().unwrap();
             let resolved = state.strip_leading_namespace_qualifier(symbol);
 
-            Name::resolved(state.id(), resolved, symbol, current.span)
+            Name::resolved(state.id(), resolved, symbol.clone(), current.span)
         }
         TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
             state.stream.next();
 
-            state.maybe_resolve_identifier(*current, kind)
+            state.maybe_resolve_identifier(current, kind)
         }
         _ => {
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier],
-                    found: *current,
+                    found: current.clone(),
                 },
                 Severity::Error,
                 current.span,
@@ -44,12 +44,12 @@ pub fn type_name_maybe_soft_reserved(state: &mut State) -> Name {
     let current = state.stream.current();
 
     if is_soft_reserved_identifier(&current.kind) {
-        let symbol = current.symbol.unwrap();
+        let symbol = current.symbol.as_ref().unwrap();
         let resolved = state.join_with_namespace(symbol);
 
         state.stream.next();
 
-        Name::resolved(state.id(), resolved, symbol, current.span)
+        Name::resolved(state.id(), resolved, symbol.clone(), current.span)
     } else {
         type_name(state)
     }
@@ -61,7 +61,7 @@ pub fn name_maybe_soft_reserved(state: &mut State, kind: UseKind) -> Name {
     if is_soft_reserved_identifier(&current.kind) {
         state.stream.next();
 
-        state.maybe_resolve_identifier(*current, kind)
+        state.maybe_resolve_identifier(current, kind)
     } else {
         full_name(state, kind)
     }
@@ -74,10 +74,10 @@ pub fn type_name(state: &mut State) -> Name {
         TokenKind::Identifier | TokenKind::Enum | TokenKind::From => {
             state.stream.next();
 
-            let symbol = current.symbol.unwrap();
+            let symbol = current.symbol.as_ref().unwrap();
             let resolved = state.join_with_namespace(symbol);
 
-            Name::resolved(state.id(), resolved, symbol, current.span)
+            Name::resolved(state.id(), resolved, symbol.clone(), current.span)
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
             state.diagnostic(
@@ -88,10 +88,10 @@ pub fn type_name(state: &mut State) -> Name {
 
             state.stream.next();
 
-            let symbol = current.symbol.unwrap();
+            let symbol = current.symbol.as_ref().unwrap();
             let resolved = state.join_with_namespace(symbol);
 
-            Name::resolved(state.id(), resolved, symbol, current.span)
+            Name::resolved(state.id(), resolved, symbol.clone(), current.span)
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
@@ -102,16 +102,16 @@ pub fn type_name(state: &mut State) -> Name {
 
             state.stream.next();
 
-            let symbol = current.symbol.unwrap();
+            let symbol = current.symbol.as_ref().unwrap();
             let resolved = state.join_with_namespace(symbol);
 
-            Name::resolved(state.id(), resolved, symbol, current.span)
+            Name::resolved(state.id(), resolved, symbol.clone(), current.span)
         }
         _ => {
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier],
-                    found: *current,
+                    found: current.clone(),
                 },
                 Severity::Error,
                 current.span,
@@ -119,8 +119,8 @@ pub fn type_name(state: &mut State) -> Name {
 
             Name::resolved(
                 state.id(),
-                Symbol::missing(),
-                Symbol::missing(),
+                ByteString::empty(),
+                ByteString::empty(),
                 current.span,
             )
         }
@@ -131,13 +131,13 @@ pub fn type_name(state: &mut State) -> Name {
 pub fn use_name(state: &mut State) -> Name {
     let identifier = identifiers::full_type_name(state);
 
-    if identifier.symbol.is_missing() {
+    if identifier.symbol.is_empty() {
         return Name::missing(state.id(), identifier.span);
     }
 
     Name::resolved(
         state.id(),
-        identifier.symbol,
+        identifier.symbol.clone(),
         identifier.symbol,
         identifier.span,
     )
@@ -149,10 +149,10 @@ pub fn full_name_including_self(state: &mut State) -> Name {
         TokenKind::FullyQualifiedIdentifier => {
             state.stream.next();
 
-            let symbol = current.symbol.unwrap();
-            let resolved = state.strip_leading_namespace_qualifier(symbol);
+            let symbol = current.symbol.as_ref().unwrap();
+            let resolved = state.strip_leading_namespace_qualifier(&symbol);
 
-            Name::resolved(state.id(), resolved, symbol, current.span)
+            Name::resolved(state.id(), resolved, symbol.clone(), current.span)
         }
         TokenKind::Identifier
         | TokenKind::QualifiedIdentifier
@@ -160,17 +160,17 @@ pub fn full_name_including_self(state: &mut State) -> Name {
         | TokenKind::From => {
             state.stream.next();
 
-            state.maybe_resolve_identifier(*current, UseKind::Normal)
+            state.maybe_resolve_identifier(current, UseKind::Normal)
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
             state.stream.next();
 
-            let symbol = current.symbol.unwrap();
+            let symbol = current.symbol.as_ref().unwrap();
 
             Name::special(
                 state.id(),
-                SpecialNameKind::from(*current),
-                symbol,
+                SpecialNameKind::from(current.clone()),
+                symbol.clone(),
                 current.span,
             )
         }
@@ -183,11 +183,11 @@ pub fn full_name_including_self(state: &mut State) -> Name {
 
             state.stream.next();
 
-            let symbol = current.symbol.unwrap();
+            let symbol = current.symbol.as_ref().unwrap();
 
             Name::unresolved(
                 state.id(),
-                symbol,
+                symbol.clone(),
                 NameQualification::Unqualified,
                 current.span,
             )
@@ -196,7 +196,7 @@ pub fn full_name_including_self(state: &mut State) -> Name {
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier],
-                    found: *current,
+                    found: current.clone(),
                 },
                 Severity::Error,
                 current.span,
@@ -217,10 +217,10 @@ pub fn constant_identifier(state: &mut State) -> Name {
         | TokenKind::Parent => {
             state.stream.next();
 
-            let symbol = current.symbol.unwrap();
+            let symbol = current.symbol.as_ref().unwrap();
             let resolved = state.join_with_namespace(symbol);
 
-            Name::resolved(state.id(), resolved, symbol, current.span)
+            Name::resolved(state.id(), resolved, symbol.clone(), current.span)
         }
         t if is_reserved_identifier(t) => {
             state.diagnostic(
@@ -231,16 +231,16 @@ pub fn constant_identifier(state: &mut State) -> Name {
 
             state.stream.next();
 
-            let symbol = current.symbol.unwrap();
+            let symbol = current.symbol.as_ref().unwrap();
             let resolved = state.join_with_namespace(symbol);
 
-            Name::resolved(state.id(), resolved, symbol, current.span)
+            Name::resolved(state.id(), resolved, symbol.clone(), current.span)
         }
         _ => {
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier],
-                    found: *current,
+                    found: current.clone(),
                 },
                 Severity::Error,
                 current.span,

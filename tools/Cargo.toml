@@ -18,6 +18,7 @@ indicatif = "0.17.8"
 pxp-ast = { version = "0.1.0", path = "../crates/pxp-ast" }
 pxp-node-finder = { version = "0.1.0", path = "../crates/pxp-node-finder" }
 pxp-inference = { version = "0.1.0", path = "../crates/pxp-inference" }
+pxp-bytestring = { version = "0.1.0", path = "../crates/pxp-bytestring" }
 
 [[bin]]
 name = "tokenise"

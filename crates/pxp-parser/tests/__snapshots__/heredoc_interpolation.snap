@@ -36,8 +36,7 @@
                                 start: 7,
                                 end: 117,
                             },
-                            label: Symbol("<<<TXT
-                            "),
+                            label: "<<<TXT\n",
                             parts: [
                                 Literal(
                                     LiteralStringPart {
@@ -46,7 +45,7 @@
                                             start: 14,
                                             end: 21,
                                         },
-                                        value: Symbol("Hello, "),
+                                        value: "Hello, ",
                                     },
                                 ),
                                 Expression(
@@ -62,8 +61,8 @@
                                                 SimpleVariable(
                                                     SimpleVariable {
                                                         id: 4,
-                                                        symbol: Symbol("$world"),
-                                                        stripped: Symbol("world"),
+                                                        symbol: "$world",
+                                                        stripped: "world",
                                                         span: Span {
                                                             start: 21,
                                                             end: 27,
@@ -88,8 +87,7 @@
                                             start: 27,
                                             end: 36,
                                         },
-                                        value: Symbol("!
-                                        Hello, "),
+                                        value: "!\nHello, ",
                                     },
                                 ),
                                 Expression(
@@ -105,8 +103,8 @@
                                                 SimpleVariable(
                                                     SimpleVariable {
                                                         id: 10,
-                                                        symbol: Symbol("$world"),
-                                                        stripped: Symbol("world"),
+                                                        symbol: "$world",
+                                                        stripped: "world",
                                                         span: Span {
                                                             start: 37,
                                                             end: 43,
@@ -131,8 +129,7 @@
                                             start: 44,
                                             end: 53,
                                         },
-                                        value: Symbol(".
-                                        Hello, "),
+                                        value: ".\nHello, ",
                                     },
                                 ),
                                 Expression(
@@ -157,8 +154,8 @@
                                                             SimpleVariable(
                                                                 SimpleVariable {
                                                                     id: 14,
-                                                                    symbol: Symbol("$world"),
-                                                                    stripped: Symbol("world"),
+                                                                    symbol: "$world",
+                                                                    stripped: "world",
                                                                     span: Span {
                                                                         start: 54,
                                                                         end: 60,
@@ -184,7 +181,7 @@
                                                             SimpleIdentifier(
                                                                 SimpleIdentifier {
                                                                     id: 15,
-                                                                    symbol: Symbol("name"),
+                                                                    symbol: "name",
                                                                     span: Span {
                                                                         start: 62,
                                                                         end: 66,
@@ -219,8 +216,7 @@
                                             start: 67,
                                             end: 76,
                                         },
-                                        value: Symbol(".
-                                        Hello, "),
+                                        value: ".\nHello, ",
                                     },
                                 ),
                                 Expression(
@@ -245,8 +241,8 @@
                                                             SimpleVariable(
                                                                 SimpleVariable {
                                                                     id: 22,
-                                                                    symbol: Symbol("$world"),
-                                                                    stripped: Symbol("world"),
+                                                                    symbol: "$world",
+                                                                    stripped: "world",
                                                                     span: Span {
                                                                         start: 77,
                                                                         end: 83,
@@ -272,7 +268,7 @@
                                                             SimpleIdentifier(
                                                                 SimpleIdentifier {
                                                                     id: 23,
-                                                                    symbol: Symbol("name"),
+                                                                    symbol: "name",
                                                                     span: Span {
                                                                         start: 85,
                                                                         end: 89,
@@ -326,8 +322,7 @@
                                             start: 92,
                                             end: 101,
                                         },
-                                        value: Symbol(".
-                                        Hello, "),
+                                        value: ".\nHello, ",
                                     },
                                 ),
                                 Expression(
@@ -352,8 +347,8 @@
                                                             SimpleVariable(
                                                                 SimpleVariable {
                                                                     id: 31,
-                                                                    symbol: Symbol("$world"),
-                                                                    stripped: Symbol("world"),
+                                                                    symbol: "$world",
+                                                                    stripped: "world",
                                                                     span: Span {
                                                                         start: 102,
                                                                         end: 108,
@@ -391,7 +386,7 @@
                                                                             end: 110,
                                                                         },
                                                                         symbol: Some(
-                                                                            Symbol("0"),
+                                                                            "0",
                                                                         ),
                                                                     },
                                                                 },
@@ -428,7 +423,7 @@
                                             start: 112,
                                             end: 113,
                                         },
-                                        value: Symbol("."),
+                                        value: ".",
                                     },
                                 ),
                             ],

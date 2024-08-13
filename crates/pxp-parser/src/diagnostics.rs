@@ -53,6 +53,8 @@ pub enum ParserDiagnostic {
         expected: Vec<TokenKind>,
     },
     MixedImportTypes,
+    InvalidDocBodyIndentationLevel(usize),
+    InvalidDocIndentation,
 }
 
 impl Display for ParserDiagnostic {
@@ -196,6 +198,8 @@ impl Display for ParserDiagnostic {
                 }
             }
             ParserDiagnostic::MixedImportTypes => write!(f, "cannot mix import types"),
+            ParserDiagnostic::InvalidDocBodyIndentationLevel(level) => write!(f, "heredoc / nowdoc body indentation level [{}] is invalid", level),
+            ParserDiagnostic::InvalidDocIndentation => write!(f, "heredoc / nowdoc body indentation is invalid"),
         }
     }
 }

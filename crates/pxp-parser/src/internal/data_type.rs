@@ -95,7 +95,7 @@ fn dnf(state: &mut State) -> Type<Name> {
         _ => {
             state.diagnostic(
                 ParserDiagnostic::UnexpectedToken {
-                    token: *state.stream.current(),
+                    token: state.stream.current().clone(),
                 },
                 Severity::Error,
                 state.stream.current().span,
@@ -154,11 +154,11 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
             state.stream.next();
 
             Some(Type::Named(
-                state.maybe_resolve_identifier(*current, UseKind::Normal),
+                state.maybe_resolve_identifier(&current, UseKind::Normal),
             ))
         }
         TokenKind::Identifier => {
-            let id = state.symbol_table.resolve(current.symbol.unwrap()).unwrap();
+            let id = current.symbol.as_ref().unwrap();
             state.stream.next();
 
             let name = &id[..];
@@ -179,27 +179,27 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
                 b"array" => Some(Type::Array),
                 b"callable" => Some(Type::Callable),
                 _ => Some(Type::Named(
-                    state.maybe_resolve_identifier(*current, UseKind::Normal),
+                    state.maybe_resolve_identifier(current, UseKind::Normal),
                 )),
             }
         }
         TokenKind::FullyQualifiedIdentifier => {
             state.stream.next();
 
-            let symbol = current.symbol.unwrap();
-            let resolved = state.strip_leading_namespace_qualifier(symbol);
+            let symbol = current.symbol.as_ref().unwrap();
+            let resolved = state.strip_leading_namespace_qualifier(&symbol);
 
             Some(Type::Named(Name::resolved(
                 state.id(),
                 resolved,
-                symbol,
+                symbol.clone(),
                 current.span,
             )))
         }
         TokenKind::QualifiedIdentifier => {
             state.stream.next();
 
-            let name = state.maybe_resolve_identifier(*current, UseKind::Normal);
+            let name = state.maybe_resolve_identifier(current, UseKind::Normal);
 
             Some(Type::Named(name))
         }

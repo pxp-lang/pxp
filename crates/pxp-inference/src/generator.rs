@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
 use pxp_ast::{*, visitor::Visitor};
+use pxp_bytestring::ByteString;
 use pxp_index::Index;
-use pxp_symbol::Symbol;
 use pxp_type::Type;
-use visitor::{walk_assignment_operation_expression, walk_expression, walk_function_statement, walk_variable};
+use visitor::{walk_assignment_operation_expression, walk_expression, walk_function_statement};
 
 use crate::TypeMap;
 
@@ -46,16 +46,16 @@ impl ScopeStack {
 
 #[derive(Debug)]
 struct Scope {
-    variables: HashMap<Symbol, Type<Name>>,
+    variables: HashMap<ByteString, Type<Name>>,
 }
 
 impl Scope {
-    fn insert(&mut self, variable: Symbol, ty: Type<Name>) {
+    fn insert(&mut self, variable: ByteString, ty: Type<Name>) {
         self.variables.insert(variable, ty);
     }
 
-    fn get(&self, variable: Symbol) -> &Type<Name> {
-        self.variables.get(&variable).unwrap_or_else(|| &Type::Mixed)
+    fn get(&self, variable: &ByteString) -> &Type<Name> {
+        self.variables.get(variable).unwrap_or_else(|| &Type::Mixed)
     }
 }
 
@@ -113,7 +113,7 @@ impl Visitor for TypeMapGenerator<'_> {
     }
 
     fn visit_simple_variable(&mut self, node: &SimpleVariable) {
-        let ty = self.scopes.scope().get(node.symbol);
+        let ty = self.scopes.scope().get(&node.symbol);
 
         self.map.insert(node.id(), ty.clone());
     }
@@ -129,7 +129,7 @@ impl Visitor for TypeMapGenerator<'_> {
             return;
         }
 
-        let variable = match target.kind {
+        let variable = match &target.kind {
             ExpressionKind::Variable(Variable::SimpleVariable(SimpleVariable { symbol, .. })) => symbol,
             _ => unreachable!(),
         };
@@ -137,7 +137,7 @@ impl Visitor for TypeMapGenerator<'_> {
         let value = node.kind.right();
         let ty = self.map.resolve(value.id());
 
-        self.scopes.scope_mut().insert(variable, ty.clone());
+        self.scopes.scope_mut().insert(variable.clone(), ty.clone());
         self.map.insert(node.id(), ty.clone());
     }
 
@@ -146,7 +146,7 @@ impl Visitor for TypeMapGenerator<'_> {
             // Insert function parameters into the current scope.
             for parameter in node.parameters.iter() {
                 // FIXME: Make this look nicer...
-                this.scopes.scope_mut().insert(parameter.name.symbol, parameter.data_type.as_ref().map(|d| d.get_type().clone()).unwrap_or_else(|| Type::Mixed));
+                this.scopes.scope_mut().insert(parameter.name.symbol.clone(), parameter.data_type.as_ref().map(|d| d.get_type().clone()).unwrap_or_else(|| Type::Mixed));
             }
 
             walk_function_statement(this, node);
@@ -159,15 +159,15 @@ impl Visitor for TypeMapGenerator<'_> {
             return;
         }
 
-        let name = match node.target.kind {
+        let name = match &node.target.kind {
             ExpressionKind::Name(name) => name,
             _ => unreachable!(),
         };
 
         let return_type = if name.is_resolved() {
-            let symbol = name.as_resolved().unwrap().resolved;
+            let symbol = &name.as_resolved().unwrap().resolved;
 
-            self.index.get_function(symbol).map(|f| f.get_return_type().clone()).unwrap_or_else(|| Type::Mixed)
+            self.index.get_function(&symbol).map(|f| f.get_return_type().clone()).unwrap_or_else(|| Type::Mixed)
         } else {
             todo!("do checks for resolved and unresolved names");
         };

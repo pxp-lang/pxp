@@ -2,7 +2,7 @@
 use std::fmt::Debug;
 
 use pxp_ast::Name;
-use pxp_symbol::Symbol;
+use pxp_bytestring::ByteString;
 use pxp_type::Type;
 
 use crate::{
@@ -20,16 +20,16 @@ pub struct ReflectionFunction<'a> {
 }
 
 impl<'a> ReflectionFunction<'a> {
-    pub fn get_name(&self) -> Symbol {
-        self.function.name
+    pub fn get_name(&self) -> &ByteString {
+        &self.function.name
     }
 
-    pub fn get_short_name(&self) -> Symbol {
-        self.function.short
+    pub fn get_short_name(&self) -> &ByteString {
+        &self.function.short
     }
 
-    pub fn get_namespace(&self) -> Option<Symbol> {
-        self.function.namespace
+    pub fn get_namespace(&self) -> Option<&ByteString> {
+        self.function.namespace.as_ref()
     }
 
     pub fn get_return_type(&self) -> &Type<Name> {
@@ -50,7 +50,7 @@ impl<'a> ReflectionFunction<'a> {
             })
     }
 
-    pub fn get_parameter(&self, name: Symbol) -> Option<ReflectionParameter> {
+    pub fn get_parameter(&self, name: ByteString) -> Option<ReflectionParameter> {
         self.function
             .parameters
             .iter()
@@ -69,8 +69,8 @@ pub struct ReflectionParameter<'a> {
 }
 
 impl<'a> ReflectionParameter<'a> {
-    pub fn get_name(&self) -> Symbol {
-        self.parameter.name
+    pub fn get_name(&self) -> &ByteString {
+        &self.parameter.name
     }
 
     pub fn get_type(&self) -> &Type<Name> {
@@ -136,7 +136,7 @@ impl<'a> ReflectionClass<'a> {
             })
     }
 
-    pub fn get_property(&self, name: Symbol) -> Option<ReflectionProperty> {
+    pub fn get_property(&self, name: ByteString) -> Option<ReflectionProperty> {
         self.class
             .properties
             .iter()
@@ -163,37 +163,37 @@ impl<'a> ReflectionClass<'a> {
             .filter(|property| property.is_private())
     }
 
-    pub fn get_name(&self) -> Symbol {
-        self.class.name
+    pub fn get_name(&self) -> &ByteString {
+        &self.class.name
     }
 
-    pub fn get_short_name(&self) -> Symbol {
-        self.class.short
+    pub fn get_short_name(&self) -> &ByteString {
+        &self.class.short
     }
 
-    pub fn get_namespace(&self) -> Option<Symbol> {
-        self.class.namespace
+    pub fn get_namespace(&self) -> Option<&ByteString> {
+        self.class.namespace.as_ref()
     }
 
     pub fn get_parent(&self) -> Option<ReflectionClass<'a>> {
         self.class
             .parent
             .as_ref()
-            .and_then(|parent| self.index.get_class(*parent))
+            .and_then(|parent| self.index.get_class(parent))
     }
 
     pub fn get_interfaces(&self) -> impl Iterator<Item = ReflectionClass> + '_ {
         self.class
             .interfaces
             .iter()
-            .filter_map(move |interface| self.index.get_class(*interface))
+            .filter_map(move |interface| self.index.get_class(interface))
     }
 
     pub fn get_traits(&self) -> impl Iterator<Item = ReflectionClass> + '_ {
         self.class
             .traits
             .iter()
-            .filter_map(move |r#trait| self.index.get_class(*r#trait))
+            .filter_map(move |r#trait| self.index.get_class(r#trait))
     }
 
     pub fn get_methods(&'a self) -> impl Iterator<Item = ReflectionMethod> + 'a {
@@ -204,7 +204,7 @@ impl<'a> ReflectionClass<'a> {
         })
     }
 
-    pub fn get_method(&self, name: Symbol) -> Option<ReflectionMethod> {
+    pub fn get_method(&self, name: ByteString) -> Option<ReflectionMethod> {
         self.class
             .methods
             .iter()
@@ -231,7 +231,7 @@ impl<'a> ReflectionClass<'a> {
     pub fn get_cases(&self) -> impl Iterator<Item = ReflectionCase> + '_ {
         self.class.cases.iter().map(|case| ReflectionCase {
             r#enum: self,
-            case: *case,
+            case: case.clone(),
             index: self.index,
         })
     }
@@ -256,8 +256,8 @@ pub struct ReflectionClassConstant<'a> {
 }
 
 impl<'a> ReflectionClassConstant<'a> {
-    pub fn get_name(&self) -> Symbol {
-        self.constant.name
+    pub fn get_name(&self) -> &ByteString {
+        &self.constant.name
     }
 
     pub fn get_type(&self) -> &Type<Name> {
@@ -281,16 +281,16 @@ impl<'a> ReflectionClassConstant<'a> {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct ReflectionCase<'a> {
     pub(crate) r#enum: &'a ReflectionClass<'a>,
-    pub(crate) case: Symbol,
+    pub(crate) case: ByteString,
     pub(crate) index: &'a Index,
 }
 
 impl<'a> ReflectionCase<'a> {
-    pub fn get_name(&self) -> Symbol {
-        self.case
+    pub fn get_name(&self) -> &ByteString {
+        &self.case
     }
 }
 
@@ -382,8 +382,8 @@ impl<'a> ReflectionMethod<'a> {
         &self.method.return_type
     }
 
-    pub fn get_name(&self) -> Symbol {
-        self.method.name
+    pub fn get_name(&self) -> &ByteString {
+        &self.method.name
     }
 
     pub fn get_class(&self) -> &'a ReflectionClass<'a> {
@@ -409,15 +409,15 @@ pub struct ReflectionConstant<'a> {
 }
 
 impl<'a> ReflectionConstant<'a> {
-    pub fn get_name(&self) -> Symbol {
-        self.constant.name
+    pub fn get_name(&self) -> &ByteString {
+        &self.constant.name
     }
 
-    pub fn get_short_name(&self) -> Symbol {
-        self.constant.short
+    pub fn get_short_name(&self) -> &ByteString {
+        &self.constant.short
     }
 
-    pub fn get_namespace(&self) -> Option<Symbol> {
-        self.constant.namespace
+    pub fn get_namespace(&self) -> Option<&ByteString> {
+        self.constant.namespace.as_ref()
     }
 }

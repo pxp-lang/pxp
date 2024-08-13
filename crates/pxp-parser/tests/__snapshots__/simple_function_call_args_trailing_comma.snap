@@ -48,8 +48,8 @@
                                                     start: 7,
                                                     end: 10,
                                                 },
-                                                resolved: Symbol("foo"),
-                                                original: Symbol("foo"),
+                                                resolved: "foo",
+                                                original: "foo",
                                             },
                                         ),
                                         span: Span {
@@ -108,7 +108,7 @@
                                                                 end: 12,
                                                             },
                                                             symbol: Some(
-                                                                Symbol("1"),
+                                                                "1",
                                                             ),
                                                         },
                                                     },
@@ -151,7 +151,7 @@
                                                                 end: 15,
                                                             },
                                                             symbol: Some(
-                                                                Symbol("2"),
+                                                                "2",
                                                             ),
                                                         },
                                                     },
@@ -194,7 +194,7 @@
                                                                 end: 18,
                                                             },
                                                             symbol: Some(
-                                                                Symbol("3"),
+                                                                "3",
                                                             ),
                                                         },
                                                     },

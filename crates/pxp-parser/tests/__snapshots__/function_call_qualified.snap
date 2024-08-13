@@ -48,8 +48,8 @@
                                                     start: 7,
                                                     end: 14,
                                                 },
-                                                resolved: Symbol("Bar\foo"),
-                                                original: Symbol("Bar\foo"),
+                                                resolved: "Bar\foo",
+                                                original: "Bar\foo",
                                             },
                                         ),
                                         span: Span {

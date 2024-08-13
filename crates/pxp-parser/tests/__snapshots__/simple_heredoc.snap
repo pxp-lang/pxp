@@ -36,8 +36,7 @@
                                 start: 7,
                                 end: 58,
                             },
-                            label: Symbol("<<<TXT
-                            "),
+                            label: "<<<TXT\n",
                             parts: [
                                 Literal(
                                     LiteralStringPart {
@@ -46,9 +45,7 @@
                                             start: 14,
                                             end: 54,
                                         },
-                                        value: Symbol("Hello, world!
-                                        
-                                        This is a heredoc string."),
+                                        value: "Hello, world!\n\nThis is a heredoc string.",
                                     },
                                 ),
                             ],

@@ -7,6 +7,7 @@ rust-version.workspace = true
 
 [dependencies]
 pxp-ast = { version = "0.1.0", path = "../pxp-ast" }
+pxp-bytestring = { version = "0.1.0", path = "../pxp-bytestring" }
 pxp-parser = { version = "0.1.0", path = "../pxp-parser" }
 pxp-span = { version = "0.1.0", path = "../pxp-span" }
 pxp-symbol = { version = "0.1.0", path = "../pxp-symbol" }

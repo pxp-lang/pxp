@@ -49,8 +49,8 @@
                                 start: 13,
                                 end: 16,
                             },
-                            resolved: Symbol("Foo"),
-                            original: Symbol("Foo"),
+                            resolved: "Foo",
+                            original: "Foo",
                         },
                     ),
                     span: Span {
@@ -104,8 +104,8 @@
                                                                 start: 25,
                                                                 end: 28,
                                                             },
-                                                            resolved: Symbol("Baz"),
-                                                            original: Symbol("Baz"),
+                                                            resolved: "Baz",
+                                                            original: "Baz",
                                                         },
                                                     ),
                                                     span: Span {
@@ -140,7 +140,7 @@
                                         },
                                         name: SimpleIdentifier {
                                             id: 9,
-                                            symbol: Symbol("A"),
+                                            symbol: "A",
                                             span: Span {
                                                 start: 40,
                                                 end: 41,
@@ -167,7 +167,7 @@
                                                             end: 45,
                                                         },
                                                         symbol: Some(
-                                                            Symbol("1"),
+                                                            "1",
                                                         ),
                                                     },
                                                 },

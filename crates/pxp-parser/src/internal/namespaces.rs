@@ -60,7 +60,7 @@ pub fn namespace(state: &mut State) -> StatementKind {
 fn unbraced_namespace(state: &mut State, start: Span, name: SimpleIdentifier) -> StatementKind {
     let end = utils::skip_semicolon(state);
 
-    let statements = scoped!(state, Scope::Namespace(name.symbol), {
+    let statements = scoped!(state, Scope::Namespace(name.symbol.clone()), {
         let mut statements = Block::new();
 
         while state.stream.current().kind != TokenKind::Namespace && !state.stream.is_eof() {
@@ -83,7 +83,7 @@ fn unbraced_namespace(state: &mut State, start: Span, name: SimpleIdentifier) ->
         span: Span::combine(start, statements.span()),
         start,
         end,
-        name: Name::resolved(state.id(), name.symbol, name.symbol, name.span),
+        name: Name::resolved(state.id(), name.symbol.clone(), name.symbol.clone(), name.span),
         statements,
     }))
 }
@@ -95,7 +95,7 @@ fn braced_namespace(
 ) -> StatementKind {
     let body = scoped!(
         state,
-        Scope::BracedNamespace(name.as_ref().map(|n| n.symbol)),
+        Scope::BracedNamespace(name.as_ref().map(|n| n.symbol.clone())),
         {
             let start = utils::skip_left_brace(state);
 
@@ -120,7 +120,7 @@ fn braced_namespace(
         id: state.id(),
         span: Span::combine(span, body.span),
         namespace: span,
-        name: name.map(|n| Name::resolved(state.id(), n.symbol, n.symbol, n.span)),
+        name: name.map(|n| Name::resolved(state.id(), n.symbol.clone(), n.symbol.clone(), n.span)),
         body,
     }))
 }

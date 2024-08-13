@@ -31,7 +31,7 @@ pub fn expect_literal(state: &mut State) -> Literal {
                         TokenKind::LiteralSingleQuotedString,
                         TokenKind::LiteralDoubleQuotedString,
                     ],
-                    found: *token,
+                    found: token.clone(),
                 },
                 Severity::Error,
                 token.span,
@@ -45,6 +45,6 @@ pub fn expect_literal(state: &mut State) -> Literal {
         id: state.id(),
         span: token.span,
         kind,
-        token: *token,
+        token: token.clone(),
     }
 }

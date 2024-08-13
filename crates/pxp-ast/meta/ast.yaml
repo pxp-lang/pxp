@@ -451,7 +451,7 @@ InterpolatedStringExpression:
 HeredocExpression:
   children: [parts]
   span: Span
-  label: Symbol
+  label: ByteString
   parts: Vec<StringPart>
 
 NowdocExpression:
@@ -581,7 +581,7 @@ StringPart:
 
 LiteralStringPart:
   span: Span
-  value: Symbol
+  value: ByteString
 
 ExpressionStringPart:
   children: [expression]
@@ -1168,7 +1168,7 @@ Identifier:
   DynamicIdentifier: DynamicIdentifier
 
 SimpleIdentifier:
-  symbol: Symbol
+  symbol: ByteString
   span: Span
 
 DynamicIdentifier:
@@ -1691,23 +1691,20 @@ LogicalOperationKind:
     right: Box<Expression>
 
 Name:
-  derive: Copy
   kind: NameKind
   span: Span
 
 NameKind:
   children: [self]
   as: Enum
-  derive: Copy
   Special: SpecialName
   Unresolved: UnresolvedName
   Resolved: ResolvedName
 
 SpecialName:
-  derive: Copy
   span: Span
   kind: SpecialNameKind
-  symbol: Symbol
+  symbol: ByteString
 
 SpecialNameKind:
   as: Enum
@@ -1717,16 +1714,14 @@ SpecialNameKind:
   Static: Span
 
 UnresolvedName:
-  derive: Copy
   span: Span
-  symbol: Symbol
+  symbol: ByteString
   qualification: NameQualification
 
 ResolvedName:
-  derive: Copy
   span: Span
-  resolved: Symbol
-  original: Symbol
+  resolved: ByteString
+  original: ByteString
 
 Property:
   children: [attributes, r#type?, entries]
@@ -1875,8 +1870,8 @@ Variable:
   BracedVariableVariable: BracedVariableVariable
 
 SimpleVariable:
-  symbol: Symbol
-  stripped: Symbol
+  symbol: ByteString
+  stripped: ByteString
   span: Span
 
 VariableVariable:

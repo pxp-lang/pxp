@@ -50,8 +50,8 @@
                                     SimpleVariable(
                                         SimpleVariable {
                                             id: 4,
-                                            symbol: Symbol("$foo"),
-                                            stripped: Symbol("foo"),
+                                            symbol: "$foo",
+                                            stripped: "foo",
                                             span: Span {
                                                 start: 14,
                                                 end: 18,
@@ -107,7 +107,7 @@
                                                         end: 88,
                                                     },
                                                     symbol: Some(
-                                                        Symbol("'other'"),
+                                                        "'other'",
                                                     ),
                                                 },
                                             },
@@ -147,7 +147,7 @@
                                                             end: 27,
                                                         },
                                                         symbol: Some(
-                                                            Symbol("1"),
+                                                            "1",
                                                         ),
                                                     },
                                                 },
@@ -182,7 +182,7 @@
                                                         end: 36,
                                                     },
                                                     symbol: Some(
-                                                        Symbol("'one'"),
+                                                        "'one'",
                                                     ),
                                                 },
                                             },
@@ -220,7 +220,7 @@
                                                             end: 43,
                                                         },
                                                         symbol: Some(
-                                                            Symbol("2"),
+                                                            "2",
                                                         ),
                                                     },
                                                 },
@@ -250,7 +250,7 @@
                                                             end: 46,
                                                         },
                                                         symbol: Some(
-                                                            Symbol("3"),
+                                                            "3",
                                                         ),
                                                     },
                                                 },
@@ -285,7 +285,7 @@
                                                         end: 64,
                                                     },
                                                     symbol: Some(
-                                                        Symbol("'two or three'"),
+                                                        "'two or three'",
                                                     ),
                                                 },
                                             },

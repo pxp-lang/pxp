@@ -15,8 +15,7 @@
                         end: 47,
                     },
                     symbol: Some(
-                        Symbol("<h1>Hello, world!</h1>
-                        <h2>Goodbye, world!</h2>"),
+                        "<h1>Hello, world!</h1>\n<h2>Goodbye, world!</h2>",
                     ),
                 },
             },

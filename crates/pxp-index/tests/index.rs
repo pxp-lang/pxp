@@ -1,4 +1,5 @@
 use discoverer::discover;
+use pxp_bytestring::ByteString;
 use pxp_index::{Index, Indexer};
 use pxp_parser::parse;
 use pxp_symbol::{Symbol, SymbolTable};
@@ -8,98 +9,98 @@ use pxp_type::Type;
 fn it_indexes_classes() {
     let index = index();
 
-    let a = index.get_class(name(b"A")).unwrap();
+    let a = index.get_class(&ByteString::from(b"A")).unwrap();
 
-    assert!(a.get_name() == name(b"A"));
-    assert!(a.get_short_name() == name(b"A"));
+    assert!(a.get_name() == &ByteString::from(b"A"));
+    assert!(a.get_short_name() == &ByteString::from(b"A"));
     assert!(a.get_namespace() == None);
 
-    let b = index.get_class(name(b"B")).unwrap();
+    let b = index.get_class(&ByteString::from(b"B")).unwrap();
 
-    assert!(b.get_name() == name(b"B"));
-    assert!(b.get_short_name() == name(b"B"));
+    assert!(b.get_name() == &ByteString::from(b"B"));
+    assert!(b.get_short_name() == &ByteString::from(b"B"));
     assert!(b.get_namespace() == None);
 
     let parent = b.get_parent().unwrap();
-    assert!(parent.get_name() == name(b"A"));
+    assert!(parent.get_name() == &ByteString::from(b"A"));
 
-    let c = index.get_class(name(b"C")).unwrap();
+    let c = index.get_class(&ByteString::from(b"C")).unwrap();
 
-    assert!(c.get_name() == name(b"C"));
-    assert!(c.get_short_name() == name(b"C"));
+    assert!(c.get_name() == &ByteString::from(b"C"));
+    assert!(c.get_short_name() == &ByteString::from(b"C"));
     assert!(c.get_namespace() == None);
 
     let parent = c.get_parent().unwrap();
-    assert!(parent.get_name() == name(b"B"));
+    assert!(parent.get_name() == &ByteString::from(b"B"));
 
     // FIXME: Add in tests here for interfaces.
 
-    let properties = index.get_class(name(b"Properties")).unwrap();
+    let properties = index.get_class(&ByteString::from(b"Properties")).unwrap();
 
-    assert!(properties.get_name() == name(b"Properties"));
-    assert!(properties.get_short_name() == name(b"Properties"));
+    assert!(properties.get_name() == &ByteString::from(b"Properties"));
+    assert!(properties.get_short_name() == &ByteString::from(b"Properties"));
     assert!(properties.get_namespace() == None);
 
     let properties_properties = properties.get_properties().collect::<Vec<_>>();
 
     assert!(properties_properties.len() == 6);
 
-    let a = properties.get_property(name(b"a")).unwrap();
+    let a = properties.get_property(ByteString::from(b"a")).unwrap();
     assert!(a.is_public());
     assert!(a.get_type() == &Type::Mixed);
 
-    let b = properties.get_property(name(b"b")).unwrap();
+    let b = properties.get_property(ByteString::from(b"b")).unwrap();
     assert!(b.is_public());
     assert!(b.get_type() == &Type::String);
 
-    let c = properties.get_property(name(b"c")).unwrap();
+    let c = properties.get_property(ByteString::from(b"c")).unwrap();
     assert!(c.is_protected());
     assert!(c.get_type() == &Type::Integer);
 
-    let d = properties.get_property(name(b"d")).unwrap();
+    let d = properties.get_property(ByteString::from(b"d")).unwrap();
     assert!(d.is_private());
     assert!(d.get_type() == &Type::Boolean);
 
-    let e = properties.get_property(name(b"e")).unwrap();
+    let e = properties.get_property(ByteString::from(b"e")).unwrap();
     assert!(e.is_static());
 
-    let f = properties.get_property(name(b"f")).unwrap();
+    let f = properties.get_property(ByteString::from(b"f")).unwrap();
     assert!(f.is_public());
     assert!(f.get_type() == &Type::Mixed);
 
-    let methods = index.get_class(name(b"Methods")).unwrap();
+    let methods = index.get_class(&ByteString::from(b"Methods")).unwrap();
 
-    assert!(methods.get_name() == name(b"Methods"));
-    assert!(methods.get_short_name() == name(b"Methods"));
+    assert!(methods.get_name() == &ByteString::from(b"Methods"));
+    assert!(methods.get_short_name() == &ByteString::from(b"Methods"));
     assert!(methods.get_namespace() == None);
 
     let methods_methods = methods.get_methods().collect::<Vec<_>>();
 
     assert!(methods_methods.len() == 5);
 
-    let a = methods.get_method(name(b"a")).unwrap();
+    let a = methods.get_method(ByteString::from(b"a")).unwrap();
     assert!(a.is_public());
     assert!(a.get_return_type() == &Type::Mixed);
 
-    let b = methods.get_method(name(b"b")).unwrap();
+    let b = methods.get_method(ByteString::from(b"b")).unwrap();
     assert!(b.is_public());
     assert!(b.get_return_type() == &Type::String);
 
-    let c = methods.get_method(name(b"c")).unwrap();
+    let c = methods.get_method(ByteString::from(b"c")).unwrap();
     assert!(c.is_protected());
     assert!(c.get_return_type() == &Type::Integer);
 
-    let d = methods.get_method(name(b"d")).unwrap();
+    let d = methods.get_method(ByteString::from(b"d")).unwrap();
     assert!(d.is_private());
     assert!(d.get_return_type() == &Type::Boolean);
 
-    let e = methods.get_method(name(b"e")).unwrap();
+    let e = methods.get_method(ByteString::from(b"e")).unwrap();
     assert!(e.is_static());
 
-    let constants = index.get_class(name(b"Constants")).unwrap();
+    let constants = index.get_class(&ByteString::from(b"Constants")).unwrap();
 
-    assert!(constants.get_name() == name(b"Constants"));
-    assert!(constants.get_short_name() == name(b"Constants"));
+    assert!(constants.get_name() == &ByteString::from(b"Constants"));
+    assert!(constants.get_short_name() == &ByteString::from(b"Constants"));
     assert!(constants.get_namespace() == None);
     assert!(constants.is_class());
 
@@ -107,21 +108,21 @@ fn it_indexes_classes() {
 
     assert!(constants.len() == 5);
 
-    assert!(constants[0].get_name() == name(b"A"));
+    assert!(constants[0].get_name() == &ByteString::from(b"A"));
     assert!(constants[0].get_type() == &Type::Mixed);
 
-    assert!(constants[1].get_name() == name(b"B"));
+    assert!(constants[1].get_name() == &ByteString::from(b"B"));
     assert!(constants[1].get_type() == &Type::Integer);
     assert!(constants[1].is_public());
 
-    assert!(constants[2].get_name() == name(b"C"));
+    assert!(constants[2].get_name() == &ByteString::from(b"C"));
     assert!(constants[2].get_type() == &Type::String);
     assert!(constants[2].is_protected());
 
-    assert!(constants[3].get_name() == name(b"D"));
+    assert!(constants[3].get_name() == &ByteString::from(b"D"));
     assert!(constants[3].is_private());
 
-    assert!(constants[4].get_name() == name(b"E"));
+    assert!(constants[4].get_name() == &ByteString::from(b"E"));
     assert!(constants[4].is_final());
 }
 
@@ -129,58 +130,58 @@ fn it_indexes_classes() {
 fn it_indexes_interfaces() {
     let index = index();
 
-    let i = index.get_class(name(b"I")).unwrap();
+    let i = index.get_class(&ByteString::from(b"I")).unwrap();
 
-    assert!(i.get_name() == name(b"I"));
-    assert!(i.get_short_name() == name(b"I"));
+    assert!(i.get_name() == &ByteString::from(b"I"));
+    assert!(i.get_short_name() == &ByteString::from(b"I"));
     assert!(i.get_namespace() == None);
     assert!(i.is_interface());
 
-    let j = index.get_class(name(b"J")).unwrap();
+    let j = index.get_class(&ByteString::from(b"J")).unwrap();
 
-    assert!(j.get_name() == name(b"J"));
-    assert!(j.get_short_name() == name(b"J"));
+    assert!(j.get_name() == &ByteString::from(b"J"));
+    assert!(j.get_short_name() == &ByteString::from(b"J"));
     assert!(j.get_namespace() == None);
     assert!(j.is_interface());
 
-    let k = index.get_class(name(b"K")).unwrap();
+    let k = index.get_class(&ByteString::from(b"K")).unwrap();
 
-    assert!(k.get_name() == name(b"K"));
-    assert!(k.get_short_name() == name(b"K"));
+    assert!(k.get_name() == &ByteString::from(b"K"));
+    assert!(k.get_short_name() == &ByteString::from(b"K"));
     assert!(k.get_namespace() == None);
     assert!(k.is_interface());
 
     let k_interfaces = k.get_interfaces().collect::<Vec<_>>();
 
     assert!(k_interfaces.len() == 2);
-    assert!(k_interfaces[0].get_name() == name(b"I"));
-    assert!(k_interfaces[1].get_name() == name(b"J"));
+    assert!(k_interfaces[0].get_name() == &ByteString::from(b"I"));
+    assert!(k_interfaces[1].get_name() == &ByteString::from(b"J"));
 
-    let l = index.get_class(name(b"L")).unwrap();
+    let l = index.get_class(&ByteString::from(b"L")).unwrap();
 
-    assert!(l.get_name() == name(b"L"));
-    assert!(l.get_short_name() == name(b"L"));
+    assert!(l.get_name() == &ByteString::from(b"L"));
+    assert!(l.get_short_name() == &ByteString::from(b"L"));
     assert!(l.get_namespace() == None);
     assert!(l.is_interface());
 
     let l_constants = l.get_constants().collect::<Vec<_>>();
 
     assert!(l_constants.len() == 1);
-    assert!(l_constants[0].get_name() == name(b"A"));
+    assert!(l_constants[0].get_name() == &ByteString::from(b"A"));
 
     let l_methods = l.get_methods().collect::<Vec<_>>();
 
     assert!(l_methods.len() == 3);
 
-    let a = l.get_method(name(b"a")).unwrap();
+    let a = l.get_method(ByteString::from(b"a")).unwrap();
     assert!(a.is_public());
     assert!(a.get_return_type() == &Type::Mixed);
 
-    let b = l.get_method(name(b"b")).unwrap();
+    let b = l.get_method(ByteString::from(b"b")).unwrap();
     assert!(b.is_public());
     assert!(b.get_return_type() == &Type::String);
 
-    let c = l.get_method(name(b"c")).unwrap();
+    let c = l.get_method(ByteString::from(b"c")).unwrap();
 
     assert!(c.get_return_type() == &Type::Mixed);
     assert!(c.is_static());
@@ -191,62 +192,62 @@ fn it_indexes_interfaces() {
 fn it_indexes_traits() {
     let index = index();
 
-    let trait_a = index.get_class(name(b"TraitA")).unwrap();
+    let trait_a = index.get_class(&ByteString::from(b"TraitA")).unwrap();
 
-    assert!(trait_a.get_name() == name(b"TraitA"));
-    assert!(trait_a.get_short_name() == name(b"TraitA"));
+    assert!(trait_a.get_name() == &ByteString::from(b"TraitA"));
+    assert!(trait_a.get_short_name() == &ByteString::from(b"TraitA"));
     assert!(trait_a.get_namespace() == None);
     assert!(trait_a.is_trait());
 
-    let trait_b = index.get_class(name(b"TraitB")).unwrap();
+    let trait_b = index.get_class(&ByteString::from(b"TraitB")).unwrap();
 
-    assert!(trait_b.get_name() == name(b"TraitB"));
-    assert!(trait_b.get_short_name() == name(b"TraitB"));
+    assert!(trait_b.get_name() == &ByteString::from(b"TraitB"));
+    assert!(trait_b.get_short_name() == &ByteString::from(b"TraitB"));
     assert!(trait_b.get_namespace() == None);
     assert!(trait_b.is_trait());
 
-    let trait_c = index.get_class(name(b"TraitC")).unwrap();
+    let trait_c = index.get_class(&ByteString::from(b"TraitC")).unwrap();
 
-    assert!(trait_c.get_name() == name(b"TraitC"));
-    assert!(trait_c.get_short_name() == name(b"TraitC"));
+    assert!(trait_c.get_name() == &ByteString::from(b"TraitC"));
+    assert!(trait_c.get_short_name() == &ByteString::from(b"TraitC"));
     assert!(trait_c.get_namespace() == None);
     assert!(trait_c.is_trait());
 
     let trait_c_traits = trait_c.get_traits().collect::<Vec<_>>();
 
     assert!(trait_c_traits.len() == 2);
-    assert!(trait_c_traits[0].get_name() == name(b"TraitA"));
-    assert!(trait_c_traits[1].get_name() == name(b"TraitB"));
+    assert!(trait_c_traits[0].get_name() == &ByteString::from(b"TraitA"));
+    assert!(trait_c_traits[1].get_name() == &ByteString::from(b"TraitB"));
 
-    let trait_d = index.get_class(name(b"TraitD")).unwrap();
+    let trait_d = index.get_class(&ByteString::from(b"TraitD")).unwrap();
 
-    assert!(trait_d.get_name() == name(b"TraitD"));
-    assert!(trait_d.get_short_name() == name(b"TraitD"));
+    assert!(trait_d.get_name() == &ByteString::from(b"TraitD"));
+    assert!(trait_d.get_short_name() == &ByteString::from(b"TraitD"));
     assert!(trait_d.get_namespace() == None);
     assert!(trait_d.is_trait());
 
     let trait_d_constants = trait_d.get_constants().collect::<Vec<_>>();
 
     assert!(trait_d_constants.len() == 1);
-    assert!(trait_d_constants[0].get_name() == name(b"A"));
+    assert!(trait_d_constants[0].get_name() == &ByteString::from(b"A"));
 
     let trait_d_methods = trait_d.get_methods().collect::<Vec<_>>();
 
     assert!(trait_d_methods.len() == 4);
 
-    let a = trait_d.get_method(name(b"a")).unwrap();
+    let a = trait_d.get_method(ByteString::from(b"a")).unwrap();
     assert!(a.is_public());
     assert!(a.get_return_type() == &Type::Mixed);
 
-    let b = trait_d.get_method(name(b"b")).unwrap();
+    let b = trait_d.get_method(ByteString::from(b"b")).unwrap();
     assert!(b.is_public());
     assert!(b.get_return_type() == &Type::String);
 
-    let c = trait_d.get_method(name(b"c")).unwrap();
+    let c = trait_d.get_method(ByteString::from(b"c")).unwrap();
     assert!(c.is_protected());
     assert!(c.is_static());
 
-    let d = trait_d.get_method(name(b"d")).unwrap();
+    let d = trait_d.get_method(ByteString::from(b"d")).unwrap();
     assert!(d.is_private());
     assert!(d.is_abstract());
 }
@@ -255,82 +256,82 @@ fn it_indexes_traits() {
 fn it_indexes_functions() {
     let index = index();
 
-    let a = index.get_function(name(b"a")).unwrap();
+    let a = index.get_function(&ByteString::from(b"a")).unwrap();
 
-    assert!(a.get_name() == name(b"a"));
-    assert!(a.get_short_name() == name(b"a"));
+    assert!(a.get_name() == &ByteString::from(b"a"));
+    assert!(a.get_short_name() == &ByteString::from(b"a"));
     assert!(a.get_namespace() == None);
 
-    let c = index.get_function(name(b"c")).unwrap();
+    let c = index.get_function(&ByteString::from(b"c")).unwrap();
 
-    assert!(c.get_name() == name(b"c"));
-    assert!(c.get_short_name() == name(b"c"));
+    assert!(c.get_name() == &ByteString::from(b"c"));
+    assert!(c.get_short_name() == &ByteString::from(b"c"));
     assert!(c.get_namespace() == None);
 
     let c_parameters = c.get_parameters().collect::<Vec<_>>();
 
     assert!(c_parameters.len() == 1);
-    assert!(c_parameters[0].get_name() == name(b"a"));
+    assert!(c_parameters[0].get_name() == &ByteString::from(b"a"));
     assert!(c_parameters[0].get_type() == &Type::String);
 
-    let d = index.get_function(name(b"d")).unwrap();
+    let d = index.get_function(&ByteString::from(b"d")).unwrap();
 
     assert!(d.get_return_type() == &Type::Integer);
 
-    let e = index.get_function(name(b"e")).unwrap();
+    let e = index.get_function(&ByteString::from(b"e")).unwrap();
 
     assert!(e.returns_by_reference());
 
-    let b = index.get_function(name(b"A\\b")).unwrap();
+    let b = index.get_function(&ByteString::from(b"A\\b")).unwrap();
 
-    assert!(b.get_name() == name(b"A\\b"));
-    assert!(b.get_short_name() == name(b"b"));
-    assert!(b.get_namespace() == Some(name(b"A")));
+    assert!(b.get_name() == &ByteString::from(b"A\\b"));
+    assert!(b.get_short_name() == &ByteString::from(b"b"));
+    assert!(b.get_namespace() == Some(&ByteString::from(b"A")));
 }
 
 #[test]
 fn it_indexes_enums() {
     let index = index();
 
-    let role = index.get_class(name(b"Role")).unwrap();
+    let role = index.get_class(&ByteString::from(b"Role")).unwrap();
 
-    assert!(role.get_name() == name(b"Role"));
-    assert!(role.get_short_name() == name(b"Role"));
+    assert!(role.get_name() == &ByteString::from(b"Role"));
+    assert!(role.get_short_name() == &ByteString::from(b"Role"));
     assert!(role.get_namespace() == None);
     assert!(role.is_enum());
 
     let cases = role.get_cases().collect::<Vec<_>>();
 
     assert!(cases.len() == 2);
-    assert!(cases[0].get_name() == name(b"Admin"));
-    assert!(cases[1].get_name() == name(b"User"));
+    assert!(cases[0].get_name() == &ByteString::from(b"Admin"));
+    assert!(cases[1].get_name() == &ByteString::from(b"User"));
 
-    let status = index.get_class(name(b"Status")).unwrap();
+    let status = index.get_class(&ByteString::from(b"Status")).unwrap();
 
-    assert!(status.get_name() == name(b"Status"));
-    assert!(status.get_short_name() == name(b"Status"));
+    assert!(status.get_name() == &ByteString::from(b"Status"));
+    assert!(status.get_short_name() == &ByteString::from(b"Status"));
     assert!(status.get_namespace() == None);
     assert!(status.is_enum());
 
     let cases = status.get_cases().collect::<Vec<_>>();
 
     assert!(cases.len() == 2);
-    assert!(cases[0].get_name() == name(b"Active"));
-    assert!(cases[1].get_name() == name(b"Inactive"));
+    assert!(cases[0].get_name() == &ByteString::from(b"Active"));
+    assert!(cases[1].get_name() == &ByteString::from(b"Inactive"));
 
-    let color = index.get_class(name(b"Color")).unwrap();
+    let color = index.get_class(&ByteString::from(b"Color")).unwrap();
 
-    assert!(color.get_name() == name(b"Color"));
-    assert!(color.get_short_name() == name(b"Color"));
+    assert!(color.get_name() == &ByteString::from(b"Color"));
+    assert!(color.get_short_name() == &ByteString::from(b"Color"));
     assert!(color.get_namespace() == None);
     assert!(color.is_enum());
 
     let cases = color.get_cases().collect::<Vec<_>>();
 
     assert!(cases.len() == 3);
-    assert!(cases[0].get_name() == name(b"Red"));
-    assert!(cases[1].get_name() == name(b"Green"));
-    assert!(cases[2].get_name() == name(b"Blue"));
+    assert!(cases[0].get_name() == &ByteString::from(b"Red"));
+    assert!(cases[1].get_name() == &ByteString::from(b"Green"));
+    assert!(cases[2].get_name() == &ByteString::from(b"Blue"));
 
     let methods = color.get_methods().collect::<Vec<_>>();
 
@@ -338,13 +339,9 @@ fn it_indexes_enums() {
 
     let get_hex = &methods[0];
 
-    assert!(get_hex.get_name() == name(b"getHex"));
+    assert!(get_hex.get_name() == &ByteString::from(b"getHex"));
     assert!(get_hex.get_return_type() == &Type::String);
     assert!(get_hex.is_public());
-}
-
-fn name(name: &[u8]) -> Symbol {
-    SymbolTable::the().intern(name)
 }
 
 fn index() -> Index {
@@ -354,7 +351,6 @@ fn index() -> Index {
     for file in files.iter() {
         let result = parse(
             &std::fs::read(&file).expect("failed to read file"),
-            SymbolTable::the(),
         );
         indexer.index(&result.ast);
     }

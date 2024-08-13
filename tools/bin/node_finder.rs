@@ -1,6 +1,6 @@
 use pxp_node_finder::NodeFinder;
 use pxp_parser::parse;
-use pxp_symbol::SymbolTable;
+
 
 fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
@@ -12,7 +12,7 @@ fn main() {
     println!("Locating node at offset: {}", offset_marker);
 
     let input = input.replace("§", "");
-    let result = parse(&input, SymbolTable::the());
+    let result = parse(&input);
 
     // dbg!(&result.ast);
 

@@ -44,8 +44,8 @@
                                         start: 11,
                                         end: 18,
                                     },
-                                    resolved: Symbol("Foo\Bar"),
-                                    original: Symbol("Foo\Bar"),
+                                    resolved: "Foo\Bar",
+                                    original: "Foo\Bar",
                                 },
                             ),
                             span: Span {
@@ -56,7 +56,7 @@
                         alias: Some(
                             SimpleIdentifier {
                                 id: 5,
-                                symbol: Symbol("Qux"),
+                                symbol: "Qux",
                                 span: Span {
                                     start: 22,
                                     end: 25,
@@ -107,8 +107,8 @@
                                 start: 34,
                                 end: 37,
                             },
-                            resolved: Symbol("Baz"),
-                            original: Symbol("Baz"),
+                            resolved: "Baz",
+                            original: "Baz",
                         },
                     ),
                     span: Span {
@@ -139,8 +139,8 @@
                                                 start: 49,
                                                 end: 56,
                                             },
-                                            resolved: Symbol("Foo\Bar\Foo"),
-                                            original: Symbol("Qux\Foo"),
+                                            resolved: "Foo\Bar\Foo",
+                                            original: "Qux\Foo",
                                         },
                                     ),
                                     span: Span {

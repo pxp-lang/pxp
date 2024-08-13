@@ -29,7 +29,7 @@
                 },
                 prefix: SimpleIdentifier {
                     id: 3,
-                    symbol: Symbol("Foo\"),
+                    symbol: "Foo\",
                     span: Span {
                         start: 11,
                         end: 15,
@@ -52,8 +52,8 @@
                                         start: 21,
                                         end: 24,
                                     },
-                                    resolved: Symbol("Foo\\Bar"),
-                                    original: Symbol("Bar"),
+                                    resolved: "Foo\\Bar",
+                                    original: "Bar",
                                 },
                             ),
                             span: Span {
@@ -79,8 +79,8 @@
                                         start: 30,
                                         end: 33,
                                     },
-                                    resolved: Symbol("Foo\\Baz"),
-                                    original: Symbol("Baz"),
+                                    resolved: "Foo\\Baz",
+                                    original: "Baz",
                                 },
                             ),
                             span: Span {

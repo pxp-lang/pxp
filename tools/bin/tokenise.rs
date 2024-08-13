@@ -2,7 +2,7 @@ use std::{env::args, path::Path, process::exit};
 
 use discoverer::discover;
 use pxp_lexer::Lexer;
-use pxp_symbol::SymbolTable;
+
 use pxp_token::Token;
 
 fn main() {
@@ -15,7 +15,6 @@ fn main() {
 
     let path = args.first().unwrap();
     let path = Path::new(path);
-    let symbol_table = SymbolTable::the();
     let immediate = args.contains(&"--immediate".to_string());
     let no_output = args.contains(&"--no-output".to_string());
 
@@ -30,7 +29,7 @@ fn main() {
             }
 
             let contents = std::fs::read(file).unwrap();
-            let mut lexer = Lexer::new(&contents[..], symbol_table);
+            let mut lexer = Lexer::new(&contents[..]);
 
             match if immediate {
                 lexer.tokenize_in_immediate_mode()
@@ -66,7 +65,7 @@ fn main() {
         }
     } else {
         let contents = std::fs::read(path).unwrap();
-        let mut lexer = Lexer::new(&contents[..], symbol_table);
+        let mut lexer = Lexer::new(&contents[..]);
         let tokens = match if immediate {
             lexer.tokenize_in_immediate_mode()
         } else {
@@ -87,6 +86,6 @@ fn main() {
 
 fn dbg_tokens(tokens: &[Token]) {
     for token in tokens.iter() {
-        println!("{}", token.dbg());
+        println!("{:#?}", token);
     }
 }

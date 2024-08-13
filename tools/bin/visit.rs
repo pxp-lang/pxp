@@ -3,7 +3,7 @@ use std::{env::args, path::Path, process::exit};
 use discoverer::discover;
 use pxp_ast::visitor::Visitor;
 use pxp_parser::parse;
-use pxp_symbol::SymbolTable;
+
 
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
@@ -15,7 +15,6 @@ fn main() {
 
     let path = args.first().unwrap();
     let path = Path::new(path);
-    let symbol_table = SymbolTable::the();
 
     if path.is_dir() {
         // let mut errors = Vec::new();
@@ -38,7 +37,7 @@ fn main() {
             }
 
             let contents = std::fs::read(file).unwrap();
-            let ast = parse(&contents, symbol_table);
+            let ast = parse(&contents);
 
             if !ast.diagnostics.is_empty() && stop_on_errors {
                 ast.diagnostics.iter().for_each(|error| {

@@ -44,8 +44,8 @@
                                         start: 17,
                                         end: 22,
                                     },
-                                    resolved: Symbol("A\FOO"),
-                                    original: Symbol("A\FOO"),
+                                    resolved: "A\FOO",
+                                    original: "A\FOO",
                                 },
                             ),
                             span: Span {
@@ -93,8 +93,8 @@
                                             start: 30,
                                             end: 33,
                                         },
-                                        resolved: Symbol("A\FOO"),
-                                        original: Symbol("FOO"),
+                                        resolved: "A\FOO",
+                                        original: "FOO",
                                     },
                                 ),
                                 span: Span {

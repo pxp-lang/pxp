@@ -58,7 +58,7 @@
                                                     end: 12,
                                                 },
                                                 symbol: Some(
-                                                    Symbol("'a'"),
+                                                    "'a'",
                                                 ),
                                             },
                                         },

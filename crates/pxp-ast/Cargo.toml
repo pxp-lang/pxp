@@ -12,6 +12,7 @@ pxp-span = { path = "../pxp-span" }
 pxp-syntax = { path = "../pxp-syntax" }
 pxp-symbol = { path = "../pxp-symbol" }
 pxp-type = { path = "../pxp-type" }
+pxp-bytestring = { version = "0.1.0", path = "../pxp-bytestring" }
 
 [build-dependencies]
 pxp-build = { version = "0.1.0", path = "../pxp-build" }

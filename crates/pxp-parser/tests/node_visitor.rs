@@ -1,6 +1,6 @@
 use pxp_ast::{visitor::{NodeVisitor, NodeVisitorEscapeHatch}, Node};
 use pxp_parser::parse;
-use pxp_symbol::SymbolTable;
+
 
 struct TestVisitor {
     output: Vec<String>,
@@ -35,7 +35,7 @@ echo (new B)->c('Hello, World!');
 
 #[test]
 fn it_traverses_a_node_tree_correctly() {
-    let result = parse(&CODE, SymbolTable::the());
+    let result = parse(&CODE);
 
     let mut visitor = TestVisitor { output: vec![] };
     visitor.traverse(&result.ast[..]);
