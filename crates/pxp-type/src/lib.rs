@@ -20,8 +20,6 @@ pub enum Type<N: Debug + Display> {
     Integer,
     String,
     Array,
-    GenericArray(Box<Type<N>>, Box<Type<N>>),
-    EmptyArray,
     Object,
     #[default]
     Mixed,
@@ -34,6 +32,10 @@ pub enum Type<N: Debug + Display> {
 }
 
 impl<N: Debug + Display> Type<N> {
+    pub fn map<T: Debug + Display>(&self, cb: impl FnOnce(&Type<N>) -> Type<T>) -> Type<T> {
+        cb(self)
+    }
+
     pub fn standalone(&self) -> bool {
         matches!(
             self,
@@ -93,8 +95,6 @@ impl<N: Debug + Display> Display for Type<N> {
             Type::Integer => write!(f, "int"),
             Type::String => write!(f, "string"),
             Type::Array => write!(f, "array"),
-            Type::GenericArray(key, value) => write!(f, "array<{}, {}>", key, value),
-            Type::EmptyArray => write!(f, "empty-array"),
             Type::Object => write!(f, "object"),
             Type::Mixed => write!(f, "mixed"),
             Type::Callable => write!(f, "callable"),

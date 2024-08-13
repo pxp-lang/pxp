@@ -39,6 +39,14 @@ impl Index {
         self.functions.insert(function.name.clone(), function);
     }
 
+    pub(crate) fn has_function(&self, name: &ByteString) -> bool {
+        self.functions.contains_key(name)
+    }
+
+    pub fn has_class(&self, name: &ByteString) -> bool {
+        self.classes.contains_key(name)
+    }
+
     pub(crate) fn add_constant(&mut self, constant: Constant) {
         self.constants.insert(constant.name.clone(), constant);
     }

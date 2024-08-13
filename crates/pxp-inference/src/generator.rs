@@ -4,7 +4,7 @@ use pxp_ast::{*, visitor::Visitor};
 use pxp_bytestring::ByteString;
 use pxp_index::Index;
 use pxp_type::Type;
-use visitor::{walk_assignment_operation_expression, walk_expression, walk_function_statement};
+use visitor::{walk_assignment_operation_expression, walk_expression, walk_function_statement, walk_parenthesized_expression};
 
 use crate::TypeMap;
 
@@ -46,15 +46,15 @@ impl ScopeStack {
 
 #[derive(Debug)]
 struct Scope {
-    variables: HashMap<ByteString, Type<Name>>,
+    variables: HashMap<ByteString, Type<ByteString>>,
 }
 
 impl Scope {
-    fn insert(&mut self, variable: ByteString, ty: Type<Name>) {
+    fn insert(&mut self, variable: ByteString, ty: Type<ByteString>) {
         self.variables.insert(variable, ty);
     }
 
-    fn get(&self, variable: &ByteString) -> &Type<Name> {
+    fn get(&self, variable: &ByteString) -> &Type<ByteString> {
         self.variables.get(variable).unwrap_or_else(|| &Type::Mixed)
     }
 }
@@ -87,6 +87,33 @@ impl<'i> TypeMapGenerator<'i> {
         self.scopes.push();
         f(self);
         self.scopes.pop();
+    }
+
+    fn bytestring_type(&self, ty: &Type<Name>) -> Type<ByteString> {
+        match ty {
+            Type::Named(inner) => Type::Named(inner.symbol().clone()),
+            Type::Nullable(inner) => Type::Nullable(Box::new(self.bytestring_type(inner))),
+            Type::Union(tys) => Type::Union(tys.iter().map(|t| self.bytestring_type(t)).collect()),
+            Type::Intersection(tys) => Type::Intersection(tys.iter().map(|t| self.bytestring_type(t)).collect()),
+            Type::Void => Type::Void,
+            Type::Null => Type::Null,
+            Type::True => Type::True,
+            Type::False => Type::False,
+            Type::Never => Type::Never,
+            Type::Float => Type::Float,
+            Type::Boolean => Type::Boolean,
+            Type::Integer => Type::Integer,
+            Type::String => Type::String,
+            Type::Array => Type::Array,
+            Type::Object => Type::Object,
+            Type::Mixed => Type::Mixed,
+            Type::Callable => Type::Callable,
+            Type::Iterable => Type::Iterable,
+            Type::StaticReference => Type::StaticReference,
+            Type::SelfReference => Type::SelfReference,
+            Type::ParentReference => Type::ParentReference,
+            Type::Missing => Type::Missing,
+        }
     }
 }
 
@@ -146,7 +173,9 @@ impl Visitor for TypeMapGenerator<'_> {
             // Insert function parameters into the current scope.
             for parameter in node.parameters.iter() {
                 // FIXME: Make this look nicer...
-                this.scopes.scope_mut().insert(parameter.name.symbol.clone(), parameter.data_type.as_ref().map(|d| d.get_type().clone()).unwrap_or_else(|| Type::Mixed));
+                let ty = parameter.data_type.as_ref().map(|d| this.bytestring_type(d.get_type())).unwrap_or_else(|| Type::Mixed);
+
+                this.scopes.scope_mut().insert(parameter.name.symbol.clone(), ty);
             }
 
             walk_function_statement(this, node);
@@ -172,6 +201,44 @@ impl Visitor for TypeMapGenerator<'_> {
             todo!("do checks for resolved and unresolved names");
         };
 
-        self.map.insert(node.id, return_type);
+        self.map.insert(node.id, self.bytestring_type(&return_type));
+    }
+
+    fn visit_parenthesized_expression(&mut self, node: &ParenthesizedExpression) {
+        walk_parenthesized_expression(self, node);
+
+        let ty = self.map.resolve(node.expr.id);
+
+        self.map.insert(node.id, ty.clone());
+    }
+
+    fn visit_new_expression(&mut self, node: &NewExpression) {
+        let target = node.target.as_ref();
+
+        // FIXME: Add support for "new"ing up objects from local variables of known "objectable" types.
+        if ! matches!(target.kind, ExpressionKind::Name(_)) {
+            return;
+        }
+
+        let name = match &target.kind {
+            ExpressionKind::Name(name) => name,
+            _ => unreachable!()
+        };
+
+        let ty = if let Some(resolved) = name.as_resolved() {
+            if self.index.has_class(&resolved.resolved) {
+                Type::Named(resolved.resolved.clone())
+            } else {
+                Type::Mixed
+            }
+        } else if name.is_unresolved() {
+            Type::Mixed
+        } else if name.is_special() {
+            Type::Mixed
+        } else {
+            unreachable!()
+        };
+
+        self.map.insert(node.id, ty);
     }
 }
