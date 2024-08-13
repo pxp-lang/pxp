@@ -5,7 +5,6 @@ use pxp_bytestring::{ByteString};
 use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::stream::TokenStream;
 use pxp_span::Span;
-use pxp_symbol::{Symbol};
 use pxp_token::{Token, TokenKind};
 
 use crate::{internal::identifiers::is_soft_reserved_identifier, ParserDiagnostic};
@@ -28,7 +27,6 @@ pub struct State<'a> {
     pub stream: &'a mut TokenStream<'a>,
     pub attributes: Vec<AttributeGroup>,
     pub namespace_type: Option<NamespaceType>,
-    pub namespace: Option<Symbol>,
     pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
     pub imports: HashMap<UseKind, HashMap<ByteString, ByteString>>,
     id: u32,
@@ -47,7 +45,6 @@ impl<'a> State<'a> {
             namespace_type: None,
             attributes: vec![],
             diagnostics: vec![],
-            namespace: None,
             imports,
             id: 0,
         }
@@ -130,7 +127,7 @@ impl<'a> State<'a> {
             Name::resolved(id, self.join_with_namespace(symbol), symbol.clone(), token.span)
         // Unqualified names in the global namespace can be resolved without any imports, since we can
         // only be referencing something else inside of the global namespace.
-        } else if (kind == UseKind::Function || kind == UseKind::Const) && token.kind == TokenKind::Identifier && self.namespace.is_none() {
+        } else if (kind == UseKind::Function || kind == UseKind::Const) && token.kind == TokenKind::Identifier && self.namespace().is_none() {
             Name::resolved(id, symbol.clone(), symbol.clone(), token.span)
         } else {
             Name::unresolved(id, symbol.clone(), token.kind.into(), token.span)

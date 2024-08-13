@@ -11,4 +11,3 @@ pxp-span = { version = "0.1.0", path = "../pxp-span" }
 
 [dev-dependencies]
 pxp-parser = { path = "../pxp-parser" }
-pxp-symbol = { path = "../pxp-symbol" }

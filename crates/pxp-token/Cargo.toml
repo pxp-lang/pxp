@@ -9,4 +9,3 @@ license-file.workspace = true
 [dependencies]
 pxp-bytestring = { path = "../pxp-bytestring" }
 pxp-span = { path = "../pxp-span" }
-pxp-symbol = { path = "../pxp-symbol" }
