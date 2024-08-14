@@ -6,6 +6,7 @@ use pxp_parser::parse;
 
 fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
+    let no_output = args.iter().any(|arg| arg == "--no-output");
     let path = args.first().expect("missing path to file");
     let input = std::fs::read_to_string(path).expect("failed to read file");
     let offset_marker = input.find('§').expect("missing offset marker");
@@ -20,6 +21,10 @@ fn main() {
     let index = indexer.get_index();
     let inference_engine = InferenceEngine::new(index);
     let map = inference_engine.map(&result.ast[..]);
+
+    if no_output {
+        return;
+    }
 
     println!("Node: {:#?}", &node);
     println!("TypeMap: {:#?}", &map);

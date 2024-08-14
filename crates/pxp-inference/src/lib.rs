@@ -189,6 +189,42 @@ mod tests {
         );
     }
 
+    #[test]
+    fn class_property_untyped() {
+        assert_eq!(infer("
+        <?php
+
+        use App\\Foo;
+
+        $foo = new Foo();
+        ($foo->foo)§;
+        ", index()), Type::Mixed);
+    }
+
+    #[test]
+    fn class_property_typed() {
+        assert_eq!(infer("
+        <?php
+
+        use App\\Foo;
+
+        $foo = new Foo();
+        ($foo->foop)§;
+        ", index()), Type::String);
+    }
+
+    #[test]
+    fn class_property_chained() {
+        assert_eq!(infer("
+        <?php
+
+        use App\\Foo;
+
+        $foo = new Foo();
+        ($foo->bar->baz)§;
+        ", index()), Type::String);
+    }
+
     /// Infer the type using the given input.
     /// The cursor position (denoted by the § character) is used to determine the target node.
     fn infer(input: &str, index: Option<Index>) -> Type<ByteString> {
@@ -214,7 +250,7 @@ mod tests {
     fn index() -> Option<Index> {
         let mut indexer = Indexer::new();
 
-        let paths = ["tests/fixtures/Foo.php"];
+        let paths = ["tests/fixtures/Foo.php", "tests/fixtures/Bar.php"];
 
         for path in paths {
             let result = parse(&std::fs::read(path).expect("failed to read fixture path"));

@@ -136,11 +136,11 @@ impl<'a> ReflectionClass<'a> {
             })
     }
 
-    pub fn get_property(&self, name: ByteString) -> Option<ReflectionProperty> {
+    pub fn get_property(&self, name: &ByteString) -> Option<ReflectionProperty> {
         self.class
             .properties
             .iter()
-            .find(|property| property.name == name)
+            .find(|property| &property.name == name)
             .map(|property| ReflectionProperty {
                 class: self,
                 property,

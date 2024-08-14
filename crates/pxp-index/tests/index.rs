@@ -44,26 +44,26 @@ fn it_indexes_classes() {
 
     assert!(properties_properties.len() == 6);
 
-    let a = properties.get_property(ByteString::from(b"a")).unwrap();
+    let a = properties.get_property(&ByteString::from(b"a")).unwrap();
     assert!(a.is_public());
     assert!(a.get_type() == &Type::Mixed);
 
-    let b = properties.get_property(ByteString::from(b"b")).unwrap();
+    let b = properties.get_property(&ByteString::from(b"b")).unwrap();
     assert!(b.is_public());
     assert!(b.get_type() == &Type::String);
 
-    let c = properties.get_property(ByteString::from(b"c")).unwrap();
+    let c = properties.get_property(&ByteString::from(b"c")).unwrap();
     assert!(c.is_protected());
     assert!(c.get_type() == &Type::Integer);
 
-    let d = properties.get_property(ByteString::from(b"d")).unwrap();
+    let d = properties.get_property(&ByteString::from(b"d")).unwrap();
     assert!(d.is_private());
     assert!(d.get_type() == &Type::Boolean);
 
-    let e = properties.get_property(ByteString::from(b"e")).unwrap();
+    let e = properties.get_property(&ByteString::from(b"e")).unwrap();
     assert!(e.is_static());
 
-    let f = properties.get_property(ByteString::from(b"f")).unwrap();
+    let f = properties.get_property(&ByteString::from(b"f")).unwrap();
     assert!(f.is_public());
     assert!(f.get_type() == &Type::Mixed);
 
@@ -348,9 +348,7 @@ fn index() -> Index {
     let files = discover(&["php"], &["tests/fixtures"]).expect("failed to discover files");
 
     for file in files.iter() {
-        let result = parse(
-            &std::fs::read(file).expect("failed to read file"),
-        );
+        let result = parse(&std::fs::read(file).expect("failed to read file"));
         indexer.index(&result.ast);
     }
 

@@ -5,5 +5,6 @@ namespace App;
 class Foo
 {
     public $foo;
-    public string $bar;
+    public string $foop;
+    public Bar $bar;
 }
