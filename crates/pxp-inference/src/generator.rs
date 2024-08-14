@@ -4,7 +4,7 @@ use pxp_ast::{*, visitor::Visitor};
 use pxp_bytestring::ByteString;
 use pxp_index::Index;
 use pxp_type::Type;
-use visitor::{walk_assignment_operation_expression, walk_expression, walk_function_statement, walk_method_call_expression, walk_parenthesized_expression, walk_property_fetch_expression};
+use visitor::{walk_assignment_operation_expression, walk_expression, walk_function_statement, walk_method_call_expression, walk_name, walk_parenthesized_expression, walk_property_fetch_expression, walk_static_method_call_expression};
 
 use crate::TypeMap;
 
@@ -262,6 +262,56 @@ impl Visitor for TypeMapGenerator<'_> {
         let ty = match object_ty {
             Type::Named(name) => if let Some(class) = self.index.get_class(name) {
                 if let Some(method) = class.get_method(&method.symbol) {
+                    self.bytestring_type(method.get_return_type())
+                } else {
+                    Type::Mixed
+                }
+            } else {
+                Type::Mixed
+            },
+            _ => Type::Mixed,
+        };
+
+        self.map.insert(node.id, ty)
+    }
+
+    fn visit_name(&mut self, node: &Name) {
+        walk_name(self, node);
+
+        let inner_id = node.kind.id();
+
+        self.map.insert(node.id(), self.map.resolve(inner_id).clone());
+    }
+
+    fn visit_resolved_name(&mut self, node: &ResolvedName) {
+        let ty = if self.index.has_class(&node.resolved) {
+            Type::Named(node.resolved.clone())
+        } else {
+            // FIXME: Add support for constant names here.
+            Type::Mixed
+        };
+
+        self.map.insert(node.id(), ty);
+    }
+
+    fn visit_static_method_call_expression(&mut self, node: &StaticMethodCallExpression) {
+        if !matches!(node.method, Identifier::SimpleIdentifier(_)) {
+            return;
+        }
+
+        walk_static_method_call_expression(self, node);
+
+        let method = match &node.method {
+            Identifier::SimpleIdentifier(method) => method,
+            _ => unreachable!(),
+        };
+
+        let target = node.target.as_ref();
+        let class_ty = self.map.resolve(target.id);
+
+        let ty = match class_ty {
+            Type::Named(name) => if let Some(class) = self.index.get_class(name) {
+                if let Some(method) = class.get_static_method(&method.symbol) {
                     self.bytestring_type(method.get_return_type())
                 } else {
                     Type::Mixed

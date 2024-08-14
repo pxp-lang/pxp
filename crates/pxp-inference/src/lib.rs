@@ -237,6 +237,17 @@ mod tests {
         ", index()), Type::Named(ByteString::from(b"App\\Bar")));
     }
 
+    #[test]
+    fn class_static_method_call() {
+        assert_eq!(infer("
+        <?php
+
+        use App\\Bar;
+
+        (Bar::the())§;
+        ", index()), Type::Named(ByteString::from(b"App\\Bar")));
+    }
+
     /// Infer the type using the given input.
     /// The cursor position (denoted by the § character) is used to determine the target node.
     fn infer(input: &str, index: Option<Index>) -> Type<ByteString> {

@@ -216,6 +216,18 @@ impl<'a> ReflectionClass<'a> {
             })
     }
 
+    pub fn get_static_method(&self, name: &ByteString) -> Option<ReflectionMethod> {
+        self.class
+            .methods
+            .iter()
+            .find(|method| &method.name == name && method.modifiers.has_static())
+            .map(|method| ReflectionMethod {
+                class: self,
+                method,
+                index: self.index,
+            })
+    }
+
     pub fn get_public_methods(&self) -> impl Iterator<Item = ReflectionMethod> + '_ {
         self.get_methods().filter(|method| method.is_public())
     }
