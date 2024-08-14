@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use pxp_bytestring::{ByteString};
+use pxp_bytestring::ByteString;
 use pxp_span::Span;
 
 use pxp_syntax::name::NameQualification;

@@ -1,6 +1,5 @@
-use pxp_bytestring::{ByteString};
+use pxp_bytestring::ByteString;
 use pxp_span::{Span, Spanned};
-
 
 use crate::{Identifier, NodeId, SimpleIdentifier};
 

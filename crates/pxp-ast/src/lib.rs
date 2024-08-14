@@ -2,10 +2,12 @@ use std::fmt::{Display, Formatter};
 
 mod generated;
 mod id;
+mod node;
 pub mod visitor;
 
 pub use generated::*;
 pub use id::HasId;
+pub use node::Node;
 use pxp_span::{Span, Spanned};
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::{Token, TokenKind};
