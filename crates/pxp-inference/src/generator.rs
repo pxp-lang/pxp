@@ -4,7 +4,7 @@ use pxp_ast::{*, visitor::Visitor};
 use pxp_bytestring::ByteString;
 use pxp_index::Index;
 use pxp_type::Type;
-use visitor::{walk_assignment_operation_expression, walk_expression, walk_function_statement, walk_parenthesized_expression, walk_property_fetch_expression};
+use visitor::{walk_assignment_operation_expression, walk_expression, walk_function_statement, walk_method_call_expression, walk_parenthesized_expression, walk_property_fetch_expression};
 
 use crate::TypeMap;
 
@@ -240,6 +240,39 @@ impl Visitor for TypeMapGenerator<'_> {
         };
 
         self.map.insert(node.id, ty);
+    }
+
+    fn visit_method_call_expression(&mut self, node: &MethodCallExpression) {
+        let method = node.method.as_ref();
+
+        if !matches!(method.kind, ExpressionKind::Identifier(Identifier::SimpleIdentifier(_))) {
+            return;
+        }
+
+        walk_method_call_expression(self, node);
+
+        let method = match &method.kind {
+            ExpressionKind::Identifier(Identifier::SimpleIdentifier(method)) => method,
+            _ => unreachable!(),
+        };
+
+        let target = node.target.as_ref();
+        let object_ty = self.map.resolve(target.id);
+
+        let ty = match object_ty {
+            Type::Named(name) => if let Some(class) = self.index.get_class(name) {
+                if let Some(method) = class.get_method(&method.symbol) {
+                    self.bytestring_type(method.get_return_type())
+                } else {
+                    Type::Mixed
+                }
+            } else {
+                Type::Mixed
+            },
+            _ => Type::Mixed,
+        };
+
+        self.map.insert(node.id, ty)
     }
 
     fn visit_property_fetch_expression(&mut self, node: &PropertyFetchExpression) {

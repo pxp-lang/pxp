@@ -77,23 +77,23 @@ fn it_indexes_classes() {
 
     assert!(methods_methods.len() == 5);
 
-    let a = methods.get_method(ByteString::from(b"a")).unwrap();
+    let a = methods.get_method(&ByteString::from(b"a")).unwrap();
     assert!(a.is_public());
     assert!(a.get_return_type() == &Type::Mixed);
 
-    let b = methods.get_method(ByteString::from(b"b")).unwrap();
+    let b = methods.get_method(&ByteString::from(b"b")).unwrap();
     assert!(b.is_public());
     assert!(b.get_return_type() == &Type::String);
 
-    let c = methods.get_method(ByteString::from(b"c")).unwrap();
+    let c = methods.get_method(&ByteString::from(b"c")).unwrap();
     assert!(c.is_protected());
     assert!(c.get_return_type() == &Type::Integer);
 
-    let d = methods.get_method(ByteString::from(b"d")).unwrap();
+    let d = methods.get_method(&ByteString::from(b"d")).unwrap();
     assert!(d.is_private());
     assert!(d.get_return_type() == &Type::Boolean);
 
-    let e = methods.get_method(ByteString::from(b"e")).unwrap();
+    let e = methods.get_method(&ByteString::from(b"e")).unwrap();
     assert!(e.is_static());
 
     let constants = index.get_class(&ByteString::from(b"Constants")).unwrap();
@@ -172,15 +172,15 @@ fn it_indexes_interfaces() {
 
     assert!(l_methods.len() == 3);
 
-    let a = l.get_method(ByteString::from(b"a")).unwrap();
+    let a = l.get_method(&ByteString::from(b"a")).unwrap();
     assert!(a.is_public());
     assert!(a.get_return_type() == &Type::Mixed);
 
-    let b = l.get_method(ByteString::from(b"b")).unwrap();
+    let b = l.get_method(&ByteString::from(b"b")).unwrap();
     assert!(b.is_public());
     assert!(b.get_return_type() == &Type::String);
 
-    let c = l.get_method(ByteString::from(b"c")).unwrap();
+    let c = l.get_method(&ByteString::from(b"c")).unwrap();
 
     assert!(c.get_return_type() == &Type::Mixed);
     assert!(c.is_static());
@@ -234,19 +234,19 @@ fn it_indexes_traits() {
 
     assert!(trait_d_methods.len() == 4);
 
-    let a = trait_d.get_method(ByteString::from(b"a")).unwrap();
+    let a = trait_d.get_method(&ByteString::from(b"a")).unwrap();
     assert!(a.is_public());
     assert!(a.get_return_type() == &Type::Mixed);
 
-    let b = trait_d.get_method(ByteString::from(b"b")).unwrap();
+    let b = trait_d.get_method(&ByteString::from(b"b")).unwrap();
     assert!(b.is_public());
     assert!(b.get_return_type() == &Type::String);
 
-    let c = trait_d.get_method(ByteString::from(b"c")).unwrap();
+    let c = trait_d.get_method(&ByteString::from(b"c")).unwrap();
     assert!(c.is_protected());
     assert!(c.is_static());
 
-    let d = trait_d.get_method(ByteString::from(b"d")).unwrap();
+    let d = trait_d.get_method(&ByteString::from(b"d")).unwrap();
     assert!(d.is_private());
     assert!(d.is_abstract());
 }

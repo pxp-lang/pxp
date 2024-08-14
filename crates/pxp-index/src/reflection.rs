@@ -204,11 +204,11 @@ impl<'a> ReflectionClass<'a> {
         })
     }
 
-    pub fn get_method(&self, name: ByteString) -> Option<ReflectionMethod> {
+    pub fn get_method(&self, name: &ByteString) -> Option<ReflectionMethod> {
         self.class
             .methods
             .iter()
-            .find(|method| method.name == name)
+            .find(|method| &method.name == name)
             .map(|method| ReflectionMethod {
                 class: self,
                 method,

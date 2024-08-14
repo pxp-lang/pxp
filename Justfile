@@ -2,19 +2,19 @@ test:
     cargo nextest run
 
 tokenise +args:
-    RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin tokenise --release -- {{args}}
+    RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin tokenise -- {{args}}
 
 parse +args:
-    RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin parse --release -- {{args}}
+    RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin parse -- {{args}}
 
 multi-thread-parse +args:
-    RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin multi-thread-parse --release -- {{args}}
+    RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin multi-thread-parse -- {{args}}
 
 node-finder +args:
-    RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin node-finder --release -- {{args}}
+    RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin node-finder -- {{args}}
 
 infer +args:
-    RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin infer --release -- {{args}}
+    RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin infer -- {{args}}
 
 generate-ast:
     php ./meta/scripts/generate-ast.php

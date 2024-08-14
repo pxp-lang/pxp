@@ -225,6 +225,18 @@ mod tests {
         ", index()), Type::String);
     }
 
+    #[test]
+    fn class_method_call() {
+        assert_eq!(infer("
+        <?php
+
+        use App\\Foo;
+
+        $foo = new Foo();
+        ($foo->getBar())§;
+        ", index()), Type::Named(ByteString::from(b"App\\Bar")));
+    }
+
     /// Infer the type using the given input.
     /// The cursor position (denoted by the § character) is used to determine the target node.
     fn infer(input: &str, index: Option<Index>) -> Type<ByteString> {
