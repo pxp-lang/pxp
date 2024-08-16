@@ -1,4 +1,4 @@
-use pxp_ast::{visitor::{NodeVisitor, NodeVisitorEscapeHatch}, Node, Statement};
+use pxp_ast::{visitor::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch}, Node, Statement};
 use pxp_span::ByteOffset;
 
 pub struct NodeFinder<'a> {
@@ -19,7 +19,7 @@ impl<'a> NodeFinder<'a> {
 }
 
 impl<'a> NodeVisitor<'a> for NodeFinder<'a> {
-    fn enter(&mut self, node: Node<'a>) -> NodeVisitorEscapeHatch {
+    fn enter(&mut self, node: Node<'a>, _: &mut Ancestors<'a>) -> NodeVisitorEscapeHatch {
         let span = node.span;
 
         // If the current node is before the offset we're interested in,

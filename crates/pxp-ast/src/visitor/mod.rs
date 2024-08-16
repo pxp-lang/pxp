@@ -5,7 +5,7 @@ mod visitor_mut;
 mod walk;
 mod walk_mut;
 
-pub use node::{NodeVisitor, NodeVisitorEscapeHatch};
+pub use node::{NodeVisitor, NodeVisitorEscapeHatch, Ancestors};
 pub use visitor::Visitor;
 pub use visitor_mut::VisitorMut;
 pub use walk::*;
