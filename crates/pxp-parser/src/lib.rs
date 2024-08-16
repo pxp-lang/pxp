@@ -536,7 +536,7 @@ fn statement(state: &mut State) -> Statement {
                     span: Span::combine(r#return, end),
                     r#return,
                     value,
-                    ending: utils::skip_ending(state),
+                    ending,
                 })
             }
             _ => {

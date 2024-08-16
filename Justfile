@@ -1,5 +1,5 @@
 test:
-    cargo nextest run
+    cargo test --lib --bins --tests
 
 tokenise +args:
     RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin tokenise -- {{args}}
@@ -15,6 +15,10 @@ node-finder +args:
 
 infer +args:
     RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin infer -- {{args}}
+
+pls:
+    cargo build --package pls
+    just --working-directory ./crates/pls/editors/vscode --justfile=./crates/pls/editors/vscode/Justfile package-install
 
 generate-ast:
     php ./meta/scripts/generate-ast.php

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 mod generator;
 
-use pxp_ast::{Name, NodeId, Statement};
+use pxp_ast::{NodeId, Statement};
 use pxp_bytestring::ByteString;
 use pxp_index::Index;
 

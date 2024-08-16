@@ -1,10 +1,12 @@
 use std::sync::Mutex;
 
 use crate::capabilities::get_server_capabilities;
+use crate::state::State;
 use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_parser::ParseResult;
 use pxp_parser::ParserDiagnostic;
-use pxp_symbol::SymbolTable;
+use pxp_span::Span;
+use pxp_span::Spanned;
 use tower_lsp::async_trait;
 use tower_lsp::jsonrpc::Error;
 use tower_lsp::lsp_types;
@@ -13,23 +15,16 @@ use tower_lsp::lsp_types::*;
 use tower_lsp::Client;
 use tower_lsp::LanguageServer;
 
-struct State {
-    diagnostics: dashmap::DashMap<Url, Vec<Diagnostic<ParserDiagnostic>>>
-}
-
 pub(crate) struct Backend {
     pub(crate) client: Client,
     state: Mutex<State>
 }
 
 impl Backend {
-
     pub(crate) fn new(client: Client) -> Backend {
         Backend {
             client,
-            state: Mutex::new(State {
-                diagnostics: dashmap::DashMap::new()
-            })
+            state: Mutex::new(State::new())
         }
     }
 
@@ -40,15 +35,11 @@ impl Backend {
 
     async fn calculate_diagnostics(&self, uri: &Url, content: &String) -> Vec<Diagnostic<ParserDiagnostic>>
     {
-        let mut table = SymbolTable::new();
-        let parse_result: ParseResult = pxp_parser::parse(&content, &mut table);
+        let parse_result: ParseResult = pxp_parser::parse(&content);
 
-        match self.state.lock() {
-            Ok(state) => {
-                state.diagnostics.insert(uri.clone(), parse_result.diagnostics.clone());
-            },
-            Err(_) => {}
-        };
+        if let Ok(state) = self.state.lock() {
+            state.add_diagnostic(uri.clone(), parse_result.diagnostics.clone());
+        }
 
         parse_result.diagnostics
     }
@@ -56,12 +47,14 @@ impl Backend {
     async fn publish_diagnostics_to_client(
         &self,
         uri: Url,
-        text: &String,
-        parser_diagnostics: &Vec<Diagnostic<ParserDiagnostic>>,
+        text: &str,
+        parser_diagnostics: &[Diagnostic<ParserDiagnostic>],
     ) {
+        self.client.log_message(MessageType::INFO, "Publishing diagnostics".to_string()).await;
+        
         let mut diagnostics = Vec::new();
 
-        parser_diagnostics.into_iter().for_each(|d| {
+        parser_diagnostics.iter().for_each(|d| {
             let severity = match d.severity {
                 Severity::Hint        => DiagnosticSeverity::HINT,
                 Severity::Information => DiagnosticSeverity::INFORMATION,
@@ -69,7 +62,7 @@ impl Backend {
                 Severity::Error       => DiagnosticSeverity::ERROR,
             };
             
-            let range = self.calculate_line_and_character(&text, d.span.start as u32, d.span.end as u32);
+            let range = self.calculate_line_and_character(text, d.span, d.span);
 
             let message = d.to_string();
 
@@ -85,47 +78,26 @@ impl Backend {
                 data: None,
             });
         });
+
         self.client
             .publish_diagnostics(uri, diagnostics, None)
             .await;
     }
 
-    fn calculate_line_and_character(&self, text: &str, start: u32, end: u32) -> Range {
-        let lines = text.split('\n').collect::<Vec<&str>>();
-        let mut start_line: u32 = 0;
-        let mut start_char: u32 = 0;
-        let mut end_line: u32 = 0;
-        let mut end_char: u32 = 0;
-
-        let mut offset: u32 = 0;
-
-        for (i, line) in lines.iter().enumerate() {
-            let line_len = line.len() as u32;
-            if offset + line_len >= start {
-                start_line = i as u32;
-                start_char = start - offset;
-            }
-
-            if offset + line_len >= end {
-                end_line = i as u32;
-                end_char = end - offset;
-                break;
-            }
-
-            offset += line_len + 1;
-        }
+    fn calculate_line_and_character(&self, text: &str, start: Span, end: Span) -> Range {
+        let (start_line, start_col) = (start.start_line(text.as_bytes()), start.start_column(text.as_bytes()));
+        let (end_line, end_col) = (end.end_line(text.as_bytes()), end.end_column(text.as_bytes()));
 
         Range {
             start: Position {
-                line: start_line,
-                character: start_char,
+                line: start_line as u32,
+                character: start_col as u32,
             },
             end: Position {
-                line: end_line,
-                character: end_char
+                line: end_line as u32,
+                character: end_col as u32
             }
         }
-
     }
 }
 
@@ -163,15 +135,13 @@ impl LanguageServer for Backend {
 
     async fn did_close(&self, _params: DidCloseTextDocumentParams) {
         let uri = _params.text_document.uri;
+
         self.client
             .log_message(MessageType::INFO, format!("Closed document: {}", uri))
             .await;
 
-        match self.state.lock() {
-            Ok(state) => {
-                state.diagnostics.remove(&uri);
-            },
-            Err(_) => {}
+        if let Ok(state) = self.state.lock() {
+            state.remove_diagnostics_for_uri(&uri);
         }
     }
 
@@ -179,10 +149,9 @@ impl LanguageServer for Backend {
         let uri = _params.text_document.uri;
         let content = _params.text;
 
-        match content {
-            Some(c) => self.send_diagnostics(uri, c).await,
-            None => {}
-        };
+        if let Some(c) = content {
+            self.send_diagnostics(uri, c).await;
+        }
     }
 
     async fn shutdown(&self) -> Result<(), Error> {

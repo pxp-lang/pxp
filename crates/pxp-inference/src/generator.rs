@@ -88,33 +88,6 @@ impl<'i> TypeMapGenerator<'i> {
         f(self);
         self.scopes.pop();
     }
-
-    fn bytestring_type(&self, ty: &Type<Name>) -> Type<ByteString> {
-        match ty {
-            Type::Named(inner) => Type::Named(inner.symbol().clone()),
-            Type::Nullable(inner) => Type::Nullable(Box::new(self.bytestring_type(inner))),
-            Type::Union(tys) => Type::Union(tys.iter().map(|t| self.bytestring_type(t)).collect()),
-            Type::Intersection(tys) => Type::Intersection(tys.iter().map(|t| self.bytestring_type(t)).collect()),
-            Type::Void => Type::Void,
-            Type::Null => Type::Null,
-            Type::True => Type::True,
-            Type::False => Type::False,
-            Type::Never => Type::Never,
-            Type::Float => Type::Float,
-            Type::Boolean => Type::Boolean,
-            Type::Integer => Type::Integer,
-            Type::String => Type::String,
-            Type::Array => Type::Array,
-            Type::Object => Type::Object,
-            Type::Mixed => Type::Mixed,
-            Type::Callable => Type::Callable,
-            Type::Iterable => Type::Iterable,
-            Type::StaticReference => Type::StaticReference,
-            Type::SelfReference => Type::SelfReference,
-            Type::ParentReference => Type::ParentReference,
-            Type::Missing => Type::Missing,
-        }
-    }
 }
 
 /// Handles traversing the AST and generating a `TypeMap`.
@@ -173,7 +146,7 @@ impl Visitor for TypeMapGenerator<'_> {
             // Insert function parameters into the current scope.
             for parameter in node.parameters.iter() {
                 // FIXME: Make this look nicer...
-                let ty = parameter.data_type.as_ref().map(|d| this.bytestring_type(d.get_type())).unwrap_or_else(|| Type::Mixed);
+                let ty = parameter.data_type.as_ref().map(|d| bytestring_type(d.get_type())).unwrap_or_else(|| Type::Mixed);
 
                 this.scopes.scope_mut().insert(parameter.name.symbol.clone(), ty);
             }
@@ -201,7 +174,7 @@ impl Visitor for TypeMapGenerator<'_> {
             todo!("do checks for resolved and unresolved names");
         };
 
-        self.map.insert(node.id, self.bytestring_type(&return_type));
+        self.map.insert(node.id, bytestring_type(&return_type));
     }
 
     fn visit_parenthesized_expression(&mut self, node: &ParenthesizedExpression) {
@@ -262,7 +235,7 @@ impl Visitor for TypeMapGenerator<'_> {
         let ty = match object_ty {
             Type::Named(name) => if let Some(class) = self.index.get_class(name) {
                 if let Some(method) = class.get_method(&method.symbol) {
-                    self.bytestring_type(method.get_return_type())
+                    bytestring_type(method.get_return_type())
                 } else {
                     Type::Mixed
                 }
@@ -312,7 +285,7 @@ impl Visitor for TypeMapGenerator<'_> {
         let ty = match class_ty {
             Type::Named(name) => if let Some(class) = self.index.get_class(name) {
                 if let Some(method) = class.get_static_method(&method.symbol) {
-                    self.bytestring_type(method.get_return_type())
+                    bytestring_type(method.get_return_type())
                 } else {
                     Type::Mixed
                 }
@@ -345,7 +318,7 @@ impl Visitor for TypeMapGenerator<'_> {
         let ty = match object_ty {
             Type::Named(name) => if let Some(class) = self.index.get_class(name) {
                 if let Some(property) = class.get_property(&property.symbol) {
-                    self.bytestring_type(property.get_type())
+                    bytestring_type(property.get_type())
                 } else {
                     Type::Mixed
                 }
@@ -356,5 +329,32 @@ impl Visitor for TypeMapGenerator<'_> {
         };
 
         self.map.insert(node.id, ty)
+    }
+}
+
+fn bytestring_type(ty: &Type<Name>) -> Type<ByteString> {
+    match ty {
+        Type::Named(inner) => Type::Named(inner.symbol().clone()),
+        Type::Nullable(inner) => Type::Nullable(Box::new(bytestring_type(inner))),
+        Type::Union(tys) => Type::Union(tys.iter().map(bytestring_type).collect()),
+        Type::Intersection(tys) => Type::Intersection(tys.iter().map(bytestring_type).collect()),
+        Type::Void => Type::Void,
+        Type::Null => Type::Null,
+        Type::True => Type::True,
+        Type::False => Type::False,
+        Type::Never => Type::Never,
+        Type::Float => Type::Float,
+        Type::Boolean => Type::Boolean,
+        Type::Integer => Type::Integer,
+        Type::String => Type::String,
+        Type::Array => Type::Array,
+        Type::Object => Type::Object,
+        Type::Mixed => Type::Mixed,
+        Type::Callable => Type::Callable,
+        Type::Iterable => Type::Iterable,
+        Type::StaticReference => Type::StaticReference,
+        Type::SelfReference => Type::SelfReference,
+        Type::ParentReference => Type::ParentReference,
+        Type::Missing => Type::Missing,
     }
 }

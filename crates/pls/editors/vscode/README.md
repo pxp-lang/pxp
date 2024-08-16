@@ -1,0 +1,1 @@
+# PLS (PHP Language Server) for Visual Studio Code
