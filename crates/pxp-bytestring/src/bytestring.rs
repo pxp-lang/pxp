@@ -15,6 +15,24 @@ impl ByteString {
     pub fn new(bytes: Vec<u8>) -> Self {
         ByteString { bytes }
     }
+
+    pub fn empty() -> Self {
+        ByteString::new(Vec::new())
+    }
+
+    pub fn coagulate(&self, others: &[ByteString], with: Option<&[u8]>) -> Self {
+        let mut bytes = self.bytes.clone();
+
+        for other in others {
+            if let Some(with) = with {
+                bytes.extend(with);
+            }
+
+            bytes.extend_from_slice(other);
+        }
+
+        ByteString::new(bytes)
+    }
 }
 
 impl Default for ByteString {

@@ -40,8 +40,8 @@
                                 start: 13,
                                 end: 16,
                             },
-                            resolved: Symbol("Foo"),
-                            original: Symbol("Foo"),
+                            resolved: "Foo",
+                            original: "Foo",
                         },
                     ),
                     span: Span {
@@ -87,7 +87,7 @@
                                 ampersand: None,
                                 name: SimpleIdentifier {
                                     id: 5,
-                                    symbol: Symbol("a"),
+                                    symbol: "a",
                                     span: Span {
                                         start: 32,
                                         end: 33,
@@ -170,7 +170,7 @@
                                 ampersand: None,
                                 name: SimpleIdentifier {
                                     id: 10,
-                                    symbol: Symbol("b"),
+                                    symbol: "b",
                                     span: Span {
                                         start: 59,
                                         end: 60,
@@ -253,7 +253,7 @@
                                 ampersand: None,
                                 name: SimpleIdentifier {
                                     id: 15,
-                                    symbol: Symbol("c"),
+                                    symbol: "c",
                                     span: Span {
                                         start: 89,
                                         end: 90,
@@ -336,7 +336,7 @@
                                 ampersand: None,
                                 name: SimpleIdentifier {
                                     id: 20,
-                                    symbol: Symbol("d"),
+                                    symbol: "d",
                                     span: Span {
                                         start: 117,
                                         end: 118,
@@ -419,7 +419,7 @@
                                 ampersand: None,
                                 name: SimpleIdentifier {
                                     id: 25,
-                                    symbol: Symbol("e"),
+                                    symbol: "e",
                                     span: Span {
                                         start: 143,
                                         end: 144,
@@ -502,7 +502,7 @@
                                 ampersand: None,
                                 name: SimpleIdentifier {
                                     id: 30,
-                                    symbol: Symbol("f"),
+                                    symbol: "f",
                                     span: Span {
                                         start: 172,
                                         end: 173,
@@ -570,7 +570,7 @@
                                 ampersand: None,
                                 name: SimpleIdentifier {
                                     id: 34,
-                                    symbol: Symbol("g"),
+                                    symbol: "g",
                                     span: Span {
                                         start: 197,
                                         end: 198,

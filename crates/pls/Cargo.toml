@@ -1,0 +1,14 @@
+[package]
+name = "pls"
+description = "A free and open-source language server for PHP."
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.17.0", features = ["full"] }
+tower-lsp = { version = "0.20.0", features = ["proposed"]}
+dashmap = "5.1.0"
+pxp-parser = { path = "../pxp-parser" }
+pxp-diagnostics = { path = "../pxp-diagnostics" }
+pxp-span = { version = "0.1.0", path = "../pxp-span" }
+

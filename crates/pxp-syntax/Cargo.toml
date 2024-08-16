@@ -4,10 +4,8 @@ version = "0.1.0"
 edition = "2021"
 license-file.workspace = true
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
+pxp-bytestring = { version = "0.1.0", path = "../pxp-bytestring" }
 pxp-span = { path = "../pxp-span" }
-pxp-symbol = { path = "../pxp-symbol" }
 pxp-token = { path = "../pxp-token" }
 serde = { version = "1.0.193", features = ["derive"] }

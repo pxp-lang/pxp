@@ -1,0 +1,16 @@
+[package]
+name = "pxp-inference"
+version = "0.1.0"
+edition = "2021"
+license-file.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+pxp-ast = { version = "0.1.0", path = "../pxp-ast" }
+pxp-bytestring = { version = "0.1.0", path = "../pxp-bytestring" }
+pxp-index = { version = "0.1.0", path = "../pxp-index" }
+pxp-type = { version = "0.1.0", path = "../pxp-type" }
+
+[dev-dependencies]
+pxp-node-finder = { path = "../pxp-node-finder" }
+pxp-parser = { path = "../pxp-parser" }

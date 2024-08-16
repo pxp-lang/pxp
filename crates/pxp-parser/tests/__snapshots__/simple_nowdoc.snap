@@ -43,8 +43,7 @@
                                     end: 16,
                                 },
                                 symbol: Some(
-                                    Symbol("<<<'TXT'
-                                    "),
+                                    "<<<'TXT'\n",
                                 ),
                             },
                             value: Token {
@@ -54,8 +53,7 @@
                                     end: 46,
                                 },
                                 symbol: Some(
-                                    Symbol("Hello, world!
-                                    Hello, {$world}!"),
+                                    "Hello, world!\nHello, {$world}!",
                                 ),
                             },
                         },

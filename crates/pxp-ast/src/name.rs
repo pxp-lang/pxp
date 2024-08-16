@@ -1,7 +1,8 @@
 use std::fmt::Display;
 
+use pxp_bytestring::ByteString;
 use pxp_span::Span;
-use pxp_symbol::Symbol;
+
 use pxp_syntax::name::NameQualification;
 
 use crate::{Name, NameKind, NodeId, ResolvedName, SpecialName, SpecialNameKind, UnresolvedName};
@@ -26,15 +27,15 @@ impl Name {
             id,
             NameKind::Resolved(ResolvedName {
                 id,
-                resolved: Symbol::missing(),
-                original: Symbol::missing(),
+                resolved: ByteString::empty(),
+                original: ByteString::empty(),
                 span,
             }),
             span,
         )
     }
 
-    pub fn resolved(id: NodeId, symbol: Symbol, original: Symbol, span: Span) -> Self {
+    pub fn resolved(id: NodeId, symbol: ByteString, original: ByteString, span: Span) -> Self {
         Self::new(
             id,
             NameKind::Resolved(ResolvedName {
@@ -49,7 +50,7 @@ impl Name {
 
     pub fn unresolved(
         id: NodeId,
-        symbol: Symbol,
+        symbol: ByteString,
         qualification: NameQualification,
         span: Span,
     ) -> Self {
@@ -65,7 +66,7 @@ impl Name {
         )
     }
 
-    pub fn special(id: NodeId, kind: SpecialNameKind, symbol: Symbol, span: Span) -> Self {
+    pub fn special(id: NodeId, kind: SpecialNameKind, symbol: ByteString, span: Span) -> Self {
         Self::new(
             id,
             NameKind::Special(SpecialName {
@@ -78,11 +79,11 @@ impl Name {
         )
     }
 
-    pub fn symbol(&self) -> Symbol {
+    pub fn symbol(&self) -> &ByteString {
         match &self.kind {
-            NameKind::Special(s) => s.symbol,
-            NameKind::Unresolved(u) => u.symbol,
-            NameKind::Resolved(r) => r.resolved,
+            NameKind::Special(s) => &s.symbol,
+            NameKind::Unresolved(u) => &u.symbol,
+            NameKind::Resolved(r) => &r.resolved,
         }
     }
 

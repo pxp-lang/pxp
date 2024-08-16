@@ -49,8 +49,8 @@
                                 start: 13,
                                 end: 16,
                             },
-                            resolved: Symbol("Foo"),
-                            original: Symbol("Foo"),
+                            resolved: "Foo",
+                            original: "Foo",
                         },
                     ),
                     span: Span {
@@ -96,8 +96,8 @@
                                                 },
                                                 variable: SimpleVariable {
                                                     id: 5,
-                                                    symbol: Symbol("$a"),
-                                                    stripped: Symbol("a"),
+                                                    symbol: "$a",
+                                                    stripped: "a",
                                                     span: Span {
                                                         start: 27,
                                                         end: 29,
@@ -153,8 +153,8 @@
                                                 },
                                                 variable: SimpleVariable {
                                                     id: 10,
-                                                    symbol: Symbol("$b"),
-                                                    stripped: Symbol("b"),
+                                                    symbol: "$b",
+                                                    stripped: "b",
                                                     span: Span {
                                                         start: 42,
                                                         end: 44,
@@ -210,8 +210,8 @@
                                                 },
                                                 variable: SimpleVariable {
                                                     id: 15,
-                                                    symbol: Symbol("$c"),
-                                                    stripped: Symbol("c"),
+                                                    symbol: "$c",
+                                                    stripped: "c",
                                                     span: Span {
                                                         start: 60,
                                                         end: 62,
@@ -267,8 +267,8 @@
                                                 },
                                                 variable: SimpleVariable {
                                                     id: 20,
-                                                    symbol: Symbol("$d"),
-                                                    stripped: Symbol("d"),
+                                                    symbol: "$d",
+                                                    stripped: "d",
                                                     span: Span {
                                                         start: 76,
                                                         end: 78,
@@ -324,8 +324,8 @@
                                                 },
                                                 variable: SimpleVariable {
                                                     id: 25,
-                                                    symbol: Symbol("$e"),
-                                                    stripped: Symbol("e"),
+                                                    symbol: "$e",
+                                                    stripped: "e",
                                                     span: Span {
                                                         start: 91,
                                                         end: 93,

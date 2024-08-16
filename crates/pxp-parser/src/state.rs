@@ -1,10 +1,10 @@
 use std::collections::{HashMap, VecDeque};
 
 use pxp_ast::*;
+use pxp_bytestring::{ByteString};
 use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::stream::TokenStream;
 use pxp_span::Span;
-use pxp_symbol::{Symbol, SymbolTable};
 use pxp_token::{Token, TokenKind};
 
 use crate::{internal::identifiers::is_soft_reserved_identifier, ParserDiagnostic};
@@ -17,25 +17,23 @@ pub enum NamespaceType {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Scope {
-    Namespace(Symbol),
-    BracedNamespace(Option<Symbol>),
+    Namespace(ByteString),
+    BracedNamespace(Option<ByteString>),
 }
 
 #[derive(Debug)]
-pub struct State<'a, 'b> {
+pub struct State<'a> {
     pub stack: VecDeque<Scope>,
     pub stream: &'a mut TokenStream<'a>,
-    pub symbol_table: &'b mut SymbolTable,
     pub attributes: Vec<AttributeGroup>,
     pub namespace_type: Option<NamespaceType>,
-    pub namespace: Option<Symbol>,
     pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
-    pub imports: HashMap<UseKind, HashMap<Symbol, Symbol>>,
+    pub imports: HashMap<UseKind, HashMap<ByteString, ByteString>>,
     id: u32,
 }
 
-impl<'a, 'b> State<'a, 'b> {
-    pub fn new(tokens: &'a mut TokenStream<'a>, symbol_table: &'b mut SymbolTable) -> Self {
+impl<'a> State<'a> {
+    pub fn new(tokens: &'a mut TokenStream<'a>) -> Self {
         let mut imports = HashMap::new();
         imports.insert(UseKind::Normal, HashMap::new());
         imports.insert(UseKind::Function, HashMap::new());
@@ -44,11 +42,9 @@ impl<'a, 'b> State<'a, 'b> {
         Self {
             stack: VecDeque::with_capacity(32),
             stream: tokens,
-            symbol_table,
             namespace_type: None,
             attributes: vec![],
             diagnostics: vec![],
-            namespace: None,
             imports,
             id: 0,
         }
@@ -87,21 +83,17 @@ impl<'a, 'b> State<'a, 'b> {
         self.stack.iter().next()
     }
 
-    pub fn maybe_resolve_identifier(&mut self, token: Token, kind: UseKind) -> Name {
-        let symbol = token.symbol.unwrap();
+    pub fn maybe_resolve_identifier(&mut self, token: &Token, kind: UseKind) -> Name {
+        let symbol = token.symbol.as_ref().unwrap();
         let part = match &token.kind {
-            TokenKind::Identifier | TokenKind::Enum | TokenKind::From => token.symbol.unwrap(),
+            TokenKind::Identifier | TokenKind::Enum | TokenKind::From => token.symbol.as_ref().unwrap().clone(),
             TokenKind::QualifiedIdentifier => {
-                let bytestring = self
-                    .symbol_table
-                    .resolve(token.symbol.unwrap())
-                    .unwrap()
-                    .to_bytestring();
+                let bytestring = token.symbol.as_ref().unwrap();
                 let parts = bytestring.split(|c| *c == b'\\').collect::<Vec<_>>();
 
-                self.symbol_table.intern(parts.first().unwrap())
+                ByteString::from(parts.first().unwrap().to_vec())
             }
-            _ if is_soft_reserved_identifier(&token.kind) => token.symbol.unwrap(),
+            _ if is_soft_reserved_identifier(&token.kind) => token.symbol.as_ref().unwrap().clone(),
             _ => unreachable!(),
         };
 
@@ -112,17 +104,17 @@ impl<'a, 'b> State<'a, 'b> {
         if let Some(imported) = map.get(&part) {
             match &token.kind {
                 TokenKind::Identifier | TokenKind::From | TokenKind::Enum => {
-                    Name::resolved(id, *imported, symbol, token.span)
+                    Name::resolved(id, imported.clone(), symbol.clone(), token.span)
                 }
                 TokenKind::QualifiedIdentifier => {
                     // Qualified identifiers might be aliased, so we need to take the full un-aliased import and
                     // concatenate that with everything after the first part of the qualified identifier.
-                    let bytestring = self.symbol_table.resolve(symbol).unwrap().to_bytestring();
+                    let bytestring = symbol.clone();
                     let parts = bytestring.splitn(2, |c| *c == b'\\').collect::<Vec<_>>();
-                    let rest = self.symbol_table.intern(parts[1]);
-                    let coagulated = self.symbol_table.coagulate(&[*imported, rest], Some(b"\\"));
+                    let rest = parts[1].to_vec().into();
+                    let coagulated = imported.coagulate(&[rest], Some(b"\\"));
 
-                    Name::resolved(id, coagulated, symbol, token.span)
+                    Name::resolved(id, coagulated, symbol.clone(), token.span)
                 }
                 _ => unreachable!(),
             }
@@ -132,35 +124,39 @@ impl<'a, 'b> State<'a, 'b> {
         // Additionally, if the name we're trying to resolve is qualified, then PHP's name resolution rules say that
         // we should just prepend the current namespace if the import map doesn't contain the first part.
         } else if kind == UseKind::Normal || token.kind == TokenKind::QualifiedIdentifier {
-            Name::resolved(id, self.join_with_namespace(symbol), symbol, token.span)
+            Name::resolved(id, self.join_with_namespace(symbol), symbol.clone(), token.span)
+        // Unqualified names in the global namespace can be resolved without any imports, since we can
+        // only be referencing something else inside of the global namespace.
+        } else if (kind == UseKind::Function || kind == UseKind::Const) && token.kind == TokenKind::Identifier && self.namespace().is_none() {
+            Name::resolved(id, symbol.clone(), symbol.clone(), token.span)
         } else {
-            Name::unresolved(id, symbol, token.kind.into(), token.span)
+            Name::unresolved(id, symbol.clone(), token.kind.into(), token.span)
         }
     }
 
     pub fn add_prefixed_import(
         &mut self,
         kind: &UseKind,
-        prefix: Symbol,
-        name: Symbol,
-        alias: Option<Symbol>,
+        prefix: ByteString,
+        name: ByteString,
+        alias: Option<ByteString>,
     ) {
-        let coagulated = self.symbol_table.coagulate(&[prefix, name], Some(b"\\"));
+        let coagulated = prefix.coagulate(&[name], Some(b"\\"));
 
         self.add_import(kind, coagulated, alias);
     }
 
-    pub fn add_import(&mut self, kind: &UseKind, name: Symbol, alias: Option<Symbol>) {
+    pub fn add_import(&mut self, kind: &UseKind, name: ByteString, alias: Option<ByteString>) {
         // We first need to check if the alias has been provided, and if not, create a new
         // symbol using the last part of the name.
         let alias = match alias {
             Some(alias) => alias,
             None => {
-                let bytestring = self.symbol_table.resolve(name).unwrap().to_bytestring();
+                let bytestring = name.clone();
                 let parts = bytestring.split(|c| *c == b'\\').collect::<Vec<_>>();
                 let last = parts.last().unwrap();
 
-                self.symbol_table.intern(last)
+                ByteString::new(last.to_vec())
             }
         };
 
@@ -168,27 +164,25 @@ impl<'a, 'b> State<'a, 'b> {
         self.imports.get_mut(kind).unwrap().insert(alias, name);
     }
 
-    pub fn strip_leading_namespace_qualifier(&mut self, symbol: Symbol) -> Symbol {
-        let bytestring = self.symbol_table.resolve(symbol).unwrap().to_bytestring();
-
-        if bytestring.starts_with(&[b'\\']) {
-            self.symbol_table.intern(&bytestring[1..])
+    pub fn strip_leading_namespace_qualifier(&mut self, symbol: &ByteString) -> ByteString {
+        if symbol.starts_with(&[b'\\']) {
+            ByteString::from(&symbol[1..])
         } else {
-            symbol
+            symbol.clone()
         }
     }
 
-    pub fn join_with_namespace(&mut self, name: Symbol) -> Symbol {
+    pub fn join_with_namespace(&mut self, name: &ByteString) -> ByteString {
         match self.namespace() {
-            Some(Scope::Namespace(namespace)) => self
-                .symbol_table
-                .coagulate(&[*namespace, name], Some(b"\\")),
-            Some(Scope::BracedNamespace(Some(namespace))) => self
-                .symbol_table
-                .coagulate(&[*namespace, name], Some(b"\\")),
-            _ => name,
+            Some(Scope::Namespace(namespace)) => {
+                namespace.coagulate(&[name.clone()], Some(b"\\"))
+            },
+            Some(Scope::BracedNamespace(Some(namespace))) => {
+                namespace.coagulate(&[name.clone()], Some(b"\\"))
+            },
+            _ => name.clone(),
         }
-    }
+}
 
     pub fn previous_scope(&self) -> Option<&Scope> {
         self.stack.get(self.stack.len() - 2)

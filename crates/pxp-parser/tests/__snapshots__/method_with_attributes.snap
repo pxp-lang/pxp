@@ -49,8 +49,8 @@
                                 start: 13,
                                 end: 14,
                             },
-                            resolved: Symbol("A"),
-                            original: Symbol("A"),
+                            resolved: "A",
+                            original: "A",
                         },
                     ),
                     span: Span {
@@ -104,8 +104,8 @@
                                                                 start: 23,
                                                                 end: 24,
                                                             },
-                                                            resolved: Symbol("B"),
-                                                            original: Symbol("B"),
+                                                            resolved: "B",
+                                                            original: "B",
                                                         },
                                                     ),
                                                     span: Span {
@@ -139,8 +139,8 @@
                                                                 start: 32,
                                                                 end: 33,
                                                             },
-                                                            resolved: Symbol("C"),
-                                                            original: Symbol("C"),
+                                                            resolved: "C",
+                                                            original: "C",
                                                         },
                                                     ),
                                                     span: Span {
@@ -165,8 +165,8 @@
                                                                 start: 35,
                                                                 end: 36,
                                                             },
-                                                            resolved: Symbol("D"),
-                                                            original: Symbol("D"),
+                                                            resolved: "D",
+                                                            original: "D",
                                                         },
                                                     ),
                                                     span: Span {
@@ -217,7 +217,7 @@
                                                                                         end: 43,
                                                                                     },
                                                                                     symbol: Some(
-                                                                                        Symbol("hello"),
+                                                                                        "hello",
                                                                                     ),
                                                                                 },
                                                                             },
@@ -265,7 +265,7 @@
                                 ampersand: None,
                                 name: SimpleIdentifier {
                                     id: 18,
-                                    symbol: Symbol("a"),
+                                    symbol: "a",
                                     span: Span {
                                         start: 67,
                                         end: 68,

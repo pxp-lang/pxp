@@ -1,6 +1,6 @@
 use pxp_ast::{visitor::*, UnbracedNamespace, *};
+use pxp_bytestring::ByteString;
 use pxp_span::Span;
-use pxp_symbol::{Symbol, SymbolTable};
 use pxp_type::Type;
 
 use crate::{
@@ -40,7 +40,7 @@ impl Indexer {
             .parameters
             .iter()
             .map(|p| {
-                let name = p.name.stripped;
+                let name = p.name.stripped.clone();
                 let r#type = p
                     .data_type
                     .as_ref()
@@ -70,7 +70,7 @@ impl Indexer {
             .parameters
             .iter()
             .map(|p| {
-                let name = p.name.symbol;
+                let name = p.name.symbol.clone();
                 let r#type = p
                     .data_type
                     .as_ref()
@@ -95,13 +95,13 @@ impl Indexer {
 
 #[derive(Debug, Clone, Default)]
 struct IndexerContext {
-    namespace: Option<Symbol>,
+    namespace: Option<ByteString>,
     class: Option<ClassLike>,
 }
 
 impl IndexerContext {
-    fn namespace(&self) -> Option<Symbol> {
-        self.namespace
+    fn namespace(&self) -> Option<&ByteString> {
+        self.namespace.as_ref()
     }
 
     fn class(&mut self) -> &mut ClassLike {
@@ -119,7 +119,7 @@ impl IndexerContext {
 
 impl Visitor for Indexer {
     fn visit_unbraced_namespace(&mut self, node: &UnbracedNamespace) {
-        self.context.namespace = Some(node.name.as_resolved().unwrap().resolved);
+        self.context.namespace = Some(node.name.as_resolved().unwrap().resolved.clone());
         walk_unbraced_namespace(self, node);
         self.context.namespace = None;
     }
@@ -128,14 +128,14 @@ impl Visitor for Indexer {
         self.context.namespace = node
             .name
             .as_ref()
-            .map(|n| n.as_resolved().unwrap().resolved);
+            .map(|n| n.as_resolved().unwrap().resolved.clone());
         walk_braced_namespace(self, node);
         self.context.namespace = None;
     }
 
     fn visit_function_statement(&mut self, node: &FunctionStatement) {
-        let name = node.name.as_resolved().unwrap().resolved;
-        let short = node.name.as_resolved().unwrap().original;
+        let name = node.name.as_resolved().unwrap().resolved.clone();
+        let short = node.name.as_resolved().unwrap().original.clone();
         let namespace = self.context.namespace();
         let parameters = self.transform_function_parameter_list(&node.parameters);
         let return_type = node
@@ -149,7 +149,7 @@ impl Visitor for Indexer {
         self.index.add_function(Function {
             name,
             short,
-            namespace,
+            namespace: namespace.cloned(),
             parameters,
             return_type,
             returns_by_reference,
@@ -160,22 +160,22 @@ impl Visitor for Indexer {
         let name = node.name.as_resolved().unwrap();
 
         let mut class = ClassLike::new(
-            name.resolved,
-            name.original,
-            self.context.namespace(),
+            name.resolved.clone(),
+            name.original.clone(),
+            self.context.namespace().cloned(),
             ClassKind::Class,
         );
         class.parent = node
             .extends
             .as_ref()
-            .map(|e| e.parent.as_resolved().unwrap().resolved);
+            .map(|e| e.parent.as_resolved().unwrap().resolved.clone());
         class.interfaces = node
             .implements
             .as_ref()
             .map(|i| {
                 i.interfaces
                     .iter()
-                    .map(|i| i.as_resolved().unwrap().resolved)
+                    .map(|i| i.as_resolved().unwrap().resolved.clone())
                     .collect::<Vec<_>>()
             })
             .unwrap_or_default();
@@ -194,15 +194,15 @@ impl Visitor for Indexer {
         let name = node.name.as_resolved().unwrap();
 
         let mut class = ClassLike::new(
-            name.resolved,
-            name.original,
-            self.context.namespace(),
+            name.resolved.clone(),
+            name.original.clone(),
+            self.context.namespace().cloned(),
             ClassKind::Enum,
         );
         class.interfaces = node
             .implements
             .iter()
-            .map(|i| i.as_resolved().unwrap().resolved)
+            .map(|i| i.as_resolved().unwrap().resolved.clone())
             .collect::<Vec<_>>();
 
         self.context.set_class(class);
@@ -219,22 +219,22 @@ impl Visitor for Indexer {
             return;
         }
 
-        self.context.class().cases.push(node.name.symbol);
+        self.context.class().cases.push(node.name.symbol.clone());
     }
 
     fn visit_backed_enum_statement(&mut self, node: &BackedEnumStatement) {
         let name = node.name.as_resolved().unwrap();
 
         let mut class = ClassLike::new(
-            name.resolved,
-            name.original,
-            self.context.namespace(),
+            name.resolved.clone(),
+            name.original.clone(),
+            self.context.namespace().cloned(),
             ClassKind::Enum,
         );
         class.interfaces = node
             .implements
             .iter()
-            .map(|i| i.as_resolved().unwrap().resolved)
+            .map(|i| i.as_resolved().unwrap().resolved.clone())
             .collect::<Vec<_>>();
 
         self.context.set_class(class);
@@ -251,7 +251,7 @@ impl Visitor for Indexer {
             return;
         }
 
-        let name = node.name.symbol;
+        let name = node.name.symbol.clone();
 
         self.context.class().cases.push(name);
     }
@@ -261,7 +261,7 @@ impl Visitor for Indexer {
             return;
         }
 
-        let name = node.name.symbol;
+        let name = node.name.symbol.clone();
         let return_type = node
             .return_type
             .as_ref()
@@ -285,7 +285,7 @@ impl Visitor for Indexer {
             return;
         }
 
-        let name = node.name.symbol;
+        let name = node.name.symbol.clone();
         let return_type = node
             .return_type
             .as_ref()
@@ -309,7 +309,7 @@ impl Visitor for Indexer {
             return;
         }
 
-        let name = SymbolTable::the().intern(b"__construct");
+        let name = ByteString::from(b"__construct");
         let return_type = Type::Void;
         let modifiers = node.modifiers.clone();
         let parameters = self.transform_constructor_parameter_list(&node.parameters);
@@ -328,7 +328,7 @@ impl Visitor for Indexer {
             return;
         }
 
-        let name = SymbolTable::the().intern(b"__construct");
+        let name = ByteString::from(b"__construct");
         let return_type = Type::Void;
         let modifiers = node.modifiers.clone();
         let parameters = self.transform_constructor_parameter_list(&node.parameters);
@@ -356,7 +356,7 @@ impl Visitor for Indexer {
         let modifiers = node.modifiers.clone();
 
         for entry in node.entries.iter() {
-            let name = entry.kind.variable().stripped;
+            let name = entry.kind.variable().stripped.clone();
             let default = entry.kind.is_initialized();
 
             self.context
@@ -389,7 +389,7 @@ impl Visitor for Indexer {
         };
 
         for entry in node.entries.iter() {
-            let name = entry.kind.variable().stripped;
+            let name = entry.kind.variable().stripped.clone();
             let default = entry.kind.is_initialized();
 
             self.context
@@ -418,7 +418,7 @@ impl Visitor for Indexer {
         let modifiers = node.modifiers.clone();
 
         for entry in node.entries.iter() {
-            let name = entry.name.symbol;
+            let name = entry.name.symbol.clone();
 
             self.context.class().constants.push(ClassConstant {
                 name,
@@ -432,9 +432,9 @@ impl Visitor for Indexer {
         let name = node.name.as_resolved().unwrap();
 
         let mut class = ClassLike::new(
-            name.resolved,
-            name.original,
-            self.context.namespace(),
+            name.resolved.clone(),
+            name.original.clone(),
+            self.context.namespace().cloned(),
             ClassKind::Interface,
         );
         class.interfaces = node
@@ -444,7 +444,7 @@ impl Visitor for Indexer {
                 i.parents
                     .inner
                     .iter()
-                    .map(|i| i.as_resolved().unwrap().resolved)
+                    .map(|i| i.as_resolved().unwrap().resolved.clone())
                     .collect::<Vec<_>>()
             })
             .unwrap_or_default();
@@ -462,9 +462,9 @@ impl Visitor for Indexer {
         let name = node.name.as_resolved().unwrap();
 
         let class = ClassLike::new(
-            name.resolved,
-            name.original,
-            self.context.namespace(),
+            name.resolved.clone(),
+            name.original.clone(),
+            self.context.namespace().cloned(),
             ClassKind::Trait,
         );
 
@@ -483,7 +483,7 @@ impl Visitor for Indexer {
         }
 
         for entry in node.traits.iter() {
-            let name = entry.as_resolved().unwrap().resolved;
+            let name = entry.as_resolved().unwrap().resolved.clone();
 
             self.context.class().traits.push(name);
         }

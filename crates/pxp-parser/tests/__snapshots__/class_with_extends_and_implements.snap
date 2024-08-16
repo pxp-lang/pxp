@@ -49,8 +49,8 @@
                                 start: 13,
                                 end: 16,
                             },
-                            resolved: Symbol("Foo"),
-                            original: Symbol("Foo"),
+                            resolved: "Foo",
+                            original: "Foo",
                         },
                     ),
                     span: Span {
@@ -78,8 +78,8 @@
                                         start: 25,
                                         end: 28,
                                     },
-                                    resolved: Symbol("Bar"),
-                                    original: Symbol("Bar"),
+                                    resolved: "Bar",
+                                    original: "Bar",
                                 },
                             ),
                             span: Span {
@@ -111,8 +111,8 @@
                                                 start: 40,
                                                 end: 43,
                                             },
-                                            resolved: Symbol("Baz"),
-                                            original: Symbol("Baz"),
+                                            resolved: "Baz",
+                                            original: "Baz",
                                         },
                                     ),
                                     span: Span {
@@ -129,8 +129,8 @@
                                                 start: 45,
                                                 end: 48,
                                             },
-                                            resolved: Symbol("Qux"),
-                                            original: Symbol("Qux"),
+                                            resolved: "Qux",
+                                            original: "Qux",
                                         },
                                     ),
                                     span: Span {

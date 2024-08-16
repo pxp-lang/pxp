@@ -48,8 +48,8 @@
                                 SimpleVariable(
                                     SimpleVariable {
                                         id: 4,
-                                        symbol: Symbol("$array"),
-                                        stripped: Symbol("array"),
+                                        symbol: "$array",
+                                        stripped: "array",
                                         span: Span {
                                             start: 16,
                                             end: 22,
@@ -76,8 +76,8 @@
                                 SimpleVariable(
                                     SimpleVariable {
                                         id: 6,
-                                        symbol: Symbol("$value"),
-                                        stripped: Symbol("value"),
+                                        symbol: "$value",
+                                        stripped: "value",
                                         span: Span {
                                             start: 26,
                                             end: 32,

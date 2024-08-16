@@ -41,15 +41,15 @@
                                 kind: Name(
                                     Name {
                                         id: 3,
-                                        kind: Unresolved(
-                                            UnresolvedName {
+                                        kind: Resolved(
+                                            ResolvedName {
                                                 id: 3,
                                                 span: Span {
                                                     start: 7,
                                                     end: 10,
                                                 },
-                                                symbol: Symbol("foo"),
-                                                qualification: Unqualified,
+                                                resolved: "foo",
+                                                original: "foo",
                                             },
                                         ),
                                         span: Span {
@@ -108,7 +108,7 @@
                                                                 end: 12,
                                                             },
                                                             symbol: Some(
-                                                                Symbol("1"),
+                                                                "1",
                                                             ),
                                                         },
                                                     },
@@ -151,7 +151,7 @@
                                                                 end: 15,
                                                             },
                                                             symbol: Some(
-                                                                Symbol("2"),
+                                                                "2",
                                                             ),
                                                         },
                                                     },

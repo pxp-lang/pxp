@@ -51,7 +51,8 @@ impl<'a> TokenStream<'a> {
     /// Get previous token.
     pub const fn previous(&self) -> &'a Token {
         let position = if self.cursor == 0 { 0 } else { self.cursor - 1 };
-
+        let position = if position >= self.length { self.length - 1 } else { position };
+        
         &self.tokens[position]
     }
 
@@ -130,7 +131,7 @@ impl<'a> TokenStream<'a> {
                     } => Comment {
                         span: *span,
                         format: CommentFormat::SingleLine,
-                        content: symbol.unwrap(),
+                        content: symbol.as_ref().unwrap().clone(),
                     },
                     Token {
                         kind: TokenKind::MultiLineComment,
@@ -139,7 +140,7 @@ impl<'a> TokenStream<'a> {
                     } => Comment {
                         span: *span,
                         format: CommentFormat::MultiLine,
-                        content: symbol.unwrap(),
+                        content: symbol.as_ref().unwrap().clone(),
                     },
                     Token {
                         kind: TokenKind::HashMarkComment,
@@ -148,7 +149,7 @@ impl<'a> TokenStream<'a> {
                     } => Comment {
                         span: *span,
                         format: CommentFormat::HashMark,
-                        content: symbol.unwrap(),
+                        content: symbol.as_ref().unwrap().clone(),
                     },
                     Token {
                         kind: TokenKind::DocumentComment,
@@ -157,7 +158,7 @@ impl<'a> TokenStream<'a> {
                     } => Comment {
                         span: *span,
                         format: CommentFormat::Document,
-                        content: symbol.unwrap(),
+                        content: symbol.as_ref().unwrap().clone(),
                     },
                     _ => unreachable!(),
                 })

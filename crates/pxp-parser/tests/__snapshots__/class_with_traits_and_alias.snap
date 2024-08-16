@@ -49,8 +49,8 @@
                                 start: 13,
                                 end: 16,
                             },
-                            resolved: Symbol("Foo"),
-                            original: Symbol("Foo"),
+                            resolved: "Foo",
+                            original: "Foo",
                         },
                     ),
                     span: Span {
@@ -92,8 +92,8 @@
                                                     start: 27,
                                                     end: 30,
                                                 },
-                                                resolved: Symbol("Bar"),
-                                                original: Symbol("Bar"),
+                                                resolved: "Bar",
+                                                original: "Bar",
                                             },
                                         ),
                                         span: Span {
@@ -126,8 +126,8 @@
                                                                     start: 41,
                                                                     end: 44,
                                                                 },
-                                                                resolved: Symbol("Bar"),
-                                                                original: Symbol("Bar"),
+                                                                resolved: "Bar",
+                                                                original: "Bar",
                                                             },
                                                         ),
                                                         span: Span {
@@ -138,7 +138,7 @@
                                                 ),
                                                 method: SimpleIdentifier {
                                                     id: 7,
-                                                    symbol: Symbol("a"),
+                                                    symbol: "a",
                                                     span: Span {
                                                         start: 46,
                                                         end: 47,
@@ -146,7 +146,7 @@
                                                 },
                                                 alias: SimpleIdentifier {
                                                     id: 8,
-                                                    symbol: Symbol("b"),
+                                                    symbol: "b",
                                                     span: Span {
                                                         start: 51,
                                                         end: 52,

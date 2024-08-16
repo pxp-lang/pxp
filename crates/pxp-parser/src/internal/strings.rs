@@ -79,7 +79,7 @@ pub fn shell_exec(state: &mut State) -> Expression {
 #[inline(always)]
 pub fn heredoc(state: &mut State) -> Expression {
     let span = state.stream.current().span;
-    let label = state.stream.current().symbol.unwrap();
+    let label = state.stream.current().symbol.as_ref().unwrap();
     state.stream.next();
 
     let mut parts = Vec::new();
@@ -113,25 +113,19 @@ pub fn heredoc(state: &mut State) -> Expression {
 
             match part {
                 StringPart::Literal(LiteralStringPart { value, .. }) => {
-                    let bytes = state.symbol_table.resolve(*value).unwrap();
+                    let bytes = value.clone();
 
                     // 1. If this line doesn't start with any whitespace,
                     //    we can return an error early because we know
                     //    the label was indented.
                     if !bytes.starts_with(&[b' ']) && !bytes.starts_with(&[b'\t']) {
-                        todo!("tolerant mode")
-                        // return Err(SyntaxError::InvalidDocBodyIndentationLevel(
-                        //     indentation_amount,
-                        //     span,
-                        // )
-                        // .into());
+                        state.diagnostic(ParserDiagnostic::InvalidDocBodyIndentationLevel(indentation_amount), Severity::Error, span);
                     }
 
                     // 2. If this line doesn't start with the correct
                     //    type of whitespace, we can also return an error.
                     if !bytes.starts_with(&[indentation_char]) {
-                        todo!("tolerant mode")
-                        // return Err(SyntaxError::InvalidDocIndentation(span).into());
+                        state.diagnostic(ParserDiagnostic::InvalidDocIndentation, Severity::Error, span);
                     }
 
                     // 3. We now know that the whitespace at the start of
@@ -142,12 +136,11 @@ pub fn heredoc(state: &mut State) -> Expression {
                     //    minimum and check using `starts_with()`.
                     let expected_whitespace_buffer = vec![indentation_char; indentation_amount];
                     if !bytes.starts_with(&expected_whitespace_buffer) {
-                        todo!("tolerant mode")
-                        // return Err(SyntaxError::InvalidDocBodyIndentationLevel(
-                        //     indentation_amount,
-                        //     span,
-                        // )
-                        // .into());
+                        state.diagnostic(
+                            ParserDiagnostic::InvalidDocBodyIndentationLevel(indentation_amount),
+                            Severity::Error,
+                            span
+                        );
                     }
 
                     // 4. All of the above checks have passed, so we know
@@ -174,7 +167,7 @@ pub fn heredoc(state: &mut State) -> Expression {
         ExpressionKind::Heredoc(HeredocExpression {
             id: state.id(),
             span: Span::combine(span, end_span),
-            label,
+            label: label.clone(),
             parts,
         }),
         Span::combine(span, end_span),
@@ -185,11 +178,11 @@ pub fn heredoc(state: &mut State) -> Expression {
 #[inline(always)]
 pub fn nowdoc(state: &mut State) -> Expression {
     let span = state.stream.current().span;
-    let label = *state.stream.current();
+    let label = state.stream.current().clone();
 
     state.stream.next();
 
-    let string_part = *state.stream.current();
+    let string_part = state.stream.current().clone();
 
     // FIXME: Do we still need this, or can we do it inside of the lexer?
     // let (indentation_type, indentation_amount) = match &state.stream.current().kind {
@@ -282,7 +275,7 @@ pub fn nowdoc(state: &mut State) -> Expression {
 fn part(state: &mut State) -> Option<StringPart> {
     match &state.stream.current().kind {
         TokenKind::StringPart => {
-            let s = *state.stream.current();
+            let s = state.stream.current().clone();
             let part = if !s.span.is_empty() {
                 Some(StringPart::Literal(LiteralStringPart {
                     id: state.id(),
@@ -346,7 +339,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                             ExpressionKind::Literal(Literal::new(
                                 state.id(),
                                 LiteralKind::Integer,
-                                *current,
+                                current.clone(),
                                 current.span,
                             ))
                         }
@@ -359,7 +352,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                                 let kind = ExpressionKind::Literal(Literal::new(
                                     state.id(),
                                     LiteralKind::Integer,
-                                    *literal,
+                                    literal.clone(),
                                     literal.span,
                                 ));
                                 let expression = Expression::new(
@@ -382,7 +375,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                                 state.diagnostic(
                                     ParserDiagnostic::ExpectedToken {
                                         expected: vec![TokenKind::LiteralInteger],
-                                        found: *literal,
+                                        found: literal.clone(),
                                     },
                                     Severity::Error,
                                     literal.span,
@@ -399,7 +392,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                             ExpressionKind::Literal(Literal::new(
                                 state.id(),
                                 LiteralKind::String,
-                                *current,
+                                current.clone(),
                                 current.span,
                             ))
                         }
@@ -414,7 +407,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                                         TokenKind::Identifier,
                                         TokenKind::Variable,
                                     ],
-                                    found: *current,
+                                    found: current.clone(),
                                 },
                                 Severity::Error,
                                 current.span,
@@ -510,7 +503,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                         TokenKind::DoubleQuote,
                         TokenKind::Variable,
                     ],
-                    found: *state.stream.current(),
+                    found: state.stream.current().clone(),
                 },
                 Severity::Error,
                 span,

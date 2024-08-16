@@ -44,8 +44,8 @@
                                         start: 11,
                                         end: 18,
                                     },
-                                    resolved: Symbol("Foo\Baz"),
-                                    original: Symbol("Foo\Baz"),
+                                    resolved: "Foo\Baz",
+                                    original: "Foo\Baz",
                                 },
                             ),
                             span: Span {
@@ -93,8 +93,8 @@
                                         start: 24,
                                         end: 31,
                                     },
-                                    resolved: Symbol("Baz\Bar"),
-                                    original: Symbol("Baz\Bar"),
+                                    resolved: "Baz\Bar",
+                                    original: "Baz\Bar",
                                 },
                             ),
                             span: Span {
@@ -105,7 +105,7 @@
                         alias: Some(
                             SimpleIdentifier {
                                 id: 10,
-                                symbol: Symbol("Qux"),
+                                symbol: "Qux",
                                 span: Span {
                                     start: 35,
                                     end: 38,
@@ -148,8 +148,8 @@
                                 start: 51,
                                 end: 54,
                             },
-                            resolved: Symbol("Foo"),
-                            original: Symbol("Foo"),
+                            resolved: "Foo",
+                            original: "Foo",
                         },
                     ),
                     span: Span {
@@ -179,8 +179,8 @@
                                                 start: 63,
                                                 end: 66,
                                             },
-                                            resolved: Symbol("Bar"),
-                                            original: Symbol("Bar"),
+                                            resolved: "Bar",
+                                            original: "Bar",
                                         },
                                     ),
                                     span: Span {
@@ -197,8 +197,8 @@
                                                 start: 68,
                                                 end: 71,
                                             },
-                                            resolved: Symbol("Foo\Baz"),
-                                            original: Symbol("Baz"),
+                                            resolved: "Foo\Baz",
+                                            original: "Baz",
                                         },
                                     ),
                                     span: Span {
@@ -215,8 +215,8 @@
                                                 start: 73,
                                                 end: 81,
                                             },
-                                            resolved: Symbol("Baz\Bar\Test"),
-                                            original: Symbol("Qux\Test"),
+                                            resolved: "Baz\Bar\Test",
+                                            original: "Qux\Test",
                                         },
                                     ),
                                     span: Span {

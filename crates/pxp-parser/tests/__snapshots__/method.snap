@@ -49,8 +49,8 @@
                                 start: 13,
                                 end: 14,
                             },
-                            resolved: Symbol("A"),
-                            original: Symbol("A"),
+                            resolved: "A",
+                            original: "A",
                         },
                     ),
                     span: Span {
@@ -97,7 +97,7 @@
                                 ampersand: None,
                                 name: SimpleIdentifier {
                                     id: 6,
-                                    symbol: Symbol("foo"),
+                                    symbol: "foo",
                                     span: Span {
                                         start: 30,
                                         end: 33,

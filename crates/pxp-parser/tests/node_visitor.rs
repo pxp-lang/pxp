@@ -1,26 +1,26 @@
-use pxp_ast::{visitor::{NodeVisitor, NodeVisitorEscapeHatch}, Node};
+use pxp_ast::{visitor::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch}, Node};
 use pxp_parser::parse;
-use pxp_symbol::SymbolTable;
+
 
 struct TestVisitor {
     output: Vec<String>,
 }
 
 impl NodeVisitor<'_> for TestVisitor {
-    fn enter(&mut self, node: Node) -> NodeVisitorEscapeHatch {
+    fn enter(&mut self, node: Node, _: &mut Ancestors) -> NodeVisitorEscapeHatch {
         self.output.push(format!("Enter {}", node.name()));
 
         NodeVisitorEscapeHatch::Continue
     }
 
-    fn leave(&mut self, node: Node) -> NodeVisitorEscapeHatch {
+    fn leave(&mut self, node: Node, _: &mut Ancestors) -> NodeVisitorEscapeHatch {
         self.output.push(format!("Leave {}", node.name()));
 
         NodeVisitorEscapeHatch::Continue
     }
 }
 
-const CODE: &'static str = r#"<?php
+const CODE: &str = r#"<?php
 
 namespace A;
 
@@ -35,7 +35,7 @@ echo (new B)->c('Hello, World!');
 
 #[test]
 fn it_traverses_a_node_tree_correctly() {
-    let result = parse(&CODE, SymbolTable::the());
+    let result = parse(&CODE);
 
     let mut visitor = TestVisitor { output: vec![] };
     visitor.traverse(&result.ast[..]);

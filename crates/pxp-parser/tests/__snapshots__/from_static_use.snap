@@ -44,8 +44,8 @@
                                         start: 11,
                                         end: 19,
                                     },
-                                    resolved: Symbol("Foo\From"),
-                                    original: Symbol("Foo\From"),
+                                    resolved: "Foo\From",
+                                    original: "Foo\From",
                                 },
                             ),
                             span: Span {
@@ -97,8 +97,8 @@
                                                     start: 22,
                                                     end: 26,
                                                 },
-                                                resolved: Symbol("Foo\From"),
-                                                original: Symbol("From"),
+                                                resolved: "Foo\From",
+                                                original: "From",
                                             },
                                         ),
                                         span: Span {
@@ -122,7 +122,7 @@
                             method: SimpleIdentifier(
                                 SimpleIdentifier {
                                     id: 10,
-                                    symbol: Symbol("foo"),
+                                    symbol: "foo",
                                     span: Span {
                                         start: 28,
                                         end: 31,

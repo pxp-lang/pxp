@@ -1,4 +1,4 @@
-use pxp_ast::{visitor::{NodeVisitor, NodeVisitorEscapeHatch}, Node, Statement};
+use pxp_ast::{visitor::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch}, Node, Statement};
 use pxp_span::ByteOffset;
 
 pub struct NodeFinder<'a> {
@@ -19,7 +19,7 @@ impl<'a> NodeFinder<'a> {
 }
 
 impl<'a> NodeVisitor<'a> for NodeFinder<'a> {
-    fn enter(&mut self, node: Node<'a>) -> NodeVisitorEscapeHatch {
+    fn enter(&mut self, node: Node<'a>, _: &mut Ancestors<'a>) -> NodeVisitorEscapeHatch {
         let span = node.span;
 
         // If the current node is before the offset we're interested in,
@@ -48,13 +48,13 @@ impl<'a> NodeVisitor<'a> for NodeFinder<'a> {
 mod tests {
     use pxp_ast::ExpressionKind;
     use pxp_parser::{parse, ParseResult};
-    use pxp_symbol::SymbolTable;
+    
 
     use super::*;
 
     #[test]
     fn it_can_find_a_node_at_offset() {
-        let (result, offset) = parse_with_offset_indicator(&r#"
+        let (result, offset) = parse_with_offset_indicator(r#"
         <?php
 
         echo (new A)->§
@@ -72,9 +72,9 @@ mod tests {
     }
 
     fn parse_with_offset_indicator(input: &'static str) -> (ParseResult, ByteOffset) {
-        let offset = input.find("§").unwrap() + 1;
-        let input = input.replace("§", "");
-        let result = parse(&input, SymbolTable::the());
+        let offset = input.find('§').unwrap() + 1;
+        let input = input.replace('§', "");
+        let result = parse(&input);
 
         (result, offset)
     } 

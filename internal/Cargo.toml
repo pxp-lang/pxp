@@ -1,0 +1,53 @@
+[package]
+name = "pxp-internal"
+description = "A set of internal tools for testing various parts of the PXP project."
+version = "0.1.0"
+edition = "2021"
+license-file.workspace = true
+
+
+[dependencies]
+pxp-lexer = { path = "../crates/pxp-lexer" }
+pxp-token = { path = "../crates/pxp-token" }
+pxp-parser = { path = "../crates/pxp-parser" }
+discoverer = "0.2.0"
+rustyline = "13.0.0"
+pxp-index = { version = "0.1.0", path = "../crates/pxp-index" }
+indicatif = "0.17.8"
+pxp-ast = { version = "0.1.0", path = "../crates/pxp-ast" }
+pxp-node-finder = { version = "0.1.0", path = "../crates/pxp-node-finder" }
+pxp-inference = { version = "0.1.0", path = "../crates/pxp-inference" }
+pxp-bytestring = { version = "0.1.0", path = "../crates/pxp-bytestring" }
+num_cpus = "1.16.0"
+
+[[bin]]
+name = "tokenise"
+path = "bin/tokenise.rs"
+
+[[bin]]
+name = "parse"
+path = "bin/parse.rs"
+
+[[bin]]
+name = "visit"
+path = "bin/visit.rs"
+
+[[bin]]
+name = "index"
+path = "bin/index.rs"
+
+[[bin]]
+name = "node-finder"
+path = "bin/node_finder.rs"
+
+[[bin]]
+name = "node-visit"
+path = "bin/node_visit.rs"
+
+[[bin]]
+name = "infer"
+path = "bin/infer.rs"
+
+[[bin]]
+name = "multi-thread-parse"
+path = "bin/multi_thread_parse.rs"

@@ -26,7 +26,7 @@ pub fn parse(state: &mut State) -> StatementKind {
 
         match current.kind {
             TokenKind::Identifier => {
-                let symbol = state.symbol_table.resolve(current.symbol.unwrap()).unwrap();
+                let symbol = current.symbol.as_ref().unwrap();
 
                 Some(match &symbol[..] {
                     b"string" => {
@@ -52,7 +52,7 @@ pub fn parse(state: &mut State) -> StatementKind {
             }
             TokenKind::LeftBrace => {
                 state.diagnostic(
-                    ParserDiagnostic::UnexpectedToken { token: *current },
+                    ParserDiagnostic::UnexpectedToken { token: current.clone() },
                     Severity::Error,
                     current.span,
                 );

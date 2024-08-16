@@ -33,7 +33,7 @@ pub fn use_statement(state: &mut State) -> StatementKind {
 
     if state.stream.peek().kind == TokenKind::LeftBrace {
         let prefix = identifiers::full_name(state);
-        let prefix_symbol = prefix.symbol;
+        let prefix_symbol = prefix.symbol.clone();
 
         state.stream.next();
 
@@ -75,19 +75,17 @@ pub fn use_statement(state: &mut State) -> StatementKind {
                 alias = Some(identifiers::type_identifier(state));
             }
 
-            let symbol = name.symbol;
-            let alias_symbol = alias.as_ref().map(|a| a.symbol);
+            let symbol = name.symbol.clone();
+            let alias_symbol = alias.as_ref().map(|a| a.symbol.clone());
             let import_kind = use_kind.unwrap_or(kind);
             let end_span = state.stream.previous().span;
-
+            
             uses.push(Use {
                 id: state.id(),
                 span: Span::combine(start_span, end_span),
                 name: Name::resolved(
                     state.id(),
-                    state
-                        .symbol_table
-                        .coagulate(&[prefix.symbol, name.symbol], Some(b"\\")),
+                    prefix_symbol.clone().coagulate(&[name.symbol.clone()], Some(b"\\")),
                     name.symbol,
                     name.span,
                 ),
@@ -95,7 +93,7 @@ pub fn use_statement(state: &mut State) -> StatementKind {
                 alias,
             });
 
-            state.add_prefixed_import(&import_kind, prefix_symbol, symbol, alias_symbol);
+            state.add_prefixed_import(&import_kind, prefix_symbol.clone(), symbol, alias_symbol);
 
             if state.stream.current().kind == TokenKind::Comma {
                 state.stream.next();
@@ -124,18 +122,18 @@ pub fn use_statement(state: &mut State) -> StatementKind {
                 alias = Some(identifiers::type_identifier(state));
             }
 
-            let alias_symbol = alias.as_ref().map(|a| a.symbol);
+            let alias_symbol = alias.as_ref().map(|a| a.symbol.clone());
             let end_span = state.stream.previous().span;
 
             uses.push(Use {
                 id: state.id(),
                 span: Span::combine(start_span, end_span),
-                name,
+                name: name.clone(),
                 kind: None,
                 alias,
             });
 
-            state.add_import(&kind, name.symbol(), alias_symbol);
+            state.add_import(&kind, name.symbol().clone(), alias_symbol);
 
             if state.stream.current().kind == TokenKind::Comma {
                 state.stream.next();

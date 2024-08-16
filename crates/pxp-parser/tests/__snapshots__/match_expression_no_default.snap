@@ -50,8 +50,8 @@
                                     SimpleVariable(
                                         SimpleVariable {
                                             id: 4,
-                                            symbol: Symbol("$foo"),
-                                            stripped: Symbol("foo"),
+                                            symbol: "$foo",
+                                            stripped: "foo",
                                             span: Span {
                                                 start: 14,
                                                 end: 18,
@@ -101,7 +101,7 @@
                                                             end: 27,
                                                         },
                                                         symbol: Some(
-                                                            Symbol("1"),
+                                                            "1",
                                                         ),
                                                     },
                                                 },
@@ -136,7 +136,7 @@
                                                         end: 36,
                                                     },
                                                     symbol: Some(
-                                                        Symbol("'one'"),
+                                                        "'one'",
                                                     ),
                                                 },
                                             },

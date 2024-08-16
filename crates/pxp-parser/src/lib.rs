@@ -25,7 +25,7 @@ use pxp_lexer::stream::TokenStream;
 use pxp_lexer::Lexer;
 use pxp_span::Span;
 use pxp_span::Spanned;
-use pxp_symbol::SymbolTable;
+
 use pxp_token::OpenTagKind;
 use pxp_token::Token;
 use pxp_token::TokenKind;
@@ -56,8 +56,8 @@ pub struct ParseResult {
     pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
 }
 
-pub fn parse<B: Sized + AsRef<[u8]>>(input: &B, symbol_table: &mut SymbolTable) -> ParseResult {
-    let mut lexer = Lexer::new(input, symbol_table);
+pub fn parse<B: Sized + AsRef<[u8]>>(input: &B) -> ParseResult {
+    let mut lexer = Lexer::new(input);
     let tokens = match lexer.tokenize() {
         Ok(tokens) => tokens,
         Err(error) => {
@@ -65,12 +65,12 @@ pub fn parse<B: Sized + AsRef<[u8]>>(input: &B, symbol_table: &mut SymbolTable) 
         }
     };
 
-    construct(&tokens, symbol_table)
+    construct(&tokens)
 }
 
-pub fn construct(tokens: &[Token], symbol_table: &mut SymbolTable) -> ParseResult {
+pub fn construct(tokens: &[Token]) -> ParseResult {
     let mut stream = TokenStream::new(tokens);
-    let mut state = State::new(&mut stream, symbol_table);
+    let mut state = State::new(&mut stream);
     let mut ast = Vec::new();
 
     while !state.stream.is_eof() {
@@ -100,7 +100,7 @@ fn top_level_statement(state: &mut State) -> Statement {
 
                     let (span, content) = if let TokenKind::InlineHtml = state.stream.current().kind
                     {
-                        let content = *state.stream.current();
+                        let content = state.stream.current().clone();
                         state.stream.next();
                         (Span::combine(start, content.span), Some(content))
                     } else {
@@ -458,7 +458,7 @@ fn statement(state: &mut State) -> Statement {
                 })
             }
             TokenKind::InlineHtml => {
-                let html = *state.stream.current();
+                let html = state.stream.current().clone();
                 state.stream.next();
 
                 StatementKind::InlineHtml(InlineHtmlStatement {
@@ -536,7 +536,7 @@ fn statement(state: &mut State) -> Statement {
                     span: Span::combine(r#return, end),
                     r#return,
                     value,
-                    ending: utils::skip_ending(state),
+                    ending,
                 })
             }
             _ => {

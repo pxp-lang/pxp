@@ -1,7 +1,8 @@
 use std::slice::Iter;
 
+use pxp_bytestring::ByteString;
 use pxp_span::{Span, Spanned};
-use pxp_symbol::Symbol;
+
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum CommentFormat {
@@ -16,7 +17,7 @@ pub enum CommentFormat {
 pub struct Comment {
     pub span: Span,
     pub format: CommentFormat,
-    pub content: Symbol,
+    pub content: ByteString,
 }
 
 impl Spanned for Comment {

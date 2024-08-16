@@ -36,8 +36,7 @@
                                 start: 7,
                                 end: 18,
                             },
-                            label: Symbol("<<<TXT
-                            "),
+                            label: "<<<TXT\n",
                             parts: [],
                         },
                     ),

@@ -41,8 +41,8 @@
                                 start: 12,
                                 end: 15,
                             },
-                            resolved: Symbol("Foo"),
-                            original: Symbol("Foo"),
+                            resolved: "Foo",
+                            original: "Foo",
                         },
                     ),
                     span: Span {
@@ -96,7 +96,7 @@
                                     ampersand: None,
                                     name: SimpleIdentifier {
                                         id: 5,
-                                        symbol: Symbol("a"),
+                                        symbol: "a",
                                         span: Span {
                                             start: 38,
                                             end: 39,
@@ -181,7 +181,7 @@
                                     ampersand: None,
                                     name: SimpleIdentifier {
                                         id: 10,
-                                        symbol: Symbol("b"),
+                                        symbol: "b",
                                         span: Span {
                                             start: 68,
                                             end: 69,
@@ -266,7 +266,7 @@
                                     ampersand: None,
                                     name: SimpleIdentifier {
                                         id: 15,
-                                        symbol: Symbol("c"),
+                                        symbol: "c",
                                         span: Span {
                                             start: 96,
                                             end: 97,
@@ -351,7 +351,7 @@
                                     ampersand: None,
                                     name: SimpleIdentifier {
                                         id: 20,
-                                        symbol: Symbol("d"),
+                                        symbol: "d",
                                         span: Span {
                                             start: 123,
                                             end: 124,

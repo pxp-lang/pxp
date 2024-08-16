@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
+use pxp_bytestring::ByteString;
 use pxp_span::{Span, Spanned};
-use pxp_symbol::{Symbol, SymbolTable};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 
@@ -237,12 +237,12 @@ pub enum TokenKind {
     LogicalXor,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 
 pub struct Token {
     pub kind: TokenKind,
     pub span: Span,
-    pub symbol: Option<Symbol>,
+    pub symbol: Option<ByteString>,
 }
 
 impl Spanned for Token {
@@ -262,7 +262,7 @@ impl Default for Token {
 }
 
 impl Token {
-    pub fn new(kind: TokenKind, span: Span, symbol: Option<Symbol>) -> Self {
+    pub fn new(kind: TokenKind, span: Span, symbol: Option<ByteString>) -> Self {
         Self { kind, span, symbol }
     }
 
@@ -274,28 +274,12 @@ impl Token {
         self.kind == TokenKind::Missing
     }
 
-    pub fn new_with_symbol(kind: TokenKind, span: Span, symbol: Symbol) -> Self {
+    pub fn new_with_symbol(kind: TokenKind, span: Span, symbol: ByteString) -> Self {
         Self::new(kind, span, Some(symbol))
     }
 
     pub fn new_without_symbol(kind: TokenKind, span: Span) -> Self {
         Self::new(kind, span, None)
-    }
-
-    pub fn display(&self, symbol_table: &SymbolTable) -> String {
-        if let Some(symbol) = self.symbol {
-            format!("{}", symbol_table.resolve(symbol).unwrap())
-        } else {
-            format!("{}", self.kind)
-        }
-    }
-
-    pub fn dbg(&self) -> String {
-        if let Some(symbol) = self.symbol {
-            format!("{} ({:?})", symbol, self.kind)
-        } else {
-            format!("{} ({:?})", self.kind, self.kind)
-        }
     }
 }
 

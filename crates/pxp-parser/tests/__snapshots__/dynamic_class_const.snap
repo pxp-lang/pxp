@@ -48,8 +48,8 @@
                                                     start: 7,
                                                     end: 10,
                                                 },
-                                                resolved: Symbol("Foo"),
-                                                original: Symbol("Foo"),
+                                                resolved: "Foo",
+                                                original: "Foo",
                                             },
                                         ),
                                         span: Span {
@@ -83,8 +83,8 @@
                                             SimpleVariable(
                                                 SimpleVariable {
                                                     id: 6,
-                                                    symbol: Symbol("$foo"),
-                                                    stripped: Symbol("foo"),
+                                                    symbol: "$foo",
+                                                    stripped: "foo",
                                                     span: Span {
                                                         start: 13,
                                                         end: 17,

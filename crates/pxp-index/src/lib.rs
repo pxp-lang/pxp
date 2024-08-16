@@ -1,7 +1,8 @@
 use class_like::ClassLike;
 use constant::Constant;
 use function::Function;
-use pxp_symbol::Symbol;
+use pxp_bytestring::ByteString;
+
 use std::collections::HashMap;
 
 mod class_like;
@@ -16,9 +17,9 @@ pub use reflection::*;
 
 #[derive(Debug, Clone, Default)]
 pub struct Index {
-    classes: HashMap<Symbol, ClassLike>,
-    functions: HashMap<Symbol, Function>,
-    constants: HashMap<Symbol, Constant>,
+    classes: HashMap<ByteString, ClassLike>,
+    functions: HashMap<ByteString, Function>,
+    constants: HashMap<ByteString, Constant>,
 }
 
 impl Index {
@@ -31,35 +32,43 @@ impl Index {
     }
 
     pub(crate) fn add_class(&mut self, class: ClassLike) {
-        self.classes.insert(class.name, class);
+        self.classes.insert(class.name.clone(), class);
     }
 
     pub(crate) fn add_function(&mut self, function: Function) {
-        self.functions.insert(function.name, function);
+        self.functions.insert(function.name.clone(), function);
+    }
+
+    pub(crate) fn has_function(&self, name: &ByteString) -> bool {
+        self.functions.contains_key(name)
+    }
+
+    pub fn has_class(&self, name: &ByteString) -> bool {
+        self.classes.contains_key(name)
     }
 
     pub(crate) fn add_constant(&mut self, constant: Constant) {
-        self.constants.insert(constant.name, constant);
+        self.constants.insert(constant.name.clone(), constant);
     }
 
-    pub fn get_class(&self, name: Symbol) -> Option<ReflectionClass> {
+    pub fn get_class(&self, name: &ByteString) -> Option<ReflectionClass> {
         self.classes
-            .get(&name)
+            .get(name)
             .map(|class| ReflectionClass { class, index: self })
     }
 
-    pub fn get_function(&self, name: Symbol) -> Option<ReflectionFunction> {
+    pub fn get_function(&self, name: &ByteString) -> Option<ReflectionFunction> {
         self.functions
-            .get(&name)
+            .get(name)
             .map(|function| ReflectionFunction {
                 function,
                 index: self,
             })
     }
 
-    pub fn get_constant(&self, name: Symbol) -> Option<ReflectionConstant> {
+    pub fn get_constant(&self, name: &ByteString) -> Option<ReflectionConstant> {
         self.constants
-            .get(&name)
+            .get(name)
             .map(|constant| ReflectionConstant {
                 constant,
                 index: self,

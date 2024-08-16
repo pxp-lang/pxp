@@ -41,8 +41,8 @@
                                 start: 12,
                                 end: 15,
                             },
-                            resolved: Symbol("Foo"),
-                            original: Symbol("Foo"),
+                            resolved: "Foo",
+                            original: "Foo",
                         },
                     ),
                     span: Span {
@@ -60,8 +60,8 @@
                                     start: 27,
                                     end: 30,
                                 },
-                                resolved: Symbol("Bar"),
-                                original: Symbol("Bar"),
+                                resolved: "Bar",
+                                original: "Bar",
                             },
                         ),
                         span: Span {

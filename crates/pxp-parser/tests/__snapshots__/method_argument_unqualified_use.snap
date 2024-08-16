@@ -44,8 +44,8 @@
                                         start: 11,
                                         end: 18,
                                     },
-                                    resolved: Symbol("App\Foo"),
-                                    original: Symbol("App\Foo"),
+                                    resolved: "App\Foo",
+                                    original: "App\Foo",
                                 },
                             ),
                             span: Span {
@@ -93,8 +93,8 @@
                                         start: 24,
                                         end: 35,
                                     },
-                                    resolved: Symbol("Foo\Bar\Baz"),
-                                    original: Symbol("Foo\Bar\Baz"),
+                                    resolved: "Foo\Bar\Baz",
+                                    original: "Foo\Bar\Baz",
                                 },
                             ),
                             span: Span {
@@ -105,7 +105,7 @@
                         alias: Some(
                             SimpleIdentifier {
                                 id: 10,
-                                symbol: Symbol("Bar"),
+                                symbol: "Bar",
                                 span: Span {
                                     start: 39,
                                     end: 42,
@@ -156,8 +156,8 @@
                                 start: 51,
                                 end: 52,
                             },
-                            resolved: Symbol("A"),
-                            original: Symbol("A"),
+                            resolved: "A",
+                            original: "A",
                         },
                     ),
                     span: Span {
@@ -204,7 +204,7 @@
                                 ampersand: None,
                                 name: SimpleIdentifier {
                                     id: 17,
-                                    symbol: Symbol("a"),
+                                    symbol: "a",
                                     span: Span {
                                         start: 68,
                                         end: 69,
@@ -236,8 +236,8 @@
                                                 },
                                                 name: SimpleVariable {
                                                     id: 20,
-                                                    symbol: Symbol("$a"),
-                                                    stripped: Symbol("a"),
+                                                    symbol: "$a",
+                                                    stripped: "a",
                                                     span: Span {
                                                         start: 74,
                                                         end: 76,
@@ -257,8 +257,8 @@
                                                                             start: 70,
                                                                             end: 73,
                                                                         },
-                                                                        resolved: Symbol("App\Foo"),
-                                                                        original: Symbol("Foo"),
+                                                                        resolved: "App\Foo",
+                                                                        original: "Foo",
                                                                     },
                                                                 ),
                                                                 span: Span {
@@ -288,8 +288,8 @@
                                                 },
                                                 name: SimpleVariable {
                                                     id: 25,
-                                                    symbol: Symbol("$b"),
-                                                    stripped: Symbol("b"),
+                                                    symbol: "$b",
+                                                    stripped: "b",
                                                     span: Span {
                                                         start: 88,
                                                         end: 90,
@@ -311,8 +311,8 @@
                                                                                     start: 78,
                                                                                     end: 81,
                                                                                 },
-                                                                                resolved: Symbol("App\Foo"),
-                                                                                original: Symbol("Foo"),
+                                                                                resolved: "App\Foo",
+                                                                                original: "Foo",
                                                                             },
                                                                         ),
                                                                         span: Span {
@@ -331,8 +331,8 @@
                                                                                     start: 84,
                                                                                     end: 87,
                                                                                 },
-                                                                                resolved: Symbol("Foo\Bar\Baz"),
-                                                                                original: Symbol("Bar"),
+                                                                                resolved: "Foo\Bar\Baz",
+                                                                                original: "Bar",
                                                                             },
                                                                         ),
                                                                         span: Span {
@@ -364,8 +364,8 @@
                                                 },
                                                 name: SimpleVariable {
                                                     id: 30,
-                                                    symbol: Symbol("$c"),
-                                                    stripped: Symbol("c"),
+                                                    symbol: "$c",
+                                                    stripped: "c",
                                                     span: Span {
                                                         start: 102,
                                                         end: 104,
@@ -387,8 +387,8 @@
                                                                                     start: 92,
                                                                                     end: 95,
                                                                                 },
-                                                                                resolved: Symbol("App\Foo"),
-                                                                                original: Symbol("Foo"),
+                                                                                resolved: "App\Foo",
+                                                                                original: "Foo",
                                                                             },
                                                                         ),
                                                                         span: Span {
@@ -407,8 +407,8 @@
                                                                                     start: 98,
                                                                                     end: 101,
                                                                                 },
-                                                                                resolved: Symbol("Foo\Bar\Baz"),
-                                                                                original: Symbol("Bar"),
+                                                                                resolved: "Foo\Bar\Baz",
+                                                                                original: "Bar",
                                                                             },
                                                                         ),
                                                                         span: Span {
@@ -440,8 +440,8 @@
                                                 },
                                                 name: SimpleVariable {
                                                     id: 34,
-                                                    symbol: Symbol("$d"),
-                                                    stripped: Symbol("d"),
+                                                    symbol: "$d",
+                                                    stripped: "d",
                                                     span: Span {
                                                         start: 111,
                                                         end: 113,
@@ -462,8 +462,8 @@
                                                                                 start: 107,
                                                                                 end: 110,
                                                                             },
-                                                                            resolved: Symbol("App\Foo"),
-                                                                            original: Symbol("Foo"),
+                                                                            resolved: "App\Foo",
+                                                                            original: "Foo",
                                                                         },
                                                                     ),
                                                                     span: Span {

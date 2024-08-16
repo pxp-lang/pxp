@@ -43,8 +43,7 @@
                                     end: 16,
                                 },
                                 symbol: Some(
-                                    Symbol("<<<'TXT'
-                                    "),
+                                    "<<<'TXT'\n",
                                 ),
                             },
                             value: Token {
@@ -54,7 +53,7 @@
                                     end: 16,
                                 },
                                 symbol: Some(
-                                    Symbol(""),
+                                    "",
                                 ),
                             },
                         },

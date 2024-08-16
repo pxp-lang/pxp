@@ -60,8 +60,8 @@
                                                     SimpleVariable(
                                                         SimpleVariable {
                                                             id: 4,
-                                                            symbol: Symbol("$i"),
-                                                            stripped: Symbol("i"),
+                                                            symbol: "$i",
+                                                            stripped: "i",
                                                             span: Span {
                                                                 start: 12,
                                                                 end: 14,
@@ -98,7 +98,7 @@
                                                                 end: 18,
                                                             },
                                                             symbol: Some(
-                                                                Symbol("0"),
+                                                                "0",
                                                             ),
                                                         },
                                                     },
@@ -148,8 +148,8 @@
                                                     SimpleVariable(
                                                         SimpleVariable {
                                                             id: 11,
-                                                            symbol: Symbol("$i"),
-                                                            stripped: Symbol("i"),
+                                                            symbol: "$i",
+                                                            stripped: "i",
                                                             span: Span {
                                                                 start: 20,
                                                                 end: 22,
@@ -186,7 +186,7 @@
                                                                 end: 27,
                                                             },
                                                             symbol: Some(
-                                                                Symbol("10"),
+                                                                "10",
                                                             ),
                                                         },
                                                     },
@@ -236,8 +236,8 @@
                                                     SimpleVariable(
                                                         SimpleVariable {
                                                             id: 18,
-                                                            symbol: Symbol("$i"),
-                                                            stripped: Symbol("i"),
+                                                            symbol: "$i",
+                                                            stripped: "i",
                                                             span: Span {
                                                                 start: 29,
                                                                 end: 31,
@@ -317,8 +317,8 @@
                                                                 SimpleVariable(
                                                                     SimpleVariable {
                                                                         id: 24,
-                                                                        symbol: Symbol("$i"),
-                                                                        stripped: Symbol("i"),
+                                                                        symbol: "$i",
+                                                                        stripped: "i",
                                                                         span: Span {
                                                                             start: 46,
                                                                             end: 48,

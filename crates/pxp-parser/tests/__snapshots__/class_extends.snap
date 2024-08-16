@@ -44,8 +44,8 @@
                                         start: 11,
                                         end: 18,
                                     },
-                                    resolved: Symbol("Foo\Baz"),
-                                    original: Symbol("Foo\Baz"),
+                                    resolved: "Foo\Baz",
+                                    original: "Foo\Baz",
                                 },
                             ),
                             span: Span {
@@ -98,8 +98,8 @@
                                 start: 27,
                                 end: 30,
                             },
-                            resolved: Symbol("Foo"),
-                            original: Symbol("Foo"),
+                            resolved: "Foo",
+                            original: "Foo",
                         },
                     ),
                     span: Span {
@@ -127,8 +127,8 @@
                                         start: 39,
                                         end: 42,
                                     },
-                                    resolved: Symbol("Foo\Baz"),
-                                    original: Symbol("Baz"),
+                                    resolved: "Foo\Baz",
+                                    original: "Baz",
                                 },
                             ),
                             span: Span {
