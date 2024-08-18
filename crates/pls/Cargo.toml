@@ -11,4 +11,5 @@ dashmap = "5.1.0"
 pxp-parser = { path = "../pxp-parser" }
 pxp-diagnostics = { path = "../pxp-diagnostics" }
 pxp-span = { version = "0.1.0", path = "../pxp-span" }
+pxp-index = { version = "0.1.0", path = "../pxp-index" }
 

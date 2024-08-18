@@ -1,5 +1,6 @@
 use dashmap::DashMap;
 use pxp_diagnostics::Diagnostic;
+use pxp_index::Index;
 use pxp_parser::ParserDiagnostic;
 use tower_lsp::lsp_types::{TextDocumentContentChangeEvent, Url};
 
@@ -31,6 +32,7 @@ impl TextDocuments {
 pub struct State {
     diagnostics: dashmap::DashMap<Url, Vec<Diagnostic<ParserDiagnostic>>>,
     pub(crate) text_documents: TextDocuments,
+    pub(crate) index: Index,
 }
 
 impl State {
@@ -38,6 +40,7 @@ impl State {
         State {
             diagnostics: dashmap::DashMap::new(),
             text_documents: TextDocuments::new(),
+            index: Index::new(),
         }
     }
 

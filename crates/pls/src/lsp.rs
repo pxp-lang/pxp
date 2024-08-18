@@ -119,7 +119,10 @@ impl LanguageServer for Backend {
     async fn initialize(&self, _params: InitializeParams) -> Result<InitializeResult> {
         return Ok(InitializeResult {
             capabilities: get_server_capabilities(_params),
-            server_info: None,
+            server_info: Some(ServerInfo {
+                name: "PLS (PHP Language Server)".to_string(),
+                version: Some(env!("CARGO_PKG_VERSION").to_string()),
+            }),
             offset_encoding: None,
         });
     }
