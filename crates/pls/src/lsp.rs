@@ -131,7 +131,7 @@ impl LanguageServer for Backend {
         self.client
             .log_message(
                 MessageType::INFO,
-                "PXP Language Server Initialized".to_string(),
+                "PLS initialized.".to_string(),
             )
             .await;
     }
