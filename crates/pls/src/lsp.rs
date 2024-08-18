@@ -8,7 +8,7 @@ use pxp_parser::ParserDiagnostic;
 use pxp_span::Span;
 use pxp_span::Spanned;
 use tower_lsp::async_trait;
-use tower_lsp::jsonrpc::Error;
+use tower_lsp::jsonrpc::Result;
 use tower_lsp::lsp_types;
 use tower_lsp::lsp_types::DiagnosticSeverity;
 use tower_lsp::lsp_types::*;
@@ -31,6 +31,18 @@ impl Backend {
     async fn send_diagnostics(&self, uri: Url, content: String) {
         let diagnostics = self.calculate_diagnostics(&uri, &content).await;
         self.publish_diagnostics_to_client(uri, &content, &diagnostics).await;
+    }
+
+    async fn add_document(&self, uri: Url, content: String) {
+        if let Ok(state) = self.state.lock() {
+            state.text_documents.add(uri, content.as_bytes().to_vec());
+        }
+    }
+
+    async fn update_document(&self, uri: &Url, changes: &[TextDocumentContentChangeEvent]) {        
+        if let Ok(state) = self.state.lock() {
+            state.text_documents.update(uri, changes);
+        }
     }
 
     async fn calculate_diagnostics(&self, uri: &Url, content: &String) -> Vec<Diagnostic<ParserDiagnostic>>
@@ -104,7 +116,7 @@ impl Backend {
 #[async_trait]
 impl LanguageServer for Backend {
     // Lifecycle Messages
-    async fn initialize(&self, _params: InitializeParams) -> Result<InitializeResult, Error> {
+    async fn initialize(&self, _params: InitializeParams) -> Result<InitializeResult> {
         return Ok(InitializeResult {
             capabilities: get_server_capabilities(_params),
             server_info: None,
@@ -124,12 +136,17 @@ impl LanguageServer for Backend {
     async fn did_open(&self, params: DidOpenTextDocumentParams) {
         let uri = params.text_document.uri;
         let content = params.text_document.text;
+
+        self.add_document(uri.clone(), content.clone()).await;
         self.send_diagnostics(uri, content).await;
     }
 
     async fn did_change(&self, params: DidChangeTextDocumentParams) {
         let uri = params.text_document.uri;
         let content = params.content_changes[0].text.clone();
+        let changes = params.content_changes;
+
+        self.update_document(&uri, &changes).await;
         self.send_diagnostics(uri, content).await;
     }
 
@@ -154,7 +171,14 @@ impl LanguageServer for Backend {
         }
     }
 
-    async fn shutdown(&self) -> Result<(), Error> {
+    async fn hover(&self, params: HoverParams) -> Result<Option<Hover>> {
+        let uri = params.text_document_position_params.text_document.uri;
+        let position = params.text_document_position_params.position;
+
+        Ok(self.calculate_hovers(&uri, position).await)
+    }
+
+    async fn shutdown(&self) -> Result<()> {
         Ok(())
     }
 }

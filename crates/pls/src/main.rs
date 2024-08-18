@@ -1,6 +1,9 @@
 mod lsp;
 mod capabilities;
 mod state;
+mod commands {
+    pub mod hover;
+}
 
 use tower_lsp::{LspService, Server};
 use lsp::Backend;
