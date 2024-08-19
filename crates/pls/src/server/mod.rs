@@ -35,8 +35,8 @@ pub trait LanguageServer {
     /// Manually handle a notification.
     /// 
     /// Return `true` if the notification was handled, `false` otherwise.
-    fn notification(&mut self, _: &Client, _method: &str, _params: &Value) -> bool {
-        false
+    fn notification(&mut self, _: &Client, _method: &str, _params: &Value) -> Result<bool> {
+        Ok(false)
     }
 }
 
@@ -85,7 +85,7 @@ impl<T: LanguageServer> ServerManager<T> {
 
                 },
                 Message::Notification(notification) => {
-                    if self.server.notification(&client, &notification.method, &notification.params) {
+                    if self.server.notification(&client, &notification.method, &notification.params)? {
                         continue;
                     }
 
