@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use lsp_textdocument::TextDocuments;
-use lsp_types::{notification::{DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument, Notification}, Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, InitializeParams, InitializeResult, MessageType, Position, Range, ServerInfo, Uri};
+use lsp_types::{notification::{DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument, Notification}, Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentSymbolParams, DocumentSymbolResponse, InitializeParams, InitializeResult, MessageType, Position, Range, ServerInfo, Uri};
 use pxp_diagnostics::{Diagnostic as InternalDiagnostic, Severity};
 use pxp_parser::{parse, ParserDiagnostic};
 use pxp_span::Spanned;
@@ -10,8 +10,8 @@ use serde_json::{from_value, Value};
 use crate::{capabilities::get_server_capabilities, server::{Client, LanguageServer, Result}};
 
 pub struct Backend {
-    documents: TextDocuments,
-    diagnostics: HashMap<Uri, Vec<InternalDiagnostic<ParserDiagnostic>>>,
+    pub documents: TextDocuments,
+    pub diagnostics: HashMap<Uri, Vec<InternalDiagnostic<ParserDiagnostic>>>,
 }
 
 impl Backend {
@@ -34,8 +34,6 @@ impl Backend {
 
             self.diagnostics.insert(uri.clone(), diagnostics.clone());
             self.publish_diagnostics(client, uri, &diagnostics, document.version(), content)?;
-        } else {
-            return Ok(());
         }
 
         Ok(())
@@ -102,6 +100,14 @@ impl LanguageServer for Backend {
 
     fn initialized(&mut self, client: &Client) -> Result<()> {
         client.log_message(MessageType::INFO, "Language server initialized.".to_string())
+    }
+
+    fn document_symbols(&mut self, client: &Client, params: &DocumentSymbolParams) -> Result<DocumentSymbolResponse> {
+        client.log_message(MessageType::INFO, format!("Generating document symbols for [`{}`].", &params.text_document.uri.to_string()))?;
+
+        let symbols = self.get_document_symbols(&params.text_document.uri)?;
+
+        Ok(DocumentSymbolResponse::Nested(symbols))
     }
 
     fn notification(&mut self, client: &Client, method: &str, params: &Value) -> Result<bool> {

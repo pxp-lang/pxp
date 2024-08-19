@@ -3,8 +3,9 @@ use std::error::Error;
 mod client;
 
 pub use client::Client;
-use lsp_server::{Connection, ExtractError, Message, Request, RequestId};
-use lsp_types::{*, notification::*, request::*};
+use lsp_server::{Connection, ExtractError, Message, Request, RequestId, Response};
+use lsp_types::{*, notification::*, request::Request as _};
+use request::DocumentSymbolRequest;
 use serde_json::{from_value, to_value, Value};
 
 pub type Result<T> = std::result::Result<T, Box<dyn Error + Sync + Send>>;
@@ -14,6 +15,10 @@ pub trait LanguageServer {
 
     fn initialized(&mut self, _: &Client) -> Result<()> {
         Ok(())
+    }
+
+    fn document_symbols(&mut self, _: &Client, _: &DocumentSymbolParams) -> Result<DocumentSymbolResponse> {
+        Ok(DocumentSymbolResponse::Flat(Vec::new()))
     }
 
     fn did_open(&mut self, _: &Client, _: &DidOpenTextDocumentParams) {
@@ -66,7 +71,7 @@ impl<T: LanguageServer> ServerManager<T> {
         connection.initialize_finish(id, to_value(initialize_result)?)?;
         
         // `initialize_finish()` takes care of the `initialized` message, so we can invoke the handler.
-        self.server.initialized(&client);
+        self.server.initialized(&client)?;
 
         // Then we can start up the main loop.
         for msg in &connection.receiver {
@@ -78,6 +83,16 @@ impl<T: LanguageServer> ServerManager<T> {
 
                     // Now we can map the request method to the appropriate handler.
                     match request.method.as_str() {
+                        DocumentSymbolRequest::METHOD => {
+                            let (id, params) = self.cast::<DocumentSymbolRequest>(request)?;
+                            let response = self.server.document_symbols(&client, &params)?;
+
+                            connection.sender.send(Message::Response(Response {
+                                id,
+                                result: Some(to_value(response)?),
+                                error: None,
+                            }))?;
+                        },
                         _ => {},
                     }
                 },

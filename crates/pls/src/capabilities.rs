@@ -1,21 +1,11 @@
 use lsp_types::{
-    DiagnosticOptions, 
-    FileOperationRegistrationOptions,
-    OneOf, 
-    ServerCapabilities, 
-    TextDocumentSyncCapability, 
-    TextDocumentSyncKind,
-    WorkDoneProgressOptions,
-    WorkspaceFileOperationsServerCapabilities, 
-    WorkspaceFoldersServerCapabilities,
-    WorkspaceServerCapabilities,
-    DiagnosticServerCapabilities,
+    DiagnosticOptions, DiagnosticServerCapabilities, DocumentSymbolOptions, FileOperationRegistrationOptions, OneOf, ServerCapabilities, TextDocumentSyncCapability, TextDocumentSyncKind, WorkDoneProgressOptions, WorkspaceFileOperationsServerCapabilities, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities
 };
 
 pub(crate) fn get_server_capabilities() -> ServerCapabilities {
     ServerCapabilities {
         position_encoding: None,
-        text_document_sync: Some(TextDocumentSyncCapability::Kind(TextDocumentSyncKind::FULL)),
+        text_document_sync: Some(TextDocumentSyncCapability::Kind(TextDocumentSyncKind::INCREMENTAL)),
         diagnostic_provider: Some(DiagnosticServerCapabilities::Options(DiagnosticOptions {
             identifier: Some("pls".to_string()),
             inter_file_dependencies: false,
@@ -24,6 +14,7 @@ pub(crate) fn get_server_capabilities() -> ServerCapabilities {
                 work_done_progress: None,
             },
         })),
+        document_symbol_provider: Some(OneOf::Left(true)),
         workspace: Some(WorkspaceServerCapabilities {
             workspace_folders: Some(WorkspaceFoldersServerCapabilities {
                 supported: Some(true),
