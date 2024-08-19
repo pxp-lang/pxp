@@ -1,7 +1,6 @@
-use tower_lsp::lsp_types::{
+use lsp_types::{
     DiagnosticOptions, 
-    FileOperationRegistrationOptions, 
-    InitializeParams, 
+    FileOperationRegistrationOptions,
     OneOf, 
     ServerCapabilities, 
     TextDocumentSyncCapability, 
@@ -13,7 +12,7 @@ use tower_lsp::lsp_types::{
     DiagnosticServerCapabilities,
 };
 
-pub(crate) fn get_server_capabilities(_params: InitializeParams) -> ServerCapabilities {
+pub(crate) fn get_server_capabilities() -> ServerCapabilities {
     ServerCapabilities {
         position_encoding: None,
         text_document_sync: Some(TextDocumentSyncCapability::Kind(TextDocumentSyncKind::FULL)),

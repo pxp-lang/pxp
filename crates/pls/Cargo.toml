@@ -6,10 +6,12 @@ edition = "2021"
 
 [dependencies]
 tokio = { version = "1.17.0", features = ["full"] }
-tower-lsp = { version = "0.20.0", features = ["proposed"]}
-dashmap = "5.1.0"
 pxp-parser = { path = "../pxp-parser" }
 pxp-diagnostics = { path = "../pxp-diagnostics" }
 pxp-span = { version = "0.1.0", path = "../pxp-span" }
 pxp-index = { version = "0.1.0", path = "../pxp-index" }
-
+lsp-server = "0.7.6"
+lsp-types = "0.97.0"
+serde = "1.0.208"
+serde_json = "1.0.125"
+lsp-textdocument = "0.4.0"

@@ -1,18 +1,12 @@
-mod lsp;
+use std::error::Error;
+
+use backend::Backend;
+use server::ServerManager;
+
 mod capabilities;
-mod state;
-mod commands {
-    pub mod hover;
-}
+mod server;
+mod backend;
 
-use tower_lsp::{LspService, Server};
-use lsp::Backend;
-
-#[tokio::main]
-async fn main() {
-    let stdin = tokio::io::stdin();
-    let stdout = tokio::io::stdout();
-    let (service, socket) = LspService::build(Backend::new).finish();
-
-    Server::new(stdin, stdout, socket).serve(service).await;
+fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
+    ServerManager::new(|| Backend::new()).run()
 }

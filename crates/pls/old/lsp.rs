@@ -118,7 +118,7 @@ impl LanguageServer for Backend {
     // Lifecycle Messages
     async fn initialize(&self, _params: InitializeParams) -> Result<InitializeResult> {
         return Ok(InitializeResult {
-            capabilities: get_server_capabilities(_params),
+            capabilities: get_server_capabilities(),
             server_info: Some(ServerInfo {
                 name: "PLS (PHP Language Server)".to_string(),
                 version: Some(env!("CARGO_PKG_VERSION").to_string()),
