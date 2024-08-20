@@ -8,6 +8,7 @@ mod server;
 mod backend;
 mod commands {
     pub mod document_symbol;
+    pub mod hover;
 }
 
 fn main() -> Result<(), Box<dyn Error + Send + Sync>> {

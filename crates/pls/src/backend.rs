@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use lsp_textdocument::TextDocuments;
-use lsp_types::{notification::{DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument, Notification}, Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentSymbolParams, DocumentSymbolResponse, InitializeParams, InitializeResult, MessageType, Position, Range, ServerInfo, Uri};
+use lsp_types::{notification::{DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument, Notification}, Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentSymbolParams, DocumentSymbolResponse, Hover, HoverParams, InitializeParams, InitializeResult, MessageType, Position, Range, ServerInfo, Uri};
 use pxp_diagnostics::{Diagnostic as InternalDiagnostic, Severity};
 use pxp_parser::{parse, ParserDiagnostic};
 use pxp_span::Spanned;
@@ -108,6 +108,14 @@ impl LanguageServer for Backend {
         let symbols = self.get_document_symbols(&params.text_document.uri)?;
 
         Ok(DocumentSymbolResponse::Nested(symbols))
+    }
+
+    fn hover(&mut self, client: &Client, params: &HoverParams) -> Result<Option<Hover>> {
+        let uri = &params.text_document_position_params.text_document.uri;
+
+        client.log_message(MessageType::INFO, format!("Generating hover information for [`{}`].", uri.to_string()))?;
+
+        Ok(self.generate_hover(&uri, &params.text_document_position_params.position))
     }
 
     fn notification(&mut self, client: &Client, method: &str, params: &Value) -> Result<bool> {

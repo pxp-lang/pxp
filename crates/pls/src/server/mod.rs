@@ -5,7 +5,7 @@ mod client;
 pub use client::Client;
 use lsp_server::{Connection, ExtractError, Message, Request, RequestId, Response};
 use lsp_types::{*, notification::*, request::Request as _};
-use request::DocumentSymbolRequest;
+use request::{DocumentSymbolRequest, HoverRequest};
 use serde_json::{from_value, to_value, Value};
 
 pub type Result<T> = std::result::Result<T, Box<dyn Error + Sync + Send>>;
@@ -19,6 +19,10 @@ pub trait LanguageServer {
 
     fn document_symbols(&mut self, _: &Client, _: &DocumentSymbolParams) -> Result<DocumentSymbolResponse> {
         Ok(DocumentSymbolResponse::Flat(Vec::new()))
+    }
+
+    fn hover(&mut self, _: &Client, _: &HoverParams) -> Result<Option<Hover>> {
+        Ok(None)
     }
 
     fn did_open(&mut self, _: &Client, _: &DidOpenTextDocumentParams) {
@@ -86,6 +90,16 @@ impl<T: LanguageServer> ServerManager<T> {
                         DocumentSymbolRequest::METHOD => {
                             let (id, params) = self.cast::<DocumentSymbolRequest>(request)?;
                             let response = self.server.document_symbols(&client, &params)?;
+
+                            connection.sender.send(Message::Response(Response {
+                                id,
+                                result: Some(to_value(response)?),
+                                error: None,
+                            }))?;
+                        },
+                        HoverRequest::METHOD => {
+                            let (id, params) = self.cast::<HoverRequest>(request)?;
+                            let response = self.server.hover(&client, &params)?;
 
                             connection.sender.send(Message::Response(Response {
                                 id,
