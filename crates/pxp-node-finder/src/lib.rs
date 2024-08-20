@@ -3,11 +3,11 @@ use pxp_span::ByteOffset;
 
 pub struct NodeFinder<'a> {
     offset: ByteOffset,
-    found: Option<Node<'a>>,
+    found: Option<(Node<'a>, Ancestors<'a>)>,
 }
 
 impl<'a> NodeFinder<'a> {
-    pub fn find_at_byte_offset(ast: &'a [Statement], offset: ByteOffset) -> Option<Node<'a>> {
+    pub fn find_at_byte_offset(ast: &'a [Statement], offset: ByteOffset) -> Option<(Node<'a>, Ancestors<'a>)> {
         let mut finder = NodeFinder {
             offset,
             found: None,
@@ -19,7 +19,7 @@ impl<'a> NodeFinder<'a> {
 }
 
 impl<'a> NodeVisitor<'a> for NodeFinder<'a> {
-    fn enter(&mut self, node: Node<'a>, _: &mut Ancestors<'a>) -> NodeVisitorEscapeHatch {
+    fn enter(&mut self, node: Node<'a>, ancestors: &mut Ancestors<'a>) -> NodeVisitorEscapeHatch {
         let span = node.span;
 
         // If the current node is before the offset we're interested in,
@@ -37,7 +37,7 @@ impl<'a> NodeVisitor<'a> for NodeFinder<'a> {
         // If the current node contains the offset we're interested in,
         // we should keep track of it and continue traversing the AST.
         if span.contains_offset(self.offset) {            
-            self.found = Some(node.clone());
+            self.found = Some((node.clone(), ancestors.clone()));
         }
 
         NodeVisitorEscapeHatch::Continue
@@ -60,7 +60,7 @@ mod tests {
         echo (new A)->§
         "#);
 
-        let node = NodeFinder::find_at_byte_offset(&result.ast[..], offset).unwrap();
+        let (node, _) = NodeFinder::find_at_byte_offset(&result.ast[..], offset).unwrap();
 
         assert!(node.is_property_fetch_expression());
 

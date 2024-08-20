@@ -4,7 +4,7 @@ use crate::state::State;
 use crate::ParserDiagnostic;
 use pxp_ast::*;
 
-use pxp_bytestring::ByteString;
+use pxp_bytestring::{ByteStr, ByteString};
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
@@ -39,7 +39,7 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
 
             SimpleVariable {
                 id: state.id(),
-                symbol: current.symbol.as_ref().unwrap().clone(),
+                symbol: ByteString::empty(),
                 stripped: ByteString::empty(),
                 span: current.span,
             }

@@ -4,7 +4,7 @@ use lsp_textdocument::TextDocuments;
 use lsp_types::{notification::{DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument, Notification}, Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentSymbolParams, DocumentSymbolResponse, Hover, HoverParams, InitializeParams, InitializeResult, MessageType, Position, Range, ServerInfo, Uri};
 use pxp_diagnostics::{Diagnostic as InternalDiagnostic, Severity};
 use pxp_parser::{parse, ParserDiagnostic};
-use pxp_span::Spanned;
+use pxp_span::{ByteOffset, Spanned};
 use serde_json::{from_value, Value};
 
 use crate::{capabilities::get_server_capabilities, server::{Client, LanguageServer, Result}};

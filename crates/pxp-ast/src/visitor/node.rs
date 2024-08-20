@@ -56,7 +56,7 @@ pub trait NodeVisitor<'a> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Ancestors<'a> {
     ancestors: Vec<Node<'a>>,
 }
@@ -74,5 +74,9 @@ impl<'a> Ancestors<'a> {
 
     fn pop(&mut self) {
         self.ancestors.pop();
+    }
+
+    pub fn find(&self, cb: impl Fn(&Node<'a>) -> bool) -> Option<Node<'a>> {
+        self.ancestors.iter().rev().find(|node| cb(node)).cloned()
     }
 }

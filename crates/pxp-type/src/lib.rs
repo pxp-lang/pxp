@@ -74,7 +74,7 @@ impl<N: Debug + Display> Display for Type<N> {
                     .iter()
                     .map(|t| t.to_string())
                     .collect::<Vec<String>>()
-                    .join("|")
+                    .join(" | ")
             ),
             Type::Intersection(inner) => write!(
                 f,
@@ -83,7 +83,7 @@ impl<N: Debug + Display> Display for Type<N> {
                     .iter()
                     .map(|t| t.to_string())
                     .collect::<Vec<String>>()
-                    .join("&")
+                    .join(" & ")
             ),
             Type::Void => write!(f, "void"),
             Type::Null => write!(f, "null"),

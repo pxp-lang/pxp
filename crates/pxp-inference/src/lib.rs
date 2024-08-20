@@ -264,7 +264,7 @@ mod tests {
 
         let engine = InferenceEngine::new(&index);
         let map = engine.map(&result.ast[..]);
-        let node = NodeFinder::find_at_byte_offset(&result.ast[..], offset)
+        let (node, _) = NodeFinder::find_at_byte_offset(&result.ast[..], offset)
             .expect("failed to locate node");
 
         map.resolve(node.id).clone()

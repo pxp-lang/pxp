@@ -13,7 +13,7 @@ fn main() {
 
     let input = input.replace('§', "");
     let result = parse(&input);
-    let node = NodeFinder::find_at_byte_offset(&result.ast, offset_marker);
+    let (node, _) = NodeFinder::find_at_byte_offset(&result.ast, offset_marker).unwrap();
 
     let mut indexer = Indexer::new();
     indexer.index(&result.ast);
@@ -28,5 +28,5 @@ fn main() {
 
     println!("Node: {:#?}", &node);
     println!("TypeMap: {:#?}", &map);
-    println!("Resolved type: {:#?}", &map.resolve(node.unwrap().id));
+    println!("Resolved type: {:#?}", &map.resolve(node.id));
 }
