@@ -947,14 +947,7 @@ fn process(string_or_file: &str) -> String {
     let mut output = format!("{:#?}\n---\n", result.ast);
 
     if !result.diagnostics.is_empty() {
-        output.push_str(
-            &result
-                .diagnostics
-                .iter()
-                .map(|d| d.to_string())
-                .collect::<Vec<String>>()
-                .join("\n"),
-        );
+        output.push_str(&format!("{:#?}", &result.diagnostics));
     }
 
     output

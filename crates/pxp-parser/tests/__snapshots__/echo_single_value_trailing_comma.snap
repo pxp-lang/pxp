@@ -97,5 +97,30 @@
     },
 ]
 ---
-[error] unexpected token ;
-[error] unexpected end of file
+[
+    Diagnostic {
+        kind: UnexpectedToken {
+            token: Token {
+                kind: SemiColon,
+                span: Span {
+                    start: 27,
+                    end: 28,
+                },
+                symbol: None,
+            },
+        },
+        severity: Error,
+        span: Span {
+            start: 27,
+            end: 28,
+        },
+    },
+    Diagnostic {
+        kind: UnexpectedEndOfFile,
+        severity: Error,
+        span: Span {
+            start: 28,
+            end: 28,
+        },
+    },
+]

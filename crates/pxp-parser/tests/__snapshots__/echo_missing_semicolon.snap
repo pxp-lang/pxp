@@ -81,4 +81,13 @@
     },
 ]
 ---
-[error] unexpected end of file
+[
+    Diagnostic {
+        kind: UnexpectedEndOfFile,
+        severity: Error,
+        span: Span {
+            start: 25,
+            end: 25,
+        },
+    },
+]

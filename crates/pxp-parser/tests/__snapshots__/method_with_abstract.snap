@@ -163,4 +163,13 @@
     },
 ]
 ---
-[error] cannot declare abstract method in non-abstract class
+[
+    Diagnostic {
+        kind: AbstractMethodInNonAbstractClass,
+        severity: Error,
+        span: Span {
+            start: 21,
+            end: 29,
+        },
+    },
+]
