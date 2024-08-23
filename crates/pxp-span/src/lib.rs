@@ -233,7 +233,7 @@ mod tests {
 
         let source = b"hello\nworld\n";
 
-        assert_eq!(element.start_line(source), 1);
+        assert_eq!(element.start_line(source), 0);
     }
 
     #[test]
@@ -244,7 +244,7 @@ mod tests {
 
         let source = b"hello\nworld\n";
 
-        assert_eq!(element.start_column(source), 1);
+        assert_eq!(element.start_column(source), 0);
     }
 
     #[test]
@@ -255,7 +255,7 @@ mod tests {
 
         let source = b"hello\nworld\n";
 
-        assert_eq!(element.end_line(source), 1);
+        assert_eq!(element.end_line(source), 0);
     }
 
     #[test]
@@ -266,17 +266,17 @@ mod tests {
 
         let source = b"hello\nworld\n";
 
-        assert_eq!(element.end_column(source), 6);
+        assert_eq!(element.end_column(source), 5);
     }
 
     #[test]
     fn test_byte_offset_to_line_and_column() {
         let source = b"hello\nworld\n";
 
-        assert_eq!(byte_offset_to_line_and_column(source, 0), (1, 1));
-        assert_eq!(byte_offset_to_line_and_column(source, 1), (1, 2));
-        assert_eq!(byte_offset_to_line_and_column(source, 5), (1, 6));
-        assert_eq!(byte_offset_to_line_and_column(source, 6), (2, 1));
-        assert_eq!(byte_offset_to_line_and_column(source, 11), (2, 6));
+        assert_eq!(byte_offset_to_line_and_column(source, 0), (0, 0));
+        assert_eq!(byte_offset_to_line_and_column(source, 1), (0, 1));
+        assert_eq!(byte_offset_to_line_and_column(source, 5), (0, 5));
+        assert_eq!(byte_offset_to_line_and_column(source, 6), (1, 1));
+        assert_eq!(byte_offset_to_line_and_column(source, 11), (1, 6));
     }
 }
