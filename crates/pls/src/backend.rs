@@ -1,8 +1,9 @@
 use std::collections::HashMap;
 
 use lsp_textdocument::TextDocuments;
-use lsp_types::{notification::{DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument, Notification}, Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentSymbolParams, DocumentSymbolResponse, Hover, HoverParams, InitializeParams, InitializeResult, MessageType, Position, Range, ServerInfo, Uri};
+use lsp_types::{notification::{DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument, Notification}, CompletionItem, CompletionItemKind, CompletionParams, Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentSymbolParams, DocumentSymbolResponse, Hover, HoverParams, InitializeParams, InitializeResult, MessageType, Position, Range, ServerInfo, Uri};
 use pxp_diagnostics::{Diagnostic as InternalDiagnostic, Severity};
+use pxp_index::{Index, Indexer};
 use pxp_parser::{parse, ParserDiagnostic};
 use pxp_span::{ByteOffset, Spanned};
 use serde_json::{from_value, Value};
@@ -12,6 +13,7 @@ use crate::{capabilities::get_server_capabilities, server::{Client, LanguageServ
 pub struct Backend {
     pub documents: TextDocuments,
     pub diagnostics: HashMap<Uri, Vec<InternalDiagnostic<ParserDiagnostic>>>,
+    pub index: Index,
 }
 
 impl Backend {
@@ -19,6 +21,21 @@ impl Backend {
         Self {
             documents: TextDocuments::new(),
             diagnostics: HashMap::new(),
+            index: Index::new(),
+        }
+    }
+
+    fn index_document(&mut self, uri: &Uri) {
+        if let Some(document) = self.documents.get_document(uri) {
+            let content = document.get_content(None).as_bytes();
+            let parse_result = parse(&content);
+
+            // FIXME: Remove this clone, since it will be expensive.
+            let mut indexer = Indexer::for_index(self.index.clone());
+            indexer.index(&parse_result.ast);
+            
+            // FIXME: Remove this clone, since it will be expensive.
+            self.index = indexer.get_index().clone();
         }
     }
 
@@ -99,6 +116,7 @@ impl LanguageServer for Backend {
     }
 
     fn initialized(&mut self, client: &Client) -> Result<()> {
+        // FIXME: Index workspace here.
         client.log_message(MessageType::INFO, "Language server initialized.".to_string())
     }
 
@@ -116,6 +134,10 @@ impl LanguageServer for Backend {
         client.log_message(MessageType::INFO, format!("Generating hover information for [`{}`].", uri.to_string()))?;
 
         Ok(self.generate_hover(&uri, &params.text_document_position_params.position))
+    }
+
+    fn completion(&mut self, _: &Client, params: &CompletionParams) -> Result<Vec<CompletionItem>> {
+        self.get_completion_items(&params.text_document_position.text_document.uri, params.text_document_position.position)
     }
 
     fn notification(&mut self, client: &Client, method: &str, params: &Value) -> Result<bool> {
@@ -149,6 +171,7 @@ impl LanguageServer for Backend {
             };
 
             self.send_diagnostics(client, &uri)?;
+            self.index_document(&uri);
 
             return Ok(true);
         }

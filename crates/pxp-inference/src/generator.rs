@@ -268,11 +268,11 @@ impl Visitor for TypeMapGenerator<'_> {
     }
 
     fn visit_static_method_call_expression(&mut self, node: &StaticMethodCallExpression) {
+        walk_static_method_call_expression(self, node);
+        
         if !matches!(node.method, Identifier::SimpleIdentifier(_)) {
             return;
         }
-
-        walk_static_method_call_expression(self, node);
 
         let method = match &node.method {
             Identifier::SimpleIdentifier(method) => method,
@@ -299,13 +299,13 @@ impl Visitor for TypeMapGenerator<'_> {
     }
 
     fn visit_property_fetch_expression(&mut self, node: &PropertyFetchExpression) {
+        walk_property_fetch_expression(self, node);
+
         let property = node.property.as_ref();
 
         if !matches!(property.kind, ExpressionKind::Identifier(Identifier::SimpleIdentifier(_))) {
             return;
         }
-
-        walk_property_fetch_expression(self, node);
 
         let property = match &property.kind {
             ExpressionKind::Identifier(Identifier::SimpleIdentifier(property)) => property,

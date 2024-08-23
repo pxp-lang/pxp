@@ -326,6 +326,10 @@ pub struct ReflectionProperty<'a> {
 }
 
 impl<'a> ReflectionProperty<'a> {
+    pub fn get_name(&self) -> &ByteString {
+        &self.property.name
+    }
+
     pub fn is_static(&self) -> bool {
         self.property.modifiers.has_static()
     }

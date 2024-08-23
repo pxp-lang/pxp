@@ -1,5 +1,5 @@
 use lsp_types::{
-    DiagnosticOptions, DiagnosticServerCapabilities, DocumentSymbolOptions, FileOperationRegistrationOptions, HoverProviderCapability, OneOf, ServerCapabilities, TextDocumentSyncCapability, TextDocumentSyncKind, WorkDoneProgressOptions, WorkspaceFileOperationsServerCapabilities, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities
+    CompletionOptions, DiagnosticOptions, DiagnosticServerCapabilities, DocumentSymbolOptions, FileOperationRegistrationOptions, HoverProviderCapability, OneOf, ServerCapabilities, TextDocumentSyncCapability, TextDocumentSyncKind, WorkDoneProgressOptions, WorkspaceFileOperationsServerCapabilities, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities
 };
 
 pub(crate) fn get_server_capabilities() -> ServerCapabilities {
@@ -29,6 +29,10 @@ pub(crate) fn get_server_capabilities() -> ServerCapabilities {
                 will_create: None,
                 will_delete: None,
             }),
+        }),
+        completion_provider: Some(CompletionOptions {
+            trigger_characters: Some(vec![">".to_string(), "$".to_string()]),
+            ..Default::default()
         }),
         ..Default::default()
     }

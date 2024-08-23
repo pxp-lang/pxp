@@ -19,3 +19,4 @@ pxp-ast = { version = "0.1.0", path = "../pxp-ast" }
 pxp-node-finder = { version = "0.1.0", path = "../pxp-node-finder" }
 pxp-type = { version = "0.1.0", path = "../pxp-type" }
 pxp-bytestring = { version = "0.1.0", path = "../pxp-bytestring" }
+pxp-inference = { version = "0.1.0", path = "../pxp-inference" }

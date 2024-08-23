@@ -60,6 +60,17 @@ impl<N: Debug + Display> Type<N> {
     pub fn is_bottom(&self) -> bool {
         matches!(self, Type::Never | Type::Void)
     }
+
+    pub fn is_object_like(&self) -> bool {
+        match self {
+            Type::Named(_) | Type::Object => true,
+            Type::Nullable(inner) => inner.is_object_like(),
+            Type::Union(inner) => inner.iter().any(|t| t.is_object_like()),
+            Type::Intersection(inner) => inner.iter().any(|t| t.is_object_like()),
+            // FIXME: Add static/self/parent here.
+            _ => false,
+        }
+    }
 }
 
 impl<N: Debug + Display> Display for Type<N> {

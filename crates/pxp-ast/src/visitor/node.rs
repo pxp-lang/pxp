@@ -76,6 +76,10 @@ impl<'a> Ancestors<'a> {
         self.ancestors.pop();
     }
 
+    pub fn last(&self) -> Option<Node<'a>> {
+        self.ancestors.last().cloned()
+    }
+
     pub fn find(&self, cb: impl Fn(&Node<'a>) -> bool) -> Option<Node<'a>> {
         self.ancestors.iter().rev().find(|node| cb(node)).cloned()
     }

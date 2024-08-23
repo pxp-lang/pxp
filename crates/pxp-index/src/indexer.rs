@@ -24,6 +24,13 @@ impl Indexer {
         }
     }
 
+    pub fn for_index(index: Index) -> Self {
+        Indexer {
+            index,
+            context: IndexerContext::default(),
+        }
+    }
+
     pub fn index(&mut self, ast: &Vec<Statement>) {
         self.visit(ast);
     }
