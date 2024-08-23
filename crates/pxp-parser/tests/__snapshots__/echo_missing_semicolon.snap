@@ -25,7 +25,7 @@
                 id: 5,
                 span: Span {
                     start: 7,
-                    end: 26,
+                    end: 25,
                 },
                 echo: Span {
                     start: 7,
@@ -65,15 +65,15 @@
                 ],
                 ending: Missing(
                     Span {
-                        start: 13,
-                        end: 26,
+                        start: 25,
+                        end: 25,
                     },
                 ),
             },
         ),
         span: Span {
             start: 7,
-            end: 26,
+            end: 25,
         },
         comments: CommentGroup {
             comments: [],

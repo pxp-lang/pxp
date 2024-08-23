@@ -8,7 +8,8 @@ use pxp_token::TokenKind;
 
 pub fn skip_ending(state: &mut State) -> Ending {
     let current = state.stream.current();
-
+    let previous = state.stream.previous();
+    
     if current.kind == TokenKind::CloseTag {
         state.stream.next();
 
@@ -18,11 +19,13 @@ pub fn skip_ending(state: &mut State) -> Ending {
 
         Ending::Semicolon(current.span)
     } else {
+        let span = Span::flat(previous.span.end);
+
         if state.stream.is_eof() {
             state.diagnostic(
                 ParserDiagnostic::UnexpectedEndOfFile,
                 Severity::Error,
-                current.span,
+                span,
             );
         } else {
             state.diagnostic(
@@ -31,11 +34,11 @@ pub fn skip_ending(state: &mut State) -> Ending {
                     found: current.clone(),
                 },
                 Severity::Error,
-                current.span,
+                span,
             );
         }
 
-        Ending::Missing(current.span)
+        Ending::Missing(span)
     }
 }
 
