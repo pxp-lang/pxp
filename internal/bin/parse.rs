@@ -42,7 +42,7 @@ fn main() {
 
             if !ast.diagnostics.is_empty() && stop_on_errors {
                 ast.diagnostics.iter().for_each(|error| {
-                    println!("{}", error);
+                    println!("{:?}", error);
                 });
 
                 break;
@@ -79,7 +79,7 @@ fn main() {
 
         if !result.diagnostics.is_empty() {
             for diagnostic in result.diagnostics.iter() {
-                print!("{diagnostic}");
+                print!("{:?}", diagnostic);
             }
         }
     }
