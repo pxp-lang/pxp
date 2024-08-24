@@ -6,7 +6,7 @@ use pxp_index::Index;
 use pxp_type::Type;
 use visitor::{walk_assignment_operation_expression, walk_expression, walk_function_statement, walk_method_call_expression, walk_name, walk_parenthesized_expression, walk_property_fetch_expression, walk_static_method_call_expression};
 
-use crate::TypeMap;
+use crate::{Scope, TypeMap};
 
 /// An internal set of methods for generating a `TypeMap` from an AST.
 /// 
@@ -41,21 +41,6 @@ impl ScopeStack {
 
     fn scope_mut(&mut self) -> &mut Scope {
         self.0.last_mut().unwrap()
-    }
-}
-
-#[derive(Debug)]
-struct Scope {
-    variables: HashMap<ByteString, Type<ByteString>>,
-}
-
-impl Scope {
-    fn insert(&mut self, variable: ByteString, ty: Type<ByteString>) {
-        self.variables.insert(variable, ty);
-    }
-
-    fn get(&self, variable: &ByteString) -> &Type<ByteString> {
-        self.variables.get(variable).unwrap_or_else(|| &Type::Mixed)
     }
 }
 

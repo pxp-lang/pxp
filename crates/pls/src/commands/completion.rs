@@ -35,8 +35,7 @@ impl Backend {
             return Ok(items);
         };
 
-        let engine = InferenceEngine::new(&self.index);
-        let map = engine.map(&parse_result.ast);
+        let map = InferenceEngine::map(&self.index, &parse_result.ast);
 
         match completion_kind {
             CompletionKind::PropertyOrMethod => complete_property_or_method(&node, &ancestors, &self.index, &map, &mut items),

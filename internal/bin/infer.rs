@@ -19,8 +19,7 @@ fn main() {
     indexer.index(&result.ast);
     
     let index = indexer.get_index();
-    let inference_engine = InferenceEngine::new(index);
-    let map = inference_engine.map(&result.ast[..]);
+    let map = InferenceEngine::map(index, &result.ast[..]);
 
     if no_output {
         return;

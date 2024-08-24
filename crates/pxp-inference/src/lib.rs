@@ -1,12 +1,14 @@
 use std::collections::HashMap;
 
 mod generator;
+mod scope;
 
 use pxp_ast::{NodeId, Statement};
 use pxp_bytestring::ByteString;
 use pxp_index::Index;
-
 use pxp_type::Type;
+
+pub use scope::Scope;
 
 /// The main type inference engine.
 ///
@@ -21,18 +23,12 @@ use pxp_type::Type;
 /// type of `Node` that you are interested in. Using the same AST will ensure that the `NodeId` values
 /// are the same, making lookups cheap.
 #[derive(Debug, Clone, Copy)]
-pub struct InferenceEngine<'i> {
-    index: &'i Index,
-}
+pub struct InferenceEngine;
 
-impl<'i> InferenceEngine<'i> {
-    pub fn new(index: &'i Index) -> Self {
-        InferenceEngine { index }
-    }
-
+impl InferenceEngine {
     /// Generate a `TypeMap` from the given AST.
-    pub fn map(&self, ast: &[Statement]) -> TypeMap {
-        let mut generator = generator::TypeMapGenerator::new(self.index);
+    pub fn map(index: &Index, ast: &[Statement]) -> TypeMap {
+        let mut generator = generator::TypeMapGenerator::new(index);
         generator.generate(ast)
     }
 }
@@ -262,8 +258,7 @@ mod tests {
             indexer.get_index().clone()
         });
 
-        let engine = InferenceEngine::new(&index);
-        let map = engine.map(&result.ast[..]);
+        let map = InferenceEngine::map(&index, &result.ast[..]);
         let (node, _) = NodeFinder::find_at_byte_offset(&result.ast[..], offset)
             .expect("failed to locate node");
 
