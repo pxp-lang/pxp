@@ -1,6 +1,6 @@
 use lsp_types::{DocumentSymbol, Position, Range, SymbolKind, Uri};
 use pxp_ast::visitor::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch};
-use pxp_ast::{AbstractMethod, BracedNamespace, ConcreteMethod, Name, NameKind, NamespaceStatement, Node, NodeKind, PropertyEntry, ResolvedName, UnbracedNamespace, UnresolvedName};
+use pxp_ast::{AbstractMethod, BracedNamespace, ConcreteMethod, Name, NameKind, Node, NodeKind, ResolvedName, UnbracedNamespace, UnresolvedName};
 use pxp_parser::parse;
 use pxp_span::{Span, Spanned};
 
@@ -35,12 +35,12 @@ impl<'a> DocumentSymbolGatherer<'a> {
     fn span_to_range(&self, span: Span) -> Range {
         Range {
             start: Position {
-                line: span.start_line(&self.content) as u32 - 1,
-                character: span.start_column(&self.content) as u32,
+                line: span.start_line(self.content) as u32 - 1,
+                character: span.start_column(self.content) as u32,
             },
             end: Position {
-                line: span.end_line(&self.content) as u32 - 1,
-                character: span.end_column(&self.content) as u32,
+                line: span.end_line(self.content) as u32 - 1,
+                character: span.end_column(self.content) as u32,
             },
         }
     }
@@ -108,7 +108,7 @@ impl<'a> NodeVisitor<'a> for DocumentSymbolGatherer<'a> {
             kind,
             detail: None,
             tags: None,
-            deprecated: None,
+            deprecated: None, #[allow(deprecated)]
             range,
             selection_range: range,
             children: Some(children),

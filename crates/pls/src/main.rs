@@ -13,5 +13,5 @@ mod commands {
 }
 
 fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
-    ServerManager::new(|| Backend::new()).run()
+    ServerManager::new(Backend::new).run()
 }

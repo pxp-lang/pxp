@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 mod generator;
 mod scope;
 
@@ -51,7 +49,7 @@ impl TypeMap {
     /// Returns `None` if the type cannot be resolved.
     pub fn resolve(&self, id: NodeId) -> Option<TypeMapResult> {
         for scope in self.scopes.iter() {
-            if let Some(ty) = scope.types.get(&id) {
+            if let Some(ty) = scope.get_type(id) {
                 return Some(TypeMapResult { scope, ty });
             }
         }

@@ -96,13 +96,13 @@ enum CompletionKind {
 
 fn get_reflection_classes<'a>(index: &'a Index, typ: &Type<ByteString>) -> Vec<ReflectionClass<'a>> {
     match typ {
-        Type::Named(name) => if let Some(class) = index.get_class(&name) {
+        Type::Named(name) => if let Some(class) = index.get_class(name) {
             vec![class]
         } else {
             vec![]
         },
-        Type::Union(inner) => inner.iter().map(|t| get_reflection_classes(index, t)).flatten().collect(),
-        Type::Intersection(inner) => inner.iter().map(|t| get_reflection_classes(index, t)).flatten().collect(),
+        Type::Union(inner) => inner.iter().flat_map(|t| get_reflection_classes(index, t)).collect(),
+        Type::Intersection(inner) => inner.iter().flat_map(|t| get_reflection_classes(index, t)).collect(),
         Type::Nullable(inner) => get_reflection_classes(index, inner), 
         _ => unreachable!(),
     }

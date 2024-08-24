@@ -22,8 +22,8 @@ impl Scope {
         }
     }
 
-    pub(crate) fn get_type(&self, id: NodeId) -> &Type<ByteString> {
-        self.types.get(&id).unwrap_or_else(|| &Type::Mixed)
+    pub(crate) fn get_type(&self, id: NodeId) -> Option<&Type<ByteString>> {
+        self.types.get(&id)
     }
 
     pub(crate) fn insert_type(&mut self, id: NodeId, ty: Type<ByteString>) {

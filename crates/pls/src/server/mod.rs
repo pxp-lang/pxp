@@ -68,9 +68,8 @@ impl<T: LanguageServer> ServerManager<T> {
         let client = Client { connection: &connection };
 
         // Wait for an `initialize` request from the client.
-        let (id, initialize_params): (RequestId, InitializeParams) = match connection.initialize_start()? {
-            (id, params) => (id, from_value(params)?),
-        };
+        let (id, params) = connection.initialize_start()?;
+        let (id, initialize_params) = (id, from_value(params)?);
 
         // Get the server capabilities from the language server.
         let initialize_result = self.server.initialize(&client, &initialize_params);
@@ -124,7 +123,7 @@ impl<T: LanguageServer> ServerManager<T> {
                         _ => {},
                     }
                 },
-                Message::Response(response) => {
+                Message::Response(_) => {
 
                 },
                 Message::Notification(notification) => {

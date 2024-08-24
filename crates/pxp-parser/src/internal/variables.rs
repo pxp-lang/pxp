@@ -4,7 +4,7 @@ use crate::state::State;
 use crate::ParserDiagnostic;
 use pxp_ast::*;
 
-use pxp_bytestring::{ByteStr, ByteString};
+use pxp_bytestring::ByteString;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;

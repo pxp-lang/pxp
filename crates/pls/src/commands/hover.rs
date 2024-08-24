@@ -1,6 +1,5 @@
 use lsp_types::{Hover, HoverContents, MarkupContent, MarkupKind, Position, Uri};
-use pxp_ast::{visitor::Ancestors, FunctionParameterList, Name, Node, ResolvedName, ReturnType};
-use pxp_bytestring::ByteString;
+use pxp_ast::{visitor::Ancestors, FunctionParameterList, Node, ResolvedName, ReturnType};
 use pxp_node_finder::NodeFinder;
 use pxp_parser::parse;
 use pxp_type::Type;
@@ -14,7 +13,8 @@ impl Backend {
             let parse_result = parse(&document.get_content(None).as_bytes());
             let maybe_node = NodeFinder::find_at_byte_offset(&parse_result.ast, offset);
 
-            if let None = maybe_node {
+            #[allow(clippy::question_mark)]
+            if maybe_node.is_none() {
                 return None;
             }
 
@@ -48,8 +48,8 @@ fn generate_hover(node: Node, _: Ancestors) -> Option<Hover> {
 fn function_hover(name: &ResolvedName, parameters: &FunctionParameterList, return_type: &Option<ReturnType>) -> String {
     format!(
         "{}\n\n```php\n<?php\nfunction {}({}): {} {{}}\n```\n",
-        name.resolved.to_string(),
-        name.original.to_string(),
+        name.resolved,
+        name.original,
         stringify_parameter_list(parameters),
         stringify_return_type(return_type),
     )
@@ -64,7 +64,7 @@ fn stringify_parameter_list(parameters: &FunctionParameterList) -> String {
         .iter()
         .map(|p| format!(
             "{} {}",
-            p.data_type.as_ref().map(|d| &d.kind).unwrap_or_else(|| &Type::Mixed).to_string(),
+            p.data_type.as_ref().map(|d| &d.kind).unwrap_or_else(|| &Type::Mixed),
             if p.name.symbol.is_empty() { "$_".to_string() } else { p.name.symbol.to_string() },
         ))
         .collect::<Vec<_>>()

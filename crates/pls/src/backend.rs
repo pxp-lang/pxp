@@ -1,11 +1,11 @@
 use std::collections::HashMap;
 
 use lsp_textdocument::TextDocuments;
-use lsp_types::{notification::{DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument, Notification}, CompletionItem, CompletionItemKind, CompletionParams, Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentSymbolParams, DocumentSymbolResponse, Hover, HoverParams, InitializeParams, InitializeResult, MessageType, Position, Range, ServerInfo, Uri};
+use lsp_types::{notification::{DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument, Notification}, CompletionItem, CompletionParams, Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentSymbolParams, DocumentSymbolResponse, Hover, HoverParams, InitializeParams, InitializeResult, MessageType, Position, Range, ServerInfo, Uri};
 use pxp_diagnostics::{Diagnostic as InternalDiagnostic, Severity};
 use pxp_index::{Index, Indexer};
 use pxp_parser::{parse, ParserDiagnostic};
-use pxp_span::{ByteOffset, Spanned};
+use pxp_span::{Spanned};
 use serde_json::{from_value, Value};
 
 use crate::{capabilities::get_server_capabilities, server::{Client, LanguageServer, Result}};
@@ -131,9 +131,9 @@ impl LanguageServer for Backend {
     fn hover(&mut self, client: &Client, params: &HoverParams) -> Result<Option<Hover>> {
         let uri = &params.text_document_position_params.text_document.uri;
 
-        client.log_message(MessageType::INFO, format!("Generating hover information for [`{}`].", uri.to_string()))?;
+        client.log_message(MessageType::INFO, format!("Generating hover information for [`{}`].", **uri))?;
 
-        Ok(self.generate_hover(&uri, &params.text_document_position_params.position))
+        Ok(self.generate_hover(uri, &params.text_document_position_params.position))
     }
 
     fn completion(&mut self, _: &Client, params: &CompletionParams) -> Result<Vec<CompletionItem>> {
@@ -176,6 +176,6 @@ impl LanguageServer for Backend {
             return Ok(true);
         }
 
-        return Ok(false);
+        Ok(false)
     }
 }
