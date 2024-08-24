@@ -54,14 +54,16 @@ fn complete_property_or_method(node: &Node, ancestors: &Ancestors, index: &Index
         return;
     };
 
-    let target_type = map.resolve(property_fetch.target.id());
+    let Some(map_result) = map.resolve(property_fetch.target.id()) else {
+        return
+    };
     
     // We can only complete properties on known object-like types.
-    if ! target_type.is_object_like() {
+    if ! map_result.ty.is_object_like() {
         return;
     }
 
-    let candidates = get_reflection_classes(index, target_type);
+    let candidates = get_reflection_classes(index, map_result.ty);
 
     if candidates.is_empty() {
         return;

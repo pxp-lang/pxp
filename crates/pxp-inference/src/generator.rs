@@ -1,12 +1,10 @@
-use std::collections::HashMap;
-
 use pxp_ast::{*, visitor::Visitor};
 use pxp_bytestring::ByteString;
 use pxp_index::Index;
 use pxp_type::Type;
 use visitor::{walk_assignment_operation_expression, walk_expression, walk_function_statement, walk_method_call_expression, walk_name, walk_parenthesized_expression, walk_property_fetch_expression, walk_static_method_call_expression};
 
-use crate::{Scope, TypeMap};
+use crate::TypeMap;
 
 /// An internal set of methods for generating a `TypeMap` from an AST.
 /// 
@@ -14,48 +12,16 @@ use crate::{Scope, TypeMap};
 pub(super) struct TypeMapGenerator<'i> {
     index: &'i Index,
     map: TypeMap,
-    scopes: ScopeStack,
-}
-
-#[derive(Debug)]
-struct ScopeStack(Vec<Scope>);
-
-impl ScopeStack {
-    fn new() -> Self {
-        ScopeStack(Vec::new())
-    }
-
-    fn push(&mut self) {
-        self.0.push(Scope {
-            variables: HashMap::new(),
-        });
-    }
-
-    fn pop(&mut self) {
-        self.0.pop();
-    }
-
-    fn scope(&self) -> &Scope {
-        self.0.last().unwrap()
-    }
-
-    fn scope_mut(&mut self) -> &mut Scope {
-        self.0.last_mut().unwrap()
-    }
 }
 
 impl<'i> TypeMapGenerator<'i> {
     pub fn new(index: &'i Index) -> Self {
         // We initialise the ScopeStack with a single `Scope` to
         // represent the global scope. This scope should never be popped.
-        let mut scopes = ScopeStack::new();
-        scopes.push();
+        let mut map = TypeMap::new();
+        map.scopes.push();
 
-        TypeMapGenerator {
-            index,
-            map: TypeMap::new(),
-            scopes,
-        }
+        TypeMapGenerator { index, map }
     }
 
     pub fn generate(&mut self, ast: &[Statement]) -> TypeMap {
@@ -69,9 +35,9 @@ impl<'i> TypeMapGenerator<'i> {
     }
 
     fn scoped(&mut self, f: impl FnOnce(&mut Self)) {
-        self.scopes.push();
+        self.map.scopes.push();
         f(self);
-        self.scopes.pop();
+        self.map.scopes.pop();
     }
 }
 
@@ -81,11 +47,13 @@ impl Visitor for TypeMapGenerator<'_> {
     fn visit_expression(&mut self, node: &Expression) {
         walk_expression(self, node);
 
-        self.map.insert(node.id(), self.map.resolve(node.kind.id()).clone());
+        let resolved = self.map.resolve_type(node.kind.id()).clone();
+
+        self.map.scopes.scope_mut().insert_type(node.id(), resolved);
     }
 
     fn visit_literal(&mut self, node: &Literal) {
-        self.map.insert(node.id(), match node.kind {
+        self.map.scopes.scope_mut().insert_type(node.id(), match node.kind {
             LiteralKind::String => Type::String,
             LiteralKind::Integer => Type::Integer,
             LiteralKind::Float => Type::Float,
@@ -94,13 +62,13 @@ impl Visitor for TypeMapGenerator<'_> {
     }
 
     fn visit_bool_expression(&mut self, node: &BoolExpression) {
-        self.map.insert(node.id(), Type::Boolean);
+        self.map.scopes.scope_mut().insert_type(node.id(), Type::Boolean);
     }
 
     fn visit_simple_variable(&mut self, node: &SimpleVariable) {
-        let ty = self.scopes.scope().get(&node.symbol);
+        let ty = self.map.scopes.scope().get_variable(&node.symbol).clone();
 
-        self.map.insert(node.id(), ty.clone());
+        self.map.scopes.scope_mut().insert_type(node.id(), ty);
     }
 
     fn visit_assignment_operation_expression(&mut self, node: &AssignmentOperationExpression) {
@@ -120,10 +88,10 @@ impl Visitor for TypeMapGenerator<'_> {
         };
 
         let value = node.kind.right();
-        let ty = self.map.resolve(value.id());
+        let ty = self.map.resolve_type(value.id()).clone();
 
-        self.scopes.scope_mut().insert(variable.clone(), ty.clone());
-        self.map.insert(node.id(), ty.clone());
+        self.map.scopes.scope_mut().insert_variable(variable.clone(), ty.clone());
+        self.map.scopes.scope_mut().insert_type(node.id(), ty);
     }
 
     fn visit_function_statement(&mut self, node: &FunctionStatement) {
@@ -133,7 +101,7 @@ impl Visitor for TypeMapGenerator<'_> {
                 // FIXME: Make this look nicer...
                 let ty = parameter.data_type.as_ref().map(|d| bytestring_type(d.get_type())).unwrap_or_else(|| Type::Mixed);
 
-                this.scopes.scope_mut().insert(parameter.name.symbol.clone(), ty);
+                this.map.scopes.scope_mut().insert_variable(parameter.name.symbol.clone(), ty);
             }
 
             walk_function_statement(this, node);
@@ -159,15 +127,15 @@ impl Visitor for TypeMapGenerator<'_> {
             todo!("do checks for resolved and unresolved names");
         };
 
-        self.map.insert(node.id, bytestring_type(&return_type));
+        self.map.scopes.scope_mut().insert_type(node.id, bytestring_type(&return_type));
     }
 
     fn visit_parenthesized_expression(&mut self, node: &ParenthesizedExpression) {
         walk_parenthesized_expression(self, node);
 
-        let ty = self.map.resolve(node.expr.id);
+        let ty = self.map.resolve_type(node.expr.id);
 
-        self.map.insert(node.id, ty.clone());
+        self.map.scopes.scope_mut().insert_type(node.id, ty);
     }
 
     fn visit_new_expression(&mut self, node: &NewExpression) {
@@ -197,7 +165,7 @@ impl Visitor for TypeMapGenerator<'_> {
             unreachable!()
         };
 
-        self.map.insert(node.id, ty);
+        self.map.scopes.scope_mut().insert_type(node.id, ty);
     }
 
     fn visit_method_call_expression(&mut self, node: &MethodCallExpression) {
@@ -215,10 +183,10 @@ impl Visitor for TypeMapGenerator<'_> {
         };
 
         let target = node.target.as_ref();
-        let object_ty = self.map.resolve(target.id);
+        let object_ty = self.map.resolve_type(target.id);
 
         let ty = match object_ty {
-            Type::Named(name) => if let Some(class) = self.index.get_class(name) {
+            Type::Named(name) => if let Some(class) = self.index.get_class(&name) {
                 if let Some(method) = class.get_method(&method.symbol) {
                     bytestring_type(method.get_return_type())
                 } else {
@@ -230,15 +198,16 @@ impl Visitor for TypeMapGenerator<'_> {
             _ => Type::Mixed,
         };
 
-        self.map.insert(node.id, ty)
+        self.map.scopes.scope_mut().insert_type(node.id, ty)
     }
 
     fn visit_name(&mut self, node: &Name) {
         walk_name(self, node);
 
         let inner_id = node.kind.id();
+        let inner_type = self.map.resolve_type(inner_id);
 
-        self.map.insert(node.id(), self.map.resolve(inner_id).clone());
+        self.map.scopes.scope_mut().insert_type(node.id(), inner_type);
     }
 
     fn visit_resolved_name(&mut self, node: &ResolvedName) {
@@ -249,7 +218,7 @@ impl Visitor for TypeMapGenerator<'_> {
             Type::Mixed
         };
 
-        self.map.insert(node.id(), ty);
+        self.map.scopes.scope_mut().insert_type(node.id(), ty);
     }
 
     fn visit_static_method_call_expression(&mut self, node: &StaticMethodCallExpression) {
@@ -265,10 +234,10 @@ impl Visitor for TypeMapGenerator<'_> {
         };
 
         let target = node.target.as_ref();
-        let class_ty = self.map.resolve(target.id);
+        let class_ty = self.map.resolve_type(target.id);
 
         let ty = match class_ty {
-            Type::Named(name) => if let Some(class) = self.index.get_class(name) {
+            Type::Named(name) => if let Some(class) = self.index.get_class(&name) {
                 if let Some(method) = class.get_static_method(&method.symbol) {
                     bytestring_type(method.get_return_type())
                 } else {
@@ -280,7 +249,7 @@ impl Visitor for TypeMapGenerator<'_> {
             _ => Type::Mixed,
         };
 
-        self.map.insert(node.id, ty)
+        self.map.scopes.scope_mut().insert_type(node.id, ty)
     }
 
     fn visit_property_fetch_expression(&mut self, node: &PropertyFetchExpression) {
@@ -298,10 +267,10 @@ impl Visitor for TypeMapGenerator<'_> {
         };
 
         let target = node.target.as_ref();
-        let object_ty = self.map.resolve(target.id);
+        let object_ty = self.map.resolve_type(target.id);
 
         let ty = match object_ty {
-            Type::Named(name) => if let Some(class) = self.index.get_class(name) {
+            Type::Named(name) => if let Some(class) = self.index.get_class(&name) {
                 if let Some(property) = class.get_property(&property.symbol) {
                     bytestring_type(property.get_type())
                 } else {
@@ -313,7 +282,7 @@ impl Visitor for TypeMapGenerator<'_> {
             _ => Type::Mixed,
         };
 
-        self.map.insert(node.id, ty)
+        self.map.scopes.scope_mut().insert_type(node.id, ty)
     }
 }
 

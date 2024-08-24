@@ -9,6 +9,7 @@ use pxp_index::Index;
 use pxp_type::Type;
 
 pub use scope::Scope;
+use scope::ScopeStack;
 
 /// The main type inference engine.
 ///
@@ -36,26 +37,37 @@ impl InferenceEngine {
 /// A map of `NodeId` values to their associated types.
 #[derive(Debug, Clone)]
 pub struct TypeMap {
-    types: HashMap<NodeId, Type<ByteString>>,
+    scopes: ScopeStack,
 }
 
 impl TypeMap {
     pub(crate) fn new() -> Self {
         Self {
-            types: HashMap::new(),
+            scopes: ScopeStack::new(),
         }
     }
 
-    pub(crate) fn insert(&mut self, id: NodeId, ty: Type<ByteString>) {
-        self.types.insert(id, ty);
+    /// Use the given `NodeId` to resolve the type of the node.
+    /// Returns `None` if the type cannot be resolved.
+    pub fn resolve(&self, id: NodeId) -> Option<TypeMapResult> {
+        for scope in self.scopes.iter() {
+            if let Some(ty) = scope.types.get(&id) {
+                return Some(TypeMapResult { scope, ty });
+            }
+        }
+
+        None
     }
 
-    /// Use the given `NodeId` to resolve the type of the node.
-    ///
-    /// In cases where the type is not found, `Type::Mixed` is returned.
-    pub fn resolve(&self, id: NodeId) -> &Type<ByteString> {
-        self.types.get(&id).unwrap_or_else(|| &Type::Mixed)
+    pub(crate) fn resolve_type(&self, id: NodeId) -> Type<ByteString> {
+        self.resolve(id).map(|r| r.ty.clone()).unwrap_or_else(|| Type::Mixed)
     }
+}
+
+#[derive(Debug, Clone)]
+pub struct TypeMapResult<'a> {
+    pub scope: &'a Scope,
+    pub ty: &'a Type<ByteString>,
 }
 
 #[cfg(test)]
@@ -262,7 +274,9 @@ mod tests {
         let (node, _) = NodeFinder::find_at_byte_offset(&result.ast[..], offset)
             .expect("failed to locate node");
 
-        map.resolve(node.id).clone()
+        let result = map.resolve(node.id).expect("Failed to resolve type.");
+
+        result.ty.clone()
     }
 
     fn index() -> Option<Index> {
