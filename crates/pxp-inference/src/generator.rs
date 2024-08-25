@@ -2,7 +2,7 @@ use pxp_ast::{*, visitor::Visitor};
 use pxp_bytestring::ByteString;
 use pxp_index::Index;
 use pxp_type::Type;
-use visitor::{walk_assignment_operation_expression, walk_class_statement, walk_expression, walk_function_statement, walk_method_call_expression, walk_name, walk_parenthesized_expression, walk_property_fetch_expression, walk_static_method_call_expression};
+use visitor::{walk_assignment_operation_expression, walk_class_statement, walk_concrete_method, walk_expression, walk_function_statement, walk_method_call_expression, walk_name, walk_parenthesized_expression, walk_property_fetch_expression, walk_static_method_call_expression};
 
 use crate::TypeMap;
 
@@ -34,9 +34,15 @@ impl<'i> TypeMapGenerator<'i> {
         self.map.clone()
     }
 
-    fn scoped(&mut self, f: impl FnOnce(&mut Self)) {
-        self.map.scopes.push();
+    fn scoped(&mut self, inherited: bool, f: impl FnOnce(&mut Self)) {
+        if inherited {
+            self.map.scopes.push_inherited();
+        } else {
+            self.map.scopes.push();
+        }
+        
         f(self);
+        
         self.map.scopes.pop();
     }
 }
@@ -94,8 +100,24 @@ impl Visitor for TypeMapGenerator<'_> {
         self.map.scopes.scope_mut().insert_type(node.id(), ty);
     }
 
+    fn visit_concrete_method(&mut self, node: &ConcreteMethod) {
+        self.scoped(true, |this| {
+            this.map.scopes.scope_mut().function = Some(node.name.symbol.clone());
+
+            // Insert function parameters into the current scope.
+            for parameter in node.parameters.iter() {
+                // FIXME: Make this look nicer...
+                let ty = parameter.data_type.as_ref().map(|d| bytestring_type(d.get_type())).unwrap_or_else(|| Type::Mixed);
+
+                this.map.scopes.scope_mut().insert_variable(parameter.name.symbol.clone(), ty);
+            }
+
+            walk_concrete_method(this, node);
+        });
+    }
+
     fn visit_function_statement(&mut self, node: &FunctionStatement) {
-        self.scoped(|this| {
+        self.scoped(false, |this| {
             this.map.scopes.scope_mut().function = Some(node.name.symbol().clone());
 
             // Insert function parameters into the current scope.
@@ -111,7 +133,7 @@ impl Visitor for TypeMapGenerator<'_> {
     }
 
     fn visit_class_statement(&mut self, node: &ClassStatement) {
-        self.scoped(|this| {
+        self.scoped(false, |this| {
             this.map.scopes.scope_mut().class = Some(node.name.symbol().clone());
 
             walk_class_statement(this, node);
