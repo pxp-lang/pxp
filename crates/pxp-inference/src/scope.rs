@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use pxp_ast::NodeId;
 use pxp_bytestring::ByteString;
+use pxp_index::{Index, ReflectionClass, ReflectionFunction};
 use pxp_type::Type;
 
 pub type ScopeId = u16;
@@ -9,6 +10,8 @@ pub type ScopeId = u16;
 #[derive(Debug, Clone)]
 pub struct Scope {
     pub id: ScopeId,
+    pub(crate) class: Option<ByteString>,
+    pub(crate) function: Option<ByteString>,
     pub(crate) variables: HashMap<ByteString, Type<ByteString>>,
     pub(crate) types: HashMap<NodeId, Type<ByteString>>,
 }
@@ -17,6 +20,8 @@ impl Scope {
     pub(crate) fn new(id: ScopeId) -> Self {
         Self {
             id,
+            class: None,
+            function: None,
             variables: HashMap::new(),
             types: HashMap::new(),
         }
@@ -36,6 +41,30 @@ impl Scope {
 
     pub(crate) fn get_variable(&self, variable: &ByteString) -> &Type<ByteString> {
         self.variables.get(variable).unwrap_or_else(|| &Type::Mixed)
+    }
+
+    pub fn is_in_class(&self) -> bool {
+        self.class.is_some()
+    }
+
+    pub fn is_in_function(&self) -> bool {
+        self.function.is_some()
+    }
+
+    pub fn get_class<'i>(&self, index: &'i Index) -> Option<ReflectionClass<'i>> {
+        if let Some(class) = &self.class {
+            index.get_class(class)
+        } else {
+            None
+        }
+    }
+
+    pub fn get_function<'i>(&self, index: &'i Index) -> Option<ReflectionFunction<'i>> {
+        if let Some(func) = &self.function {
+            index.get_function(func)
+        } else {
+            None
+        }
     }
 }
 
