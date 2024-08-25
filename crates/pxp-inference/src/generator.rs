@@ -2,7 +2,7 @@ use pxp_ast::{*, visitor::Visitor};
 use pxp_bytestring::ByteString;
 use pxp_index::Index;
 use pxp_type::Type;
-use visitor::{walk_assignment_operation_expression, walk_expression, walk_function_statement, walk_method_call_expression, walk_name, walk_parenthesized_expression, walk_property_fetch_expression, walk_static_method_call_expression};
+use visitor::{walk_assignment_operation_expression, walk_class_statement, walk_expression, walk_function_statement, walk_method_call_expression, walk_name, walk_parenthesized_expression, walk_property_fetch_expression, walk_static_method_call_expression};
 
 use crate::TypeMap;
 
@@ -96,6 +96,8 @@ impl Visitor for TypeMapGenerator<'_> {
 
     fn visit_function_statement(&mut self, node: &FunctionStatement) {
         self.scoped(|this| {
+            this.map.scopes.scope_mut().function = Some(node.name.symbol().clone());
+
             // Insert function parameters into the current scope.
             for parameter in node.parameters.iter() {
                 // FIXME: Make this look nicer...
@@ -105,6 +107,14 @@ impl Visitor for TypeMapGenerator<'_> {
             }
 
             walk_function_statement(this, node);
+        });
+    }
+
+    fn visit_class_statement(&mut self, node: &ClassStatement) {
+        self.scoped(|this| {
+            this.map.scopes.scope_mut().class = Some(node.name.symbol().clone());
+
+            walk_class_statement(this, node);
         });
     }
 

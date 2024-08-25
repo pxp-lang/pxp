@@ -99,6 +99,18 @@ impl Name {
         matches!(self.kind, NameKind::Resolved(_))
     }
 
+    pub fn to_resolved(&self) -> &ResolvedName {
+        self.as_resolved().unwrap()
+    }
+
+    pub fn to_unresolved(&self) -> &UnresolvedName {
+        self.as_unresolved().unwrap()
+    }
+
+    pub fn to_special(&self) -> &SpecialName {
+        self.as_special().unwrap()
+    }
+
     pub fn as_resolved(&self) -> Option<&ResolvedName> {
         match &self.kind {
             NameKind::Resolved(r) => Some(r),
