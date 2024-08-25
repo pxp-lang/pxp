@@ -17,11 +17,11 @@ pub struct Scope {
 }
 
 impl Scope {
-    pub(crate) fn new(id: ScopeId) -> Self {
+    pub(crate) fn new(id: ScopeId, class: Option<ByteString>, function: Option<ByteString>) -> Self {
         Self {
             id,
-            class: None,
-            function: None,
+            class,
+            function,
             variables: HashMap::new(),
             types: HashMap::new(),
         }
@@ -83,11 +83,25 @@ impl ScopeStack {
     }
 
     pub(crate) fn push(&mut self) {
-        if !self.stack.is_empty() {
+        if ! self.stack.is_empty() {
             self.i += 1;
         }
 
-        self.stack.push(Scope::new(self.stack.len() as u16));
+        self.stack.push(Scope::new(self.stack.len() as u16, None, None));
+    }
+
+    pub(crate) fn push_inherited(&mut self) {
+        let (class, function) = if !self.stack.is_empty() {
+            let previous = &self.stack[self.i];
+            
+            self.i += 1;
+
+            (previous.class.clone(), previous.function.clone())
+        } else {
+            (None, None)
+        };
+
+        self.stack.push(Scope::new(self.stack.len() as u16, class, function));
     }
 
     pub(crate) fn pop(&mut self) {
