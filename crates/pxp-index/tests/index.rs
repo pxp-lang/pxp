@@ -20,7 +20,7 @@ fn it_indexes_classes() {
     assert!(b.get_short_name() == &ByteString::from(b"B"));
     assert!(b.get_namespace().is_none());
 
-    let parent = b.get_parent().unwrap();
+    let parent = b.get_parent(&index).unwrap();
     assert!(parent.get_name() == &ByteString::from(b"A"));
 
     let c = index.get_class(&ByteString::from(b"C")).unwrap();
@@ -29,7 +29,7 @@ fn it_indexes_classes() {
     assert!(c.get_short_name() == &ByteString::from(b"C"));
     assert!(c.get_namespace().is_none());
 
-    let parent = c.get_parent().unwrap();
+    let parent = c.get_parent(&index).unwrap();
     assert!(parent.get_name() == &ByteString::from(b"B"));
 
     // FIXME: Add in tests here for interfaces.
@@ -40,7 +40,7 @@ fn it_indexes_classes() {
     assert!(properties.get_short_name() == &ByteString::from(b"Properties"));
     assert!(properties.get_namespace().is_none());
 
-    let properties_properties = properties.get_properties().collect::<Vec<_>>();
+    let properties_properties = properties.get_properties();
 
     assert!(properties_properties.len() == 6);
 
@@ -73,7 +73,7 @@ fn it_indexes_classes() {
     assert!(methods.get_short_name() == &ByteString::from(b"Methods"));
     assert!(methods.get_namespace().is_none());
 
-    let methods_methods = methods.get_methods().collect::<Vec<_>>();
+    let methods_methods = methods.get_methods();
 
     assert!(methods_methods.len() == 5);
 
@@ -103,7 +103,7 @@ fn it_indexes_classes() {
     assert!(constants.get_namespace().is_none());
     assert!(constants.is_class());
 
-    let constants = constants.get_constants().collect::<Vec<_>>();
+    let constants = constants.get_constants();
 
     assert!(constants.len() == 5);
 
@@ -150,7 +150,7 @@ fn it_indexes_interfaces() {
     assert!(k.get_namespace().is_none());
     assert!(k.is_interface());
 
-    let k_interfaces = k.get_interfaces().collect::<Vec<_>>();
+    let k_interfaces = k.get_interfaces(&index);
 
     assert!(k_interfaces.len() == 2);
     assert!(k_interfaces[0].get_name() == &ByteString::from(b"I"));
@@ -163,12 +163,12 @@ fn it_indexes_interfaces() {
     assert!(l.get_namespace().is_none());
     assert!(l.is_interface());
 
-    let l_constants = l.get_constants().collect::<Vec<_>>();
+    let l_constants = l.get_constants();
 
     assert!(l_constants.len() == 1);
     assert!(l_constants[0].get_name() == &ByteString::from(b"A"));
 
-    let l_methods = l.get_methods().collect::<Vec<_>>();
+    let l_methods = l.get_methods();
 
     assert!(l_methods.len() == 3);
 
@@ -212,7 +212,7 @@ fn it_indexes_traits() {
     assert!(trait_c.get_namespace().is_none());
     assert!(trait_c.is_trait());
 
-    let trait_c_traits = trait_c.get_traits().collect::<Vec<_>>();
+    let trait_c_traits = trait_c.get_traits(&index);
 
     assert!(trait_c_traits.len() == 2);
     assert!(trait_c_traits[0].get_name() == &ByteString::from(b"TraitA"));
@@ -225,12 +225,12 @@ fn it_indexes_traits() {
     assert!(trait_d.get_namespace().is_none());
     assert!(trait_d.is_trait());
 
-    let trait_d_constants = trait_d.get_constants().collect::<Vec<_>>();
+    let trait_d_constants = trait_d.get_constants();
 
     assert!(trait_d_constants.len() == 1);
     assert!(trait_d_constants[0].get_name() == &ByteString::from(b"A"));
 
-    let trait_d_methods = trait_d.get_methods().collect::<Vec<_>>();
+    let trait_d_methods = trait_d.get_methods();
 
     assert!(trait_d_methods.len() == 4);
 
@@ -267,7 +267,7 @@ fn it_indexes_functions() {
     assert!(c.get_short_name() == &ByteString::from(b"c"));
     assert!(c.get_namespace().is_none());
 
-    let c_parameters = c.get_parameters().collect::<Vec<_>>();
+    let c_parameters = c.get_parameters();
 
     assert!(c_parameters.len() == 1);
     assert!(c_parameters[0].get_name() == &ByteString::from(b"a"));
@@ -299,7 +299,7 @@ fn it_indexes_enums() {
     assert!(role.get_namespace().is_none());
     assert!(role.is_enum());
 
-    let cases = role.get_cases().collect::<Vec<_>>();
+    let cases = role.get_cases();
 
     assert!(cases.len() == 2);
     assert!(cases[0].get_name() == &ByteString::from(b"Admin"));
@@ -312,7 +312,7 @@ fn it_indexes_enums() {
     assert!(status.get_namespace().is_none());
     assert!(status.is_enum());
 
-    let cases = status.get_cases().collect::<Vec<_>>();
+    let cases = status.get_cases();
 
     assert!(cases.len() == 2);
     assert!(cases[0].get_name() == &ByteString::from(b"Active"));
@@ -325,14 +325,14 @@ fn it_indexes_enums() {
     assert!(color.get_namespace().is_none());
     assert!(color.is_enum());
 
-    let cases = color.get_cases().collect::<Vec<_>>();
+    let cases = color.get_cases();
 
     assert!(cases.len() == 3);
     assert!(cases[0].get_name() == &ByteString::from(b"Red"));
     assert!(cases[1].get_name() == &ByteString::from(b"Green"));
     assert!(cases[2].get_name() == &ByteString::from(b"Blue"));
 
-    let methods = color.get_methods().collect::<Vec<_>>();
+    let methods = color.get_methods();
 
     assert!(methods.len() == 1);
 

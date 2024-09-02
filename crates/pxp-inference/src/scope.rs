@@ -51,7 +51,7 @@ impl Scope {
         self.function.is_some()
     }
 
-    pub fn get_class<'i>(&self, index: &'i Index) -> Option<ReflectionClass<'i>> {
+    pub fn get_class(&self, index: &Index) -> Option<ReflectionClass> {
         if let Some(class) = &self.class {
             index.get_class(class)
         } else {
@@ -59,7 +59,7 @@ impl Scope {
         }
     }
 
-    pub fn get_function<'i>(&self, index: &'i Index) -> Option<ReflectionFunction<'i>> {
+    pub fn get_function(&self, index: &Index) -> Option<ReflectionFunction> {
         if let Some(func) = &self.function {
             index.get_function(func)
         } else {

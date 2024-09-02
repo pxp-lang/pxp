@@ -14,12 +14,11 @@ use crate::{
 };
 
 #[derive(Clone)]
-pub struct ReflectionFunction<'a> {
-    pub(crate) function: &'a Function,
-    pub(crate) index: &'a Index,
+pub struct ReflectionFunction {
+    pub(crate) function: Function,
 }
 
-impl<'a> ReflectionFunction<'a> {
+impl ReflectionFunction {
     pub fn get_name(&self) -> &ByteString {
         &self.function.name
     }
@@ -40,14 +39,14 @@ impl<'a> ReflectionFunction<'a> {
         self.function.returns_by_reference
     }
 
-    pub fn get_parameters(&'a self) -> impl Iterator<Item = ReflectionParameter> + 'a {
+    pub fn get_parameters(&self) -> Vec<ReflectionParameter> {
         self.function
             .parameters
             .iter()
             .map(|parameter| ReflectionParameter {
-                parameter,
-                index: self.index,
+                parameter: parameter.clone(),
             })
+            .collect()
     }
 
     pub fn get_parameter(&self, name: ByteString) -> Option<ReflectionParameter> {
@@ -56,19 +55,17 @@ impl<'a> ReflectionFunction<'a> {
             .iter()
             .find(|parameter| parameter.name == name)
             .map(|parameter| ReflectionParameter {
-                parameter,
-                index: self.index,
+                parameter: parameter.clone(),
             })
     }
 }
 
 #[derive(Clone)]
-pub struct ReflectionParameter<'a> {
-    pub(crate) parameter: &'a Parameter,
-    pub(crate) index: &'a Index,
+pub struct ReflectionParameter {
+    pub(crate) parameter: Parameter,
 }
 
-impl<'a> ReflectionParameter<'a> {
+impl ReflectionParameter {
     pub fn get_name(&self) -> &ByteString {
         &self.parameter.name
     }
@@ -91,12 +88,11 @@ impl<'a> ReflectionParameter<'a> {
 }
 
 #[derive(Clone)]
-pub struct ReflectionClass<'a> {
-    pub(crate) class: &'a ClassLike,
-    pub(crate) index: &'a Index,
+pub struct ReflectionClass {
+    pub(crate) class: ClassLike,
 }
 
-impl<'a> ReflectionClass<'a> {
+impl ReflectionClass {
     pub fn is_final(&self) -> bool {
         self.class.modifiers.has_final()
     }
@@ -125,15 +121,15 @@ impl<'a> ReflectionClass<'a> {
         self.class.kind == ClassKind::Trait
     }
 
-    pub fn get_properties(&'a self) -> impl Iterator<Item = ReflectionProperty> + 'a {
+    pub fn get_properties(&self) -> Vec<ReflectionProperty> {
         self.class
             .properties
             .iter()
             .map(|property| ReflectionProperty {
-                class: self,
-                property,
-                index: self.index,
+                class: self.clone(),
+                property: property.clone(),
             })
+            .collect()
     }
 
     pub fn get_property(&self, name: &ByteString) -> Option<ReflectionProperty> {
@@ -142,25 +138,30 @@ impl<'a> ReflectionClass<'a> {
             .iter()
             .find(|property| &property.name == name)
             .map(|property| ReflectionProperty {
-                class: self,
-                property,
-                index: self.index,
+                class: self.clone(),
+                property: property.clone(),
             })
     }
 
-    pub fn get_public_properties(&self) -> impl Iterator<Item = ReflectionProperty> + '_ {
+    pub fn get_public_properties(&self) -> Vec<ReflectionProperty> {
         self.get_properties()
+            .into_iter()
             .filter(|property| property.is_public())
+            .collect()
     }
 
-    pub fn get_protected_properties(&self) -> impl Iterator<Item = ReflectionProperty> + '_ {
+    pub fn get_protected_properties(&self) -> Vec<ReflectionProperty> {
         self.get_properties()
+            .into_iter()
             .filter(|property| property.is_protected())
+            .collect()
     }
 
-    pub fn get_private_properties(&self) -> impl Iterator<Item = ReflectionProperty> + '_ {
+    pub fn get_private_properties(&self) -> Vec<ReflectionProperty> {
         self.get_properties()
+            .into_iter()
             .filter(|property| property.is_private())
+            .collect()
     }
 
     pub fn get_name(&self) -> &ByteString {
@@ -175,33 +176,38 @@ impl<'a> ReflectionClass<'a> {
         self.class.namespace.as_ref()
     }
 
-    pub fn get_parent(&self) -> Option<ReflectionClass<'a>> {
+    pub fn get_parent(&self, index: &Index) -> Option<ReflectionClass> {
         self.class
             .parent
             .as_ref()
-            .and_then(|parent| self.index.get_class(parent))
+            .and_then(|parent| index.get_class(parent))
     }
 
-    pub fn get_interfaces(&self) -> impl Iterator<Item = ReflectionClass> + '_ {
+    pub fn get_interfaces(&self, index: &Index) -> Vec<ReflectionClass> {
         self.class
             .interfaces
             .iter()
-            .filter_map(move |interface| self.index.get_class(interface))
+            .filter_map(move |interface| index.get_class(interface))
+            .collect()
     }
 
-    pub fn get_traits(&self) -> impl Iterator<Item = ReflectionClass> + '_ {
+    pub fn get_traits(&self, index: &Index) -> Vec<ReflectionClass> {
         self.class
             .traits
             .iter()
-            .filter_map(move |r#trait| self.index.get_class(r#trait))
+            .filter_map(move |r#trait| index.get_class(r#trait))
+            .collect()
     }
 
-    pub fn get_methods(&'a self) -> impl Iterator<Item = ReflectionMethod> + 'a {
-        self.class.methods.iter().map(|method| ReflectionMethod {
-            class: self,
-            method,
-            index: self.index,
-        })
+    pub fn get_methods(&self) -> Vec<ReflectionMethod> {
+        self.class
+            .methods
+            .iter()
+            .map(|method| ReflectionMethod {
+                class: self.clone(),
+                method: method.clone(),
+            })
+            .collect()
     }
 
     pub fn get_method(&self, name: &ByteString) -> Option<ReflectionMethod> {
@@ -210,9 +216,8 @@ impl<'a> ReflectionClass<'a> {
             .iter()
             .find(|method| &method.name == name)
             .map(|method| ReflectionMethod {
-                class: self,
-                method,
-                index: self.index,
+                class: self.clone(),
+                method: method.clone(),
             })
     }
 
@@ -222,52 +227,62 @@ impl<'a> ReflectionClass<'a> {
             .iter()
             .find(|method| &method.name == name && method.modifiers.has_static())
             .map(|method| ReflectionMethod {
-                class: self,
-                method,
-                index: self.index,
+                class: self.clone(),
+                method: method.clone(),
             })
     }
 
-    pub fn get_public_methods(&self) -> impl Iterator<Item = ReflectionMethod> + '_ {
-        self.get_methods().filter(|method| method.is_public())
+    pub fn get_public_methods(&self) -> Vec<ReflectionMethod> {
+        self.get_methods()
+            .into_iter()
+            .filter(|method| method.is_public())
+            .collect()
     }
 
-    pub fn get_protected_methods(&self) -> impl Iterator<Item = ReflectionMethod> + '_ {
-        self.get_methods().filter(|method| method.is_protected())
+    pub fn get_protected_methods(&self) -> Vec<ReflectionMethod> {
+        self.get_methods()
+            .into_iter()
+            .filter(|method| method.is_protected())
+            .collect()
     }
 
-    pub fn get_private_methods(&self) -> impl Iterator<Item = ReflectionMethod> + '_ {
-        self.get_methods().filter(|method| method.is_private())
+    pub fn get_private_methods(&self) -> Vec<ReflectionMethod> {
+        self.get_methods()
+            .into_iter()
+            .filter(|method| method.is_private())
+            .collect()
     }
 
-    pub fn get_cases(&self) -> impl Iterator<Item = ReflectionCase> + '_ {
-        self.class.cases.iter().map(|case| ReflectionCase {
-            r#enum: self,
-            case: case.clone(),
-            index: self.index,
-        })
+    pub fn get_cases(&self) -> Vec<ReflectionCase> {
+        self.class
+            .cases
+            .iter()
+            .map(|case| ReflectionCase {
+                r#enum: self.clone(),
+                case: case.clone(),
+            })
+            .collect()
     }
 
-    pub fn get_constants(&self) -> impl Iterator<Item = ReflectionClassConstant> + '_ {
+    pub fn get_constants(&self) -> Vec<ReflectionClassConstant> {
         self.class
             .constants
             .iter()
             .map(|constant| ReflectionClassConstant {
-                class: self,
-                constant,
-                index: self.index,
+                class: self.clone(),
+                constant: constant.clone(),
             })
+            .collect()
     }
 }
 
 #[derive(Clone)]
-pub struct ReflectionClassConstant<'a> {
-    pub(crate) class: &'a ReflectionClass<'a>,
-    pub(crate) constant: &'a ClassConstant,
-    pub(crate) index: &'a Index,
+pub struct ReflectionClassConstant {
+    pub(crate) class: ReflectionClass,
+    pub(crate) constant: ClassConstant,
 }
 
-impl<'a> ReflectionClassConstant<'a> {
+impl ReflectionClassConstant {
     pub fn get_name(&self) -> &ByteString {
         &self.constant.name
     }
@@ -294,38 +309,36 @@ impl<'a> ReflectionClassConstant<'a> {
 }
 
 #[derive(Clone)]
-pub struct ReflectionCase<'a> {
-    pub(crate) r#enum: &'a ReflectionClass<'a>,
+pub struct ReflectionCase {
+    pub(crate) r#enum: ReflectionClass,
     pub(crate) case: ByteString,
-    pub(crate) index: &'a Index,
 }
 
-impl<'a> ReflectionCase<'a> {
+impl ReflectionCase {
     pub fn get_name(&self) -> &ByteString {
         &self.case
     }
 }
 
-impl<'a> Debug for ReflectionClass<'a> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl Debug for ReflectionClass {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         f.debug_struct("ReflectionClass")
             .field("name", &self.get_name())
             .field("short", &self.get_short_name())
             .field("namespace", &self.get_namespace())
-            .field("properties", &self.get_properties().collect::<Vec<_>>())
-            .field("methods", &self.get_methods().collect::<Vec<_>>())
+            .field("properties", &self.get_properties())
+            .field("methods", &self.get_methods())
             .finish()
     }
 }
 
 #[derive(Clone)]
-pub struct ReflectionProperty<'a> {
-    pub(crate) class: &'a ReflectionClass<'a>,
-    pub(crate) property: &'a Property,
-    pub(crate) index: &'a Index,
+pub struct ReflectionProperty {
+    pub(crate) class: ReflectionClass,
+    pub(crate) property: Property,
 }
 
-impl<'a> ReflectionProperty<'a> {
+impl ReflectionProperty {
     pub fn get_name(&self) -> &ByteString {
         &self.property.name
     }
@@ -355,8 +368,8 @@ impl<'a> ReflectionProperty<'a> {
     }
 }
 
-impl Debug for ReflectionProperty<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl Debug for ReflectionProperty {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         f.debug_struct("ReflectionProperty")
             .field("name", &self.property.name)
             .field("type", &self.property.r#type)
@@ -367,13 +380,12 @@ impl Debug for ReflectionProperty<'_> {
 }
 
 #[derive(Clone)]
-pub struct ReflectionMethod<'a> {
-    pub(crate) class: &'a ReflectionClass<'a>,
-    pub(crate) method: &'a Method,
-    pub(crate) index: &'a Index,
+pub struct ReflectionMethod {
+    pub(crate) class: ReflectionClass,
+    pub(crate) method: Method,
 }
 
-impl<'a> ReflectionMethod<'a> {
+impl ReflectionMethod {
     pub fn is_static(&self) -> bool {
         self.method.modifiers.has_static()
     }
@@ -402,13 +414,13 @@ impl<'a> ReflectionMethod<'a> {
         &self.method.name
     }
 
-    pub fn get_class(&self) -> &'a ReflectionClass<'a> {
-        self.class
+    pub fn get_class(&self) -> &ReflectionClass {
+        &self.class
     }
 }
 
-impl Debug for ReflectionMethod<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl Debug for ReflectionMethod {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         f.debug_struct("ReflectionMethod")
             .field("name", &self.method.name)
             .field("return_type", &self.method.return_type)
@@ -419,12 +431,11 @@ impl Debug for ReflectionMethod<'_> {
 }
 
 #[derive(Clone)]
-pub struct ReflectionConstant<'a> {
-    pub(crate) constant: &'a Constant,
-    pub(crate) index: &'a Index,
+pub struct ReflectionConstant {
+    pub(crate) constant: Constant,
 }
 
-impl<'a> ReflectionConstant<'a> {
+impl ReflectionConstant {
     pub fn get_name(&self) -> &ByteString {
         &self.constant.name
     }

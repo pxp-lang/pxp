@@ -54,15 +54,14 @@ impl Index {
     pub fn get_class(&self, name: &ByteString) -> Option<ReflectionClass> {
         self.classes
             .get(name)
-            .map(|class| ReflectionClass { class, index: self })
+            .map(|class| ReflectionClass { class: class.clone() })
     }
 
     pub fn get_function(&self, name: &ByteString) -> Option<ReflectionFunction> {
         self.functions
             .get(name)
             .map(|function| ReflectionFunction {
-                function,
-                index: self,
+                function: function.clone(),
             })
     }
 
@@ -70,8 +69,7 @@ impl Index {
         self.constants
             .get(name)
             .map(|constant| ReflectionConstant {
-                constant,
-                index: self,
+                constant: constant.clone(),
             })
     }
 }

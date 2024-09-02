@@ -94,7 +94,7 @@ enum CompletionKind {
     PropertyOrMethod,
 }
 
-fn get_reflection_classes<'a>(index: &'a Index, typ: &Type<ByteString>) -> Vec<ReflectionClass<'a>> {
+fn get_reflection_classes(index: &Index, typ: &Type<ByteString>) -> Vec<ReflectionClass> {
     match typ {
         Type::Named(name) => if let Some(class) = index.get_class(name) {
             vec![class]
