@@ -170,7 +170,7 @@ impl LanguageServer for Backend {
                 _ => return Ok(true),
             };
 
-            self.send_diagnostics(client, &uri)?;
+            // self.send_diagnostics(client, &uri)?;
             self.index_document(&uri);
 
             return Ok(true);
