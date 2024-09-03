@@ -70,7 +70,11 @@ impl Scope {
 
 #[derive(Debug, Clone)]
 pub(crate) struct ScopeStack {
+    // The current scope index. Saved into a field to reduce lookups.
     i: usize,
+    // A list of pointer-indexes into the stack. Used to track scope changes.
+    ptrs: Vec<usize>,
+    // The stack of scopes.
     stack: Vec<Scope>,
 }
 
@@ -78,13 +82,31 @@ impl ScopeStack {
     pub(crate) fn new() -> Self {
         ScopeStack {
             i: 0,
+            ptrs: vec![0],
             stack: vec![],
         }
     }
 
+    // Grab the current scope index.
+    fn ptr(&self) -> usize {
+        *self.ptrs.last().unwrap()
+    }
+
+    // Used to move back to the previous scope.
+    fn go_back(&mut self) {
+        self.ptrs.pop();
+        self.i = self.ptr();
+    }
+
+    // Used to move to the next scope.
+    fn move_to(&mut self, i: usize) {
+        self.i = i;
+        self.ptrs.push(self.i);
+    }
+
     pub(crate) fn push(&mut self) {
         if ! self.stack.is_empty() {
-            self.i += 1;
+            self.move_to(self.stack.len());
         }
 
         self.stack.push(Scope::new(self.stack.len() as u16, None, None));
@@ -92,11 +114,12 @@ impl ScopeStack {
 
     pub(crate) fn push_inherited(&mut self) {
         let (class, function) = if !self.stack.is_empty() {
-            let previous = &self.stack[self.i];
-            
-            self.i += 1;
+            let previous = &self.stack[self.ptr()];
+            let result = (previous.class.clone(), previous.function.clone());
 
-            (previous.class.clone(), previous.function.clone())
+            self.move_to(self.stack.len());
+
+            result
         } else {
             (None, None)
         };
@@ -105,7 +128,7 @@ impl ScopeStack {
     }
 
     pub(crate) fn pop(&mut self) {
-        self.i -= 1;
+        self.go_back();
     }
 
     pub(crate) fn scope(&self) -> &Scope {

@@ -40,7 +40,7 @@ fn it_indexes_classes() {
     assert!(properties.get_short_name() == &ByteString::from(b"Properties"));
     assert!(properties.get_namespace().is_none());
 
-    let properties_properties = properties.get_properties();
+    let properties_properties = properties.get_own_properties();
 
     assert!(properties_properties.len() == 6);
 

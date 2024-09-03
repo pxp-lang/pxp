@@ -1,4 +1,4 @@
-use lsp_types::CompletionItemKind;
+use lsp_types::{CompletionItemKind, CompletionItemLabelDetails};
 use lsp_types::{CompletionItem, Position, Uri};
 use pxp_ast::visitor::Ancestors;
 use pxp_ast::Node;
@@ -69,12 +69,18 @@ fn complete_property_or_method(node: &Node, ancestors: &Ancestors, index: &Index
         return;
     }
 
+    let scope = map_result.scope.get_class(index);
+
     for candidate in candidates {
         // FIXME: Filter out properties that can't be accessed from the current scope.
-        for property in candidate.get_properties() {
+        for property in candidate.get_accessible_properties(scope.as_ref(), index) {
             items.push(CompletionItem {
                 label: property.get_name().to_string(),
                 kind: Some(CompletionItemKind::PROPERTY),
+                label_details: Some(CompletionItemLabelDetails {
+                    description: Some(property.get_type().to_string()),
+                    detail: None,
+                }),
                 ..Default::default()
             })
         }
@@ -104,7 +110,7 @@ fn get_reflection_classes(index: &Index, typ: &Type<ByteString>) -> Vec<Reflecti
         Type::Union(inner) => inner.iter().flat_map(|t| get_reflection_classes(index, t)).collect(),
         Type::Intersection(inner) => inner.iter().flat_map(|t| get_reflection_classes(index, t)).collect(),
         Type::Nullable(inner) => get_reflection_classes(index, inner), 
-        _ => unreachable!(),
+        _ => Vec::new(),
     }
 }
 

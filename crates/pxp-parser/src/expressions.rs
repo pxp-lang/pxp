@@ -2263,8 +2263,6 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                         span,
                     );
 
-                    state.stream.next();
-
                     Expression::missing(state.id(), span)
                 }
             };

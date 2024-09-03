@@ -112,6 +112,11 @@ impl Visitor for TypeMapGenerator<'_> {
                 this.map.scopes.scope_mut().insert_variable(parameter.name.symbol.clone(), ty);
             }
 
+            if ! node.modifiers.has_static() {
+                let class = this.map.scopes.scope().class.as_ref().unwrap().clone();
+                this.map.scopes.scope_mut().insert_variable(b"$this".into(), Type::Named(class));
+            }
+
             walk_concrete_method(this, node);
         });
     }
@@ -138,6 +143,11 @@ impl Visitor for TypeMapGenerator<'_> {
 
             walk_class_statement(this, node);
         });
+    }
+
+    fn visit_property_entry(&mut self, _: &PropertyEntry) {
+        // We don't want property variables to be added to the current scope, since they're
+        // only accessible via `$this->property`.
     }
 
     fn visit_function_call_expression(&mut self, node: &FunctionCallExpression) {
