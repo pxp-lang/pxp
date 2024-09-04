@@ -1,6 +1,7 @@
 use std::error::Error;
 
 mod client;
+pub mod types;
 
 pub use client::Client;
 use lsp_server::{Connection, ExtractError, Message, Request, RequestId, Response};

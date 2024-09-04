@@ -1,5 +1,4 @@
-use lsp_types::{CompletionItemKind, CompletionItemLabelDetails, InsertTextFormat, TextEdit};
-use lsp_types::{CompletionItem, Position, Uri};
+use pxp_lsp::types::{CompletionItemKind, CompletionItemLabelDetails, InsertTextFormat, TextEdit, CompletionItem, Position, Uri};
 use pxp_ast::visitor::Ancestors;
 use pxp_ast::Node;
 use pxp_ast::HasId;
@@ -12,7 +11,7 @@ use pxp_parser::parse;
 use pxp_type::Type;
 
 use crate::backend::Backend;
-use crate::server::Result;
+use pxp_lsp::Result;
 
 impl Backend {
     pub(crate) fn get_completion_items(&mut self, uri: &Uri, position: Position) -> Result<Vec<CompletionItem>> {

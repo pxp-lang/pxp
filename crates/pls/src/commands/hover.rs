@@ -1,4 +1,4 @@
-use lsp_types::{Hover, HoverContents, MarkupContent, MarkupKind, Position, Uri};
+use pxp_lsp::types::{Hover, HoverContents, MarkupContent, MarkupKind, Position, Uri};
 use pxp_ast::{visitor::Ancestors, FunctionParameterList, Node, ResolvedName, ReturnType};
 use pxp_node_finder::NodeFinder;
 use pxp_parser::parse;

@@ -1,11 +1,11 @@
-use lsp_types::{DocumentSymbol, Position, Range, SymbolKind, Uri};
+use pxp_lsp::types::{DocumentSymbol, Position, Range, SymbolKind, Uri};
 use pxp_ast::visitor::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch};
 use pxp_ast::{AbstractMethod, BracedNamespace, ConcreteMethod, Name, NameKind, Node, NodeKind, ResolvedName, UnbracedNamespace, UnresolvedName};
 use pxp_parser::parse;
 use pxp_span::{Span, Spanned};
 
 use crate::backend::Backend;
-use crate::server::Result;
+use pxp_lsp::Result;
 
 impl Backend {
     pub fn get_document_symbols(&self, uri: &Uri) -> Result<Vec<DocumentSymbol>> {

@@ -1,4 +1,4 @@
-use lsp_types::{
+use pxp_lsp::types::{
     CompletionOptions, CompletionOptionsCompletionItem, DiagnosticOptions, DiagnosticServerCapabilities, FileOperationRegistrationOptions, HoverProviderCapability, OneOf, ServerCapabilities, TextDocumentSyncCapability, TextDocumentSyncKind, WorkDoneProgressOptions, WorkspaceFileOperationsServerCapabilities, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities
 };
 

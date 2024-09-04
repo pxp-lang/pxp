@@ -1,14 +1,15 @@
 use std::collections::HashMap;
 
 use lsp_textdocument::TextDocuments;
-use lsp_types::{notification::{DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument, Notification}, CompletionItem, CompletionParams, Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentSymbolParams, DocumentSymbolResponse, Hover, HoverParams, InitializeParams, InitializeResult, MessageType, Position, Range, ServerInfo, Uri};
+use pxp_lsp::types::{notification::{DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument, Notification}, CompletionItem, CompletionParams, Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentSymbolParams, DocumentSymbolResponse, Hover, HoverParams, InitializeParams, InitializeResult, MessageType, Position, Range, ServerInfo, Uri};
 use pxp_diagnostics::{Diagnostic as InternalDiagnostic, Severity};
 use pxp_index::{Index, Indexer};
 use pxp_parser::{parse, ParserDiagnostic};
-use pxp_span::{Spanned};
+use pxp_span::Spanned;
 use serde_json::{from_value, Value};
 
-use crate::{capabilities::get_server_capabilities, server::{Client, LanguageServer, Result}};
+use crate::capabilities::get_server_capabilities;
+use pxp_lsp::{Client, LanguageServer, Result};
 
 pub struct Backend {
     pub documents: TextDocuments,

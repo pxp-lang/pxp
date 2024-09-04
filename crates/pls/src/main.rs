@@ -1,10 +1,9 @@
 use std::error::Error;
 
 use backend::Backend;
-use server::ServerManager;
+use pxp_lsp::ServerManager;
 
 mod capabilities;
-mod server;
 mod backend;
 mod commands {
     pub mod document_symbol;
