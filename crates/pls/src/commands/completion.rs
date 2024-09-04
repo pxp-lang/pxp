@@ -72,7 +72,6 @@ fn complete_property_or_method(node: &Node, ancestors: &Ancestors, index: &Index
     let scope = map_result.scope.get_class(index);
 
     for candidate in candidates {
-        // FIXME: Filter out properties that can't be accessed from the current scope.
         for property in candidate.get_accessible_properties(scope.as_ref(), index) {
             items.push(CompletionItem {
                 label: property.get_name().to_string(),
@@ -85,11 +84,14 @@ fn complete_property_or_method(node: &Node, ancestors: &Ancestors, index: &Index
             })
         }
 
-        // FIXME: Filter out methods that can't be accessed from the current scope.
-        for method in candidate.get_own_methods() {
+        for method in candidate.get_accessible_methods(scope.as_ref(), index) {
             items.push(CompletionItem {
                 label: format!("{}()", method.get_name()),
                 kind: Some(CompletionItemKind::METHOD),
+                label_details: Some(CompletionItemLabelDetails {
+                    description: Some(method.get_return_type().to_string()),
+                    detail: None,
+                }),
                 ..Default::default()
             })
         }

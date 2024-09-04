@@ -305,6 +305,47 @@ impl ReflectionClass {
             .collect()
     }
 
+    pub fn get_accessible_methods(&self, scope: Option<&ReflectionClass>, index: &Index) -> Vec<ReflectionMethod> {
+        // If we're not inside of an object, we can only access public properties.
+        // FIXME: This isn't entirely true – we could be inside of a bound closure,
+        //        but we don't have that information or intelligence just yet.
+        let Some(scope) = scope else {
+            return self.get_public_methods(index);
+        };
+
+        // If we reach this point, then we need to figure out what properties are accessible.
+        // 1. If we're inside of the class we're trying to access, we can access all properties, e.g. $this.
+        if self.get_name() == scope.get_name() {
+            let mut methods = self.get_own_methods();
+
+            if let Some(parent) = self.get_parent(index) {
+                methods.extend(parent.get_public_methods(index));
+                methods.extend(parent.get_protected_methods(index));
+            }
+
+            // We can also access all methods from traits.
+            // This includes private methods since traits are essentially
+            // copy-pasta'd into the class.
+            for r#trait in self.get_traits(index) {
+                methods.extend(r#trait.get_methods(index));
+            }
+
+            return methods;
+        }
+
+        // If we're not inside of the class we're trying to access, we can start building a list.
+        // In all cases, we should be able to access the public methods of the class we're trying to access.
+        let mut methods = self.get_public_methods(index);
+
+        // 2. If the class we're trying to access is a parent class of the current scope, we can
+        //    also access protected methods from the parent.
+        if scope.has_parent(index, self) {
+            methods.extend(self.get_protected_methods(index));
+        }
+
+        methods
+    }
+
     pub fn get_methods(&self, index: &Index) -> Vec<ReflectionMethod> {
         let mut methods = self.get_own_methods();
 
