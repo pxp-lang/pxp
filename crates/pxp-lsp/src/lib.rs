@@ -2,9 +2,10 @@ use std::error::Error;
 
 mod client;
 pub mod types;
+pub mod testing;
 
 pub use client::Client;
-use lsp_server::{Connection, ExtractError, Message, Request, RequestId, Response};
+use lsp_server::{Connection, ExtractError, IoThreads, Message, Request, RequestId, Response};
 use lsp_types::{*, notification::*, request::Request as _};
 use request::{Completion, DocumentSymbolRequest, HoverRequest};
 use serde_json::{from_value, to_value, Value};
@@ -63,12 +64,9 @@ impl<T: LanguageServer> ServerManager<T> {
         Self { server: builder() }
     }
 
-    pub fn run(&mut self) -> Result<()> {
-        // FIXME: Make this configurable, so we can use stdio or tcp.
-        let (connection, threads) = Connection::stdio();
+    pub(crate) fn initialize(&mut self, connection: &Connection) -> Result<()> {
         let client = Client { connection: &connection };
 
-        // Wait for an `initialize` request from the client.
         let (id, params) = connection.initialize_start()?;
         let (id, initialize_params) = (id, from_value(params)?);
 
@@ -80,6 +78,16 @@ impl<T: LanguageServer> ServerManager<T> {
         
         // `initialize_finish()` takes care of the `initialized` message, so we can invoke the handler.
         self.server.initialized(&client)?;
+
+        Ok(())
+    }
+
+    pub fn run(&mut self) -> Result<()> {
+        let (connection, threads) = Connection::stdio();
+        
+        self.initialize(&connection)?;
+
+        let client = Client { connection: &connection };
 
         // Then we can start up the main loop.
         for msg in &connection.receiver {
