@@ -3,6 +3,7 @@ use pxp_ast::*;
 use pxp_bytestring::ByteString;
 use pxp_diagnostics::Severity;
 
+use pxp_span::Span;
 use pxp_token::{Token, TokenKind};
 
 /// Expect an unqualified identifier such as Foo or Bar for a class, interface, trait, or an enum name.
@@ -133,13 +134,17 @@ pub fn identifier(state: &mut State) -> SimpleIdentifier {
 
         SimpleIdentifier::new(state.id(), symbol, current.span)
     } else {
+        let previous = state.stream.previous();
+
         state.diagnostic(
             ParserDiagnostic::UnexpectedToken { token: current.clone() },
             Severity::Error,
             current.span,
         );
 
-        SimpleIdentifier::new(state.id(), ByteString::empty(), current.span)
+        // Because identifiers cannot contain spaces, we can assume that the next identifier starts
+        // one byte after the previous token ends.
+        SimpleIdentifier::new(state.id(), ByteString::empty(), Span::flat(previous.span.end + 1))
     }
 }
 

@@ -74,7 +74,7 @@ mod tests {
     fn parse_with_offset_indicator(input: &'static str) -> (ParseResult, ByteOffset) {
         let offset = input.find('§').unwrap();
         let input = input.replace('§', "");
-        let result = parse(&input);
+        let result = parse(&input); 
 
         (result, offset)
     } 

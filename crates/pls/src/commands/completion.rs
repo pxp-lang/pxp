@@ -1,4 +1,4 @@
-use lsp_types::{CompletionItemKind, CompletionItemLabelDetails, InsertTextFormat};
+use lsp_types::{CompletionItemKind, CompletionItemLabelDetails, InsertTextFormat, TextEdit};
 use lsp_types::{CompletionItem, Position, Uri};
 use pxp_ast::visitor::Ancestors;
 use pxp_ast::Node;
@@ -32,15 +32,27 @@ impl Backend {
         };
 
         let map = InferenceEngine::map(&self.index, &parse_result.ast);
+        let completion_kind = completion_kind(&node, &ancestors);
 
-        match completion_kind(&node, &ancestors) {
+        match completion_kind {
             CompletionKind::PropertyOrMethod => complete_property_or_method(&node, &ancestors, &self.index, &map, &mut items),
             CompletionKind::Extends => complete_extends(&node, &ancestors, &self.index, &map, &mut items),
+            CompletionKind::ContextualMethodName => complete_contextual_method_names(&node, &ancestors, &map, &self.index, &mut items),
             CompletionKind::ContextualKeywords => complete_keywords(&node, &ancestors, &self.index, &map, &mut items),
         }
 
+        // If we reach this point and haven't found any completions, we can defer to
+        // the contextual keywords logic to generate a list of sensible completions.
+        if items.is_empty() && completion_kind != CompletionKind::ContextualKeywords {
+            complete_keywords(&node, &ancestors, &self.index, &map, &mut items);
+        }
+        
         Ok(items)
     }
+}
+
+fn complete_contextual_method_names(node: &Node, ancestors: &Ancestors, map: &TypeMap, index: &Index, items: &mut Vec<CompletionItem>) {
+
 }
 
 struct CompletionContext;
@@ -71,7 +83,7 @@ impl CompletionContext {
     }
 
     fn method_name(node: &Node, ancestors: &Ancestors) -> bool {
-        node.is_abstract_method() || node.is_concrete_method() || ancestors.find(|n| n.is_abstract_method() || n.is_concrete_method()).is_some()
+        node.is_abstract_method() || node.is_concrete_method() || (node.is_simple_identifier() && ancestors.find(|n| n.is_abstract_method() || n.is_concrete_method()).is_some())
     }
 }
 
@@ -96,12 +108,10 @@ fn magic_methods(items: &mut Vec<CompletionItem>) {
         ("__wakeup", "(): void\n{$0\n})")
     ];
 
-    for (name, snippet) in methods {
+    for (name, _) in methods {
         items.push(CompletionItem {
-            label: name.to_string(),
+            label: format!("{name}()"),
             kind: Some(CompletionItemKind::METHOD),
-            insert_text: Some(format!("{name}{snippet}")),
-            insert_text_format: Some(InsertTextFormat::SNIPPET),
             ..Default::default()
         });
     }
@@ -229,9 +239,11 @@ fn complete_property_or_method(node: &Node, ancestors: &Ancestors, index: &Index
     }
 }
 
+#[derive(PartialEq, Eq)]
 enum CompletionKind {
     PropertyOrMethod,
     Extends,
+    ContextualMethodName,
     ContextualKeywords,
 }
 
@@ -244,7 +256,7 @@ fn get_reflection_classes(index: &Index, typ: &Type<ByteString>) -> Vec<Reflecti
         },
         Type::Union(inner) => inner.iter().flat_map(|t| get_reflection_classes(index, t)).collect(),
         Type::Intersection(inner) => inner.iter().flat_map(|t| get_reflection_classes(index, t)).collect(),
-        Type::Nullable(inner) => get_reflection_classes(index, inner), 
+        Type::Nullable(inner) => get_reflection_classes(index, inner),
         _ => Vec::new(),
     }
 }
@@ -252,6 +264,10 @@ fn get_reflection_classes(index: &Index, typ: &Type<ByteString>) -> Vec<Reflecti
 fn completion_kind(node: &Node, ancestors: &Ancestors) -> CompletionKind {
     if node.is_property_fetch_expression() || ancestors.find(|n| n.is_property_fetch_expression()).is_some() {
         return CompletionKind::PropertyOrMethod;
+    }
+
+    if node.is_simple_identifier() && ancestors.find(|n| n.is_concrete_method()).is_some() {
+        return CompletionKind::ContextualMethodName;
     }
 
     if node.is_class_extends() || ancestors.find(|n| n.is_class_extends()).is_some() {

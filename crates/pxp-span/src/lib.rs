@@ -36,7 +36,7 @@ impl Span {
     }
 
     pub fn is_after_offset(&self, offset: ByteOffset) -> bool {
-        self.start >= offset
+        self.start > offset
     }
 }
 
