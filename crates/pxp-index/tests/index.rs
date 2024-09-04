@@ -73,7 +73,7 @@ fn it_indexes_classes() {
     assert!(methods.get_short_name() == &ByteString::from(b"Methods"));
     assert!(methods.get_namespace().is_none());
 
-    let methods_methods = methods.get_methods();
+    let methods_methods = methods.get_own_methods();
 
     assert!(methods_methods.len() == 5);
 
@@ -168,7 +168,7 @@ fn it_indexes_interfaces() {
     assert!(l_constants.len() == 1);
     assert!(l_constants[0].get_name() == &ByteString::from(b"A"));
 
-    let l_methods = l.get_methods();
+    let l_methods = l.get_own_methods();
 
     assert!(l_methods.len() == 3);
 
@@ -230,7 +230,7 @@ fn it_indexes_traits() {
     assert!(trait_d_constants.len() == 1);
     assert!(trait_d_constants[0].get_name() == &ByteString::from(b"A"));
 
-    let trait_d_methods = trait_d.get_methods();
+    let trait_d_methods = trait_d.get_own_methods();
 
     assert!(trait_d_methods.len() == 4);
 
@@ -332,7 +332,7 @@ fn it_indexes_enums() {
     assert!(cases[1].get_name() == &ByteString::from(b"Green"));
     assert!(cases[2].get_name() == &ByteString::from(b"Blue"));
 
-    let methods = color.get_methods();
+    let methods = color.get_own_methods();
 
     assert!(methods.len() == 1);
 

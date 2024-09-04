@@ -86,7 +86,7 @@ fn complete_property_or_method(node: &Node, ancestors: &Ancestors, index: &Index
         }
 
         // FIXME: Filter out methods that can't be accessed from the current scope.
-        for method in candidate.get_methods() {
+        for method in candidate.get_own_methods() {
             items.push(CompletionItem {
                 label: format!("{}()", method.get_name()),
                 kind: Some(CompletionItemKind::METHOD),

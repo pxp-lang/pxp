@@ -294,7 +294,7 @@ impl ReflectionClass {
             .collect()
     }
 
-    pub fn get_methods(&self) -> Vec<ReflectionMethod> {
+    pub fn get_own_methods(&self) -> Vec<ReflectionMethod> {
         self.class
             .methods
             .iter()
@@ -302,6 +302,47 @@ impl ReflectionClass {
                 class: self.clone(),
                 method: method.clone(),
             })
+            .collect()
+    }
+
+    pub fn get_methods(&self, index: &Index) -> Vec<ReflectionMethod> {
+        let mut methods = self.get_own_methods();
+
+        if let Some(parent) = self.get_parent(index) {
+            methods.extend(parent.get_methods(index));
+        }
+
+        for r#trait in self.get_traits(index) {
+            methods.extend(r#trait.get_methods(index));
+        }
+
+        // Interfaces also provide methods, so we need to include thos as well,
+        // even if those methods are abstract in nature.
+        for r#interface in self.get_interfaces(index) {
+            methods.extend(r#interface.get_methods(index));
+        }
+
+        methods
+    }
+
+    pub fn get_public_methods(&self, index: &Index) -> Vec<ReflectionMethod> {
+        self.get_methods(index)
+            .into_iter()
+            .filter(|method| method.is_public())
+            .collect()
+    }
+
+    pub fn get_protected_methods(&self, index: &Index) -> Vec<ReflectionMethod> {
+        self.get_methods(index)
+            .into_iter()
+            .filter(|method| method.is_protected())
+            .collect()
+    }
+
+    pub fn get_private_methods(&self, index: &Index) -> Vec<ReflectionMethod> {
+        self.get_methods(index)
+            .into_iter()
+            .filter(|method| method.is_private())
             .collect()
     }
 
@@ -327,22 +368,22 @@ impl ReflectionClass {
             })
     }
 
-    pub fn get_public_methods(&self) -> Vec<ReflectionMethod> {
-        self.get_methods()
+    pub fn get_own_public_methods(&self) -> Vec<ReflectionMethod> {
+        self.get_own_methods()
             .into_iter()
             .filter(|method| method.is_public())
             .collect()
     }
 
-    pub fn get_protected_methods(&self) -> Vec<ReflectionMethod> {
-        self.get_methods()
+    pub fn get_own_protected_methods(&self) -> Vec<ReflectionMethod> {
+        self.get_own_methods()
             .into_iter()
             .filter(|method| method.is_protected())
             .collect()
     }
 
-    pub fn get_private_methods(&self) -> Vec<ReflectionMethod> {
-        self.get_methods()
+    pub fn get_own_private_methods(&self) -> Vec<ReflectionMethod> {
+        self.get_own_methods()
             .into_iter()
             .filter(|method| method.is_private())
             .collect()
@@ -422,7 +463,7 @@ impl Debug for ReflectionClass {
             .field("short", &self.get_short_name())
             .field("namespace", &self.get_namespace())
             .field("properties", &self.get_own_properties())
-            .field("methods", &self.get_methods())
+            .field("methods", &self.get_own_methods())
             .finish()
     }
 }
