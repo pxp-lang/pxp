@@ -46,14 +46,10 @@ impl Backend {
     }
 }
 
-fn complete_extends(node: &Node, ancestors: &Ancestors, index: &Index, map: &TypeMap, items: &mut Vec<CompletionItem>) {
-    let extends = if node.is_class_extends() {
-        node.clone().as_class_extends().unwrap()
-    } else if let Some(parent) = ancestors.find(|p| p.is_class_extends()) {
-        parent.as_class_extends().unwrap()
-    } else {
+fn complete_extends(node: &Node, ancestors: &Ancestors, index: &Index, _: &TypeMap, items: &mut Vec<CompletionItem>) {
+    if !node.is_class_extends() && ancestors.find(|n| n.is_class_extends()).is_none() {
         return;
-    };
+    }
 
     let Some(class_statement) = ancestors.find(|node| node.is_class_statement()).map(|node| node.as_class_statement()).flatten() else {
         return

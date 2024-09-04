@@ -47,6 +47,11 @@ fn main() {
                             None => println!("class not found."),
                         }
                     }
+                    &["classes"] => {
+                        for class in indexer.get_index().get_classes() {
+                            println!("{}", class.get_name());
+                        }
+                    },
                     _ => {
                         println!("unrecognised input.");
                     }
