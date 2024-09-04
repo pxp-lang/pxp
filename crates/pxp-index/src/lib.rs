@@ -39,7 +39,7 @@ impl Index {
         self.functions.insert(function.name.clone(), function);
     }
 
-    pub(crate) fn has_function(&self, name: &ByteString) -> bool {
+    pub fn has_function(&self, name: &ByteString) -> bool {
         self.functions.contains_key(name)
     }
 

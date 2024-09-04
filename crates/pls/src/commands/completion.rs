@@ -1,4 +1,4 @@
-use pxp_lsp::types::{CompletionItemKind, CompletionItemLabelDetails, InsertTextFormat, TextEdit, CompletionItem, Position, Uri};
+use pxp_lsp::types::{CompletionItemKind, CompletionItemLabelDetails, CompletionItem, Position, Uri};
 use pxp_ast::visitor::Ancestors;
 use pxp_ast::Node;
 use pxp_ast::HasId;
@@ -118,33 +118,17 @@ fn magic_methods(items: &mut Vec<CompletionItem>) {
 
 fn complete_keywords(node: &Node, ancestors: &Ancestors, _: &Index, _: &TypeMap, items: &mut Vec<CompletionItem>) {
     if CompletionContext::method_name(node, ancestors) {
-        magic_methods(items);
-        return;
-    }
-
-    if CompletionContext::classish_member(node, ancestors) && CompletionContext::not_missing_classish_member(node, ancestors) {
-        keywords(items, &["function", "const"]);
-        return;
-    }
-
-    if CompletionContext::class_body(node, ancestors) {
-        keywords(items, &["public", "protected", "private", "function", "const"]);
-        return;
-    }
-
-    if CompletionContext::enum_body(node, ancestors) {
-        keywords(items, &["case", "const", "public", "protected", "private"]);
-        return;
-    }
-
-    if CompletionContext::interface_body(node, ancestors) {
-        keywords(items, &["public", "function", "const"]);
-        return;
-    }
-
-    if CompletionContext::class_clause(node, ancestors) {
-        keywords(items, &["implements", "extends"]);
-        return;
+        magic_methods(items)
+    } else if CompletionContext::classish_member(node, ancestors) && CompletionContext::not_missing_classish_member(node, ancestors) {
+        keywords(items, &["function", "const"])
+    } else if CompletionContext::class_body(node, ancestors) {
+        keywords(items, &["public", "protected", "private", "function", "const"])
+    } else if CompletionContext::enum_body(node, ancestors) {
+        keywords(items, &["case", "const", "public", "protected", "private"])
+    } else if CompletionContext::interface_body(node, ancestors) {
+        keywords(items, &["public", "function", "const"])
+    } else if CompletionContext::class_clause(node, ancestors) {
+        keywords(items, &["implements", "extends"])
     }
 }
 
@@ -163,7 +147,7 @@ fn complete_extends(node: &Node, ancestors: &Ancestors, index: &Index, _: &TypeM
         return;
     }
 
-    let Some(class_statement) = ancestors.find(|node| node.is_class_statement()).map(|node| node.as_class_statement()).flatten() else {
+    let Some(class_statement) = ancestors.find(|node| node.is_class_statement()).and_then(|node| node.as_class_statement()) else {
         return
     };
 

@@ -37,8 +37,8 @@ fn main() {
             let readline = rl.readline("search: ");
 
             match readline {
-                Ok(line) => match line.split_whitespace().collect::<Vec<_>>().as_slice() {
-                    &["class", name] => {
+                Ok(line) => match *line.split_whitespace().collect::<Vec<_>>().as_slice() {
+                    ["class", name] => {
                         let name = ByteString::from(name.as_bytes());
                         match indexer.get_index().get_class(&name) {
                             Some(class) => {
@@ -47,7 +47,7 @@ fn main() {
                             None => println!("class not found."),
                         }
                     }
-                    &["classes"] => {
+                    ["classes"] => {
                         for class in indexer.get_index().get_classes() {
                             println!("{}", class.get_name());
                         }

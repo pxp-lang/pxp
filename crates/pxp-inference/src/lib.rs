@@ -70,7 +70,7 @@ pub struct TypeMapResult<'a> {
 
 #[cfg(test)]
 mod tests {
-    use pxp_ast::Name;
+    
     use pxp_bytestring::ByteString;
     use pxp_index::Indexer;
     use pxp_node_finder::NodeFinder;
