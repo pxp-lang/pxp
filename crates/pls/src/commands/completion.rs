@@ -39,9 +39,41 @@ impl Backend {
 
         match completion_kind {
             CompletionKind::PropertyOrMethod => complete_property_or_method(&node, &ancestors, &self.index, &map, &mut items),
+            CompletionKind::Extends => complete_extends(&node, &ancestors, &self.index, &map, &mut items),
         }
 
         Ok(items)
+    }
+}
+
+fn complete_extends(node: &Node, ancestors: &Ancestors, index: &Index, map: &TypeMap, items: &mut Vec<CompletionItem>) {
+    let extends = if node.is_class_extends() {
+        node.clone().as_class_extends().unwrap()
+    } else if let Some(parent) = ancestors.find(|p| p.is_class_extends()) {
+        parent.as_class_extends().unwrap()
+    } else {
+        return;
+    };
+
+    let Some(class_statement) = ancestors.find(|node| node.is_class_statement()).map(|node| node.as_class_statement()).flatten() else {
+        return
+    };
+
+    for class in index.get_extendable_classes() {
+        if class.get_name() == &class_statement.name.to_resolved().resolved {
+            continue;
+        }
+
+        // FIXME: These completion items also need to import the chosen class, if required.
+        items.push(CompletionItem {
+            label: class.get_short_name().to_string(),
+            kind: Some(CompletionItemKind::CLASS),
+            label_details: Some(CompletionItemLabelDetails {
+                description: Some(class.get_name().to_string()),
+                detail: None,
+            }),
+            ..Default::default()
+        });
     }
 }
 
@@ -100,6 +132,7 @@ fn complete_property_or_method(node: &Node, ancestors: &Ancestors, index: &Index
 
 enum CompletionKind {
     PropertyOrMethod,
+    Extends,
 }
 
 fn get_reflection_classes(index: &Index, typ: &Type<ByteString>) -> Vec<ReflectionClass> {
@@ -119,6 +152,10 @@ fn get_reflection_classes(index: &Index, typ: &Type<ByteString>) -> Vec<Reflecti
 fn completion_kind(node: &Node, ancestors: &Ancestors) -> Option<CompletionKind> {
     if node.is_property_fetch_expression() || ancestors.find(|n| n.is_property_fetch_expression()).is_some() {
         return Some(CompletionKind::PropertyOrMethod);
+    }
+
+    if node.is_class_extends() || ancestors.find(|n| n.is_class_extends()).is_some() {
+        return Some(CompletionKind::Extends);
     }
 
     None

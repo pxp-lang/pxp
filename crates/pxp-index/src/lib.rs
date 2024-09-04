@@ -57,6 +57,21 @@ impl Index {
             .map(|class| ReflectionClass { class: class.clone() })
     }
 
+    pub fn get_classes(&self) -> Vec<ReflectionClass> {
+        self.classes
+            .values()
+            .map(|class| ReflectionClass { class: class.clone() })
+            .collect()
+    }
+
+    pub fn get_extendable_classes(&self) -> Vec<ReflectionClass> {
+        self.classes
+            .values()
+            .filter(|class| !class.modifiers.has_final())
+            .map(|class| ReflectionClass { class: class.clone() })
+            .collect()
+    }
+
     pub fn get_function(&self, name: &ByteString) -> Option<ReflectionFunction> {
         self.functions
             .get(name)
