@@ -41,11 +41,7 @@ pub trait NodeVisitor<'a> {
 
         for statement in ast {
             let escape = self.visit(
-                Node::new(
-                    statement.id,
-                    NodeKind::Statement(statement),
-                    statement.span,
-                ),
+                Node::new(statement.id, NodeKind::Statement(statement), statement.span),
                 &mut ancestors,
             );
 

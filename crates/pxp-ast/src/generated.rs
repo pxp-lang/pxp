@@ -2214,6 +2214,7 @@ pub enum ClassishMember {
     AbstractConstructor(AbstractConstructor),
     ConcreteMethod(ConcreteMethod),
     ConcreteConstructor(ConcreteConstructor),
+    Missing(MissingClassishMember),
 }
 
 impl HasId for ClassishMember {
@@ -2227,7 +2228,26 @@ impl HasId for ClassishMember {
             ClassishMember::AbstractConstructor(inner) => inner.id(),
             ClassishMember::ConcreteMethod(inner) => inner.id(),
             ClassishMember::ConcreteConstructor(inner) => inner.id(),
+            ClassishMember::Missing(inner) => inner.id(),
         }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct MissingClassishMember {
+    pub id: NodeId,
+    pub span: Span,
+}
+
+impl HasId for MissingClassishMember {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for MissingClassishMember {
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -5600,6 +5620,7 @@ pub enum NodeKind<'a> {
     ClassExtends(&'a ClassExtends),
     ClassImplements(&'a ClassImplements),
     ClassishMember(&'a ClassishMember),
+    MissingClassishMember(&'a MissingClassishMember),
     ConstantEntry(&'a ConstantEntry),
     ClassishConstantEntry(&'a ClassishConstantEntry),
     ConstantStatement(&'a ConstantStatement),
@@ -6826,6 +6847,17 @@ impl<'a> Node<'a> {
 
     pub fn is_classish_member(&self) -> bool {
         matches!(&self.kind, NodeKind::ClassishMember(_))
+    }
+
+    pub fn as_missing_classish_member(self) -> Option<&'a MissingClassishMember> {
+        match &self.kind {
+            NodeKind::MissingClassishMember(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_missing_classish_member(&self) -> bool {
+        matches!(&self.kind, NodeKind::MissingClassishMember(_))
     }
 
     pub fn as_constant_entry(self) -> Option<&'a ConstantEntry> {
@@ -8477,6 +8509,7 @@ impl<'a> Node<'a> {
             NodeKind::ClassExtends(_) => "ClassExtends",
             NodeKind::ClassImplements(_) => "ClassImplements",
             NodeKind::ClassishMember(_) => "ClassishMember",
+            NodeKind::MissingClassishMember(_) => "MissingClassishMember",
             NodeKind::ConstantEntry(_) => "ConstantEntry",
             NodeKind::ClassishConstantEntry(_) => "ClassishConstantEntry",
             NodeKind::ConstantStatement(_) => "ConstantStatement",
@@ -9420,6 +9453,9 @@ impl<'a> Node<'a> {
                     children.push(inner.into());
                 }
                 ClassishMember::ConcreteConstructor(inner) => {
+                    children.push(inner.into());
+                }
+                ClassishMember::Missing(inner) => {
                     children.push(inner.into());
                 }
                 _ => {}
@@ -10729,6 +10765,7 @@ impl<'a> Node<'a> {
             NodeKind::ClassExtends(node) => NonNull::from(node).cast(),
             NodeKind::ClassImplements(node) => NonNull::from(node).cast(),
             NodeKind::ClassishMember(node) => NonNull::from(node).cast(),
+            NodeKind::MissingClassishMember(node) => NonNull::from(node).cast(),
             NodeKind::ConstantEntry(node) => NonNull::from(node).cast(),
             NodeKind::ClassishConstantEntry(node) => NonNull::from(node).cast(),
             NodeKind::ConstantStatement(node) => NonNull::from(node).cast(),
@@ -11546,6 +11583,16 @@ impl<'a> From<&'a ClassImplements> for Node<'a> {
 impl<'a> From<&'a ClassishMember> for Node<'a> {
     fn from(node: &'a ClassishMember) -> Self {
         Node::new(node.id(), NodeKind::ClassishMember(node), node.span())
+    }
+}
+
+impl<'a> From<&'a MissingClassishMember> for Node<'a> {
+    fn from(node: &'a MissingClassishMember) -> Self {
+        Node::new(
+            node.id(),
+            NodeKind::MissingClassishMember(node),
+            node.span(),
+        )
     }
 }
 

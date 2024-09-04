@@ -1,4 +1,4 @@
-use lsp_types::{CompletionItemKind, CompletionItemLabelDetails};
+use lsp_types::{CompletionItemKind, CompletionItemLabelDetails, InsertTextFormat};
 use lsp_types::{CompletionItem, Position, Uri};
 use pxp_ast::visitor::Ancestors;
 use pxp_ast::Node;
@@ -31,18 +31,121 @@ impl Backend {
             return Ok(items);
         };
 
-        let Some(completion_kind) = completion_kind(&node, &ancestors) else {
-            return Ok(items);
-        };
-
         let map = InferenceEngine::map(&self.index, &parse_result.ast);
 
-        match completion_kind {
+        match completion_kind(&node, &ancestors) {
             CompletionKind::PropertyOrMethod => complete_property_or_method(&node, &ancestors, &self.index, &map, &mut items),
             CompletionKind::Extends => complete_extends(&node, &ancestors, &self.index, &map, &mut items),
+            CompletionKind::ContextualKeywords => complete_keywords(&node, &ancestors, &self.index, &map, &mut items),
         }
 
         Ok(items)
+    }
+}
+
+struct CompletionContext;
+
+impl CompletionContext {
+    fn class_clause(node: &Node, ancestors: &Ancestors) -> bool {
+        node.is_class_statement() || ancestors.find(|n| n.is_class_statement()).is_some()
+    }
+
+    fn class_body(node: &Node, ancestors: &Ancestors) -> bool {
+        node.is_class_body() || ancestors.find(|n| n.is_class_body()).is_some()
+    }
+
+    fn interface_body(node: &Node, ancestors: &Ancestors) -> bool {
+        node.is_interface_body() || ancestors.find(|n| n.is_interface_body()).is_some()
+    }
+
+    fn enum_body(node: &Node, ancestors: &Ancestors) -> bool {
+        node.is_unit_enum_body() || ancestors.find(|n| n.is_unit_enum_body()).is_some() || node.is_backed_enum_body() || ancestors.find(|n| n.is_backed_enum_body()).is_some()
+    }
+
+    fn classish_member(node: &Node, ancestors: &Ancestors) -> bool {
+        node.is_classish_member() || ancestors.find(|n| n.is_classish_member()).is_some()
+    }
+
+    fn not_missing_classish_member(node: &Node, ancestors: &Ancestors) -> bool {
+        !node.is_missing_classish_member() && ancestors.find(|n| n.is_missing_classish_member()).is_none()
+    }
+
+    fn method_name(node: &Node, ancestors: &Ancestors) -> bool {
+        node.is_abstract_method() || node.is_concrete_method() || ancestors.find(|n| n.is_abstract_method() || n.is_concrete_method()).is_some()
+    }
+}
+
+fn magic_methods(items: &mut Vec<CompletionItem>) {
+    let methods = [
+        ("__construct", "($1)\n{$0\n}"),
+        ("__call", "(string $${1:name}, array $${2:arguments}): ${3:mixed}\n{$0\n}"),
+        ("__callStatic", "(string $${1:name}, array $${2:arguments}): ${3:mixed}\n{$0\n}"),
+        ("__clone", "(): void\n{$0\n}"),
+        ("__debugInfo", "(): array\n{$0\n}"),
+        ("__destruct", "(): void\n{$0\n}"),
+        ("__get", "(string $${1:name}): ${3:mixed}\n{$0\n}"),
+        ("__invoke", "($1): ${2:mixed}\n{$0\n}"),
+        ("__isset", "(string $${1:name}): bool\n{$0\n}"),
+        ("__serialize", "(): array\n{$0\n}"),
+        ("__set", "(string $${1:name}, mixed $${2:value}): void\n{$0\n}"),
+        ("__set_state", "(array $${1:properties}): object\n{$0\n}"),
+        ("__sleep", "(): array\n{$0\n}"),
+        ("__toString", "(): string\n{$0\n}"),
+        ("__unserialize", "(array $${1:data}): void\n{$0\n}"),
+        ("__unset", "(string $${1:name}): void\n{$0\n}"),
+        ("__wakeup", "(): void\n{$0\n})")
+    ];
+
+    for (name, snippet) in methods {
+        items.push(CompletionItem {
+            label: name.to_string(),
+            kind: Some(CompletionItemKind::METHOD),
+            insert_text: Some(format!("{name}{snippet}")),
+            insert_text_format: Some(InsertTextFormat::SNIPPET),
+            ..Default::default()
+        });
+    }
+}
+
+fn complete_keywords(node: &Node, ancestors: &Ancestors, _: &Index, _: &TypeMap, items: &mut Vec<CompletionItem>) {
+    if CompletionContext::method_name(node, ancestors) {
+        magic_methods(items);
+        return;
+    }
+
+    if CompletionContext::classish_member(node, ancestors) && CompletionContext::not_missing_classish_member(node, ancestors) {
+        keywords(items, &["function", "const"]);
+        return;
+    }
+
+    if CompletionContext::class_body(node, ancestors) {
+        keywords(items, &["public", "protected", "private", "function", "const"]);
+        return;
+    }
+
+    if CompletionContext::enum_body(node, ancestors) {
+        keywords(items, &["case", "const", "public", "protected", "private"]);
+        return;
+    }
+
+    if CompletionContext::interface_body(node, ancestors) {
+        keywords(items, &["public", "function", "const"]);
+        return;
+    }
+
+    if CompletionContext::class_clause(node, ancestors) {
+        keywords(items, &["implements", "extends"]);
+        return;
+    }
+}
+
+fn keywords(items: &mut Vec<CompletionItem>, keywords: &[&str]) {
+    for keyword in keywords {
+        items.push(CompletionItem {
+            label: keyword.to_string(),
+            kind: Some(CompletionItemKind::KEYWORD),
+            ..Default::default()
+        });
     }
 }
 
@@ -129,6 +232,7 @@ fn complete_property_or_method(node: &Node, ancestors: &Ancestors, index: &Index
 enum CompletionKind {
     PropertyOrMethod,
     Extends,
+    ContextualKeywords,
 }
 
 fn get_reflection_classes(index: &Index, typ: &Type<ByteString>) -> Vec<ReflectionClass> {
@@ -145,14 +249,14 @@ fn get_reflection_classes(index: &Index, typ: &Type<ByteString>) -> Vec<Reflecti
     }
 }
 
-fn completion_kind(node: &Node, ancestors: &Ancestors) -> Option<CompletionKind> {
+fn completion_kind(node: &Node, ancestors: &Ancestors) -> CompletionKind {
     if node.is_property_fetch_expression() || ancestors.find(|n| n.is_property_fetch_expression()).is_some() {
-        return Some(CompletionKind::PropertyOrMethod);
+        return CompletionKind::PropertyOrMethod;
     }
 
     if node.is_class_extends() || ancestors.find(|n| n.is_class_extends()).is_some() {
-        return Some(CompletionKind::Extends);
+        return CompletionKind::Extends;
     }
 
-    None
+    CompletionKind::ContextualKeywords
 }

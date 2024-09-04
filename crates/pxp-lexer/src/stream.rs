@@ -1,3 +1,4 @@
+use pxp_span::Span;
 use pxp_syntax::comments::Comment;
 use pxp_syntax::comments::CommentFormat;
 use pxp_syntax::comments::CommentGroup;
@@ -35,6 +36,14 @@ impl<'a> TokenStream<'a> {
     pub fn next(&mut self) {
         self.cursor += 1;
         self.collect_comments();
+    }
+
+    pub fn span(&self) -> Span {
+        if self.cursor >= self.length {
+            return self.previous().span;
+        }
+
+        self.current().span
     }
 
     /// Get current token.

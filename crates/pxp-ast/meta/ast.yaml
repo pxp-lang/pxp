@@ -762,6 +762,10 @@ ClassishMember:
   AbstractConstructor: AbstractConstructor
   ConcreteMethod: ConcreteMethod
   ConcreteConstructor: ConcreteConstructor
+  Missing: MissingClassishMember
+
+MissingClassishMember:
+  span: Span
 
 ConstantEntry:
   children: [name, value]

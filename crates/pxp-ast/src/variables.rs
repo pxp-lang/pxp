@@ -11,6 +11,10 @@ impl SimpleVariable {
             span,
         }
     }
+
+    pub fn is_missing(&self) -> bool {
+        self.symbol.is_empty()
+    }
 }
 
 impl Spanned for Variable {

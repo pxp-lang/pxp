@@ -399,6 +399,8 @@ pub trait VisitorMut {
         walk_classish_member_mut(self, node);
     }
 
+    fn visit_missing_classish_member(&mut self, node: &mut MissingClassishMember) {}
+
     fn visit_constant_entry(&mut self, node: &mut ConstantEntry) {
         walk_constant_entry_mut(self, node);
     }

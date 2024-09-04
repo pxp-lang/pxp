@@ -229,6 +229,25 @@ pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
 
     let modifiers = modifiers::collect(state);
 
+    if modifiers.is_empty() && !matches!(state.stream.current().kind, TokenKind::Const | TokenKind::Function) {
+        let current = state.stream.current();
+
+        state.diagnostic(
+            ParserDiagnostic::UnexpectedToken {
+                token: current.clone()
+            },
+            Severity::Error,
+            current.span
+        );
+
+        state.stream.next();
+
+        return ClassishMember::Missing(MissingClassishMember {
+            id: state.id(),
+            span: current.span,
+        });
+    }
+
     if state.stream.current().kind == TokenKind::Const {
         let modifiers = modifiers::constant_group(state, modifiers);
         return ClassishMember::Constant(classish(state, modifiers));

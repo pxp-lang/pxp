@@ -393,6 +393,8 @@ pub trait Visitor {
         walk_classish_member(self, node);
     }
 
+    fn visit_missing_classish_member(&mut self, node: &MissingClassishMember) {}
+
     fn visit_constant_entry(&mut self, node: &ConstantEntry) {
         walk_constant_entry(self, node);
     }

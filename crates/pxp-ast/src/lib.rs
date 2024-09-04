@@ -142,6 +142,7 @@ impl Spanned for ClassishMember {
             ClassishMember::AbstractConstructor(inner) => inner.span(),
             ClassishMember::ConcreteMethod(inner) => inner.span(),
             ClassishMember::ConcreteConstructor(inner) => inner.span(),
+            ClassishMember::Missing(inner) => inner.span(),
         }
     }
 }

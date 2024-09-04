@@ -15,7 +15,14 @@ fn main() {
 
     // dbg!(&result.ast);
 
-    let node = NodeFinder::find_at_byte_offset(&result.ast, offset_marker);
+    let Some((node, ancestors)) = NodeFinder::find_at_byte_offset(&result.ast, offset_marker) else {
+        println!("No node found.");
+        return;
+    };
 
     dbg!(node);
+
+    if args.contains(&"--ancestors".to_string()) {
+        dbg!(ancestors);
+    }
 }

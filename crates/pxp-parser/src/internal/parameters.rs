@@ -52,6 +52,7 @@ pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
 
             FunctionParameter {
                 id: state.id(),
+                // FIXME: This isn't taking other fields into account.
                 span: if ty.is_some() {
                     Span::combine(ty.span(), var.span)
                 } else {

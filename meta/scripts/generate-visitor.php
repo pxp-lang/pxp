@@ -132,7 +132,7 @@ class VisitorGenerator
                 $function .= ", .. } => {\n";
                 
                 foreach ($field as $subfield => $subtype) {
-                    if (in_array($subtype, ['Comment', 'CommentGroup', 'BackedEnumType', 'Type', 'Type<Name>', 'Span', 'Option<Span>', 'Symbol', 'Token', 'bool', 'NameQualification', '(Span, Span)', 'Level', 'Box<Level>'])) {
+                    if (in_array($subtype, ['Comment', 'CommentGroup', 'BackedEnumType', 'Type', 'Type<Name>', 'Span', 'Option<Span>', 'ByteString', 'Token', 'bool', 'NameQualification', '(Span, Span)', 'Level', 'Box<Level>'])) {
                         continue;
                     }
 
@@ -152,7 +152,7 @@ class VisitorGenerator
     private function generateWalkStructFunction(string $function, string $type, array $fields, VisitorTemplate $template): string
     {
         foreach ($fields as $field => $type) {
-            if (in_array($type, ['CommentGroup', 'BackedEnumType', 'Type', 'Type<Name>', 'Span', 'Option<Span>', 'Symbol', 'Token', 'bool', 'NameQualification', '(Span, Span)', 'Level', 'Box<Level>'])) {
+            if (in_array($type, ['CommentGroup', 'BackedEnumType', 'Type', 'Type<Name>', 'Span', 'Option<Span>', 'ByteString', 'Token', 'bool', 'NameQualification', '(Span, Span)', 'Level', 'Box<Level>'])) {
                 continue;
             }
 
@@ -227,7 +227,7 @@ class VisitorGenerator
                 if (is_string($field)) {
                     $stripped = $this->stripTypeToRoot($field);
 
-                    return !in_array($stripped, ['Comment', 'CommentGroup', 'BackedEnumType', 'Type', 'Type<Name>', 'Span', 'Option<Span>', 'Symbol', 'Token', 'bool', 'NameQualification', '(Span, Span)', 'Level', 'Box<Level>'], true);
+                    return !in_array($stripped, ['Comment', 'CommentGroup', 'BackedEnumType', 'Type', 'Type<Name>', 'Span', 'Option<Span>', 'ByteString', 'Token', 'bool', 'NameQualification', '(Span, Span)', 'Level', 'Box<Level>'], true);
                 }
 
                 return true;

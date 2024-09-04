@@ -737,6 +737,7 @@ pub fn walk_classish_member<V: Visitor + ?Sized>(visitor: &mut V, node: &Classis
         ClassishMember::AbstractConstructor(inner) => visitor.visit_abstract_constructor(inner),
         ClassishMember::ConcreteMethod(inner) => visitor.visit_concrete_method(inner),
         ClassishMember::ConcreteConstructor(inner) => visitor.visit_concrete_constructor(inner),
+        ClassishMember::Missing(inner) => visitor.visit_missing_classish_member(inner),
         _ => {}
     }
 }
