@@ -2,7 +2,7 @@ use pxp_ast::{*, visitor::Visitor};
 use pxp_bytestring::ByteString;
 use pxp_index::Index;
 use pxp_type::Type;
-use visitor::{walk_assignment_operation_expression, walk_class_statement, walk_concrete_method, walk_expression, walk_function_statement, walk_method_call_expression, walk_name, walk_parenthesized_expression, walk_property_fetch_expression, walk_static_method_call_expression};
+use visitor::{walk_assignment_operation_expression, walk_backed_enum_statement, walk_class_statement, walk_concrete_method, walk_expression, walk_function_statement, walk_method_call_expression, walk_name, walk_parenthesized_expression, walk_property_fetch_expression, walk_static_method_call_expression, walk_trait_statement, walk_unit_enum_statement};
 
 use crate::TypeMap;
 
@@ -114,6 +114,7 @@ impl Visitor for TypeMapGenerator<'_> {
 
             if ! node.modifiers.has_static() {
                 let class = this.map.scopes.scope().class.as_ref().unwrap().clone();
+                
                 this.map.scopes.scope_mut().insert_variable(b"$this".into(), Type::Named(class));
             }
 
@@ -142,6 +143,30 @@ impl Visitor for TypeMapGenerator<'_> {
             this.map.scopes.scope_mut().class = Some(node.name.symbol().clone());
 
             walk_class_statement(this, node);
+        });
+    }
+
+    fn visit_trait_statement(&mut self, node: &TraitStatement) {
+        self.scoped(false, |this| {
+            this.map.scopes.scope_mut().class = Some(node.name.symbol().clone());
+
+            walk_trait_statement(this, node);
+        });
+    }
+
+    fn visit_unit_enum_statement(&mut self, node: &UnitEnumStatement) {
+        self.scoped(false, |this| {
+            this.map.scopes.scope_mut().class = Some(node.name.symbol().clone());
+
+            walk_unit_enum_statement(this, node);
+        });
+    }
+
+    fn visit_backed_enum_statement(&mut self, node: &BackedEnumStatement) {
+        self.scoped(false, |this| {
+            this.map.scopes.scope_mut().class = Some(node.name.symbol().clone());
+
+            walk_backed_enum_statement(this, node);
         });
     }
 

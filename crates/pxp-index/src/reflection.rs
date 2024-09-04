@@ -121,6 +121,22 @@ impl ReflectionClass {
         self.class.kind == ClassKind::Trait
     }
 
+    pub fn get_properties(&self, index: &Index) -> Vec<ReflectionProperty> {
+        let mut properties = self.get_own_properties();
+
+        // If we have a parent class, we can access those public properties as well.
+        if let Some(parent) = self.get_parent(index) {
+            properties.extend(parent.get_properties(index));
+        }
+
+        // If we're using traits on this object, we also need to get the public properties from those.
+        for r#trait in self.get_traits(index) {
+            properties.extend(r#trait.get_properties(index));
+        }
+
+        properties
+    }
+
     pub fn get_own_properties(&self) -> Vec<ReflectionProperty> {
         self.class
             .properties
@@ -156,13 +172,19 @@ impl ReflectionClass {
 
         // If we reach this point, then we need to figure out what properties are accessible.
         // 1. If we're inside of the class we're trying to access, we can access all properties, e.g. $this.
-        // FIXME: We can access all properties of the current class, but only public & protected properties of parent classes.
         if self.get_name() == scope.get_name() {
             let mut properties = self.get_own_properties();
 
             if let Some(parent) = self.get_parent(index) {
                 properties.extend(parent.get_public_properties(index));
                 properties.extend(parent.get_protected_properties(index));
+            }
+
+            // We can also access all properties from traits.
+            // This includes private properties since traits are essentially
+            // copy-pasta'd into the class.
+            for r#trait in self.get_traits(index) {
+                properties.extend(r#trait.get_properties(index));
             }
 
             return properties;
@@ -182,29 +204,24 @@ impl ReflectionClass {
     }
 
     pub fn get_public_properties(&self, index: &Index) -> Vec<ReflectionProperty> {
-        let mut properties = self.get_own_public_properties();
-
-        // If we have a parent class, we can access those public properties as well.
-        if let Some(parent) = self.get_parent(index) {
-            properties.extend(parent.get_public_properties(index));
-        }
-
-        // FIXME: Add traits here.
-
-        properties
+        self.get_properties(index)
+            .into_iter()
+            .filter(|property| property.is_public())
+            .collect()
     }
 
     pub fn get_protected_properties(&self, index: &Index) -> Vec<ReflectionProperty> {
-        let mut properties = self.get_own_protected_properties();
+        self.get_properties(index)
+            .into_iter()
+            .filter(|property| property.is_protected())
+            .collect()
+    }
 
-        // If we have a parent class, we can access those public properties as well.
-        if let Some(parent) = self.get_parent(index) {
-            properties.extend(parent.get_protected_properties(index));
-        }
-
-        // FIXME: Add traits here.
-
-        properties
+    pub fn get_private_properties(&self, index: &Index) -> Vec<ReflectionProperty> {
+        self.get_properties(index)
+            .into_iter()
+            .filter(|property| property.is_private())
+            .collect()
     }
 
     pub fn get_own_public_properties(&self) -> Vec<ReflectionProperty> {
