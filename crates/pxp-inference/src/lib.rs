@@ -261,11 +261,12 @@ mod tests {
         let input = input.replace('§', "");
         let result = parse(&input);
         let index = index.unwrap_or_else(|| {
-            let mut indexer = Indexer::new();
+            let mut index = Index::new();
+            let mut indexer = Indexer::new(&mut index);
             let ast = result.ast.to_vec();
 
             indexer.index(&ast);
-            indexer.get_index().clone()
+            index
         });
 
         let map = InferenceEngine::map(&index, &result.ast[..]);
@@ -278,7 +279,8 @@ mod tests {
     }
 
     fn index() -> Option<Index> {
-        let mut indexer = Indexer::new();
+        let mut index = Index::new();
+        let mut indexer = Indexer::new(&mut index);
 
         let paths = ["tests/fixtures/Foo.php", "tests/fixtures/Bar.php"];
 
@@ -288,6 +290,6 @@ mod tests {
             indexer.index(&result.ast);
         }
 
-        Some(indexer.get_index().clone())
+        Some(index)
     }
 }

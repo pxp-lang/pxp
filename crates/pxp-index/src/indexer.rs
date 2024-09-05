@@ -10,21 +10,14 @@ use crate::{
     Index,
 };
 
-#[derive(Debug, Clone, Default)]
-pub struct Indexer {
-    index: Index,
+#[derive(Debug)]
+pub struct Indexer<'a> {
+    index: &'a mut Index,
     context: IndexerContext,
 }
 
-impl Indexer {
-    pub fn new() -> Self {
-        Indexer {
-            index: Index::new(),
-            context: IndexerContext::default(),
-        }
-    }
-
-    pub fn for_index(index: Index) -> Self {
+impl<'a> Indexer<'a> {
+    pub fn new(index: &'a mut Index) -> Self {
         Indexer {
             index,
             context: IndexerContext::default(),
@@ -33,10 +26,6 @@ impl Indexer {
 
     pub fn index(&mut self, ast: &Vec<Statement>) {
         self.visit(ast);
-    }
-
-    pub fn get_index(&self) -> &Index {
-        &self.index
     }
 
     fn transform_function_parameter_list(
@@ -124,7 +113,7 @@ impl IndexerContext {
     }
 }
 
-impl Visitor for Indexer {
+impl<'a> Visitor for Indexer<'a> {
     fn visit_unbraced_namespace(&mut self, node: &UnbracedNamespace) {
         self.context.namespace = Some(node.name.as_resolved().unwrap().resolved.clone());
         walk_unbraced_namespace(self, node);

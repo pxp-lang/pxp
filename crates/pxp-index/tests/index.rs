@@ -344,7 +344,8 @@ fn it_indexes_enums() {
 }
 
 fn index() -> Index {
-    let mut indexer = Indexer::new();
+    let mut index = Index::new();
+    let mut indexer = Indexer::new(&mut index);
     let files = discover(&["php"], &["tests/fixtures"]).expect("failed to discover files");
 
     for file in files.iter() {
@@ -352,5 +353,5 @@ fn index() -> Index {
         indexer.index(&result.ast);
     }
 
-    indexer.get_index().clone()
+    index
 }

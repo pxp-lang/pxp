@@ -3,7 +3,7 @@ use std::env::args;
 use discoverer::discover;
 use indicatif::ProgressBar;
 use pxp_bytestring::ByteString;
-use pxp_index::Indexer;
+use pxp_index::{Index, Indexer};
 use pxp_parser::parse;
 
 use rustyline::DefaultEditor;
@@ -13,7 +13,8 @@ fn main() {
     let directory = args.first().expect("error: no directory provided");
     let with_output = args.iter().any(|arg| arg == "--output");
     let files = discover(&["php"], &[directory]).unwrap();
-    let mut indexer = Indexer::new();
+    let mut index = Index::new();
+    let mut indexer = Indexer::new(&mut index);
 
     if with_output {
         println!("Indexing...");
@@ -40,7 +41,7 @@ fn main() {
                 Ok(line) => match *line.split_whitespace().collect::<Vec<_>>().as_slice() {
                     ["class", name] => {
                         let name = ByteString::from(name.as_bytes());
-                        match indexer.get_index().get_class(&name) {
+                        match index.get_class(&name) {
                             Some(class) => {
                                 dbg!(class);
                             }
@@ -48,7 +49,7 @@ fn main() {
                         }
                     }
                     ["classes"] => {
-                        for class in indexer.get_index().get_classes() {
+                        for class in index.get_classes() {
                             println!("{}", class.get_name());
                         }
                     },

@@ -31,21 +31,12 @@ impl Backend {
             let content = document.get_content(None).as_bytes();
             let parse_result = parse(&content);
 
-            // FIXME: Remove this clone, since it will be expensive.
-            let mut indexer = Indexer::for_index(self.index.clone());
+            let mut indexer = Indexer::new(&mut self.index);
             indexer.index(&parse_result.ast);
-            
-            // FIXME: Remove this clone, since it will be expensive.
-            self.index = indexer.get_index().clone();
         }
     }
 
     fn send_diagnostics(&mut self, client: &Client, uri: &Uri) -> Result<()> {
-        client.log_message(
-            MessageType::INFO,
-            format!("Sending diagnostics for [`{}`].", uri.as_str()),
-        )?;
-
         if let Some(document) = self.documents.get_document(uri) {
             let content = document.get_content(None).as_bytes();
             let diagnostics = parse(&content).diagnostics;
@@ -58,11 +49,6 @@ impl Backend {
     }
 
     fn publish_diagnostics(&self, client: &Client, uri: &Uri, parser_diagnostics: &[InternalDiagnostic<ParserDiagnostic>], version: i32, content: &[u8]) -> Result<()> {
-        client.log_message(
-            MessageType::INFO,
-            format!("Publishing diagnostics for [`{}`].", uri.as_str()),
-        )?;
-
         let mut diagnostics = Vec::new();
 
         parser_diagnostics.iter().for_each(|d| {
@@ -122,8 +108,6 @@ impl LanguageServer for Backend {
     }
 
     fn document_symbols(&mut self, client: &Client, params: &DocumentSymbolParams) -> Result<DocumentSymbolResponse> {
-        client.log_message(MessageType::INFO, format!("Generating document symbols for [`{}`].", &params.text_document.uri.to_string()))?;
-
         let symbols = self.get_document_symbols(&params.text_document.uri)?;
 
         Ok(DocumentSymbolResponse::Nested(symbols))
@@ -132,8 +116,6 @@ impl LanguageServer for Backend {
     fn hover(&mut self, client: &Client, params: &HoverParams) -> Result<Option<Hover>> {
         let uri = &params.text_document_position_params.text_document.uri;
 
-        client.log_message(MessageType::INFO, format!("Generating hover information for [`{}`].", **uri))?;
-
         Ok(self.generate_hover(uri, &params.text_document_position_params.position))
     }
 
@@ -141,13 +123,8 @@ impl LanguageServer for Backend {
         self.get_completion_items(&params.text_document_position.text_document.uri, params.text_document_position.position)
     }
 
-    fn notification(&mut self, client: &Client, method: &str, params: &Value) -> Result<bool> {
+    fn notification(&mut self, _: &Client, method: &str, params: &Value) -> Result<bool> {
         if self.documents.listen(method, params) {
-            client.log_message(
-                MessageType::INFO,
-                format!("Accepted document change notification [`{method}`].")
-            )?;
-
             let uri = match method {
                 DidOpenTextDocument::METHOD => {
                     let params: DidOpenTextDocumentParams = from_value(params.clone())?;
