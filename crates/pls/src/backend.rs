@@ -1,5 +1,6 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, path::PathBuf};
 
+use discoverer::discover;
 use lsp_textdocument::TextDocuments;
 use pxp_lsp::types::{notification::{DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument, Notification}, CompletionItem, CompletionParams, Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentSymbolParams, DocumentSymbolResponse, Hover, HoverParams, InitializeParams, InitializeResult, MessageType, Position, Range, ServerInfo, Uri};
 use pxp_diagnostics::{Diagnostic as InternalDiagnostic, Severity};
@@ -11,10 +12,16 @@ use serde_json::{from_value, Value};
 use crate::capabilities::get_server_capabilities;
 use pxp_lsp::{Client, LanguageServer, Result};
 
+#[derive(Debug)]
+pub struct Workspace {
+    root: PathBuf,
+}
+
 pub struct Backend {
     pub documents: TextDocuments,
     pub diagnostics: HashMap<Uri, Vec<InternalDiagnostic<ParserDiagnostic>>>,
     pub index: Index,
+    pub workspace: Workspace,
 }
 
 impl Backend {
@@ -23,6 +30,9 @@ impl Backend {
             documents: TextDocuments::new(),
             diagnostics: HashMap::new(),
             index: Index::new(),
+            workspace: Workspace {
+                root: "".parse().unwrap(),
+            }
         }
     }
 
@@ -89,10 +99,43 @@ impl Backend {
 
         Ok(())
     }
+
+    fn index_workspace(&mut self, client: &Client) -> Result<()> {
+        let mut indexer = Indexer::new(&mut self.index);
+
+        client.with_progress("Indexing...", |reporter| {
+            let documents = match discover(&["php"], &[self.workspace.root.to_str().unwrap()]) {
+                Ok(documents) => documents,
+                Err(e) => {
+                    client.log_message(MessageType::ERROR, format!("Error while discovering files: {}", e))?;
+                    return Ok(());
+                },
+            };
+
+            let total = documents.len();
+
+            for (i, document) in documents.iter().enumerate() {                
+                indexer.index_file(document);
+
+                reporter.report((i as f64 / total as f64 * 100.0) as u32, None)?;
+            }
+
+            Ok(())
+        })?;
+
+        Ok(())
+    }
 }
 
 impl LanguageServer for Backend {
-    fn initialize(&mut self, _: &Client, _: &InitializeParams) -> InitializeResult {
+    fn initialize(&mut self, _: &Client, params: &InitializeParams) -> InitializeResult {
+        // FIXME: Support multi-root workspaces.
+        if let Some(workspaces) = params.workspace_folders.as_ref() {
+            if let Some(workspace) = workspaces.first() {
+                self.workspace.root = workspace.uri.path().to_string().parse().unwrap();
+            }
+        }
+
         InitializeResult {
             capabilities: get_server_capabilities(),
             server_info: Some(ServerInfo {
@@ -103,8 +146,22 @@ impl LanguageServer for Backend {
     }
 
     fn initialized(&mut self, client: &Client) -> Result<()> {
-        // FIXME: Index workspace here.
-        client.log_message(MessageType::INFO, "Language server initialized.".to_string())
+        client.log_message(
+            MessageType::INFO,
+            format!("Server initialized. Workspace root set to: {}", self.workspace.root.display()),
+        )?;
+
+        client.log_message(
+            MessageType::INFO,
+            "Indexing started.".to_string(),
+        )?;
+
+        self.index_workspace(client)?;
+
+        client.log_message(
+            MessageType::INFO,
+            "Indexing finished.".to_string(),
+        )
     }
 
     fn document_symbols(&mut self, client: &Client, params: &DocumentSymbolParams) -> Result<DocumentSymbolResponse> {

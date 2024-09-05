@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use pxp_lsp::types::{CompletionItemKind, CompletionItemLabelDetails, CompletionItem, Position, Uri};
 use pxp_ast::visitor::Ancestors;
 use pxp_ast::Node;
@@ -46,6 +48,18 @@ impl Backend {
             complete_keywords(&node, &ancestors, &self.index, &map, &mut items);
         }
         
+        let mut seen = HashSet::new();
+
+        // FIXME: We should handle deduplication of completion items when inserting
+        //        for better performance. We could probably use a wrapper around
+        //        the Vec<CompletionItem> that implements a custom `insert` method
+        //        and uses a HashSet to track the labels that have been inserted.
+        items.retain(|item| {
+            let is_new = !seen.contains(item.label.as_str());
+            seen.insert(item.label.clone());
+            is_new
+        });
+
         Ok(items)
     }
 }
@@ -216,6 +230,8 @@ fn complete_property_or_method(node: &Node, ancestors: &Ancestors, index: &Index
                     description: Some(method.get_return_type().to_string()),
                     detail: None,
                 }),
+                // FIXME: This is a hack to ensure magic methods are sorted to the bottom.
+                sort_text: if method.get_name().starts_with(b"__") { Some("1".to_string()) } else { Some("0".to_string()) },
                 ..Default::default()
             })
         }

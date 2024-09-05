@@ -1,5 +1,8 @@
+use std::path::Path;
+
 use pxp_ast::{visitor::*, UnbracedNamespace, *};
 use pxp_bytestring::ByteString;
+use pxp_parser::parse;
 use pxp_span::Span;
 use pxp_type::Type;
 
@@ -26,6 +29,16 @@ impl<'a> Indexer<'a> {
 
     pub fn index(&mut self, ast: &Vec<Statement>) {
         self.visit(ast);
+    }
+
+    pub fn index_file(&mut self, path: &Path) {
+        let Ok(content) = std::fs::read(path) else {
+            return;
+        };
+
+        let parse_result = parse(&content);
+
+        self.index(&parse_result.ast);
     }
 
     fn transform_function_parameter_list(

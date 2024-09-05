@@ -18,3 +18,4 @@ pxp-bytestring = { version = "0.1.0", path = "../pxp-bytestring" }
 pxp-inference = { version = "0.1.0", path = "../pxp-inference" }
 pxp-lsp = { version = "0.1.0", path = "../pxp-lsp" }
 serde_json = "1.0.127"
+discoverer = "0.2.0"

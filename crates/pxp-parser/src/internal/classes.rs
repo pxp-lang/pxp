@@ -275,7 +275,7 @@ pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
                     state.diagnostic(
                         ParserDiagnostic::AbstractMethodInNonAbstractClass,
                         Severity::Error,
-                        ctor.modifiers.get_abstract().unwrap().span(),
+                        ctor.span(),
                     );
                 }
 
