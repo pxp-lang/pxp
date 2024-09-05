@@ -2090,7 +2090,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
 
                     state.stream.next();
 
-                    ExpressionKind::Missing(current.span)
+                    ExpressionKind::Missing(MissingExpression { id: 0, span: current.span })
                 }
             };
 
@@ -2190,7 +2190,17 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                             property: variable,
                         })
                     }
-                    _ => unreachable!(),
+                    _ => {
+                        let span = Span::combine(lhs.span, double_colon);
+
+                        ExpressionKind::ConstantFetch(ConstantFetchExpression {
+                            id: state.id(),
+                            span,
+                            target: lhs,
+                            double_colon,
+                            constant: Identifier::missing(state.id(), Span::flat(double_colon.end)),
+                        })
+                    },
                 }
             }
         }

@@ -68,7 +68,7 @@ Expression:
 ExpressionKind:
   as: Enum
   children: [self]
-  Missing: Span 
+  Missing: MissingExpression
   Eval: EvalExpression
   Empty: EmptyExpression
   Die: DieExpression
@@ -135,6 +135,9 @@ ExpressionKind:
   Cast: CastExpression
   Name: Name
   Noop: Span
+
+MissingExpression:
+  span: Span
 
 StaticExpression:
   span: Span

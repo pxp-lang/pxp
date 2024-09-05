@@ -57,7 +57,7 @@ impl Expression {
     pub fn missing(id: NodeId, span: Span) -> Self {
         Self::new(
             id,
-            ExpressionKind::Missing(span),
+            ExpressionKind::Missing(MissingExpression { id, span }),
             span,
             CommentGroup::default(),
         )

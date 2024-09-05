@@ -149,19 +149,19 @@ impl LanguageServer for Backend {
         client.log_message(
             MessageType::INFO,
             format!("Server initialized. Workspace root set to: {}", self.workspace.root.display()),
-        )?;
-
-        client.log_message(
-            MessageType::INFO,
-            "Indexing started.".to_string(),
-        )?;
-
-        self.index_workspace(client)?;
-
-        client.log_message(
-            MessageType::INFO,
-            "Indexing finished.".to_string(),
         )
+
+        // client.log_message(
+        //     MessageType::INFO,
+        //     "Indexing started.".to_string(),
+        // )?;
+
+        // self.index_workspace(client)?;
+
+        // client.log_message(
+        //     MessageType::INFO,
+        //     "Indexing finished.".to_string(),
+        // )
     }
 
     fn document_symbols(&mut self, client: &Client, params: &DocumentSymbolParams) -> Result<DocumentSymbolResponse> {

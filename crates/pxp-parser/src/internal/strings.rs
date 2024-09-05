@@ -383,7 +383,7 @@ fn part(state: &mut State) -> Option<StringPart> {
 
                                 state.stream.next();
 
-                                ExpressionKind::Missing(literal.span)
+                                ExpressionKind::Missing(MissingExpression { id: 0, span: literal.span })
                             }
                         }
                         TokenKind::Identifier => {
@@ -415,7 +415,7 @@ fn part(state: &mut State) -> Option<StringPart> {
 
                             state.stream.next();
 
-                            ExpressionKind::Missing(current.span)
+                            ExpressionKind::Missing(MissingExpression { id: 0, span: current.span })
                         }
                     };
                     let index_end_span = state.stream.previous().span;

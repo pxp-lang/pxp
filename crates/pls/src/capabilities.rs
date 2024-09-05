@@ -31,7 +31,7 @@ pub(crate) fn get_server_capabilities() -> ServerCapabilities {
             }),
         }),
         completion_provider: Some(CompletionOptions {
-            trigger_characters: Some(vec![">".to_string(), "$".to_string()]),
+            trigger_characters: Some(vec![">".to_string(), "$".to_string(), ":".to_string()]),
             ..Default::default()
         }),
         ..Default::default()

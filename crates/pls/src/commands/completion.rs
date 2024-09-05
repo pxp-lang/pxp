@@ -1,5 +1,9 @@
 use std::collections::HashSet;
 
+use pxp_ast::ExpressionKind;
+use pxp_ast::Name;
+use pxp_ast::NameKind;
+use pxp_ast::ResolvedName;
 use pxp_lsp::types::{CompletionItemKind, CompletionItemLabelDetails, CompletionItem, Position, Uri};
 use pxp_ast::visitor::Ancestors;
 use pxp_ast::Node;
@@ -38,15 +42,16 @@ impl Backend {
         match completion_kind {
             CompletionKind::PropertyOrMethod => complete_property_or_method(&node, &ancestors, &self.index, &map, &mut items),
             CompletionKind::Extends => complete_extends(&node, &ancestors, &self.index, &map, &mut items),
+            CompletionKind::StaticPropertyMethodOrConstant => complete_static_property_method_or_constant(&node, &ancestors, &self.index, &map, &mut items),
             CompletionKind::ContextualMethodName => complete_contextual_method_names(&node, &ancestors, &map, &self.index, &mut items),
             CompletionKind::ContextualKeywords => complete_keywords(&node, &ancestors, &self.index, &map, &mut items),
         }
 
         // If we reach this point and haven't found any completions, we can defer to
         // the contextual keywords logic to generate a list of sensible completions.
-        if items.is_empty() && completion_kind != CompletionKind::ContextualKeywords {
-            complete_keywords(&node, &ancestors, &self.index, &map, &mut items);
-        }
+        // if items.is_empty() && completion_kind != CompletionKind::ContextualKeywords {
+        //     complete_keywords(&node, &ancestors, &self.index, &map, &mut items);
+        // }
         
         let mut seen = HashSet::new();
 
@@ -64,8 +69,48 @@ impl Backend {
     }
 }
 
-fn complete_contextual_method_names(node: &Node, ancestors: &Ancestors, map: &TypeMap, index: &Index, items: &mut Vec<CompletionItem>) {
+fn complete_static_property_method_or_constant(node: &Node<'_>, ancestors: &Ancestors<'_>, index: &Index, map: &TypeMap, items: &mut Vec<CompletionItem>) {
+    let Some(constant_fetch) = ancestors.find(|n| n.is_constant_fetch_expression()) else {
+        return;
+    };
 
+    // Grab the target.
+    let target = constant_fetch.as_constant_fetch_expression().unwrap().target.as_ref();
+
+    // Make sure we're able to resolve the type of the target.
+    let Some(map_result) = map.resolve(target.id()) else {
+        return;
+    };
+    
+    if ! map_result.ty.is_object_like() {
+        return;
+    }
+
+    let candidates = get_reflection_classes(index, &map_result.ty);
+    let scope = map_result.scope.get_class(index);
+
+    for candidate in candidates {
+        // Provide completions for the class.
+        for property in candidate.get_accessible_properties(scope.as_ref(), index) {
+            if ! property.is_static() {
+                continue;
+            }
+
+            items.push(CompletionItem {
+                label: format!("${}", property.get_name()),
+                kind: Some(CompletionItemKind::PROPERTY),
+                label_details: Some(CompletionItemLabelDetails {
+                    description: Some(property.get_type().to_string()),
+                    detail: None,
+                }),
+                ..Default::default()
+            });
+        }
+    }
+}
+
+fn complete_contextual_method_names(node: &Node, ancestors: &Ancestors, map: &TypeMap, index: &Index, items: &mut Vec<CompletionItem>) {
+    // FIXME: Provide contextual method names based on parent methods, or methods provided by an interface.
 }
 
 struct CompletionContext;
@@ -193,8 +238,10 @@ fn complete_property_or_method(node: &Node, ancestors: &Ancestors, index: &Index
     };
 
     let Some(map_result) = map.resolve(property_fetch.target.id()) else {
-        return
+        return;
     };
+
+    dbg!(&map_result);
     
     // We can only complete properties on known object-like types.
     if ! map_result.ty.is_object_like() {
@@ -211,6 +258,10 @@ fn complete_property_or_method(node: &Node, ancestors: &Ancestors, index: &Index
 
     for candidate in candidates {
         for property in candidate.get_accessible_properties(scope.as_ref(), index) {
+            if property.is_static() {
+                continue;
+            }
+
             items.push(CompletionItem {
                 label: property.get_name().to_string(),
                 kind: Some(CompletionItemKind::PROPERTY),
@@ -242,6 +293,7 @@ fn complete_property_or_method(node: &Node, ancestors: &Ancestors, index: &Index
 enum CompletionKind {
     PropertyOrMethod,
     Extends,
+    StaticPropertyMethodOrConstant,
     ContextualMethodName,
     ContextualKeywords,
 }
@@ -261,16 +313,26 @@ fn get_reflection_classes(index: &Index, typ: &Type<ByteString>) -> Vec<Reflecti
 }
 
 fn completion_kind(node: &Node, ancestors: &Ancestors) -> CompletionKind {
+    dbg!(node);
+    
+    // $object->^
     if node.is_property_fetch_expression() || ancestors.find(|n| n.is_property_fetch_expression()).is_some() {
         return CompletionKind::PropertyOrMethod;
     }
 
+    // public function ^
     if node.is_simple_identifier() && ancestors.find(|n| n.is_concrete_method()).is_some() {
         return CompletionKind::ContextualMethodName;
     }
 
+    // class A extends ^
     if node.is_class_extends() || ancestors.find(|n| n.is_class_extends()).is_some() {
         return CompletionKind::Extends;
+    }
+
+    // MyClass::^
+    if node.is_simple_identifier() && ancestors.find(|n| n.is_constant_fetch_expression()).is_some() {
+        return CompletionKind::StaticPropertyMethodOrConstant;
     }
 
     CompletionKind::ContextualKeywords

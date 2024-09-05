@@ -141,7 +141,7 @@ impl Spanned for Expression {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ExpressionKind {
-    Missing(Span),
+    Missing(MissingExpression),
     Eval(EvalExpression),
     Empty(EmptyExpression),
     Die(DieExpression),
@@ -213,7 +213,7 @@ pub enum ExpressionKind {
 impl HasId for ExpressionKind {
     fn id(&self) -> NodeId {
         match self {
-            ExpressionKind::Missing(_) => 0,
+            ExpressionKind::Missing(inner) => inner.id(),
             ExpressionKind::Eval(inner) => inner.id(),
             ExpressionKind::Empty(inner) => inner.id(),
             ExpressionKind::Die(inner) => inner.id(),
@@ -281,6 +281,24 @@ impl HasId for ExpressionKind {
             ExpressionKind::Name(inner) => inner.id(),
             ExpressionKind::Noop(_) => 0,
         }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct MissingExpression {
+    pub id: NodeId,
+    pub span: Span,
+}
+
+impl HasId for MissingExpression {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for MissingExpression {
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -5526,6 +5544,7 @@ pub enum NodeKind<'a> {
     StatementKind(&'a StatementKind),
     Expression(&'a Expression),
     ExpressionKind(&'a ExpressionKind),
+    MissingExpression(&'a MissingExpression),
     StaticExpression(&'a StaticExpression),
     SelfExpression(&'a SelfExpression),
     ParentExpression(&'a ParentExpression),
@@ -5817,6 +5836,17 @@ impl<'a> Node<'a> {
 
     pub fn is_expression_kind(&self) -> bool {
         matches!(&self.kind, NodeKind::ExpressionKind(_))
+    }
+
+    pub fn as_missing_expression(self) -> Option<&'a MissingExpression> {
+        match &self.kind {
+            NodeKind::MissingExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_missing_expression(&self) -> bool {
+        matches!(&self.kind, NodeKind::MissingExpression(_))
     }
 
     pub fn as_static_expression(self) -> Option<&'a StaticExpression> {
@@ -8413,6 +8443,7 @@ impl<'a> Node<'a> {
             NodeKind::StatementKind(_) => "StatementKind",
             NodeKind::Expression(_) => "Expression",
             NodeKind::ExpressionKind(_) => "ExpressionKind",
+            NodeKind::MissingExpression(_) => "MissingExpression",
             NodeKind::StaticExpression(_) => "StaticExpression",
             NodeKind::SelfExpression(_) => "SelfExpression",
             NodeKind::ParentExpression(_) => "ParentExpression",
@@ -8774,6 +8805,9 @@ impl<'a> Node<'a> {
                 children.push(x.into());
             }
             NodeKind::ExpressionKind(node) => match node {
+                ExpressionKind::Missing(inner) => {
+                    children.push(inner.into());
+                }
                 ExpressionKind::Eval(inner) => {
                     children.push(inner.into());
                 }
@@ -10671,6 +10705,7 @@ impl<'a> Node<'a> {
             NodeKind::StatementKind(node) => NonNull::from(node).cast(),
             NodeKind::Expression(node) => NonNull::from(node).cast(),
             NodeKind::ExpressionKind(node) => NonNull::from(node).cast(),
+            NodeKind::MissingExpression(node) => NonNull::from(node).cast(),
             NodeKind::StaticExpression(node) => NonNull::from(node).cast(),
             NodeKind::SelfExpression(node) => NonNull::from(node).cast(),
             NodeKind::ParentExpression(node) => NonNull::from(node).cast(),
@@ -10931,6 +10966,12 @@ impl<'a> From<&'a Expression> for Node<'a> {
 impl<'a> From<&'a ExpressionKind> for Node<'a> {
     fn from(node: &'a ExpressionKind) -> Self {
         Node::new(node.id(), NodeKind::ExpressionKind(node), node.span())
+    }
+}
+
+impl<'a> From<&'a MissingExpression> for Node<'a> {
+    fn from(node: &'a MissingExpression) -> Self {
+        Node::new(node.id(), NodeKind::MissingExpression(node), node.span())
     }
 }
 

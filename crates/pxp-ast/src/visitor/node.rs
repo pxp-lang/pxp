@@ -17,17 +17,19 @@ pub trait NodeVisitor<'a> {
     }
 
     fn visit(&mut self, node: Node<'a>, ancestors: &mut Ancestors<'a>) -> NodeVisitorEscapeHatch {
-        let escape = self.enter(node.clone(), ancestors);
+        let mut escape = self.enter(node.clone(), ancestors);
 
         ancestors.push(node.clone());
 
         if escape != NodeVisitorEscapeHatch::SkipChildren {
             for child in node.children() {
-                self.visit(child, ancestors);
-            }
-        }
+                escape = self.visit(child, ancestors);
 
-        if escape == NodeVisitorEscapeHatch::Stop {
+                if escape == NodeVisitorEscapeHatch::Stop {
+                    return NodeVisitorEscapeHatch::Stop;
+                }
+            }
+        } else if escape == NodeVisitorEscapeHatch::Stop {
             return NodeVisitorEscapeHatch::Stop;
         }
 

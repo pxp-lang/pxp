@@ -100,6 +100,16 @@ impl Visitor for TypeMapGenerator<'_> {
         self.map.scopes.scope_mut().insert_type(node.id(), ty);
     }
 
+    fn visit_self_expression(&mut self, node: &SelfExpression) {
+        if let Some(class) = &self.map.scopes.scope().class {
+            let class = class.clone();
+
+            self.map.scopes.scope_mut().insert_type(node.id(), Type::Named(class));
+        } else {
+            self.map.scopes.scope_mut().insert_type(node.id(), Type::Mixed);            
+        }
+    }
+
     fn visit_concrete_method(&mut self, node: &ConcreteMethod) {
         self.scoped(true, |this| {
             this.map.scopes.scope_mut().function = Some(node.name.symbol.clone());

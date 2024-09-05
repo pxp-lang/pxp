@@ -29,6 +29,8 @@ pub trait VisitorMut {
         walk_expression_kind_mut(self, node);
     }
 
+    fn visit_missing_expression(&mut self, node: &mut MissingExpression) {}
+
     fn visit_static_expression(&mut self, node: &mut StaticExpression) {}
 
     fn visit_self_expression(&mut self, node: &mut SelfExpression) {}

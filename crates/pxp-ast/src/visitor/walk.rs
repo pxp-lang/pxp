@@ -61,6 +61,7 @@ pub fn walk_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &Expression) 
 
 pub fn walk_expression_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &ExpressionKind) {
     match node {
+        ExpressionKind::Missing(inner) => visitor.visit_missing_expression(inner),
         ExpressionKind::Eval(inner) => visitor.visit_eval_expression(inner),
         ExpressionKind::Empty(inner) => visitor.visit_empty_expression(inner),
         ExpressionKind::Die(inner) => visitor.visit_die_expression(inner),

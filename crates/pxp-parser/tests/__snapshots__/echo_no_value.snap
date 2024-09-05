@@ -35,9 +35,12 @@
                     Expression {
                         id: 3,
                         kind: Missing(
-                            Span {
-                                start: 11,
-                                end: 12,
+                            MissingExpression {
+                                id: 3,
+                                span: Span {
+                                    start: 11,
+                                    end: 12,
+                                },
                             },
                         ),
                         span: Span {

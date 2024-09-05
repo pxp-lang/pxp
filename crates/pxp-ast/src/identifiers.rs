@@ -8,6 +8,17 @@ impl Identifier {
         Self::SimpleIdentifier(SimpleIdentifier::new(id, ByteString::empty(), span))
     }
 
+    pub fn is_missing(&self) -> bool {
+        self.is_simple() && self.to_simple().is_missing()
+    }
+
+    pub fn to_simple(&self) -> &SimpleIdentifier {
+        match self {
+            Self::SimpleIdentifier(simple) => simple,
+            Self::DynamicIdentifier(..) => unreachable!(),
+        }
+    }
+
     pub fn is_simple(&self) -> bool {
         match self {
             Self::SimpleIdentifier(..) => true,
@@ -35,5 +46,9 @@ impl Spanned for Identifier {
 impl SimpleIdentifier {
     pub fn new(id: NodeId, symbol: ByteString, span: Span) -> Self {
         Self { id, symbol, span }
+    }
+
+    pub fn is_missing(&self) -> bool {
+        self.symbol.is_empty()
     }
 }
