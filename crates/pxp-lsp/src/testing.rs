@@ -42,5 +42,13 @@ pub struct TestableServer<'a, T: LanguageServer> {
 }
 
 impl<'a, T: LanguageServer> TestableServer<'a, T> {
-    
+    // TODO: Add a method for opening a file.
+    // TODO: Add a method for closing a file.
+    // TODO: Add a method for changing a file.
+    // TODO: Add a method for saving a file.
+    // TODO: Add a method for sending a raw notification.
+    // TODO: Add a method for sending a raw request.
+    // TODO: Add a method for completions.
+    // TODO: Add a method for document symbols.
+    // TODO: Add a method for hovers.
 }
