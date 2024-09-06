@@ -312,12 +312,15 @@ fn get_reflection_classes(index: &Index, typ: &Type<ByteString>) -> Vec<Reflecti
     }
 }
 
-fn completion_kind(node: &Node, ancestors: &Ancestors) -> CompletionKind {
-    dbg!(node);
-    
+fn completion_kind(node: &Node, ancestors: &Ancestors) -> CompletionKind {    
     // $object->^
     if node.is_property_fetch_expression() || ancestors.find(|n| n.is_property_fetch_expression()).is_some() {
         return CompletionKind::PropertyOrMethod;
+    }
+
+    // MyClass::^
+    if node.is_simple_identifier() && ancestors.find(|n| n.is_constant_fetch_expression()).is_some() {
+        return CompletionKind::StaticPropertyMethodOrConstant;
     }
 
     // public function ^
@@ -328,11 +331,6 @@ fn completion_kind(node: &Node, ancestors: &Ancestors) -> CompletionKind {
     // class A extends ^
     if node.is_class_extends() || ancestors.find(|n| n.is_class_extends()).is_some() {
         return CompletionKind::Extends;
-    }
-
-    // MyClass::^
-    if node.is_simple_identifier() && ancestors.find(|n| n.is_constant_fetch_expression()).is_some() {
-        return CompletionKind::StaticPropertyMethodOrConstant;
     }
 
     CompletionKind::ContextualKeywords
