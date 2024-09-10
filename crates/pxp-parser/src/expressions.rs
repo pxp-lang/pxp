@@ -816,6 +816,8 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                 CommentGroup::default(),
             );
 
+            maybe_shift_assignment_operands(&mut left);
+
             continue;
         }
 
@@ -823,6 +825,276 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
     }
 
     left
+}
+
+fn should_shift_assignment_operands(expr: &Expression) -> bool {
+    let is_assignment = matches!(expr.kind, ExpressionKind::AssignmentOperation(_));
+
+    if !is_assignment {
+        return false;
+    }
+
+    let ExpressionKind::AssignmentOperation(AssignmentOperationExpression { kind, .. }) =
+        &expr.kind
+    else {
+        unreachable!()
+    };
+
+    matches!(
+        kind.left().kind,
+        ExpressionKind::ComparisonOperation(_)
+            | ExpressionKind::BitwiseOperation(_)
+            | ExpressionKind::ArithmeticOperation(_)
+            | ExpressionKind::LogicalOperation(_)
+    )
+}
+
+// This is a workaround for a problem somebody reported, but something that
+// I've found in other PHP parsers too.
+//
+// Given the following code:
+//     true !== $a = true
+// The precedence system interprets this as:
+//     (true !== $a) = true
+// which isn't a valid assignment target.
+//
+// This seems to be a downfall of the precedence system and a side effect
+// of PHP treating assignment as an expression rather than a statement.
+//
+// I found a similar piece of logic in the `microsoft/tolerant-php-parser` project,
+// where they check to see if the expression being created is an assignment operation
+// and if the left-hand side if a binary operation.
+//
+// If it is, then they shift the operands around to fake parentheses, so that the expression
+// is instead interpreted as:
+//     true !== ($a = true)
+//
+// This is a real mega hack, but it seems to work and should be the only place where
+// we need to do this sort of trickery-bobbery.
+fn maybe_shift_assignment_operands(expr: &mut Expression) {
+    if !should_shift_assignment_operands(expr) {
+        return;
+    }
+
+    // At this point, we know that the left-hand side of the expression is an assignment.
+    let ExpressionKind::AssignmentOperation(AssignmentOperationExpression { id, kind, .. }) =
+        &expr.kind
+    else {
+        unreachable!()
+    };
+
+    // Given the following AST:
+    // AssignmentOperation {
+    //     left: ComparisonOperation {
+    //         left: true,
+    //         op: !==,
+    //         right: $a
+    //     },
+    //     right: true
+    // }
+    //
+    // We need to transform it into:
+    // ComparisonOperation {
+    //     left: true,
+    //     op: !==,
+    //     right: AssignmentOperation {
+    //         left: $a,
+    //         right: true
+    //     }
+    // }
+
+    // So we first need to get the left-hand side of the assignment.
+    // Which in the example above will be the ComparisonOperation.
+    let assignment_left = kind.left();
+
+    // We also need the right-hand side of the assignment since
+    // that will be our new right-hand side too.
+    let assignment_right = kind.right();
+
+    // Then we need to get the right-hand side of the comparison, since
+    // this is the real assignment target.
+    let real_assignment_target = match &assignment_left.kind {
+        ExpressionKind::ComparisonOperation(ComparisonOperationExpression { kind, .. }) => {
+            Some(kind.right())
+        }
+        ExpressionKind::BitwiseOperation(BitwiseOperationExpression { kind, .. }) => {
+            Some(kind.right())
+        }
+        ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression { kind, .. }) => {
+            kind.right()
+        }
+        ExpressionKind::LogicalOperation(LogicalOperationExpression { kind, .. }) => {
+            Some(kind.right())
+        }
+        _ => todo!(),
+    };
+
+    if let None = real_assignment_target {
+        // This is a bit of a hack, but we can't really do anything about it.
+        // If we can't find the real assignment target, then we can't shift the operands.
+        return;
+    }
+
+    // Then we can create the new right-hand side of the comparison, which will
+    // be an assignment expression.
+    //
+    // This is a bit lengthy since we need to match against the existing assignment to
+    // make sure it's the right type of assignment.
+    let new_right = Expression::new(
+        expr.id,
+        ExpressionKind::AssignmentOperation(AssignmentOperationExpression {
+            id: *id,
+            span: Span::default(),
+            kind: match kind {
+                AssignmentOperationKind::Assign { id, equals, .. } => {
+                    AssignmentOperationKind::Assign {
+                        id: *id,
+                        left: Box::new(real_assignment_target.cloned().unwrap()),
+                        equals: *equals,
+                        right: Box::new(assignment_right.clone()),
+                    }
+                }
+                AssignmentOperationKind::Addition {
+                    id, plus_equals, ..
+                } => AssignmentOperationKind::Addition {
+                    id: *id,
+                    left: Box::new(real_assignment_target.cloned().unwrap()),
+                    plus_equals: *plus_equals,
+                    right: Box::new(assignment_right.clone()),
+                },
+                AssignmentOperationKind::Subtraction {
+                    id, minus_equals, ..
+                } => AssignmentOperationKind::Subtraction {
+                    id: *id,
+                    left: Box::new(real_assignment_target.cloned().unwrap()),
+                    minus_equals: *minus_equals,
+                    right: Box::new(assignment_right.clone()),
+                },
+                AssignmentOperationKind::Multiplication {
+                    id,
+                    asterisk_equals,
+                    ..
+                } => AssignmentOperationKind::Multiplication {
+                    id: *id,
+                    left: Box::new(real_assignment_target.cloned().unwrap()),
+                    asterisk_equals: *asterisk_equals,
+                    right: Box::new(assignment_right.clone()),
+                },
+                AssignmentOperationKind::Division {
+                    id, slash_equals, ..
+                } => AssignmentOperationKind::Division {
+                    id: *id,
+                    left: Box::new(real_assignment_target.cloned().unwrap()),
+                    slash_equals: *slash_equals,
+                    right: Box::new(assignment_right.clone()),
+                },
+                AssignmentOperationKind::Modulo {
+                    id, percent_equals, ..
+                } => AssignmentOperationKind::Modulo {
+                    id: *id,
+                    left: Box::new(real_assignment_target.cloned().unwrap()),
+                    percent_equals: *percent_equals,
+                    right: Box::new(assignment_right.clone()),
+                },
+                AssignmentOperationKind::Exponentiation { id, pow_equals, .. } => {
+                    AssignmentOperationKind::Exponentiation {
+                        id: *id,
+                        left: Box::new(real_assignment_target.cloned().unwrap()),
+                        pow_equals: *pow_equals,
+                        right: Box::new(assignment_right.clone()),
+                    }
+                }
+                AssignmentOperationKind::Concat { id, dot_equals, .. } => {
+                    AssignmentOperationKind::Concat {
+                        id: *id,
+                        left: Box::new(real_assignment_target.cloned().unwrap()),
+                        dot_equals: *dot_equals,
+                        right: Box::new(assignment_right.clone()),
+                    }
+                }
+                AssignmentOperationKind::BitwiseAnd {
+                    id,
+                    ampersand_equals,
+                    ..
+                } => AssignmentOperationKind::BitwiseAnd {
+                    id: *id,
+                    left: Box::new(real_assignment_target.cloned().unwrap()),
+                    ampersand_equals: *ampersand_equals,
+                    right: Box::new(assignment_right.clone()),
+                },
+                AssignmentOperationKind::BitwiseOr {
+                    id, pipe_equals, ..
+                } => AssignmentOperationKind::BitwiseOr {
+                    id: *id,
+                    left: Box::new(real_assignment_target.cloned().unwrap()),
+                    pipe_equals: *pipe_equals,
+                    right: Box::new(assignment_right.clone()),
+                },
+                AssignmentOperationKind::BitwiseXor {
+                    id, caret_equals, ..
+                } => AssignmentOperationKind::BitwiseXor {
+                    id: *id,
+                    left: Box::new(real_assignment_target.cloned().unwrap()),
+                    caret_equals: *caret_equals,
+                    right: Box::new(assignment_right.clone()),
+                },
+                AssignmentOperationKind::LeftShift {
+                    id,
+                    left_shift_equals,
+                    ..
+                } => AssignmentOperationKind::LeftShift {
+                    id: *id,
+                    left: Box::new(real_assignment_target.cloned().unwrap()),
+                    left_shift_equals: *left_shift_equals,
+                    right: Box::new(assignment_right.clone()),
+                },
+                AssignmentOperationKind::RightShift {
+                    id,
+                    right_shift_equals,
+                    ..
+                } => AssignmentOperationKind::RightShift {
+                    id: *id,
+                    left: Box::new(real_assignment_target.cloned().unwrap()),
+                    right_shift_equals: *right_shift_equals,
+                    right: Box::new(assignment_right.clone()),
+                },
+                AssignmentOperationKind::Coalesce {
+                    id,
+                    coalesce_equals,
+                    ..
+                } => AssignmentOperationKind::Coalesce {
+                    id: *id,
+                    left: Box::new(real_assignment_target.cloned().unwrap()),
+                    coalesce_equals: *coalesce_equals,
+                    right: Box::new(assignment_right.clone()),
+                },
+            },
+        }),
+        Span::default(),
+        CommentGroup::default(),
+    );
+
+    // Then we need to create the new binary operation, which will replace
+    // the existing assignment operation.
+    let mut new_expression = assignment_left.clone();
+
+    match &mut new_expression.kind {
+        ExpressionKind::ComparisonOperation(ComparisonOperationExpression { kind, .. }) => {
+            kind.set_right(Box::new(new_right))
+        }
+        ExpressionKind::BitwiseOperation(BitwiseOperationExpression { kind, .. }) => {
+            kind.set_right(Box::new(new_right))
+        }
+        ExpressionKind::ArithmeticOperation(ArithmeticOperationExpression { kind, .. }) => {
+            kind.set_right(Box::new(new_right))
+        }
+        ExpressionKind::LogicalOperation(LogicalOperationExpression { kind, .. }) => {
+            kind.set_right(Box::new(new_right))
+        }
+        _ => unreachable!(),
+    };
+
+    *expr = new_expression;
 }
 
 pub fn attributes(state: &mut State) -> Expression {
