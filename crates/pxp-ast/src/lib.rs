@@ -1,18 +1,19 @@
 use std::fmt::{Display, Formatter};
 
+mod backed_enum_type;
 mod generated;
 mod id;
 mod node;
-pub mod visitor;
 mod visibility;
+pub mod visitor;
 
-pub use visibility::*;
 pub use generated::*;
 pub use id::HasId;
 pub use node::Node;
 use pxp_span::{Span, Spanned};
 use pxp_syntax::comments::CommentGroup;
 use pxp_token::{Token, TokenKind};
+pub use visibility::*;
 
 pub mod data_type;
 pub mod identifiers;

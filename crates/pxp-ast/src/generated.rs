@@ -5,7 +5,6 @@
 use crate::{name::NameQualification, utils::CommaSeparated, HasId, Node};
 use pxp_bytestring::ByteString;
 use pxp_span::{Span, Spanned};
-use pxp_syntax::backed_enum_type::BackedEnumType;
 use pxp_syntax::comments::{Comment, CommentGroup};
 use pxp_token::Token;
 use pxp_type::Type;
@@ -2859,6 +2858,7 @@ pub struct BackedEnumStatement {
     pub attributes: Vec<AttributeGroup>,
     pub r#enum: Span,
     pub name: Name,
+    pub colon: Span,
     pub backed_type: BackedEnumType,
     pub implements: Vec<Name>,
     pub body: BackedEnumBody,
@@ -2873,6 +2873,23 @@ impl HasId for BackedEnumStatement {
 impl Spanned for BackedEnumStatement {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum BackedEnumType {
+    String(Span),
+    Int(Span),
+    Invalid,
+}
+
+impl Spanned for BackedEnumType {
+    fn span(&self) -> Span {
+        match self {
+            BackedEnumType::String(span) => *span,
+            BackedEnumType::Int(span) => *span,
+            _ => Span::default(),
+        }
     }
 }
 

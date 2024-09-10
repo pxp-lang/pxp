@@ -50,11 +50,11 @@
                         end: 15,
                     },
                 },
+                colon: Span {
+                    start: 15,
+                    end: 16,
+                },
                 backed_type: String(
-                    Span {
-                        start: 15,
-                        end: 16,
-                    },
                     Span {
                         start: 17,
                         end: 23,

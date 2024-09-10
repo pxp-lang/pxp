@@ -17,7 +17,6 @@ use pxp_syntax::comments::{CommentGroup, Comment};
 use pxp_type::Type;
 use pxp_token::Token;
 use pxp_span::{Span, Spanned};
-use pxp_syntax::backed_enum_type::BackedEnumType;
 use pxp_bytestring::ByteString;
 use std::ptr::NonNull;
 

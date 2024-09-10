@@ -9,7 +9,6 @@ use pxp_ast::*;
 
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
-use pxp_syntax::backed_enum_type::BackedEnumType;
 use pxp_token::TokenKind;
 
 use super::classes::member;
@@ -20,8 +19,8 @@ pub fn parse(state: &mut State) -> StatementKind {
 
     let name = names::type_name(state);
 
-    let backed_type: Option<BackedEnumType> = if state.stream.current().kind == TokenKind::Colon {
-        let span = utils::skip_colon(state);
+    let backed_type: Option<(Span, BackedEnumType)> = if state.stream.current().kind == TokenKind::Colon {
+        let colon = utils::skip_colon(state);
         let current = state.stream.current();
 
         match current.kind {
@@ -31,11 +30,11 @@ pub fn parse(state: &mut State) -> StatementKind {
                 Some(match &symbol[..] {
                     b"string" => {
                         state.stream.next();
-                        BackedEnumType::String(span, current.span)
+                        (colon, BackedEnumType::String(current.span))
                     }
                     b"int" => {
                         state.stream.next();
-                        BackedEnumType::Int(span, current.span)
+                        (colon, BackedEnumType::Int(current.span))
                     }
                     _ => {
                         state.stream.next();
@@ -46,7 +45,7 @@ pub fn parse(state: &mut State) -> StatementKind {
                             current.span,
                         );
 
-                        BackedEnumType::Invalid(span)
+                        (colon, BackedEnumType::Invalid)
                     }
                 })
             }
@@ -57,7 +56,7 @@ pub fn parse(state: &mut State) -> StatementKind {
                     current.span,
                 );
 
-                Some(BackedEnumType::Invalid(span))
+                Some((colon, BackedEnumType::Invalid))
             }
             _ => {
                 state.stream.next();
@@ -68,7 +67,7 @@ pub fn parse(state: &mut State) -> StatementKind {
                     current.span,
                 );
 
-                Some(BackedEnumType::Invalid(span))
+                Some((colon, BackedEnumType::Invalid))
             }
         }
     } else {
@@ -91,7 +90,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     }
 
     let attributes = state.get_attributes();
-    if let Some(backed_type) = backed_type {
+    if let Some((colon, backed_type)) = backed_type {
         let left_brace = utils::skip_left_brace(state);
         let members = {
             let mut members = Vec::new();
@@ -118,6 +117,7 @@ pub fn parse(state: &mut State) -> StatementKind {
             span: Span::combine(span, body.span),
             r#enum: span,
             name,
+            colon,
             backed_type,
             attributes,
             implements,

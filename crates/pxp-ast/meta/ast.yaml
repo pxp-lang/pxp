@@ -984,9 +984,17 @@ BackedEnumStatement:
   attributes: Vec<AttributeGroup>
   r#enum: Span
   name: Name
+  colon: Span
   backed_type: BackedEnumType
   implements: Vec<Name>
   body: BackedEnumBody
+
+BackedEnumType:
+  as: Enum
+  node: false
+  String: Span
+  Int: Span
+  Invalid: ''
 
 ReturnType:
   children: [data_type]
