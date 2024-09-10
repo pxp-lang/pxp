@@ -1128,19 +1128,12 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                 }
 
                 let mut key = None;
-                let mut value = Box::new(for_precedence(
-                    state,
-                    if !from.is_empty() {
-                        Precedence::YieldFrom
-                    } else {
-                        Precedence::Yield
-                    },
-                ));
+                let mut value = Box::new(create(state));
 
                 if state.stream.current().kind == TokenKind::DoubleArrow && !from.is_empty() {
                     state.stream.next();
                     key = Some(value.clone());
-                    value = Box::new(for_precedence(state, Precedence::Yield));
+                    value = Box::new(create(state));
                 }
 
                 let end_span = state.stream.previous().span;

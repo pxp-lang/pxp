@@ -10,8 +10,6 @@ pub enum Associativity {
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
 pub enum Precedence {
     Lowest,
-    Yield,
-    YieldFrom,
     IncDec,
     KeyOr,
     KeyXor,
@@ -63,7 +61,6 @@ impl Precedence {
             Equals | PlusEquals | MinusEquals | AsteriskEquals | PowEquals | SlashEquals
             | DotEquals | AndEquals | DoubleQuestionEquals | PercentEquals | AmpersandEquals
             | PipeEquals | CaretEquals | LeftShiftEquals | RightShiftEquals => Self::Assignment,
-            Yield => Self::Yield,
             LogicalAnd => Self::KeyAnd,
             LogicalOr => Self::KeyOr,
             LogicalXor => Self::KeyXor,
