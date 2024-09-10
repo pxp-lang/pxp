@@ -1959,3 +1959,22 @@ StaticVar:
   span: Span
   var: Variable
   default: Option<Expression>
+
+Comment:
+  node: false
+  span: Span
+  format: CommentFormat
+  content: ByteString
+
+CommentFormat:
+  as: Enum
+  node: false
+  SingleLine: ""
+  MultiLine: ""
+  HashMark: ""
+  DocBlock: ""
+
+CommentGroup:
+  node: false
+  derive: Default
+  comments: Vec<Comment>

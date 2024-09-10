@@ -7,6 +7,7 @@ use pxp_ast::ArrayItemReferencedKeyValue;
 use pxp_ast::ArrayItemReferencedValue;
 use pxp_ast::ArrayItemSpreadValue;
 use pxp_ast::ArrayItemValue;
+use pxp_ast::CommentGroup;
 use pxp_ast::Expression;
 use pxp_ast::ExpressionKind;
 use pxp_ast::ListEntry;
@@ -16,7 +17,6 @@ use pxp_ast::{ArrayExpression, ArrayItem, ListExpression, ShortArrayExpression};
 
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
-use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
 pub fn list_expression(state: &mut State) -> Expression {
@@ -206,7 +206,9 @@ fn array_pair(state: &mut State) -> ArrayItem {
     if let Some(ellipsis) = ellipsis {
         if let Some(ampersand) = ampersand {
             state.diagnostic(
-                ParserDiagnostic::UnexpectedToken { token: ampersand.clone() },
+                ParserDiagnostic::UnexpectedToken {
+                    token: ampersand.clone(),
+                },
                 Severity::Error,
                 ampersand.span,
             );

@@ -88,7 +88,7 @@ fn top_level_statement(state: &mut State) -> Statement {
 
     match &current.kind {
         TokenKind::Namespace | TokenKind::Use | TokenKind::Const | TokenKind::HaltCompiler => {
-            let comments = state.stream.comments();
+            let comments = state.comments();
             let kind = match &state.stream.current().kind {
                 TokenKind::Namespace => namespaces::namespace(state),
                 TokenKind::Use => uses::use_statement(state),
@@ -129,7 +129,7 @@ fn top_level_statement(state: &mut State) -> Statement {
 
 fn statement(state: &mut State) -> Statement {
     let start_span = state.stream.current().span;
-    let comments = state.stream.comments();
+    let comments = state.comments();
 
     let has_attributes = attributes::gather_attributes(state);
     let current = state.stream.current();
@@ -555,10 +555,5 @@ fn statement(state: &mut State) -> Statement {
 
     let span = statement.span();
 
-    Statement::new(
-        state.id(),
-        statement,
-        span,
-        comments,
-    )
+    Statement::new(state.id(), statement, span, comments)
 }

@@ -1,7 +1,7 @@
 use std::collections::{HashMap, VecDeque};
 
 use pxp_ast::*;
-use pxp_bytestring::{ByteString};
+use pxp_bytestring::ByteString;
 use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::stream::TokenStream;
 use pxp_span::Span;
@@ -50,6 +50,57 @@ impl<'a> State<'a> {
         }
     }
 
+    pub fn comments(&mut self) -> CommentGroup {
+        let mut comments = vec![];
+
+        std::mem::swap(&mut self.stream.comments, &mut comments);
+
+        CommentGroup {
+            comments: comments
+                .iter()
+                .map(|token| match token {
+                    Token {
+                        kind: TokenKind::SingleLineComment,
+                        span,
+                        symbol,
+                    } => Comment {
+                        span: *span,
+                        format: CommentFormat::SingleLine,
+                        content: symbol.as_ref().unwrap().clone(),
+                    },
+                    Token {
+                        kind: TokenKind::MultiLineComment,
+                        span,
+                        symbol,
+                    } => Comment {
+                        span: *span,
+                        format: CommentFormat::MultiLine,
+                        content: symbol.as_ref().unwrap().clone(),
+                    },
+                    Token {
+                        kind: TokenKind::HashMarkComment,
+                        span,
+                        symbol,
+                    } => Comment {
+                        span: *span,
+                        format: CommentFormat::HashMark,
+                        content: symbol.as_ref().unwrap().clone(),
+                    },
+                    Token {
+                        kind: TokenKind::DocumentComment,
+                        span,
+                        symbol,
+                    } => Comment {
+                        span: *span,
+                        format: CommentFormat::DocBlock,
+                        content: symbol.as_ref().unwrap().clone(),
+                    },
+                    _ => unreachable!(),
+                })
+                .collect(),
+        }
+    }
+
     #[inline(always)]
     pub fn id(&mut self) -> u32 {
         self.id += 1;
@@ -86,7 +137,9 @@ impl<'a> State<'a> {
     pub fn maybe_resolve_identifier(&mut self, token: &Token, kind: UseKind) -> Name {
         let symbol = token.symbol.as_ref().unwrap();
         let part = match &token.kind {
-            TokenKind::Identifier | TokenKind::Enum | TokenKind::From => token.symbol.as_ref().unwrap().clone(),
+            TokenKind::Identifier | TokenKind::Enum | TokenKind::From => {
+                token.symbol.as_ref().unwrap().clone()
+            }
             TokenKind::QualifiedIdentifier => {
                 let bytestring = token.symbol.as_ref().unwrap();
                 let parts = bytestring.split(|c| *c == b'\\').collect::<Vec<_>>();
@@ -124,10 +177,18 @@ impl<'a> State<'a> {
         // Additionally, if the name we're trying to resolve is qualified, then PHP's name resolution rules say that
         // we should just prepend the current namespace if the import map doesn't contain the first part.
         } else if kind == UseKind::Normal || token.kind == TokenKind::QualifiedIdentifier {
-            Name::resolved(id, self.join_with_namespace(symbol), symbol.clone(), token.span)
+            Name::resolved(
+                id,
+                self.join_with_namespace(symbol),
+                symbol.clone(),
+                token.span,
+            )
         // Unqualified names in the global namespace can be resolved without any imports, since we can
         // only be referencing something else inside of the global namespace.
-        } else if (kind == UseKind::Function || kind == UseKind::Const) && token.kind == TokenKind::Identifier && self.namespace().is_none() {
+        } else if (kind == UseKind::Function || kind == UseKind::Const)
+            && token.kind == TokenKind::Identifier
+            && self.namespace().is_none()
+        {
             Name::resolved(id, symbol.clone(), symbol.clone(), token.span)
         } else {
             Name::unresolved(id, symbol.clone(), token.kind.into(), token.span)
@@ -174,15 +235,13 @@ impl<'a> State<'a> {
 
     pub fn join_with_namespace(&mut self, name: &ByteString) -> ByteString {
         match self.namespace() {
-            Some(Scope::Namespace(namespace)) => {
-                namespace.coagulate(&[name.clone()], Some(b"\\"))
-            },
+            Some(Scope::Namespace(namespace)) => namespace.coagulate(&[name.clone()], Some(b"\\")),
             Some(Scope::BracedNamespace(Some(namespace))) => {
                 namespace.coagulate(&[name.clone()], Some(b"\\"))
-            },
+            }
             _ => name.clone(),
         }
-}
+    }
 
     pub fn previous_scope(&self) -> Option<&Scope> {
         self.stack.get(self.stack.len() - 2)

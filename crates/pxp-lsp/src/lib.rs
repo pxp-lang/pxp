@@ -1,12 +1,12 @@
 use std::error::Error;
 
 mod client;
-pub mod types;
 pub mod testing;
+pub mod types;
 
 pub use client::Client;
 use lsp_server::{Connection, ExtractError, IoThreads, Message, Request, RequestId, Response};
-use lsp_types::{*, notification::*, request::Request as _};
+use lsp_types::{notification::*, request::Request as _, *};
 use request::{Completion, DocumentSymbolRequest, HoverRequest};
 use serde_json::{from_value, to_value, Value};
 
@@ -19,7 +19,11 @@ pub trait LanguageServer {
         Ok(())
     }
 
-    fn document_symbols(&mut self, _: &Client, _: &DocumentSymbolParams) -> Result<DocumentSymbolResponse> {
+    fn document_symbols(
+        &mut self,
+        _: &Client,
+        _: &DocumentSymbolParams,
+    ) -> Result<DocumentSymbolResponse> {
         Ok(DocumentSymbolResponse::Flat(Vec::new()))
     }
 
@@ -31,24 +35,16 @@ pub trait LanguageServer {
         Ok(Vec::new())
     }
 
-    fn did_open(&mut self, _: &Client, _: &DidOpenTextDocumentParams) {
+    fn did_open(&mut self, _: &Client, _: &DidOpenTextDocumentParams) {}
 
-    }
+    fn did_close(&mut self, _: &Client, _: &DidCloseTextDocumentParams) {}
 
-    fn did_close(&mut self, _: &Client, _: &DidCloseTextDocumentParams) {
+    fn did_change(&mut self, _: &Client, _: &DidChangeTextDocumentParams) {}
 
-    }
-
-    fn did_change(&mut self, _: &Client, _: &DidChangeTextDocumentParams) {
-
-    }
-
-    fn did_save(&mut self, _: &Client, _: &DidSaveTextDocumentParams) {
-
-    }
+    fn did_save(&mut self, _: &Client, _: &DidSaveTextDocumentParams) {}
 
     /// Manually handle a notification.
-    /// 
+    ///
     /// Return `true` if the notification was handled, `false` otherwise.
     fn notification(&mut self, _: &Client, _method: &str, _params: &Value) -> Result<bool> {
         Ok(false)
@@ -56,7 +52,7 @@ pub trait LanguageServer {
 }
 
 pub struct ServerManager<T: LanguageServer> {
-    server: T
+    server: T,
 }
 
 impl<T: LanguageServer> ServerManager<T> {
@@ -65,7 +61,9 @@ impl<T: LanguageServer> ServerManager<T> {
     }
 
     pub(crate) fn initialize(&mut self, connection: &Connection) -> Result<()> {
-        let client = Client { connection: &connection };
+        let client = Client {
+            connection: &connection,
+        };
 
         let (id, params) = connection.initialize_start()?;
         let (id, initialize_params) = (id, from_value(params)?);
@@ -75,7 +73,7 @@ impl<T: LanguageServer> ServerManager<T> {
 
         // Respond to the `initialize` request.
         connection.initialize_finish(id, to_value(initialize_result)?)?;
-        
+
         // `initialize_finish()` takes care of the `initialized` message, so we can invoke the handler.
         self.server.initialized(&client)?;
 
@@ -84,10 +82,12 @@ impl<T: LanguageServer> ServerManager<T> {
 
     pub fn run(&mut self) -> Result<()> {
         let (connection, threads) = Connection::stdio();
-        
+
         self.initialize(&connection)?;
 
-        let client = Client { connection: &connection };
+        let client = Client {
+            connection: &connection,
+        };
 
         // Then we can start up the main loop.
         for msg in &connection.receiver {
@@ -108,7 +108,7 @@ impl<T: LanguageServer> ServerManager<T> {
                                 result: Some(to_value(response)?),
                                 error: None,
                             }))?;
-                        },
+                        }
                         HoverRequest::METHOD => {
                             let (id, params) = self.cast::<HoverRequest>(request)?;
                             let response = self.server.hover(&client, &params)?;
@@ -118,7 +118,7 @@ impl<T: LanguageServer> ServerManager<T> {
                                 result: Some(to_value(response)?),
                                 error: None,
                             }))?;
-                        },
+                        }
                         Completion::METHOD => {
                             let (id, params) = self.cast::<Completion>(request)?;
                             let response = self.server.completion(&client, &params)?;
@@ -128,26 +128,36 @@ impl<T: LanguageServer> ServerManager<T> {
                                 result: Some(to_value(response)?),
                                 error: None,
                             }))?;
-                        },
-                        _ => {},
+                        }
+                        _ => {}
                     }
-                },
-                Message::Response(_) => {
-
-                },
+                }
+                Message::Response(_) => {}
                 Message::Notification(notification) => {
-                    if self.server.notification(&client, &notification.method, &notification.params)? {
+                    if self.server.notification(
+                        &client,
+                        &notification.method,
+                        &notification.params,
+                    )? {
                         continue;
                     }
 
                     match notification.method.as_str() {
-                        DidOpenTextDocument::METHOD => self.server.did_open(&client, &from_value(notification.params)?),
-                        DidChangeTextDocument::METHOD => self.server.did_change(&client, &from_value(notification.params)?),
-                        DidCloseTextDocument::METHOD => self.server.did_close(&client, &from_value(notification.params)?),
-                        DidSaveTextDocument::METHOD => self.server.did_save(&client, &from_value(notification.params)?),
-                        _ => {},
+                        DidOpenTextDocument::METHOD => self
+                            .server
+                            .did_open(&client, &from_value(notification.params)?),
+                        DidChangeTextDocument::METHOD => self
+                            .server
+                            .did_change(&client, &from_value(notification.params)?),
+                        DidCloseTextDocument::METHOD => self
+                            .server
+                            .did_close(&client, &from_value(notification.params)?),
+                        DidSaveTextDocument::METHOD => self
+                            .server
+                            .did_save(&client, &from_value(notification.params)?),
+                        _ => {}
                     }
-                },
+                }
             }
         }
 
@@ -156,7 +166,10 @@ impl<T: LanguageServer> ServerManager<T> {
         Ok(())
     }
 
-    fn cast<R>(&self, req: Request) -> std::result::Result<(RequestId, R::Params), ExtractError<Request>>
+    fn cast<R>(
+        &self,
+        req: Request,
+    ) -> std::result::Result<(RequestId, R::Params), ExtractError<Request>>
     where
         R: lsp_types::request::Request,
         R::Params: serde::de::DeserializeOwned,

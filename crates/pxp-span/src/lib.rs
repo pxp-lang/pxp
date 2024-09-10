@@ -12,7 +12,10 @@ impl Span {
     }
 
     pub fn flat(offset: ByteOffset) -> Self {
-        Self { start: offset, end: offset }
+        Self {
+            start: offset,
+            end: offset,
+        }
     }
 
     pub fn len(&self) -> ByteOffset {

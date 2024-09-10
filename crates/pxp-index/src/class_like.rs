@@ -40,7 +40,12 @@ pub(crate) enum ClassKind {
 }
 
 impl ClassLike {
-    pub fn new(name: ByteString, short: ByteString, namespace: Option<ByteString>, kind: ClassKind) -> Self {
+    pub fn new(
+        name: ByteString,
+        short: ByteString,
+        namespace: Option<ByteString>,
+        kind: ClassKind,
+    ) -> Self {
         ClassLike {
             name,
             short,

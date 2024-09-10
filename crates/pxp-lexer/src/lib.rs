@@ -1797,7 +1797,7 @@ enum NumberKind {
 #[cfg(test)]
 mod tests {
     use super::Lexer;
-    
+
     use pxp_token::{DocStringIndentationKind, OpenTagKind, Token, TokenKind};
 
     #[test]

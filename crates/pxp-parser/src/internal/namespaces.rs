@@ -83,7 +83,12 @@ fn unbraced_namespace(state: &mut State, start: Span, name: SimpleIdentifier) ->
         span: Span::combine(start, statements.span()),
         start,
         end,
-        name: Name::resolved(state.id(), name.symbol.clone(), name.symbol.clone(), name.span),
+        name: Name::resolved(
+            state.id(),
+            name.symbol.clone(),
+            name.symbol.clone(),
+            name.span,
+        ),
         statements,
     }))
 }

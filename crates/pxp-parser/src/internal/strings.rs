@@ -16,7 +16,6 @@ use pxp_ast::{
 };
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
-use pxp_syntax::comments::CommentGroup;
 use pxp_token::DocStringIndentationKind;
 use pxp_token::TokenKind;
 
@@ -119,13 +118,21 @@ pub fn heredoc(state: &mut State) -> Expression {
                     //    we can return an error early because we know
                     //    the label was indented.
                     if !bytes.starts_with(&[b' ']) && !bytes.starts_with(&[b'\t']) {
-                        state.diagnostic(ParserDiagnostic::InvalidDocBodyIndentationLevel(indentation_amount), Severity::Error, span);
+                        state.diagnostic(
+                            ParserDiagnostic::InvalidDocBodyIndentationLevel(indentation_amount),
+                            Severity::Error,
+                            span,
+                        );
                     }
 
                     // 2. If this line doesn't start with the correct
                     //    type of whitespace, we can also return an error.
                     if !bytes.starts_with(&[indentation_char]) {
-                        state.diagnostic(ParserDiagnostic::InvalidDocIndentation, Severity::Error, span);
+                        state.diagnostic(
+                            ParserDiagnostic::InvalidDocIndentation,
+                            Severity::Error,
+                            span,
+                        );
                     }
 
                     // 3. We now know that the whitespace at the start of
@@ -139,7 +146,7 @@ pub fn heredoc(state: &mut State) -> Expression {
                         state.diagnostic(
                             ParserDiagnostic::InvalidDocBodyIndentationLevel(indentation_amount),
                             Severity::Error,
-                            span
+                            span,
                         );
                     }
 
@@ -383,7 +390,10 @@ fn part(state: &mut State) -> Option<StringPart> {
 
                                 state.stream.next();
 
-                                ExpressionKind::Missing(MissingExpression { id: 0, span: literal.span })
+                                ExpressionKind::Missing(MissingExpression {
+                                    id: 0,
+                                    span: literal.span,
+                                })
                             }
                         }
                         TokenKind::Identifier => {
@@ -415,7 +425,10 @@ fn part(state: &mut State) -> Option<StringPart> {
 
                             state.stream.next();
 
-                            ExpressionKind::Missing(MissingExpression { id: 0, span: current.span })
+                            ExpressionKind::Missing(MissingExpression {
+                                id: 0,
+                                span: current.span,
+                            })
                         }
                     };
                     let index_end_span = state.stream.previous().span;

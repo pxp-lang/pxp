@@ -7,6 +7,5 @@ license-file.workspace = true
 [dependencies]
 pxp-token = { path = "../pxp-token" }
 pxp-span = { path = "../pxp-span" }
-pxp-syntax = { path = "../pxp-syntax" }
 pxp-type = { path = "../pxp-type" }
 pxp-bytestring = { version = "0.1.0", path = "../pxp-bytestring" }

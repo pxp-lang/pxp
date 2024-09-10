@@ -137,14 +137,20 @@ pub fn identifier(state: &mut State) -> SimpleIdentifier {
         let previous = state.stream.previous();
 
         state.diagnostic(
-            ParserDiagnostic::UnexpectedToken { token: current.clone() },
+            ParserDiagnostic::UnexpectedToken {
+                token: current.clone(),
+            },
             Severity::Error,
             current.span,
         );
 
         // Because identifiers cannot contain spaces, we can assume that the next identifier starts
         // one byte after the previous token ends.
-        SimpleIdentifier::new(state.id(), ByteString::empty(), Span::flat(previous.span.end + 1))
+        SimpleIdentifier::new(
+            state.id(),
+            ByteString::empty(),
+            Span::flat(previous.span.end + 1),
+        )
     }
 }
 

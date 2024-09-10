@@ -960,6 +960,13 @@ pub fn walk_backed_enum_statement<V: Visitor + ?Sized>(
     visitor.visit_backed_enum_body(&node.body);
 }
 
+pub fn walk_backed_enum_type<V: Visitor + ?Sized>(visitor: &mut V, node: &BackedEnumType) {
+    match node {
+        BackedEnumType::Invalid => {}
+        _ => {}
+    }
+}
+
 pub fn walk_return_type<V: Visitor + ?Sized>(visitor: &mut V, node: &ReturnType) {
     visitor.visit_data_type(&node.data_type);
 }
@@ -2125,5 +2132,19 @@ pub fn walk_static_var<V: Visitor + ?Sized>(visitor: &mut V, node: &StaticVar) {
     visitor.visit_variable(&node.var);
     if let Some(item) = &node.default {
         visitor.visit_expression(item);
+    }
+}
+
+pub fn walk_comment<V: Visitor + ?Sized>(visitor: &mut V, node: &Comment) {
+    visitor.visit_comment_format(&node.format);
+}
+
+pub fn walk_comment_format<V: Visitor + ?Sized>(visitor: &mut V, node: &CommentFormat) {
+    match node {
+        CommentFormat::SingleLine => {}
+        CommentFormat::MultiLine => {}
+        CommentFormat::HashMark => {}
+        CommentFormat::DocBlock => {}
+        _ => {}
     }
 }

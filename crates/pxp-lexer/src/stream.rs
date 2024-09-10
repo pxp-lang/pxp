@@ -1,7 +1,4 @@
 use pxp_span::Span;
-use pxp_syntax::comments::Comment;
-use pxp_syntax::comments::CommentFormat;
-use pxp_syntax::comments::CommentGroup;
 use pxp_token::Token;
 use pxp_token::TokenKind;
 
@@ -9,7 +6,7 @@ use pxp_token::TokenKind;
 pub struct TokenStream<'a> {
     tokens: &'a [Token],
     length: usize,
-    comments: Vec<&'a Token>,
+    pub comments: Vec<&'a Token>,
     cursor: usize,
 }
 
@@ -60,8 +57,12 @@ impl<'a> TokenStream<'a> {
     /// Get previous token.
     pub const fn previous(&self) -> &'a Token {
         let position = if self.cursor == 0 { 0 } else { self.cursor - 1 };
-        let position = if position >= self.length { self.length - 1 } else { position };
-        
+        let position = if position >= self.length {
+            self.length - 1
+        } else {
+            position
+        };
+
         &self.tokens[position]
     }
 
@@ -120,59 +121,6 @@ impl<'a> TokenStream<'a> {
         }
 
         self.tokens[self.cursor].kind == TokenKind::Eof
-    }
-
-    /// Get all comments.
-    #[allow(dead_code)]
-    pub fn comments(&mut self) -> CommentGroup {
-        let mut comments = vec![];
-
-        std::mem::swap(&mut self.comments, &mut comments);
-
-        CommentGroup {
-            comments: comments
-                .iter()
-                .map(|token| match token {
-                    Token {
-                        kind: TokenKind::SingleLineComment,
-                        span,
-                        symbol,
-                    } => Comment {
-                        span: *span,
-                        format: CommentFormat::SingleLine,
-                        content: symbol.as_ref().unwrap().clone(),
-                    },
-                    Token {
-                        kind: TokenKind::MultiLineComment,
-                        span,
-                        symbol,
-                    } => Comment {
-                        span: *span,
-                        format: CommentFormat::MultiLine,
-                        content: symbol.as_ref().unwrap().clone(),
-                    },
-                    Token {
-                        kind: TokenKind::HashMarkComment,
-                        span,
-                        symbol,
-                    } => Comment {
-                        span: *span,
-                        format: CommentFormat::HashMark,
-                        content: symbol.as_ref().unwrap().clone(),
-                    },
-                    Token {
-                        kind: TokenKind::DocumentComment,
-                        span,
-                        symbol,
-                    } => Comment {
-                        span: *span,
-                        format: CommentFormat::Document,
-                        content: symbol.as_ref().unwrap().clone(),
-                    },
-                    _ => unreachable!(),
-                })
-                .collect(),
-        }
     }
 
     fn collect_comments(&mut self) {

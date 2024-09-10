@@ -29,7 +29,6 @@ use pxp_ast::{
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_span::Spanned;
-use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
 use pxp_ast::BoolExpression;
@@ -101,7 +100,9 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
 
             if rpred == precedence && matches!(rpred.associativity(), Some(Associativity::Non)) {
                 state.diagnostic(
-                    ParserDiagnostic::UnexpectedToken { token: current.clone() },
+                    ParserDiagnostic::UnexpectedToken {
+                        token: current.clone(),
+                    },
                     Severity::Error,
                     current.span,
                 );
@@ -258,7 +259,11 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                     let right = Expression::new(
                         state.id(),
                         ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier::new(state.id(), op.symbol.as_ref().unwrap().clone(), enum_span),
+                            SimpleIdentifier::new(
+                                state.id(),
+                                op.symbol.as_ref().unwrap().clone(),
+                                enum_span,
+                            ),
                         )),
                         enum_span,
                         CommentGroup::default(),
@@ -278,7 +283,11 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                     let right = Expression::new(
                         state.id(),
                         ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier::new(state.id(), op.symbol.as_ref().unwrap().clone(), op.span),
+                            SimpleIdentifier::new(
+                                state.id(),
+                                op.symbol.as_ref().unwrap().clone(),
+                                op.span,
+                            ),
                         )),
                         Span::new(start_span.start, from_span.end),
                         CommentGroup::default(),
@@ -1945,7 +1954,9 @@ fn unexpected_token(state: &mut State, _: &Precedence) -> Expression {
     let current = state.stream.current();
 
     state.diagnostic(
-        ParserDiagnostic::UnexpectedToken { token: current.clone() },
+        ParserDiagnostic::UnexpectedToken {
+            token: current.clone(),
+        },
         Severity::Error,
         current.span,
     );
@@ -1989,7 +2000,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                 let placeholder = ArgumentPlaceholder {
                     id: state.id(),
                     span,
-                    comments: state.stream.comments(),
+                    comments: state.comments(),
                     left_parenthesis: start,
                     ellipsis,
                     right_parenthesis: end,
@@ -2090,7 +2101,10 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
 
                     state.stream.next();
 
-                    ExpressionKind::Missing(MissingExpression { id: 0, span: current.span })
+                    ExpressionKind::Missing(MissingExpression {
+                        id: 0,
+                        span: current.span,
+                    })
                 }
             };
 
@@ -2108,7 +2122,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                     let placeholder = ArgumentPlaceholder {
                         id: state.id(),
                         span,
-                        comments: state.stream.comments(),
+                        comments: state.comments(),
                         left_parenthesis: start,
                         ellipsis,
                         right_parenthesis: end,
@@ -2200,7 +2214,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                             double_colon,
                             constant: Identifier::missing(state.id(), Span::flat(double_colon.end)),
                         })
-                    },
+                    }
                 }
             }
         }
@@ -2302,7 +2316,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                         let placeholder = ArgumentPlaceholder {
                             id: state.id(),
                             span,
-                            comments: state.stream.comments(),
+                            comments: state.comments(),
                             left_parenthesis: start,
                             ellipsis,
                             right_parenthesis: end,

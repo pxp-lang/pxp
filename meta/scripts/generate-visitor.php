@@ -298,7 +298,6 @@ class VisitorMut implements VisitorTemplate
 use crate::*;
 use super::*;
 use pxp_span::Span;
-use pxp_syntax::comments::Comment;
 use pxp_type::Type;
 
 pub trait VisitorMut {
@@ -364,7 +363,6 @@ class Visitor implements VisitorTemplate
 use crate::*;
 use super::*;
 use pxp_span::Span;
-use pxp_syntax::comments::Comment;
 use pxp_type::Type;
 
 pub trait Visitor {

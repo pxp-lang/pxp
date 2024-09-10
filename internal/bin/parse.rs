@@ -3,7 +3,6 @@ use std::{env::args, path::Path, process::exit};
 use discoverer::discover;
 use pxp_parser::parse;
 
-
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
 

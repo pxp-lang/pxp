@@ -9,7 +9,6 @@ pxp-bytestring = { path = "../pxp-bytestring" }
 pxp-token = { path = "../pxp-token" }
 pxp-ast = { path = "../pxp-ast" }
 pxp-lexer = { path = "../pxp-lexer" }
-pxp-syntax = { path = "../pxp-syntax" }
 pxp-type = { path = "../pxp-type" }
 pxp-diagnostics = { path = "../pxp-diagnostics" }
 

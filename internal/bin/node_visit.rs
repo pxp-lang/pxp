@@ -4,7 +4,6 @@ use discoverer::discover;
 use pxp_ast::visitor::NodeVisitor;
 use pxp_parser::parse;
 
-
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
 

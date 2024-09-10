@@ -15,7 +15,7 @@ use pxp_span::Spanned;
 use pxp_token::TokenKind;
 
 pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
-    let comments = state.stream.comments();
+    let comments = state.comments();
     let left_parenthesis = utils::skip_left_parenthesis(state);
     let parameters = utils::comma_separated(
         state,
@@ -58,7 +58,7 @@ pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
                 } else {
                     var.span
                 },
-                comments: state.stream.comments(),
+                comments: state.comments(),
                 name: var,
                 attributes: state.get_attributes(),
                 data_type: ty,
@@ -83,7 +83,7 @@ pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
 }
 
 pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList {
-    let comments = state.stream.comments();
+    let comments = state.comments();
 
     let left_parenthesis = utils::skip_left_parenthesis(state);
     let parameters = utils::comma_separated::<ConstructorParameter>(
@@ -161,7 +161,7 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
                 } else {
                     var.span
                 },
-                comments: state.stream.comments(),
+                comments: state.comments(),
                 name: var,
                 attributes: state.get_attributes(),
                 data_type: ty,
@@ -187,7 +187,7 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
 }
 
 pub fn argument_list(state: &mut State) -> ArgumentList {
-    let comments = state.stream.comments();
+    let comments = state.comments();
     let start = utils::skip_left_parenthesis(state);
 
     let mut arguments = Vec::new();
@@ -232,7 +232,7 @@ pub fn single_argument(
     required: bool,
     only_positional: bool,
 ) -> Option<SingleArgument> {
-    let comments = state.stream.comments();
+    let comments = state.comments();
 
     if state.stream.current().kind != TokenKind::LeftParen {
         return None;
@@ -308,7 +308,7 @@ fn argument(state: &mut State) -> (bool, Argument) {
             Argument::Named(NamedArgument {
                 id: state.id(),
                 span: Span::combine(name.span, value.span),
-                comments: state.stream.comments(),
+                comments: state.comments(),
                 name,
                 colon,
                 ellipsis,
@@ -330,7 +330,7 @@ fn argument(state: &mut State) -> (bool, Argument) {
         Argument::Positional(PositionalArgument {
             id: state.id(),
             span: value.span,
-            comments: state.stream.comments(),
+            comments: state.comments(),
             ellipsis,
             value,
         }),

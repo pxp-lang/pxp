@@ -18,7 +18,6 @@ use pxp_ast::{ExpressionKind, NewExpression};
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_span::Spanned;
-use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
 use super::names;
@@ -229,15 +228,20 @@ pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
 
     let modifiers = modifiers::collect(state);
 
-    if modifiers.is_empty() && !matches!(state.stream.current().kind, TokenKind::Const | TokenKind::Function) {
+    if modifiers.is_empty()
+        && !matches!(
+            state.stream.current().kind,
+            TokenKind::Const | TokenKind::Function
+        )
+    {
         let current = state.stream.current();
 
         state.diagnostic(
             ParserDiagnostic::UnexpectedToken {
-                token: current.clone()
+                token: current.clone(),
             },
             Severity::Error,
-            current.span
+            current.span,
         );
 
         state.stream.next();

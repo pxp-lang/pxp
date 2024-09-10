@@ -52,15 +52,17 @@ impl Index {
     }
 
     pub fn get_class(&self, name: &ByteString) -> Option<ReflectionClass> {
-        self.classes
-            .get(name)
-            .map(|class| ReflectionClass { class: class.clone() })
+        self.classes.get(name).map(|class| ReflectionClass {
+            class: class.clone(),
+        })
     }
 
     pub fn get_classes(&self) -> Vec<ReflectionClass> {
         self.classes
             .values()
-            .map(|class| ReflectionClass { class: class.clone() })
+            .map(|class| ReflectionClass {
+                class: class.clone(),
+            })
             .collect()
     }
 
@@ -68,23 +70,21 @@ impl Index {
         self.classes
             .values()
             .filter(|class| !class.modifiers.has_final())
-            .map(|class| ReflectionClass { class: class.clone() })
+            .map(|class| ReflectionClass {
+                class: class.clone(),
+            })
             .collect()
     }
 
     pub fn get_function(&self, name: &ByteString) -> Option<ReflectionFunction> {
-        self.functions
-            .get(name)
-            .map(|function| ReflectionFunction {
-                function: function.clone(),
-            })
+        self.functions.get(name).map(|function| ReflectionFunction {
+            function: function.clone(),
+        })
     }
 
     pub fn get_constant(&self, name: &ByteString) -> Option<ReflectionConstant> {
-        self.constants
-            .get(name)
-            .map(|constant| ReflectionConstant {
-                constant: constant.clone(),
-            })
+        self.constants.get(name).map(|constant| ReflectionConstant {
+            constant: constant.clone(),
+        })
     }
 }

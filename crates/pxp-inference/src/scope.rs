@@ -17,7 +17,11 @@ pub struct Scope {
 }
 
 impl Scope {
-    pub(crate) fn new(id: ScopeId, class: Option<ByteString>, function: Option<ByteString>) -> Self {
+    pub(crate) fn new(
+        id: ScopeId,
+        class: Option<ByteString>,
+        function: Option<ByteString>,
+    ) -> Self {
         Self {
             id,
             class,
@@ -105,11 +109,12 @@ impl ScopeStack {
     }
 
     pub(crate) fn push(&mut self) {
-        if ! self.stack.is_empty() {
+        if !self.stack.is_empty() {
             self.move_to(self.stack.len());
         }
 
-        self.stack.push(Scope::new(self.stack.len() as u16, None, None));
+        self.stack
+            .push(Scope::new(self.stack.len() as u16, None, None));
     }
 
     pub(crate) fn push_inherited(&mut self) {
@@ -124,7 +129,8 @@ impl ScopeStack {
             (None, None)
         };
 
-        self.stack.push(Scope::new(self.stack.len() as u16, class, function));
+        self.stack
+            .push(Scope::new(self.stack.len() as u16, class, function));
     }
 
     pub(crate) fn pop(&mut self) {

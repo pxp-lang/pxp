@@ -1,4 +1,7 @@
-use pxp_ast::{visitor::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch}, Node, Statement};
+use pxp_ast::{
+    visitor::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch},
+    Node, Statement,
+};
 use pxp_span::ByteOffset;
 
 pub struct NodeFinder<'a> {
@@ -7,12 +10,15 @@ pub struct NodeFinder<'a> {
 }
 
 impl<'a> NodeFinder<'a> {
-    pub fn find_at_byte_offset(ast: &'a [Statement], offset: ByteOffset) -> Option<(Node<'a>, Ancestors<'a>)> {
+    pub fn find_at_byte_offset(
+        ast: &'a [Statement],
+        offset: ByteOffset,
+    ) -> Option<(Node<'a>, Ancestors<'a>)> {
         let mut finder = NodeFinder {
             offset,
             found: None,
         };
-        
+
         finder.traverse(ast);
         finder.found
     }
@@ -36,7 +42,7 @@ impl<'a> NodeVisitor<'a> for NodeFinder<'a> {
 
         // If the current node contains the offset we're interested in,
         // we should keep track of it and continue traversing the AST.
-        if span.contains_offset(self.offset) {            
+        if span.contains_offset(self.offset) {
             self.found = Some((node.clone(), ancestors.clone()));
         }
 
@@ -48,17 +54,18 @@ impl<'a> NodeVisitor<'a> for NodeFinder<'a> {
 mod tests {
     use pxp_ast::ExpressionKind;
     use pxp_parser::{parse, ParseResult};
-    
 
     use super::*;
 
     #[test]
     fn it_can_find_a_node_at_offset() {
-        let (result, offset) = parse_with_offset_indicator(r#"
+        let (result, offset) = parse_with_offset_indicator(
+            r#"
         <?php
 
         echo (new A)->§
-        "#);
+        "#,
+        );
 
         let (node, _) = NodeFinder::find_at_byte_offset(&result.ast[..], offset).unwrap();
 
@@ -66,16 +73,17 @@ mod tests {
 
         let property_fetch = node.as_property_fetch_expression().unwrap();
 
-        assert!(
-            matches!(property_fetch.target.kind, ExpressionKind::Parenthesized(_))
-        );
+        assert!(matches!(
+            property_fetch.target.kind,
+            ExpressionKind::Parenthesized(_)
+        ));
     }
 
     fn parse_with_offset_indicator(input: &'static str) -> (ParseResult, ByteOffset) {
         let offset = input.find('§').unwrap();
         let input = input.replace('§', "");
-        let result = parse(&input); 
+        let result = parse(&input);
 
         (result, offset)
-    } 
+    }
 }

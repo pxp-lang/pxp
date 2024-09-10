@@ -10,7 +10,7 @@ use super::data_type::data_type;
 use super::names;
 
 pub fn parse(state: &mut State) -> ConstantStatement {
-    let comments = state.stream.comments();
+    let comments = state.comments();
     let start = utils::skip(state, TokenKind::Const);
 
     let mut entries = vec![];
@@ -51,7 +51,7 @@ pub fn parse(state: &mut State) -> ConstantStatement {
 pub fn classish(state: &mut State, modifiers: ConstantModifierGroup) -> ClassishConstant {
     let attributes = state.get_attributes();
 
-    let comments = state.stream.comments();
+    let comments = state.comments();
     let start = utils::skip(state, TokenKind::Const);
 
     let data_type = if state.stream.peek().kind == TokenKind::Identifier {

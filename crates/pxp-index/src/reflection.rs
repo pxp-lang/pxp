@@ -160,9 +160,13 @@ impl ReflectionClass {
     }
 
     /// Get properties that are accessible on this object from the given scope.
-    /// 
+    ///
     /// The `scope` is the class that we're currently inside of, based on AST location.
-    pub fn get_accessible_properties(&self, scope: Option<&ReflectionClass>, index: &Index) -> Vec<ReflectionProperty> {
+    pub fn get_accessible_properties(
+        &self,
+        scope: Option<&ReflectionClass>,
+        index: &Index,
+    ) -> Vec<ReflectionProperty> {
         // If we're not inside of an object, we can only access public properties.
         // FIXME: This isn't entirely true – we could be inside of a bound closure,
         //        but we don't have that information or intelligence just yet.
@@ -305,7 +309,11 @@ impl ReflectionClass {
             .collect()
     }
 
-    pub fn get_accessible_methods(&self, scope: Option<&ReflectionClass>, index: &Index) -> Vec<ReflectionMethod> {
+    pub fn get_accessible_methods(
+        &self,
+        scope: Option<&ReflectionClass>,
+        index: &Index,
+    ) -> Vec<ReflectionMethod> {
         // If we're not inside of an object, we can only access public properties.
         // FIXME: This isn't entirely true – we could be inside of a bound closure,
         //        but we don't have that information or intelligence just yet.

@@ -9,7 +9,7 @@ use pxp_token::TokenKind;
 pub fn skip_ending(state: &mut State) -> Ending {
     let current = state.stream.current();
     let previous = state.stream.previous();
-    
+
     if current.kind == TokenKind::CloseTag {
         state.stream.next();
 
@@ -22,11 +22,7 @@ pub fn skip_ending(state: &mut State) -> Ending {
         let span = Span::flat(previous.span.end);
 
         if state.stream.is_eof() {
-            state.diagnostic(
-                ParserDiagnostic::UnexpectedEndOfFile,
-                Severity::Error,
-                span,
-            );
+            state.diagnostic(ParserDiagnostic::UnexpectedEndOfFile, Severity::Error, span);
         } else {
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {

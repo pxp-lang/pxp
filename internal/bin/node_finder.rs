@@ -1,7 +1,6 @@
 use pxp_node_finder::NodeFinder;
 use pxp_parser::parse;
 
-
 fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
     let path = args.first().expect("missing path to file");
@@ -15,7 +14,8 @@ fn main() {
 
     // dbg!(&result.ast);
 
-    let Some((node, ancestors)) = NodeFinder::find_at_byte_offset(&result.ast, offset_marker) else {
+    let Some((node, ancestors)) = NodeFinder::find_at_byte_offset(&result.ast, offset_marker)
+    else {
         println!("No node found.");
         return;
     };

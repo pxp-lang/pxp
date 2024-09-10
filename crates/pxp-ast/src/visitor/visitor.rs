@@ -5,7 +5,6 @@
 use super::*;
 use crate::*;
 use pxp_span::Span;
-use pxp_syntax::comments::Comment;
 use pxp_type::Type;
 
 pub trait Visitor {
@@ -511,6 +510,10 @@ pub trait Visitor {
         walk_backed_enum_statement(self, node);
     }
 
+    fn visit_backed_enum_type(&mut self, node: &BackedEnumType) {
+        walk_backed_enum_type(self, node);
+    }
+
     fn visit_return_type(&mut self, node: &ReturnType) {
         walk_return_type(self, node);
     }
@@ -937,4 +940,14 @@ pub trait Visitor {
     fn visit_static_var(&mut self, node: &StaticVar) {
         walk_static_var(self, node);
     }
+
+    fn visit_comment(&mut self, node: &Comment) {
+        walk_comment(self, node);
+    }
+
+    fn visit_comment_format(&mut self, node: &CommentFormat) {
+        walk_comment_format(self, node);
+    }
+
+    fn visit_comment_group(&mut self, node: &CommentGroup) {}
 }

@@ -285,7 +285,12 @@ fn loop_level(state: &mut State) -> Level {
 
         return Level::Literal(LiteralLevel {
             id: state.id(),
-            literal: Literal::new(state.id(), LiteralKind::Integer, current.clone(), current.span),
+            literal: Literal::new(
+                state.id(),
+                LiteralKind::Integer,
+                current.clone(),
+                current.span,
+            ),
         });
     }
 

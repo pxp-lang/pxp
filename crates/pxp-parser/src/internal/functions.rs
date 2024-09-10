@@ -11,7 +11,6 @@ use pxp_ast::ExpressionKind;
 use pxp_ast::StatementKind;
 use pxp_ast::*;
 use pxp_span::Span;
-use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
 use super::names;
@@ -24,7 +23,7 @@ pub enum Method {
 }
 
 pub fn anonymous_function(state: &mut State) -> Expression {
-    let comments = state.stream.comments();
+    let comments = state.comments();
     let start_span = state.stream.current().span;
     let attributes = state.get_attributes();
     let current = state.stream.current();
@@ -57,7 +56,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
         let variables = utils::comma_separated::<ClosureUseVariable>(
             state,
             &|state| {
-                let use_comments = state.stream.comments();
+                let use_comments = state.comments();
                 let current = state.stream.current();
                 let use_ampersand = if current.kind == TokenKind::Ampersand {
                     state.stream.next();
@@ -85,7 +84,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
         Some(ClosureUse {
             id: state.id(),
             span: Span::combine(current.span, right_parenthesis),
-            comments: state.stream.comments(),
+            comments: state.comments(),
             r#use: current.span,
             left_parenthesis,
             variables,
@@ -109,7 +108,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
         None
     };
 
-    let body_comments = state.stream.comments();
+    let body_comments = state.comments();
     let left_brace = utils::skip_left_brace(state);
     let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
     let right_brace = utils::skip_right_brace(state);
@@ -146,7 +145,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
 }
 
 pub fn arrow_function(state: &mut State) -> Expression {
-    let comments = state.stream.comments();
+    let comments = state.comments();
     let start_span = state.stream.current().span;
     let current = state.stream.current();
     let r#static = if current.kind == TokenKind::Static {
@@ -210,7 +209,7 @@ pub fn arrow_function(state: &mut State) -> Expression {
 }
 
 pub fn function(state: &mut State) -> StatementKind {
-    let comments = state.stream.comments();
+    let comments = state.comments();
 
     let function = utils::skip(state, TokenKind::Function);
 
@@ -244,7 +243,7 @@ pub fn function(state: &mut State) -> StatementKind {
         None
     };
 
-    let body_comments = state.stream.comments();
+    let body_comments = state.comments();
     let left_brace = utils::skip_left_brace(state);
     let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
     let right_brace = utils::skip_right_brace(state);
@@ -273,7 +272,7 @@ pub fn function(state: &mut State) -> StatementKind {
 }
 
 pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
-    let comments = state.stream.comments();
+    let comments = state.comments();
     let attributes = state.get_attributes();
     let function = utils::skip(state, TokenKind::Function);
 
@@ -295,7 +294,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
         let parameters = parameters::constructor_parameter_list(state);
 
         return if state.stream.current().kind == TokenKind::LeftBrace {
-            let body_comments = state.stream.comments();
+            let body_comments = state.comments();
             let left_brace = utils::skip_left_brace(state);
             let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
             let right_brace = utils::skip_right_brace(state);
@@ -355,7 +354,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
     };
 
     if state.stream.current().kind == TokenKind::LeftBrace {
-        let body_comments = state.stream.comments();
+        let body_comments = state.comments();
         let left_brace = utils::skip_left_brace(state);
         let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
         let right_brace = utils::skip_right_brace(state);

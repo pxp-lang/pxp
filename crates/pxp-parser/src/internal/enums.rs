@@ -19,60 +19,63 @@ pub fn parse(state: &mut State) -> StatementKind {
 
     let name = names::type_name(state);
 
-    let backed_type: Option<(Span, BackedEnumType)> = if state.stream.current().kind == TokenKind::Colon {
-        let colon = utils::skip_colon(state);
-        let current = state.stream.current();
+    let backed_type: Option<(Span, BackedEnumType)> =
+        if state.stream.current().kind == TokenKind::Colon {
+            let colon = utils::skip_colon(state);
+            let current = state.stream.current();
 
-        match current.kind {
-            TokenKind::Identifier => {
-                let symbol = current.symbol.as_ref().unwrap();
+            match current.kind {
+                TokenKind::Identifier => {
+                    let symbol = current.symbol.as_ref().unwrap();
 
-                Some(match &symbol[..] {
-                    b"string" => {
-                        state.stream.next();
-                        (colon, BackedEnumType::String(current.span))
-                    }
-                    b"int" => {
-                        state.stream.next();
-                        (colon, BackedEnumType::Int(current.span))
-                    }
-                    _ => {
-                        state.stream.next();
+                    Some(match &symbol[..] {
+                        b"string" => {
+                            state.stream.next();
+                            (colon, BackedEnumType::String(current.span))
+                        }
+                        b"int" => {
+                            state.stream.next();
+                            (colon, BackedEnumType::Int(current.span))
+                        }
+                        _ => {
+                            state.stream.next();
 
-                        state.diagnostic(
-                            ParserDiagnostic::InvalidBackedEnumType,
-                            Severity::Error,
-                            current.span,
-                        );
+                            state.diagnostic(
+                                ParserDiagnostic::InvalidBackedEnumType,
+                                Severity::Error,
+                                current.span,
+                            );
 
-                        (colon, BackedEnumType::Invalid)
-                    }
-                })
+                            (colon, BackedEnumType::Invalid)
+                        }
+                    })
+                }
+                TokenKind::LeftBrace => {
+                    state.diagnostic(
+                        ParserDiagnostic::UnexpectedToken {
+                            token: current.clone(),
+                        },
+                        Severity::Error,
+                        current.span,
+                    );
+
+                    Some((colon, BackedEnumType::Invalid))
+                }
+                _ => {
+                    state.stream.next();
+
+                    state.diagnostic(
+                        ParserDiagnostic::InvalidBackedEnumType,
+                        Severity::Error,
+                        current.span,
+                    );
+
+                    Some((colon, BackedEnumType::Invalid))
+                }
             }
-            TokenKind::LeftBrace => {
-                state.diagnostic(
-                    ParserDiagnostic::UnexpectedToken { token: current.clone() },
-                    Severity::Error,
-                    current.span,
-                );
-
-                Some((colon, BackedEnumType::Invalid))
-            }
-            _ => {
-                state.stream.next();
-
-                state.diagnostic(
-                    ParserDiagnostic::InvalidBackedEnumType,
-                    Severity::Error,
-                    current.span,
-                );
-
-                Some((colon, BackedEnumType::Invalid))
-            }
-        }
-    } else {
-        None
-    };
+        } else {
+            None
+        };
 
     let mut implements = Vec::new();
     if state.stream.current().kind == TokenKind::Implements {

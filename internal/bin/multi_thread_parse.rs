@@ -1,8 +1,12 @@
-use std::{env::args, path::{Path, PathBuf}, process::exit, thread};
+use std::{
+    env::args,
+    path::{Path, PathBuf},
+    process::exit,
+    thread,
+};
 
 use discoverer::discover;
 use pxp_parser::parse;
-
 
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
@@ -26,7 +30,10 @@ fn main() {
     let num_threads = num_cpus::get();
 
     // Split files into chunks and parse them in parallel.
-    let chunks: Vec<Vec<PathBuf>> = files.chunks(files.len() / num_threads).map(|chunk| chunk.to_vec()).collect();
+    let chunks: Vec<Vec<PathBuf>> = files
+        .chunks(files.len() / num_threads)
+        .map(|chunk| chunk.to_vec())
+        .collect();
     let mut handles = Vec::new();
 
     for chunk in chunks {

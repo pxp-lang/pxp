@@ -12,8 +12,7 @@ fn it_initializes() {
 }
 
 fn server() -> TestServerManager<TestServer> {
-    TestServerManager::new(TestServer::new)
-        .workspace(PathBuf::from("./tests/workspace"))
+    TestServerManager::new(TestServer::new).workspace(PathBuf::from("./tests/workspace"))
 }
 
 struct TestServer;

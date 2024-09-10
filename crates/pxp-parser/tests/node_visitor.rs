@@ -1,6 +1,8 @@
-use pxp_ast::{visitor::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch}, Node};
+use pxp_ast::{
+    visitor::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch},
+    Node,
+};
 use pxp_parser::parse;
-
 
 struct TestVisitor {
     output: Vec<String>,

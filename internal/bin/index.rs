@@ -52,7 +52,7 @@ fn main() {
                         for class in index.get_classes() {
                             println!("{}", class.get_name());
                         }
-                    },
+                    }
                     _ => {
                         println!("unrecognised input.");
                     }

@@ -5,7 +5,6 @@
 use crate::{name::NameQualification, utils::CommaSeparated, HasId, Node};
 use pxp_bytestring::ByteString;
 use pxp_span::{Span, Spanned};
-use pxp_syntax::comments::{Comment, CommentGroup};
 use pxp_token::Token;
 use pxp_type::Type;
 use std::ptr::NonNull;
@@ -5551,6 +5550,32 @@ impl Spanned for StaticVar {
     fn span(&self) -> Span {
         self.span
     }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct Comment {
+    pub span: Span,
+    pub format: CommentFormat,
+    pub content: ByteString,
+}
+
+impl Spanned for Comment {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum CommentFormat {
+    SingleLine,
+    MultiLine,
+    HashMark,
+    DocBlock,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Default)]
+pub struct CommentGroup {
+    pub comments: Vec<Comment>,
 }
 
 #[derive(Debug, PartialEq, Clone)]

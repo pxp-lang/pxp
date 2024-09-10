@@ -17,7 +17,6 @@ use pxp_ast::{Block, MatchExpression};
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_span::Spanned;
-use pxp_syntax::comments::CommentGroup;
 use pxp_token::TokenKind;
 
 pub fn match_expression(state: &mut State) -> Expression {

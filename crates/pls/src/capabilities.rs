@@ -1,11 +1,17 @@
 use pxp_lsp::types::{
-    CompletionOptions, DiagnosticOptions, DiagnosticServerCapabilities, FileOperationRegistrationOptions, HoverProviderCapability, OneOf, ServerCapabilities, TextDocumentSyncCapability, TextDocumentSyncKind, WorkDoneProgressOptions, WorkspaceFileOperationsServerCapabilities, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities
+    CompletionOptions, DiagnosticOptions, DiagnosticServerCapabilities,
+    FileOperationRegistrationOptions, HoverProviderCapability, OneOf, ServerCapabilities,
+    TextDocumentSyncCapability, TextDocumentSyncKind, WorkDoneProgressOptions,
+    WorkspaceFileOperationsServerCapabilities, WorkspaceFoldersServerCapabilities,
+    WorkspaceServerCapabilities,
 };
 
 pub(crate) fn get_server_capabilities() -> ServerCapabilities {
     ServerCapabilities {
         position_encoding: None,
-        text_document_sync: Some(TextDocumentSyncCapability::Kind(TextDocumentSyncKind::INCREMENTAL)),
+        text_document_sync: Some(TextDocumentSyncCapability::Kind(
+            TextDocumentSyncKind::INCREMENTAL,
+        )),
         diagnostic_provider: Some(DiagnosticServerCapabilities::Options(DiagnosticOptions {
             identifier: Some("pls".to_string()),
             inter_file_dependencies: false,

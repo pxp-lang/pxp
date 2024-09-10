@@ -13,7 +13,6 @@ $output = <<<'RUST'
 // Do not make modifications to this file directly.
 
 use crate::{HasId, utils::CommaSeparated, Node, name::NameQualification};
-use pxp_syntax::comments::{CommentGroup, Comment};
 use pxp_type::Type;
 use pxp_token::Token;
 use pxp_span::{Span, Spanned};
@@ -82,7 +81,10 @@ foreach ($ast as $node => $structure) {
                 $output .= "({$value}),\n";
             } elseif (is_array($value)) {
                 $output .= " {\n";
-                $output .= "id: NodeId,\n";    
+
+                if (! isset($value['node'])) {
+                    $output .= "id: NodeId,\n";    
+                }
 
                 foreach ($value as $subfield => $subtype) {
                     $output .= "        {$subfield}: {$subtype},\n";
@@ -92,7 +94,9 @@ foreach ($ast as $node => $structure) {
             }
         }
     } else {
-        $output .= "    pub id: NodeId,\n";
+        if (! isset($structure['node'])) {
+            $output .= "    pub id: NodeId,\n";
+        }
         
         foreach ($structure as $field => $type) {
             if (in_array($field, $reserved, true)) {

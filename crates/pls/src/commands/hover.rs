@@ -1,5 +1,5 @@
-use pxp_lsp::types::{Hover, HoverContents, MarkupContent, MarkupKind, Position, Uri};
 use pxp_ast::{visitor::Ancestors, FunctionParameterList, Node, ResolvedName, ReturnType};
+use pxp_lsp::types::{Hover, HoverContents, MarkupContent, MarkupKind, Position, Uri};
 use pxp_node_finder::NodeFinder;
 use pxp_parser::parse;
 use pxp_type::Type;
@@ -22,7 +22,7 @@ impl Backend {
 
             return generate_hover(node, ancestors);
         }
-        
+
         None
     }
 }
@@ -45,7 +45,11 @@ fn generate_hover(node: Node, _: Ancestors) -> Option<Hover> {
     })
 }
 
-fn function_hover(name: &ResolvedName, parameters: &FunctionParameterList, return_type: &Option<ReturnType>) -> String {
+fn function_hover(
+    name: &ResolvedName,
+    parameters: &FunctionParameterList,
+    return_type: &Option<ReturnType>,
+) -> String {
     format!(
         "{}\n\n```php\n<?php\nfunction {}({}): {} {{}}\n```\n",
         name.resolved,
@@ -56,17 +60,30 @@ fn function_hover(name: &ResolvedName, parameters: &FunctionParameterList, retur
 }
 
 fn stringify_return_type(return_type: &Option<ReturnType>) -> String {
-    return_type.as_ref().map(|d| &d.data_type.kind).unwrap_or_else(|| &Type::Void).to_string()
+    return_type
+        .as_ref()
+        .map(|d| &d.data_type.kind)
+        .unwrap_or_else(|| &Type::Void)
+        .to_string()
 }
 
 fn stringify_parameter_list(parameters: &FunctionParameterList) -> String {
     parameters
         .iter()
-        .map(|p| format!(
-            "{} {}",
-            p.data_type.as_ref().map(|d| &d.kind).unwrap_or_else(|| &Type::Mixed),
-            if p.name.symbol.is_empty() { "$_".to_string() } else { p.name.symbol.to_string() },
-        ))
+        .map(|p| {
+            format!(
+                "{} {}",
+                p.data_type
+                    .as_ref()
+                    .map(|d| &d.kind)
+                    .unwrap_or_else(|| &Type::Mixed),
+                if p.name.symbol.is_empty() {
+                    "$_".to_string()
+                } else {
+                    p.name.symbol.to_string()
+                },
+            )
+        })
         .collect::<Vec<_>>()
         .join(", ")
 }

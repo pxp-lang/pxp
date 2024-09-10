@@ -2,9 +2,18 @@ use std::{collections::HashMap, path::PathBuf};
 
 use discoverer::discover;
 use lsp_textdocument::TextDocuments;
-use pxp_lsp::types::{notification::{DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument, Notification}, CompletionItem, CompletionParams, Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentSymbolParams, DocumentSymbolResponse, Hover, HoverParams, InitializeParams, InitializeResult, MessageType, Position, Range, ServerInfo, Uri};
 use pxp_diagnostics::{Diagnostic as InternalDiagnostic, Severity};
 use pxp_index::{Index, Indexer};
+use pxp_lsp::types::{
+    notification::{
+        DidChangeTextDocument, DidCloseTextDocument, DidOpenTextDocument, DidSaveTextDocument,
+        Notification,
+    },
+    CompletionItem, CompletionParams, Diagnostic, DiagnosticSeverity, DidChangeTextDocumentParams,
+    DidCloseTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams,
+    DocumentSymbolParams, DocumentSymbolResponse, Hover, HoverParams, InitializeParams,
+    InitializeResult, MessageType, Position, Range, ServerInfo, Uri,
+};
 use pxp_parser::{parse, ParserDiagnostic};
 use pxp_span::Spanned;
 use serde_json::{from_value, Value};
@@ -32,7 +41,7 @@ impl Backend {
             index: Index::new(),
             workspace: Workspace {
                 root: "".parse().unwrap(),
-            }
+            },
         }
     }
 
@@ -58,7 +67,14 @@ impl Backend {
         Ok(())
     }
 
-    fn publish_diagnostics(&self, client: &Client, uri: &Uri, parser_diagnostics: &[InternalDiagnostic<ParserDiagnostic>], version: i32, content: &[u8]) -> Result<()> {
+    fn publish_diagnostics(
+        &self,
+        client: &Client,
+        uri: &Uri,
+        parser_diagnostics: &[InternalDiagnostic<ParserDiagnostic>],
+        version: i32,
+        content: &[u8],
+    ) -> Result<()> {
         let mut diagnostics = Vec::new();
 
         parser_diagnostics.iter().for_each(|d| {
@@ -107,14 +123,17 @@ impl Backend {
             let documents = match discover(&["php"], &[self.workspace.root.to_str().unwrap()]) {
                 Ok(documents) => documents,
                 Err(e) => {
-                    client.log_message(MessageType::ERROR, format!("Error while discovering files: {}", e))?;
+                    client.log_message(
+                        MessageType::ERROR,
+                        format!("Error while discovering files: {}", e),
+                    )?;
                     return Ok(());
-                },
+                }
             };
 
             let total = documents.len();
 
-            for (i, document) in documents.iter().enumerate() {                
+            for (i, document) in documents.iter().enumerate() {
                 indexer.index_file(document);
 
                 reporter.report((i as f64 / total as f64 * 100.0) as u32, None)?;
@@ -148,7 +167,10 @@ impl LanguageServer for Backend {
     fn initialized(&mut self, client: &Client) -> Result<()> {
         client.log_message(
             MessageType::INFO,
-            format!("Server initialized. Workspace root set to: {}", self.workspace.root.display()),
+            format!(
+                "Server initialized. Workspace root set to: {}",
+                self.workspace.root.display()
+            ),
         )
 
         // client.log_message(
@@ -164,7 +186,11 @@ impl LanguageServer for Backend {
         // )
     }
 
-    fn document_symbols(&mut self, client: &Client, params: &DocumentSymbolParams) -> Result<DocumentSymbolResponse> {
+    fn document_symbols(
+        &mut self,
+        client: &Client,
+        params: &DocumentSymbolParams,
+    ) -> Result<DocumentSymbolResponse> {
         let symbols = self.get_document_symbols(&params.text_document.uri)?;
 
         Ok(DocumentSymbolResponse::Nested(symbols))
@@ -177,7 +203,10 @@ impl LanguageServer for Backend {
     }
 
     fn completion(&mut self, _: &Client, params: &CompletionParams) -> Result<Vec<CompletionItem>> {
-        self.get_completion_items(&params.text_document_position.text_document.uri, params.text_document_position.position)
+        self.get_completion_items(
+            &params.text_document_position.text_document.uri,
+            params.text_document_position.position,
+        )
     }
 
     fn notification(&mut self, _: &Client, method: &str, params: &Value) -> Result<bool> {
@@ -186,22 +215,22 @@ impl LanguageServer for Backend {
                 DidOpenTextDocument::METHOD => {
                     let params: DidOpenTextDocumentParams = from_value(params.clone())?;
                     params.text_document.uri
-                },
+                }
                 DidChangeTextDocument::METHOD => {
                     let params: DidChangeTextDocumentParams = from_value(params.clone())?;
                     params.text_document.uri
-                },
+                }
                 DidSaveTextDocument::METHOD => {
                     let params: DidSaveTextDocumentParams = from_value(params.clone())?;
                     params.text_document.uri
-                },
+                }
                 DidCloseTextDocument::METHOD => {
                     let params: DidCloseTextDocumentParams = from_value(params.clone())?;
 
                     self.diagnostics.remove(&params.text_document.uri);
 
-                    return Ok(true)
-                },
+                    return Ok(true);
+                }
                 _ => return Ok(true),
             };
 

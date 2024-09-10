@@ -58,7 +58,9 @@ impl TypeMap {
     }
 
     pub(crate) fn resolve_type(&self, id: NodeId) -> Type<ByteString> {
-        self.resolve(id).map(|r| r.ty.clone()).unwrap_or_else(|| Type::Mixed)
+        self.resolve(id)
+            .map(|r| r.ty.clone())
+            .unwrap_or_else(|| Type::Mixed)
     }
 }
 
@@ -70,7 +72,7 @@ pub struct TypeMapResult<'a> {
 
 #[cfg(test)]
 mod tests {
-    
+
     use pxp_bytestring::ByteString;
     use pxp_index::Indexer;
     use pxp_node_finder::NodeFinder;
@@ -181,8 +183,9 @@ mod tests {
 
     #[test]
     fn new_class() {
-        assert_eq!(infer(
-            "<?php
+        assert_eq!(
+            infer(
+                "<?php
 
             use App\\Foo;
 
@@ -197,61 +200,91 @@ mod tests {
 
     #[test]
     fn class_property_untyped() {
-        assert_eq!(infer("
+        assert_eq!(
+            infer(
+                "
         <?php
 
         use App\\Foo;
 
         $foo = new Foo();
         ($foo->foo)§;
-        ", index()), Type::Mixed);
+        ",
+                index()
+            ),
+            Type::Mixed
+        );
     }
 
     #[test]
     fn class_property_typed() {
-        assert_eq!(infer("
+        assert_eq!(
+            infer(
+                "
         <?php
 
         use App\\Foo;
 
         $foo = new Foo();
         ($foo->foop)§;
-        ", index()), Type::String);
+        ",
+                index()
+            ),
+            Type::String
+        );
     }
 
     #[test]
     fn class_property_chained() {
-        assert_eq!(infer("
+        assert_eq!(
+            infer(
+                "
         <?php
 
         use App\\Foo;
 
         $foo = new Foo();
         ($foo->bar->baz)§;
-        ", index()), Type::String);
+        ",
+                index()
+            ),
+            Type::String
+        );
     }
 
     #[test]
     fn class_method_call() {
-        assert_eq!(infer("
+        assert_eq!(
+            infer(
+                "
         <?php
 
         use App\\Foo;
 
         $foo = new Foo();
         ($foo->getBar())§;
-        ", index()), Type::Named(ByteString::from(b"App\\Bar")));
+        ",
+                index()
+            ),
+            Type::Named(ByteString::from(b"App\\Bar"))
+        );
     }
 
     #[test]
     fn class_static_method_call() {
-        assert_eq!(infer("
+        assert_eq!(
+            infer(
+                "
         <?php
 
         use App\\Bar;
 
         (Bar::the())§;
-        ", index()), Type::Named(ByteString::from(b"App\\Bar")));
+        ",
+                index()
+            ),
+            Type::Named(ByteString::from(b"App\\Bar"))
+        );
     }
 
     /// Infer the type using the given input.

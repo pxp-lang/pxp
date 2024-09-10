@@ -79,13 +79,15 @@ pub fn use_statement(state: &mut State) -> StatementKind {
             let alias_symbol = alias.as_ref().map(|a| a.symbol.clone());
             let import_kind = use_kind.unwrap_or(kind);
             let end_span = state.stream.previous().span;
-            
+
             uses.push(Use {
                 id: state.id(),
                 span: Span::combine(start_span, end_span),
                 name: Name::resolved(
                     state.id(),
-                    prefix_symbol.clone().coagulate(&[name.symbol.clone()], Some(b"\\")),
+                    prefix_symbol
+                        .clone()
+                        .coagulate(&[name.symbol.clone()], Some(b"\\")),
                     name.symbol,
                     name.span,
                 ),

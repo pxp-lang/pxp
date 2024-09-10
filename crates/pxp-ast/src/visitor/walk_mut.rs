@@ -1113,6 +1113,16 @@ pub fn walk_backed_enum_statement_mut<V: VisitorMut + ?Sized>(
     visitor.visit_backed_enum_body(&mut node.body);
 }
 
+pub fn walk_backed_enum_type_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut BackedEnumType,
+) {
+    match node {
+        BackedEnumType::Invalid => {}
+        _ => {}
+    }
+}
+
 pub fn walk_return_type_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut ReturnType) {
     visitor.visit_data_type(&mut node.data_type);
 }
@@ -2374,5 +2384,19 @@ pub fn walk_static_var_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut S
     visitor.visit_variable(&mut node.var);
     if let Some(item) = &mut node.default {
         visitor.visit_expression(item);
+    }
+}
+
+pub fn walk_comment_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Comment) {
+    visitor.visit_comment_format(&mut node.format);
+}
+
+pub fn walk_comment_format_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut CommentFormat) {
+    match node {
+        CommentFormat::SingleLine => {}
+        CommentFormat::MultiLine => {}
+        CommentFormat::HashMark => {}
+        CommentFormat::DocBlock => {}
+        _ => {}
     }
 }

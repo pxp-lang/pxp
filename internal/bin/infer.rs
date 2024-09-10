@@ -3,7 +3,6 @@ use pxp_inference::InferenceEngine;
 use pxp_node_finder::NodeFinder;
 use pxp_parser::parse;
 
-
 fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
     let no_output = args.iter().any(|arg| arg == "--no-output");
@@ -18,7 +17,7 @@ fn main() {
     let mut index = Index::new();
     let mut indexer = Indexer::new(&mut index);
     indexer.index(&result.ast);
-    
+
     let map = InferenceEngine::map(&index, &result.ast[..]);
 
     if no_output {
