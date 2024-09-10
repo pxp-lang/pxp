@@ -1,9 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Default, Serialize, Deserialize)]
-
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Default)]
 pub enum Visibility {
     #[default]
     Public,

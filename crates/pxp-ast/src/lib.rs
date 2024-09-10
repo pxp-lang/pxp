@@ -4,7 +4,9 @@ mod generated;
 mod id;
 mod node;
 pub mod visitor;
+mod visibility;
 
+pub use visibility::*;
 pub use generated::*;
 pub use id::HasId;
 pub use node::Node;

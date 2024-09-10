@@ -1,10 +1,9 @@
 use pxp_span::Span;
-use pxp_syntax::visibility::Visibility;
 
 use crate::{
     ClassModifier, ClassModifierGroup, ConstantModifier, ConstantModifierGroup, MethodModifier,
     MethodModifierGroup, PromotedPropertyModifier, PromotedPropertyModifierGroup, PropertyModifier,
-    PropertyModifierGroup,
+    PropertyModifierGroup, Visibility,
 };
 
 impl PromotedPropertyModifier {
