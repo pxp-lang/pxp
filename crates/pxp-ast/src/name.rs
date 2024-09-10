@@ -2,8 +2,24 @@ use std::fmt::Display;
 
 use pxp_bytestring::ByteString;
 use pxp_span::Span;
+use pxp_token::TokenKind;
 
-use pxp_syntax::name::NameQualification;
+#[derive(Debug, Clone, PartialEq, Copy, Hash, Eq)]
+pub enum NameQualification {
+    Unqualified,
+    Qualified,
+    FullyQualified,
+}
+
+impl From<TokenKind> for NameQualification {
+    fn from(kind: TokenKind) -> Self {
+        match kind {
+            TokenKind::QualifiedIdentifier => NameQualification::Qualified,
+            TokenKind::FullyQualifiedIdentifier => NameQualification::FullyQualified,
+            _ => NameQualification::Unqualified,
+        }
+    }
+}
 
 use crate::{Name, NameKind, NodeId, ResolvedName, SpecialName, SpecialNameKind, UnresolvedName};
 

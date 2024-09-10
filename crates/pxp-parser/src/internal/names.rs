@@ -1,7 +1,7 @@
+use name::NameQualification;
 use pxp_ast::*;
 use pxp_bytestring::ByteString;
 use pxp_diagnostics::Severity;
-use pxp_syntax::name::NameQualification;
 use pxp_token::TokenKind;
 
 use crate::{state::State, ParserDiagnostic};
