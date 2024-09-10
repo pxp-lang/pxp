@@ -4,7 +4,7 @@ This document contains information related to contributing to the project and th
 
 ## Picking a change
 
-It's recommended that you consult the [Issues](https://github.com/pxp-lang/wip/issues) page before starting work.
+It's recommended that you consult the [Issues](https://github.com/pxp-lang/pxp/issues) page before starting work.
 
 Issues are labelled based on the project that they target and the priority of the change. If you fancy a challenge, pick a "high" priority issue. Want something more casual to learn the ropes and discover the project, go for a "low" priority change.
 
