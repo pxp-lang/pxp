@@ -10,7 +10,6 @@ pub enum Associativity {
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
 pub enum Precedence {
     Lowest,
-    Print,
     Yield,
     YieldFrom,
     IncDec,
