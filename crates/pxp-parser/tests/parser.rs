@@ -931,9 +931,21 @@ snap!(
 );
 
 // Precedence Testing
-snap!(snapper, binary_op_right_hand_assignment, process("fixtures/precedence/binary-op-right-hand-assignment.php"));
-snap!(snapper, binary_op_multi_right_hand_assignment, process("fixtures/precedence/binary-op-multi-right-hand-assignment.php"));
-snap!(snapper, multi_op_arithmetic, process("fixtures/precedence/multi-op-arithmetic.php"));
+snap!(
+    snapper,
+    binary_op_right_hand_assignment,
+    process("fixtures/precedence/binary-op-right-hand-assignment.php")
+);
+snap!(
+    snapper,
+    binary_op_multi_right_hand_assignment,
+    process("fixtures/precedence/binary-op-multi-right-hand-assignment.php")
+);
+snap!(
+    snapper,
+    multi_op_arithmetic,
+    process("fixtures/precedence/multi-op-arithmetic.php")
+);
 
 fn snapper() -> Snapper {
     Snapper::new(format!("{}/{}", env!("CARGO_MANIFEST_DIR"), "tests/__snapshots__").into())

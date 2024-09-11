@@ -1,4 +1,4 @@
-use std::{error::Error};
+use std::error::Error;
 
 use lsp_server::{Connection, Message, Notification, Request};
 use lsp_types::{

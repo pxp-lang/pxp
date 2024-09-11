@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 
-
 use crate::LanguageServer;
 
 pub struct TestServerManager<T: LanguageServer> {

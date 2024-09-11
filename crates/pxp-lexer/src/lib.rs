@@ -127,7 +127,12 @@ impl<'a, 'b> Lexer<'a> {
     }
 
     fn skip_horizontal_whitespace(&mut self) {
-        while let Some(true) = self.state.source.current().map(|u: &u8| u == &b' ' || u == &b'\t') {
+        while let Some(true) = self
+            .state
+            .source
+            .current()
+            .map(|u: &u8| u == &b' ' || u == &b'\t')
+        {
             self.state.source.next();
         }
     }
@@ -162,7 +167,9 @@ impl<'a, 'b> Lexer<'a> {
         // We need to consume horizontal whitespace.
         self.skip_horizontal_whitespace();
 
-        if matches!(self.state.source.current(), Some(b'*')) && ! matches!(self.state.source.read(2), [b'*', b'/', ..]) {
+        if matches!(self.state.source.current(), Some(b'*'))
+            && !matches!(self.state.source.read(2), [b'*', b'/', ..])
+        {
             self.state.source.next();
 
             // We also want to skip the next space character here.
@@ -174,7 +181,11 @@ impl<'a, 'b> Lexer<'a> {
         let span = self.state.source.span();
         let symbol = self.state.source.span_range(span);
 
-        Ok(Token::new_with_symbol(TokenKind::PhpDocEol, span, symbol.into()))
+        Ok(Token::new_with_symbol(
+            TokenKind::PhpDocEol,
+            span,
+            symbol.into(),
+        ))
     }
 
     fn docblock(&mut self, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
@@ -206,17 +217,21 @@ impl<'a, 'b> Lexer<'a> {
                     let span = self.state.source.span();
                     let symbol = self.state.source.span_range(span);
 
-                    tokens.push(Token::new_with_symbol(TokenKind::PhpDocTag, span, symbol.into()));
+                    tokens.push(Token::new_with_symbol(
+                        TokenKind::PhpDocTag,
+                        span,
+                        symbol.into(),
+                    ));
 
                     self.skip_horizontal_whitespace();
-                },
+                }
                 [b'$', ident_start!(), ..] => {
                     let variable = self.tokenize_variable();
                     let span = self.state.source.span();
                     let symbol = self.state.source.span_range(span);
 
                     tokens.push(Token::new_with_symbol(variable, span, symbol.into()));
-                },
+                }
                 [b'\\', ident_start!(), ..] => {
                     self.state.source.next();
 
@@ -262,8 +277,12 @@ impl<'a, 'b> Lexer<'a> {
                         s => unreachable!("{:?}", s),
                     };
 
-                    tokens.push(Token::new_with_symbol(kind, span, self.state.source.span_range(span).into()));
-                },
+                    tokens.push(Token::new_with_symbol(
+                        kind,
+                        span,
+                        self.state.source.span_range(span).into(),
+                    ));
+                }
                 [b @ ident_start!(), ..] => {
                     self.state.source.next();
                     let mut qualified = false;
@@ -322,140 +341,140 @@ impl<'a, 'b> Lexer<'a> {
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Pipe, span));
-                },
+                }
                 [b'&', ..] => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Ampersand, span));
-                },
+                }
                 [b'!', ..] => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Bang, span));
-                },
+                }
                 [b'?', ..] => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
 
-                    tokens.push(Token::new_without_symbol(TokenKind::Question, span));  
-                },
+                    tokens.push(Token::new_without_symbol(TokenKind::Question, span));
+                }
                 [b'(', ..] => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::LeftParen, span));
-                },
+                }
                 [b')', ..] => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::RightParen, span));
-                },
+                }
                 [b'[', ..] => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::LeftBracket, span));
-                },
+                }
                 [b']', ..] => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::RightBracket, span));
-                },
+                }
                 [b'{', ..] => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::LeftBrace, span));
-                },
+                }
                 [b'}', ..] => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::RightBrace, span));
-                },
+                }
                 [b'<', ..] => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::LessThan, span));
-                },
+                }
                 [b'>', ..] => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::GreaterThan, span));
-                },
+                }
                 [b'.', b'.', b'.', ..] => {
                     self.state.source.skip(3);
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Ellipsis, span));
-                },
+                }
                 [b'=', b'>', ..] => {
                     self.state.source.skip(2);
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::DoubleArrow, span));
-                },
+                }
                 [b'-', b'>', ..] => {
                     self.state.source.skip(2);
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Arrow, span));
-                },
+                }
                 [b'=', ..] => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Equals, span));
-                },
+                }
                 [b':', b':', ..] => {
                     self.state.source.skip(2);
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::DoubleColon, span));
-                },
+                }
                 [b':', ..] => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Colon, span));
-                },
+                }
                 [b',', ..] => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Comma, span));
-                },
+                }
                 [b'0'..=b'9', ..] => {
                     let number = self.tokenize_number()?;
                     let span = self.state.source.span();
                     let symbol = self.state.source.span_range(span);
 
                     tokens.push(Token::new_with_symbol(number, span, symbol.into()));
-                },
+                }
                 [b'\'', ..] => {
                     self.state.source.next();
 
@@ -464,10 +483,10 @@ impl<'a, 'b> Lexer<'a> {
                     let symbol = self.state.source.span_range(span);
 
                     tokens.push(Token::new_with_symbol(string, span, symbol.into()));
-                },
+                }
                 [b'"', ..] => {
                     self.state.source.skip(1);
-                    
+
                     let string = self.tokenize_double_quote_string()?;
                     let span = self.state.source.span();
                     let symbol = self.state.source.span_range(span);
@@ -477,33 +496,44 @@ impl<'a, 'b> Lexer<'a> {
                 [b'*', b'/', ..] => {
                     self.state.source.skip(2);
 
-                    tokens.push(Token::new_without_symbol(TokenKind::ClosePhpDoc, self.state.source.span()));
+                    tokens.push(Token::new_without_symbol(
+                        TokenKind::ClosePhpDoc,
+                        self.state.source.span(),
+                    ));
 
                     break;
-                },
+                }
                 [b'*', ..] => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Asterisk, span));
-                },
+                }
                 [b' ' | b'\t', ..] => {
                     self.skip_horizontal_whitespace();
 
                     let span = self.state.source.span();
                     let symbol = self.state.source.span_range(span);
 
-                    tokens.push(Token::new_with_symbol(TokenKind::PhpDocHorizontalWhitespace, span, symbol.into()));
-                },
+                    tokens.push(Token::new_with_symbol(
+                        TokenKind::PhpDocHorizontalWhitespace,
+                        span,
+                        symbol.into(),
+                    ));
+                }
                 _ => {
                     self.state.source.next();
 
                     let span = self.state.source.span();
                     let symbol = self.state.source.span_range(span);
 
-                    tokens.push(Token::new_with_symbol(TokenKind::PhpDocOther, span, symbol.into()));
-                },
+                    tokens.push(Token::new_with_symbol(
+                        TokenKind::PhpDocOther,
+                        span,
+                        symbol.into(),
+                    ));
+                }
             }
         }
 
@@ -778,7 +808,7 @@ impl<'a, 'b> Lexer<'a> {
 
                             kind = TokenKind::OpenPhpDoc;
                             with_symbol = false;
-                            
+
                             self.state.enter(StackFrame::DocBlock);
 
                             break;

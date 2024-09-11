@@ -71,7 +71,7 @@ impl<'a> State<'a> {
                             id: self.id(),
                             span: *span,
                             content: symbol.as_ref().unwrap().clone(),
-                        })
+                        }),
                     },
                     Token {
                         kind: TokenKind::MultiLineComment,
@@ -84,7 +84,7 @@ impl<'a> State<'a> {
                             id: self.id(),
                             span: *span,
                             content: symbol.as_ref().unwrap().clone(),
-                        })
+                        }),
                     },
                     Token {
                         kind: TokenKind::HashMarkComment,
@@ -97,17 +97,17 @@ impl<'a> State<'a> {
                             id: self.id(),
                             span: *span,
                             content: symbol.as_ref().unwrap().clone(),
-                        })
+                        }),
                     },
                     Token {
                         kind: TokenKind::DocumentComment,
                         span,
                         symbol,
                     } => todo!(), /*Comment {
-                        id: self.id(),
-                        span: *span,
-                        format: CommentFormat::DocBlock,
-                        content: symbol.as_ref().unwrap().clone(),
+                    id: self.id(),
+                    span: *span,
+                    format: CommentFormat::DocBlock,
+                    content: symbol.as_ref().unwrap().clone(),
                     }*/
                     _ => unreachable!(),
                 })
