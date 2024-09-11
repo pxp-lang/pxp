@@ -316,12 +316,177 @@ impl<'a, 'b> Lexer<'a> {
 
                     tokens.push(Token::new_with_symbol(kind, span, symbol.into()));
                 }
+                [b'|', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::Pipe, span));
+                },
+                [b'&', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::Ampersand, span));
+                },
+                [b'!', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::Bang, span));
+                },
+                [b'?', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::Question, span));  
+                },
+                [b'(', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::LeftParen, span));
+                },
+                [b')', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::RightParen, span));
+                },
+                [b'[', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::LeftBracket, span));
+                },
+                [b']', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::RightBracket, span));
+                },
+                [b'{', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::LeftBrace, span));
+                },
+                [b'}', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::RightBrace, span));
+                },
+                [b'<', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::LessThan, span));
+                },
+                [b'>', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::GreaterThan, span));
+                },
+                [b'.', b'.', b'.', ..] => {
+                    self.state.source.skip(3);
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::Ellipsis, span));
+                },
+                [b'=', b'>', ..] => {
+                    self.state.source.skip(2);
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::DoubleArrow, span));
+                },
+                [b'-', b'>', ..] => {
+                    self.state.source.skip(2);
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::Arrow, span));
+                },
+                [b'=', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::Equals, span));
+                },
+                [b':', b':', ..] => {
+                    self.state.source.skip(2);
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::DoubleColon, span));
+                },
+                [b':', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::Colon, span));
+                },
+                [b',', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::Comma, span));
+                },
+                [b'0'..=b'9', ..] => {
+                    let number = self.tokenize_number()?;
+                    let span = self.state.source.span();
+                    let symbol = self.state.source.span_range(span);
+
+                    tokens.push(Token::new_with_symbol(number, span, symbol.into()));
+                },
+                [b'\'', ..] => {
+                    self.state.source.next();
+
+                    let string = self.tokenize_single_quote_string()?;
+                    let span = self.state.source.span();
+                    let symbol = self.state.source.span_range(span);
+
+                    tokens.push(Token::new_with_symbol(string, span, symbol.into()));
+                },
+                [b'"', ..] => {
+                    self.state.source.skip(1);
+                    
+                    let string = self.tokenize_double_quote_string()?;
+                    let span = self.state.source.span();
+                    let symbol = self.state.source.span_range(span);
+
+                    tokens.push(Token::new_with_symbol(string, span, symbol.into()));
+                }
                 [b'*', b'/', ..] => {
                     self.state.source.skip(2);
 
                     tokens.push(Token::new_without_symbol(TokenKind::ClosePhpDoc, self.state.source.span()));
 
                     break;
+                },
+                [b'*', ..] => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+
+                    tokens.push(Token::new_without_symbol(TokenKind::Asterisk, span));
                 },
                 [b' ' | b'\t', ..] => {
                     self.skip_horizontal_whitespace();
@@ -331,7 +496,14 @@ impl<'a, 'b> Lexer<'a> {
 
                     tokens.push(Token::new_with_symbol(TokenKind::PhpDocHorizontalWhitespace, span, symbol.into()));
                 },
-                _ => {},
+                _ => {
+                    self.state.source.next();
+
+                    let span = self.state.source.span();
+                    let symbol = self.state.source.span_range(span);
+
+                    tokens.push(Token::new_with_symbol(TokenKind::PhpDocOther, span, symbol.into()));
+                },
             }
         }
 
