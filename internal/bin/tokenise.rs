@@ -3,8 +3,8 @@ use std::{env::args, path::Path, process::exit};
 use discoverer::discover;
 use pxp_lexer::Lexer;
 
-use pxp_token::Token;
 use pxp_span::Spanned;
+use pxp_token::Token;
 
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
@@ -78,7 +78,11 @@ fn main() {
 
                 let span = err.span();
 
-                eprintln!("{}:{}", span.start_line(&contents), span.start_column(&contents));
+                eprintln!(
+                    "{}:{}",
+                    span.start_line(&contents),
+                    span.start_column(&contents)
+                );
 
                 exit(1);
             }

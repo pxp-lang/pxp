@@ -464,7 +464,7 @@ impl<'a, 'b> Lexer<'a> {
                     let offset = self.state.source.offset();
 
                     self.state.source.next();
-                    
+
                     let is_single_quoted_string = loop {
                         let Some(c) = self.state.source.current() else {
                             break false;
@@ -511,7 +511,7 @@ impl<'a, 'b> Lexer<'a> {
                     let offset = self.state.source.offset();
 
                     self.state.source.next();
-                    
+
                     let is_single_quoted_string = loop {
                         let Some(c) = self.state.source.current() else {
                             break false;

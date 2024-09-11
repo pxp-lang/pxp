@@ -1,4 +1,7 @@
-use pxp_ast::{DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockTag, DocBlockTagNode, DocBlockTextNode};
+use pxp_ast::{
+    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockTag, DocBlockTagNode,
+    DocBlockTextNode,
+};
 use pxp_bytestring::ByteString;
 use pxp_span::{Span, Spanned};
 use pxp_token::TokenKind;
@@ -76,7 +79,7 @@ fn docblock_tag(state: &mut State) -> DocBlockTagNode {
             span: tag.span,
             tag: tag.clone(),
             text,
-        })
+        }),
     }
 }
 
