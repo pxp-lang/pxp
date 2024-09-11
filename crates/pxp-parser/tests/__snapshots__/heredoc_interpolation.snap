@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,23 +15,24 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 41,
+        id: 44,
         kind: Expression(
             ExpressionStatement {
-                id: 40,
+                id: 43,
                 span: Span {
                     start: 7,
                     end: 118,
                 },
                 expression: Expression {
-                    id: 38,
+                    id: 41,
                     kind: Heredoc(
                         HeredocExpression {
-                            id: 39,
+                            id: 42,
                             span: Span {
                                 start: 7,
                                 end: 117,
@@ -40,7 +41,7 @@
                             parts: [
                                 Literal(
                                     LiteralStringPart {
-                                        id: 3,
+                                        id: 5,
                                         span: Span {
                                             start: 14,
                                             end: 21,
@@ -50,17 +51,17 @@
                                 ),
                                 Expression(
                                     ExpressionStringPart {
-                                        id: 6,
+                                        id: 8,
                                         span: Span {
                                             start: 21,
                                             end: 27,
                                         },
                                         expression: Expression {
-                                            id: 7,
+                                            id: 9,
                                             kind: Variable(
                                                 SimpleVariable(
                                                     SimpleVariable {
-                                                        id: 4,
+                                                        id: 6,
                                                         symbol: "$world",
                                                         stripped: "world",
                                                         span: Span {
@@ -75,6 +76,7 @@
                                                 end: 27,
                                             },
                                             comments: CommentGroup {
+                                                id: 0,
                                                 comments: [],
                                             },
                                         },
@@ -82,7 +84,7 @@
                                 ),
                                 Literal(
                                     LiteralStringPart {
-                                        id: 8,
+                                        id: 10,
                                         span: Span {
                                             start: 27,
                                             end: 36,
@@ -92,17 +94,17 @@
                                 ),
                                 Expression(
                                     ExpressionStringPart {
-                                        id: 11,
+                                        id: 13,
                                         span: Span {
                                             start: 37,
                                             end: 43,
                                         },
                                         expression: Expression {
-                                            id: 9,
+                                            id: 11,
                                             kind: Variable(
                                                 SimpleVariable(
                                                     SimpleVariable {
-                                                        id: 10,
+                                                        id: 12,
                                                         symbol: "$world",
                                                         stripped: "world",
                                                         span: Span {
@@ -117,6 +119,7 @@
                                                 end: 43,
                                             },
                                             comments: CommentGroup {
+                                                id: 0,
                                                 comments: [],
                                             },
                                         },
@@ -124,7 +127,7 @@
                                 ),
                                 Literal(
                                     LiteralStringPart {
-                                        id: 12,
+                                        id: 14,
                                         span: Span {
                                             start: 44,
                                             end: 53,
@@ -134,26 +137,26 @@
                                 ),
                                 Expression(
                                     ExpressionStringPart {
-                                        id: 19,
+                                        id: 21,
                                         span: Span {
                                             start: 60,
                                             end: 66,
                                         },
                                         expression: Expression {
-                                            id: 18,
+                                            id: 20,
                                             kind: PropertyFetch(
                                                 PropertyFetchExpression {
-                                                    id: 17,
+                                                    id: 19,
                                                     span: Span {
                                                         start: 54,
                                                         end: 66,
                                                     },
                                                     target: Expression {
-                                                        id: 13,
+                                                        id: 15,
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
-                                                                    id: 14,
+                                                                    id: 16,
                                                                     symbol: "$world",
                                                                     stripped: "world",
                                                                     span: Span {
@@ -168,6 +171,7 @@
                                                             end: 60,
                                                         },
                                                         comments: CommentGroup {
+                                                            id: 0,
                                                             comments: [],
                                                         },
                                                     },
@@ -176,11 +180,11 @@
                                                         end: 62,
                                                     },
                                                     property: Expression {
-                                                        id: 16,
+                                                        id: 18,
                                                         kind: Identifier(
                                                             SimpleIdentifier(
                                                                 SimpleIdentifier {
-                                                                    id: 15,
+                                                                    id: 17,
                                                                     symbol: "name",
                                                                     span: Span {
                                                                         start: 62,
@@ -194,6 +198,7 @@
                                                             end: 66,
                                                         },
                                                         comments: CommentGroup {
+                                                            id: 0,
                                                             comments: [],
                                                         },
                                                     },
@@ -204,6 +209,7 @@
                                                 end: 66,
                                             },
                                             comments: CommentGroup {
+                                                id: 0,
                                                 comments: [],
                                             },
                                         },
@@ -211,7 +217,7 @@
                                 ),
                                 Literal(
                                     LiteralStringPart {
-                                        id: 20,
+                                        id: 22,
                                         span: Span {
                                             start: 67,
                                             end: 76,
@@ -221,26 +227,26 @@
                                 ),
                                 Expression(
                                     ExpressionStringPart {
-                                        id: 28,
+                                        id: 31,
                                         span: Span {
                                             start: 83,
                                             end: 91,
                                         },
                                         expression: Expression {
-                                            id: 27,
+                                            id: 30,
                                             kind: MethodCall(
                                                 MethodCallExpression {
-                                                    id: 26,
+                                                    id: 29,
                                                     span: Span {
                                                         start: 77,
                                                         end: 91,
                                                     },
                                                     target: Expression {
-                                                        id: 21,
+                                                        id: 23,
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
-                                                                    id: 22,
+                                                                    id: 24,
                                                                     symbol: "$world",
                                                                     stripped: "world",
                                                                     span: Span {
@@ -255,6 +261,7 @@
                                                             end: 83,
                                                         },
                                                         comments: CommentGroup {
+                                                            id: 0,
                                                             comments: [],
                                                         },
                                                     },
@@ -263,11 +270,11 @@
                                                         end: 85,
                                                     },
                                                     method: Expression {
-                                                        id: 24,
+                                                        id: 26,
                                                         kind: Identifier(
                                                             SimpleIdentifier(
                                                                 SimpleIdentifier {
-                                                                    id: 23,
+                                                                    id: 25,
                                                                     symbol: "name",
                                                                     span: Span {
                                                                         start: 85,
@@ -281,16 +288,18 @@
                                                             end: 89,
                                                         },
                                                         comments: CommentGroup {
+                                                            id: 0,
                                                             comments: [],
                                                         },
                                                     },
                                                     arguments: ArgumentList {
-                                                        id: 25,
+                                                        id: 28,
                                                         span: Span {
                                                             start: 89,
                                                             end: 91,
                                                         },
                                                         comments: CommentGroup {
+                                                            id: 27,
                                                             comments: [],
                                                         },
                                                         left_parenthesis: Span {
@@ -310,6 +319,7 @@
                                                 end: 91,
                                             },
                                             comments: CommentGroup {
+                                                id: 0,
                                                 comments: [],
                                             },
                                         },
@@ -317,7 +327,7 @@
                                 ),
                                 Literal(
                                     LiteralStringPart {
-                                        id: 29,
+                                        id: 32,
                                         span: Span {
                                             start: 92,
                                             end: 101,
@@ -327,26 +337,26 @@
                                 ),
                                 Expression(
                                     ExpressionStringPart {
-                                        id: 36,
+                                        id: 39,
                                         span: Span {
                                             start: 108,
                                             end: 111,
                                         },
                                         expression: Expression {
-                                            id: 35,
+                                            id: 38,
                                             kind: ArrayIndex(
                                                 ArrayIndexExpression {
-                                                    id: 34,
+                                                    id: 37,
                                                     span: Span {
                                                         start: 102,
                                                         end: 111,
                                                     },
                                                     array: Expression {
-                                                        id: 30,
+                                                        id: 33,
                                                         kind: Variable(
                                                             SimpleVariable(
                                                                 SimpleVariable {
-                                                                    id: 31,
+                                                                    id: 34,
                                                                     symbol: "$world",
                                                                     stripped: "world",
                                                                     span: Span {
@@ -361,6 +371,7 @@
                                                             end: 108,
                                                         },
                                                         comments: CommentGroup {
+                                                            id: 0,
                                                             comments: [],
                                                         },
                                                     },
@@ -370,10 +381,10 @@
                                                     },
                                                     index: Some(
                                                         Expression {
-                                                            id: 32,
+                                                            id: 35,
                                                             kind: Literal(
                                                                 Literal {
-                                                                    id: 33,
+                                                                    id: 36,
                                                                     span: Span {
                                                                         start: 109,
                                                                         end: 110,
@@ -396,6 +407,7 @@
                                                                 end: 110,
                                                             },
                                                             comments: CommentGroup {
+                                                                id: 0,
                                                                 comments: [],
                                                             },
                                                         },
@@ -411,6 +423,7 @@
                                                 end: 111,
                                             },
                                             comments: CommentGroup {
+                                                id: 0,
                                                 comments: [],
                                             },
                                         },
@@ -418,7 +431,7 @@
                                 ),
                                 Literal(
                                     LiteralStringPart {
-                                        id: 37,
+                                        id: 40,
                                         span: Span {
                                             start: 112,
                                             end: 113,
@@ -434,6 +447,7 @@
                         end: 117,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -450,6 +464,7 @@
             end: 118,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

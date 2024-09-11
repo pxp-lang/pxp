@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,14 +15,15 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 7,
+        id: 9,
         kind: Use(
             UseStatement {
-                id: 6,
+                id: 8,
                 span: Span {
                     start: 7,
                     end: 19,
@@ -30,16 +31,16 @@
                 kind: Normal,
                 uses: [
                     Use {
-                        id: 5,
+                        id: 7,
                         span: Span {
                             start: 11,
                             end: 18,
                         },
                         name: Name {
-                            id: 4,
+                            id: 6,
                             kind: Resolved(
                                 ResolvedName {
-                                    id: 4,
+                                    id: 6,
                                     span: Span {
                                         start: 11,
                                         end: 18,
@@ -64,37 +65,38 @@
             end: 19,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },
     Statement {
-        id: 15,
+        id: 18,
         kind: Class(
             ClassStatement {
-                id: 14,
+                id: 17,
                 span: Span {
                     start: 28,
                     end: 40,
                 },
                 attributes: [
                     AttributeGroup {
-                        id: 10,
+                        id: 13,
                         span: Span {
                             start: 21,
                             end: 27,
                         },
                         members: [
                             Attribute {
-                                id: 9,
+                                id: 12,
                                 span: Span {
                                     start: 23,
                                     end: 27,
                                 },
                                 name: Name {
-                                    id: 8,
+                                    id: 11,
                                     kind: Resolved(
                                         ResolvedName {
-                                            id: 8,
+                                            id: 11,
                                             span: Span {
                                                 start: 23,
                                                 end: 26,
@@ -114,7 +116,7 @@
                     },
                 ],
                 modifiers: ClassModifierGroup {
-                    id: 11,
+                    id: 14,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -126,10 +128,10 @@
                     end: 33,
                 },
                 name: Name {
-                    id: 12,
+                    id: 15,
                     kind: Resolved(
                         ResolvedName {
-                            id: 12,
+                            id: 15,
                             span: Span {
                                 start: 34,
                                 end: 37,
@@ -146,7 +148,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
-                    id: 13,
+                    id: 16,
                     span: Span {
                         start: 38,
                         end: 40,
@@ -168,6 +170,7 @@
             end: 40,
         },
         comments: CommentGroup {
+            id: 10,
             comments: [],
         },
     },

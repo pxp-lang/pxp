@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,35 +15,36 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 15,
+        id: 20,
         kind: Expression(
             ExpressionStatement {
-                id: 14,
+                id: 19,
                 span: Span {
                     start: 10,
                     end: 17,
                 },
                 expression: Expression {
-                    id: 13,
+                    id: 18,
                     kind: FunctionCall(
                         FunctionCallExpression {
-                            id: 12,
+                            id: 17,
                             span: Span {
                                 start: 7,
                                 end: 16,
                             },
                             target: Expression {
-                                id: 4,
+                                id: 6,
                                 kind: Name(
                                     Name {
-                                        id: 3,
+                                        id: 5,
                                         kind: Resolved(
                                             ResolvedName {
-                                                id: 3,
+                                                id: 5,
                                                 span: Span {
                                                     start: 7,
                                                     end: 10,
@@ -63,16 +64,18 @@
                                     end: 10,
                                 },
                                 comments: CommentGroup {
+                                    id: 0,
                                     comments: [],
                                 },
                             },
                             arguments: ArgumentList {
-                                id: 11,
+                                id: 16,
                                 span: Span {
                                     start: 10,
                                     end: 16,
                                 },
                                 comments: CommentGroup {
+                                    id: 7,
                                     comments: [],
                                 },
                                 left_parenthesis: Span {
@@ -82,20 +85,21 @@
                                 arguments: [
                                     Positional(
                                         PositionalArgument {
-                                            id: 7,
+                                            id: 10,
                                             span: Span {
                                                 start: 11,
                                                 end: 12,
                                             },
                                             comments: CommentGroup {
+                                                id: 11,
                                                 comments: [],
                                             },
                                             ellipsis: None,
                                             value: Expression {
-                                                id: 5,
+                                                id: 8,
                                                 kind: Literal(
                                                     Literal {
-                                                        id: 6,
+                                                        id: 9,
                                                         span: Span {
                                                             start: 11,
                                                             end: 12,
@@ -118,6 +122,7 @@
                                                     end: 12,
                                                 },
                                                 comments: CommentGroup {
+                                                    id: 0,
                                                     comments: [],
                                                 },
                                             },
@@ -125,20 +130,21 @@
                                     ),
                                     Positional(
                                         PositionalArgument {
-                                            id: 10,
+                                            id: 14,
                                             span: Span {
                                                 start: 14,
                                                 end: 15,
                                             },
                                             comments: CommentGroup {
+                                                id: 15,
                                                 comments: [],
                                             },
                                             ellipsis: None,
                                             value: Expression {
-                                                id: 8,
+                                                id: 12,
                                                 kind: Literal(
                                                     Literal {
-                                                        id: 9,
+                                                        id: 13,
                                                         span: Span {
                                                             start: 14,
                                                             end: 15,
@@ -161,6 +167,7 @@
                                                     end: 15,
                                                 },
                                                 comments: CommentGroup {
+                                                    id: 0,
                                                     comments: [],
                                                 },
                                             },
@@ -179,6 +186,7 @@
                         end: 16,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -195,6 +203,7 @@
             end: 17,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

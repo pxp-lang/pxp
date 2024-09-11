@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,14 +15,15 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 9,
+        id: 11,
         kind: Interface(
             InterfaceStatement {
-                id: 8,
+                id: 10,
                 span: Span {
                     start: 7,
                     end: 40,
@@ -33,10 +34,10 @@
                     end: 16,
                 },
                 name: Name {
-                    id: 3,
+                    id: 5,
                     kind: Resolved(
                         ResolvedName {
-                            id: 3,
+                            id: 5,
                             span: Span {
                                 start: 17,
                                 end: 20,
@@ -52,7 +53,7 @@
                 },
                 extends: Some(
                     InterfaceExtends {
-                        id: 6,
+                        id: 8,
                         span: Span {
                             start: 21,
                             end: 37,
@@ -64,10 +65,10 @@
                         parents: CommaSeparated {
                             inner: [
                                 Name {
-                                    id: 4,
+                                    id: 6,
                                     kind: Resolved(
                                         ResolvedName {
-                                            id: 4,
+                                            id: 6,
                                             span: Span {
                                                 start: 29,
                                                 end: 32,
@@ -82,10 +83,10 @@
                                     },
                                 },
                                 Name {
-                                    id: 5,
+                                    id: 7,
                                     kind: Resolved(
                                         ResolvedName {
-                                            id: 5,
+                                            id: 7,
                                             span: Span {
                                                 start: 34,
                                                 end: 37,
@@ -110,7 +111,7 @@
                     },
                 ),
                 body: InterfaceBody {
-                    id: 7,
+                    id: 9,
                     span: Span {
                         start: 38,
                         end: 40,
@@ -132,6 +133,7 @@
             end: 40,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

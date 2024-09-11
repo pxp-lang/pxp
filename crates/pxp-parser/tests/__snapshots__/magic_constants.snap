@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,23 +15,24 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 6,
+        id: 8,
         kind: Expression(
             ExpressionStatement {
-                id: 5,
+                id: 7,
                 span: Span {
                     start: 7,
                     end: 15,
                 },
                 expression: Expression {
-                    id: 3,
+                    id: 5,
                     kind: MagicConstant(
                         MagicConstantExpression {
-                            id: 4,
+                            id: 6,
                             span: Span {
                                 start: 7,
                                 end: 14,
@@ -44,6 +45,7 @@
                         end: 14,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -60,23 +62,24 @@
             end: 15,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },
     Statement {
-        id: 10,
+        id: 13,
         kind: Expression(
             ExpressionStatement {
-                id: 9,
+                id: 12,
                 span: Span {
                     start: 16,
                     end: 25,
                 },
                 expression: Expression {
-                    id: 7,
+                    id: 10,
                     kind: MagicConstant(
                         MagicConstantExpression {
-                            id: 8,
+                            id: 11,
                             span: Span {
                                 start: 16,
                                 end: 24,
@@ -89,6 +92,7 @@
                         end: 24,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -105,23 +109,24 @@
             end: 25,
         },
         comments: CommentGroup {
+            id: 9,
             comments: [],
         },
     },
     Statement {
-        id: 14,
+        id: 18,
         kind: Expression(
             ExpressionStatement {
-                id: 13,
+                id: 17,
                 span: Span {
                     start: 26,
                     end: 35,
                 },
                 expression: Expression {
-                    id: 11,
+                    id: 15,
                     kind: MagicConstant(
                         MagicConstantExpression {
-                            id: 12,
+                            id: 16,
                             span: Span {
                                 start: 26,
                                 end: 34,
@@ -134,6 +139,7 @@
                         end: 34,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -150,23 +156,24 @@
             end: 35,
         },
         comments: CommentGroup {
+            id: 14,
             comments: [],
         },
     },
     Statement {
-        id: 18,
+        id: 23,
         kind: Expression(
             ExpressionStatement {
-                id: 17,
+                id: 22,
                 span: Span {
                     start: 36,
                     end: 49,
                 },
                 expression: Expression {
-                    id: 15,
+                    id: 20,
                     kind: MagicConstant(
                         MagicConstantExpression {
-                            id: 16,
+                            id: 21,
                             span: Span {
                                 start: 36,
                                 end: 48,
@@ -179,6 +186,7 @@
                         end: 48,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -195,23 +203,24 @@
             end: 49,
         },
         comments: CommentGroup {
+            id: 19,
             comments: [],
         },
     },
     Statement {
-        id: 22,
+        id: 28,
         kind: Expression(
             ExpressionStatement {
-                id: 21,
+                id: 27,
                 span: Span {
                     start: 50,
                     end: 60,
                 },
                 expression: Expression {
-                    id: 19,
+                    id: 25,
                     kind: MagicConstant(
                         MagicConstantExpression {
-                            id: 20,
+                            id: 26,
                             span: Span {
                                 start: 50,
                                 end: 59,
@@ -224,6 +233,7 @@
                         end: 59,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -240,23 +250,24 @@
             end: 60,
         },
         comments: CommentGroup {
+            id: 24,
             comments: [],
         },
     },
     Statement {
-        id: 26,
+        id: 33,
         kind: Expression(
             ExpressionStatement {
-                id: 25,
+                id: 32,
                 span: Span {
                     start: 61,
                     end: 71,
                 },
                 expression: Expression {
-                    id: 23,
+                    id: 30,
                     kind: MagicConstant(
                         MagicConstantExpression {
-                            id: 24,
+                            id: 31,
                             span: Span {
                                 start: 61,
                                 end: 70,
@@ -269,6 +280,7 @@
                         end: 70,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -285,23 +297,24 @@
             end: 71,
         },
         comments: CommentGroup {
+            id: 29,
             comments: [],
         },
     },
     Statement {
-        id: 30,
+        id: 38,
         kind: Expression(
             ExpressionStatement {
-                id: 29,
+                id: 37,
                 span: Span {
                     start: 72,
                     end: 83,
                 },
                 expression: Expression {
-                    id: 27,
+                    id: 35,
                     kind: MagicConstant(
                         MagicConstantExpression {
-                            id: 28,
+                            id: 36,
                             span: Span {
                                 start: 72,
                                 end: 82,
@@ -314,6 +327,7 @@
                         end: 82,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -330,23 +344,24 @@
             end: 83,
         },
         comments: CommentGroup {
+            id: 34,
             comments: [],
         },
     },
     Statement {
-        id: 34,
+        id: 43,
         kind: Expression(
             ExpressionStatement {
-                id: 33,
+                id: 42,
                 span: Span {
                     start: 84,
                     end: 98,
                 },
                 expression: Expression {
-                    id: 31,
+                    id: 40,
                     kind: MagicConstant(
                         MagicConstantExpression {
-                            id: 32,
+                            id: 41,
                             span: Span {
                                 start: 84,
                                 end: 97,
@@ -359,6 +374,7 @@
                         end: 97,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -375,6 +391,7 @@
             end: 98,
         },
         comments: CommentGroup {
+            id: 39,
             comments: [],
         },
     },

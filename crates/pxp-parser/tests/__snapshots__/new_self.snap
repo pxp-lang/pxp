@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,21 +15,22 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 19,
+        id: 26,
         kind: Class(
             ClassStatement {
-                id: 18,
+                id: 25,
                 span: Span {
                     start: 7,
                     end: 63,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
-                    id: 3,
+                    id: 5,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -41,10 +42,10 @@
                     end: 12,
                 },
                 name: Name {
-                    id: 4,
+                    id: 6,
                     kind: Resolved(
                         ResolvedName {
-                            id: 4,
+                            id: 6,
                             span: Span {
                                 start: 13,
                                 end: 14,
@@ -61,7 +62,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
-                    id: 17,
+                    id: 24,
                     span: Span {
                         start: 15,
                         end: 63,
@@ -73,17 +74,18 @@
                     members: [
                         ConcreteMethod(
                             ConcreteMethod {
-                                id: 16,
+                                id: 23,
                                 span: Span {
                                     start: 21,
                                     end: 61,
                                 },
                                 comments: CommentGroup {
+                                    id: 8,
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
-                                    id: 5,
+                                    id: 7,
                                     span: Span {
                                         start: 0,
                                         end: 0,
@@ -96,7 +98,7 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
-                                    id: 6,
+                                    id: 9,
                                     symbol: "a",
                                     span: Span {
                                         start: 30,
@@ -104,12 +106,13 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
-                                    id: 7,
+                                    id: 11,
                                     span: Span {
                                         start: 31,
                                         end: 33,
                                     },
                                     comments: CommentGroup {
+                                        id: 10,
                                         comments: [],
                                     },
                                     left_parenthesis: Span {
@@ -127,12 +130,13 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
-                                    id: 15,
+                                    id: 22,
                                     span: Span {
                                         start: 34,
                                         end: 61,
                                     },
                                     comments: CommentGroup {
+                                        id: 12,
                                         comments: [],
                                     },
                                     left_brace: Span {
@@ -141,19 +145,19 @@
                                     },
                                     statements: [
                                         Statement {
-                                            id: 14,
+                                            id: 21,
                                             kind: Expression(
                                                 ExpressionStatement {
-                                                    id: 13,
+                                                    id: 20,
                                                     span: Span {
                                                         start: 44,
                                                         end: 55,
                                                     },
                                                     expression: Expression {
-                                                        id: 11,
+                                                        id: 18,
                                                         kind: New(
                                                             NewExpression {
-                                                                id: 12,
+                                                                id: 19,
                                                                 span: Span {
                                                                     start: 44,
                                                                     end: 54,
@@ -163,13 +167,13 @@
                                                                     end: 47,
                                                                 },
                                                                 target: Expression {
-                                                                    id: 8,
+                                                                    id: 14,
                                                                     kind: Name(
                                                                         Name {
-                                                                            id: 9,
+                                                                            id: 15,
                                                                             kind: Special(
                                                                                 SpecialName {
-                                                                                    id: 9,
+                                                                                    id: 15,
                                                                                     span: Span {
                                                                                         start: 48,
                                                                                         end: 52,
@@ -194,17 +198,19 @@
                                                                         end: 52,
                                                                     },
                                                                     comments: CommentGroup {
+                                                                        id: 0,
                                                                         comments: [],
                                                                     },
                                                                 },
                                                                 arguments: Some(
                                                                     ArgumentList {
-                                                                        id: 10,
+                                                                        id: 17,
                                                                         span: Span {
                                                                             start: 52,
                                                                             end: 54,
                                                                         },
                                                                         comments: CommentGroup {
+                                                                            id: 16,
                                                                             comments: [],
                                                                         },
                                                                         left_parenthesis: Span {
@@ -225,6 +231,7 @@
                                                             end: 54,
                                                         },
                                                         comments: CommentGroup {
+                                                            id: 0,
                                                             comments: [],
                                                         },
                                                     },
@@ -241,6 +248,7 @@
                                                 end: 55,
                                             },
                                             comments: CommentGroup {
+                                                id: 13,
                                                 comments: [],
                                             },
                                         },
@@ -265,6 +273,7 @@
             end: 63,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

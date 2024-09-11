@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,21 +15,22 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 14,
+        id: 17,
         kind: Class(
             ClassStatement {
-                id: 13,
+                id: 16,
                 span: Span {
                     start: 7,
                     end: 43,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
-                    id: 3,
+                    id: 5,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -41,10 +42,10 @@
                     end: 12,
                 },
                 name: Name {
-                    id: 4,
+                    id: 6,
                     kind: Resolved(
                         ResolvedName {
-                            id: 4,
+                            id: 6,
                             span: Span {
                                 start: 13,
                                 end: 16,
@@ -61,7 +62,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
-                    id: 12,
+                    id: 15,
                     span: Span {
                         start: 17,
                         end: 43,
@@ -73,17 +74,18 @@
                     members: [
                         Constant(
                             ClassishConstant {
-                                id: 11,
+                                id: 14,
                                 span: Span {
                                     start: 23,
                                     end: 41,
                                 },
                                 comments: CommentGroup {
+                                    id: 8,
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: ConstantModifierGroup {
-                                    id: 5,
+                                    id: 7,
                                     span: Span {
                                         start: 0,
                                         end: 0,
@@ -96,7 +98,7 @@
                                 },
                                 data_type: Some(
                                     DataType {
-                                        id: 6,
+                                        id: 9,
                                         kind: Integer,
                                         span: Span {
                                             start: 29,
@@ -106,13 +108,13 @@
                                 ),
                                 entries: [
                                     ClassishConstantEntry {
-                                        id: 10,
+                                        id: 13,
                                         span: Span {
                                             start: 33,
                                             end: 40,
                                         },
                                         name: SimpleIdentifier {
-                                            id: 7,
+                                            id: 10,
                                             symbol: "FOO",
                                             span: Span {
                                                 start: 33,
@@ -124,10 +126,10 @@
                                             end: 38,
                                         },
                                         value: Expression {
-                                            id: 8,
+                                            id: 11,
                                             kind: Literal(
                                                 Literal {
-                                                    id: 9,
+                                                    id: 12,
                                                     span: Span {
                                                         start: 39,
                                                         end: 40,
@@ -150,6 +152,7 @@
                                                 end: 40,
                                             },
                                             comments: CommentGroup {
+                                                id: 0,
                                                 comments: [],
                                             },
                                         },
@@ -174,6 +177,7 @@
             end: 43,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

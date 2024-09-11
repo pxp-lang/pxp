@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,14 +15,15 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 8,
+        id: 10,
         kind: Use(
             UseStatement {
-                id: 7,
+                id: 9,
                 span: Span {
                     start: 7,
                     end: 26,
@@ -30,16 +31,16 @@
                 kind: Normal,
                 uses: [
                     Use {
-                        id: 6,
+                        id: 8,
                         span: Span {
                             start: 11,
                             end: 25,
                         },
                         name: Name {
-                            id: 4,
+                            id: 6,
                             kind: Resolved(
                                 ResolvedName {
-                                    id: 4,
+                                    id: 6,
                                     span: Span {
                                         start: 11,
                                         end: 18,
@@ -55,7 +56,7 @@
                         },
                         alias: Some(
                             SimpleIdentifier {
-                                id: 5,
+                                id: 7,
                                 symbol: "Qux",
                                 span: Span {
                                     start: 22,
@@ -73,21 +74,22 @@
             end: 26,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },
     Statement {
-        id: 15,
+        id: 18,
         kind: Class(
             ClassStatement {
-                id: 14,
+                id: 17,
                 span: Span {
                     start: 28,
                     end: 52,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
-                    id: 9,
+                    id: 12,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -99,10 +101,10 @@
                     end: 33,
                 },
                 name: Name {
-                    id: 10,
+                    id: 13,
                     kind: Resolved(
                         ResolvedName {
-                            id: 10,
+                            id: 13,
                             span: Span {
                                 start: 34,
                                 end: 37,
@@ -118,7 +120,7 @@
                 },
                 extends: Some(
                     ClassExtends {
-                        id: 12,
+                        id: 15,
                         span: Span {
                             start: 38,
                             end: 49,
@@ -128,10 +130,10 @@
                             end: 45,
                         },
                         parent: Name {
-                            id: 11,
+                            id: 14,
                             kind: Resolved(
                                 ResolvedName {
-                                    id: 11,
+                                    id: 14,
                                     span: Span {
                                         start: 46,
                                         end: 49,
@@ -149,7 +151,7 @@
                 ),
                 implements: None,
                 body: ClassBody {
-                    id: 13,
+                    id: 16,
                     span: Span {
                         start: 50,
                         end: 52,
@@ -171,6 +173,7 @@
             end: 52,
         },
         comments: CommentGroup {
+            id: 11,
             comments: [],
         },
     },

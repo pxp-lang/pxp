@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,20 +15,21 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 14,
+        id: 16,
         kind: GroupUse(
             GroupUseStatement {
-                id: 13,
+                id: 15,
                 span: Span {
                     start: 11,
                     end: 59,
                 },
                 prefix: SimpleIdentifier {
-                    id: 3,
+                    id: 5,
                     symbol: "Foo\",
                     span: Span {
                         start: 11,
@@ -38,16 +39,16 @@
                 kind: Normal,
                 uses: [
                     Use {
-                        id: 5,
+                        id: 7,
                         span: Span {
                             start: 21,
                             end: 24,
                         },
                         name: Name {
-                            id: 6,
+                            id: 8,
                             kind: Resolved(
                                 ResolvedName {
-                                    id: 6,
+                                    id: 8,
                                     span: Span {
                                         start: 21,
                                         end: 24,
@@ -65,16 +66,16 @@
                         kind: None,
                     },
                     Use {
-                        id: 8,
+                        id: 10,
                         span: Span {
                             start: 30,
                             end: 42,
                         },
                         name: Name {
-                            id: 9,
+                            id: 11,
                             kind: Resolved(
                                 ResolvedName {
-                                    id: 9,
+                                    id: 11,
                                     span: Span {
                                         start: 39,
                                         end: 42,
@@ -94,16 +95,16 @@
                         ),
                     },
                     Use {
-                        id: 11,
+                        id: 13,
                         span: Span {
                             start: 48,
                             end: 56,
                         },
                         name: Name {
-                            id: 12,
+                            id: 14,
                             kind: Resolved(
                                 ResolvedName {
-                                    id: 12,
+                                    id: 14,
                                     span: Span {
                                         start: 54,
                                         end: 56,
@@ -130,6 +131,7 @@
             end: 59,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

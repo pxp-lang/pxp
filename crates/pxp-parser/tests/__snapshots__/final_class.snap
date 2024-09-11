@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,21 +15,22 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 7,
+        id: 9,
         kind: Class(
             ClassStatement {
-                id: 6,
+                id: 8,
                 span: Span {
                     start: 7,
                     end: 25,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
-                    id: 3,
+                    id: 5,
                     span: Span {
                         start: 7,
                         end: 12,
@@ -48,10 +49,10 @@
                     end: 18,
                 },
                 name: Name {
-                    id: 4,
+                    id: 6,
                     kind: Resolved(
                         ResolvedName {
-                            id: 4,
+                            id: 6,
                             span: Span {
                                 start: 19,
                                 end: 22,
@@ -68,7 +69,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
-                    id: 5,
+                    id: 7,
                     span: Span {
                         start: 23,
                         end: 25,
@@ -90,6 +91,7 @@
             end: 25,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

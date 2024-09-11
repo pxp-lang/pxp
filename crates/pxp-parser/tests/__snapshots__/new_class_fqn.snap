@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,23 +15,24 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 9,
+        id: 12,
         kind: Expression(
             ExpressionStatement {
-                id: 8,
+                id: 11,
                 span: Span {
                     start: 7,
                     end: 26,
                 },
                 expression: Expression {
-                    id: 6,
+                    id: 9,
                     kind: New(
                         NewExpression {
-                            id: 7,
+                            id: 10,
                             span: Span {
                                 start: 7,
                                 end: 25,
@@ -41,13 +42,13 @@
                                 end: 10,
                             },
                             target: Expression {
-                                id: 3,
+                                id: 5,
                                 kind: Name(
                                     Name {
-                                        id: 4,
+                                        id: 6,
                                         kind: Resolved(
                                             ResolvedName {
-                                                id: 4,
+                                                id: 6,
                                                 span: Span {
                                                     start: 11,
                                                     end: 23,
@@ -67,17 +68,19 @@
                                     end: 23,
                                 },
                                 comments: CommentGroup {
+                                    id: 0,
                                     comments: [],
                                 },
                             },
                             arguments: Some(
                                 ArgumentList {
-                                    id: 5,
+                                    id: 8,
                                     span: Span {
                                         start: 23,
                                         end: 25,
                                     },
                                     comments: CommentGroup {
+                                        id: 7,
                                         comments: [],
                                     },
                                     left_parenthesis: Span {
@@ -98,6 +101,7 @@
                         end: 25,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -114,6 +118,7 @@
             end: 26,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

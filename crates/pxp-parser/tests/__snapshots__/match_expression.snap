@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,23 +15,24 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 23,
+        id: 25,
         kind: Expression(
             ExpressionStatement {
-                id: 22,
+                id: 24,
                 span: Span {
                     start: 7,
                     end: 92,
                 },
                 expression: Expression {
-                    id: 20,
+                    id: 22,
                     kind: Match(
                         MatchExpression {
-                            id: 21,
+                            id: 23,
                             span: Span {
                                 start: 7,
                                 end: 91,
@@ -45,11 +46,11 @@
                                 end: 14,
                             },
                             condition: Expression {
-                                id: 3,
+                                id: 5,
                                 kind: Variable(
                                     SimpleVariable(
                                         SimpleVariable {
-                                            id: 4,
+                                            id: 6,
                                             symbol: "$foo",
                                             stripped: "foo",
                                             span: Span {
@@ -64,6 +65,7 @@
                                     end: 18,
                                 },
                                 comments: CommentGroup {
+                                    id: 0,
                                     comments: [],
                                 },
                             },
@@ -77,7 +79,7 @@
                             },
                             default: Some(
                                 DefaultMatchArm {
-                                    id: 19,
+                                    id: 21,
                                     span: Span {
                                         start: 70,
                                         end: 88,
@@ -91,10 +93,10 @@
                                         end: 80,
                                     },
                                     body: Expression {
-                                        id: 17,
+                                        id: 19,
                                         kind: Literal(
                                             Literal {
-                                                id: 18,
+                                                id: 20,
                                                 span: Span {
                                                     start: 81,
                                                     end: 88,
@@ -117,6 +119,7 @@
                                             end: 88,
                                         },
                                         comments: CommentGroup {
+                                            id: 0,
                                             comments: [],
                                         },
                                     },
@@ -124,17 +127,17 @@
                             ),
                             arms: [
                                 MatchArm {
-                                    id: 9,
+                                    id: 11,
                                     span: Span {
                                         start: 26,
                                         end: 36,
                                     },
                                     conditions: [
                                         Expression {
-                                            id: 5,
+                                            id: 7,
                                             kind: Literal(
                                                 Literal {
-                                                    id: 6,
+                                                    id: 8,
                                                     span: Span {
                                                         start: 26,
                                                         end: 27,
@@ -157,6 +160,7 @@
                                                 end: 27,
                                             },
                                             comments: CommentGroup {
+                                                id: 0,
                                                 comments: [],
                                             },
                                         },
@@ -166,10 +170,10 @@
                                         end: 30,
                                     },
                                     body: Expression {
-                                        id: 7,
+                                        id: 9,
                                         kind: Literal(
                                             Literal {
-                                                id: 8,
+                                                id: 10,
                                                 span: Span {
                                                     start: 31,
                                                     end: 36,
@@ -192,22 +196,23 @@
                                             end: 36,
                                         },
                                         comments: CommentGroup {
+                                            id: 0,
                                             comments: [],
                                         },
                                     },
                                 },
                                 MatchArm {
-                                    id: 16,
+                                    id: 18,
                                     span: Span {
                                         start: 42,
                                         end: 64,
                                     },
                                     conditions: [
                                         Expression {
-                                            id: 10,
+                                            id: 12,
                                             kind: Literal(
                                                 Literal {
-                                                    id: 11,
+                                                    id: 13,
                                                     span: Span {
                                                         start: 42,
                                                         end: 43,
@@ -230,14 +235,15 @@
                                                 end: 43,
                                             },
                                             comments: CommentGroup {
+                                                id: 0,
                                                 comments: [],
                                             },
                                         },
                                         Expression {
-                                            id: 12,
+                                            id: 14,
                                             kind: Literal(
                                                 Literal {
-                                                    id: 13,
+                                                    id: 15,
                                                     span: Span {
                                                         start: 45,
                                                         end: 46,
@@ -260,6 +266,7 @@
                                                 end: 46,
                                             },
                                             comments: CommentGroup {
+                                                id: 0,
                                                 comments: [],
                                             },
                                         },
@@ -269,10 +276,10 @@
                                         end: 49,
                                     },
                                     body: Expression {
-                                        id: 14,
+                                        id: 16,
                                         kind: Literal(
                                             Literal {
-                                                id: 15,
+                                                id: 17,
                                                 span: Span {
                                                     start: 50,
                                                     end: 64,
@@ -295,6 +302,7 @@
                                             end: 64,
                                         },
                                         comments: CommentGroup {
+                                            id: 0,
                                             comments: [],
                                         },
                                     },
@@ -311,6 +319,7 @@
                         end: 91,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -327,6 +336,7 @@
             end: 92,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

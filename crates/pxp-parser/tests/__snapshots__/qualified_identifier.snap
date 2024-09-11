@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,35 +15,36 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 10,
+        id: 13,
         kind: Expression(
             ExpressionStatement {
-                id: 9,
+                id: 12,
                 span: Span {
                     start: 10,
                     end: 18,
                 },
                 expression: Expression {
-                    id: 8,
+                    id: 11,
                     kind: StaticMethodCall(
                         StaticMethodCallExpression {
-                            id: 7,
+                            id: 10,
                             span: Span {
                                 start: 7,
                                 end: 17,
                             },
                             target: Expression {
-                                id: 4,
+                                id: 6,
                                 kind: Name(
                                     Name {
-                                        id: 3,
+                                        id: 5,
                                         kind: Resolved(
                                             ResolvedName {
-                                                id: 3,
+                                                id: 5,
                                                 span: Span {
                                                     start: 7,
                                                     end: 10,
@@ -63,6 +64,7 @@
                                     end: 10,
                                 },
                                 comments: CommentGroup {
+                                    id: 0,
                                     comments: [],
                                 },
                             },
@@ -72,7 +74,7 @@
                             },
                             method: SimpleIdentifier(
                                 SimpleIdentifier {
-                                    id: 5,
+                                    id: 7,
                                     symbol: "foo",
                                     span: Span {
                                         start: 12,
@@ -81,12 +83,13 @@
                                 },
                             ),
                             arguments: ArgumentList {
-                                id: 6,
+                                id: 9,
                                 span: Span {
                                     start: 15,
                                     end: 17,
                                 },
                                 comments: CommentGroup {
+                                    id: 8,
                                     comments: [],
                                 },
                                 left_parenthesis: Span {
@@ -106,6 +109,7 @@
                         end: 17,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -122,6 +126,7 @@
             end: 18,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

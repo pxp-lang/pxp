@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,14 +15,15 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 9,
+        id: 12,
         kind: If(
             IfStatement {
-                id: 8,
+                id: 11,
                 span: Span {
                     start: 7,
                     end: 23,
@@ -36,11 +37,11 @@
                     end: 11,
                 },
                 condition: Expression {
-                    id: 3,
+                    id: 5,
                     kind: Variable(
                         SimpleVariable(
                             SimpleVariable {
-                                id: 4,
+                                id: 6,
                                 symbol: "$a",
                                 stripped: "a",
                                 span: Span {
@@ -55,6 +56,7 @@
                         end: 13,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -64,16 +66,16 @@
                 },
                 body: Statement(
                     IfStatementBodyStatement {
-                        id: 7,
+                        id: 10,
                         span: Span {
                             start: 15,
                             end: 23,
                         },
                         statement: Statement {
-                            id: 6,
+                            id: 9,
                             kind: Block(
                                 BlockStatement {
-                                    id: 5,
+                                    id: 8,
                                     span: Span {
                                         start: 15,
                                         end: 23,
@@ -94,6 +96,7 @@
                                 end: 23,
                             },
                             comments: CommentGroup {
+                                id: 7,
                                 comments: [],
                             },
                         },
@@ -108,6 +111,7 @@
             end: 23,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

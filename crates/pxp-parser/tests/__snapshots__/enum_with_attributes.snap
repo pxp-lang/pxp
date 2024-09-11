@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,37 +15,38 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 9,
+        id: 11,
         kind: UnitEnum(
             UnitEnumStatement {
-                id: 8,
+                id: 10,
                 span: Span {
                     start: 14,
                     end: 31,
                 },
                 attributes: [
                     AttributeGroup {
-                        id: 5,
+                        id: 7,
                         span: Span {
                             start: 7,
                             end: 13,
                         },
                         members: [
                             Attribute {
-                                id: 4,
+                                id: 6,
                                 span: Span {
                                     start: 9,
                                     end: 13,
                                 },
                                 name: Name {
-                                    id: 3,
+                                    id: 5,
                                     kind: Resolved(
                                         ResolvedName {
-                                            id: 3,
+                                            id: 5,
                                             span: Span {
                                                 start: 9,
                                                 end: 12,
@@ -69,10 +70,10 @@
                     end: 18,
                 },
                 name: Name {
-                    id: 6,
+                    id: 8,
                     kind: Resolved(
                         ResolvedName {
-                            id: 6,
+                            id: 8,
                             span: Span {
                                 start: 19,
                                 end: 22,
@@ -88,7 +89,7 @@
                 },
                 implements: [],
                 body: UnitEnumBody {
-                    id: 7,
+                    id: 9,
                     span: Span {
                         start: 23,
                         end: 31,
@@ -110,6 +111,7 @@
             end: 31,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

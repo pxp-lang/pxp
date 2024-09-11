@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,14 +15,15 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 5,
+        id: 7,
         kind: Echo(
             EchoStatement {
-                id: 4,
+                id: 6,
                 span: Span {
                     start: 7,
                     end: 12,
@@ -33,10 +34,10 @@
                 },
                 values: [
                     Expression {
-                        id: 3,
+                        id: 5,
                         kind: Missing(
                             MissingExpression {
-                                id: 3,
+                                id: 5,
                                 span: Span {
                                     start: 11,
                                     end: 12,
@@ -48,6 +49,7 @@
                             end: 12,
                         },
                         comments: CommentGroup {
+                            id: 0,
                             comments: [],
                         },
                     },
@@ -65,6 +67,7 @@
             end: 12,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

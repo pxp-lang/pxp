@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: InlineHtml(
             InlineHtmlStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 4,
@@ -25,14 +25,15 @@
             end: 4,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 4,
+        id: 6,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 3,
+                id: 5,
                 span: Span {
                     start: 4,
                     end: 9,
@@ -44,14 +45,15 @@
             end: 9,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },
     Statement {
-        id: 8,
+        id: 11,
         kind: Echo(
             EchoStatement {
-                id: 7,
+                id: 10,
                 span: Span {
                     start: 10,
                     end: 33,
@@ -62,10 +64,10 @@
                 },
                 values: [
                     Expression {
-                        id: 5,
+                        id: 8,
                         kind: Literal(
                             Literal {
-                                id: 6,
+                                id: 9,
                                 span: Span {
                                     start: 16,
                                     end: 29,
@@ -88,6 +90,7 @@
                             end: 29,
                         },
                         comments: CommentGroup {
+                            id: 0,
                             comments: [],
                         },
                     },
@@ -105,14 +108,15 @@
             end: 33,
         },
         comments: CommentGroup {
+            id: 7,
             comments: [],
         },
     },
     Statement {
-        id: 10,
+        id: 14,
         kind: InlineHtml(
             InlineHtmlStatement {
-                id: 9,
+                id: 13,
                 span: Span {
                     start: 33,
                     end: 38,
@@ -134,6 +138,7 @@
             end: 38,
         },
         comments: CommentGroup {
+            id: 12,
             comments: [],
         },
     },

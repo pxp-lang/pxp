@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,37 +15,38 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 10,
+        id: 12,
         kind: Class(
             ClassStatement {
-                id: 9,
+                id: 11,
                 span: Span {
                     start: 14,
                     end: 26,
                 },
                 attributes: [
                     AttributeGroup {
-                        id: 5,
+                        id: 7,
                         span: Span {
                             start: 7,
                             end: 13,
                         },
                         members: [
                             Attribute {
-                                id: 4,
+                                id: 6,
                                 span: Span {
                                     start: 9,
                                     end: 13,
                                 },
                                 name: Name {
-                                    id: 3,
+                                    id: 5,
                                     kind: Resolved(
                                         ResolvedName {
-                                            id: 3,
+                                            id: 5,
                                             span: Span {
                                                 start: 9,
                                                 end: 12,
@@ -65,7 +66,7 @@
                     },
                 ],
                 modifiers: ClassModifierGroup {
-                    id: 6,
+                    id: 8,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -77,10 +78,10 @@
                     end: 19,
                 },
                 name: Name {
-                    id: 7,
+                    id: 9,
                     kind: Resolved(
                         ResolvedName {
-                            id: 7,
+                            id: 9,
                             span: Span {
                                 start: 20,
                                 end: 23,
@@ -97,7 +98,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
-                    id: 8,
+                    id: 10,
                     span: Span {
                         start: 24,
                         end: 26,
@@ -119,6 +120,7 @@
             end: 26,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

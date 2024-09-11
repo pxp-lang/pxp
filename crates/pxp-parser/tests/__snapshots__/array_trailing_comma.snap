@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,23 +15,24 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 15,
+        id: 17,
         kind: Expression(
             ExpressionStatement {
-                id: 14,
+                id: 16,
                 span: Span {
                     start: 7,
                     end: 18,
                 },
                 expression: Expression {
-                    id: 13,
+                    id: 15,
                     kind: ShortArray(
                         ShortArrayExpression {
-                            id: 12,
+                            id: 14,
                             span: Span {
                                 start: 7,
                                 end: 17,
@@ -44,16 +45,16 @@
                                 inner: [
                                     Value(
                                         ArrayItemValue {
-                                            id: 5,
+                                            id: 7,
                                             span: Span {
                                                 start: 8,
                                                 end: 9,
                                             },
                                             value: Expression {
-                                                id: 3,
+                                                id: 5,
                                                 kind: Literal(
                                                     Literal {
-                                                        id: 4,
+                                                        id: 6,
                                                         span: Span {
                                                             start: 8,
                                                             end: 9,
@@ -76,6 +77,7 @@
                                                     end: 9,
                                                 },
                                                 comments: CommentGroup {
+                                                    id: 0,
                                                     comments: [],
                                                 },
                                             },
@@ -83,16 +85,16 @@
                                     ),
                                     Value(
                                         ArrayItemValue {
-                                            id: 8,
+                                            id: 10,
                                             span: Span {
                                                 start: 11,
                                                 end: 12,
                                             },
                                             value: Expression {
-                                                id: 6,
+                                                id: 8,
                                                 kind: Literal(
                                                     Literal {
-                                                        id: 7,
+                                                        id: 9,
                                                         span: Span {
                                                             start: 11,
                                                             end: 12,
@@ -115,6 +117,7 @@
                                                     end: 12,
                                                 },
                                                 comments: CommentGroup {
+                                                    id: 0,
                                                     comments: [],
                                                 },
                                             },
@@ -122,16 +125,16 @@
                                     ),
                                     Value(
                                         ArrayItemValue {
-                                            id: 11,
+                                            id: 13,
                                             span: Span {
                                                 start: 14,
                                                 end: 15,
                                             },
                                             value: Expression {
-                                                id: 9,
+                                                id: 11,
                                                 kind: Literal(
                                                     Literal {
-                                                        id: 10,
+                                                        id: 12,
                                                         span: Span {
                                                             start: 14,
                                                             end: 15,
@@ -154,6 +157,7 @@
                                                     end: 15,
                                                 },
                                                 comments: CommentGroup {
+                                                    id: 0,
                                                     comments: [],
                                                 },
                                             },
@@ -186,6 +190,7 @@
                         end: 17,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -202,6 +207,7 @@
             end: 18,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

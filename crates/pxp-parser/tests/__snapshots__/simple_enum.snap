@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,14 +15,15 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 6,
+        id: 8,
         kind: UnitEnum(
             UnitEnumStatement {
-                id: 5,
+                id: 7,
                 span: Span {
                     start: 7,
                     end: 18,
@@ -33,10 +34,10 @@
                     end: 11,
                 },
                 name: Name {
-                    id: 3,
+                    id: 5,
                     kind: Resolved(
                         ResolvedName {
-                            id: 3,
+                            id: 5,
                             span: Span {
                                 start: 12,
                                 end: 15,
@@ -52,7 +53,7 @@
                 },
                 implements: [],
                 body: UnitEnumBody {
-                    id: 4,
+                    id: 6,
                     span: Span {
                         start: 16,
                         end: 18,
@@ -74,6 +75,7 @@
             end: 18,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

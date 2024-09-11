@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,14 +15,15 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 14,
+        id: 20,
         kind: Interface(
             InterfaceStatement {
-                id: 13,
+                id: 19,
                 span: Span {
                     start: 7,
                     end: 67,
@@ -33,10 +34,10 @@
                     end: 16,
                 },
                 name: Name {
-                    id: 3,
+                    id: 5,
                     kind: Resolved(
                         ResolvedName {
-                            id: 3,
+                            id: 5,
                             span: Span {
                                 start: 17,
                                 end: 20,
@@ -52,7 +53,7 @@
                 },
                 extends: None,
                 body: InterfaceBody {
-                    id: 12,
+                    id: 18,
                     span: Span {
                         start: 21,
                         end: 67,
@@ -64,17 +65,18 @@
                     members: [
                         AbstractMethod(
                             AbstractMethod {
-                                id: 7,
+                                id: 11,
                                 span: Span {
                                     start: 27,
                                     end: 40,
                                 },
                                 comments: CommentGroup {
+                                    id: 7,
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
-                                    id: 4,
+                                    id: 6,
                                     span: Span {
                                         start: 0,
                                         end: 0,
@@ -87,7 +89,7 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
-                                    id: 5,
+                                    id: 8,
                                     symbol: "a",
                                     span: Span {
                                         start: 36,
@@ -95,12 +97,13 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
-                                    id: 6,
+                                    id: 10,
                                     span: Span {
                                         start: 37,
                                         end: 39,
                                     },
                                     comments: CommentGroup {
+                                        id: 9,
                                         comments: [],
                                     },
                                     left_parenthesis: Span {
@@ -125,17 +128,18 @@
                         ),
                         AbstractMethod(
                             AbstractMethod {
-                                id: 11,
+                                id: 17,
                                 span: Span {
                                     start: 52,
                                     end: 65,
                                 },
                                 comments: CommentGroup {
+                                    id: 13,
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
-                                    id: 8,
+                                    id: 12,
                                     span: Span {
                                         start: 45,
                                         end: 51,
@@ -155,7 +159,7 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
-                                    id: 9,
+                                    id: 14,
                                     symbol: "b",
                                     span: Span {
                                         start: 61,
@@ -163,12 +167,13 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
-                                    id: 10,
+                                    id: 16,
                                     span: Span {
                                         start: 62,
                                         end: 64,
                                     },
                                     comments: CommentGroup {
+                                        id: 15,
                                         comments: [],
                                     },
                                     left_parenthesis: Span {
@@ -204,6 +209,7 @@
             end: 67,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

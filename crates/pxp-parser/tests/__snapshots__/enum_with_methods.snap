@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,14 +15,15 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 26,
+        id: 40,
         kind: UnitEnum(
             UnitEnumStatement {
-                id: 25,
+                id: 39,
                 span: Span {
                     start: 7,
                     end: 131,
@@ -33,10 +34,10 @@
                     end: 11,
                 },
                 name: Name {
-                    id: 3,
+                    id: 5,
                     kind: Resolved(
                         ResolvedName {
-                            id: 3,
+                            id: 5,
                             span: Span {
                                 start: 12,
                                 end: 15,
@@ -52,7 +53,7 @@
                 },
                 implements: [],
                 body: UnitEnumBody {
-                    id: 24,
+                    id: 38,
                     span: Span {
                         start: 16,
                         end: 131,
@@ -65,17 +66,18 @@
                         Classish(
                             ConcreteMethod(
                                 ConcreteMethod {
-                                    id: 8,
+                                    id: 13,
                                     span: Span {
                                         start: 29,
                                         end: 44,
                                     },
                                     comments: CommentGroup {
+                                        id: 7,
                                         comments: [],
                                     },
                                     attributes: [],
                                     modifiers: MethodModifierGroup {
-                                        id: 4,
+                                        id: 6,
                                         span: Span {
                                             start: 22,
                                             end: 28,
@@ -95,7 +97,7 @@
                                     },
                                     ampersand: None,
                                     name: SimpleIdentifier {
-                                        id: 5,
+                                        id: 8,
                                         symbol: "a",
                                         span: Span {
                                             start: 38,
@@ -103,12 +105,13 @@
                                         },
                                     },
                                     parameters: FunctionParameterList {
-                                        id: 6,
+                                        id: 10,
                                         span: Span {
                                             start: 39,
                                             end: 41,
                                         },
                                         comments: CommentGroup {
+                                            id: 9,
                                             comments: [],
                                         },
                                         left_parenthesis: Span {
@@ -126,12 +129,13 @@
                                     },
                                     return_type: None,
                                     body: MethodBody {
-                                        id: 7,
+                                        id: 12,
                                         span: Span {
                                             start: 42,
                                             end: 44,
                                         },
                                         comments: CommentGroup {
+                                            id: 11,
                                             comments: [],
                                         },
                                         left_brace: Span {
@@ -150,17 +154,18 @@
                         Classish(
                             ConcreteMethod(
                                 ConcreteMethod {
-                                    id: 13,
+                                    id: 21,
                                     span: Span {
                                         start: 59,
                                         end: 74,
                                     },
                                     comments: CommentGroup {
+                                        id: 15,
                                         comments: [],
                                     },
                                     attributes: [],
                                     modifiers: MethodModifierGroup {
-                                        id: 9,
+                                        id: 14,
                                         span: Span {
                                             start: 49,
                                             end: 58,
@@ -180,7 +185,7 @@
                                     },
                                     ampersand: None,
                                     name: SimpleIdentifier {
-                                        id: 10,
+                                        id: 16,
                                         symbol: "b",
                                         span: Span {
                                             start: 68,
@@ -188,12 +193,13 @@
                                         },
                                     },
                                     parameters: FunctionParameterList {
-                                        id: 11,
+                                        id: 18,
                                         span: Span {
                                             start: 69,
                                             end: 71,
                                         },
                                         comments: CommentGroup {
+                                            id: 17,
                                             comments: [],
                                         },
                                         left_parenthesis: Span {
@@ -211,12 +217,13 @@
                                     },
                                     return_type: None,
                                     body: MethodBody {
-                                        id: 12,
+                                        id: 20,
                                         span: Span {
                                             start: 72,
                                             end: 74,
                                         },
                                         comments: CommentGroup {
+                                            id: 19,
                                             comments: [],
                                         },
                                         left_brace: Span {
@@ -235,17 +242,18 @@
                         Classish(
                             ConcreteMethod(
                                 ConcreteMethod {
-                                    id: 18,
+                                    id: 29,
                                     span: Span {
                                         start: 87,
                                         end: 102,
                                     },
                                     comments: CommentGroup {
+                                        id: 23,
                                         comments: [],
                                     },
                                     attributes: [],
                                     modifiers: MethodModifierGroup {
-                                        id: 14,
+                                        id: 22,
                                         span: Span {
                                             start: 79,
                                             end: 86,
@@ -265,7 +273,7 @@
                                     },
                                     ampersand: None,
                                     name: SimpleIdentifier {
-                                        id: 15,
+                                        id: 24,
                                         symbol: "c",
                                         span: Span {
                                             start: 96,
@@ -273,12 +281,13 @@
                                         },
                                     },
                                     parameters: FunctionParameterList {
-                                        id: 16,
+                                        id: 26,
                                         span: Span {
                                             start: 97,
                                             end: 99,
                                         },
                                         comments: CommentGroup {
+                                            id: 25,
                                             comments: [],
                                         },
                                         left_parenthesis: Span {
@@ -296,12 +305,13 @@
                                     },
                                     return_type: None,
                                     body: MethodBody {
-                                        id: 17,
+                                        id: 28,
                                         span: Span {
                                             start: 100,
                                             end: 102,
                                         },
                                         comments: CommentGroup {
+                                            id: 27,
                                             comments: [],
                                         },
                                         left_brace: Span {
@@ -320,17 +330,18 @@
                         Classish(
                             ConcreteMethod(
                                 ConcreteMethod {
-                                    id: 23,
+                                    id: 37,
                                     span: Span {
                                         start: 114,
                                         end: 129,
                                     },
                                     comments: CommentGroup {
+                                        id: 31,
                                         comments: [],
                                     },
                                     attributes: [],
                                     modifiers: MethodModifierGroup {
-                                        id: 19,
+                                        id: 30,
                                         span: Span {
                                             start: 107,
                                             end: 113,
@@ -350,7 +361,7 @@
                                     },
                                     ampersand: None,
                                     name: SimpleIdentifier {
-                                        id: 20,
+                                        id: 32,
                                         symbol: "d",
                                         span: Span {
                                             start: 123,
@@ -358,12 +369,13 @@
                                         },
                                     },
                                     parameters: FunctionParameterList {
-                                        id: 21,
+                                        id: 34,
                                         span: Span {
                                             start: 124,
                                             end: 126,
                                         },
                                         comments: CommentGroup {
+                                            id: 33,
                                             comments: [],
                                         },
                                         left_parenthesis: Span {
@@ -381,12 +393,13 @@
                                     },
                                     return_type: None,
                                     body: MethodBody {
-                                        id: 22,
+                                        id: 36,
                                         span: Span {
                                             start: 127,
                                             end: 129,
                                         },
                                         comments: CommentGroup {
+                                            id: 35,
                                             comments: [],
                                         },
                                         left_brace: Span {
@@ -415,6 +428,7 @@
             end: 131,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

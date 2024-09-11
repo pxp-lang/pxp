@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,14 +15,15 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 14,
+        id: 18,
         kind: If(
             IfStatement {
-                id: 13,
+                id: 17,
                 span: Span {
                     start: 7,
                     end: 19,
@@ -36,11 +37,11 @@
                     end: 11,
                 },
                 condition: Expression {
-                    id: 3,
+                    id: 5,
                     kind: Variable(
                         SimpleVariable(
                             SimpleVariable {
-                                id: 4,
+                                id: 6,
                                 symbol: "$a",
                                 stripped: "a",
                                 span: Span {
@@ -55,6 +56,7 @@
                         end: 13,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -64,16 +66,16 @@
                 },
                 body: Statement(
                     IfStatementBodyStatement {
-                        id: 12,
+                        id: 16,
                         span: Span {
                             start: 15,
                             end: 19,
                         },
                         statement: Statement {
-                            id: 6,
+                            id: 9,
                             kind: Block(
                                 BlockStatement {
-                                    id: 5,
+                                    id: 8,
                                     span: Span {
                                         start: 15,
                                         end: 19,
@@ -94,12 +96,13 @@
                                 end: 19,
                             },
                             comments: CommentGroup {
+                                id: 7,
                                 comments: [],
                             },
                         },
                         elseifs: [
                             IfStatementElseIf {
-                                id: 11,
+                                id: 15,
                                 span: Span {
                                     start: 20,
                                     end: 40,
@@ -113,11 +116,11 @@
                                     end: 28,
                                 },
                                 condition: Expression {
-                                    id: 7,
+                                    id: 10,
                                     kind: Variable(
                                         SimpleVariable(
                                             SimpleVariable {
-                                                id: 8,
+                                                id: 11,
                                                 symbol: "$b",
                                                 stripped: "b",
                                                 span: Span {
@@ -132,6 +135,7 @@
                                         end: 30,
                                     },
                                     comments: CommentGroup {
+                                        id: 0,
                                         comments: [],
                                     },
                                 },
@@ -140,10 +144,10 @@
                                     end: 31,
                                 },
                                 statement: Statement {
-                                    id: 10,
+                                    id: 14,
                                     kind: Block(
                                         BlockStatement {
-                                            id: 9,
+                                            id: 13,
                                             span: Span {
                                                 start: 32,
                                                 end: 40,
@@ -164,6 +168,7 @@
                                         end: 40,
                                     },
                                     comments: CommentGroup {
+                                        id: 12,
                                         comments: [],
                                     },
                                 },
@@ -179,6 +184,7 @@
             end: 19,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

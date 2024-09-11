@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,21 +15,22 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 30,
+        id: 39,
         kind: Class(
             ClassStatement {
-                id: 29,
+                id: 38,
                 span: Span {
                     start: 7,
                     end: 90,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
-                    id: 3,
+                    id: 5,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -41,10 +42,10 @@
                     end: 12,
                 },
                 name: Name {
-                    id: 4,
+                    id: 6,
                     kind: Resolved(
                         ResolvedName {
-                            id: 4,
+                            id: 6,
                             span: Span {
                                 start: 13,
                                 end: 14,
@@ -61,7 +62,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
-                    id: 28,
+                    id: 37,
                     span: Span {
                         start: 15,
                         end: 90,
@@ -73,17 +74,18 @@
                     members: [
                         ConcreteMethod(
                             ConcreteMethod {
-                                id: 27,
+                                id: 36,
                                 span: Span {
                                     start: 21,
                                     end: 88,
                                 },
                                 comments: CommentGroup {
+                                    id: 8,
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
-                                    id: 5,
+                                    id: 7,
                                     span: Span {
                                         start: 0,
                                         end: 0,
@@ -96,7 +98,7 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
-                                    id: 6,
+                                    id: 9,
                                     symbol: "a",
                                     span: Span {
                                         start: 30,
@@ -104,12 +106,13 @@
                                     },
                                 },
                                 parameters: FunctionParameterList {
-                                    id: 25,
+                                    id: 33,
                                     span: Span {
                                         start: 31,
                                         end: 76,
                                     },
                                     comments: CommentGroup {
+                                        id: 10,
                                         comments: [],
                                     },
                                     left_parenthesis: Span {
@@ -119,16 +122,17 @@
                                     parameters: CommaSeparated {
                                         inner: [
                                             FunctionParameter {
-                                                id: 10,
+                                                id: 14,
                                                 span: Span {
                                                     start: 32,
                                                     end: 38,
                                                 },
                                                 comments: CommentGroup {
+                                                    id: 15,
                                                     comments: [],
                                                 },
                                                 name: SimpleVariable {
-                                                    id: 9,
+                                                    id: 13,
                                                     symbol: "$a",
                                                     stripped: "a",
                                                     span: Span {
@@ -139,13 +143,13 @@
                                                 attributes: [],
                                                 data_type: Some(
                                                     DataType {
-                                                        id: 8,
+                                                        id: 12,
                                                         kind: Named(
                                                             Name {
-                                                                id: 7,
+                                                                id: 11,
                                                                 kind: Resolved(
                                                                     ResolvedName {
-                                                                        id: 7,
+                                                                        id: 11,
                                                                         span: Span {
                                                                             start: 32,
                                                                             end: 35,
@@ -171,16 +175,17 @@
                                                 ampersand: None,
                                             },
                                             FunctionParameter {
-                                                id: 15,
+                                                id: 20,
                                                 span: Span {
                                                     start: 40,
                                                     end: 52,
                                                 },
                                                 comments: CommentGroup {
+                                                    id: 21,
                                                     comments: [],
                                                 },
                                                 name: SimpleVariable {
-                                                    id: 14,
+                                                    id: 19,
                                                     symbol: "$b",
                                                     stripped: "b",
                                                     span: Span {
@@ -191,15 +196,15 @@
                                                 attributes: [],
                                                 data_type: Some(
                                                     DataType {
-                                                        id: 13,
+                                                        id: 18,
                                                         kind: Union(
                                                             [
                                                                 Named(
                                                                     Name {
-                                                                        id: 11,
+                                                                        id: 16,
                                                                         kind: Resolved(
                                                                             ResolvedName {
-                                                                                id: 11,
+                                                                                id: 16,
                                                                                 span: Span {
                                                                                     start: 40,
                                                                                     end: 43,
@@ -216,10 +221,10 @@
                                                                 ),
                                                                 Named(
                                                                     Name {
-                                                                        id: 12,
+                                                                        id: 17,
                                                                         kind: Resolved(
                                                                             ResolvedName {
-                                                                                id: 12,
+                                                                                id: 17,
                                                                                 span: Span {
                                                                                     start: 46,
                                                                                     end: 49,
@@ -247,16 +252,17 @@
                                                 ampersand: None,
                                             },
                                             FunctionParameter {
-                                                id: 20,
+                                                id: 26,
                                                 span: Span {
                                                     start: 54,
                                                     end: 66,
                                                 },
                                                 comments: CommentGroup {
+                                                    id: 27,
                                                     comments: [],
                                                 },
                                                 name: SimpleVariable {
-                                                    id: 19,
+                                                    id: 25,
                                                     symbol: "$c",
                                                     stripped: "c",
                                                     span: Span {
@@ -267,15 +273,15 @@
                                                 attributes: [],
                                                 data_type: Some(
                                                     DataType {
-                                                        id: 18,
+                                                        id: 24,
                                                         kind: Intersection(
                                                             [
                                                                 Named(
                                                                     Name {
-                                                                        id: 16,
+                                                                        id: 22,
                                                                         kind: Resolved(
                                                                             ResolvedName {
-                                                                                id: 16,
+                                                                                id: 22,
                                                                                 span: Span {
                                                                                     start: 54,
                                                                                     end: 57,
@@ -292,10 +298,10 @@
                                                                 ),
                                                                 Named(
                                                                     Name {
-                                                                        id: 17,
+                                                                        id: 23,
                                                                         kind: Resolved(
                                                                             ResolvedName {
-                                                                                id: 17,
+                                                                                id: 23,
                                                                                 span: Span {
                                                                                     start: 60,
                                                                                     end: 63,
@@ -323,16 +329,17 @@
                                                 ampersand: None,
                                             },
                                             FunctionParameter {
-                                                id: 24,
+                                                id: 31,
                                                 span: Span {
                                                     start: 68,
                                                     end: 75,
                                                 },
                                                 comments: CommentGroup {
+                                                    id: 32,
                                                     comments: [],
                                                 },
                                                 name: SimpleVariable {
-                                                    id: 23,
+                                                    id: 30,
                                                     symbol: "$d",
                                                     stripped: "d",
                                                     span: Span {
@@ -343,14 +350,14 @@
                                                 attributes: [],
                                                 data_type: Some(
                                                     DataType {
-                                                        id: 22,
+                                                        id: 29,
                                                         kind: Nullable(
                                                             Named(
                                                                 Name {
-                                                                    id: 21,
+                                                                    id: 28,
                                                                     kind: Resolved(
                                                                         ResolvedName {
-                                                                            id: 21,
+                                                                            id: 28,
                                                                             span: Span {
                                                                                 start: 69,
                                                                                 end: 72,
@@ -399,12 +406,13 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
-                                    id: 26,
+                                    id: 35,
                                     span: Span {
                                         start: 81,
                                         end: 88,
                                     },
                                     comments: CommentGroup {
+                                        id: 34,
                                         comments: [],
                                     },
                                     left_brace: Span {
@@ -432,6 +440,7 @@
             end: 90,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

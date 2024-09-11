@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,35 +15,36 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 11,
+        id: 13,
         kind: Expression(
             ExpressionStatement {
-                id: 10,
+                id: 12,
                 span: Span {
                     start: 12,
                     end: 14,
                 },
                 expression: Expression {
-                    id: 9,
+                    id: 11,
                     kind: AssignmentOperation(
                         AssignmentOperationExpression {
-                            id: 7,
+                            id: 9,
                             span: Span {
                                 start: 7,
                                 end: 13,
                             },
                             kind: Assign {
-                                id: 8,
+                                id: 10,
                                 left: Expression {
-                                    id: 3,
+                                    id: 5,
                                     kind: Variable(
                                         SimpleVariable(
                                             SimpleVariable {
-                                                id: 4,
+                                                id: 6,
                                                 symbol: "$a",
                                                 stripped: "a",
                                                 span: Span {
@@ -58,6 +59,7 @@
                                         end: 9,
                                     },
                                     comments: CommentGroup {
+                                        id: 0,
                                         comments: [],
                                     },
                                 },
@@ -66,10 +68,10 @@
                                     end: 11,
                                 },
                                 right: Expression {
-                                    id: 5,
+                                    id: 7,
                                     kind: Literal(
                                         Literal {
-                                            id: 6,
+                                            id: 8,
                                             span: Span {
                                                 start: 12,
                                                 end: 13,
@@ -92,6 +94,7 @@
                                         end: 13,
                                     },
                                     comments: CommentGroup {
+                                        id: 0,
                                         comments: [],
                                     },
                                 },
@@ -103,6 +106,7 @@
                         end: 13,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -119,6 +123,7 @@
             end: 14,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },

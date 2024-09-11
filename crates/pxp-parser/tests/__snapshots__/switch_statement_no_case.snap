@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 2,
+        id: 3,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 1,
+                id: 2,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -15,14 +15,15 @@
             end: 5,
         },
         comments: CommentGroup {
+            id: 1,
             comments: [],
         },
     },
     Statement {
-        id: 6,
+        id: 8,
         kind: Switch(
             SwitchStatement {
-                id: 5,
+                id: 7,
                 span: Span {
                     start: 7,
                     end: 0,
@@ -36,11 +37,11 @@
                     end: 15,
                 },
                 condition: Expression {
-                    id: 3,
+                    id: 5,
                     kind: Variable(
                         SimpleVariable(
                             SimpleVariable {
-                                id: 4,
+                                id: 6,
                                 symbol: "$a",
                                 stripped: "a",
                                 span: Span {
@@ -55,6 +56,7 @@
                         end: 17,
                     },
                     comments: CommentGroup {
+                        id: 0,
                         comments: [],
                     },
                 },
@@ -70,6 +72,7 @@
             end: 0,
         },
         comments: CommentGroup {
+            id: 4,
             comments: [],
         },
     },
