@@ -31,17 +31,17 @@ pub fn docblock(state: &mut State) -> DocBlockComment {
         match &current.kind {
             TokenKind::PhpDocEol => {
                 state.next();
-            },
+            }
             TokenKind::PhpDocTag => {
                 let tag = docblock_tag(state);
 
                 nodes.push(DocBlockNode::Tag(tag))
-            },
+            }
             _ => {
                 if let Some(text) = docblock_text(state) {
                     nodes.push(DocBlockNode::Text(text))
                 }
-            },
+            }
         };
     }
 
@@ -88,7 +88,7 @@ fn read_text_until_eol_or_close(state: &mut State) -> Option<(ByteString, Span)>
             None => {
                 let string = current.kind.to_string();
                 ByteString::new(string.as_bytes().to_vec())
-            },
+            }
         };
 
         text.extend_with_bytes(&bytes);
