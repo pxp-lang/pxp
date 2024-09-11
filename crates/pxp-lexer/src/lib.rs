@@ -307,8 +307,8 @@ impl<'a, 'b> Lexer<'a> {
                         break;
                     }
 
-                    let (kind, with_symbol) = if qualified {
-                        (TokenKind::QualifiedIdentifier, true)
+                    let kind = if qualified {
+                        TokenKind::QualifiedIdentifier
                     } else {
                         let kind = identifier_to_keyword(&buffer).unwrap_or(TokenKind::Identifier);
 
@@ -326,7 +326,7 @@ impl<'a, 'b> Lexer<'a> {
                             }
                         }
 
-                        (kind, true)
+                        kind
                     };
 
                     let span = self.state.source.span();
