@@ -196,6 +196,126 @@ impl<'a, 'b> Lexer<'a> {
             }
 
             match &self.state.source.read(2) {
+                [b'@', ident_start!(), ..] => {
+                    self.state.source.skip(2);
+
+                    while let Some(ident_start!() | b'\\') = self.state.source.current() {
+                        self.state.source.next();
+                    }
+
+                    let span = self.state.source.span();
+                    let symbol = self.state.source.span_range(span);
+
+                    tokens.push(Token::new_with_symbol(TokenKind::PhpDocTag, span, symbol.into()));
+
+                    self.skip_horizontal_whitespace();
+                },
+                [b'$', ident_start!(), ..] => {
+                    let variable = self.tokenize_variable();
+                    let span = self.state.source.span();
+                    let symbol = self.state.source.span_range(span);
+
+                    tokens.push(Token::new_with_symbol(variable, span, symbol.into()));
+                },
+                [b'\\', ident_start!(), ..] => {
+                    self.state.source.next();
+
+                    let mut span = self.state.source.span();
+
+                    let kind = match self.scripting()? {
+                        Token {
+                            kind: TokenKind::Identifier | TokenKind::QualifiedIdentifier,
+                            span: ident_span,
+                            ..
+                        } => {
+                            span.end = ident_span.end;
+
+                            TokenKind::FullyQualifiedIdentifier
+                        }
+                        Token {
+                            kind: TokenKind::True,
+                            span: ident_span,
+                            ..
+                        } => {
+                            span.end = ident_span.end;
+
+                            TokenKind::FullyQualifiedIdentifier
+                        }
+                        Token {
+                            kind: TokenKind::False,
+                            span: ident_span,
+                            ..
+                        } => {
+                            span.end = ident_span.end;
+
+                            TokenKind::FullyQualifiedIdentifier
+                        }
+                        Token {
+                            kind: TokenKind::Null,
+                            span: ident_span,
+                            ..
+                        } => {
+                            span.end = ident_span.end;
+
+                            TokenKind::FullyQualifiedIdentifier
+                        }
+                        s => unreachable!("{:?}", s),
+                    };
+
+                    tokens.push(Token::new_with_symbol(kind, span, self.state.source.span_range(span).into()));
+                },
+                [b @ ident_start!(), ..] => {
+                    self.state.source.next();
+                    let mut qualified = false;
+                    let mut last_was_slash = false;
+
+                    let mut buffer = vec![*b];
+                    while let Some(next @ ident!() | next @ b'\\') = self.state.source.current() {
+                        if matches!(next, ident!()) {
+                            buffer.push(*next);
+                            self.state.source.next();
+                            last_was_slash = false;
+                            continue;
+                        }
+
+                        if *next == b'\\' && !last_was_slash {
+                            qualified = true;
+                            last_was_slash = true;
+                            buffer.push(*next);
+                            self.state.source.next();
+                            continue;
+                        }
+
+                        break;
+                    }
+
+                    let (kind, with_symbol) = if qualified {
+                        (TokenKind::QualifiedIdentifier, true)
+                    } else {
+                        let kind = identifier_to_keyword(&buffer).unwrap_or(TokenKind::Identifier);
+
+                        if kind == TokenKind::HaltCompiler {
+                            match self.state.source.read(3) {
+                                [b'(', b')', b';'] => {
+                                    self.state.source.skip(3);
+                                    self.state.replace(StackFrame::Halted);
+                                }
+                                _ => {
+                                    return Err(SyntaxError::InvalidHaltCompiler(
+                                        self.state.source.span(),
+                                    ))
+                                }
+                            }
+                        }
+
+                        (kind, true)
+                    };
+
+                    let span = self.state.source.span();
+                    let symbol = self.state.source.span_range(span);
+
+                    tokens.push(Token::new_with_symbol(kind, span, symbol.into()));
+                }
                 [b'*', b'/', ..] => {
                     self.state.source.skip(2);
 
