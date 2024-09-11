@@ -1,7 +1,5 @@
 use std::fmt::Display;
 
-use pxp_span::Span;
-
 use crate::BackedEnumType;
 
 impl BackedEnumType {
