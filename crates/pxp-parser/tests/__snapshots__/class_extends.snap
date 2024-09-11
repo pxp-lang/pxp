@@ -70,10 +70,10 @@
         },
     },
     Statement {
-        id: 17,
+        id: 19,
         kind: Class(
             ClassStatement {
-                id: 16,
+                id: 18,
                 span: Span {
                     start: 21,
                     end: 53,
@@ -142,7 +142,7 @@
                 ),
                 implements: None,
                 body: ClassBody {
-                    id: 15,
+                    id: 17,
                     span: Span {
                         start: 43,
                         end: 53,

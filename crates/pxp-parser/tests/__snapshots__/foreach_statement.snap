@@ -20,10 +20,10 @@
         },
     },
     Statement {
-        id: 15,
+        id: 17,
         kind: Foreach(
             ForeachStatement {
-                id: 14,
+                id: 16,
                 span: Span {
                     start: 7,
                     end: 44,
@@ -104,16 +104,16 @@
                 },
                 body: Statement(
                     ForeachStatementBodyStatement {
-                        id: 13,
+                        id: 15,
                         span: Span {
                             start: 34,
                             end: 44,
                         },
                         statement: Statement {
-                            id: 12,
+                            id: 14,
                             kind: Block(
                                 BlockStatement {
-                                    id: 11,
+                                    id: 13,
                                     span: Span {
                                         start: 34,
                                         end: 44,
