@@ -1,4 +1,5 @@
 use pxp_ast::{DocBlock, DocBlockComment, DocBlockNode, DocBlockTagNode, DocBlockTextNode};
+use pxp_bytestring::ByteString;
 use pxp_span::{Span, Spanned};
 use pxp_token::TokenKind;
 
@@ -27,20 +28,21 @@ pub fn docblock(state: &mut State) -> DocBlockComment {
             break;
         }
 
-        let node = match &current.kind {
+        match &current.kind {
+            TokenKind::PhpDocEol => {
+                state.next();
+            },
             TokenKind::PhpDocTag => {
                 let tag = docblock_tag(state);
 
-                DocBlockNode::Tag(tag)
+                nodes.push(DocBlockNode::Tag(tag))
             },
             _ => {
-                let text = docblock_text(state);
-
-                DocBlockNode::Text(text)
+                if let Some(text) = docblock_text(state) {
+                    nodes.push(DocBlockNode::Text(text))
+                }
             },
         };
-
-        nodes.push(node);
     }
 
     let span = Span::combine(current.span, nodes.span());
@@ -60,6 +62,46 @@ fn docblock_tag(state: &mut State) -> DocBlockTagNode {
     todo!()
 }
 
-fn docblock_text(state: &mut State) -> DocBlockTextNode {
-    todo!()
+fn docblock_text(state: &mut State) -> Option<DocBlockTextNode> {
+    let (content, span) = read_text_until_eol_or_close(state)?;
+
+    Some(DocBlockTextNode {
+        id: state.id(),
+        span,
+        content,
+    })
+}
+
+fn read_text_until_eol_or_close(state: &mut State) -> Option<(ByteString, Span)> {
+    let mut text = ByteString::empty();
+    let start_span = state.current().span;
+
+    loop {
+        let current = state.current();
+
+        if matches!(current.kind, TokenKind::PhpDocEol | TokenKind::ClosePhpDoc) {
+            break;
+        }
+
+        let bytes = match &current.symbol {
+            Some(symbol) => symbol.clone(),
+            None => {
+                let string = current.kind.to_string();
+                ByteString::new(string.as_bytes().to_vec())
+            },
+        };
+
+        text.extend_with_bytes(&bytes);
+
+        state.next();
+    }
+
+    if text.is_empty() {
+        return None;
+    }
+
+    let end_span = state.current().span;
+    let span = Span::combine(start_span, end_span);
+
+    Some((text, span))
 }

@@ -20,6 +20,14 @@ impl ByteString {
         ByteString::new(Vec::new())
     }
 
+    pub fn extend_with_bytes(&mut self, bytes: &[u8]) {
+        self.bytes.extend_from_slice(bytes);
+    }
+
+    pub fn extend(&mut self, other: &ByteString) {
+        self.bytes.extend_from_slice(&other.bytes);
+    }
+
     pub fn coagulate(&self, others: &[ByteString], with: Option<&[u8]>) -> Self {
         let mut bytes = self.bytes.clone();
 
