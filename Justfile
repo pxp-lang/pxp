@@ -35,27 +35,27 @@ generate-node-finder:
 bench-parser:
     cargo build --release --bin parse
     hyperfine --warmup=1 --runs=1 \
-        --command-name="PHP (AST Ext)" "php ./benches/parsing/core.php ./playground/laravel-framework" \
-        --command-name="PXP (Release)" "./target/release/parse ./playground/laravel-framework --no-output"
+        --command-name="PHP (AST Ext)" "php ./benches/parsing/core.php ./playground/framework" \
+        --command-name="PXP (Release)" "./target/release/parse ./playground/framework --no-output"
 
 bench-lexer:
     cargo build --release --bin tokenise
     hyperfine --warmup=1 --runs=1 \
-        --command-name="PHP (Core)" "php ./benches/lexing/php.php ./playground/laravel-framework" \
-        --command-name="PHP (Core + Opcache)" "php -d opcache.enable_cli=1 ./benches/lexing/php.php ./playground/laravel-framework" \
-        --command-name="PXP (Release)" "./target/release/tokenise ./playground/laravel-framework --no-output"
+        --command-name="PHP (Core)" "php ./benches/lexing/php.php ./playground/framework" \
+        --command-name="PHP (Core + Opcache)" "php -d opcache.enable_cli=1 ./benches/lexing/php.php ./playground/framework" \
+        --command-name="PXP (Release)" "./target/release/tokenise ./playground/framework --no-output"
 
 bench-indexer:
     cargo build --release --bin index
     hyperfine --warmup=1 --runs=1 \
-        --command-name="Indexer (Release)" "./target/release/index ./playground/laravel-framework --no-output"
+        --command-name="Indexer (Release)" "./target/release/index ./playground/framework --no-output"
 
 bench-visitor:
     cargo build --release --bin visit
     hyperfine --warmup=1 --runs=1 \
-        --command-name="Visitor (Release)" "./target/release/visit ./playground/laravel-framework --no-output"
+        --command-name="Visitor (Release)" "./target/release/visit ./playground/framework --no-output"
 
 bench-node-visitor:
     cargo build --release --bin node-visit
     hyperfine --warmup=1 --runs=1 \
-        --command-name="Node Visitor (Release)" "./target/release/node-visit ./playground/laravel-framework --no-output"
+        --command-name="Node Visitor (Release)" "./target/release/node-visit ./playground/framework --no-output"
