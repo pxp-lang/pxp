@@ -20,6 +20,14 @@ impl<'a> Source<'a> {
         }
     }
 
+    pub fn goto(&mut self, offset: ByteOffset) {
+        self.offset = offset;
+    }
+
+    pub fn goto_start_of_token(&mut self) {
+        self.offset = self.current_token_start_offset;
+    }
+
     pub fn offset(&self) -> ByteOffset {
         self.offset
     }

@@ -19,6 +19,7 @@ pxp-node-finder = { version = "0.1.0", path = "../crates/pxp-node-finder" }
 pxp-inference = { version = "0.1.0", path = "../crates/pxp-inference" }
 pxp-bytestring = { version = "0.1.0", path = "../crates/pxp-bytestring" }
 num_cpus = "1.16.0"
+pxp-span = { version = "0.1.0", path = "../crates/pxp-span" }
 
 [[bin]]
 name = "tokenise"

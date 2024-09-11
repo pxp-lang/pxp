@@ -1,4 +1,4 @@
-use pxp_ast::{DocBlock, DocBlockComment, DocBlockNode, DocBlockTagNode, DocBlockTextNode};
+use pxp_ast::{DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockTag, DocBlockTagNode, DocBlockTextNode};
 use pxp_bytestring::ByteString;
 use pxp_span::{Span, Spanned};
 use pxp_token::TokenKind;
@@ -59,7 +59,25 @@ pub fn docblock(state: &mut State) -> DocBlockComment {
 }
 
 fn docblock_tag(state: &mut State) -> DocBlockTagNode {
-    todo!()
+    let tag = state.current();
+
+    state.next();
+
+    let (text, span) = match read_text_until_eol_or_close(state) {
+        Some((text, text_span)) => (Some(text), Span::combine(tag.span, text_span)),
+        None => (None, tag.span),
+    };
+
+    DocBlockTagNode {
+        id: state.id(),
+        span,
+        tag: DocBlockTag::Generic(DocBlockGenericTag {
+            id: state.id(),
+            span: tag.span,
+            tag: tag.clone(),
+            text,
+        })
+    }
 }
 
 fn docblock_text(state: &mut State) -> Option<DocBlockTextNode> {

@@ -4,6 +4,7 @@ use discoverer::discover;
 use pxp_lexer::Lexer;
 
 use pxp_token::Token;
+use pxp_span::Spanned;
 
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
@@ -74,6 +75,11 @@ fn main() {
             Ok(tokens) => tokens,
             Err(err) => {
                 eprintln!("{}", err);
+
+                let span = err.span();
+
+                eprintln!("{}:{}", span.start_line(&contents), span.start_column(&contents));
+
                 exit(1);
             }
         };

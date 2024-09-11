@@ -310,23 +310,7 @@ impl<'a, 'b> Lexer<'a> {
                     let kind = if qualified {
                         TokenKind::QualifiedIdentifier
                     } else {
-                        let kind = identifier_to_keyword(&buffer).unwrap_or(TokenKind::Identifier);
-
-                        if kind == TokenKind::HaltCompiler {
-                            match self.state.source.read(3) {
-                                [b'(', b')', b';'] => {
-                                    self.state.source.skip(3);
-                                    self.state.replace(StackFrame::Halted);
-                                }
-                                _ => {
-                                    return Err(SyntaxError::InvalidHaltCompiler(
-                                        self.state.source.span(),
-                                    ))
-                                }
-                            }
-                        }
-
-                        kind
+                        identifier_to_keyword(&buffer).unwrap_or(TokenKind::Identifier)
                     };
 
                     let span = self.state.source.span();
@@ -474,23 +458,101 @@ impl<'a, 'b> Lexer<'a> {
 
                     tokens.push(Token::new_with_symbol(number, span, symbol.into()));
                 }
+                // We only need to consider these things strings if they are closed before the end of the line.
                 [b'\'', ..] => {
+                    // First we can grab the current offset, in case we need to backtrack.
+                    let offset = self.state.source.offset();
+
                     self.state.source.next();
+                    
+                    let is_single_quoted_string = loop {
+                        let Some(c) = self.state.source.current() else {
+                            break false;
+                        };
 
-                    let string = self.tokenize_single_quote_string()?;
-                    let span = self.state.source.span();
-                    let symbol = self.state.source.span_range(span);
+                        // If we encounter a single quote, we can break out of the loop since we've found the end of the string.
+                        if *c == b'\'' {
+                            self.state.source.next();
+                            break true;
+                        }
 
-                    tokens.push(Token::new_with_symbol(string, span, symbol.into()));
+                        // If we encounter the end of a line, we need to backtrack and treat the single quote as a single character.
+                        if *c == b'\n' {
+                            break false;
+                        }
+
+                        self.state.source.next();
+                    };
+
+                    if is_single_quoted_string {
+                        let span = self.state.source.span();
+                        let symbol = self.state.source.span_range(span);
+
+                        tokens.push(Token::new_with_symbol(
+                            TokenKind::LiteralSingleQuotedString,
+                            span,
+                            symbol.into(),
+                        ));
+                    } else {
+                        self.state.source.goto(offset);
+                        self.state.source.next();
+
+                        let span = self.state.source.span();
+                        let symbol = self.state.source.span_range(span);
+
+                        tokens.push(Token::new_with_symbol(
+                            TokenKind::PhpDocOther,
+                            span,
+                            symbol.into(),
+                        ));
+                    }
                 }
                 [b'"', ..] => {
-                    self.state.source.skip(1);
+                    let offset = self.state.source.offset();
 
-                    let string = self.tokenize_double_quote_string()?;
-                    let span = self.state.source.span();
-                    let symbol = self.state.source.span_range(span);
+                    self.state.source.next();
+                    
+                    let is_single_quoted_string = loop {
+                        let Some(c) = self.state.source.current() else {
+                            break false;
+                        };
 
-                    tokens.push(Token::new_with_symbol(string, span, symbol.into()));
+                        // If we encounter a single quote, we can break out of the loop since we've found the end of the string.
+                        if *c == b'"' {
+                            self.state.source.next();
+                            break true;
+                        }
+
+                        // If we encounter the end of a line, we need to backtrack and treat the single quote as a single character.
+                        if *c == b'\n' {
+                            break false;
+                        }
+
+                        self.state.source.next();
+                    };
+
+                    if is_single_quoted_string {
+                        let span = self.state.source.span();
+                        let symbol = self.state.source.span_range(span);
+
+                        tokens.push(Token::new_with_symbol(
+                            TokenKind::LiteralDoubleQuotedString,
+                            span,
+                            symbol.into(),
+                        ));
+                    } else {
+                        self.state.source.goto(offset);
+                        self.state.source.next();
+
+                        let span = self.state.source.span();
+                        let symbol = self.state.source.span_range(span);
+
+                        tokens.push(Token::new_with_symbol(
+                            TokenKind::PhpDocOther,
+                            span,
+                            symbol.into(),
+                        ));
+                    }
                 }
                 [b'*', b'/', ..] => {
                     self.state.source.skip(2);
