@@ -1961,20 +1961,148 @@ StaticVar:
   default: Option<Expression>
 
 Comment:
-  node: false
+  children: [kind]
   span: Span
-  format: CommentFormat
+  kind: CommentKind
+
+CommentKind:
+  as: Enum
+  children: [self]
+  SingleLine: SingleLineComment
+  MultiLine: MultiLineComment
+  HashMark: HashMarkComment
+  DocBlock: DocBlockComment
+
+SingleLineComment:
+  span: Span
   content: ByteString
 
-CommentFormat:
+MultiLineComment:
+  span: Span
+  content: ByteString
+
+HashMarkComment:
+  span: Span
+  content: ByteString
+
+DocBlockComment:
+  span: Span
+  doc: DocBlock
+
+DocBlock:
+  children: [nodes]
+  span: Span
+  nodes: Vec<DocBlockNode>
+
+DocBlockNode:
+  children: [self]
   as: Enum
-  node: false
-  SingleLine: ""
-  MultiLine: ""
-  HashMark: ""
-  DocBlock: ""
+  Text: DocBlockTextNode
+  Tag: DocBlockTagNode
+
+DocBlockTextNode:
+  span: Span
+  content: ByteString
+
+DocBlockTagNode:
+  span: Span
+  tag: DocBlockTag
+
+DocBlockTag:
+  children: [self]
+  as: Enum
+  Param: DocBlockParamTag
+  Return: DocBlockReturnTag
+  Throws: DocBlockThrowsTag
+  Var: DocBlockVarTag
+  Property: DocBlockPropertyTag
+  Method: DocBlockMethodTag
+  Template: DocBlockTemplateTag
+  Extends: DocBlockExtendsTag
+  Implements: DocBlockImplementsTag
+  Uses: DocBlockUsesTag
+  Deprecated: DocBlockDeprecatedTag
+  Generic: DocBlockGenericTag
+
+DocBlockParamTag:
+  span: Span
+  tag: Token
+  data_type: Option<DataType>
+  variable: Option<SimpleVariable>
+  text: Option<ByteString>
+
+DocBlockReturnTag:
+  span: Span
+  tag: Token
+  data_type: Option<DataType>
+  text: Option<ByteString>
+
+DocBlockThrowsTag:
+  span: Span
+  tag: Token
+  data_type: Option<DataType>
+  text: Option<ByteString>
+
+DocBlockVarTag:
+  span: Span
+  tag: Token
+  data_type: Option<DataType>
+  variable: Option<SimpleVariable>
+  text: Option<ByteString>
+
+DocBlockPropertyTag:
+  span: Span
+  tag: Token
+  data_type: Option<DataType>
+  variable: Option<SimpleVariable>
+  text: Option<ByteString>
+
+DocBlockMethodTag:
+  span: Span
+  tag: Token
+  r#static: Option<Span>
+  return_type: Option<DataType>
+  name: SimpleIdentifier
+  left_parenthesis: Span
+  parameters: FunctionParameterList
+  right_parenthesis: Span
+  text: Option<ByteString>
+
+DocBlockTemplateTag:
+  span: Span
+  tag: Token
+  placeholder: SimpleIdentifier
+  constraint: Option<DataType>
+  text: Option<ByteString>
+
+DocBlockExtendsTag:
+  span: Span
+  tag: Token
+  data_type: Option<DataType>
+  text: Option<ByteString>
+
+DocBlockImplementsTag:
+  span: Span
+  tag: Token
+  data_type: Option<DataType>
+  text: Option<ByteString>
+
+DocBlockUsesTag:
+  span: Span
+  tag: Token
+  data_type: Option<DataType>
+  text: Option<ByteString>
+
+DocBlockDeprecatedTag:
+  span: Span
+  tag: Token
+  text: Option<ByteString>
+
+DocBlockGenericTag:
+  span: Span
+  tag: Token
+  text: Option<ByteString>
 
 CommentGroup:
-  node: false
   derive: Default
   comments: Vec<Comment>

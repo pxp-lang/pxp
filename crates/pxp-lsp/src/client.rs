@@ -1,6 +1,6 @@
-use std::{error::Error, thread, time::Duration};
+use std::{error::Error};
 
-use lsp_server::{Connection, Message, Notification, Request, RequestId};
+use lsp_server::{Connection, Message, Notification, Request};
 use lsp_types::{
     notification::{LogMessage, Notification as NotificationTrait, Progress, PublishDiagnostics},
     request::{Request as _, WorkDoneProgressCreate},

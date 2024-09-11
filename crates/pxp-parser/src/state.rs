@@ -56,6 +56,7 @@ impl<'a> State<'a> {
         std::mem::swap(&mut self.stream.comments, &mut comments);
 
         CommentGroup {
+            id: self.id(),
             comments: comments
                 .iter()
                 .map(|token| match token {
@@ -64,37 +65,50 @@ impl<'a> State<'a> {
                         span,
                         symbol,
                     } => Comment {
+                        id: self.id(),
                         span: *span,
-                        format: CommentFormat::SingleLine,
-                        content: symbol.as_ref().unwrap().clone(),
+                        kind: CommentKind::SingleLine(SingleLineComment {
+                            id: self.id(),
+                            span: *span,
+                            content: symbol.as_ref().unwrap().clone(),
+                        })
                     },
                     Token {
                         kind: TokenKind::MultiLineComment,
                         span,
                         symbol,
                     } => Comment {
+                        id: self.id(),
                         span: *span,
-                        format: CommentFormat::MultiLine,
-                        content: symbol.as_ref().unwrap().clone(),
+                        kind: CommentKind::MultiLine(MultiLineComment {
+                            id: self.id(),
+                            span: *span,
+                            content: symbol.as_ref().unwrap().clone(),
+                        })
                     },
                     Token {
                         kind: TokenKind::HashMarkComment,
                         span,
                         symbol,
                     } => Comment {
+                        id: self.id(),
                         span: *span,
-                        format: CommentFormat::HashMark,
-                        content: symbol.as_ref().unwrap().clone(),
+                        kind: CommentKind::HashMark(HashMarkComment {
+                            id: self.id(),
+                            span: *span,
+                            content: symbol.as_ref().unwrap().clone(),
+                        })
                     },
                     Token {
                         kind: TokenKind::DocumentComment,
                         span,
                         symbol,
-                    } => Comment {
+                    } => todo!(), /*Comment {
+                        id: self.id(),
                         span: *span,
                         format: CommentFormat::DocBlock,
                         content: symbol.as_ref().unwrap().clone(),
-                    },
+                    }*/
                     _ => unreachable!(),
                 })
                 .collect(),

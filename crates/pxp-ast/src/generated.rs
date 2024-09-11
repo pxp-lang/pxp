@@ -5554,9 +5554,15 @@ impl Spanned for StaticVar {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Comment {
+    pub id: NodeId,
     pub span: Span,
-    pub format: CommentFormat,
-    pub content: ByteString,
+    pub kind: CommentKind,
+}
+
+impl HasId for Comment {
+    fn id(&self) -> NodeId {
+        self.id
+    }
 }
 
 impl Spanned for Comment {
@@ -5566,16 +5572,476 @@ impl Spanned for Comment {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub enum CommentFormat {
-    SingleLine,
-    MultiLine,
-    HashMark,
-    DocBlock,
+pub enum CommentKind {
+    SingleLine(SingleLineComment),
+    MultiLine(MultiLineComment),
+    HashMark(HashMarkComment),
+    DocBlock(DocBlockComment),
+}
+
+impl HasId for CommentKind {
+    fn id(&self) -> NodeId {
+        match self {
+            CommentKind::SingleLine(inner) => inner.id(),
+            CommentKind::MultiLine(inner) => inner.id(),
+            CommentKind::HashMark(inner) => inner.id(),
+            CommentKind::DocBlock(inner) => inner.id(),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct SingleLineComment {
+    pub id: NodeId,
+    pub span: Span,
+    pub content: ByteString,
+}
+
+impl HasId for SingleLineComment {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for SingleLineComment {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct MultiLineComment {
+    pub id: NodeId,
+    pub span: Span,
+    pub content: ByteString,
+}
+
+impl HasId for MultiLineComment {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for MultiLineComment {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct HashMarkComment {
+    pub id: NodeId,
+    pub span: Span,
+    pub content: ByteString,
+}
+
+impl HasId for HashMarkComment {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for HashMarkComment {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockComment {
+    pub id: NodeId,
+    pub span: Span,
+    pub doc: DocBlock,
+}
+
+impl HasId for DocBlockComment {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockComment {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlock {
+    pub id: NodeId,
+    pub span: Span,
+    pub nodes: Vec<DocBlockNode>,
+}
+
+impl HasId for DocBlock {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlock {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum DocBlockNode {
+    Text(DocBlockTextNode),
+    Tag(DocBlockTagNode),
+}
+
+impl HasId for DocBlockNode {
+    fn id(&self) -> NodeId {
+        match self {
+            DocBlockNode::Text(inner) => inner.id(),
+            DocBlockNode::Tag(inner) => inner.id(),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockTextNode {
+    pub id: NodeId,
+    pub span: Span,
+    pub content: ByteString,
+}
+
+impl HasId for DocBlockTextNode {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockTextNode {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockTagNode {
+    pub id: NodeId,
+    pub span: Span,
+    pub tag: DocBlockTag,
+}
+
+impl HasId for DocBlockTagNode {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockTagNode {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum DocBlockTag {
+    Param(DocBlockParamTag),
+    Return(DocBlockReturnTag),
+    Throws(DocBlockThrowsTag),
+    Var(DocBlockVarTag),
+    Property(DocBlockPropertyTag),
+    Method(DocBlockMethodTag),
+    Template(DocBlockTemplateTag),
+    Extends(DocBlockExtendsTag),
+    Implements(DocBlockImplementsTag),
+    Uses(DocBlockUsesTag),
+    Deprecated(DocBlockDeprecatedTag),
+    Generic(DocBlockGenericTag),
+}
+
+impl HasId for DocBlockTag {
+    fn id(&self) -> NodeId {
+        match self {
+            DocBlockTag::Param(inner) => inner.id(),
+            DocBlockTag::Return(inner) => inner.id(),
+            DocBlockTag::Throws(inner) => inner.id(),
+            DocBlockTag::Var(inner) => inner.id(),
+            DocBlockTag::Property(inner) => inner.id(),
+            DocBlockTag::Method(inner) => inner.id(),
+            DocBlockTag::Template(inner) => inner.id(),
+            DocBlockTag::Extends(inner) => inner.id(),
+            DocBlockTag::Implements(inner) => inner.id(),
+            DocBlockTag::Uses(inner) => inner.id(),
+            DocBlockTag::Deprecated(inner) => inner.id(),
+            DocBlockTag::Generic(inner) => inner.id(),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockParamTag {
+    pub id: NodeId,
+    pub span: Span,
+    pub tag: Token,
+    pub data_type: Option<DataType>,
+    pub variable: Option<SimpleVariable>,
+    pub text: Option<ByteString>,
+}
+
+impl HasId for DocBlockParamTag {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockParamTag {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockReturnTag {
+    pub id: NodeId,
+    pub span: Span,
+    pub tag: Token,
+    pub data_type: Option<DataType>,
+    pub text: Option<ByteString>,
+}
+
+impl HasId for DocBlockReturnTag {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockReturnTag {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockThrowsTag {
+    pub id: NodeId,
+    pub span: Span,
+    pub tag: Token,
+    pub data_type: Option<DataType>,
+    pub text: Option<ByteString>,
+}
+
+impl HasId for DocBlockThrowsTag {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockThrowsTag {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockVarTag {
+    pub id: NodeId,
+    pub span: Span,
+    pub tag: Token,
+    pub data_type: Option<DataType>,
+    pub variable: Option<SimpleVariable>,
+    pub text: Option<ByteString>,
+}
+
+impl HasId for DocBlockVarTag {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockVarTag {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockPropertyTag {
+    pub id: NodeId,
+    pub span: Span,
+    pub tag: Token,
+    pub data_type: Option<DataType>,
+    pub variable: Option<SimpleVariable>,
+    pub text: Option<ByteString>,
+}
+
+impl HasId for DocBlockPropertyTag {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockPropertyTag {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockMethodTag {
+    pub id: NodeId,
+    pub span: Span,
+    pub tag: Token,
+    pub r#static: Option<Span>,
+    pub return_type: Option<DataType>,
+    pub name: SimpleIdentifier,
+    pub left_parenthesis: Span,
+    pub parameters: FunctionParameterList,
+    pub right_parenthesis: Span,
+    pub text: Option<ByteString>,
+}
+
+impl HasId for DocBlockMethodTag {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockMethodTag {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockTemplateTag {
+    pub id: NodeId,
+    pub span: Span,
+    pub tag: Token,
+    pub placeholder: SimpleIdentifier,
+    pub constraint: Option<DataType>,
+    pub text: Option<ByteString>,
+}
+
+impl HasId for DocBlockTemplateTag {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockTemplateTag {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockExtendsTag {
+    pub id: NodeId,
+    pub span: Span,
+    pub tag: Token,
+    pub data_type: Option<DataType>,
+    pub text: Option<ByteString>,
+}
+
+impl HasId for DocBlockExtendsTag {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockExtendsTag {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockImplementsTag {
+    pub id: NodeId,
+    pub span: Span,
+    pub tag: Token,
+    pub data_type: Option<DataType>,
+    pub text: Option<ByteString>,
+}
+
+impl HasId for DocBlockImplementsTag {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockImplementsTag {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockUsesTag {
+    pub id: NodeId,
+    pub span: Span,
+    pub tag: Token,
+    pub data_type: Option<DataType>,
+    pub text: Option<ByteString>,
+}
+
+impl HasId for DocBlockUsesTag {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockUsesTag {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockDeprecatedTag {
+    pub id: NodeId,
+    pub span: Span,
+    pub tag: Token,
+    pub text: Option<ByteString>,
+}
+
+impl HasId for DocBlockDeprecatedTag {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockDeprecatedTag {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockGenericTag {
+    pub id: NodeId,
+    pub span: Span,
+    pub tag: Token,
+    pub text: Option<ByteString>,
+}
+
+impl HasId for DocBlockGenericTag {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockGenericTag {
+    fn span(&self) -> Span {
+        self.span
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct CommentGroup {
+    pub id: NodeId,
     pub comments: Vec<Comment>,
+}
+
+impl HasId for CommentGroup {
+    fn id(&self) -> NodeId {
+        self.id
+    }
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -5821,6 +6287,30 @@ pub enum NodeKind<'a> {
     GroupUseStatement(&'a GroupUseStatement),
     HaltCompilerStatement(&'a HaltCompilerStatement),
     StaticVar(&'a StaticVar),
+    Comment(&'a Comment),
+    CommentKind(&'a CommentKind),
+    SingleLineComment(&'a SingleLineComment),
+    MultiLineComment(&'a MultiLineComment),
+    HashMarkComment(&'a HashMarkComment),
+    DocBlockComment(&'a DocBlockComment),
+    DocBlock(&'a DocBlock),
+    DocBlockNode(&'a DocBlockNode),
+    DocBlockTextNode(&'a DocBlockTextNode),
+    DocBlockTagNode(&'a DocBlockTagNode),
+    DocBlockTag(&'a DocBlockTag),
+    DocBlockParamTag(&'a DocBlockParamTag),
+    DocBlockReturnTag(&'a DocBlockReturnTag),
+    DocBlockThrowsTag(&'a DocBlockThrowsTag),
+    DocBlockVarTag(&'a DocBlockVarTag),
+    DocBlockPropertyTag(&'a DocBlockPropertyTag),
+    DocBlockMethodTag(&'a DocBlockMethodTag),
+    DocBlockTemplateTag(&'a DocBlockTemplateTag),
+    DocBlockExtendsTag(&'a DocBlockExtendsTag),
+    DocBlockImplementsTag(&'a DocBlockImplementsTag),
+    DocBlockUsesTag(&'a DocBlockUsesTag),
+    DocBlockDeprecatedTag(&'a DocBlockDeprecatedTag),
+    DocBlockGenericTag(&'a DocBlockGenericTag),
+    CommentGroup(&'a CommentGroup),
 }
 
 impl<'a> Node<'a> {
@@ -8477,6 +8967,270 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::StaticVar(_))
     }
 
+    pub fn as_comment(self) -> Option<&'a Comment> {
+        match &self.kind {
+            NodeKind::Comment(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_comment(&self) -> bool {
+        matches!(&self.kind, NodeKind::Comment(_))
+    }
+
+    pub fn as_comment_kind(self) -> Option<&'a CommentKind> {
+        match &self.kind {
+            NodeKind::CommentKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_comment_kind(&self) -> bool {
+        matches!(&self.kind, NodeKind::CommentKind(_))
+    }
+
+    pub fn as_single_line_comment(self) -> Option<&'a SingleLineComment> {
+        match &self.kind {
+            NodeKind::SingleLineComment(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_single_line_comment(&self) -> bool {
+        matches!(&self.kind, NodeKind::SingleLineComment(_))
+    }
+
+    pub fn as_multi_line_comment(self) -> Option<&'a MultiLineComment> {
+        match &self.kind {
+            NodeKind::MultiLineComment(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_multi_line_comment(&self) -> bool {
+        matches!(&self.kind, NodeKind::MultiLineComment(_))
+    }
+
+    pub fn as_hash_mark_comment(self) -> Option<&'a HashMarkComment> {
+        match &self.kind {
+            NodeKind::HashMarkComment(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_hash_mark_comment(&self) -> bool {
+        matches!(&self.kind, NodeKind::HashMarkComment(_))
+    }
+
+    pub fn as_doc_block_comment(self) -> Option<&'a DocBlockComment> {
+        match &self.kind {
+            NodeKind::DocBlockComment(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_comment(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockComment(_))
+    }
+
+    pub fn as_doc_block(self) -> Option<&'a DocBlock> {
+        match &self.kind {
+            NodeKind::DocBlock(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlock(_))
+    }
+
+    pub fn as_doc_block_node(self) -> Option<&'a DocBlockNode> {
+        match &self.kind {
+            NodeKind::DocBlockNode(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_node(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockNode(_))
+    }
+
+    pub fn as_doc_block_text_node(self) -> Option<&'a DocBlockTextNode> {
+        match &self.kind {
+            NodeKind::DocBlockTextNode(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_text_node(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockTextNode(_))
+    }
+
+    pub fn as_doc_block_tag_node(self) -> Option<&'a DocBlockTagNode> {
+        match &self.kind {
+            NodeKind::DocBlockTagNode(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_tag_node(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockTagNode(_))
+    }
+
+    pub fn as_doc_block_tag(self) -> Option<&'a DocBlockTag> {
+        match &self.kind {
+            NodeKind::DocBlockTag(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_tag(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockTag(_))
+    }
+
+    pub fn as_doc_block_param_tag(self) -> Option<&'a DocBlockParamTag> {
+        match &self.kind {
+            NodeKind::DocBlockParamTag(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_param_tag(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockParamTag(_))
+    }
+
+    pub fn as_doc_block_return_tag(self) -> Option<&'a DocBlockReturnTag> {
+        match &self.kind {
+            NodeKind::DocBlockReturnTag(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_return_tag(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockReturnTag(_))
+    }
+
+    pub fn as_doc_block_throws_tag(self) -> Option<&'a DocBlockThrowsTag> {
+        match &self.kind {
+            NodeKind::DocBlockThrowsTag(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_throws_tag(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockThrowsTag(_))
+    }
+
+    pub fn as_doc_block_var_tag(self) -> Option<&'a DocBlockVarTag> {
+        match &self.kind {
+            NodeKind::DocBlockVarTag(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_var_tag(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockVarTag(_))
+    }
+
+    pub fn as_doc_block_property_tag(self) -> Option<&'a DocBlockPropertyTag> {
+        match &self.kind {
+            NodeKind::DocBlockPropertyTag(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_property_tag(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockPropertyTag(_))
+    }
+
+    pub fn as_doc_block_method_tag(self) -> Option<&'a DocBlockMethodTag> {
+        match &self.kind {
+            NodeKind::DocBlockMethodTag(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_method_tag(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockMethodTag(_))
+    }
+
+    pub fn as_doc_block_template_tag(self) -> Option<&'a DocBlockTemplateTag> {
+        match &self.kind {
+            NodeKind::DocBlockTemplateTag(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_template_tag(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockTemplateTag(_))
+    }
+
+    pub fn as_doc_block_extends_tag(self) -> Option<&'a DocBlockExtendsTag> {
+        match &self.kind {
+            NodeKind::DocBlockExtendsTag(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_extends_tag(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockExtendsTag(_))
+    }
+
+    pub fn as_doc_block_implements_tag(self) -> Option<&'a DocBlockImplementsTag> {
+        match &self.kind {
+            NodeKind::DocBlockImplementsTag(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_implements_tag(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockImplementsTag(_))
+    }
+
+    pub fn as_doc_block_uses_tag(self) -> Option<&'a DocBlockUsesTag> {
+        match &self.kind {
+            NodeKind::DocBlockUsesTag(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_uses_tag(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockUsesTag(_))
+    }
+
+    pub fn as_doc_block_deprecated_tag(self) -> Option<&'a DocBlockDeprecatedTag> {
+        match &self.kind {
+            NodeKind::DocBlockDeprecatedTag(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_deprecated_tag(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockDeprecatedTag(_))
+    }
+
+    pub fn as_doc_block_generic_tag(self) -> Option<&'a DocBlockGenericTag> {
+        match &self.kind {
+            NodeKind::DocBlockGenericTag(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_generic_tag(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockGenericTag(_))
+    }
+
+    pub fn as_comment_group(self) -> Option<&'a CommentGroup> {
+        match &self.kind {
+            NodeKind::CommentGroup(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_comment_group(&self) -> bool {
+        matches!(&self.kind, NodeKind::CommentGroup(_))
+    }
+
     pub fn name(&self) -> &'static str {
         match &self.kind {
             NodeKind::Block(_) => "Block",
@@ -8724,6 +9478,30 @@ impl<'a> Node<'a> {
             NodeKind::GroupUseStatement(_) => "GroupUseStatement",
             NodeKind::HaltCompilerStatement(_) => "HaltCompilerStatement",
             NodeKind::StaticVar(_) => "StaticVar",
+            NodeKind::Comment(_) => "Comment",
+            NodeKind::CommentKind(_) => "CommentKind",
+            NodeKind::SingleLineComment(_) => "SingleLineComment",
+            NodeKind::MultiLineComment(_) => "MultiLineComment",
+            NodeKind::HashMarkComment(_) => "HashMarkComment",
+            NodeKind::DocBlockComment(_) => "DocBlockComment",
+            NodeKind::DocBlock(_) => "DocBlock",
+            NodeKind::DocBlockNode(_) => "DocBlockNode",
+            NodeKind::DocBlockTextNode(_) => "DocBlockTextNode",
+            NodeKind::DocBlockTagNode(_) => "DocBlockTagNode",
+            NodeKind::DocBlockTag(_) => "DocBlockTag",
+            NodeKind::DocBlockParamTag(_) => "DocBlockParamTag",
+            NodeKind::DocBlockReturnTag(_) => "DocBlockReturnTag",
+            NodeKind::DocBlockThrowsTag(_) => "DocBlockThrowsTag",
+            NodeKind::DocBlockVarTag(_) => "DocBlockVarTag",
+            NodeKind::DocBlockPropertyTag(_) => "DocBlockPropertyTag",
+            NodeKind::DocBlockMethodTag(_) => "DocBlockMethodTag",
+            NodeKind::DocBlockTemplateTag(_) => "DocBlockTemplateTag",
+            NodeKind::DocBlockExtendsTag(_) => "DocBlockExtendsTag",
+            NodeKind::DocBlockImplementsTag(_) => "DocBlockImplementsTag",
+            NodeKind::DocBlockUsesTag(_) => "DocBlockUsesTag",
+            NodeKind::DocBlockDeprecatedTag(_) => "DocBlockDeprecatedTag",
+            NodeKind::DocBlockGenericTag(_) => "DocBlockGenericTag",
+            NodeKind::CommentGroup(_) => "CommentGroup",
         }
     }
     pub fn children(&self) -> Vec<Node<'a>> {
@@ -10734,6 +11512,78 @@ impl<'a> Node<'a> {
                     children.push(child.into());
                 }
             }
+            NodeKind::Comment(node) => {
+                let x = &node.kind;
+                children.push(x.into());
+            }
+            NodeKind::CommentKind(node) => match node {
+                CommentKind::SingleLine(inner) => {
+                    children.push(inner.into());
+                }
+                CommentKind::MultiLine(inner) => {
+                    children.push(inner.into());
+                }
+                CommentKind::HashMark(inner) => {
+                    children.push(inner.into());
+                }
+                CommentKind::DocBlock(inner) => {
+                    children.push(inner.into());
+                }
+                _ => {}
+            },
+            NodeKind::DocBlock(node) => {
+                for x in &node.nodes {
+                    children.push(x.into());
+                }
+            }
+            NodeKind::DocBlockNode(node) => match node {
+                DocBlockNode::Text(inner) => {
+                    children.push(inner.into());
+                }
+                DocBlockNode::Tag(inner) => {
+                    children.push(inner.into());
+                }
+                _ => {}
+            },
+            NodeKind::DocBlockTag(node) => match node {
+                DocBlockTag::Param(inner) => {
+                    children.push(inner.into());
+                }
+                DocBlockTag::Return(inner) => {
+                    children.push(inner.into());
+                }
+                DocBlockTag::Throws(inner) => {
+                    children.push(inner.into());
+                }
+                DocBlockTag::Var(inner) => {
+                    children.push(inner.into());
+                }
+                DocBlockTag::Property(inner) => {
+                    children.push(inner.into());
+                }
+                DocBlockTag::Method(inner) => {
+                    children.push(inner.into());
+                }
+                DocBlockTag::Template(inner) => {
+                    children.push(inner.into());
+                }
+                DocBlockTag::Extends(inner) => {
+                    children.push(inner.into());
+                }
+                DocBlockTag::Implements(inner) => {
+                    children.push(inner.into());
+                }
+                DocBlockTag::Uses(inner) => {
+                    children.push(inner.into());
+                }
+                DocBlockTag::Deprecated(inner) => {
+                    children.push(inner.into());
+                }
+                DocBlockTag::Generic(inner) => {
+                    children.push(inner.into());
+                }
+                _ => {}
+            },
             _ => {}
         }
         children
@@ -10982,6 +11832,30 @@ impl<'a> Node<'a> {
             NodeKind::GroupUseStatement(node) => NonNull::from(node).cast(),
             NodeKind::HaltCompilerStatement(node) => NonNull::from(node).cast(),
             NodeKind::StaticVar(node) => NonNull::from(node).cast(),
+            NodeKind::Comment(node) => NonNull::from(node).cast(),
+            NodeKind::CommentKind(node) => NonNull::from(node).cast(),
+            NodeKind::SingleLineComment(node) => NonNull::from(node).cast(),
+            NodeKind::MultiLineComment(node) => NonNull::from(node).cast(),
+            NodeKind::HashMarkComment(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockComment(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlock(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockNode(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockTextNode(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockTagNode(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockTag(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockParamTag(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockReturnTag(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockThrowsTag(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockVarTag(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockPropertyTag(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockMethodTag(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockTemplateTag(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockExtendsTag(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockImplementsTag(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockUsesTag(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockDeprecatedTag(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockGenericTag(node) => NonNull::from(node).cast(),
+            NodeKind::CommentGroup(node) => NonNull::from(node).cast(),
         }
     }
 }
@@ -12663,5 +13537,157 @@ impl<'a> From<&'a HaltCompilerStatement> for Node<'a> {
 impl<'a> From<&'a StaticVar> for Node<'a> {
     fn from(node: &'a StaticVar) -> Self {
         Node::new(node.id(), NodeKind::StaticVar(node), node.span())
+    }
+}
+
+impl<'a> From<&'a Comment> for Node<'a> {
+    fn from(node: &'a Comment) -> Self {
+        Node::new(node.id(), NodeKind::Comment(node), node.span())
+    }
+}
+
+impl<'a> From<&'a CommentKind> for Node<'a> {
+    fn from(node: &'a CommentKind) -> Self {
+        Node::new(node.id(), NodeKind::CommentKind(node), node.span())
+    }
+}
+
+impl<'a> From<&'a SingleLineComment> for Node<'a> {
+    fn from(node: &'a SingleLineComment) -> Self {
+        Node::new(node.id(), NodeKind::SingleLineComment(node), node.span())
+    }
+}
+
+impl<'a> From<&'a MultiLineComment> for Node<'a> {
+    fn from(node: &'a MultiLineComment) -> Self {
+        Node::new(node.id(), NodeKind::MultiLineComment(node), node.span())
+    }
+}
+
+impl<'a> From<&'a HashMarkComment> for Node<'a> {
+    fn from(node: &'a HashMarkComment) -> Self {
+        Node::new(node.id(), NodeKind::HashMarkComment(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockComment> for Node<'a> {
+    fn from(node: &'a DocBlockComment) -> Self {
+        Node::new(node.id(), NodeKind::DocBlockComment(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlock> for Node<'a> {
+    fn from(node: &'a DocBlock) -> Self {
+        Node::new(node.id(), NodeKind::DocBlock(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockNode> for Node<'a> {
+    fn from(node: &'a DocBlockNode) -> Self {
+        Node::new(node.id(), NodeKind::DocBlockNode(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockTextNode> for Node<'a> {
+    fn from(node: &'a DocBlockTextNode) -> Self {
+        Node::new(node.id(), NodeKind::DocBlockTextNode(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockTagNode> for Node<'a> {
+    fn from(node: &'a DocBlockTagNode) -> Self {
+        Node::new(node.id(), NodeKind::DocBlockTagNode(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockTag> for Node<'a> {
+    fn from(node: &'a DocBlockTag) -> Self {
+        Node::new(node.id(), NodeKind::DocBlockTag(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockParamTag> for Node<'a> {
+    fn from(node: &'a DocBlockParamTag) -> Self {
+        Node::new(node.id(), NodeKind::DocBlockParamTag(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockReturnTag> for Node<'a> {
+    fn from(node: &'a DocBlockReturnTag) -> Self {
+        Node::new(node.id(), NodeKind::DocBlockReturnTag(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockThrowsTag> for Node<'a> {
+    fn from(node: &'a DocBlockThrowsTag) -> Self {
+        Node::new(node.id(), NodeKind::DocBlockThrowsTag(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockVarTag> for Node<'a> {
+    fn from(node: &'a DocBlockVarTag) -> Self {
+        Node::new(node.id(), NodeKind::DocBlockVarTag(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockPropertyTag> for Node<'a> {
+    fn from(node: &'a DocBlockPropertyTag) -> Self {
+        Node::new(node.id(), NodeKind::DocBlockPropertyTag(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockMethodTag> for Node<'a> {
+    fn from(node: &'a DocBlockMethodTag) -> Self {
+        Node::new(node.id(), NodeKind::DocBlockMethodTag(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockTemplateTag> for Node<'a> {
+    fn from(node: &'a DocBlockTemplateTag) -> Self {
+        Node::new(node.id(), NodeKind::DocBlockTemplateTag(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockExtendsTag> for Node<'a> {
+    fn from(node: &'a DocBlockExtendsTag) -> Self {
+        Node::new(node.id(), NodeKind::DocBlockExtendsTag(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockImplementsTag> for Node<'a> {
+    fn from(node: &'a DocBlockImplementsTag) -> Self {
+        Node::new(
+            node.id(),
+            NodeKind::DocBlockImplementsTag(node),
+            node.span(),
+        )
+    }
+}
+
+impl<'a> From<&'a DocBlockUsesTag> for Node<'a> {
+    fn from(node: &'a DocBlockUsesTag) -> Self {
+        Node::new(node.id(), NodeKind::DocBlockUsesTag(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockDeprecatedTag> for Node<'a> {
+    fn from(node: &'a DocBlockDeprecatedTag) -> Self {
+        Node::new(
+            node.id(),
+            NodeKind::DocBlockDeprecatedTag(node),
+            node.span(),
+        )
+    }
+}
+
+impl<'a> From<&'a DocBlockGenericTag> for Node<'a> {
+    fn from(node: &'a DocBlockGenericTag) -> Self {
+        Node::new(node.id(), NodeKind::DocBlockGenericTag(node), node.span())
+    }
+}
+
+impl<'a> From<&'a CommentGroup> for Node<'a> {
+    fn from(node: &'a CommentGroup) -> Self {
+        Node::new(node.id(), NodeKind::CommentGroup(node), node.span())
     }
 }

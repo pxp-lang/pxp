@@ -1,4 +1,7 @@
-use crate::{ArithmeticOperationKind, AssignmentOperationKind, BitwiseOperationKind, ComparisonOperationKind, Expression, LogicalOperationKind};
+use crate::{
+    ArithmeticOperationKind, AssignmentOperationKind, BitwiseOperationKind,
+    ComparisonOperationKind, Expression, LogicalOperationKind,
+};
 use pxp_span::Span;
 
 impl AssignmentOperationKind {
@@ -155,35 +158,35 @@ impl BitwiseOperationKind {
 impl ArithmeticOperationKind {
     pub fn left(&self) -> Option<&Expression> {
         match self {
-            ArithmeticOperationKind::Addition { id, left, plus, right } => Some(left),
-            ArithmeticOperationKind::Subtraction { id, left, minus, right } => Some(left),
-            ArithmeticOperationKind::Multiplication { id, left, asterisk, right } => Some(left),
-            ArithmeticOperationKind::Division { id, left, slash, right } => Some(left),
-            ArithmeticOperationKind::Modulo { id, left, percent, right } => Some(left),
-            ArithmeticOperationKind::Exponentiation { id, left, pow, right } => Some(left),
-            ArithmeticOperationKind::Negative { id, minus, right } => None,
-            ArithmeticOperationKind::Positive { id, plus, right } => None,
-            ArithmeticOperationKind::PreIncrement { id, increment, right } => None,
-            ArithmeticOperationKind::PostIncrement { id, left, increment } => Some(left),
-            ArithmeticOperationKind::PreDecrement { id, decrement, right } => None,
-            ArithmeticOperationKind::PostDecrement { id, left, decrement } => Some(left),
+            ArithmeticOperationKind::Addition { left, .. } => Some(left),
+            ArithmeticOperationKind::Subtraction { left, .. } => Some(left),
+            ArithmeticOperationKind::Multiplication { left, .. } => Some(left),
+            ArithmeticOperationKind::Division { left, .. } => Some(left),
+            ArithmeticOperationKind::Modulo { left, .. } => Some(left),
+            ArithmeticOperationKind::Exponentiation { left, .. } => Some(left),
+            ArithmeticOperationKind::Negative { .. } => None,
+            ArithmeticOperationKind::Positive { .. } => None,
+            ArithmeticOperationKind::PreIncrement { .. } => None,
+            ArithmeticOperationKind::PostIncrement { left, .. } => Some(left),
+            ArithmeticOperationKind::PreDecrement { .. } => None,
+            ArithmeticOperationKind::PostDecrement { left, .. } => Some(left),
         }
     }
 
     pub fn right(&self) -> Option<&Expression> {
         match self {
-            ArithmeticOperationKind::Addition { id, left, plus, right } => Some(right),
-            ArithmeticOperationKind::Subtraction { id, left, minus, right } => Some(right),
-            ArithmeticOperationKind::Multiplication { id, left, asterisk, right } => Some(right),
-            ArithmeticOperationKind::Division { id, left, slash, right } => Some(right),
-            ArithmeticOperationKind::Modulo { id, left, percent, right } => Some(right),
-            ArithmeticOperationKind::Exponentiation { id, left, pow, right } => Some(right),
-            ArithmeticOperationKind::Negative { id, minus, right } => Some(right),
-            ArithmeticOperationKind::Positive { id, plus, right } => Some(right),
-            ArithmeticOperationKind::PreIncrement { id, increment, right } => Some(right),
-            ArithmeticOperationKind::PostIncrement { id, left, increment } => None,
-            ArithmeticOperationKind::PreDecrement { id, decrement, right } => Some(right),
-            ArithmeticOperationKind::PostDecrement { id, left, decrement } => None,
+            ArithmeticOperationKind::Addition { right, .. } => Some(right),
+            ArithmeticOperationKind::Subtraction { right, .. } => Some(right),
+            ArithmeticOperationKind::Multiplication { right, .. } => Some(right),
+            ArithmeticOperationKind::Division { right, .. } => Some(right),
+            ArithmeticOperationKind::Modulo { right, .. } => Some(right),
+            ArithmeticOperationKind::Exponentiation { right, .. } => Some(right),
+            ArithmeticOperationKind::Negative { right, .. } => Some(right),
+            ArithmeticOperationKind::Positive { right, .. } => Some(right),
+            ArithmeticOperationKind::PreIncrement { right, .. } => Some(right),
+            ArithmeticOperationKind::PostIncrement { .. } => None,
+            ArithmeticOperationKind::PreDecrement { right, .. } => Some(right),
+            ArithmeticOperationKind::PostDecrement { .. } => None,
         }
     }
 
@@ -207,23 +210,23 @@ impl ArithmeticOperationKind {
 impl LogicalOperationKind {
     pub fn left(&self) -> Option<&Expression> {
         match self {
-            LogicalOperationKind::And { id, left, double_ampersand, right } => Some(left),
-            LogicalOperationKind::Or { id, left, double_pipe, right } => Some(left),
-            LogicalOperationKind::Not { id, bang, right } => None,
-            LogicalOperationKind::LogicalAnd { id, left, and, right } => Some(left),
-            LogicalOperationKind::LogicalOr { id, left, or, right } => Some(left),
-            LogicalOperationKind::LogicalXor { id, left, xor, right } => Some(left),
+            LogicalOperationKind::And { left, .. } => Some(left),
+            LogicalOperationKind::Or { left, .. } => Some(left),
+            LogicalOperationKind::Not { .. } => None,
+            LogicalOperationKind::LogicalAnd { left, .. } => Some(left),
+            LogicalOperationKind::LogicalOr { left, .. } => Some(left),
+            LogicalOperationKind::LogicalXor { left, .. } => Some(left),
         }
     }
 
     pub fn right(&self) -> &Expression {
         match self {
-            LogicalOperationKind::And { id, left, double_ampersand, right } => right,
-            LogicalOperationKind::Or { id, left, double_pipe, right } => right,
-            LogicalOperationKind::Not { id, bang, right } => right,
-            LogicalOperationKind::LogicalAnd { id, left, and, right } => right,
-            LogicalOperationKind::LogicalOr { id, left, or, right } => right,
-            LogicalOperationKind::LogicalXor { id, left, xor, right } => right,
+            LogicalOperationKind::And { right, .. } => right,
+            LogicalOperationKind::Or { right, .. } => right,
+            LogicalOperationKind::Not { right, .. } => right,
+            LogicalOperationKind::LogicalAnd { right, .. } => right,
+            LogicalOperationKind::LogicalOr { right, .. } => right,
+            LogicalOperationKind::LogicalXor { right, .. } => right,
         }
     }
 

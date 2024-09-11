@@ -5,7 +5,7 @@ pub mod testing;
 pub mod types;
 
 pub use client::Client;
-use lsp_server::{Connection, ExtractError, IoThreads, Message, Request, RequestId, Response};
+use lsp_server::{Connection, ExtractError, Message, Request, RequestId, Response};
 use lsp_types::{notification::*, request::Request as _, *};
 use request::{Completion, DocumentSymbolRequest, HoverRequest};
 use serde_json::{from_value, to_value, Value};

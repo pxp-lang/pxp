@@ -2136,15 +2136,136 @@ pub fn walk_static_var<V: Visitor + ?Sized>(visitor: &mut V, node: &StaticVar) {
 }
 
 pub fn walk_comment<V: Visitor + ?Sized>(visitor: &mut V, node: &Comment) {
-    visitor.visit_comment_format(&node.format);
+    visitor.visit_comment_kind(&node.kind);
 }
 
-pub fn walk_comment_format<V: Visitor + ?Sized>(visitor: &mut V, node: &CommentFormat) {
+pub fn walk_comment_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &CommentKind) {
     match node {
-        CommentFormat::SingleLine => {}
-        CommentFormat::MultiLine => {}
-        CommentFormat::HashMark => {}
-        CommentFormat::DocBlock => {}
+        CommentKind::SingleLine(inner) => visitor.visit_single_line_comment(inner),
+        CommentKind::MultiLine(inner) => visitor.visit_multi_line_comment(inner),
+        CommentKind::HashMark(inner) => visitor.visit_hash_mark_comment(inner),
+        CommentKind::DocBlock(inner) => visitor.visit_doc_block_comment(inner),
         _ => {}
+    }
+}
+
+pub fn walk_doc_block_comment<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockComment) {
+    visitor.visit_doc_block(&node.doc);
+}
+
+pub fn walk_doc_block<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlock) {
+    for item in &node.nodes {
+        visitor.visit_doc_block_node(item);
+    }
+}
+
+pub fn walk_doc_block_node<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockNode) {
+    match node {
+        DocBlockNode::Text(inner) => visitor.visit_doc_block_text_node(inner),
+        DocBlockNode::Tag(inner) => visitor.visit_doc_block_tag_node(inner),
+        _ => {}
+    }
+}
+
+pub fn walk_doc_block_tag_node<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockTagNode) {
+    visitor.visit_doc_block_tag(&node.tag);
+}
+
+pub fn walk_doc_block_tag<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockTag) {
+    match node {
+        DocBlockTag::Param(inner) => visitor.visit_doc_block_param_tag(inner),
+        DocBlockTag::Return(inner) => visitor.visit_doc_block_return_tag(inner),
+        DocBlockTag::Throws(inner) => visitor.visit_doc_block_throws_tag(inner),
+        DocBlockTag::Var(inner) => visitor.visit_doc_block_var_tag(inner),
+        DocBlockTag::Property(inner) => visitor.visit_doc_block_property_tag(inner),
+        DocBlockTag::Method(inner) => visitor.visit_doc_block_method_tag(inner),
+        DocBlockTag::Template(inner) => visitor.visit_doc_block_template_tag(inner),
+        DocBlockTag::Extends(inner) => visitor.visit_doc_block_extends_tag(inner),
+        DocBlockTag::Implements(inner) => visitor.visit_doc_block_implements_tag(inner),
+        DocBlockTag::Uses(inner) => visitor.visit_doc_block_uses_tag(inner),
+        DocBlockTag::Deprecated(inner) => visitor.visit_doc_block_deprecated_tag(inner),
+        DocBlockTag::Generic(inner) => visitor.visit_doc_block_generic_tag(inner),
+        _ => {}
+    }
+}
+
+pub fn walk_doc_block_param_tag<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockParamTag) {
+    if let Some(item) = &node.data_type {
+        visitor.visit_data_type(item);
+    }
+    if let Some(item) = &node.variable {
+        visitor.visit_simple_variable(item);
+    }
+}
+
+pub fn walk_doc_block_return_tag<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockReturnTag) {
+    if let Some(item) = &node.data_type {
+        visitor.visit_data_type(item);
+    }
+}
+
+pub fn walk_doc_block_throws_tag<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockThrowsTag) {
+    if let Some(item) = &node.data_type {
+        visitor.visit_data_type(item);
+    }
+}
+
+pub fn walk_doc_block_var_tag<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockVarTag) {
+    if let Some(item) = &node.data_type {
+        visitor.visit_data_type(item);
+    }
+    if let Some(item) = &node.variable {
+        visitor.visit_simple_variable(item);
+    }
+}
+
+pub fn walk_doc_block_property_tag<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &DocBlockPropertyTag,
+) {
+    if let Some(item) = &node.data_type {
+        visitor.visit_data_type(item);
+    }
+    if let Some(item) = &node.variable {
+        visitor.visit_simple_variable(item);
+    }
+}
+
+pub fn walk_doc_block_method_tag<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockMethodTag) {
+    if let Some(item) = &node.return_type {
+        visitor.visit_data_type(item);
+    }
+    visitor.visit_simple_identifier(&node.name);
+    visitor.visit_function_parameter_list(&node.parameters);
+}
+
+pub fn walk_doc_block_template_tag<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &DocBlockTemplateTag,
+) {
+    visitor.visit_simple_identifier(&node.placeholder);
+    if let Some(item) = &node.constraint {
+        visitor.visit_data_type(item);
+    }
+}
+
+pub fn walk_doc_block_extends_tag<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockExtendsTag) {
+    if let Some(item) = &node.data_type {
+        visitor.visit_data_type(item);
+    }
+}
+
+pub fn walk_doc_block_implements_tag<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &DocBlockImplementsTag,
+) {
+    if let Some(item) = &node.data_type {
+        visitor.visit_data_type(item);
+    }
+}
+
+pub fn walk_doc_block_uses_tag<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockUsesTag) {
+    if let Some(item) = &node.data_type {
+        visitor.visit_data_type(item);
     }
 }

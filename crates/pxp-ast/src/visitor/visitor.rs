@@ -945,9 +945,81 @@ pub trait Visitor {
         walk_comment(self, node);
     }
 
-    fn visit_comment_format(&mut self, node: &CommentFormat) {
-        walk_comment_format(self, node);
+    fn visit_comment_kind(&mut self, node: &CommentKind) {
+        walk_comment_kind(self, node);
     }
+
+    fn visit_single_line_comment(&mut self, node: &SingleLineComment) {}
+
+    fn visit_multi_line_comment(&mut self, node: &MultiLineComment) {}
+
+    fn visit_hash_mark_comment(&mut self, node: &HashMarkComment) {}
+
+    fn visit_doc_block_comment(&mut self, node: &DocBlockComment) {
+        walk_doc_block_comment(self, node);
+    }
+
+    fn visit_doc_block(&mut self, node: &DocBlock) {
+        walk_doc_block(self, node);
+    }
+
+    fn visit_doc_block_node(&mut self, node: &DocBlockNode) {
+        walk_doc_block_node(self, node);
+    }
+
+    fn visit_doc_block_text_node(&mut self, node: &DocBlockTextNode) {}
+
+    fn visit_doc_block_tag_node(&mut self, node: &DocBlockTagNode) {
+        walk_doc_block_tag_node(self, node);
+    }
+
+    fn visit_doc_block_tag(&mut self, node: &DocBlockTag) {
+        walk_doc_block_tag(self, node);
+    }
+
+    fn visit_doc_block_param_tag(&mut self, node: &DocBlockParamTag) {
+        walk_doc_block_param_tag(self, node);
+    }
+
+    fn visit_doc_block_return_tag(&mut self, node: &DocBlockReturnTag) {
+        walk_doc_block_return_tag(self, node);
+    }
+
+    fn visit_doc_block_throws_tag(&mut self, node: &DocBlockThrowsTag) {
+        walk_doc_block_throws_tag(self, node);
+    }
+
+    fn visit_doc_block_var_tag(&mut self, node: &DocBlockVarTag) {
+        walk_doc_block_var_tag(self, node);
+    }
+
+    fn visit_doc_block_property_tag(&mut self, node: &DocBlockPropertyTag) {
+        walk_doc_block_property_tag(self, node);
+    }
+
+    fn visit_doc_block_method_tag(&mut self, node: &DocBlockMethodTag) {
+        walk_doc_block_method_tag(self, node);
+    }
+
+    fn visit_doc_block_template_tag(&mut self, node: &DocBlockTemplateTag) {
+        walk_doc_block_template_tag(self, node);
+    }
+
+    fn visit_doc_block_extends_tag(&mut self, node: &DocBlockExtendsTag) {
+        walk_doc_block_extends_tag(self, node);
+    }
+
+    fn visit_doc_block_implements_tag(&mut self, node: &DocBlockImplementsTag) {
+        walk_doc_block_implements_tag(self, node);
+    }
+
+    fn visit_doc_block_uses_tag(&mut self, node: &DocBlockUsesTag) {
+        walk_doc_block_uses_tag(self, node);
+    }
+
+    fn visit_doc_block_deprecated_tag(&mut self, node: &DocBlockDeprecatedTag) {}
+
+    fn visit_doc_block_generic_tag(&mut self, node: &DocBlockGenericTag) {}
 
     fn visit_comment_group(&mut self, node: &CommentGroup) {}
 }

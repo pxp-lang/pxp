@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 
-use lsp_server::Connection;
 
 use crate::LanguageServer;
 

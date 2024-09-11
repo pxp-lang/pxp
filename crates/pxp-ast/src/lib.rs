@@ -450,3 +450,42 @@ impl FunctionParameterList {
         self.parameters.iter()
     }
 }
+
+impl Spanned for CommentKind {
+    fn span(&self) -> Span {
+        match self {
+            CommentKind::SingleLine(inner) => inner.span,
+            CommentKind::MultiLine(inner) => inner.span,
+            CommentKind::HashMark(inner) => inner.span,
+            CommentKind::DocBlock(inner) => inner.span,
+        }
+    }
+}
+
+impl Spanned for DocBlockNode {
+    fn span(&self) -> Span {
+        match self {
+            DocBlockNode::Text(inner) => inner.span,
+            DocBlockNode::Tag(inner) => inner.span(),
+        }
+    }
+}
+
+impl Spanned for DocBlockTag {
+    fn span(&self) -> Span {
+        match self {
+            DocBlockTag::Param(inner) => inner.span,
+            DocBlockTag::Return(inner) => inner.span,
+            DocBlockTag::Throws(inner) => inner.span,
+            DocBlockTag::Var(inner) => inner.span,
+            DocBlockTag::Property(inner) => inner.span,
+            DocBlockTag::Method(inner) => inner.span,
+            DocBlockTag::Template(inner) => inner.span,
+            DocBlockTag::Extends(inner) => inner.span,
+            DocBlockTag::Implements(inner) => inner.span,
+            DocBlockTag::Uses(inner) => inner.span,
+            DocBlockTag::Deprecated(inner) => inner.span,
+            DocBlockTag::Generic(inner) => inner.span,
+        }
+    }
+}

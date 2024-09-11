@@ -957,9 +957,81 @@ pub trait VisitorMut {
         walk_comment_mut(self, node);
     }
 
-    fn visit_comment_format(&mut self, node: &mut CommentFormat) {
-        walk_comment_format_mut(self, node);
+    fn visit_comment_kind(&mut self, node: &mut CommentKind) {
+        walk_comment_kind_mut(self, node);
     }
+
+    fn visit_single_line_comment(&mut self, node: &mut SingleLineComment) {}
+
+    fn visit_multi_line_comment(&mut self, node: &mut MultiLineComment) {}
+
+    fn visit_hash_mark_comment(&mut self, node: &mut HashMarkComment) {}
+
+    fn visit_doc_block_comment(&mut self, node: &mut DocBlockComment) {
+        walk_doc_block_comment_mut(self, node);
+    }
+
+    fn visit_doc_block(&mut self, node: &mut DocBlock) {
+        walk_doc_block_mut(self, node);
+    }
+
+    fn visit_doc_block_node(&mut self, node: &mut DocBlockNode) {
+        walk_doc_block_node_mut(self, node);
+    }
+
+    fn visit_doc_block_text_node(&mut self, node: &mut DocBlockTextNode) {}
+
+    fn visit_doc_block_tag_node(&mut self, node: &mut DocBlockTagNode) {
+        walk_doc_block_tag_node_mut(self, node);
+    }
+
+    fn visit_doc_block_tag(&mut self, node: &mut DocBlockTag) {
+        walk_doc_block_tag_mut(self, node);
+    }
+
+    fn visit_doc_block_param_tag(&mut self, node: &mut DocBlockParamTag) {
+        walk_doc_block_param_tag_mut(self, node);
+    }
+
+    fn visit_doc_block_return_tag(&mut self, node: &mut DocBlockReturnTag) {
+        walk_doc_block_return_tag_mut(self, node);
+    }
+
+    fn visit_doc_block_throws_tag(&mut self, node: &mut DocBlockThrowsTag) {
+        walk_doc_block_throws_tag_mut(self, node);
+    }
+
+    fn visit_doc_block_var_tag(&mut self, node: &mut DocBlockVarTag) {
+        walk_doc_block_var_tag_mut(self, node);
+    }
+
+    fn visit_doc_block_property_tag(&mut self, node: &mut DocBlockPropertyTag) {
+        walk_doc_block_property_tag_mut(self, node);
+    }
+
+    fn visit_doc_block_method_tag(&mut self, node: &mut DocBlockMethodTag) {
+        walk_doc_block_method_tag_mut(self, node);
+    }
+
+    fn visit_doc_block_template_tag(&mut self, node: &mut DocBlockTemplateTag) {
+        walk_doc_block_template_tag_mut(self, node);
+    }
+
+    fn visit_doc_block_extends_tag(&mut self, node: &mut DocBlockExtendsTag) {
+        walk_doc_block_extends_tag_mut(self, node);
+    }
+
+    fn visit_doc_block_implements_tag(&mut self, node: &mut DocBlockImplementsTag) {
+        walk_doc_block_implements_tag_mut(self, node);
+    }
+
+    fn visit_doc_block_uses_tag(&mut self, node: &mut DocBlockUsesTag) {
+        walk_doc_block_uses_tag_mut(self, node);
+    }
+
+    fn visit_doc_block_deprecated_tag(&mut self, node: &mut DocBlockDeprecatedTag) {}
+
+    fn visit_doc_block_generic_tag(&mut self, node: &mut DocBlockGenericTag) {}
 
     fn visit_comment_group(&mut self, node: &mut CommentGroup) {}
 }
