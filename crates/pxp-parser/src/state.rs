@@ -7,7 +7,7 @@ use pxp_span::Span;
 use pxp_token::{Token, TokenKind};
 
 use crate::{
-    internal::identifiers::is_soft_reserved_identifier, ParserDiagnostic,
+    internal::{docblock::docblock, identifiers::is_soft_reserved_identifier}, ParserDiagnostic,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -178,8 +178,7 @@ impl<'a> State<'a> {
 
             let id = self.id();
             let comment_id = self.id();
-
-            self.comments.push(match &current {
+            let comment = match &current {
                 Token {
                     kind: TokenKind::SingleLineComment,
                     span,
@@ -219,8 +218,22 @@ impl<'a> State<'a> {
                         content: symbol.as_ref().unwrap().clone(),
                     }),
                 },
+                Token {
+                    kind: TokenKind::OpenPhpDoc,
+                    ..
+                } => {
+                    let docblock = docblock(self);
+
+                    Comment {
+                        id,
+                        span: docblock.span,
+                        kind: CommentKind::DocBlock(docblock),
+                    }
+                },
                 _ => unreachable!()
-            });
+            };
+
+            self.comments.push(comment);
             
             self.cursor += 1;
         }
