@@ -240,6 +240,7 @@ pub enum TokenKind {
     OpenPhpDoc,
     ClosePhpDoc,
     PhpDocEol,
+    PhpDocHorizontalWhitespace,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -489,6 +490,7 @@ impl Display for TokenKind {
             Self::OpenPhpDoc => "/**",
             Self::ClosePhpDoc => "*/",
             Self::PhpDocEol => "<eol>",
+            Self::PhpDocHorizontalWhitespace => "<whitespace>",
         };
 
         write!(f, "{}", s)

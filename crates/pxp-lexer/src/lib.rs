@@ -180,7 +180,7 @@ impl<'a, 'b> Lexer<'a> {
     fn docblock(&mut self, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
         while !self.state.source.eof() {
             self.state.source.start_token();
-            
+
             if matches!(self.state.source.read(2), [b'\r', b'\n', ..] | [b'\n', ..]) {
                 let b = self.state.source.current().unwrap();
 
@@ -195,8 +195,6 @@ impl<'a, 'b> Lexer<'a> {
                 continue;
             }
 
-            self.skip_whitespace();
-
             match &self.state.source.read(2) {
                 [b'*', b'/', ..] => {
                     self.state.source.skip(2);
@@ -204,6 +202,14 @@ impl<'a, 'b> Lexer<'a> {
                     tokens.push(Token::new_without_symbol(TokenKind::ClosePhpDoc, self.state.source.span()));
 
                     break;
+                },
+                [b' ' | b'\t', ..] => {
+                    self.skip_horizontal_whitespace();
+
+                    let span = self.state.source.span();
+                    let symbol = self.state.source.span_range(span);
+
+                    tokens.push(Token::new_with_symbol(TokenKind::PhpDocHorizontalWhitespace, span, symbol.into()));
                 },
                 _ => {},
             }
