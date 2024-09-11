@@ -106,7 +106,6 @@ pub enum TokenKind {
     SingleLineComment,
     HashMarkComment,
     MultiLineComment,
-    DocumentComment,
     Const,
     LiteralSingleQuotedString,
     LiteralDoubleQuotedString,
@@ -486,8 +485,7 @@ impl Display for TokenKind {
             | Self::LiteralDoubleQuotedString
             | Self::SingleLineComment
             | Self::MultiLineComment
-            | Self::HashMarkComment
-            | Self::DocumentComment => {
+            | Self::HashMarkComment => {
                 return write!(f, "{:?}", self);
             }
             Self::Missing => return write!(f, "<missing>"),

@@ -99,7 +99,6 @@ impl<'a> TokenStream<'a> {
                 TokenKind::SingleLineComment
                     | TokenKind::MultiLineComment
                     | TokenKind::HashMarkComment
-                    | TokenKind::DocumentComment
             ) {
                 cursor += 1;
                 continue;
@@ -136,7 +135,6 @@ impl<'a> TokenStream<'a> {
                 TokenKind::SingleLineComment
                     | TokenKind::MultiLineComment
                     | TokenKind::HashMarkComment
-                    | TokenKind::DocumentComment
             ) {
                 break;
             }

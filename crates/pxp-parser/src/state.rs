@@ -99,16 +99,11 @@ impl<'a> State<'a> {
                             content: symbol.as_ref().unwrap().clone(),
                         }),
                     },
-                    Token {
-                        kind: TokenKind::DocumentComment,
-                        span,
-                        symbol,
-                    } => todo!(), /*Comment {
-                    id: self.id(),
-                    span: *span,
-                    format: CommentFormat::DocBlock,
-                    content: symbol.as_ref().unwrap().clone(),
-                    }*/
+                    // Token {
+                    //     kind: TokenKind::DocumentComment,
+                    //     span,
+                    //     symbol,
+                    // } => todo!(),
                     _ => unreachable!(),
                 })
                 .collect(),
