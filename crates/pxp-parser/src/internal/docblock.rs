@@ -1,4 +1,4 @@
-use pxp_ast::{DocBlock, DocBlockComment};
+use pxp_ast::{DocBlock, DocBlockComment, DocBlockNode, DocBlockTagNode, DocBlockTextNode};
 use pxp_span::{Span, Spanned};
 use pxp_token::TokenKind;
 
@@ -27,8 +27,20 @@ pub fn docblock(state: &mut State) -> DocBlockComment {
             break;
         }
 
-        // FIXME: Actually parse.
-        state.next();
+        let node = match &current.kind {
+            TokenKind::PhpDocTag => {
+                let tag = docblock_tag(state);
+
+                DocBlockNode::Tag(tag)
+            },
+            _ => {
+                let text = docblock_text(state);
+
+                DocBlockNode::Text(text)
+            },
+        };
+
+        nodes.push(node);
     }
 
     let span = Span::combine(current.span, nodes.span());
@@ -42,4 +54,12 @@ pub fn docblock(state: &mut State) -> DocBlockComment {
             nodes,
         },
     }
+}
+
+fn docblock_tag(state: &mut State) -> DocBlockTagNode {
+    todo!()
+}
+
+fn docblock_text(state: &mut State) -> DocBlockTextNode {
+    todo!()
 }
