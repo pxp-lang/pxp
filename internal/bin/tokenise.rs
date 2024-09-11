@@ -86,6 +86,6 @@ fn main() {
 
 fn dbg_tokens(tokens: &[Token]) {
     for token in tokens.iter() {
-        println!("{:#?}", token);
+        println!("{:?}: {:?}", token.kind, token.symbol);
     }
 }

@@ -235,6 +235,11 @@ pub enum TokenKind {
     LogicalAnd,
     LogicalOr,
     LogicalXor,
+
+    // DocBlock
+    OpenPhpDoc,
+    ClosePhpDoc,
+    PhpDocEol,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -481,6 +486,9 @@ impl Display for TokenKind {
                 return write!(f, "{:?}", self);
             }
             Self::Missing => return write!(f, "<missing>"),
+            Self::OpenPhpDoc => "/**",
+            Self::ClosePhpDoc => "*/",
+            Self::PhpDocEol => "<eol>",
         };
 
         write!(f, "{}", s)

@@ -26,6 +26,7 @@ pub enum StackFrame {
     LookingForVarname,
     LookingForProperty,
     VarOffset,
+    DocBlock,
 }
 
 #[derive(Debug)]

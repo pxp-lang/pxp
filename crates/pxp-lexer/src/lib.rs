@@ -111,6 +111,10 @@ impl<'a, 'b> Lexer<'a> {
 
                     tokens.push(self.var_offset()?);
                 }
+                // DocBlock is entered when parsing a DocBlock comment.
+                // The lexer does this extra work to ensure that the comment
+                // is in a usable state for the parser.
+                StackFrame::DocBlock => self.docblock(&mut tokens)?,
             }
         }
 
@@ -120,6 +124,12 @@ impl<'a, 'b> Lexer<'a> {
         ));
 
         Ok(tokens)
+    }
+
+    fn skip_horizontal_whitespace(&mut self) {
+        while let Some(true) = self.state.source.current().map(|u: &u8| u == &b' ' || u == &b'\t') {
+            self.state.source.next();
+        }
     }
 
     fn skip_whitespace(&mut self) {
@@ -145,6 +155,63 @@ impl<'a, 'b> Lexer<'a> {
             self.state.source.next();
         }
         buffer
+    }
+
+    fn docblock_eol(&mut self) -> SyntaxResult<Token> {
+        // We've already skipped the line break at this point.
+        // We need to consume horizontal whitespace.
+        self.skip_horizontal_whitespace();
+
+        if matches!(self.state.source.current(), Some(b'*')) && ! matches!(self.state.source.read(2), [b'*', b'/', ..]) {
+            self.state.source.next();
+
+            // We also want to skip the next space character here.
+            if let Some(b' ') = self.state.source.current() {
+                self.state.source.next();
+            }
+        }
+
+        let span = self.state.source.span();
+        let symbol = self.state.source.span_range(span);
+
+        Ok(Token::new_with_symbol(TokenKind::PhpDocEol, span, symbol.into()))
+    }
+
+    fn docblock(&mut self, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
+        while !self.state.source.eof() {
+            self.state.source.start_token();
+            
+            if matches!(self.state.source.read(2), [b'\r', b'\n', ..] | [b'\n', ..]) {
+                let b = self.state.source.current().unwrap();
+
+                if b == &b'\r' {
+                    self.state.source.skip(2);
+                } else {
+                    self.state.source.skip(1);
+                }
+
+                tokens.push(self.docblock_eol()?);
+
+                continue;
+            }
+
+            self.skip_whitespace();
+
+            match &self.state.source.read(2) {
+                [b'*', b'/', ..] => {
+                    self.state.source.skip(2);
+
+                    tokens.push(Token::new_without_symbol(TokenKind::ClosePhpDoc, self.state.source.span()));
+
+                    break;
+                },
+                _ => {},
+            }
+        }
+
+        self.state.exit();
+
+        Ok(())
     }
 
     fn initial(&mut self, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
@@ -404,12 +471,19 @@ impl<'a, 'b> Lexer<'a> {
                 self.state.source.next();
 
                 let mut kind = TokenKind::MultiLineComment;
+                let mut with_symbol = true;
 
                 loop {
-                    match self.state.source.read(3) {
-                        [b'*', b'*', b'\n'] => {
+                    match self.state.source.read(2) {
+                        [b'*', b'*', ..] => {
                             self.state.source.skip(2);
-                            kind = TokenKind::DocumentComment;
+
+                            kind = TokenKind::OpenPhpDoc;
+                            with_symbol = false;
+                            
+                            self.state.enter(StackFrame::DocBlock);
+
+                            break;
                         }
                         [b'*', b'/', ..] => {
                             self.state.source.skip(2);
@@ -421,7 +495,7 @@ impl<'a, 'b> Lexer<'a> {
                     }
                 }
 
-                (kind, true)
+                (kind, with_symbol)
             }
             [b'#', b'[', ..] => {
                 self.state.source.skip(2);
