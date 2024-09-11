@@ -1,0 +1,245 @@
+[
+    Statement {
+        id: 2,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                id: 1,
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+    Statement {
+        id: 21,
+        kind: Expression(
+            ExpressionStatement {
+                id: 20,
+                span: Span {
+                    start: 11,
+                    end: 21,
+                },
+                expression: Expression {
+                    id: 19,
+                    kind: ArithmeticOperation(
+                        ArithmeticOperationExpression {
+                            id: 17,
+                            span: Span {
+                                start: 7,
+                                end: 20,
+                            },
+                            kind: Addition {
+                                id: 18,
+                                left: Expression {
+                                    id: 3,
+                                    kind: Literal(
+                                        Literal {
+                                            id: 4,
+                                            span: Span {
+                                                start: 7,
+                                                end: 8,
+                                            },
+                                            kind: Integer,
+                                            token: Token {
+                                                kind: LiteralInteger,
+                                                span: Span {
+                                                    start: 7,
+                                                    end: 8,
+                                                },
+                                                symbol: Some(
+                                                    "1",
+                                                ),
+                                            },
+                                        },
+                                    ),
+                                    span: Span {
+                                        start: 7,
+                                        end: 8,
+                                    },
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                },
+                                plus: Span {
+                                    start: 9,
+                                    end: 10,
+                                },
+                                right: Expression {
+                                    id: 16,
+                                    kind: ArithmeticOperation(
+                                        ArithmeticOperationExpression {
+                                            id: 14,
+                                            span: Span {
+                                                start: 15,
+                                                end: 20,
+                                            },
+                                            kind: Division {
+                                                id: 15,
+                                                left: Expression {
+                                                    id: 11,
+                                                    kind: ArithmeticOperation(
+                                                        ArithmeticOperationExpression {
+                                                            id: 9,
+                                                            span: Span {
+                                                                start: 11,
+                                                                end: 16,
+                                                            },
+                                                            kind: Multiplication {
+                                                                id: 10,
+                                                                left: Expression {
+                                                                    id: 5,
+                                                                    kind: Literal(
+                                                                        Literal {
+                                                                            id: 6,
+                                                                            span: Span {
+                                                                                start: 11,
+                                                                                end: 12,
+                                                                            },
+                                                                            kind: Integer,
+                                                                            token: Token {
+                                                                                kind: LiteralInteger,
+                                                                                span: Span {
+                                                                                    start: 11,
+                                                                                    end: 12,
+                                                                                },
+                                                                                symbol: Some(
+                                                                                    "2",
+                                                                                ),
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                    span: Span {
+                                                                        start: 11,
+                                                                        end: 12,
+                                                                    },
+                                                                    comments: CommentGroup {
+                                                                        comments: [],
+                                                                    },
+                                                                },
+                                                                asterisk: Span {
+                                                                    start: 13,
+                                                                    end: 14,
+                                                                },
+                                                                right: Expression {
+                                                                    id: 7,
+                                                                    kind: Literal(
+                                                                        Literal {
+                                                                            id: 8,
+                                                                            span: Span {
+                                                                                start: 15,
+                                                                                end: 16,
+                                                                            },
+                                                                            kind: Integer,
+                                                                            token: Token {
+                                                                                kind: LiteralInteger,
+                                                                                span: Span {
+                                                                                    start: 15,
+                                                                                    end: 16,
+                                                                                },
+                                                                                symbol: Some(
+                                                                                    "3",
+                                                                                ),
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                    span: Span {
+                                                                        start: 15,
+                                                                        end: 16,
+                                                                    },
+                                                                    comments: CommentGroup {
+                                                                        comments: [],
+                                                                    },
+                                                                },
+                                                            },
+                                                        },
+                                                    ),
+                                                    span: Span {
+                                                        start: 15,
+                                                        end: 16,
+                                                    },
+                                                    comments: CommentGroup {
+                                                        comments: [],
+                                                    },
+                                                },
+                                                slash: Span {
+                                                    start: 17,
+                                                    end: 18,
+                                                },
+                                                right: Expression {
+                                                    id: 12,
+                                                    kind: Literal(
+                                                        Literal {
+                                                            id: 13,
+                                                            span: Span {
+                                                                start: 19,
+                                                                end: 20,
+                                                            },
+                                                            kind: Integer,
+                                                            token: Token {
+                                                                kind: LiteralInteger,
+                                                                span: Span {
+                                                                    start: 19,
+                                                                    end: 20,
+                                                                },
+                                                                symbol: Some(
+                                                                    "4",
+                                                                ),
+                                                            },
+                                                        },
+                                                    ),
+                                                    span: Span {
+                                                        start: 19,
+                                                        end: 20,
+                                                    },
+                                                    comments: CommentGroup {
+                                                        comments: [],
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    ),
+                                    span: Span {
+                                        start: 19,
+                                        end: 20,
+                                    },
+                                    comments: CommentGroup {
+                                        comments: [],
+                                    },
+                                },
+                            },
+                        },
+                    ),
+                    span: Span {
+                        start: 11,
+                        end: 20,
+                    },
+                    comments: CommentGroup {
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: 20,
+                        end: 21,
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: 11,
+            end: 21,
+        },
+        comments: CommentGroup {
+            comments: [],
+        },
+    },
+]
+---
