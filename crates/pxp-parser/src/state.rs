@@ -77,14 +77,6 @@ impl<'a> State<'a> {
         self.collect_comments();
     }
 
-    pub fn span(&self) -> Span {
-        if self.cursor >= self.length {
-            return self.previous().span;
-        }
-
-        self.current().span
-    }
-
     /// Get current token.
     pub const fn current(&self) -> &'a Token {
         let position = if self.cursor >= self.length {
