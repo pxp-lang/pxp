@@ -3,11 +3,10 @@ use std::collections::{HashMap, VecDeque};
 use pxp_ast::*;
 use pxp_bytestring::ByteString;
 use pxp_diagnostics::{Diagnostic, Severity};
-use pxp_lexer::stream::TokenStream;
 use pxp_span::Span;
 use pxp_token::{Token, TokenKind};
 
-use crate::{internal::identifiers::is_soft_reserved_identifier, ParserDiagnostic};
+use crate::{internal::identifiers::is_soft_reserved_identifier, token_stream::TokenStream, ParserDiagnostic};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum NamespaceType {

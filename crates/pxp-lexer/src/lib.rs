@@ -13,7 +13,6 @@ use pxp_token::TokenKind;
 pub mod error;
 pub mod macros;
 pub mod state;
-pub mod stream;
 
 #[derive(Debug)]
 pub struct Lexer<'a> {

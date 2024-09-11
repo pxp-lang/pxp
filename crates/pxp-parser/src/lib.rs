@@ -21,7 +21,6 @@ use pxp_ast::Statement;
 use pxp_ast::*;
 use pxp_ast::{StatementKind, StaticVar};
 use pxp_diagnostics::Diagnostic;
-use pxp_lexer::stream::TokenStream;
 use pxp_lexer::Lexer;
 use pxp_span::Span;
 use pxp_span::Spanned;
@@ -47,8 +46,10 @@ mod expressions;
 mod internal;
 mod macros;
 mod state;
+mod token_stream;
 
 pub use diagnostics::ParserDiagnostic;
+use token_stream::TokenStream;
 
 #[derive(Debug)]
 pub struct ParseResult {
