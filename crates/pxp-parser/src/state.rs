@@ -7,7 +7,7 @@ use pxp_span::Span;
 use pxp_token::{Token, TokenKind};
 
 use crate::{
-    internal::identifiers::is_soft_reserved_identifier, token_stream::TokenStream, ParserDiagnostic,
+    internal::identifiers::is_soft_reserved_identifier, ParserDiagnostic,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -24,90 +24,222 @@ pub enum Scope {
 
 #[derive(Debug)]
 pub struct State<'a> {
-    pub stack: VecDeque<Scope>,
-    pub stream: &'a mut TokenStream<'a>,
-    pub attributes: Vec<AttributeGroup>,
-    pub namespace_type: Option<NamespaceType>,
-    pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
-    pub imports: HashMap<UseKind, HashMap<ByteString, ByteString>>,
+    // Unique identifier for each node.
     id: u32,
+
+    // Scope Tracking
+    pub stack: VecDeque<Scope>,
+    pub imports: HashMap<UseKind, HashMap<ByteString, ByteString>>,
+    pub namespace_type: Option<NamespaceType>,
+    pub attributes: Vec<AttributeGroup>,
+    comments: Vec<Comment>,
+
+    // Token Stream
+    tokens: &'a [Token],
+    length: usize,
+    cursor: usize,
+
+    // Diagnostics
+    pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
 }
 
 impl<'a> State<'a> {
-    pub fn new(tokens: &'a mut TokenStream<'a>) -> Self {
+    pub fn new(tokens: &'a [Token]) -> Self {
         let mut imports = HashMap::new();
         imports.insert(UseKind::Normal, HashMap::new());
         imports.insert(UseKind::Function, HashMap::new());
         imports.insert(UseKind::Const, HashMap::new());
 
-        Self {
+        let mut this = Self {
             stack: VecDeque::with_capacity(32),
-            stream: tokens,
             namespace_type: None,
             attributes: vec![],
-            diagnostics: vec![],
             imports,
+            comments: vec![],
+            
             id: 0,
+
+            tokens,
+            length: tokens.len(),
+            cursor: 0,
+
+            diagnostics: vec![],
+        };
+
+        this
+    }
+
+    /// Move cursor to next token.
+    ///
+    /// Comments are collected.
+    pub fn next(&mut self) {
+        self.cursor += 1;
+        self.collect_comments();
+    }
+
+    pub fn span(&self) -> Span {
+        if self.cursor >= self.length {
+            return self.previous().span;
+        }
+
+        self.current().span
+    }
+
+    /// Get current token.
+    pub const fn current(&self) -> &'a Token {
+        let position = if self.cursor >= self.length {
+            self.length - 1
+        } else {
+            self.cursor
+        };
+
+        &self.tokens[position]
+    }
+
+    /// Get previous token.
+    pub const fn previous(&self) -> &'a Token {
+        let position = if self.cursor == 0 { 0 } else { self.cursor - 1 };
+        let position = if position >= self.length {
+            self.length - 1
+        } else {
+            position
+        };
+
+        &self.tokens[position]
+    }
+
+    /// Peek next token.
+    ///
+    /// All comments are skipped.
+    pub const fn peek(&self) -> &'a Token {
+        self.peek_nth(1)
+    }
+
+    /// Peek nth+1 token.
+    ///
+    /// All comments are skipped.
+    pub const fn lookahead(&self, n: usize) -> &'a Token {
+        self.peek_nth(n + 1)
+    }
+
+    /// Peek nth token.
+    ///
+    /// All comments are skipped.
+    #[inline(always)]
+    const fn peek_nth(&self, n: usize) -> &'a Token {
+        let mut cursor = self.cursor + 1;
+        let mut target = 1;
+        loop {
+            if cursor >= self.length {
+                return &self.tokens[self.length - 1];
+            }
+
+            let current = &self.tokens[cursor];
+
+            if matches!(
+                current.kind,
+                TokenKind::SingleLineComment
+                    | TokenKind::MultiLineComment
+                    | TokenKind::HashMarkComment
+            ) {
+                cursor += 1;
+                continue;
+            }
+
+            if target == n {
+                return current;
+            }
+
+            target += 1;
+            cursor += 1;
+        }
+    }
+
+    /// Check if current token is EOF.
+    pub fn is_eof(&self) -> bool {
+        if self.cursor >= self.length {
+            return true;
+        }
+
+        self.tokens[self.cursor].kind == TokenKind::Eof
+    }
+
+    fn collect_comments(&mut self) {
+        loop {
+            if self.cursor >= self.length {
+                break;
+            }
+
+            let current = &self.tokens[self.cursor];
+
+            if !matches!(
+                current.kind,
+                TokenKind::SingleLineComment
+                    | TokenKind::MultiLineComment
+                    | TokenKind::HashMarkComment
+                    | TokenKind::OpenPhpDoc,
+            ) {
+                break;
+            }
+
+            let id = self.id();
+            let comment_id = self.id();
+
+            self.comments.push(match &current {
+                Token {
+                    kind: TokenKind::SingleLineComment,
+                    span,
+                    symbol,
+                } => Comment {
+                    id,
+                    span: *span,
+                    kind: CommentKind::SingleLine(SingleLineComment {
+                        id: comment_id,
+                        span: *span,
+                        content: symbol.as_ref().unwrap().clone(),
+                    }),
+                },
+                Token {
+                    kind: TokenKind::MultiLineComment,
+                    span,
+                    symbol,
+                } => Comment {
+                    id,
+                    span: *span,
+                    kind: CommentKind::MultiLine(MultiLineComment {
+                        id: comment_id,
+                        span: *span,
+                        content: symbol.as_ref().unwrap().clone(),
+                    }),
+                },
+                Token {
+                    kind: TokenKind::HashMarkComment,
+                    span,
+                    symbol,
+                } => Comment {
+                    id,
+                    span: *span,
+                    kind: CommentKind::HashMark(HashMarkComment {
+                        id: comment_id,
+                        span: *span,
+                        content: symbol.as_ref().unwrap().clone(),
+                    }),
+                },
+                _ => unreachable!()
+            });
+            
+            self.cursor += 1;
         }
     }
 
     pub fn comments(&mut self) -> CommentGroup {
         let mut comments = vec![];
 
-        std::mem::swap(&mut self.stream.comments, &mut comments);
+        std::mem::swap(&mut self.comments, &mut comments);
 
         CommentGroup {
             id: self.id(),
-            comments: comments
-                .iter()
-                .map(|token| match token {
-                    Token {
-                        kind: TokenKind::SingleLineComment,
-                        span,
-                        symbol,
-                    } => Comment {
-                        id: self.id(),
-                        span: *span,
-                        kind: CommentKind::SingleLine(SingleLineComment {
-                            id: self.id(),
-                            span: *span,
-                            content: symbol.as_ref().unwrap().clone(),
-                        }),
-                    },
-                    Token {
-                        kind: TokenKind::MultiLineComment,
-                        span,
-                        symbol,
-                    } => Comment {
-                        id: self.id(),
-                        span: *span,
-                        kind: CommentKind::MultiLine(MultiLineComment {
-                            id: self.id(),
-                            span: *span,
-                            content: symbol.as_ref().unwrap().clone(),
-                        }),
-                    },
-                    Token {
-                        kind: TokenKind::HashMarkComment,
-                        span,
-                        symbol,
-                    } => Comment {
-                        id: self.id(),
-                        span: *span,
-                        kind: CommentKind::HashMark(HashMarkComment {
-                            id: self.id(),
-                            span: *span,
-                            content: symbol.as_ref().unwrap().clone(),
-                        }),
-                    },
-                    // Token {
-                    //     kind: TokenKind::DocumentComment,
-                    //     span,
-                    //     symbol,
-                    // } => todo!(),
-                    _ => unreachable!(),
-                })
-                .collect(),
+            comments: comments.clone()
         }
     }
 

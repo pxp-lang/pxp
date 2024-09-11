@@ -15,11 +15,11 @@ pub fn parse(state: &mut State) -> StatementKind {
 
     let name = names::type_name(state);
 
-    let current = state.stream.current();
+    let current = state.current();
     let extends = if current.kind == TokenKind::Extends {
         let span = current.span;
 
-        state.stream.next();
+        state.next();
 
         let parents = utils::at_least_one_comma_separated_no_trailing::<Name>(state, &|state| {
             names::full_name(state, UseKind::Normal)
@@ -40,7 +40,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     let left_brace = utils::skip_left_brace(state);
     let members = {
         let mut members = Vec::new();
-        while state.stream.current().kind != TokenKind::RightBrace {
+        while state.current().kind != TokenKind::RightBrace {
             members.push(member(state, true));
         }
 

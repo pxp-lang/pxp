@@ -25,7 +25,7 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
                 state.diagnostic(
                     ParserDiagnostic::StaticPropertyCannotBeReadonly,
                     Severity::Error,
-                    state.stream.current().span,
+                    state.current().span,
                 );
             }
 
@@ -51,7 +51,7 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
             }
         }
 
-        let current = state.stream.current();
+        let current = state.current();
         if current.kind == TokenKind::Equals {
             if let Some(modifier) = modifiers.get_readonly() {
                 state.diagnostic(
@@ -61,7 +61,7 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
                 );
             }
 
-            state.stream.next();
+            state.next();
             let value = expressions::create(state);
             let span = Span::combine(variable.span, value.span);
 
@@ -88,8 +88,8 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
             });
         }
 
-        if state.stream.current().kind == TokenKind::Comma {
-            state.stream.next();
+        if state.current().kind == TokenKind::Comma {
+            state.next();
         } else {
             break;
         }
@@ -136,9 +136,9 @@ pub fn parse_var(state: &mut State) -> VariableProperty {
             }
         }
 
-        let current = state.stream.current();
+        let current = state.current();
         if current.kind == TokenKind::Equals {
-            state.stream.next();
+            state.next();
             let value = expressions::create(state);
             let span = Span::combine(variable.span, value.span);
 
@@ -165,8 +165,8 @@ pub fn parse_var(state: &mut State) -> VariableProperty {
             });
         }
 
-        if state.stream.current().kind == TokenKind::Comma {
-            state.stream.next();
+        if state.current().kind == TokenKind::Comma {
+            state.next();
         } else {
             break;
         }

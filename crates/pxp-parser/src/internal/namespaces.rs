@@ -18,7 +18,7 @@ pub fn namespace(state: &mut State) -> StatementKind {
     let start = utils::skip(state, TokenKind::Namespace);
     let name = identifiers::optional_name(state);
 
-    let current = state.stream.current();
+    let current = state.current();
 
     if let Some(name) = &name {
         if current.kind != TokenKind::LeftBrace {
@@ -63,10 +63,10 @@ fn unbraced_namespace(state: &mut State, start: Span, name: SimpleIdentifier) ->
     let statements = scoped!(state, Scope::Namespace(name.symbol.clone()), {
         let mut statements = Block::new();
 
-        while state.stream.current().kind != TokenKind::Namespace && !state.stream.is_eof() {
+        while state.current().kind != TokenKind::Namespace && !state.is_eof() {
             // NOTE: If we encounter a right-brace here, it's possible that we're in a nested namespace.
             // We should check to see if the previous scope is a BracedNamespace and break out of this scope.
-            if state.stream.current().kind == TokenKind::RightBrace {
+            if state.current().kind == TokenKind::RightBrace {
                 if let Some(Scope::BracedNamespace(_)) = state.previous_scope() {
                     break;
                 }
@@ -105,7 +105,7 @@ fn braced_namespace(
             let start = utils::skip_left_brace(state);
 
             let mut statements = Block::new();
-            while state.stream.current().kind != TokenKind::RightBrace && !state.stream.is_eof() {
+            while state.current().kind != TokenKind::RightBrace && !state.is_eof() {
                 statements.push(crate::top_level_statement(state));
             }
 

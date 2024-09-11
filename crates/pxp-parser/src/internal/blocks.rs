@@ -25,17 +25,17 @@ pub fn block_statement(state: &mut State) -> StatementKind {
 pub fn multiple_statements_until(state: &mut State, until: &TokenKind) -> Vec<Statement> {
     let mut statements = Vec::new();
 
-    let mut current = state.stream.current();
+    let mut current = state.current();
     while &current.kind != until {
         if let TokenKind::OpenTag(OpenTagKind::Full) = current.kind {
-            state.stream.next();
+            state.next();
 
-            current = state.stream.current();
+            current = state.current();
             continue;
         }
 
         statements.push(statement(state));
-        current = state.stream.current();
+        current = state.current();
     }
 
     statements
@@ -44,17 +44,17 @@ pub fn multiple_statements_until(state: &mut State, until: &TokenKind) -> Vec<St
 pub fn multiple_statements_until_any(state: &mut State, until: &[TokenKind]) -> Vec<Statement> {
     let mut statements = Vec::new();
 
-    let mut current = state.stream.current();
+    let mut current = state.current();
     while !until.contains(&current.kind) {
         if let TokenKind::OpenTag(OpenTagKind::Full) = current.kind {
-            state.stream.next();
+            state.next();
 
-            current = state.stream.current();
+            current = state.current();
             continue;
         }
 
         statements.push(statement(state));
-        current = state.stream.current();
+        current = state.current();
     }
 
     statements

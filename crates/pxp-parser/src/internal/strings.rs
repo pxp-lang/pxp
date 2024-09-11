@@ -21,18 +21,18 @@ use pxp_token::TokenKind;
 
 #[inline(always)]
 pub fn interpolated(state: &mut State) -> Expression {
-    let start_span = state.stream.current().span;
+    let start_span = state.current().span;
     let mut parts = Vec::new();
 
-    while state.stream.current().kind != TokenKind::DoubleQuote {
+    while state.current().kind != TokenKind::DoubleQuote {
         if let Some(part) = part(state) {
             parts.push(part);
         }
     }
 
-    state.stream.next();
+    state.next();
 
-    let end_span = state.stream.current().span;
+    let end_span = state.current().span;
 
     Expression::new(
         state.id(),
@@ -48,20 +48,20 @@ pub fn interpolated(state: &mut State) -> Expression {
 
 #[inline(always)]
 pub fn shell_exec(state: &mut State) -> Expression {
-    let start_span = state.stream.current().span;
-    state.stream.next();
+    let start_span = state.current().span;
+    state.next();
 
     let mut parts = Vec::new();
 
-    while state.stream.current().kind != TokenKind::Backtick {
+    while state.current().kind != TokenKind::Backtick {
         if let Some(part) = part(state) {
             parts.push(part);
         }
     }
 
-    state.stream.next();
+    state.next();
 
-    let end_span = state.stream.current().span;
+    let end_span = state.current().span;
 
     Expression::new(
         state.id(),
@@ -77,26 +77,26 @@ pub fn shell_exec(state: &mut State) -> Expression {
 
 #[inline(always)]
 pub fn heredoc(state: &mut State) -> Expression {
-    let span = state.stream.current().span;
-    let label = state.stream.current().symbol.as_ref().unwrap();
-    state.stream.next();
+    let span = state.current().span;
+    let label = state.current().symbol.as_ref().unwrap();
+    state.next();
 
     let mut parts = Vec::new();
 
-    while !matches!(state.stream.current().kind, TokenKind::EndDocString(_, _)) {
+    while !matches!(state.current().kind, TokenKind::EndDocString(_, _)) {
         if let Some(part) = part(state) {
             parts.push(part);
         }
     }
 
-    let (indentation_type, indentation_amount) = match &state.stream.current().kind {
+    let (indentation_type, indentation_amount) = match &state.current().kind {
         TokenKind::EndDocString(indentation_type, indentation_amount) => {
             (*indentation_type, *indentation_amount)
         }
         _ => unreachable!(),
     };
 
-    state.stream.next();
+    state.next();
 
     let mut new_line = true;
     if indentation_type != DocStringIndentationKind::None {
@@ -167,7 +167,7 @@ pub fn heredoc(state: &mut State) -> Expression {
         }
     }
 
-    let end_span = state.stream.previous().span;
+    let end_span = state.previous().span;
 
     Expression::new(
         state.id(),
@@ -184,22 +184,22 @@ pub fn heredoc(state: &mut State) -> Expression {
 
 #[inline(always)]
 pub fn nowdoc(state: &mut State) -> Expression {
-    let span = state.stream.current().span;
-    let label = state.stream.current().clone();
+    let span = state.current().span;
+    let label = state.current().clone();
 
-    state.stream.next();
+    state.next();
 
-    let string_part = state.stream.current().clone();
+    let string_part = state.current().clone();
 
     // FIXME: Do we still need this, or can we do it inside of the lexer?
-    // let (indentation_type, indentation_amount) = match &state.stream.current().kind {
+    // let (indentation_type, indentation_amount) = match &state.current().kind {
     //     TokenKind::EndDocString(indentation_type, indentation_amount) => {
     //         (indentation_type.clone(), *indentation_amount)
     //     }
     //     _ => unreachable!(),
     // };
 
-    state.stream.next();
+    state.next();
 
     // FIXME: Figure out if this is something we can do inside of the lexer instead.
     //        If not, then we need to emit diagnostics for invalid indentation etc.
@@ -263,8 +263,8 @@ pub fn nowdoc(state: &mut State) -> Expression {
     //     string_part = bytes.into();
     // }
 
-    state.stream.next();
-    let end_span = state.stream.previous().span;
+    state.next();
+    let end_span = state.previous().span;
 
     Expression::new(
         state.id(),
@@ -280,9 +280,9 @@ pub fn nowdoc(state: &mut State) -> Expression {
 }
 
 fn part(state: &mut State) -> Option<StringPart> {
-    match &state.stream.current().kind {
+    match &state.current().kind {
         TokenKind::StringPart => {
-            let s = state.stream.current().clone();
+            let s = state.current().clone();
             let part = if !s.span.is_empty() {
                 Some(StringPart::Literal(LiteralStringPart {
                     id: state.id(),
@@ -293,16 +293,16 @@ fn part(state: &mut State) -> Option<StringPart> {
                 None
             };
 
-            state.stream.next();
+            state.next();
             part
         }
         TokenKind::DollarLeftBrace => {
-            let start_span = state.stream.current().span;
+            let start_span = state.current().span;
             let variable = variables::dynamic_variable(state);
             let expression = Expression::new(
                 state.id(),
                 ExpressionKind::Variable(variable),
-                Span::new(start_span.start, state.stream.previous().span.end),
+                Span::new(start_span.start, state.previous().span.end),
                 CommentGroup::default(),
             );
 
@@ -314,7 +314,7 @@ fn part(state: &mut State) -> Option<StringPart> {
         }
         TokenKind::LeftBrace => {
             // "{$expr}"
-            state.stream.next();
+            state.next();
             let e = create(state);
             utils::skip_right_brace(state);
             Some(StringPart::Expression(ExpressionStringPart {
@@ -325,23 +325,23 @@ fn part(state: &mut State) -> Option<StringPart> {
         }
         TokenKind::Variable => {
             // "$expr", "$expr[0]", "$expr[name]", "$expr->a"
-            let variable_span = state.stream.current().span;
+            let variable_span = state.current().span;
             let variable = ExpressionKind::Variable(variables::dynamic_variable(state));
             let variable =
                 Expression::new(state.id(), variable, variable_span, CommentGroup::default());
 
-            let current = state.stream.current();
+            let current = state.current();
             let e = match &current.kind {
                 TokenKind::LeftBracket => {
                     let left_bracket = utils::skip_left_bracket(state);
 
-                    let current = state.stream.current();
+                    let current = state.current();
                     let index_start_span = current.span;
                     // Full expression syntax is not allowed here,
                     // so we can't call expression.
                     let index = match &current.kind {
                         TokenKind::LiteralInteger => {
-                            state.stream.next();
+                            state.next();
 
                             ExpressionKind::Literal(Literal::new(
                                 state.id(),
@@ -351,11 +351,11 @@ fn part(state: &mut State) -> Option<StringPart> {
                             ))
                         }
                         TokenKind::Minus => {
-                            state.stream.next();
-                            let literal = state.stream.current();
+                            state.next();
+                            let literal = state.current();
                             if let TokenKind::LiteralInteger = &literal.kind {
-                                let span = state.stream.current().span;
-                                state.stream.next();
+                                let span = state.current().span;
+                                state.next();
                                 let kind = ExpressionKind::Literal(Literal::new(
                                     state.id(),
                                     LiteralKind::Integer,
@@ -388,7 +388,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                                     literal.span,
                                 );
 
-                                state.stream.next();
+                                state.next();
 
                                 ExpressionKind::Missing(MissingExpression {
                                     id: 0,
@@ -397,7 +397,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                             }
                         }
                         TokenKind::Identifier => {
-                            state.stream.next();
+                            state.next();
 
                             ExpressionKind::Literal(Literal::new(
                                 state.id(),
@@ -423,7 +423,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                                 current.span,
                             );
 
-                            state.stream.next();
+                            state.next();
 
                             ExpressionKind::Missing(MissingExpression {
                                 id: 0,
@@ -431,7 +431,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                             })
                         }
                     };
-                    let index_end_span = state.stream.previous().span;
+                    let index_end_span = state.previous().span;
                     let index = Expression::new(
                         state.id(),
                         index,
@@ -453,7 +453,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                 TokenKind::Arrow => {
                     let span = current.span;
 
-                    state.stream.next();
+                    state.next();
 
                     let identifier = identifiers::identifier_maybe_reserved(state);
                     let id_span = identifier.span;
@@ -471,7 +471,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                 }
                 TokenKind::QuestionArrow => {
                     let span = current.span;
-                    state.stream.next();
+                    state.next();
 
                     let ident = identifiers::identifier_maybe_reserved(state);
                     let ident_span = ident.span;
@@ -496,17 +496,17 @@ fn part(state: &mut State) -> Option<StringPart> {
 
             Some(StringPart::Expression(ExpressionStringPart {
                 id: state.id(),
-                span: Span::combine(variable_span, state.stream.previous().span),
+                span: Span::combine(variable_span, state.previous().span),
                 expression: Box::new(Expression::new(
                     state.id(),
                     e,
-                    Span::new(variable_span.start, state.stream.previous().span.end),
+                    Span::new(variable_span.start, state.previous().span.end),
                     CommentGroup::default(),
                 )),
             }))
         }
         _ => {
-            let span = state.stream.current().span;
+            let span = state.current().span;
 
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
@@ -516,13 +516,13 @@ fn part(state: &mut State) -> Option<StringPart> {
                         TokenKind::DoubleQuote,
                         TokenKind::Variable,
                     ],
-                    found: state.stream.current().clone(),
+                    found: state.current().clone(),
                 },
                 Severity::Error,
                 span,
             );
 
-            state.stream.next();
+            state.next();
 
             None
         }

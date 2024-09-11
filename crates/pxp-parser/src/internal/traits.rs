@@ -19,23 +19,23 @@ pub fn usage(state: &mut State) -> TraitUsage {
 
     let mut traits = Vec::new();
 
-    while state.stream.current().kind != TokenKind::SemiColon
-        && state.stream.current().kind != TokenKind::LeftBrace
+    while state.current().kind != TokenKind::SemiColon
+        && state.current().kind != TokenKind::LeftBrace
     {
         let t = names::full_name(state, UseKind::Normal);
         traits.push(t);
 
-        if state.stream.current().kind == TokenKind::Comma {
-            if state.stream.peek().kind == TokenKind::SemiColon {
+        if state.current().kind == TokenKind::Comma {
+            if state.peek().kind == TokenKind::SemiColon {
                 // will fail with unexpected token `,`
                 // as `use` doesn't allow for trailing commas.
                 utils::skip_semicolon(state);
-            } else if state.stream.peek().kind == TokenKind::LeftBrace {
+            } else if state.peek().kind == TokenKind::LeftBrace {
                 // will fail with unexpected token `{`
                 // as `use` doesn't allow for trailing commas.
                 utils::skip_left_brace(state);
             } else {
-                state.stream.next();
+                state.next();
             }
         } else {
             break;
@@ -43,29 +43,29 @@ pub fn usage(state: &mut State) -> TraitUsage {
     }
 
     let mut adaptations = Vec::new();
-    if state.stream.current().kind == TokenKind::LeftBrace {
+    if state.current().kind == TokenKind::LeftBrace {
         utils::skip_left_brace(state);
 
-        while state.stream.current().kind != TokenKind::RightBrace {
-            let (r#trait, method): (Option<Name>, SimpleIdentifier) = match state.stream.peek().kind
+        while state.current().kind != TokenKind::RightBrace {
+            let (r#trait, method): (Option<Name>, SimpleIdentifier) = match state.peek().kind
             {
                 TokenKind::DoubleColon => {
                     let r#trait = names::full_name_including_self(state);
-                    state.stream.next();
+                    state.next();
                     let method = identifiers::identifier(state);
                     (Some(r#trait), method)
                 }
                 _ => (None, identifiers::identifier(state)),
             };
 
-            while !state.stream.is_eof()
+            while !state.is_eof()
                 && !matches!(
-                    state.stream.current().kind,
+                    state.current().kind,
                     TokenKind::As | TokenKind::Insteadof
                 )
             {
-                let token = state.stream.current();
-                state.stream.next();
+                let token = state.current();
+                state.next();
 
                 state.diagnostic(
                     ParserDiagnostic::ExpectedToken {
@@ -77,26 +77,26 @@ pub fn usage(state: &mut State) -> TraitUsage {
                 );
             }
 
-            match state.stream.current().kind {
+            match state.current().kind {
                 TokenKind::As => {
-                    state.stream.next();
+                    state.next();
 
-                    match state.stream.current() {
+                    match state.current() {
                         Token {
                             kind: TokenKind::Public | TokenKind::Protected | TokenKind::Private,
                             span,
                             ..
                         } => {
-                            let visibility = match state.stream.current().kind {
+                            let visibility = match state.current().kind {
                                 TokenKind::Public => VisibilityModifier::Public(*span),
                                 TokenKind::Protected => VisibilityModifier::Protected(*span),
                                 TokenKind::Private => VisibilityModifier::Private(*span),
                                 _ => unreachable!(),
                             };
 
-                            state.stream.next();
+                            state.next();
 
-                            if state.stream.current().kind == TokenKind::SemiColon {
+                            if state.current().kind == TokenKind::SemiColon {
                                 let span = if r#trait.is_some() {
                                     Span::combine(r#trait.span(), visibility.span())
                                 } else {
@@ -163,29 +163,29 @@ pub fn usage(state: &mut State) -> TraitUsage {
                     }
                 }
                 TokenKind::Insteadof => {
-                    state.stream.next();
+                    state.next();
 
                     let mut insteadof = vec![identifiers::full_type_name(state)];
 
-                    if state.stream.current().kind == TokenKind::Comma {
-                        if state.stream.peek().kind == TokenKind::SemiColon {
+                    if state.current().kind == TokenKind::Comma {
+                        if state.peek().kind == TokenKind::SemiColon {
                             // will fail with unexpected token `,`
                             // as `insteadof` doesn't allow for trailing commas.
                             utils::skip_semicolon(state);
                         }
 
-                        state.stream.next();
+                        state.next();
 
-                        while state.stream.current().kind != TokenKind::SemiColon {
+                        while state.current().kind != TokenKind::SemiColon {
                             insteadof.push(identifiers::full_type_name(state));
 
-                            if state.stream.current().kind == TokenKind::Comma {
-                                if state.stream.peek().kind == TokenKind::SemiColon {
+                            if state.current().kind == TokenKind::Comma {
+                                if state.peek().kind == TokenKind::SemiColon {
                                     // will fail with unexpected token `,`
                                     // as `insteadof` doesn't allow for trailing commas.
                                     utils::skip_semicolon(state);
                                 } else {
-                                    state.stream.next();
+                                    state.next();
                                 }
                             } else {
                                 break;
@@ -213,7 +213,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
                         ),
                     });
                 }
-                _ => unreachable!("{:?}", state.stream.current()),
+                _ => unreachable!("{:?}", state.current()),
             };
 
             utils::skip_semicolon(state);
@@ -241,7 +241,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     let left_brace = utils::skip_left_brace(state);
     let members = {
         let mut members = Vec::new();
-        while state.stream.current().kind != TokenKind::RightBrace && !state.stream.is_eof() {
+        while state.current().kind != TokenKind::RightBrace && !state.is_eof() {
             members.push(member(state, true));
         }
         members

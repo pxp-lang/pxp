@@ -24,17 +24,17 @@ pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
 
             let ty = data_type::optional_data_type(state);
 
-            let mut current = state.stream.current();
+            let mut current = state.current();
             let ampersand = if current.kind == TokenKind::Ampersand {
-                state.stream.next();
-                current = state.stream.current();
+                state.next();
+                current = state.current();
                 Some(current.span)
             } else {
                 None
             };
 
             let ellipsis = if current.kind == TokenKind::Ellipsis {
-                state.stream.next();
+                state.next();
 
                 Some(current.span)
             } else {
@@ -45,8 +45,8 @@ pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
             let var = variables::simple_variable(state);
 
             let mut default = None;
-            if state.stream.current().kind == TokenKind::Equals {
-                state.stream.next();
+            if state.current().kind == TokenKind::Equals {
+                state.next();
                 default = Some(expressions::create(state));
             }
 
@@ -96,11 +96,11 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
 
             let ty = data_type::optional_data_type(state);
 
-            let mut current = state.stream.current();
+            let mut current = state.current();
             let ampersand = if matches!(current.kind, TokenKind::Ampersand) {
-                state.stream.next();
+                state.next();
 
-                current = state.stream.current();
+                current = state.current();
 
                 Some(current.span)
             } else {
@@ -108,7 +108,7 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
             };
 
             let (ellipsis, var) = if matches!(current.kind, TokenKind::Ellipsis) {
-                state.stream.next();
+                state.next();
                 let var = variables::simple_variable(state);
                 if !modifiers.is_empty() {
                     state.diagnostic(
@@ -149,8 +149,8 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
             }
 
             let mut default = None;
-            if state.stream.current().kind == TokenKind::Equals {
-                state.stream.next();
+            if state.current().kind == TokenKind::Equals {
+                state.next();
                 default = Some(expressions::create(state));
             }
 
@@ -193,8 +193,8 @@ pub fn argument_list(state: &mut State) -> ArgumentList {
     let mut arguments = Vec::new();
     let mut has_used_named_arguments = false;
 
-    while !state.stream.is_eof() && state.stream.current().kind != TokenKind::RightParen {
-        let span = state.stream.current().span;
+    while !state.is_eof() && state.current().kind != TokenKind::RightParen {
+        let span = state.current().span;
         let (named, argument) = argument(state);
         if named {
             has_used_named_arguments = true;
@@ -208,8 +208,8 @@ pub fn argument_list(state: &mut State) -> ArgumentList {
 
         arguments.push(argument);
 
-        if state.stream.current().kind == TokenKind::Comma {
-            state.stream.next();
+        if state.current().kind == TokenKind::Comma {
+            state.next();
         } else {
             break;
         }
@@ -234,7 +234,7 @@ pub fn single_argument(
 ) -> Option<SingleArgument> {
     let comments = state.comments();
 
-    if state.stream.current().kind != TokenKind::LeftParen {
+    if state.current().kind != TokenKind::LeftParen {
         return None;
     }
 
@@ -242,8 +242,8 @@ pub fn single_argument(
 
     let mut first_argument = None;
 
-    while !state.stream.is_eof() && state.stream.current().kind != TokenKind::RightParen {
-        let span = state.stream.current().span;
+    while !state.is_eof() && state.current().kind != TokenKind::RightParen {
+        let span = state.current().span;
         let (named, argument) = argument(state);
         if only_positional && named {
             state.diagnostic(
@@ -263,8 +263,8 @@ pub fn single_argument(
 
         first_argument = Some(argument);
 
-        if state.stream.current().kind == TokenKind::Comma {
-            state.stream.next();
+        if state.current().kind == TokenKind::Comma {
+            state.next();
         } else {
             break;
         }
@@ -274,7 +274,7 @@ pub fn single_argument(
         state.diagnostic(
             ParserDiagnostic::ArgumentRequired,
             Severity::Error,
-            state.stream.current().span,
+            state.current().span,
         );
     }
 
@@ -291,12 +291,12 @@ pub fn single_argument(
 }
 
 fn argument(state: &mut State) -> (bool, Argument) {
-    if identifiers::is_identifier_maybe_reserved(&state.stream.current().kind)
-        && state.stream.peek().kind == TokenKind::Colon
+    if identifiers::is_identifier_maybe_reserved(&state.current().kind)
+        && state.peek().kind == TokenKind::Colon
     {
         let name = identifiers::identifier_maybe_reserved(state);
         let colon = utils::skip(state, TokenKind::Colon);
-        let ellipsis = if state.stream.current().kind == TokenKind::Ellipsis {
+        let ellipsis = if state.current().kind == TokenKind::Ellipsis {
             Some(utils::skip(state, TokenKind::Ellipsis))
         } else {
             None
@@ -317,7 +317,7 @@ fn argument(state: &mut State) -> (bool, Argument) {
         );
     }
 
-    let ellipsis = if state.stream.current().kind == TokenKind::Ellipsis {
+    let ellipsis = if state.current().kind == TokenKind::Ellipsis {
         Some(utils::skip(state, TokenKind::Ellipsis))
     } else {
         None

@@ -7,20 +7,20 @@ use pxp_token::TokenKind;
 use pxp_type::Type;
 
 pub fn data_type(state: &mut State) -> DataType {
-    let start = state.stream.current().span;
+    let start = state.current().span;
 
-    let kind = if state.stream.current().kind == TokenKind::Question {
+    let kind = if state.current().kind == TokenKind::Question {
         nullable(state)
-    } else if state.stream.current().kind == TokenKind::LeftParen {
+    } else if state.current().kind == TokenKind::LeftParen {
         dnf(state)
     } else {
         let ty = simple_data_type(state);
 
-        if state.stream.current().kind == TokenKind::Pipe {
+        if state.current().kind == TokenKind::Pipe {
             union(state, ty, false)
-        } else if state.stream.current().kind == TokenKind::Ampersand
+        } else if state.current().kind == TokenKind::Ampersand
             && !matches!(
-                state.stream.peek().kind,
+                state.peek().kind,
                 TokenKind::Variable | TokenKind::Ellipsis | TokenKind::Ampersand
             )
         {
@@ -30,27 +30,27 @@ pub fn data_type(state: &mut State) -> DataType {
         }
     };
 
-    let end = state.stream.previous().span;
+    let end = state.previous().span;
 
     DataType::new(state.id(), kind, Span::new(start.start, end.end))
 }
 
 pub fn optional_data_type(state: &mut State) -> Option<DataType> {
-    let start = state.stream.current().span;
-    let kind = if state.stream.current().kind == TokenKind::Question {
+    let start = state.current().span;
+    let kind = if state.current().kind == TokenKind::Question {
         nullable(state)
-    } else if state.stream.current().kind == TokenKind::LeftParen {
+    } else if state.current().kind == TokenKind::LeftParen {
         dnf(state)
     } else {
         let ty = optional_simple_data_type(state);
 
         match ty {
             Some(ty) => {
-                if state.stream.current().kind == TokenKind::Pipe {
+                if state.current().kind == TokenKind::Pipe {
                     union(state, ty, false)
-                } else if state.stream.current().kind == TokenKind::Ampersand
+                } else if state.current().kind == TokenKind::Ampersand
                     && !matches!(
-                        state.stream.peek().kind,
+                        state.peek().kind,
                         TokenKind::Variable | TokenKind::Ellipsis | TokenKind::Ampersand
                     )
                 {
@@ -63,7 +63,7 @@ pub fn optional_data_type(state: &mut State) -> Option<DataType> {
         }
     };
 
-    let end = state.stream.previous().span;
+    let end = state.previous().span;
 
     Some(DataType::new(
         state.id(),
@@ -74,10 +74,10 @@ pub fn optional_data_type(state: &mut State) -> Option<DataType> {
 
 fn dnf(state: &mut State) -> Type<Name> {
     // (A|B|..)&C.. or (A&B&..)|C..
-    state.stream.next();
+    state.next();
     let ty = simple_data_type(state);
 
-    match state.stream.current().kind {
+    match state.current().kind {
         TokenKind::Pipe => {
             let union = union(state, ty, true);
 
@@ -95,10 +95,10 @@ fn dnf(state: &mut State) -> Type<Name> {
         _ => {
             state.diagnostic(
                 ParserDiagnostic::UnexpectedToken {
-                    token: state.stream.current().clone(),
+                    token: state.current().clone(),
                 },
                 Severity::Error,
-                state.stream.current().span,
+                state.current().span,
             );
 
             Type::Missing
@@ -107,51 +107,51 @@ fn dnf(state: &mut State) -> Type<Name> {
 }
 
 fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
-    let current = state.stream.current();
+    let current = state.current();
 
     match &current.kind {
         TokenKind::Array => {
-            state.stream.next();
+            state.next();
 
             Some(Type::Array)
         }
         TokenKind::Callable => {
-            state.stream.next();
+            state.next();
 
             Some(Type::Callable)
         }
         TokenKind::Null => {
-            state.stream.next();
+            state.next();
 
             Some(Type::Null)
         }
         TokenKind::True => {
-            state.stream.next();
+            state.next();
 
             Some(Type::True)
         }
         TokenKind::False => {
-            state.stream.next();
+            state.next();
 
             Some(Type::False)
         }
         TokenKind::Static => {
-            state.stream.next();
+            state.next();
 
             Some(Type::StaticReference)
         }
         TokenKind::Self_ => {
-            state.stream.next();
+            state.next();
 
             Some(Type::SelfReference)
         }
         TokenKind::Parent => {
-            state.stream.next();
+            state.next();
 
             Some(Type::ParentReference)
         }
         TokenKind::Enum | TokenKind::From => {
-            state.stream.next();
+            state.next();
 
             Some(Type::Named(
                 state.maybe_resolve_identifier(current, UseKind::Normal),
@@ -159,7 +159,7 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
         }
         TokenKind::Identifier => {
             let id = current.symbol.as_ref().unwrap();
-            state.stream.next();
+            state.next();
 
             let name = &id[..];
             let lowered_name = name.to_ascii_lowercase();
@@ -184,7 +184,7 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
             }
         }
         TokenKind::FullyQualifiedIdentifier => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap();
             let resolved = state.strip_leading_namespace_qualifier(symbol);
@@ -197,7 +197,7 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
             )))
         }
         TokenKind::QualifiedIdentifier => {
-            state.stream.next();
+            state.next();
 
             let name = state.maybe_resolve_identifier(current, UseKind::Normal);
 
@@ -214,7 +214,7 @@ fn simple_data_type(state: &mut State) -> Type<Name> {
             state.diagnostic(
                 ParserDiagnostic::MissingType,
                 Severity::Error,
-                state.stream.current().span,
+                state.current().span,
             );
 
             Type::Missing
@@ -223,9 +223,9 @@ fn simple_data_type(state: &mut State) -> Type<Name> {
 }
 
 fn nullable(state: &mut State) -> Type<Name> {
-    let current = state.stream.current();
+    let current = state.current();
 
-    state.stream.next();
+    state.next();
 
     let ty = simple_data_type(state);
 
@@ -245,7 +245,7 @@ fn union(state: &mut State, other: Type<Name>, within_dnf: bool) -> Type<Name> {
         state.diagnostic(
             ParserDiagnostic::StandaloneTypeUsedInUnionType,
             Severity::Error,
-            state.stream.current().span,
+            state.current().span,
         );
     }
 
@@ -253,7 +253,7 @@ fn union(state: &mut State, other: Type<Name>, within_dnf: bool) -> Type<Name> {
     let mut last_pipe = utils::skip(state, TokenKind::Pipe);
 
     loop {
-        let current = state.stream.current();
+        let current = state.current();
         let ty = if current.kind == TokenKind::LeftParen {
             if within_dnf {
                 // don't allow nesting.
@@ -276,7 +276,7 @@ fn union(state: &mut State, other: Type<Name>, within_dnf: bool) -> Type<Name> {
                 );
             }
 
-            state.stream.next();
+            state.next();
 
             let other = simple_data_type(state);
             let ty = intersection(state, other, true);
@@ -299,7 +299,7 @@ fn union(state: &mut State, other: Type<Name>, within_dnf: bool) -> Type<Name> {
 
         types.push(ty);
 
-        if state.stream.current().kind == TokenKind::Pipe {
+        if state.current().kind == TokenKind::Pipe {
             last_pipe = utils::skip(state, TokenKind::Pipe);
         } else {
             break;
@@ -314,7 +314,7 @@ fn intersection(state: &mut State, other: Type<Name>, within_dnf: bool) -> Type<
         state.diagnostic(
             ParserDiagnostic::StandaloneTypeUsedInIntersectionType,
             Severity::Error,
-            state.stream.current().span,
+            state.current().span,
         );
     }
 
@@ -323,7 +323,7 @@ fn intersection(state: &mut State, other: Type<Name>, within_dnf: bool) -> Type<
     let mut last_ampersand = utils::skip(state, TokenKind::Ampersand);
 
     loop {
-        let current = state.stream.current();
+        let current = state.current();
         let ty = if current.kind == TokenKind::LeftParen {
             if within_dnf {
                 // don't allow nesting.
@@ -347,7 +347,7 @@ fn intersection(state: &mut State, other: Type<Name>, within_dnf: bool) -> Type<
                 );
             }
 
-            state.stream.next();
+            state.next();
 
             let other = simple_data_type(state);
             let ty = union(state, other, true);
@@ -370,9 +370,9 @@ fn intersection(state: &mut State, other: Type<Name>, within_dnf: bool) -> Type<
 
         types.push(ty);
 
-        if state.stream.current().kind == TokenKind::Ampersand
+        if state.current().kind == TokenKind::Ampersand
             && !matches!(
-                state.stream.peek().kind,
+                state.peek().kind,
                 TokenKind::Variable | TokenKind::Ellipsis | TokenKind::Ampersand
             )
         {

@@ -9,11 +9,11 @@ use crate::{state::State, ParserDiagnostic};
 use super::identifiers::{self, is_reserved_identifier, is_soft_reserved_identifier};
 
 pub fn full_name(state: &mut State, kind: UseKind) -> Name {
-    let current = state.stream.current();
+    let current = state.current();
 
     match &current.kind {
         TokenKind::FullyQualifiedIdentifier => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap();
             let resolved = state.strip_leading_namespace_qualifier(symbol);
@@ -21,7 +21,7 @@ pub fn full_name(state: &mut State, kind: UseKind) -> Name {
             Name::resolved(state.id(), resolved, symbol.clone(), current.span)
         }
         TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
-            state.stream.next();
+            state.next();
 
             state.maybe_resolve_identifier(current, kind)
         }
@@ -41,13 +41,13 @@ pub fn full_name(state: &mut State, kind: UseKind) -> Name {
 }
 
 pub fn type_name_maybe_soft_reserved(state: &mut State) -> Name {
-    let current = state.stream.current();
+    let current = state.current();
 
     if is_soft_reserved_identifier(&current.kind) {
         let symbol = current.symbol.as_ref().unwrap();
         let resolved = state.join_with_namespace(symbol);
 
-        state.stream.next();
+        state.next();
 
         Name::resolved(state.id(), resolved, symbol.clone(), current.span)
     } else {
@@ -56,10 +56,10 @@ pub fn type_name_maybe_soft_reserved(state: &mut State) -> Name {
 }
 
 pub fn name_maybe_soft_reserved(state: &mut State, kind: UseKind) -> Name {
-    let current = state.stream.current();
+    let current = state.current();
 
     if is_soft_reserved_identifier(&current.kind) {
-        state.stream.next();
+        state.next();
 
         state.maybe_resolve_identifier(current, kind)
     } else {
@@ -68,11 +68,11 @@ pub fn name_maybe_soft_reserved(state: &mut State, kind: UseKind) -> Name {
 }
 
 pub fn type_name(state: &mut State) -> Name {
-    let current = state.stream.current();
+    let current = state.current();
 
     match &current.kind {
         TokenKind::Identifier | TokenKind::Enum | TokenKind::From => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap();
             let resolved = state.join_with_namespace(symbol);
@@ -86,7 +86,7 @@ pub fn type_name(state: &mut State) -> Name {
                 current.span,
             );
 
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap();
             let resolved = state.join_with_namespace(symbol);
@@ -100,7 +100,7 @@ pub fn type_name(state: &mut State) -> Name {
                 current.span,
             );
 
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap();
             let resolved = state.join_with_namespace(symbol);
@@ -144,10 +144,10 @@ pub fn use_name(state: &mut State) -> Name {
 }
 
 pub fn full_name_including_self(state: &mut State) -> Name {
-    let current = state.stream.current();
+    let current = state.current();
     match &current.kind {
         TokenKind::FullyQualifiedIdentifier => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap();
             let resolved = state.strip_leading_namespace_qualifier(symbol);
@@ -158,12 +158,12 @@ pub fn full_name_including_self(state: &mut State) -> Name {
         | TokenKind::QualifiedIdentifier
         | TokenKind::Enum
         | TokenKind::From => {
-            state.stream.next();
+            state.next();
 
             state.maybe_resolve_identifier(current, UseKind::Normal)
         }
         TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap();
 
@@ -181,7 +181,7 @@ pub fn full_name_including_self(state: &mut State) -> Name {
                 current.span,
             );
 
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap();
 
@@ -208,14 +208,14 @@ pub fn full_name_including_self(state: &mut State) -> Name {
 }
 
 pub fn constant_identifier(state: &mut State) -> Name {
-    let current = state.stream.current();
+    let current = state.current();
     match &current.kind {
         TokenKind::Identifier
         | TokenKind::Enum
         | TokenKind::From
         | TokenKind::Self_
         | TokenKind::Parent => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap();
             let resolved = state.join_with_namespace(symbol);
@@ -229,7 +229,7 @@ pub fn constant_identifier(state: &mut State) -> Name {
                 current.span,
             );
 
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap();
             let resolved = state.join_with_namespace(symbol);

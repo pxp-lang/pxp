@@ -20,9 +20,9 @@ pub fn parse(state: &mut State) -> StatementKind {
     let name = names::type_name(state);
 
     let backed_type: Option<(Span, BackedEnumType)> =
-        if state.stream.current().kind == TokenKind::Colon {
+        if state.current().kind == TokenKind::Colon {
             let colon = utils::skip_colon(state);
-            let current = state.stream.current();
+            let current = state.current();
 
             match current.kind {
                 TokenKind::Identifier => {
@@ -30,15 +30,15 @@ pub fn parse(state: &mut State) -> StatementKind {
 
                     Some(match &symbol[..] {
                         b"string" => {
-                            state.stream.next();
+                            state.next();
                             (colon, BackedEnumType::String(current.span))
                         }
                         b"int" => {
-                            state.stream.next();
+                            state.next();
                             (colon, BackedEnumType::Int(current.span))
                         }
                         _ => {
-                            state.stream.next();
+                            state.next();
 
                             state.diagnostic(
                                 ParserDiagnostic::InvalidBackedEnumType,
@@ -62,7 +62,7 @@ pub fn parse(state: &mut State) -> StatementKind {
                     Some((colon, BackedEnumType::Invalid))
                 }
                 _ => {
-                    state.stream.next();
+                    state.next();
 
                     state.diagnostic(
                         ParserDiagnostic::InvalidBackedEnumType,
@@ -78,14 +78,14 @@ pub fn parse(state: &mut State) -> StatementKind {
         };
 
     let mut implements = Vec::new();
-    if state.stream.current().kind == TokenKind::Implements {
-        state.stream.next();
+    if state.current().kind == TokenKind::Implements {
+        state.next();
 
-        while state.stream.current().kind != TokenKind::LeftBrace {
+        while state.current().kind != TokenKind::LeftBrace {
             implements.push(names::full_name(state, UseKind::Normal));
 
-            if state.stream.current().kind == TokenKind::Comma {
-                state.stream.next();
+            if state.current().kind == TokenKind::Comma {
+                state.next();
             } else {
                 break;
             }
@@ -97,7 +97,7 @@ pub fn parse(state: &mut State) -> StatementKind {
         let left_brace = utils::skip_left_brace(state);
         let members = {
             let mut members = Vec::new();
-            while state.stream.current().kind != TokenKind::RightBrace {
+            while state.current().kind != TokenKind::RightBrace {
                 if let Some(member) = backed_member(state) {
                     members.push(member);
                 }
@@ -130,7 +130,7 @@ pub fn parse(state: &mut State) -> StatementKind {
         let left_brace = utils::skip_left_brace(state);
         let members = {
             let mut members = Vec::new();
-            while state.stream.current().kind != TokenKind::RightBrace {
+            while state.current().kind != TokenKind::RightBrace {
                 if let Some(member) = unit_member(state) {
                     members.push(member);
                 }
@@ -163,16 +163,16 @@ pub fn parse(state: &mut State) -> StatementKind {
 fn unit_member(state: &mut State) -> Option<UnitEnumMember> {
     let _has_attributes = attributes::gather_attributes(state);
 
-    let current = state.stream.current();
+    let current = state.current();
     if current.kind == TokenKind::Case {
         let attributes = state.get_attributes();
 
         let start = current.span;
-        state.stream.next();
+        state.next();
 
         let name = identifiers::identifier_maybe_reserved(state);
 
-        let current = state.stream.current();
+        let current = state.current();
         if current.kind == TokenKind::Equals {
             // parse the value, but don't do anything with it.
             let equals = utils::skip(state, TokenKind::Equals);
@@ -206,16 +206,16 @@ fn unit_member(state: &mut State) -> Option<UnitEnumMember> {
 fn backed_member(state: &mut State) -> Option<BackedEnumMember> {
     let _has_attributes = attributes::gather_attributes(state);
 
-    let current = state.stream.current();
+    let current = state.current();
     if current.kind == TokenKind::Case {
         let attributes = state.get_attributes();
 
         let case = current.span;
-        state.stream.next();
+        state.next();
 
         let name = identifiers::identifier_maybe_reserved(state);
 
-        let current = state.stream.current();
+        let current = state.current();
         if current.kind == TokenKind::SemiColon {
             // parse the semicolon, but don't do anything with it.
             let semi = utils::skip_semicolon(state);

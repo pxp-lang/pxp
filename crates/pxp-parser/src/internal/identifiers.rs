@@ -8,17 +8,17 @@ use pxp_token::{Token, TokenKind};
 
 /// Expect an unqualified identifier such as Foo or Bar for a class, interface, trait, or an enum name.
 pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
-    let current = state.stream.current();
+    let current = state.current();
     match &current.kind {
         TokenKind::Identifier => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap().clone();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         TokenKind::Enum | TokenKind::From => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap().clone();
 
@@ -31,7 +31,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap().clone();
 
@@ -44,7 +44,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap().clone();
 
@@ -67,17 +67,17 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
 
 /// Expect an unqualified identifier such as foo or bar for a goto label name.
 pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
-    let current = state.stream.current();
+    let current = state.current();
     match &current.kind {
         TokenKind::Identifier => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap().clone();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         TokenKind::Enum | TokenKind::From => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap().clone();
 
@@ -90,7 +90,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap().clone();
 
@@ -103,7 +103,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap().clone();
 
@@ -126,15 +126,15 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
 
 /// Expect an unqualified identifier such as Foo or Bar.
 pub fn identifier(state: &mut State) -> SimpleIdentifier {
-    let current = state.stream.current();
+    let current = state.current();
     if let TokenKind::Identifier = &current.kind {
-        state.stream.next();
+        state.next();
 
         let symbol = current.symbol.as_ref().unwrap().clone();
 
         SimpleIdentifier::new(state.id(), symbol, current.span)
     } else {
-        let previous = state.stream.previous();
+        let previous = state.previous();
 
         state.diagnostic(
             ParserDiagnostic::UnexpectedToken {
@@ -156,43 +156,43 @@ pub fn identifier(state: &mut State) -> SimpleIdentifier {
 
 /// Expect an unqualified or qualified identifier such as Foo, Bar or Foo\Bar.
 pub fn name(state: &mut State) -> SimpleIdentifier {
-    let name = match state.stream.current().kind {
-        TokenKind::Identifier | TokenKind::QualifiedIdentifier => state.stream.current().clone(),
+    let name = match state.current().kind {
+        TokenKind::Identifier | TokenKind::QualifiedIdentifier => state.current().clone(),
         _ => {
-            let span = state.stream.current().span;
+            let span = state.current().span;
 
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier, TokenKind::QualifiedIdentifier],
-                    found: state.stream.current().clone(),
+                    found: state.current().clone(),
                 },
                 Severity::Error,
                 span,
             );
 
-            Token::missing(state.stream.current().span)
+            Token::missing(state.current().span)
         }
     };
 
-    state.stream.next();
+    state.next();
 
     SimpleIdentifier::new(state.id(), name.symbol.unwrap(), name.span)
 }
 
 /// Expect an optional unqualified or qualified identifier such as Foo, Bar or Foo\Bar.
 pub fn optional_name(state: &mut State) -> Option<SimpleIdentifier> {
-    let current = state.stream.current();
+    let current = state.current();
 
     match &current.kind {
         TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap().clone();
 
             Some(SimpleIdentifier::new(state.id(), symbol, current.span))
         }
         t if is_reserved_identifier(t) => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap().clone();
 
@@ -204,12 +204,12 @@ pub fn optional_name(state: &mut State) -> Option<SimpleIdentifier> {
 
 /// Expect an unqualified, qualified or fully qualified identifier such as Foo, Foo\Bar or \Foo\Bar.
 pub fn full_name(state: &mut State) -> SimpleIdentifier {
-    let current = state.stream.current();
+    let current = state.current();
     match &current.kind {
         TokenKind::Identifier
         | TokenKind::QualifiedIdentifier
         | TokenKind::FullyQualifiedIdentifier => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap().clone();
 
@@ -232,19 +232,19 @@ pub fn full_name(state: &mut State) -> SimpleIdentifier {
 
 /// Expect an unqualified, qualified or fully qualified identifier such as Foo, Foo\Bar or \Foo\Bar.
 pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
-    let current = state.stream.current();
+    let current = state.current();
     match &current.kind {
         TokenKind::Identifier
         | TokenKind::QualifiedIdentifier
         | TokenKind::FullyQualifiedIdentifier => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap().clone();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         TokenKind::Enum | TokenKind::From => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap().clone();
 
@@ -257,7 +257,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap().clone();
 
@@ -270,7 +270,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
                 current.span,
             );
 
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap().clone();
 
@@ -292,10 +292,10 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
 }
 
 pub fn identifier_maybe_reserved(state: &mut State) -> SimpleIdentifier {
-    let current = state.stream.current();
+    let current = state.current();
 
     if is_reserved_identifier(&current.kind) {
-        state.stream.next();
+        state.next();
 
         let symbol = current.symbol.as_ref().unwrap().clone();
 

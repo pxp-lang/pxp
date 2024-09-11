@@ -19,9 +19,9 @@ pub fn foreach_statement(state: &mut State) -> StatementKind {
 
             let r#as = utils::skip(state, TokenKind::As);
 
-            let current = state.stream.current();
+            let current = state.current();
             let ampersand = if current.kind == TokenKind::Ampersand {
-                state.stream.next();
+                state.next();
                 Some(current.span)
             } else {
                 None
@@ -29,14 +29,14 @@ pub fn foreach_statement(state: &mut State) -> StatementKind {
 
             let mut value = expressions::create(state);
 
-            let current = state.stream.current();
+            let current = state.current();
             if current.kind == TokenKind::DoubleArrow {
-                state.stream.next();
+                state.next();
                 let arrow = current.span;
 
-                let current = state.stream.current();
+                let current = state.current();
                 let ampersand = if current.kind == TokenKind::Ampersand {
-                    state.stream.next();
+                    state.next();
                     Some(current.span)
                 } else {
                     None
@@ -68,7 +68,7 @@ pub fn foreach_statement(state: &mut State) -> StatementKind {
             }
         });
 
-    let body = if state.stream.current().kind == TokenKind::Colon {
+    let body = if state.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
         let statements = blocks::multiple_statements_until(state, &TokenKind::EndForeach);
         let endforeach = utils::skip(state, TokenKind::EndForeach);
@@ -134,7 +134,7 @@ pub fn for_statement(state: &mut State) -> StatementKind {
         }
     });
 
-    let body = if state.stream.current().kind == TokenKind::Colon {
+    let body = if state.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
         let statements = blocks::multiple_statements_until(state, &TokenKind::EndFor);
         let endfor = utils::skip(state, TokenKind::EndFor);
@@ -200,7 +200,7 @@ pub fn while_statement(state: &mut State) -> StatementKind {
     let (left_parenthesis, condition, right_parenthesis) =
         utils::parenthesized(state, &expressions::create);
 
-    let body = if state.stream.current().kind == TokenKind::Colon {
+    let body = if state.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
         let statements = blocks::multiple_statements_until(state, &TokenKind::EndWhile);
         let endwhile = utils::skip(state, TokenKind::EndWhile);
@@ -264,7 +264,7 @@ pub fn break_statement(state: &mut State) -> StatementKind {
 }
 
 fn maybe_loop_level(state: &mut State) -> Option<Level> {
-    let current = &state.stream.current().kind;
+    let current = &state.current().kind;
 
     if current == &TokenKind::SemiColon || current == &TokenKind::CloseTag {
         None
@@ -274,14 +274,14 @@ fn maybe_loop_level(state: &mut State) -> Option<Level> {
 }
 
 fn loop_level(state: &mut State) -> Level {
-    let current = state.stream.current();
+    let current = state.current();
 
     if let Token {
         kind: TokenKind::LiteralInteger,
         ..
     } = current
     {
-        state.stream.next();
+        state.next();
 
         return Level::Literal(LiteralLevel {
             id: state.id(),

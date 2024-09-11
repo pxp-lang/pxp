@@ -28,8 +28,8 @@ pub fn parse(state: &mut State) -> ConstantStatement {
             value,
         });
 
-        if state.stream.current().kind == TokenKind::Comma {
-            state.stream.next();
+        if state.current().kind == TokenKind::Comma {
+            state.next();
         } else {
             break;
         }
@@ -54,7 +54,7 @@ pub fn classish(state: &mut State, modifiers: ConstantModifierGroup) -> Classish
     let comments = state.comments();
     let start = utils::skip(state, TokenKind::Const);
 
-    let data_type = if state.stream.peek().kind == TokenKind::Identifier {
+    let data_type = if state.peek().kind == TokenKind::Identifier {
         Some(data_type(state))
     } else {
         None
@@ -75,8 +75,8 @@ pub fn classish(state: &mut State, modifiers: ConstantModifierGroup) -> Classish
             value,
         });
 
-        if state.stream.current().kind == TokenKind::Comma {
-            state.stream.next();
+        if state.current().kind == TokenKind::Comma {
+            state.next();
         } else {
             break;
         }

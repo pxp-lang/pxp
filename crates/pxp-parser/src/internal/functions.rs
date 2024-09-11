@@ -24,11 +24,11 @@ pub enum Method {
 
 pub fn anonymous_function(state: &mut State) -> Expression {
     let comments = state.comments();
-    let start_span = state.stream.current().span;
+    let start_span = state.current().span;
     let attributes = state.get_attributes();
-    let current = state.stream.current();
+    let current = state.current();
     let r#static = if current.kind == TokenKind::Static {
-        state.stream.next();
+        state.next();
 
         Some(current.span)
     } else {
@@ -37,9 +37,9 @@ pub fn anonymous_function(state: &mut State) -> Expression {
 
     let function = utils::skip(state, TokenKind::Function);
 
-    let current = state.stream.current();
+    let current = state.current();
     let ampersand = if current.kind == TokenKind::Ampersand {
-        state.stream.next();
+        state.next();
 
         Some(current.span)
     } else {
@@ -48,18 +48,18 @@ pub fn anonymous_function(state: &mut State) -> Expression {
 
     let parameters = parameters::function_parameter_list(state);
 
-    let current = state.stream.current();
+    let current = state.current();
     let uses = if current.kind == TokenKind::Use {
-        state.stream.next();
+        state.next();
 
         let left_parenthesis = utils::skip_left_parenthesis(state);
         let variables = utils::comma_separated::<ClosureUseVariable>(
             state,
             &|state| {
                 let use_comments = state.comments();
-                let current = state.stream.current();
+                let current = state.current();
                 let use_ampersand = if current.kind == TokenKind::Ampersand {
-                    state.stream.next();
+                    state.next();
 
                     Some(current.span)
                 } else {
@@ -94,7 +94,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
         None
     };
 
-    let return_type = if state.stream.current().kind == TokenKind::Colon {
+    let return_type = if state.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
         let data_type = data_type::data_type(state);
 
@@ -146,10 +146,10 @@ pub fn anonymous_function(state: &mut State) -> Expression {
 
 pub fn arrow_function(state: &mut State) -> Expression {
     let comments = state.comments();
-    let start_span = state.stream.current().span;
-    let current = state.stream.current();
+    let start_span = state.current().span;
+    let current = state.current();
     let r#static = if current.kind == TokenKind::Static {
-        state.stream.next();
+        state.next();
 
         Some(current.span)
     } else {
@@ -158,9 +158,9 @@ pub fn arrow_function(state: &mut State) -> Expression {
 
     let r#fn = utils::skip(state, TokenKind::Fn);
 
-    let current = state.stream.current();
-    let ampersand = if state.stream.current().kind == TokenKind::Ampersand {
-        state.stream.next();
+    let current = state.current();
+    let ampersand = if state.current().kind == TokenKind::Ampersand {
+        state.next();
 
         Some(current.span)
     } else {
@@ -169,7 +169,7 @@ pub fn arrow_function(state: &mut State) -> Expression {
 
     let attributes = state.get_attributes();
     let parameters = parameters::function_parameter_list(state);
-    let return_type = if state.stream.current().kind == TokenKind::Colon {
+    let return_type = if state.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
         let data_type = data_type::data_type(state);
 
@@ -213,9 +213,9 @@ pub fn function(state: &mut State) -> StatementKind {
 
     let function = utils::skip(state, TokenKind::Function);
 
-    let current = state.stream.current();
+    let current = state.current();
     let ampersand = if current.kind == TokenKind::Ampersand {
-        state.stream.next();
+        state.next();
 
         Some(current.span)
     } else {
@@ -229,7 +229,7 @@ pub fn function(state: &mut State) -> StatementKind {
     let attributes = state.get_attributes();
 
     let parameters = parameters::function_parameter_list(state);
-    let return_type = if state.stream.current().kind == TokenKind::Colon {
+    let return_type = if state.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
         let data_type = data_type::data_type(state);
 
@@ -276,9 +276,9 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
     let attributes = state.get_attributes();
     let function = utils::skip(state, TokenKind::Function);
 
-    let current = state.stream.current();
+    let current = state.current();
     let ampersand = if current.kind == TokenKind::Ampersand {
-        state.stream.next();
+        state.next();
 
         Some(current.span)
     } else {
@@ -293,7 +293,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
     if is_constructor {
         let parameters = parameters::constructor_parameter_list(state);
 
-        return if state.stream.current().kind == TokenKind::LeftBrace {
+        return if state.current().kind == TokenKind::LeftBrace {
             let body_comments = state.comments();
             let left_brace = utils::skip_left_brace(state);
             let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
@@ -339,7 +339,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
     }
 
     let parameters = parameters::function_parameter_list(state);
-    let return_type = if state.stream.current().kind == TokenKind::Colon {
+    let return_type = if state.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
         let data_type = data_type::data_type(state);
 
@@ -353,7 +353,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
         None
     };
 
-    if state.stream.current().kind == TokenKind::LeftBrace {
+    if state.current().kind == TokenKind::LeftBrace {
         let body_comments = state.comments();
         let left_brace = utils::skip_left_brace(state);
         let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);

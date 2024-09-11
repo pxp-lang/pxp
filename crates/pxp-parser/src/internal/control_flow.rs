@@ -31,8 +31,8 @@ pub fn match_expression(state: &mut State) -> Expression {
 
     let mut default: Option<Box<DefaultMatchArm>> = None;
     let mut arms = Vec::new();
-    while state.stream.current().kind != TokenKind::RightBrace {
-        let current = state.stream.current();
+    while state.current().kind != TokenKind::RightBrace {
+        let current = state.current();
         if current.kind == TokenKind::Default {
             if default.is_some() {
                 state.diagnostic(
@@ -42,11 +42,11 @@ pub fn match_expression(state: &mut State) -> Expression {
                 );
             }
 
-            state.stream.next();
+            state.next();
 
             // match conditions can have an extra comma at the end, including `default`.
-            if state.stream.current().kind == TokenKind::Comma {
-                state.stream.next();
+            if state.current().kind == TokenKind::Comma {
+                state.next();
             }
 
             let arrow = utils::skip_double_arrow(state);
@@ -63,11 +63,11 @@ pub fn match_expression(state: &mut State) -> Expression {
         } else {
             let mut conditions = Vec::new();
 
-            while state.stream.current().kind != TokenKind::DoubleArrow {
+            while state.current().kind != TokenKind::DoubleArrow {
                 conditions.push(expressions::create(state));
 
-                if state.stream.current().kind == TokenKind::Comma {
-                    state.stream.next();
+                if state.current().kind == TokenKind::Comma {
+                    state.next();
                 } else {
                     break;
                 }
@@ -90,8 +90,8 @@ pub fn match_expression(state: &mut State) -> Expression {
             });
         }
 
-        if state.stream.current().kind == TokenKind::Comma {
-            state.stream.next();
+        if state.current().kind == TokenKind::Comma {
+            state.next();
         } else {
             break;
         }
@@ -124,7 +124,7 @@ pub fn switch_statement(state: &mut State) -> StatementKind {
     let (left_parenthesis, condition, right_parenthesis) =
         utils::parenthesized(state, &expressions::create);
 
-    let end_token = if state.stream.current().kind == TokenKind::Colon {
+    let end_token = if state.current().kind == TokenKind::Colon {
         utils::skip_colon(state);
         TokenKind::EndSwitch
     } else {
@@ -133,10 +133,10 @@ pub fn switch_statement(state: &mut State) -> StatementKind {
     };
 
     let mut cases = Vec::new();
-    while state.stream.current().kind != end_token {
-        match state.stream.current().kind {
+    while state.current().kind != end_token {
+        match state.current().kind {
             TokenKind::Case => {
-                state.stream.next();
+                state.next();
 
                 let condition = expressions::create(state);
 
@@ -144,10 +144,10 @@ pub fn switch_statement(state: &mut State) -> StatementKind {
 
                 let mut body = Block::new();
 
-                while state.stream.current().kind != TokenKind::Case
-                    && state.stream.current().kind != TokenKind::Default
-                    && state.stream.current().kind != TokenKind::RightBrace
-                    && state.stream.current().kind != end_token
+                while state.current().kind != TokenKind::Case
+                    && state.current().kind != TokenKind::Default
+                    && state.current().kind != TokenKind::RightBrace
+                    && state.current().kind != end_token
                 {
                     body.push(statement(state));
                 }
@@ -160,15 +160,15 @@ pub fn switch_statement(state: &mut State) -> StatementKind {
                 });
             }
             TokenKind::Default => {
-                state.stream.next();
+                state.next();
 
                 utils::skip_any_of(state, &[TokenKind::Colon, TokenKind::SemiColon]);
 
                 let mut body = Block::new();
 
-                while state.stream.current().kind != TokenKind::Case
-                    && state.stream.current().kind != TokenKind::Default
-                    && state.stream.current().kind != end_token
+                while state.current().kind != TokenKind::Case
+                    && state.current().kind != TokenKind::Default
+                    && state.current().kind != end_token
                 {
                     body.push(statement(state));
                 }
@@ -184,10 +184,10 @@ pub fn switch_statement(state: &mut State) -> StatementKind {
                 state.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::Case, TokenKind::Default, end_token],
-                        found: state.stream.current().clone(),
+                        found: state.current().clone(),
                     },
                     Severity::Error,
-                    state.stream.current().span,
+                    state.current().span,
                 );
             }
         }
@@ -217,7 +217,7 @@ pub fn if_statement(state: &mut State) -> StatementKind {
     let (left_parenthesis, condition, right_parenthesis) =
         utils::parenthesized(state, &expressions::create);
 
-    let body = if state.stream.current().kind == TokenKind::Colon {
+    let body = if state.current().kind == TokenKind::Colon {
         if_statement_block_body(state)
     } else {
         if_statement_statement_body(state)
@@ -238,9 +238,9 @@ fn if_statement_statement_body(state: &mut State) -> IfStatementBody {
     let statement = Box::new(statement(state));
 
     let mut elseifs: Vec<IfStatementElseIf> = vec![];
-    let mut current = state.stream.current();
+    let mut current = state.current();
     while current.kind == TokenKind::ElseIf {
-        state.stream.next();
+        state.next();
 
         let (left_parenthesis, condition, right_parenthesis) =
             utils::parenthesized(state, &expressions::create);
@@ -257,11 +257,11 @@ fn if_statement_statement_body(state: &mut State) -> IfStatementBody {
             statement: Box::new(statement),
         });
 
-        current = state.stream.current();
+        current = state.current();
     }
 
     let r#else = if current.kind == TokenKind::Else {
-        state.stream.next();
+        state.next();
 
         let statement = crate::statement(state);
 
@@ -296,9 +296,9 @@ fn if_statement_block_body(state: &mut State) -> IfStatementBody {
     );
 
     let mut elseifs: Vec<IfStatementElseIfBlock> = vec![];
-    let mut current = state.stream.current();
+    let mut current = state.current();
     while current.kind == TokenKind::ElseIf {
-        state.stream.next();
+        state.next();
 
         let (left_parenthesis, condition, right_parenthesis) =
             utils::parenthesized(state, &expressions::create);
@@ -323,11 +323,11 @@ fn if_statement_block_body(state: &mut State) -> IfStatementBody {
             statements,
         });
 
-        current = state.stream.current();
+        current = state.current();
     }
 
     let r#else = if current.kind == TokenKind::Else {
-        state.stream.next();
+        state.next();
 
         let colon = utils::skip(state, TokenKind::Colon);
         let statements = blocks::multiple_statements_until(state, &TokenKind::EndIf);

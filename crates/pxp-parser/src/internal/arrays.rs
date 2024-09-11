@@ -26,20 +26,20 @@ pub fn list_expression(state: &mut State) -> Expression {
         let mut items = Vec::new();
         let mut has_at_least_one_key = false;
 
-        let mut current = state.stream.current();
+        let mut current = state.current();
         while current.kind != TokenKind::RightParen {
             if current.kind == TokenKind::Comma {
-                state.stream.next();
+                state.next();
 
                 items.push(ListEntry::Skipped(current.span));
 
-                current = state.stream.current();
+                current = state.current();
 
                 continue;
             }
 
             if current.kind == TokenKind::Ellipsis {
-                state.stream.next();
+                state.next();
 
                 state.diagnostic(
                     ParserDiagnostic::InvalidSpreadOperator,
@@ -49,7 +49,7 @@ pub fn list_expression(state: &mut State) -> Expression {
             }
 
             let mut value = expressions::create(state);
-            current = state.stream.current();
+            current = state.current();
             if current.kind == TokenKind::DoubleArrow {
                 if !has_at_least_one_key && !items.is_empty() {
                     state.diagnostic(
@@ -61,11 +61,11 @@ pub fn list_expression(state: &mut State) -> Expression {
 
                 let double_arrow = current.span;
 
-                state.stream.next();
+                state.next();
 
-                current = state.stream.current();
+                current = state.current();
                 if current.kind == TokenKind::Ellipsis {
-                    state.stream.next();
+                    state.next();
 
                     state.diagnostic(
                         ParserDiagnostic::InvalidSpreadOperator,
@@ -75,7 +75,7 @@ pub fn list_expression(state: &mut State) -> Expression {
                 }
 
                 let mut key = expressions::create(state);
-                current = state.stream.current();
+                current = state.current();
 
                 std::mem::swap(&mut key, &mut value);
 
@@ -105,15 +105,15 @@ pub fn list_expression(state: &mut State) -> Expression {
             }
 
             if current.kind == TokenKind::Comma {
-                state.stream.next();
-                current = state.stream.current();
+                state.next();
+                current = state.current();
             } else {
                 break;
             }
         }
 
         if current.kind == TokenKind::Comma {
-            state.stream.next();
+            state.next();
         }
 
         items
@@ -139,7 +139,7 @@ pub fn short_array_expression(state: &mut State) -> Expression {
     let items = utils::comma_separated(
         state,
         &|state| {
-            let current = state.stream.current();
+            let current = state.current();
             if current.kind == TokenKind::Comma {
                 ArrayItem::Skipped(current.span)
             } else {
@@ -182,11 +182,11 @@ pub fn array_expression(state: &mut State) -> Expression {
 }
 
 fn array_pair(state: &mut State) -> ArrayItem {
-    let mut current = state.stream.current();
+    let mut current = state.current();
     let ellipsis = if current.kind == TokenKind::Ellipsis {
-        state.stream.next();
+        state.next();
         let span = current.span;
-        current = state.stream.current();
+        current = state.current();
 
         Some(span)
     } else {
@@ -194,7 +194,7 @@ fn array_pair(state: &mut State) -> ArrayItem {
     };
 
     let mut ampersand = if current.kind == TokenKind::Ampersand {
-        state.stream.next();
+        state.next();
 
         Some(current)
     } else {
@@ -231,15 +231,15 @@ fn array_pair(state: &mut State) -> ArrayItem {
         });
     }
 
-    let mut current = state.stream.current();
+    let mut current = state.current();
     if current.kind == TokenKind::DoubleArrow {
         let double_arrow = current.span;
 
-        state.stream.next();
+        state.next();
 
-        current = state.stream.current();
+        current = state.current();
         if current.kind == TokenKind::Ellipsis {
-            state.stream.next();
+            state.next();
 
             state.diagnostic(
                 ParserDiagnostic::InvalidSpreadOperator,
@@ -249,7 +249,7 @@ fn array_pair(state: &mut State) -> ArrayItem {
         }
 
         ampersand = if current.kind == TokenKind::Ampersand {
-            state.stream.next();
+            state.next();
 
             Some(current)
         } else {

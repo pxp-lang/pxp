@@ -8,24 +8,24 @@ use pxp_token::TokenKind;
 use super::names;
 
 pub fn gather_attributes(state: &mut State) -> bool {
-    if state.stream.current().kind != TokenKind::Attribute {
+    if state.current().kind != TokenKind::Attribute {
         return false;
     }
 
-    let start = state.stream.current().span;
+    let start = state.current().span;
     let mut members = vec![];
 
-    state.stream.next();
+    state.next();
 
     loop {
-        let start = state.stream.current().span;
+        let start = state.current().span;
         let name = names::full_name_including_self(state);
-        let arguments = if state.stream.current().kind == TokenKind::LeftParen {
+        let arguments = if state.current().kind == TokenKind::LeftParen {
             Some(parameters::argument_list(state))
         } else {
             None
         };
-        let end = state.stream.current().span;
+        let end = state.current().span;
         let span = Span::new(start.start, end.end);
 
         members.push(Attribute {
@@ -35,10 +35,10 @@ pub fn gather_attributes(state: &mut State) -> bool {
             arguments,
         });
 
-        if state.stream.current().kind == TokenKind::Comma {
-            state.stream.next();
+        if state.current().kind == TokenKind::Comma {
+            state.next();
 
-            if state.stream.current().kind == TokenKind::RightBracket {
+            if state.current().kind == TokenKind::RightBracket {
                 break;
             }
 

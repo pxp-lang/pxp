@@ -7,21 +7,21 @@ use pxp_span::Span;
 use pxp_token::TokenKind;
 
 pub fn skip_ending(state: &mut State) -> Ending {
-    let current = state.stream.current();
-    let previous = state.stream.previous();
+    let current = state.current();
+    let previous = state.previous();
 
     if current.kind == TokenKind::CloseTag {
-        state.stream.next();
+        state.next();
 
         Ending::CloseTag(current.span)
     } else if current.kind == TokenKind::SemiColon {
-        state.stream.next();
+        state.next();
 
         Ending::Semicolon(current.span)
     } else {
         let span = Span::flat(previous.span.end);
 
-        if state.stream.is_eof() {
+        if state.is_eof() {
             state.diagnostic(ParserDiagnostic::UnexpectedEndOfFile, Severity::Error, span);
         } else {
             state.diagnostic(
@@ -39,10 +39,10 @@ pub fn skip_ending(state: &mut State) -> Ending {
 }
 
 pub fn skip_semicolon(state: &mut State) -> Span {
-    let current = state.stream.current();
+    let current = state.current();
 
     if current.kind == TokenKind::SemiColon {
-        state.stream.next();
+        state.next();
 
         current.span
     } else {
@@ -96,10 +96,10 @@ pub fn skip_colon(state: &mut State) -> Span {
 }
 
 pub fn skip(state: &mut State, kind: TokenKind) -> Span {
-    while state.stream.current().kind != kind {
-        let current = state.stream.current();
+    while state.current().kind != kind {
+        let current = state.current();
 
-        if state.stream.is_eof() {
+        if state.is_eof() {
             state.diagnostic(
                 ParserDiagnostic::UnexpectedEndOfFileExpected {
                     expected: vec![kind],
@@ -110,7 +110,7 @@ pub fn skip(state: &mut State, kind: TokenKind) -> Span {
             break;
         }
 
-        state.stream.next();
+        state.next();
 
         state.diagnostic(
             ParserDiagnostic::ExpectedToken {
@@ -122,20 +122,20 @@ pub fn skip(state: &mut State, kind: TokenKind) -> Span {
         );
     }
 
-    let end = state.stream.current().span;
+    let end = state.current().span;
 
-    state.stream.next();
+    state.next();
 
     end
 }
 
 pub fn skip_any_of(state: &mut State, kinds: &[TokenKind]) -> Span {
-    let current = state.stream.current();
+    let current = state.current();
 
     if kinds.contains(&current.kind) {
         let end = current.span;
 
-        state.stream.next();
+        state.next();
 
         end
     } else {
@@ -190,21 +190,21 @@ pub fn comma_separated<T>(
 ) -> CommaSeparated<T> {
     let mut inner: Vec<T> = vec![];
     let mut commas: Vec<Span> = vec![];
-    let mut current = state.stream.current();
+    let mut current = state.current();
 
     while current.kind != until {
         inner.push(func(state));
 
-        current = state.stream.current();
+        current = state.current();
         if current.kind != TokenKind::Comma {
             break;
         }
 
         commas.push(current.span);
 
-        state.stream.next();
+        state.next();
 
-        current = state.stream.current();
+        current = state.current();
     }
 
     CommaSeparated { inner, commas }
@@ -218,27 +218,27 @@ pub fn comma_separated_no_trailing<T>(
 ) -> CommaSeparated<T> {
     let mut inner: Vec<T> = vec![];
     let mut commas: Vec<Span> = vec![];
-    let mut current = state.stream.current();
+    let mut current = state.current();
 
     while current.kind != until {
         inner.push(func(state));
 
-        current = state.stream.current();
+        current = state.current();
         if current.kind != TokenKind::Comma {
             break;
         }
 
         // If the next token is the until token, we don't want to consume the comma.
         // This ensures that trailing commas are not allowed.
-        if state.stream.peek().kind == until {
+        if state.peek().kind == until {
             break;
         }
 
         commas.push(current.span);
 
-        state.stream.next();
+        state.next();
 
-        current = state.stream.current();
+        current = state.current();
     }
 
     CommaSeparated { inner, commas }
@@ -255,14 +255,14 @@ pub fn at_least_one_comma_separated_no_trailing<T>(
     loop {
         inner.push(func(state));
 
-        let current = state.stream.current();
+        let current = state.current();
         if current.kind != TokenKind::Comma {
             break;
         }
 
         commas.push(current.span);
 
-        state.stream.next();
+        state.next();
     }
 
     CommaSeparated { inner, commas }

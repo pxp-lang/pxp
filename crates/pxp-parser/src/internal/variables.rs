@@ -10,11 +10,11 @@ use pxp_span::Span;
 use pxp_token::TokenKind;
 
 pub fn simple_variable(state: &mut State) -> SimpleVariable {
-    let current = state.stream.current();
+    let current = state.current();
 
     match &current.kind {
         TokenKind::Variable => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap();
 
@@ -29,7 +29,7 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
             }
         }
         TokenKind::Dollar => {
-            state.stream.next();
+            state.next();
 
             state.diagnostic(
                 ParserDiagnostic::DynamicVariableNotAllowed,
@@ -60,10 +60,10 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
 }
 
 pub fn dynamic_variable(state: &mut State) -> Variable {
-    let current = state.stream.current();
+    let current = state.current();
     match &current.kind {
         TokenKind::Variable => {
-            state.stream.next();
+            state.next();
 
             let symbol = current.symbol.as_ref().unwrap();
             let name = symbol.clone();
@@ -78,7 +78,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
         }
         TokenKind::DollarLeftBrace => {
             let start = current.span;
-            state.stream.next();
+            state.next();
 
             let expr = expressions::create(state);
 
@@ -92,10 +92,10 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
                 end,
             })
         }
-        TokenKind::Dollar if state.stream.peek().kind == TokenKind::LeftBrace => {
+        TokenKind::Dollar if state.peek().kind == TokenKind::LeftBrace => {
             let start = current.span;
-            state.stream.next();
-            state.stream.next();
+            state.next();
+            state.next();
 
             let expr = expressions::create(state);
 
@@ -111,9 +111,9 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
         }
         TokenKind::Dollar => {
             let span = current.span;
-            state.stream.next();
+            state.next();
 
-            match state.stream.current().kind {
+            match state.current().kind {
                 TokenKind::Dollar | TokenKind::Variable => {
                     let variable = dynamic_variable(state);
 
