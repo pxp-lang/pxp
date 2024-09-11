@@ -7,7 +7,7 @@ use crate::state::State;
 pub fn docblock(state: &mut State) -> DocBlockComment {
     let current = state.current();
 
-    if ! matches!(current.kind, TokenKind::OpenPhpDoc) {
+    if !matches!(current.kind, TokenKind::OpenPhpDoc) {
         unreachable!();
     }
 
@@ -40,6 +40,6 @@ pub fn docblock(state: &mut State) -> DocBlockComment {
             id: state.id(),
             span,
             nodes,
-        }
+        },
     }
 }

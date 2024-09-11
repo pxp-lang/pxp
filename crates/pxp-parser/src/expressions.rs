@@ -1106,9 +1106,7 @@ pub fn attributes(state: &mut State) -> Expression {
         TokenKind::Static if state.peek().kind == TokenKind::Function => {
             functions::anonymous_function(state)
         }
-        TokenKind::Static if state.peek().kind == TokenKind::Fn => {
-            functions::arrow_function(state)
-        }
+        TokenKind::Static if state.peek().kind == TokenKind::Fn => functions::arrow_function(state),
         TokenKind::Function => functions::anonymous_function(state),
         TokenKind::Fn => functions::arrow_function(state),
         _ => {

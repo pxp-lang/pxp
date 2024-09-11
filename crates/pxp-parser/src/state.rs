@@ -7,7 +7,8 @@ use pxp_span::Span;
 use pxp_token::{Token, TokenKind};
 
 use crate::{
-    internal::{docblock::docblock, identifiers::is_soft_reserved_identifier}, ParserDiagnostic,
+    internal::{docblock::docblock, identifiers::is_soft_reserved_identifier},
+    ParserDiagnostic,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -56,7 +57,7 @@ impl<'a> State<'a> {
             attributes: vec![],
             imports,
             comments: vec![],
-            
+
             id: 0,
 
             tokens,
@@ -183,54 +184,66 @@ impl<'a> State<'a> {
                     kind: TokenKind::SingleLineComment,
                     span,
                     symbol,
-                } => (Comment {
-                    id,
-                    span: *span,
-                    kind: CommentKind::SingleLine(SingleLineComment {
-                        id: comment_id,
+                } => (
+                    Comment {
+                        id,
                         span: *span,
-                        content: symbol.as_ref().unwrap().clone(),
-                    }),
-                }, true),
+                        kind: CommentKind::SingleLine(SingleLineComment {
+                            id: comment_id,
+                            span: *span,
+                            content: symbol.as_ref().unwrap().clone(),
+                        }),
+                    },
+                    true,
+                ),
                 Token {
                     kind: TokenKind::MultiLineComment,
                     span,
                     symbol,
-                } => (Comment {
-                    id,
-                    span: *span,
-                    kind: CommentKind::MultiLine(MultiLineComment {
-                        id: comment_id,
+                } => (
+                    Comment {
+                        id,
                         span: *span,
-                        content: symbol.as_ref().unwrap().clone(),
-                    }),
-                }, true),
+                        kind: CommentKind::MultiLine(MultiLineComment {
+                            id: comment_id,
+                            span: *span,
+                            content: symbol.as_ref().unwrap().clone(),
+                        }),
+                    },
+                    true,
+                ),
                 Token {
                     kind: TokenKind::HashMarkComment,
                     span,
                     symbol,
-                } => (Comment {
-                    id,
-                    span: *span,
-                    kind: CommentKind::HashMark(HashMarkComment {
-                        id: comment_id,
+                } => (
+                    Comment {
+                        id,
                         span: *span,
-                        content: symbol.as_ref().unwrap().clone(),
-                    }),
-                }, true),
+                        kind: CommentKind::HashMark(HashMarkComment {
+                            id: comment_id,
+                            span: *span,
+                            content: symbol.as_ref().unwrap().clone(),
+                        }),
+                    },
+                    true,
+                ),
                 Token {
                     kind: TokenKind::OpenPhpDoc,
                     ..
                 } => {
                     let docblock = docblock(self);
 
-                    (Comment {
-                        id,
-                        span: docblock.span,
-                        kind: CommentKind::DocBlock(docblock),
-                    }, false)
-                },
-                _ => unreachable!()
+                    (
+                        Comment {
+                            id,
+                            span: docblock.span,
+                            kind: CommentKind::DocBlock(docblock),
+                        },
+                        false,
+                    )
+                }
+                _ => unreachable!(),
             };
 
             self.comments.push(comment);
@@ -248,7 +261,7 @@ impl<'a> State<'a> {
 
         CommentGroup {
             id: self.id(),
-            comments: comments.clone()
+            comments: comments.clone(),
         }
     }
 

@@ -96,8 +96,7 @@ fn top_level_statement(state: &mut State) -> Statement {
 
                     state.next();
 
-                    let (span, content) = if let TokenKind::InlineHtml = state.current().kind
-                    {
+                    let (span, content) = if let TokenKind::InlineHtml = state.current().kind {
                         let content = state.current().clone();
                         state.next();
                         (Span::combine(start, content.span), Some(content))
@@ -153,9 +152,7 @@ fn statement(state: &mut State) -> Statement {
                     || peek.kind == TokenKind::Ampersand =>
             {
                 if peek.kind == TokenKind::Ampersand {
-                    if !identifiers::is_identifier_maybe_soft_reserved(
-                        &state.lookahead(1).kind,
-                    ) {
+                    if !identifiers::is_identifier_maybe_soft_reserved(&state.lookahead(1).kind) {
                         let expression = expressions::attributes(state);
                         let ending = utils::skip_ending(state);
                         let ending_span = ending.span();
@@ -247,9 +244,7 @@ fn statement(state: &mut State) -> Statement {
                     || peek.kind == TokenKind::Ampersand =>
             {
                 if peek.kind == TokenKind::Ampersand {
-                    if !identifiers::is_identifier_maybe_soft_reserved(
-                        &state.lookahead(1).kind,
-                    ) {
+                    if !identifiers::is_identifier_maybe_soft_reserved(&state.lookahead(1).kind) {
                         let expression = expressions::attributes(state);
                         let ending = utils::skip_ending(state);
                         let ending_span = ending.span();

@@ -229,10 +229,7 @@ pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
     let modifiers = modifiers::collect(state);
 
     if modifiers.is_empty()
-        && !matches!(
-            state.current().kind,
-            TokenKind::Const | TokenKind::Function
-        )
+        && !matches!(state.current().kind, TokenKind::Const | TokenKind::Function)
     {
         let current = state.current();
 

@@ -19,63 +19,62 @@ pub fn parse(state: &mut State) -> StatementKind {
 
     let name = names::type_name(state);
 
-    let backed_type: Option<(Span, BackedEnumType)> =
-        if state.current().kind == TokenKind::Colon {
-            let colon = utils::skip_colon(state);
-            let current = state.current();
+    let backed_type: Option<(Span, BackedEnumType)> = if state.current().kind == TokenKind::Colon {
+        let colon = utils::skip_colon(state);
+        let current = state.current();
 
-            match current.kind {
-                TokenKind::Identifier => {
-                    let symbol = current.symbol.as_ref().unwrap();
+        match current.kind {
+            TokenKind::Identifier => {
+                let symbol = current.symbol.as_ref().unwrap();
 
-                    Some(match &symbol[..] {
-                        b"string" => {
-                            state.next();
-                            (colon, BackedEnumType::String(current.span))
-                        }
-                        b"int" => {
-                            state.next();
-                            (colon, BackedEnumType::Int(current.span))
-                        }
-                        _ => {
-                            state.next();
+                Some(match &symbol[..] {
+                    b"string" => {
+                        state.next();
+                        (colon, BackedEnumType::String(current.span))
+                    }
+                    b"int" => {
+                        state.next();
+                        (colon, BackedEnumType::Int(current.span))
+                    }
+                    _ => {
+                        state.next();
 
-                            state.diagnostic(
-                                ParserDiagnostic::InvalidBackedEnumType,
-                                Severity::Error,
-                                current.span,
-                            );
+                        state.diagnostic(
+                            ParserDiagnostic::InvalidBackedEnumType,
+                            Severity::Error,
+                            current.span,
+                        );
 
-                            (colon, BackedEnumType::Invalid)
-                        }
-                    })
-                }
-                TokenKind::LeftBrace => {
-                    state.diagnostic(
-                        ParserDiagnostic::UnexpectedToken {
-                            token: current.clone(),
-                        },
-                        Severity::Error,
-                        current.span,
-                    );
-
-                    Some((colon, BackedEnumType::Invalid))
-                }
-                _ => {
-                    state.next();
-
-                    state.diagnostic(
-                        ParserDiagnostic::InvalidBackedEnumType,
-                        Severity::Error,
-                        current.span,
-                    );
-
-                    Some((colon, BackedEnumType::Invalid))
-                }
+                        (colon, BackedEnumType::Invalid)
+                    }
+                })
             }
-        } else {
-            None
-        };
+            TokenKind::LeftBrace => {
+                state.diagnostic(
+                    ParserDiagnostic::UnexpectedToken {
+                        token: current.clone(),
+                    },
+                    Severity::Error,
+                    current.span,
+                );
+
+                Some((colon, BackedEnumType::Invalid))
+            }
+            _ => {
+                state.next();
+
+                state.diagnostic(
+                    ParserDiagnostic::InvalidBackedEnumType,
+                    Severity::Error,
+                    current.span,
+                );
+
+                Some((colon, BackedEnumType::Invalid))
+            }
+        }
+    } else {
+        None
+    };
 
     let mut implements = Vec::new();
     if state.current().kind == TokenKind::Implements {

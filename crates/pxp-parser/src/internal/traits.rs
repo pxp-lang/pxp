@@ -47,8 +47,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
         utils::skip_left_brace(state);
 
         while state.current().kind != TokenKind::RightBrace {
-            let (r#trait, method): (Option<Name>, SimpleIdentifier) = match state.peek().kind
-            {
+            let (r#trait, method): (Option<Name>, SimpleIdentifier) = match state.peek().kind {
                 TokenKind::DoubleColon => {
                     let r#trait = names::full_name_including_self(state);
                     state.next();
@@ -59,10 +58,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
             };
 
             while !state.is_eof()
-                && !matches!(
-                    state.current().kind,
-                    TokenKind::As | TokenKind::Insteadof
-                )
+                && !matches!(state.current().kind, TokenKind::As | TokenKind::Insteadof)
             {
                 let token = state.current();
                 state.next();
