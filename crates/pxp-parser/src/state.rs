@@ -66,6 +66,8 @@ impl<'a> State<'a> {
             diagnostics: vec![],
         };
 
+        this.collect_comments();
+
         this
     }
 
