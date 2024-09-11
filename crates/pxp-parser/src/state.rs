@@ -178,12 +178,12 @@ impl<'a> State<'a> {
 
             let id = self.id();
             let comment_id = self.id();
-            let comment = match &current {
+            let (comment, move_forward) = match &current {
                 Token {
                     kind: TokenKind::SingleLineComment,
                     span,
                     symbol,
-                } => Comment {
+                } => (Comment {
                     id,
                     span: *span,
                     kind: CommentKind::SingleLine(SingleLineComment {
@@ -191,12 +191,12 @@ impl<'a> State<'a> {
                         span: *span,
                         content: symbol.as_ref().unwrap().clone(),
                     }),
-                },
+                }, true),
                 Token {
                     kind: TokenKind::MultiLineComment,
                     span,
                     symbol,
-                } => Comment {
+                } => (Comment {
                     id,
                     span: *span,
                     kind: CommentKind::MultiLine(MultiLineComment {
@@ -204,12 +204,12 @@ impl<'a> State<'a> {
                         span: *span,
                         content: symbol.as_ref().unwrap().clone(),
                     }),
-                },
+                }, true),
                 Token {
                     kind: TokenKind::HashMarkComment,
                     span,
                     symbol,
-                } => Comment {
+                } => (Comment {
                     id,
                     span: *span,
                     kind: CommentKind::HashMark(HashMarkComment {
@@ -217,25 +217,27 @@ impl<'a> State<'a> {
                         span: *span,
                         content: symbol.as_ref().unwrap().clone(),
                     }),
-                },
+                }, true),
                 Token {
                     kind: TokenKind::OpenPhpDoc,
                     ..
                 } => {
                     let docblock = docblock(self);
 
-                    Comment {
+                    (Comment {
                         id,
                         span: docblock.span,
                         kind: CommentKind::DocBlock(docblock),
-                    }
+                    }, false)
                 },
                 _ => unreachable!()
             };
 
             self.comments.push(comment);
-            
-            self.cursor += 1;
+
+            if move_forward {
+                self.cursor += 1;
+            }
         }
     }
 

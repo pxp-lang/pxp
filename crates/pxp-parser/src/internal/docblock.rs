@@ -15,8 +15,20 @@ pub fn docblock(state: &mut State) -> DocBlockComment {
 
     let mut nodes = Vec::new();
 
-    while ! state.is_eof() {
-        
+    loop {
+        if state.is_eof() {
+            break;
+        }
+
+        let current = state.current();
+
+        if current.kind == TokenKind::ClosePhpDoc {
+            state.next();
+            break;
+        }
+
+        // FIXME: Actually parse.
+        state.next();
     }
 
     let span = Span::combine(current.span, nodes.span());
