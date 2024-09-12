@@ -965,6 +965,12 @@ snap!(snapper, docblock_param_variable_description, process("fixtures/docblocks/
 snap!(snapper, docblock_param_type_variable, process("fixtures/docblocks/param-type-variable.php"));
 snap!(snapper, docblock_param_type_variable_description, process("fixtures/docblocks/param-type-variable-description.php"));
 
+snap!(snapper, docblock_var_empty, process("fixtures/docblocks/var-empty.php"));
+snap!(snapper, docblock_var_type, process("fixtures/docblocks/var-type.php"));
+snap!(snapper, docblock_var_type_text, process("fixtures/docblocks/var-type-text.php"));
+snap!(snapper, docblock_var_type_variable, process("fixtures/docblocks/var-type-variable.php"));
+snap!(snapper, docblock_var_type_variable_text, process("fixtures/docblocks/var-type-variable-text.php"));
+
 fn snapper() -> Snapper {
     Snapper::new(format!("{}/{}", env!("CARGO_MANIFEST_DIR"), "tests/__snapshots__").into())
 }

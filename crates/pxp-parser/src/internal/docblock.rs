@@ -1,5 +1,5 @@
 use pxp_ast::{
-    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockParamTag, DocBlockTag, DocBlockTagNode, DocBlockTextNode
+    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockParamTag, DocBlockTag, DocBlockTagNode, DocBlockTextNode, DocBlockVarTag
 };
 use pxp_bytestring::ByteString;
 use pxp_span::{Span, Spanned};
@@ -67,6 +67,7 @@ fn docblock_tag(state: &mut State) -> DocBlockTagNode {
 
     let tag = match symbol.as_bytes() {
         b"@param" => param_tag(state),
+        b"@var" => var_tag(state),
         _ => generic_tag(state),
     };
 
@@ -97,6 +98,35 @@ fn param_tag(state: &mut State) -> DocBlockTag {
     let span = Span::combine(tag.span, previous.span);
 
     DocBlockTag::Param(DocBlockParamTag {
+        id: state.id(),
+        span,
+        tag: tag.clone(),
+        data_type,
+        variable,
+        text,
+    })
+}
+
+fn var_tag(state: &mut State) -> DocBlockTag {
+    let tag =state.current();
+
+    state.next();
+    skip_horizontal_whitespace(state);
+
+    let data_type = optional_data_type(state);
+
+    skip_horizontal_whitespace(state);
+
+    let variable = optional_simple_variable(state);
+
+    skip_horizontal_whitespace(state);
+
+    let (text, _) = read_text_until_eol_or_close(state);
+
+    let previous = state.previous();
+    let span = Span::combine(tag.span, previous.span);
+
+    DocBlockTag::Var(DocBlockVarTag {
         id: state.id(),
         span,
         tag: tag.clone(),

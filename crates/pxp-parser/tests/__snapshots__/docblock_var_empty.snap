@@ -1,0 +1,188 @@
+[
+    Statement {
+        id: 9,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                id: 8,
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            id: 1,
+            comments: [],
+        },
+    },
+    Statement {
+        id: 19,
+        kind: Expression(
+            ExpressionStatement {
+                id: 18,
+                span: Span {
+                    start: 24,
+                    end: 26,
+                },
+                expression: Expression {
+                    id: 17,
+                    kind: AssignmentOperation(
+                        AssignmentOperationExpression {
+                            id: 15,
+                            span: Span {
+                                start: 19,
+                                end: 25,
+                            },
+                            kind: Assign {
+                                id: 16,
+                                left: Expression {
+                                    id: 11,
+                                    kind: Variable(
+                                        SimpleVariable(
+                                            SimpleVariable {
+                                                id: 12,
+                                                symbol: "$a",
+                                                stripped: "a",
+                                                span: Span {
+                                                    start: 19,
+                                                    end: 21,
+                                                },
+                                            },
+                                        ),
+                                    ),
+                                    span: Span {
+                                        start: 19,
+                                        end: 21,
+                                    },
+                                    comments: CommentGroup {
+                                        id: 0,
+                                        comments: [],
+                                    },
+                                },
+                                equals: Span {
+                                    start: 22,
+                                    end: 23,
+                                },
+                                right: Expression {
+                                    id: 13,
+                                    kind: Literal(
+                                        Literal {
+                                            id: 14,
+                                            span: Span {
+                                                start: 24,
+                                                end: 25,
+                                            },
+                                            kind: Integer,
+                                            token: Token {
+                                                kind: LiteralInteger,
+                                                span: Span {
+                                                    start: 24,
+                                                    end: 25,
+                                                },
+                                                symbol: Some(
+                                                    "1",
+                                                ),
+                                            },
+                                        },
+                                    ),
+                                    span: Span {
+                                        start: 24,
+                                        end: 25,
+                                    },
+                                    comments: CommentGroup {
+                                        id: 0,
+                                        comments: [],
+                                    },
+                                },
+                            },
+                        },
+                    ),
+                    span: Span {
+                        start: 24,
+                        end: 25,
+                    },
+                    comments: CommentGroup {
+                        id: 0,
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: 25,
+                        end: 26,
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: 24,
+            end: 26,
+        },
+        comments: CommentGroup {
+            id: 10,
+            comments: [
+                Comment {
+                    id: 2,
+                    span: Span {
+                        start: 7,
+                        end: 15,
+                    },
+                    kind: DocBlock(
+                        DocBlockComment {
+                            id: 6,
+                            span: Span {
+                                start: 7,
+                                end: 15,
+                            },
+                            doc: DocBlock {
+                                id: 7,
+                                span: Span {
+                                    start: 7,
+                                    end: 15,
+                                },
+                                nodes: [
+                                    Tag(
+                                        DocBlockTagNode {
+                                            id: 5,
+                                            span: Span {
+                                                start: 11,
+                                                end: 15,
+                                            },
+                                            tag: Var(
+                                                DocBlockVarTag {
+                                                    id: 4,
+                                                    span: Span {
+                                                        start: 11,
+                                                        end: 15,
+                                                    },
+                                                    tag: Token {
+                                                        kind: PhpDocTag,
+                                                        span: Span {
+                                                            start: 11,
+                                                            end: 15,
+                                                        },
+                                                        symbol: Some(
+                                                            "@var",
+                                                        ),
+                                                    },
+                                                    data_type: None,
+                                                    variable: None,
+                                                    text: None,
+                                                },
+                                            ),
+                                        },
+                                    ),
+                                ],
+                            },
+                        },
+                    ),
+                },
+            ],
+        },
+    },
+]
+---
