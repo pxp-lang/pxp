@@ -9,6 +9,16 @@ use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
+pub fn optional_simple_variable(state: &mut State) -> Option<SimpleVariable> {
+    let current = state.current();
+
+    if TokenKind::Variable == current.kind {
+        Some(simple_variable(state))
+    } else {
+        None
+    }
+}
+
 pub fn simple_variable(state: &mut State) -> SimpleVariable {
     let current = state.current();
 

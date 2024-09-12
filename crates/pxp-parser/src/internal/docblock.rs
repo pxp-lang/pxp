@@ -1,12 +1,13 @@
 use pxp_ast::{
-    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockTag, DocBlockTagNode,
-    DocBlockTextNode,
+    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockParamTag, DocBlockTag, DocBlockTagNode, DocBlockTextNode
 };
 use pxp_bytestring::ByteString;
 use pxp_span::{Span, Spanned};
 use pxp_token::TokenKind;
 
 use crate::state::State;
+
+use super::{data_type::optional_data_type, variables::{optional_simple_variable, simple_variable}};
 
 pub fn docblock(state: &mut State) -> DocBlockComment {
     let current = state.current();
@@ -40,10 +41,8 @@ pub fn docblock(state: &mut State) -> DocBlockComment {
 
                 nodes.push(DocBlockNode::Tag(tag))
             }
-            _ => {
-                if let Some(text) = docblock_text(state) {
-                    nodes.push(DocBlockNode::Text(text))
-                }
+            _ => if let Some(text) = docblock_text(state) {
+                nodes.push(DocBlockNode::Text(text))
             }
         };
     }
@@ -63,37 +62,87 @@ pub fn docblock(state: &mut State) -> DocBlockComment {
 
 fn docblock_tag(state: &mut State) -> DocBlockTagNode {
     let tag = state.current();
+    let symbol = tag.symbol.as_ref().unwrap();
 
-    state.next();
-
-    let (text, span) = match read_text_until_eol_or_close(state) {
-        Some((text, text_span)) => (Some(text), Span::combine(tag.span, text_span)),
-        None => (None, tag.span),
+    let tag = match symbol.as_bytes() {
+        b"@param" => param_tag(state),
+        _ => generic_tag(state),
     };
 
     DocBlockTagNode {
         id: state.id(),
-        span,
-        tag: DocBlockTag::Generic(DocBlockGenericTag {
-            id: state.id(),
-            span: tag.span,
-            tag: tag.clone(),
-            text,
-        }),
+        span: tag.span(),
+        tag,
     }
 }
 
-fn docblock_text(state: &mut State) -> Option<DocBlockTextNode> {
-    let (content, span) = read_text_until_eol_or_close(state)?;
+fn param_tag(state: &mut State) -> DocBlockTag {
+    let tag = state.current();
 
-    Some(DocBlockTextNode {
+    state.next();
+    skip_horizontal_whitespace(state);
+
+    let data_type = optional_data_type(state);
+
+    skip_horizontal_whitespace(state);
+
+    let variable = optional_simple_variable(state);
+
+    skip_horizontal_whitespace(state);
+    
+    let (text, _) = read_text_until_eol_or_close(state);
+
+    let previous = state.previous();
+    let span = Span::combine(tag.span, previous.span);
+
+    DocBlockTag::Param(DocBlockParamTag {
         id: state.id(),
         span,
-        content,
+        tag: tag.clone(),
+        data_type,
+        variable,
+        text,
     })
 }
 
-fn read_text_until_eol_or_close(state: &mut State) -> Option<(ByteString, Span)> {
+fn generic_tag(state: &mut State) -> DocBlockTag {
+    let tag = state.current();
+
+    state.next();
+
+    skip_horizontal_whitespace(state);
+
+    let (text, text_span) = read_text_until_eol_or_close(state);
+
+    let span = if text_span.is_some() {
+        Span::combine(tag.span, text_span.unwrap())
+    } else {
+        tag.span
+    };
+
+    DocBlockTag::Generic(DocBlockGenericTag {
+        id: state.id(),
+        span,
+        tag: tag.clone(),
+        text,
+    })
+}
+
+fn docblock_text(state: &mut State) -> Option<DocBlockTextNode> {
+    let (content, span) = read_text_until_eol_or_close(state);
+
+    if content.is_none() {
+        return None;
+    }
+
+    Some(DocBlockTextNode {
+        id: state.id(),
+        span: span.unwrap(),
+        content: content.unwrap(),
+    })
+}
+
+fn read_text_until_eol_or_close(state: &mut State) -> (Option<ByteString>, Option<Span>) {
     let mut text = ByteString::empty();
     let start_span = state.current().span;
 
@@ -118,11 +167,17 @@ fn read_text_until_eol_or_close(state: &mut State) -> Option<(ByteString, Span)>
     }
 
     if text.is_empty() {
-        return None;
+        return (None, None);
     }
 
     let end_span = state.current().span;
     let span = Span::combine(start_span, end_span);
 
-    Some((text, span))
+    (Some(text), Some(span))
+}
+
+fn skip_horizontal_whitespace(state: &mut State) {
+    while let TokenKind::PhpDocHorizontalWhitespace = state.current().kind {
+        state.next();
+    }
 }

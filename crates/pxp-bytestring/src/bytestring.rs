@@ -28,6 +28,10 @@ impl ByteString {
         self.bytes.extend_from_slice(&other.bytes);
     }
 
+    pub fn as_bytes(&self) -> &[u8] {
+        &self.bytes
+    }
+
     pub fn coagulate(&self, others: &[ByteString], with: Option<&[u8]>) -> Self {
         let mut bytes = self.bytes.clone();
 
