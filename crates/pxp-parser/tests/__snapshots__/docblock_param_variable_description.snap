@@ -1,0 +1,210 @@
+[
+    Statement {
+        id: 10,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                id: 9,
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            id: 1,
+            comments: [],
+        },
+    },
+    Statement {
+        id: 22,
+        kind: Function(
+            FunctionStatement {
+                id: 21,
+                span: Span {
+                    start: 47,
+                    end: 64,
+                },
+                comments: CommentGroup {
+                    id: 12,
+                    comments: [],
+                },
+                attributes: [],
+                function: Span {
+                    start: 47,
+                    end: 55,
+                },
+                ampersand: None,
+                name: Name {
+                    id: 13,
+                    kind: Resolved(
+                        ResolvedName {
+                            id: 13,
+                            span: Span {
+                                start: 56,
+                                end: 57,
+                            },
+                            resolved: "a",
+                            original: "a",
+                        },
+                    ),
+                    span: Span {
+                        start: 56,
+                        end: 57,
+                    },
+                },
+                parameters: FunctionParameterList {
+                    id: 18,
+                    span: Span {
+                        start: 57,
+                        end: 61,
+                    },
+                    comments: CommentGroup {
+                        id: 14,
+                        comments: [],
+                    },
+                    left_parenthesis: Span {
+                        start: 57,
+                        end: 58,
+                    },
+                    parameters: CommaSeparated {
+                        inner: [
+                            FunctionParameter {
+                                id: 16,
+                                span: Span {
+                                    start: 58,
+                                    end: 60,
+                                },
+                                comments: CommentGroup {
+                                    id: 17,
+                                    comments: [],
+                                },
+                                name: SimpleVariable {
+                                    id: 15,
+                                    symbol: "$a",
+                                    stripped: "a",
+                                    span: Span {
+                                        start: 58,
+                                        end: 60,
+                                    },
+                                },
+                                attributes: [],
+                                data_type: None,
+                                ellipsis: None,
+                                default: None,
+                                ampersand: None,
+                            },
+                        ],
+                        commas: [],
+                    },
+                    right_parenthesis: Span {
+                        start: 60,
+                        end: 61,
+                    },
+                },
+                return_type: None,
+                body: FunctionBody {
+                    id: 20,
+                    span: Span {
+                        start: 62,
+                        end: 64,
+                    },
+                    comments: CommentGroup {
+                        id: 19,
+                        comments: [],
+                    },
+                    left_brace: Span {
+                        start: 62,
+                        end: 63,
+                    },
+                    statements: [],
+                    right_brace: Span {
+                        start: 63,
+                        end: 64,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: 47,
+            end: 64,
+        },
+        comments: CommentGroup {
+            id: 11,
+            comments: [
+                Comment {
+                    id: 2,
+                    span: Span {
+                        start: 7,
+                        end: 44,
+                    },
+                    kind: DocBlock(
+                        DocBlockComment {
+                            id: 7,
+                            span: Span {
+                                start: 7,
+                                end: 44,
+                            },
+                            doc: DocBlock {
+                                id: 8,
+                                span: Span {
+                                    start: 7,
+                                    end: 44,
+                                },
+                                nodes: [
+                                    Tag(
+                                        DocBlockTagNode {
+                                            id: 6,
+                                            span: Span {
+                                                start: 11,
+                                                end: 44,
+                                            },
+                                            tag: Param(
+                                                DocBlockParamTag {
+                                                    id: 5,
+                                                    span: Span {
+                                                        start: 11,
+                                                        end: 44,
+                                                    },
+                                                    tag: Token {
+                                                        kind: PhpDocTag,
+                                                        span: Span {
+                                                            start: 11,
+                                                            end: 17,
+                                                        },
+                                                        symbol: Some(
+                                                            "@param",
+                                                        ),
+                                                    },
+                                                    data_type: None,
+                                                    variable: Some(
+                                                        SimpleVariable {
+                                                            id: 4,
+                                                            symbol: "$a",
+                                                            stripped: "a",
+                                                            span: Span {
+                                                                start: 18,
+                                                                end: 20,
+                                                            },
+                                                        },
+                                                    ),
+                                                    text: Some(
+                                                        "This is the parameter. ",
+                                                    ),
+                                                },
+                                            ),
+                                        },
+                                    ),
+                                ],
+                            },
+                        },
+                    ),
+                },
+            ],
+        },
+    },
+]
+---

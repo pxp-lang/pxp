@@ -17,6 +17,7 @@ pub fn docblock(state: &mut State) -> DocBlockComment {
     }
 
     state.next();
+    skip_horizontal_whitespace(state);
 
     let mut nodes = Vec::new();
 

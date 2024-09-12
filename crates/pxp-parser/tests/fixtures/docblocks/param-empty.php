@@ -1,0 +1,4 @@
+<?php
+
+/** @param */
+function a() {}

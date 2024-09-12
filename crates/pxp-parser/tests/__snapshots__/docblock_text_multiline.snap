@@ -1,0 +1,161 @@
+[
+    Statement {
+        id: 9,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                id: 8,
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            id: 1,
+            comments: [],
+        },
+    },
+    Statement {
+        id: 18,
+        kind: Function(
+            FunctionStatement {
+                id: 17,
+                span: Span {
+                    start: 95,
+                    end: 110,
+                },
+                comments: CommentGroup {
+                    id: 11,
+                    comments: [],
+                },
+                attributes: [],
+                function: Span {
+                    start: 95,
+                    end: 103,
+                },
+                ampersand: None,
+                name: Name {
+                    id: 12,
+                    kind: Resolved(
+                        ResolvedName {
+                            id: 12,
+                            span: Span {
+                                start: 104,
+                                end: 105,
+                            },
+                            resolved: "a",
+                            original: "a",
+                        },
+                    ),
+                    span: Span {
+                        start: 104,
+                        end: 105,
+                    },
+                },
+                parameters: FunctionParameterList {
+                    id: 14,
+                    span: Span {
+                        start: 105,
+                        end: 107,
+                    },
+                    comments: CommentGroup {
+                        id: 13,
+                        comments: [],
+                    },
+                    left_parenthesis: Span {
+                        start: 105,
+                        end: 106,
+                    },
+                    parameters: CommaSeparated {
+                        inner: [],
+                        commas: [],
+                    },
+                    right_parenthesis: Span {
+                        start: 106,
+                        end: 107,
+                    },
+                },
+                return_type: None,
+                body: FunctionBody {
+                    id: 16,
+                    span: Span {
+                        start: 108,
+                        end: 110,
+                    },
+                    comments: CommentGroup {
+                        id: 15,
+                        comments: [],
+                    },
+                    left_brace: Span {
+                        start: 108,
+                        end: 109,
+                    },
+                    statements: [],
+                    right_brace: Span {
+                        start: 109,
+                        end: 110,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: 95,
+            end: 110,
+        },
+        comments: CommentGroup {
+            id: 10,
+            comments: [
+                Comment {
+                    id: 2,
+                    span: Span {
+                        start: 7,
+                        end: 92,
+                    },
+                    kind: DocBlock(
+                        DocBlockComment {
+                            id: 6,
+                            span: Span {
+                                start: 7,
+                                end: 92,
+                            },
+                            doc: DocBlock {
+                                id: 7,
+                                span: Span {
+                                    start: 7,
+                                    end: 92,
+                                },
+                                nodes: [
+                                    Text(
+                                        DocBlockTextNode {
+                                            id: 4,
+                                            span: Span {
+                                                start: 14,
+                                                end: 59,
+                                            },
+                                            content: "Here is the description for the function.",
+                                        },
+                                    ),
+                                    Text(
+                                        DocBlockTextNode {
+                                            id: 5,
+                                            span: Span {
+                                                start: 63,
+                                                end: 92,
+                                            },
+                                            content: "Here is an additional line.",
+                                        },
+                                    ),
+                                ],
+                            },
+                        },
+                    ),
+                },
+            ],
+        },
+    },
+]
+---

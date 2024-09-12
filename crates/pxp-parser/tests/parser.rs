@@ -947,6 +947,24 @@ snap!(
     process("fixtures/precedence/multi-op-arithmetic.php")
 );
 
+// DocBlocks
+snap!(snapper, docblock_empty, process("fixtures/docblocks/empty.php"));
+snap!(snapper, docblock_empty_multiline, process("fixtures/docblocks/empty-multiline.php"));
+snap!(snapper, docblock_text, process("fixtures/docblocks/text.php"));
+snap!(snapper, docblock_text_multiline, process("fixtures/docblocks/text-multiline.php"));
+
+snap!(snapper, docblock_param_empty, process("fixtures/docblocks/param-empty.php"));
+snap!(snapper, docblock_param_type, process("fixtures/docblocks/param-type.php"));
+snap!(snapper, docblock_param_nullable_type, process("fixtures/docblocks/param-nullable-type.php"));
+snap!(snapper, docblock_param_union_type, process("fixtures/docblocks/param-union-type.php"));
+snap!(snapper, docblock_param_intersection_type, process("fixtures/docblocks/param-intersection-type.php"));
+snap!(snapper, docblock_param_dnf_type, process("fixtures/docblocks/param-dnf-type.php"));
+
+snap!(snapper, docblock_param_variable, process("fixtures/docblocks/param-variable.php"));
+snap!(snapper, docblock_param_variable_description, process("fixtures/docblocks/param-variable-description.php"));
+snap!(snapper, docblock_param_type_variable, process("fixtures/docblocks/param-type-variable.php"));
+snap!(snapper, docblock_param_type_variable_description, process("fixtures/docblocks/param-type-variable-description.php"));
+
 fn snapper() -> Snapper {
     Snapper::new(format!("{}/{}", env!("CARGO_MANIFEST_DIR"), "tests/__snapshots__").into())
 }
