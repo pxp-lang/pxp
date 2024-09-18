@@ -32,9 +32,9 @@ pub enum Precedence {
     Instanceof,
     Prefix,
     Pow,
+    CloneOrNew,
     CallDim,
     ObjectAccess,
-    CloneOrNew,
 }
 
 impl Precedence {

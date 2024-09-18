@@ -947,6 +947,12 @@ snap!(
     process("fixtures/precedence/multi-op-arithmetic.php")
 );
 
+// Clone
+snap!(snapper, clone_var, process("fixtures/clone/clone-var.php"));
+snap!(snapper, clone_property_fetch, process("fixtures/clone/clone-property-fetch.php"));
+snap!(snapper, clone_function_call, process("fixtures/clone/clone-function-call.php"));
+snap!(snapper, clone_function_call_args, process("fixtures/clone/clone-function-call-args.php"));
+
 // DocBlocks
 snap!(snapper, docblock_empty, process("fixtures/docblocks/empty.php"));
 snap!(snapper, docblock_empty_multiline, process("fixtures/docblocks/empty-multiline.php"));
