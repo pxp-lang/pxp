@@ -1311,7 +1311,19 @@ impl<'a, 'b> Lexer<'a> {
                 if qualified {
                     (TokenKind::QualifiedIdentifier, true)
                 } else {
-                    let kind = identifier_to_keyword(&buffer).unwrap_or(TokenKind::Identifier);
+                    let mut kind = identifier_to_keyword(&buffer).unwrap_or(TokenKind::Identifier);
+
+                    if matches!(kind, TokenKind::Public | TokenKind::Private | TokenKind::Protected) &&
+                        self.state.source.read(5) == b"(set)"
+                    {
+                        self.state.source.skip(5);
+                        kind = match kind {
+                            TokenKind::Public => TokenKind::PublicSet,
+                            TokenKind::Private => TokenKind::PrivateSet,
+                            TokenKind::Protected => TokenKind::ProtectedSet,
+                            _ => unreachable!(),
+                        };
+                    }
 
                     if kind == TokenKind::HaltCompiler {
                         match self.state.source.read(3) {
@@ -2274,7 +2286,7 @@ mod tests {
     fn it_can_tokenize_keywords() {
         use TokenKind::*;
 
-        let tokens = tokenise("<?php die self parent from print readonly global abstract as break case catch class clone const continue declare default do echo else elseif empty enddeclare endfor endforeach endif endswitch endwhile enum extends false final finally fn for foreach function goto if implements include include_once instanceof insteadof eval exit unset isset list interface match namespace new null private protected public require require_once return static switch throw trait true try use var yield while and or xor").iter().map(|t| t.kind).collect::<Vec<_>>();
+        let tokens = tokenise("<?php die self parent from print readonly global abstract as break case catch class clone const continue declare default do echo else elseif empty enddeclare endfor endforeach endif endswitch endwhile enum extends false final finally fn for foreach function goto if implements include include_once instanceof insteadof eval exit unset isset list interface match namespace new null private protected public public(set) private(set) protected(set) require require_once return static switch throw trait true try use var yield while and or xor").iter().map(|t| t.kind).collect::<Vec<_>>();
 
         assert_eq!(
             &tokens,
@@ -2338,6 +2350,9 @@ mod tests {
                 Private,
                 Protected,
                 Public,
+                PublicSet,
+                PrivateSet,
+                ProtectedSet,
                 Require,
                 RequireOnce,
                 Return,

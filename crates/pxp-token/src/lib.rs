@@ -234,6 +234,9 @@ pub enum TokenKind {
     LogicalAnd,
     LogicalOr,
     LogicalXor,
+    PublicSet,
+    ProtectedSet,
+    PrivateSet,
 
     // DocBlock
     OpenPhpDoc,
@@ -293,6 +296,9 @@ impl Token {
 impl Display for TokenKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = match self {
+            Self::PublicSet => "public(set)",
+            Self::ProtectedSet => "protected(set)",
+            Self::PrivateSet => "private(set)",
             Self::PhpDocTag => "@<tag>",
             Self::PhpDocOther => "<other>",
             Self::CompilerHaltOffsetConstant => "__COMPILER_HALT_OFFSET__",
