@@ -101,6 +101,9 @@ pub fn property_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Prope
             TokenKind::Public => Some(PropertyModifier::Public(*span)),
             TokenKind::Protected => Some(PropertyModifier::Protected(*span)),
             TokenKind::Private => Some(PropertyModifier::Private(*span)),
+            TokenKind::PublicSet => Some(PropertyModifier::PublicSet(*span)),
+            TokenKind::ProtectedSet => Some(PropertyModifier::ProtectedSet(*span)),
+            TokenKind::PrivateSet => Some(PropertyModifier::PrivateSet(*span)),
             _ => {
                 state.diagnostic(
                     ParserDiagnostic::InvalidPropertyModifier,
@@ -132,6 +135,9 @@ pub fn promoted_property_group(
             TokenKind::Private => Some(PromotedPropertyModifier::Private(*span)),
             TokenKind::Protected => Some(PromotedPropertyModifier::Protected(*span)),
             TokenKind::Public => Some(PromotedPropertyModifier::Public(*span)),
+            TokenKind::PublicSet => Some(PromotedPropertyModifier::PublicSet(*span)),
+            TokenKind::ProtectedSet => Some(PromotedPropertyModifier::ProtectedSet(*span)),
+            TokenKind::PrivateSet => Some(PromotedPropertyModifier::PrivateSet(*span)),
             _ => {
                 state.diagnostic(
                     ParserDiagnostic::InvalidPropertyModifier,

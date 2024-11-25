@@ -13,6 +13,9 @@ impl PromotedPropertyModifier {
             PromotedPropertyModifier::Protected(span) => *span,
             PromotedPropertyModifier::Private(span) => *span,
             PromotedPropertyModifier::Readonly(span) => *span,
+            PromotedPropertyModifier::PublicSet(span) => *span,
+            PromotedPropertyModifier::ProtectedSet(span) => *span,
+            PromotedPropertyModifier::PrivateSet(span) => *span,
         }
     }
 }
@@ -24,6 +27,9 @@ impl std::fmt::Display for PromotedPropertyModifier {
             PromotedPropertyModifier::Protected(_) => write!(f, "protected"),
             PromotedPropertyModifier::Private(_) => write!(f, "private"),
             PromotedPropertyModifier::Readonly(_) => write!(f, "readonly"),
+            PromotedPropertyModifier::PublicSet(_) => write!(f, "public(set)"),
+            PromotedPropertyModifier::ProtectedSet(_) => write!(f, "protected(set)"),
+            PromotedPropertyModifier::PrivateSet(_) => write!(f, "private(set)"),
         }
     }
 }
@@ -66,6 +72,9 @@ impl PropertyModifier {
             PropertyModifier::Private(span) => *span,
             PropertyModifier::Static(span) => *span,
             PropertyModifier::Readonly(span) => *span,
+            PropertyModifier::PublicSet(span) => *span,
+            PropertyModifier::ProtectedSet(span) => *span,
+            PropertyModifier::PrivateSet(span) => *span,
         }
     }
 }
@@ -115,6 +124,18 @@ impl PropertyModifierGroup {
         self.modifiers
             .iter()
             .any(|modifier| matches!(modifier, PropertyModifier::Private { .. }))
+    }
+
+    pub fn visibility_for_set(&self) -> Visibility {
+        self.modifiers
+            .iter()
+            .find_map(|modifier| match modifier {
+                PropertyModifier::ProtectedSet { .. } => Some(Visibility::Protected),
+                PropertyModifier::PrivateSet { .. } => Some(Visibility::Private),
+                PropertyModifier::PublicSet { .. } => Some(Visibility::Public),
+                _ => None,
+            })
+            .unwrap_or_else(|| self.visibility())
     }
 
     pub fn visibility(&self) -> Visibility {

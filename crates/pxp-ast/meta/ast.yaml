@@ -1392,6 +1392,9 @@ PromotedPropertyModifier:
   Public: Span
   Protected: Span
   Private: Span
+  PublicSet: Span
+  ProtectedSet: Span
+  PrivateSet: Span
   Readonly: Span
 
 PromotedPropertyModifierGroup:
@@ -1404,6 +1407,9 @@ PropertyModifier:
   Public: Span
   Protected: Span
   Private: Span
+  PublicSet: Span
+  ProtectedSet: Span
+  PrivateSet: Span
   Static: Span
   Readonly: Span
 

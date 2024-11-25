@@ -3938,6 +3938,9 @@ pub enum PromotedPropertyModifier {
     Public(Span),
     Protected(Span),
     Private(Span),
+    PublicSet(Span),
+    ProtectedSet(Span),
+    PrivateSet(Span),
     Readonly(Span),
 }
 
@@ -3947,6 +3950,9 @@ impl HasId for PromotedPropertyModifier {
             PromotedPropertyModifier::Public(_) => 0,
             PromotedPropertyModifier::Protected(_) => 0,
             PromotedPropertyModifier::Private(_) => 0,
+            PromotedPropertyModifier::PublicSet(_) => 0,
+            PromotedPropertyModifier::ProtectedSet(_) => 0,
+            PromotedPropertyModifier::PrivateSet(_) => 0,
             PromotedPropertyModifier::Readonly(_) => 0,
         }
     }
@@ -3958,6 +3964,9 @@ impl Spanned for PromotedPropertyModifier {
             PromotedPropertyModifier::Public(span) => *span,
             PromotedPropertyModifier::Protected(span) => *span,
             PromotedPropertyModifier::Private(span) => *span,
+            PromotedPropertyModifier::PublicSet(span) => *span,
+            PromotedPropertyModifier::ProtectedSet(span) => *span,
+            PromotedPropertyModifier::PrivateSet(span) => *span,
             PromotedPropertyModifier::Readonly(span) => *span,
             _ => Span::default(),
         }
@@ -3988,6 +3997,9 @@ pub enum PropertyModifier {
     Public(Span),
     Protected(Span),
     Private(Span),
+    PublicSet(Span),
+    ProtectedSet(Span),
+    PrivateSet(Span),
     Static(Span),
     Readonly(Span),
 }
@@ -3998,6 +4010,9 @@ impl HasId for PropertyModifier {
             PropertyModifier::Public(_) => 0,
             PropertyModifier::Protected(_) => 0,
             PropertyModifier::Private(_) => 0,
+            PropertyModifier::PublicSet(_) => 0,
+            PropertyModifier::ProtectedSet(_) => 0,
+            PropertyModifier::PrivateSet(_) => 0,
             PropertyModifier::Static(_) => 0,
             PropertyModifier::Readonly(_) => 0,
         }
@@ -4010,6 +4025,9 @@ impl Spanned for PropertyModifier {
             PropertyModifier::Public(span) => *span,
             PropertyModifier::Protected(span) => *span,
             PropertyModifier::Private(span) => *span,
+            PropertyModifier::PublicSet(span) => *span,
+            PropertyModifier::ProtectedSet(span) => *span,
+            PropertyModifier::PrivateSet(span) => *span,
             PropertyModifier::Static(span) => *span,
             PropertyModifier::Readonly(span) => *span,
             _ => Span::default(),
