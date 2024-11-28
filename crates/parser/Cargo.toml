@@ -1,0 +1,16 @@
+[package]
+name = "pxp-parser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+pxp-span = { path = "../span" }
+pxp-bytestring = { path = "../bytestring" }
+pxp-token = { path = "../token" }
+pxp-ast = { path = "../ast" }
+pxp-lexer = { path = "../lexer" }
+pxp-type = { path = "../type" }
+pxp-diagnostics = { path = "../diagnostics" }
+
+[dev-dependencies]
+snappers = { path = "../snappers" }

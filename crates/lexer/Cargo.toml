@@ -1,0 +1,10 @@
+[package]
+name = "pxp-lexer"
+version = "0.1.0"
+edition = "2021"
+license-file.workspace = true
+
+[dependencies]
+pxp-token = { path = "../token" }
+pxp-span = { path = "../span" }
+pxp-bytestring = { path = "../bytestring" }

@@ -6,16 +6,16 @@ edition = "2021"
 
 [dependencies]
 tokio = { version = "1.17.0", features = ["full"] }
-pxp-parser = { path = "../../crates/pxp-parser" }
-pxp-diagnostics = { path = "../../crates/pxp-diagnostics" }
-pxp-span = { version = "0.1.0", path = "../../crates/pxp-span" }
-pxp-index = { version = "0.1.0", path = "../../crates/pxp-index" }
+pxp-parser = { path = "../../crates/parser" }
+pxp-diagnostics = { path = "../../crates/diagnostics" }
+pxp-span = { version = "0.1.0", path = "../../crates/span" }
+pxp-index = { version = "0.1.0", path = "../../crates/index" }
 lsp-textdocument = "0.4.0"
-pxp-ast = { version = "0.1.0", path = "../../crates/pxp-ast" }
-pxp-node-finder = { version = "0.1.0", path = "../../crates/pxp-node-finder" }
-pxp-type = { version = "0.1.0", path = "../../crates/pxp-type" }
-pxp-bytestring = { version = "0.1.0", path = "../../crates/pxp-bytestring" }
-pxp-inference = { version = "0.1.0", path = "../../crates/pxp-inference" }
-pxp-lsp = { version = "0.1.0", path = "../../crates/pxp-lsp" }
+pxp-ast = { version = "0.1.0", path = "../../crates/ast" }
+pxp-node-finder = { version = "0.1.0", path = "../../crates/node-finder" }
+pxp-type = { version = "0.1.0", path = "../../crates/type" }
+pxp-bytestring = { version = "0.1.0", path = "../../crates/bytestring" }
+pxp-inference = { version = "0.1.0", path = "../../crates/inference" }
+pxp-lsp = { version = "0.1.0", path = "../../crates/lsp" }
 serde_json = "1.0.127"
 discoverer = "0.2.0"

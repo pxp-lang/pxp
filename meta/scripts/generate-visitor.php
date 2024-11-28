@@ -12,7 +12,7 @@ class VisitorGenerator
         /** @var VisitorTemplate[] */
         protected array $templates,
     ) {
-        $this->yaml = Yaml::parseFile(__DIR__ . '/../../crates/pxp-ast/meta/ast.yaml');
+        $this->yaml = Yaml::parseFile(__DIR__ . '/../../crates/ast/meta/ast.yaml');
     }
 
     public function generate(): void
@@ -27,14 +27,14 @@ class VisitorGenerator
         $methods = $this->generateVisitorMethods($template);
         $visitor = sprintf($template->getVisitorTemplate(), implode("\n\n", $methods));
 
-        file_put_contents(__DIR__ . '/../../crates/pxp-ast/src/visitor/' . $template->getVisitorFilename(), $visitor);
+        file_put_contents(__DIR__ . '/../../crates/ast/src/visitor/' . $template->getVisitorFilename(), $visitor);
 
         echo "Generated " . class_basename($template) . ", saved to " . $template->getVisitorFilename() . "\n";
 
         $walkers = $this->generateWalkerFunctions($template);
         $walk = sprintf($template->getWalkTemplate(), implode("\n\n", $walkers));
 
-        file_put_contents(__DIR__ . '/../../crates/pxp-ast/src/visitor/' . $template->getWalkFilename(), $walk);
+        file_put_contents(__DIR__ . '/../../crates/ast/src/visitor/' . $template->getWalkFilename(), $walk);
 
         echo "Generated " . class_basename($template) . ", saved to " . $template->getWalkFilename() . "\n";
     }

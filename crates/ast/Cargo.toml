@@ -1,0 +1,11 @@
+[package]
+name = "pxp-ast"
+version = "0.1.0"
+edition = "2021"
+license-file.workspace = true
+
+[dependencies]
+pxp-token = { path = "../token" }
+pxp-span = { path = "../span" }
+pxp-type = { path = "../type" }
+pxp-bytestring = { version = "0.1.0", path = "../bytestring" }

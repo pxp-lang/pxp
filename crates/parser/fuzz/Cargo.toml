@@ -14,7 +14,7 @@ libfuzzer-sys = "0.4"
 path = ".."
 
 [dependencies.pxp-ast]
-path = "../../pxp-ast"
+path = "../../ast"
 
 # Prevent this from interfering with workspaces
 [workspace]

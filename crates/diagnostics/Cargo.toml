@@ -5,5 +5,5 @@ edition = "2021"
 license-file.workspace = true
 
 [dependencies]
-pxp-span = { path = "../pxp-span" }
-pxp-token = { path = "../pxp-token" }
+pxp-span = { path = "../span" }
+pxp-token = { path = "../token" }

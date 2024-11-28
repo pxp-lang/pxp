@@ -7,19 +7,19 @@ license-file.workspace = true
 
 
 [dependencies]
-pxp-lexer = { path = "../crates/pxp-lexer" }
-pxp-token = { path = "../crates/pxp-token" }
-pxp-parser = { path = "../crates/pxp-parser" }
+pxp-lexer = { path = "../crates/lexer" }
+pxp-token = { path = "../crates/token" }
+pxp-parser = { path = "../crates/parser" }
 discoverer = "0.2.0"
 rustyline = "13.0.0"
-pxp-index = { version = "0.1.0", path = "../crates/pxp-index" }
+pxp-index = { version = "0.1.0", path = "../crates/index" }
 indicatif = "0.17.8"
-pxp-ast = { version = "0.1.0", path = "../crates/pxp-ast" }
-pxp-node-finder = { version = "0.1.0", path = "../crates/pxp-node-finder" }
-pxp-inference = { version = "0.1.0", path = "../crates/pxp-inference" }
-pxp-bytestring = { version = "0.1.0", path = "../crates/pxp-bytestring" }
+pxp-ast = { version = "0.1.0", path = "../crates/ast" }
+pxp-node-finder = { version = "0.1.0", path = "../crates/node-finder" }
+pxp-inference = { version = "0.1.0", path = "../crates/inference" }
+pxp-bytestring = { version = "0.1.0", path = "../crates/bytestring" }
 num_cpus = "1.16.0"
-pxp-span = { version = "0.1.0", path = "../crates/pxp-span" }
+pxp-span = { version = "0.1.0", path = "../crates/span" }
 
 [[bin]]
 name = "tokenise"

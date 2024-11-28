@@ -5,5 +5,5 @@ edition = "2021"
 license-file.workspace = true
 
 [dependencies]
-pxp-span = { path = "../pxp-span" }
+pxp-span = { path = "../span" }
 serde = { version = "1.0.193", features = ["derive"] }

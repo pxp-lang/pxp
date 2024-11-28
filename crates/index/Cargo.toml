@@ -1,0 +1,17 @@
+[package]
+name = "pxp-index"
+version = "0.1.0"
+edition = "2021"
+license-file.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+pxp-ast = { version = "0.1.0", path = "../ast" }
+pxp-bytestring = { version = "0.1.0", path = "../bytestring" }
+pxp-parser = { version = "0.1.0", path = "../parser" }
+pxp-span = { version = "0.1.0", path = "../span" }
+pxp-type = { version = "0.1.0", path = "../type" }
+
+[dev-dependencies]
+discoverer = "0.2.0"
+pxp-parser = { path = "../parser" }
