@@ -1,8 +1,0 @@
-package:
-    vsce package --allow-missing-repository --out=pls.vsix
-
-install:
-    code --uninstall-extension pls.vsix
-    code --install-extension pls.vsix --force
-
-package-install: package install
