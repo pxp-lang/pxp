@@ -16,6 +16,7 @@ pub fn docblock(state: &mut State) -> DocBlockComment {
         unreachable!();
     }
 
+    state.enter_docblock();
     state.next();
     skip_horizontal_whitespace(state);
 
@@ -49,6 +50,8 @@ pub fn docblock(state: &mut State) -> DocBlockComment {
     }
 
     let span = Span::combine(current.span, nodes.span());
+
+    state.exit_docblock();
 
     DocBlockComment {
         id: state.id(),

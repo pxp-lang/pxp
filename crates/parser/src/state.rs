@@ -34,6 +34,7 @@ pub struct State<'a> {
     pub namespace_type: Option<NamespaceType>,
     pub attributes: Vec<AttributeGroup>,
     comments: Vec<Comment>,
+    docblock: bool,
 
     // Token Stream
     tokens: &'a [Token],
@@ -57,6 +58,7 @@ impl<'a> State<'a> {
             attributes: vec![],
             imports,
             comments: vec![],
+            docblock: false,
 
             id: 0,
 
@@ -148,6 +150,18 @@ impl<'a> State<'a> {
             target += 1;
             cursor += 1;
         }
+    }
+
+    pub const fn is_in_docblock(&self) -> bool {
+        self.docblock
+    }
+
+    pub fn enter_docblock(&mut self) {
+        self.docblock = true;
+    }
+
+    pub fn exit_docblock(&mut self) {
+        self.docblock = false;
     }
 
     /// Check if current token is EOF.
