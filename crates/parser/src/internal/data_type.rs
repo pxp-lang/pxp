@@ -76,6 +76,7 @@ pub fn optional_data_type(state: &mut State) -> Option<DataType> {
     ))
 }
 
+// Special type parsing logic for DocBlock comments, heavily based on the phpstan/phpdoc-parser package.
 fn docblock_type(state: &mut State) -> Type<Name> {
     let current = state.current();
 
@@ -83,6 +84,54 @@ fn docblock_type(state: &mut State) -> Type<Name> {
         return nullable(state);
     }
     
+    let atomic = docblock_atomic(state);
+
+    if atomic == Type::Missing {
+        return atomic;
+    }
+
+    let current = state.current();
+
+    if current.kind == TokenKind::Pipe {
+        return union(state, atomic, false);
+    }
+
+    if current.kind == TokenKind::Ampersand {
+        return intersection(state, atomic, false);
+    }
+
+    atomic
+}
+
+fn docblock_atomic(state: &mut State) -> Type<Name> {
+    let current = state.current();
+    let peek = state.peek();
+
+    if current.kind == TokenKind::LeftParen {
+        return dnf(state);
+    }
+
+    if current.kind == TokenKind::Variable && peek.kind == TokenKind::Identifier && peek.symbol.as_ref().is_some_and(|sym| sym == b"is") {
+        todo!()
+    }
+
+    let ty = optional_simple_data_type(state);
+
+    match ty {
+        Some(ty) => ty,
+        None => {
+            state.diagnostic(
+                ParserDiagnostic::MissingType,
+                Severity::Error,
+                state.current().span,
+            );
+
+            Type::Missing
+        }
+    }
+}
+
+fn docblock_subparse(state: &mut State) -> Type<Name> {
     todo!()
 }
 
