@@ -9,7 +9,9 @@ use pxp_type::Type;
 pub fn data_type(state: &mut State) -> DataType {
     let start = state.current().span;
 
-    let kind = if state.current().kind == TokenKind::Question {
+    let kind = if state.is_in_docblock() {
+        docblock_type(state)
+    } else if state.current().kind == TokenKind::Question {
         nullable(state)
     } else if state.current().kind == TokenKind::LeftParen {
         dnf(state)
@@ -37,7 +39,9 @@ pub fn data_type(state: &mut State) -> DataType {
 
 pub fn optional_data_type(state: &mut State) -> Option<DataType> {
     let start = state.current().span;
-    let kind = if state.current().kind == TokenKind::Question {
+    let kind = if state.is_in_docblock() {
+        docblock_type(state)
+    } else if state.current().kind == TokenKind::Question {
         nullable(state)
     } else if state.current().kind == TokenKind::LeftParen {
         dnf(state)
@@ -70,6 +74,16 @@ pub fn optional_data_type(state: &mut State) -> Option<DataType> {
         kind,
         Span::new(start.start, end.end),
     ))
+}
+
+fn docblock_type(state: &mut State) -> Type<Name> {
+    let current = state.current();
+
+    if current.kind == TokenKind::Question {
+        return nullable(state);
+    }
+    
+    todo!()
 }
 
 fn dnf(state: &mut State) -> Type<Name> {
