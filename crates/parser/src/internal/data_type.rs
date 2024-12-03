@@ -80,55 +80,101 @@ pub fn optional_data_type(state: &mut State) -> Option<DataType> {
 fn docblock_type(state: &mut State) -> Type<Name> {
     let current = state.current();
 
-    if current.kind == TokenKind::Question {
-        return nullable(state);
+    match current.kind {
+        TokenKind::Question => docblock_nullable(state),
+        _ => {
+            let r#type = docblock_atomic(state);
+
+            if r#type == Type::Missing {
+                return docblock_missing(state);
+            }
+
+            let current = state.current();
+
+            match current.kind {
+                TokenKind::Pipe => docblock_union(state, r#type),
+                TokenKind::Ampersand => docblock_intersection(state, r#type),
+                _ => r#type
+            }
+        }
     }
-    
-    let atomic = docblock_atomic(state);
+}
 
-    if atomic == Type::Missing {
-        return atomic;
+fn docblock_nullable(state: &mut State) -> Type<Name> {
+    state.next();
+
+    let inner = docblock_atomic(state);
+
+    if inner == Type::Missing {
+        return docblock_missing(state);
     }
 
-    let current = state.current();
+    Type::Nullable(Box::new(inner))
+}
 
-    if current.kind == TokenKind::Pipe {
-        return union(state, atomic, false);
-    }
+fn docblock_union(state: &mut State, lhs: Type<Name>) -> Type<Name> {
+    todo!()
+}
 
-    if current.kind == TokenKind::Ampersand {
-        return intersection(state, atomic, false);
-    }
+fn docblock_intersection(state: &mut State, lhs: Type<Name>) -> Type<Name> {
+    todo!()
+}
 
-    atomic
+fn docblock_missing(state: &mut State) -> Type<Name> {
+    state.diagnostic(
+        ParserDiagnostic::MissingType,
+        Severity::Warning,
+        state.current().span,
+    );
+
+    Type::Missing
 }
 
 fn docblock_atomic(state: &mut State) -> Type<Name> {
     let current = state.current();
-    let peek = state.peek();
 
-    if current.kind == TokenKind::LeftParen {
-        return dnf(state);
+    match current.kind {
+        TokenKind::LeftParen => {
+            state.next();
+            state.skip_doc_eol();
+
+            let inner = docblock_subparse(state);
+
+            if inner == Type::Missing {
+                return docblock_missing(state);
+            }
+
+            state.skip_doc_eol();
+
+            if state.current().kind != TokenKind::RightParen {
+                state.diagnostic(
+                    ParserDiagnostic::ExpectedTokenExFound { expected: vec![TokenKind::RightParen] },
+                    Severity::Warning,
+                    state.current().span,
+                );
+            } else {
+                state.next();
+            }
+
+            if state.current().kind == TokenKind::LeftBracket {
+                docblock_array_or_offset_access(state, inner)
+            } else {
+                inner
+            }
+        },
+        // FIXME: $this is a special case, we need to handle it here.
+        TokenKind::Variable if current.symbol.as_ref().is_some_and(|sym| sym == b"$this") => {
+            todo!()
+        },
+        TokenKind::Identifier | TokenKind::QualifiedIdentifier | TokenKind::FullyQualifiedIdentifier => {
+            todo!()
+        },
+        _ => todo!(),
     }
+}
 
-    if current.kind == TokenKind::Variable && peek.kind == TokenKind::Identifier && peek.symbol.as_ref().is_some_and(|sym| sym == b"is") {
-        todo!()
-    }
-
-    let ty = optional_simple_data_type(state);
-
-    match ty {
-        Some(ty) => ty,
-        None => {
-            state.diagnostic(
-                ParserDiagnostic::MissingType,
-                Severity::Error,
-                state.current().span,
-            );
-
-            Type::Missing
-        }
-    }
+fn docblock_array_or_offset_access(state: &mut State, lhs: Type<Name>) -> Type<Name> {
+    todo!()
 }
 
 fn docblock_subparse(state: &mut State) -> Type<Name> {
