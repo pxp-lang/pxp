@@ -2191,7 +2191,10 @@ const KEYWORDS: [(&[u8], TokenKind); 85] = [
     (b"__method__", TokenKind::MethodConstant),
     (b"__trait__", TokenKind::TraitConstant),
     (b"__namespace__", TokenKind::NamespaceConstant),
-    (b"__compiler_halt_offset__", TokenKind::CompilerHaltOffsetConstant),
+    (
+        b"__compiler_halt_offset__",
+        TokenKind::CompilerHaltOffsetConstant,
+    ),
     (b"while", TokenKind::While),
     (b"insteadof", TokenKind::Insteadof),
     (b"list", TokenKind::List),

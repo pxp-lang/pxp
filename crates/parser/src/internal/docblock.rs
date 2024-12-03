@@ -1,5 +1,6 @@
 use pxp_ast::{
-    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockParamTag, DocBlockTag, DocBlockTagNode, DocBlockTextNode, DocBlockVarTag
+    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockParamTag, DocBlockTag,
+    DocBlockTagNode, DocBlockTextNode, DocBlockVarTag,
 };
 use pxp_bytestring::ByteString;
 use pxp_span::{Span, Spanned};
@@ -7,7 +8,10 @@ use pxp_token::TokenKind;
 
 use crate::state::State;
 
-use super::{data_type::optional_data_type, variables::{optional_simple_variable, simple_variable}};
+use super::{
+    data_type::optional_data_type,
+    variables::{optional_simple_variable, simple_variable},
+};
 
 pub fn docblock(state: &mut State) -> DocBlockComment {
     let current = state.current();
@@ -43,8 +47,10 @@ pub fn docblock(state: &mut State) -> DocBlockComment {
 
                 nodes.push(DocBlockNode::Tag(tag))
             }
-            _ => if let Some(text) = docblock_text(state) {
-                nodes.push(DocBlockNode::Text(text))
+            _ => {
+                if let Some(text) = docblock_text(state) {
+                    nodes.push(DocBlockNode::Text(text))
+                }
             }
         };
     }
@@ -94,7 +100,7 @@ fn param_tag(state: &mut State) -> DocBlockTag {
     let variable = optional_simple_variable(state);
 
     skip_horizontal_whitespace(state);
-    
+
     let (text, _) = read_text_until_eol_or_close(state);
 
     let previous = state.previous();
@@ -111,7 +117,7 @@ fn param_tag(state: &mut State) -> DocBlockTag {
 }
 
 fn var_tag(state: &mut State) -> DocBlockTag {
-    let tag =state.current();
+    let tag = state.current();
 
     state.next();
     skip_horizontal_whitespace(state);

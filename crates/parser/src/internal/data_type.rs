@@ -94,7 +94,7 @@ fn docblock_type(state: &mut State) -> Type<Name> {
             match current.kind {
                 TokenKind::Pipe => docblock_union(state, r#type),
                 TokenKind::Ampersand => docblock_intersection(state, r#type),
-                _ => r#type
+                _ => r#type,
             }
         }
     }
@@ -148,7 +148,9 @@ fn docblock_atomic(state: &mut State) -> Type<Name> {
 
             if state.current().kind != TokenKind::RightParen {
                 state.diagnostic(
-                    ParserDiagnostic::ExpectedTokenExFound { expected: vec![TokenKind::RightParen] },
+                    ParserDiagnostic::ExpectedTokenExFound {
+                        expected: vec![TokenKind::RightParen],
+                    },
                     Severity::Warning,
                     state.current().span,
                 );
@@ -161,14 +163,16 @@ fn docblock_atomic(state: &mut State) -> Type<Name> {
             } else {
                 inner
             }
-        },
+        }
         // FIXME: $this is a special case, we need to handle it here.
         TokenKind::Variable if current.symbol.as_ref().is_some_and(|sym| sym == b"$this") => {
             todo!()
-        },
-        TokenKind::Identifier | TokenKind::QualifiedIdentifier | TokenKind::FullyQualifiedIdentifier => {
+        }
+        TokenKind::Identifier
+        | TokenKind::QualifiedIdentifier
+        | TokenKind::FullyQualifiedIdentifier => {
             todo!()
-        },
+        }
         _ => todo!(),
     }
 }

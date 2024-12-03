@@ -73,10 +73,7 @@ impl<N: Debug + Display> Type<N> {
     }
 
     pub fn array_key_types() -> Type<N> {
-        Self::Union(vec![
-            Self::String,
-            Self::Integer,
-        ])
+        Self::Union(vec![Self::String, Self::Integer])
     }
 }
 
