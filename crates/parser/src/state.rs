@@ -173,6 +173,16 @@ impl<'a> State<'a> {
         self.tokens[self.cursor].kind == TokenKind::Eof
     }
 
+    pub fn skip_doc_eol(&mut self) {
+        if self.current().kind == TokenKind::PhpDocEol {
+            self.next();
+
+            while self.current().kind == TokenKind::PhpDocHorizontalWhitespace {
+                self.next();
+            }
+        }
+    }
+
     fn collect_comments(&mut self) {
         loop {
             if self.cursor >= self.length {

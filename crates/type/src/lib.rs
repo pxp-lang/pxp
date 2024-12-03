@@ -27,6 +27,7 @@ pub enum Type<N: Debug + Display> {
     StaticReference,
     SelfReference,
     ParentReference,
+    TypedArray(Box<Type<N>>, Box<Type<N>>),
     Missing,
 }
 
@@ -70,6 +71,13 @@ impl<N: Debug + Display> Type<N> {
             _ => false,
         }
     }
+
+    pub fn array_key_types() -> Type<N> {
+        Self::Union(vec![
+            Self::String,
+            Self::Integer,
+        ])
+    }
 }
 
 impl<N: Debug + Display> Display for Type<N> {
@@ -112,6 +120,7 @@ impl<N: Debug + Display> Display for Type<N> {
             Type::StaticReference => write!(f, "static"),
             Type::SelfReference => write!(f, "self"),
             Type::ParentReference => write!(f, "parent"),
+            Type::TypedArray(key, value) => write!(f, "array<{}, {}>", key, value),
             Type::Missing => write!(f, "<missing>"),
         }
     }

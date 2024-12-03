@@ -449,6 +449,10 @@ fn bytestring_type(ty: &Type<Name>) -> Type<ByteString> {
         Type::StaticReference => Type::StaticReference,
         Type::SelfReference => Type::SelfReference,
         Type::ParentReference => Type::ParentReference,
+        Type::TypedArray(key, value) => Type::TypedArray(
+            Box::new(bytestring_type(key)),
+            Box::new(bytestring_type(value)),
+        ),
         Type::Missing => Type::Missing,
     }
 }
