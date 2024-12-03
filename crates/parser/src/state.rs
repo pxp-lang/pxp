@@ -414,7 +414,7 @@ impl<'a> State<'a> {
     }
 
     pub fn strip_leading_namespace_qualifier(&mut self, symbol: &ByteString) -> ByteString {
-        if symbol.starts_with(&[b'\\']) {
+        if symbol.starts_with(b"\\") {
             ByteString::from(&symbol[1..])
         } else {
             symbol.clone()

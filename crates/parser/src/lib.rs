@@ -68,7 +68,7 @@ pub fn parse<B: Sized + AsRef<[u8]>>(input: &B) -> ParseResult {
 }
 
 pub fn construct(tokens: &[Token]) -> ParseResult {
-    let mut state = State::new(&tokens);
+    let mut state = State::new(tokens);
     let mut ast = Vec::new();
 
     while !state.is_eof() {

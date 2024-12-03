@@ -154,8 +154,8 @@ fn generic_tag(state: &mut State) -> DocBlockTag {
 
     let (text, text_span) = read_text_until_eol_or_close(state);
 
-    let span = if text_span.is_some() {
-        Span::combine(tag.span, text_span.unwrap())
+    let span = if let Some(text_span) = text_span {
+        Span::combine(tag.span, text_span)
     } else {
         tag.span
     };
@@ -171,9 +171,7 @@ fn generic_tag(state: &mut State) -> DocBlockTag {
 fn docblock_text(state: &mut State) -> Option<DocBlockTextNode> {
     let (content, span) = read_text_until_eol_or_close(state);
 
-    if content.is_none() {
-        return None;
-    }
+    content.as_ref()?;
 
     Some(DocBlockTextNode {
         id: state.id(),

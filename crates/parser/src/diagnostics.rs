@@ -1,6 +1,5 @@
 use std::fmt::Display;
 
-use pxp_bytestring::ByteString;
 use pxp_token::{Token, TokenKind};
 
 #[derive(Debug, Clone)]

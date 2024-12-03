@@ -929,7 +929,7 @@ fn maybe_shift_assignment_operands(expr: &mut Expression) {
         _ => todo!(),
     };
 
-    if let None = real_assignment_target {
+    if real_assignment_target.is_none() {
         // This is a bit of a hack, but we can't really do anything about it.
         // If we can't find the real assignment target, then we can't shift the operands.
         return;
