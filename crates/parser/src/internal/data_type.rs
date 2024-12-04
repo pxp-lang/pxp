@@ -124,6 +124,20 @@ fn docblock_union(state: &mut State, lhs: Type<Name>) -> Type<Name> {
     Type::Union(types)
 }
 
+fn docblock_subparse_union(state: &mut State, lhs: Type<Name>) -> Type<Name> {
+    let mut types = vec![lhs];
+
+    while let TokenKind::Pipe = state.current().kind {
+        state.next();
+
+        state.skip_doc_eol();
+        types.push(docblock_atomic(state));
+        state.skip_doc_eol();
+    }
+
+    Type::Union(types)
+}
+
 fn docblock_intersection(state: &mut State, lhs: Type<Name>) -> Type<Name> {
     let mut types = vec![lhs];
 
@@ -131,6 +145,20 @@ fn docblock_intersection(state: &mut State, lhs: Type<Name>) -> Type<Name> {
         state.next();
 
         types.push(docblock_atomic(state));
+    }
+
+    Type::Intersection(types)
+}
+
+fn docblock_subparse_intersection(state: &mut State, lhs: Type<Name>) -> Type<Name> {
+    let mut types = vec![lhs];
+
+    while let TokenKind::Ampersand = state.current().kind {
+        state.next();
+
+        state.skip_doc_eol();
+        types.push(docblock_atomic(state));
+        state.skip_doc_eol();
     }
 
     Type::Intersection(types)
@@ -223,9 +251,9 @@ fn docblock_subparse(state: &mut State) -> Type<Name> {
             let current = state.current();
 
             if current.kind == TokenKind::Pipe {
-                docblock_union(state, r#type)
+                docblock_subparse_union(state, r#type)
             } else if current.kind == TokenKind::Ampersand {
-                docblock_intersection(state, r#type)
+                docblock_subparse_intersection(state, r#type)
             } else {
                 r#type
             }
