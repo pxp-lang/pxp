@@ -205,14 +205,16 @@ fn docblock_subparse(state: &mut State) -> Type<Name> {
         TokenKind::Variable => todo!(),
         _ => {
             let r#type = docblock_atomic(state);
-            
+
             if r#type == Type::Missing {
                 return Type::Missing;
             }
-    
+
             let current = state.current();
 
-            if current.kind == TokenKind::Identifier && current.symbol.as_ref().is_some_and(|sym| sym == b"is") {
+            if current.kind == TokenKind::Identifier
+                && current.symbol.as_ref().is_some_and(|sym| sym == b"is")
+            {
                 todo!("parse docblock conditional type");
             }
 
