@@ -217,12 +217,45 @@ fn docblock_atomic(state: &mut State) -> Type<Name> {
                 Type::This
             }
         }
-        _ => optional_simple_data_type(state).unwrap_or_else(|| docblock_missing_type(state)),
+        _ => {
+            let r#type = optional_simple_data_type(state).unwrap_or_else(|| docblock_missing_type(state));
+
+            if r#type == Type::Missing {
+                return Type::Missing;
+            }
+
+            // FIXME: Check for ! T:: here.
+            let current = state.current();
+
+            if current.kind == TokenKind::LessThan {
+                todo!("parse docblock generics");
+            } else if current.kind == TokenKind::LeftParen {
+                todo!("parse docblock callable type");
+            } else if current.kind == TokenKind::LeftBracket {
+                docblock_array_or_offset_access(state, r#type)
+            } else {
+                r#type
+            }
+        },
     }
 }
 
 fn docblock_array_or_offset_access(state: &mut State, lhs: Type<Name>) -> Type<Name> {
-    todo!()
+    let mut r#type = lhs;
+
+    while let TokenKind::LeftBracket = state.current().kind {
+        state.next();
+        
+        // FIXME: Add offset type parsing here.
+
+        if state.current().kind == TokenKind::RightBracket {
+            state.next();
+
+            r#type = Type::TypedArray(Box::new(Type::array_key_types()), Box::new(r#type));
+        }
+    }
+
+    r#type
 }
 
 fn docblock_subparse(state: &mut State) -> Type<Name> {

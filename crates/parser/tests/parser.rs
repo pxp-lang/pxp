@@ -1038,6 +1038,16 @@ snap!(
     docblock_param_type_variable_description,
     process("fixtures/docblocks/param-type-variable-description.php")
 );
+snap!(
+    snapper,
+    docblock_param_simple_typed_array,
+    process("fixtures/docblocks/param-simple-typed-array.php")
+);
+snap!(
+    snapper,
+    docblock_param_nested_typed_array,
+    process("fixtures/docblocks/param-nested-typed-array.php")
+);
 
 snap!(
     snapper,
