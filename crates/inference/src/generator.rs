@@ -453,6 +453,7 @@ fn bytestring_type(ty: &Type<Name>) -> Type<ByteString> {
             Box::new(bytestring_type(key)),
             Box::new(bytestring_type(value)),
         ),
+        Type::This => Type::This,
         Type::Missing => Type::Missing,
     }
 }

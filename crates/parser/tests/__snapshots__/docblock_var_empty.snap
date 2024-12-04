@@ -198,7 +198,7 @@
 [
     Diagnostic {
         kind: MissingType,
-        severity: Error,
+        severity: Warning,
         span: Span {
             start: 16,
             end: 18,

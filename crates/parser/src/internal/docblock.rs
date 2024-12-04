@@ -110,6 +110,8 @@ fn param_tag(state: &mut State) -> DocBlockTag {
         id: state.id(),
         span,
         tag: tag.clone(),
+        ampersand: None,
+        ellipsis: None,
         data_type,
         variable,
         text,

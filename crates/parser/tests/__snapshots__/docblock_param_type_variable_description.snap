@@ -195,6 +195,8 @@
                                                             },
                                                         },
                                                     ),
+                                                    ampersand: None,
+                                                    ellipsis: None,
                                                     variable: Some(
                                                         SimpleVariable {
                                                             id: 5,

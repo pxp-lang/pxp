@@ -206,6 +206,8 @@
                                                             },
                                                         },
                                                     ),
+                                                    ampersand: None,
+                                                    ellipsis: None,
                                                     variable: None,
                                                     text: None,
                                                 },

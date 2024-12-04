@@ -28,6 +28,7 @@ pub enum Type<N: Debug + Display> {
     SelfReference,
     ParentReference,
     TypedArray(Box<Type<N>>, Box<Type<N>>),
+    This,
     Missing,
 }
 
@@ -118,6 +119,7 @@ impl<N: Debug + Display> Display for Type<N> {
             Type::SelfReference => write!(f, "self"),
             Type::ParentReference => write!(f, "parent"),
             Type::TypedArray(key, value) => write!(f, "array<{}, {}>", key, value),
+            Type::This => write!(f, "$this"),
             Type::Missing => write!(f, "<missing>"),
         }
     }

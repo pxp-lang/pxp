@@ -189,6 +189,8 @@
                                                             },
                                                         },
                                                     ),
+                                                    ampersand: None,
+                                                    ellipsis: None,
                                                     variable: Some(
                                                         SimpleVariable {
                                                             id: 5,
@@ -220,7 +222,7 @@
 [
     Diagnostic {
         kind: MissingType,
-        severity: Error,
+        severity: Warning,
         span: Span {
             start: 18,
             end: 20,

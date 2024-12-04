@@ -5779,6 +5779,8 @@ pub struct DocBlockParamTag {
     pub span: Span,
     pub tag: Token,
     pub data_type: Option<DataType>,
+    pub ampersand: Option<Span>,
+    pub ellipsis: Option<Span>,
     pub variable: Option<SimpleVariable>,
     pub text: Option<ByteString>,
 }

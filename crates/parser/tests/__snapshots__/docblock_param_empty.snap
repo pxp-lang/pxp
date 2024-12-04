@@ -163,6 +163,8 @@
                                                             },
                                                         },
                                                     ),
+                                                    ampersand: None,
+                                                    ellipsis: None,
                                                     variable: None,
                                                     text: None,
                                                 },
@@ -182,7 +184,7 @@
 [
     Diagnostic {
         kind: MissingType,
-        severity: Error,
+        severity: Warning,
         span: Span {
             start: 18,
             end: 20,
