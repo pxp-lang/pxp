@@ -176,10 +176,10 @@ impl<'a> State<'a> {
     pub fn skip_doc_eol(&mut self) {
         if self.current().kind == TokenKind::PhpDocEol {
             self.next();
+        }
 
-            while self.current().kind == TokenKind::PhpDocHorizontalWhitespace {
-                self.next();
-            }
+        while self.current().kind == TokenKind::PhpDocHorizontalWhitespace {
+            self.next();
         }
     }
 

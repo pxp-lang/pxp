@@ -232,7 +232,13 @@ fn docblock_atomic(state: &mut State) -> Type<Name> {
             let current = state.current();
 
             if current.kind == TokenKind::LessThan {
-                todo!("parse docblock generics");
+                let mut r#type = docblock_generic(state, r#type);
+
+                if state.current().kind == TokenKind::LeftBracket {
+                    r#type = docblock_array_or_offset_access(state, r#type);
+                }
+
+                r#type
             } else if current.kind == TokenKind::LeftParen {
                 todo!("parse docblock callable type");
             } else if current.kind == TokenKind::LeftBracket {
@@ -242,6 +248,45 @@ fn docblock_atomic(state: &mut State) -> Type<Name> {
             }
         },
     }
+}
+
+fn docblock_generic(state: &mut State, lhs: Type<Name>) -> Type<Name> {
+    state.next();
+    let mut generic_types = vec![];
+    let mut is_first = true;
+    
+    while is_first || state.current().kind == TokenKind::Comma {
+        if state.current().kind == TokenKind::Comma {
+            state.next();
+        }
+
+        state.skip_doc_eol();
+
+        if ! is_first && state.current().kind == TokenKind::GreaterThan {
+            break;
+        }
+
+        is_first = false;
+
+        // FIXME: Parse variance keywords and wildcards here too.
+        generic_types.push(docblock_type(state));
+
+        state.skip_doc_eol();
+    }
+
+    if state.current().kind == TokenKind::GreaterThan {
+        state.next();
+    } else {
+        state.diagnostic(
+            ParserDiagnostic::ExpectedTokenExFound {
+                expected: vec![TokenKind::GreaterThan],
+            },
+            Severity::Warning,
+            state.current().span,
+        );
+    }
+
+    Type::NamedWithGenerics(Box::new(lhs), generic_types)
 }
 
 fn docblock_array_or_offset_access(state: &mut State, lhs: Type<Name>) -> Type<Name> {

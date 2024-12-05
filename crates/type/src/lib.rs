@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 
 pub enum Type<N: Debug + Display> {
     Named(N),
+    NamedWithGenerics(Box<Type<N>>, Vec<Type<N>>),
     Nullable(Box<Type<N>>),
     Union(Vec<Type<N>>),
     Intersection(Vec<Type<N>>),
@@ -82,6 +83,9 @@ impl<N: Debug + Display> Display for Type<N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
             Type::Named(inner) => write!(f, "{}", inner),
+            Type::NamedWithGenerics(inner, templates) => {
+                write!(f, "{}<{}>", inner, templates.iter().map(|t| t.to_string()).collect::<Vec<String>>().join(", "))
+            }
             Type::Nullable(inner) => write!(f, "?{}", inner),
             Type::Union(inner) => write!(
                 f,

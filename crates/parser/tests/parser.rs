@@ -1063,6 +1063,21 @@ snap!(
     docblock_param_intersection_typed_array,
     process("fixtures/docblocks/param-intersection-typed-array.php")
 );
+snap!(
+    snapper,
+    docblock_param_simple_generic_type,
+    process("fixtures/docblocks/param-simple-generic-type.php")
+);
+snap!(
+    snapper,
+    docblock_param_multiple_generic_type,
+    process("fixtures/docblocks/param-multiple-generic-type.php")
+);
+snap!(
+    snapper,
+    docblock_param_nested_generic_type,
+    process("fixtures/docblocks/param-nested-generic-type.php")
+);
 
 snap!(
     snapper,
