@@ -118,6 +118,7 @@ fn docblock_union(state: &mut State, lhs: Type<Name>) -> Type<Name> {
     while let TokenKind::Pipe = state.current().kind {
         state.next();
 
+        // FIXME: Warn about invalid types inside of union.
         types.push(docblock_atomic(state));
     }
 
@@ -131,6 +132,7 @@ fn docblock_subparse_union(state: &mut State, lhs: Type<Name>) -> Type<Name> {
         state.next();
 
         state.skip_doc_eol();
+        // FIXME: Warn about invalid types inside of union.
         types.push(docblock_atomic(state));
         state.skip_doc_eol();
     }
@@ -144,6 +146,7 @@ fn docblock_intersection(state: &mut State, lhs: Type<Name>) -> Type<Name> {
     while let TokenKind::Ampersand = state.current().kind {
         state.next();
 
+        // FIXME: Warn about invalid types inside of intersection.
         types.push(docblock_atomic(state));
     }
 
@@ -157,6 +160,7 @@ fn docblock_subparse_intersection(state: &mut State, lhs: Type<Name>) -> Type<Na
         state.next();
 
         state.skip_doc_eol();
+        // FIXME: Warn about invalid types inside of intersection.
         types.push(docblock_atomic(state));
         state.skip_doc_eol();
     }

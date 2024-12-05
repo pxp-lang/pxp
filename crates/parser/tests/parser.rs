@@ -1048,6 +1048,21 @@ snap!(
     docblock_param_nested_typed_array,
     process("fixtures/docblocks/param-nested-typed-array.php")
 );
+snap!(
+    snapper,
+    docblock_param_union_typed_array,
+    process("fixtures/docblocks/param-union-typed-array.php")
+);
+snap!(
+    snapper,
+    docblock_param_unparenthesized_union_typed_array,
+    process("fixtures/docblocks/param-unparenthesized-union-typed-array.php")
+);
+snap!(
+    snapper,
+    docblock_param_intersection_typed_array,
+    process("fixtures/docblocks/param-intersection-typed-array.php")
+);
 
 snap!(
     snapper,
