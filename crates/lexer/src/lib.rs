@@ -1634,35 +1634,12 @@ impl<'a, 'b> Lexer<'a> {
                         self.state.source.skip(label.len());
                         self.state.replace(StackFrame::Scripting);
                         break (
-                            TokenKind::EndDocString(DocStringIndentationKind::None, 0),
+                            TokenKind::EndHeredoc,
                             true,
                         );
                     }
 
-                    // Check if there's any whitespace first.
-                    let (whitespace_kind, whitespace_amount) = match self.state.source.read(1) {
-                        [b' '] => {
-                            let mut amount = 0;
-                            while self.state.source.read(1) == [b' '] {
-                                amount += 1;
-                                self.state.source.next();
-                            }
-                            (DocStringIndentationKind::Space, amount)
-                        }
-                        [b'\t'] => {
-                            let mut amount = 0;
-                            while self.state.source.read(1) == [b'\t'] {
-                                amount += 1;
-                                self.state.source.next();
-                            }
-                            (DocStringIndentationKind::Tab, amount)
-                        }
-                        _ => (DocStringIndentationKind::None, 0),
-                    };
-
-                    while let [b' ' | b'\t'] = self.state.source.read(1) {
-                        self.state.source.next();
-                    }
+                    self.skip_horizontal_whitespace();
 
                     // We've consumed all leading whitespace on this line now,
                     // so let's try to read the label again.
@@ -1674,7 +1651,7 @@ impl<'a, 'b> Lexer<'a> {
                         self.state.replace(StackFrame::Scripting);
 
                         break (
-                            TokenKind::EndDocString(whitespace_kind, whitespace_amount),
+                            TokenKind::EndHeredoc,
                             true,
                         );
                     }
@@ -1737,35 +1714,12 @@ impl<'a, 'b> Lexer<'a> {
                         self.state.replace(StackFrame::Scripting);
                         last_was_newline = true;
                         break (
-                            TokenKind::EndDocString(DocStringIndentationKind::None, 0),
+                            TokenKind::EndNowdoc,
                             true,
                         );
                     }
 
-                    // Check if there's any whitespace first.
-                    let (whitespace_kind, whitespace_amount) = match self.state.source.read(1) {
-                        [b' '] => {
-                            let mut amount = 0;
-                            while self.state.source.read(1) == [b' '] {
-                                amount += 1;
-                                self.state.source.next();
-                            }
-                            (DocStringIndentationKind::Space, amount)
-                        }
-                        [b'\t'] => {
-                            let mut amount = 0;
-                            while self.state.source.read(1) == [b'\t'] {
-                                amount += 1;
-                                self.state.source.next();
-                            }
-                            (DocStringIndentationKind::Tab, amount)
-                        }
-                        _ => (DocStringIndentationKind::None, 0),
-                    };
-
-                    while let [b' ' | b'\t'] = self.state.source.read(1) {
-                        self.state.source.next();
-                    }
+                    self.skip_horizontal_whitespace();
 
                     // We've consumed all leading whitespace on this line now,
                     // so let's try to read the label again.
@@ -1779,7 +1733,7 @@ impl<'a, 'b> Lexer<'a> {
                         self.state.source.skip(label.len());
                         self.state.replace(StackFrame::Scripting);
                         break (
-                            TokenKind::EndDocString(whitespace_kind, whitespace_amount),
+                            TokenKind::EndNowdoc,
                             true,
                         );
                     }
@@ -2268,7 +2222,7 @@ enum NumberKind {
 mod tests {
     use super::Lexer;
 
-    use pxp_token::{DocStringIndentationKind, OpenTagKind, Token, TokenKind};
+    use pxp_token::{OpenTagKind, Token, TokenKind};
 
     #[test]
     fn it_can_tokenize_keywords() {
@@ -2523,7 +2477,7 @@ mod tests {
                 TokenKind::OpenTag(OpenTagKind::Full),
                 TokenKind::StartHeredoc,
                 TokenKind::StringPart,
-                TokenKind::EndDocString(DocStringIndentationKind::Space, 4),
+                TokenKind::EndHeredoc,
                 TokenKind::Eof,
             ]
         );
@@ -2542,7 +2496,7 @@ mod tests {
                 TokenKind::OpenTag(OpenTagKind::Full),
                 TokenKind::StartNowdoc,
                 TokenKind::StringPart,
-                TokenKind::EndDocString(DocStringIndentationKind::Space, 4),
+                TokenKind::EndNowdoc,
                 TokenKind::Eof,
             ]
         );
@@ -2622,7 +2576,7 @@ mod tests {
                 TokenKind::OpenTag(OpenTagKind::Full),
                 TokenKind::StartHeredoc,
                 TokenKind::StringPart,
-                TokenKind::EndDocString(DocStringIndentationKind::None, 0),
+                TokenKind::EndHeredoc,
                 TokenKind::SemiColon,
                 TokenKind::Eof,
             ]

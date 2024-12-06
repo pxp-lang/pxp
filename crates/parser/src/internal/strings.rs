@@ -16,7 +16,6 @@ use pxp_ast::{
 };
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
-use pxp_token::DocStringIndentationKind;
 use pxp_token::TokenKind;
 
 #[inline(always)]
@@ -83,101 +82,25 @@ pub fn heredoc(state: &mut State) -> Expression {
 
     let mut parts = Vec::new();
 
-    while !matches!(state.current().kind, TokenKind::EndDocString(_, _)) {
+    while !matches!(state.current().kind, TokenKind::EndHeredoc) {
         if let Some(part) = part(state) {
             parts.push(part);
         }
     }
 
-    let (indentation_type, indentation_amount) = match &state.current().kind {
-        TokenKind::EndDocString(indentation_type, indentation_amount) => {
-            (*indentation_type, *indentation_amount)
-        }
-        _ => unreachable!(),
-    };
+    let end = state.current();
 
     state.next();
-
-    let mut new_line = true;
-    if indentation_type != DocStringIndentationKind::None {
-        let indentation_char: u8 = indentation_type.into();
-
-        for part in parts.iter_mut() {
-            // We only need to strip and validate indentation
-            // for individual lines, so we can skip checks if
-            // we know we're not on a new line.
-            if !new_line {
-                continue;
-            }
-
-            match part {
-                StringPart::Literal(LiteralStringPart { value, .. }) => {
-                    let bytes = value.clone();
-
-                    // 1. If this line doesn't start with any whitespace,
-                    //    we can return an error early because we know
-                    //    the label was indented.
-                    if !bytes.starts_with(&[b' ']) && !bytes.starts_with(&[b'\t']) {
-                        state.diagnostic(
-                            ParserDiagnostic::InvalidDocBodyIndentationLevel(indentation_amount),
-                            Severity::Error,
-                            span,
-                        );
-                    }
-
-                    // 2. If this line doesn't start with the correct
-                    //    type of whitespace, we can also return an error.
-                    if !bytes.starts_with(&[indentation_char]) {
-                        state.diagnostic(
-                            ParserDiagnostic::InvalidDocIndentation,
-                            Severity::Error,
-                            span,
-                        );
-                    }
-
-                    // 3. We now know that the whitespace at the start of
-                    //    this line is correct, so we need to check that the
-                    //    amount of whitespace is correct too. In this case,
-                    //    the amount of whitespace just needs to be at least
-                    //    the same, so we can create a vector containing the
-                    //    minimum and check using `starts_with()`.
-                    let expected_whitespace_buffer = vec![indentation_char; indentation_amount];
-                    if !bytes.starts_with(&expected_whitespace_buffer) {
-                        state.diagnostic(
-                            ParserDiagnostic::InvalidDocBodyIndentationLevel(indentation_amount),
-                            Severity::Error,
-                            span,
-                        );
-                    }
-
-                    // 4. All of the above checks have passed, so we know
-                    //    there are no more possible errors. Let's now
-                    //    strip the leading whitespace accordingly.
-
-                    // FIXME: Figure out if this is something we can do inside of the lexer instead.
-                    // *bytes = ByteStr::new(bytes
-                    //     .strip_prefix(&expected_whitespace_buffer[..])
-                    //     .unwrap())
-                    //     .into();
-
-                    new_line = bytes.ends_with(&[b'\n']);
-                }
-                _ => continue,
-            }
-        }
-    }
-
-    let end_span = state.previous().span;
 
     Expression::new(
         state.id(),
         ExpressionKind::Heredoc(HeredocExpression {
             id: state.id(),
-            span: Span::combine(span, end_span),
+            span: Span::combine(span, end.span),
             label: label.clone(),
             parts,
         }),
-        Span::combine(span, end_span),
+        Span::combine(span, end.span),
         CommentGroup::default(),
     )
 }
@@ -191,90 +114,38 @@ pub fn nowdoc(state: &mut State) -> Expression {
 
     let string_part = state.current().clone();
 
-    // FIXME: Do we still need this, or can we do it inside of the lexer?
-    // let (indentation_type, indentation_amount) = match &state.current().kind {
-    //     TokenKind::EndDocString(indentation_type, indentation_amount) => {
-    //         (indentation_type.clone(), *indentation_amount)
-    //     }
-    //     _ => unreachable!(),
-    // };
-
     state.next();
 
-    // FIXME: Figure out if this is something we can do inside of the lexer instead.
-    //        If not, then we need to emit diagnostics for invalid indentation etc.
-    // if indentation_type != DocStringIndentationKind::None {
-    //     let indentation_char: u8 = indentation_type.into();
+    let end = state.current();
 
-    //     let mut lines = string_part
-    //         .split(|b| *b == b'\n')
-    //         .map(|s| s.to_vec())
-    //         .collect::<Vec<Vec<u8>>>();
+    let span = if ! state.is_eof() && end.kind != TokenKind::EndNowdoc {
+        state.diagnostic(
+            ParserDiagnostic::ExpectedToken {
+                expected: vec![TokenKind::EndNowdoc],
+                found: end.clone(),
+            },
+            Severity::Error,
+            end.span,
+        );
 
-    //     for line in lines.iter_mut() {
-    //         if line.is_empty() {
-    //             continue;
-    //         }
+        span
+    } else if end.kind == TokenKind::EndNowdoc {
+        state.next();
 
-    //         // 1. If this line doesn't start with any whitespace,
-    //         //    we can return an error early because we know
-    //         //    the label was indented.
-    //         if !line.starts_with(&[b' ']) && !line.starts_with(&[b'\t']) {
-    //             return Err(
-    //                 SyntaxError::InvalidDocBodyIndentationLevel(indentation_amount, span).into(),
-    //             );
-    //         }
-
-    //         // 2. If this line doesn't start with the correct
-    //         //    type of whitespace, we can also return an error.
-    //         if !line.starts_with(&[indentation_char]) {
-    //             return Err(SyntaxError::InvalidDocIndentation(span).into());
-    //         }
-
-    //         // 3. We now know that the whitespace at the start of
-    //         //    this line is correct, so we need to check that the
-    //         //    amount of whitespace is correct too. In this case,
-    //         //    the amount of whitespace just needs to be at least
-    //         //    the same, so we can create a vector containing the
-    //         //    minimum and check using `starts_with()`.
-    //         let expected_whitespace_buffer = vec![indentation_char; indentation_amount];
-    //         if !line.starts_with(&expected_whitespace_buffer) {
-    //             return Err(
-    //                 SyntaxError::InvalidDocBodyIndentationLevel(indentation_amount, span).into(),
-    //             );
-    //         }
-
-    //         // 4. All of the above checks have passed, so we know
-    //         //    there are no more possible errors. Let's now
-    //         //    strip the leading whitespace accordingly.
-    //         *line = line
-    //             .strip_prefix(&expected_whitespace_buffer[..])
-    //             .unwrap()
-    //             .into();
-    //     }
-
-    //     let mut bytes = Vec::new();
-    //     for (i, line) in lines.iter().enumerate() {
-    //         bytes.extend(line);
-    //         if i < lines.len() - 1 {
-    //             bytes.push(b'\n');
-    //         }
-    //     }
-    //     string_part = bytes.into();
-    // }
-
-    state.next();
-    let end_span = state.previous().span;
+        Span::combine(span, end.span)
+    } else {
+        span
+    };
 
     Expression::new(
         state.id(),
         ExpressionKind::Nowdoc(NowdocExpression {
             id: state.id(),
-            span: Span::combine(span, end_span),
+            span,
             label,
             value: string_part,
         }),
-        Span::new(span.start, end_span.end),
+        span,
         CommentGroup::default(),
     )
 }
