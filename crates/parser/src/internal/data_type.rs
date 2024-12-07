@@ -9,7 +9,9 @@ use pxp_type::Type;
 pub fn data_type(state: &mut State) -> DataType {
     let start = state.current().span;
 
-    let kind = if state.current().kind == TokenKind::Question {
+    let kind = if state.is_in_docblock() {
+        docblock_type(state)
+    } else if state.current().kind == TokenKind::Question {
         nullable(state)
     } else if state.current().kind == TokenKind::LeftParen {
         dnf(state)
@@ -37,7 +39,9 @@ pub fn data_type(state: &mut State) -> DataType {
 
 pub fn optional_data_type(state: &mut State) -> Option<DataType> {
     let start = state.current().span;
-    let kind = if state.current().kind == TokenKind::Question {
+    let kind = if state.is_in_docblock() {
+        docblock_type(state)
+    } else if state.current().kind == TokenKind::Question {
         nullable(state)
     } else if state.current().kind == TokenKind::LeftParen {
         dnf(state)
@@ -70,6 +74,273 @@ pub fn optional_data_type(state: &mut State) -> Option<DataType> {
         kind,
         Span::new(start.start, end.end),
     ))
+}
+
+// Special type parsing logic for DocBlock comments, heavily based on the phpstan/phpdoc-parser package.
+fn docblock_type(state: &mut State) -> Type<Name> {
+    let current = state.current();
+
+    match current.kind {
+        TokenKind::Question => docblock_nullable(state),
+        _ => {
+            let r#type = docblock_atomic(state);
+
+            if r#type == Type::Missing {
+                return Type::Missing;
+            }
+
+            let current = state.current();
+
+            match current.kind {
+                TokenKind::Pipe => docblock_union(state, r#type),
+                TokenKind::Ampersand => docblock_intersection(state, r#type),
+                _ => r#type,
+            }
+        }
+    }
+}
+
+fn docblock_nullable(state: &mut State) -> Type<Name> {
+    state.next();
+
+    let inner = docblock_atomic(state);
+
+    if inner == Type::Missing {
+        return Type::Missing;
+    }
+
+    Type::Nullable(Box::new(inner))
+}
+
+fn docblock_union(state: &mut State, lhs: Type<Name>) -> Type<Name> {
+    let mut types = vec![lhs];
+
+    while let TokenKind::Pipe = state.current().kind {
+        state.next();
+
+        // FIXME: Warn about invalid types inside of union.
+        types.push(docblock_atomic(state));
+    }
+
+    Type::Union(types)
+}
+
+fn docblock_subparse_union(state: &mut State, lhs: Type<Name>) -> Type<Name> {
+    let mut types = vec![lhs];
+
+    while let TokenKind::Pipe = state.current().kind {
+        state.next();
+
+        state.skip_doc_eol();
+        // FIXME: Warn about invalid types inside of union.
+        types.push(docblock_atomic(state));
+        state.skip_doc_eol();
+    }
+
+    Type::Union(types)
+}
+
+fn docblock_intersection(state: &mut State, lhs: Type<Name>) -> Type<Name> {
+    let mut types = vec![lhs];
+
+    while let TokenKind::Ampersand = state.current().kind {
+        state.next();
+
+        // FIXME: Warn about invalid types inside of intersection.
+        types.push(docblock_atomic(state));
+    }
+
+    Type::Intersection(types)
+}
+
+fn docblock_subparse_intersection(state: &mut State, lhs: Type<Name>) -> Type<Name> {
+    let mut types = vec![lhs];
+
+    while let TokenKind::Ampersand = state.current().kind {
+        state.next();
+
+        state.skip_doc_eol();
+        // FIXME: Warn about invalid types inside of intersection.
+        types.push(docblock_atomic(state));
+        state.skip_doc_eol();
+    }
+
+    Type::Intersection(types)
+}
+
+fn docblock_missing_type(state: &mut State) -> Type<Name> {
+    state.diagnostic(
+        ParserDiagnostic::MissingType,
+        Severity::Warning,
+        state.current().span,
+    );
+
+    Type::Missing
+}
+
+fn docblock_atomic(state: &mut State) -> Type<Name> {
+    let current = state.current();
+
+    match current.kind {
+        TokenKind::LeftParen => {
+            state.next();
+            state.skip_doc_eol();
+
+            let inner = docblock_subparse(state);
+
+            if inner == Type::Missing {
+                return docblock_missing_type(state);
+            }
+
+            state.skip_doc_eol();
+
+            if state.current().kind != TokenKind::RightParen {
+                state.diagnostic(
+                    ParserDiagnostic::ExpectedTokenExFound {
+                        expected: vec![TokenKind::RightParen],
+                    },
+                    Severity::Warning,
+                    state.current().span,
+                );
+            } else {
+                state.next();
+            }
+
+            if state.current().kind == TokenKind::LeftBracket {
+                docblock_array_or_offset_access(state, inner)
+            } else {
+                inner
+            }
+        }
+        TokenKind::Variable if current.symbol.as_ref().is_some_and(|sym| sym == b"$this") => {
+            state.next();
+
+            if state.current().kind == TokenKind::LeftBracket {
+                docblock_array_or_offset_access(state, Type::This)
+            } else {
+                Type::This
+            }
+        }
+        _ => {
+            let r#type = optional_simple_data_type(state).unwrap_or_else(|| docblock_missing_type(state));
+
+            if r#type == Type::Missing {
+                return Type::Missing;
+            }
+
+            // FIXME: Check for ! T:: here.
+            let current = state.current();
+
+            if current.kind == TokenKind::LessThan {
+                let mut r#type = docblock_generic(state, r#type);
+
+                if state.current().kind == TokenKind::LeftBracket {
+                    r#type = docblock_array_or_offset_access(state, r#type);
+                }
+
+                r#type
+            } else if current.kind == TokenKind::LeftParen {
+                todo!("parse docblock callable type");
+            } else if current.kind == TokenKind::LeftBracket {
+                docblock_array_or_offset_access(state, r#type)
+            } else {
+                r#type
+            }
+        },
+    }
+}
+
+fn docblock_generic(state: &mut State, lhs: Type<Name>) -> Type<Name> {
+    state.next();
+    let mut generic_types = vec![];
+    let mut is_first = true;
+    
+    while is_first || state.current().kind == TokenKind::Comma {
+        if state.current().kind == TokenKind::Comma {
+            state.next();
+        }
+
+        state.skip_doc_eol();
+
+        if ! is_first && state.current().kind == TokenKind::GreaterThan {
+            break;
+        }
+
+        is_first = false;
+
+        // FIXME: Parse variance keywords and wildcards here too.
+        generic_types.push(docblock_type(state));
+
+        state.skip_doc_eol();
+    }
+
+    if state.current().kind == TokenKind::GreaterThan {
+        state.next();
+    } else {
+        state.diagnostic(
+            ParserDiagnostic::ExpectedTokenExFound {
+                expected: vec![TokenKind::GreaterThan],
+            },
+            Severity::Warning,
+            state.current().span,
+        );
+    }
+
+    Type::NamedWithGenerics(Box::new(lhs), generic_types)
+}
+
+fn docblock_array_or_offset_access(state: &mut State, lhs: Type<Name>) -> Type<Name> {
+    let mut r#type = lhs;
+
+    while let TokenKind::LeftBracket = state.current().kind {
+        state.next();
+        
+        // FIXME: Add offset type parsing here.
+
+        if state.current().kind == TokenKind::RightBracket {
+            state.next();
+
+            r#type = Type::TypedArray(Box::new(Type::array_key_types()), Box::new(r#type));
+        }
+    }
+
+    r#type
+}
+
+fn docblock_subparse(state: &mut State) -> Type<Name> {
+    let current = state.current();
+
+    match &current.kind {
+        TokenKind::Question => docblock_nullable(state),
+        TokenKind::Variable => todo!(),
+        _ => {
+            let r#type = docblock_atomic(state);
+
+            if r#type == Type::Missing {
+                return Type::Missing;
+            }
+
+            let current = state.current();
+
+            if current.kind == TokenKind::Identifier
+                && current.symbol.as_ref().is_some_and(|sym| sym == b"is")
+            {
+                todo!("parse docblock conditional type");
+            }
+
+            state.skip_doc_eol();
+
+            let current = state.current();
+
+            if current.kind == TokenKind::Pipe {
+                docblock_subparse_union(state, r#type)
+            } else if current.kind == TokenKind::Ampersand {
+                docblock_subparse_intersection(state, r#type)
+            } else {
+                r#type
+            }
+        }
+    }
 }
 
 fn dnf(state: &mut State) -> Type<Name> {

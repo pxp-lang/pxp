@@ -429,6 +429,10 @@ impl Visitor for TypeMapGenerator<'_> {
 fn bytestring_type(ty: &Type<Name>) -> Type<ByteString> {
     match ty {
         Type::Named(inner) => Type::Named(inner.symbol().clone()),
+        Type::NamedWithGenerics(inner, templates) => Type::NamedWithGenerics(
+            Box::new(bytestring_type(inner)),
+            templates.iter().map(|t| bytestring_type(t)).collect(),
+        ),
         Type::Nullable(inner) => Type::Nullable(Box::new(bytestring_type(inner))),
         Type::Union(tys) => Type::Union(tys.iter().map(bytestring_type).collect()),
         Type::Intersection(tys) => Type::Intersection(tys.iter().map(bytestring_type).collect()),
@@ -449,6 +453,11 @@ fn bytestring_type(ty: &Type<Name>) -> Type<ByteString> {
         Type::StaticReference => Type::StaticReference,
         Type::SelfReference => Type::SelfReference,
         Type::ParentReference => Type::ParentReference,
+        Type::TypedArray(key, value) => Type::TypedArray(
+            Box::new(bytestring_type(key)),
+            Box::new(bytestring_type(value)),
+        ),
+        Type::This => Type::This,
         Type::Missing => Type::Missing,
     }
 }

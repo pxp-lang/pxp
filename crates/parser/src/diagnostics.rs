@@ -11,6 +11,9 @@ pub enum ParserDiagnostic {
         expected: Vec<TokenKind>,
         found: Token,
     },
+    ExpectedTokenExFound {
+        expected: Vec<TokenKind>,
+    },
     InvalidSpreadOperator,
     InvalidTargetForAttributes,
     CannotMixKeyedAndUnkeyedListEntries,
@@ -76,6 +79,21 @@ impl Display for ParserDiagnostic {
                         f,
                         "unexpected token {}, expected one of {}",
                         found.kind,
+                        expected
+                            .iter()
+                            .map(|kind| format!("{}", kind))
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    )
+                }
+            }
+            ParserDiagnostic::ExpectedTokenExFound { expected } => {
+                if expected.len() == 1 {
+                    write!(f, "expected {}", expected.first().unwrap())
+                } else {
+                    write!(
+                        f,
+                        "expected one of {}",
                         expected
                             .iter()
                             .map(|kind| format!("{}", kind))

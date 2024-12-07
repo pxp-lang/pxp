@@ -1,0 +1,306 @@
+[
+    Statement {
+        id: 15,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                id: 14,
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            id: 1,
+            comments: [],
+        },
+    },
+    Statement {
+        id: 27,
+        kind: Function(
+            FunctionStatement {
+                id: 26,
+                span: Span {
+                    start: 35,
+                    end: 52,
+                },
+                comments: CommentGroup {
+                    id: 17,
+                    comments: [],
+                },
+                attributes: [],
+                function: Span {
+                    start: 35,
+                    end: 43,
+                },
+                ampersand: None,
+                name: Name {
+                    id: 18,
+                    kind: Resolved(
+                        ResolvedName {
+                            id: 18,
+                            span: Span {
+                                start: 44,
+                                end: 45,
+                            },
+                            resolved: "a",
+                            original: "a",
+                        },
+                    ),
+                    span: Span {
+                        start: 44,
+                        end: 45,
+                    },
+                },
+                parameters: FunctionParameterList {
+                    id: 23,
+                    span: Span {
+                        start: 45,
+                        end: 49,
+                    },
+                    comments: CommentGroup {
+                        id: 19,
+                        comments: [],
+                    },
+                    left_parenthesis: Span {
+                        start: 45,
+                        end: 46,
+                    },
+                    parameters: CommaSeparated {
+                        inner: [
+                            FunctionParameter {
+                                id: 21,
+                                span: Span {
+                                    start: 46,
+                                    end: 48,
+                                },
+                                comments: CommentGroup {
+                                    id: 22,
+                                    comments: [],
+                                },
+                                name: SimpleVariable {
+                                    id: 20,
+                                    symbol: "$a",
+                                    stripped: "a",
+                                    span: Span {
+                                        start: 46,
+                                        end: 48,
+                                    },
+                                },
+                                attributes: [],
+                                data_type: None,
+                                ellipsis: None,
+                                default: None,
+                                ampersand: None,
+                            },
+                        ],
+                        commas: [],
+                    },
+                    right_parenthesis: Span {
+                        start: 48,
+                        end: 49,
+                    },
+                },
+                return_type: None,
+                body: FunctionBody {
+                    id: 25,
+                    span: Span {
+                        start: 50,
+                        end: 52,
+                    },
+                    comments: CommentGroup {
+                        id: 24,
+                        comments: [],
+                    },
+                    left_brace: Span {
+                        start: 50,
+                        end: 51,
+                    },
+                    statements: [],
+                    right_brace: Span {
+                        start: 51,
+                        end: 52,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: 35,
+            end: 52,
+        },
+        comments: CommentGroup {
+            id: 16,
+            comments: [
+                Comment {
+                    id: 2,
+                    span: Span {
+                        start: 7,
+                        end: 32,
+                    },
+                    kind: DocBlock(
+                        DocBlockComment {
+                            id: 12,
+                            span: Span {
+                                start: 7,
+                                end: 32,
+                            },
+                            doc: DocBlock {
+                                id: 13,
+                                span: Span {
+                                    start: 7,
+                                    end: 32,
+                                },
+                                nodes: [
+                                    Tag(
+                                        DocBlockTagNode {
+                                            id: 11,
+                                            span: Span {
+                                                start: 11,
+                                                end: 32,
+                                            },
+                                            tag: Param(
+                                                DocBlockParamTag {
+                                                    id: 10,
+                                                    span: Span {
+                                                        start: 11,
+                                                        end: 32,
+                                                    },
+                                                    tag: Token {
+                                                        kind: PhpDocTag,
+                                                        span: Span {
+                                                            start: 11,
+                                                            end: 17,
+                                                        },
+                                                        symbol: Some(
+                                                            "@param",
+                                                        ),
+                                                    },
+                                                    data_type: Some(
+                                                        DataType {
+                                                            id: 8,
+                                                            kind: NamedWithGenerics(
+                                                                Named(
+                                                                    Name {
+                                                                        id: 4,
+                                                                        kind: Resolved(
+                                                                            ResolvedName {
+                                                                                id: 4,
+                                                                                span: Span {
+                                                                                    start: 18,
+                                                                                    end: 19,
+                                                                                },
+                                                                                resolved: "A",
+                                                                                original: "A",
+                                                                            },
+                                                                        ),
+                                                                        span: Span {
+                                                                            start: 18,
+                                                                            end: 19,
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                [
+                                                                    Named(
+                                                                        Name {
+                                                                            id: 5,
+                                                                            kind: Resolved(
+                                                                                ResolvedName {
+                                                                                    id: 5,
+                                                                                    span: Span {
+                                                                                        start: 20,
+                                                                                        end: 21,
+                                                                                    },
+                                                                                    resolved: "B",
+                                                                                    original: "B",
+                                                                                },
+                                                                            ),
+                                                                            span: Span {
+                                                                                start: 20,
+                                                                                end: 21,
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                    NamedWithGenerics(
+                                                                        Named(
+                                                                            Name {
+                                                                                id: 6,
+                                                                                kind: Resolved(
+                                                                                    ResolvedName {
+                                                                                        id: 6,
+                                                                                        span: Span {
+                                                                                            start: 23,
+                                                                                            end: 24,
+                                                                                        },
+                                                                                        resolved: "C",
+                                                                                        original: "C",
+                                                                                    },
+                                                                                ),
+                                                                                span: Span {
+                                                                                    start: 23,
+                                                                                    end: 24,
+                                                                                },
+                                                                            },
+                                                                        ),
+                                                                        [
+                                                                            Named(
+                                                                                Name {
+                                                                                    id: 7,
+                                                                                    kind: Resolved(
+                                                                                        ResolvedName {
+                                                                                            id: 7,
+                                                                                            span: Span {
+                                                                                                start: 25,
+                                                                                                end: 26,
+                                                                                            },
+                                                                                            resolved: "D",
+                                                                                            original: "D",
+                                                                                        },
+                                                                                    ),
+                                                                                    span: Span {
+                                                                                        start: 25,
+                                                                                        end: 26,
+                                                                                    },
+                                                                                },
+                                                                            ),
+                                                                        ],
+                                                                    ),
+                                                                ],
+                                                            ),
+                                                            span: Span {
+                                                                start: 18,
+                                                                end: 28,
+                                                            },
+                                                        },
+                                                    ),
+                                                    ampersand: None,
+                                                    ellipsis: None,
+                                                    variable: Some(
+                                                        SimpleVariable {
+                                                            id: 9,
+                                                            symbol: "$a",
+                                                            stripped: "a",
+                                                            span: Span {
+                                                                start: 29,
+                                                                end: 31,
+                                                            },
+                                                        },
+                                                    ),
+                                                    text: None,
+                                                },
+                                            ),
+                                        },
+                                    ),
+                                ],
+                            },
+                        },
+                    ),
+                },
+            ],
+        },
+    },
+]
+---

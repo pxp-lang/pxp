@@ -34,6 +34,7 @@ pub struct State<'a> {
     pub namespace_type: Option<NamespaceType>,
     pub attributes: Vec<AttributeGroup>,
     comments: Vec<Comment>,
+    docblock: bool,
 
     // Token Stream
     tokens: &'a [Token],
@@ -57,6 +58,7 @@ impl<'a> State<'a> {
             attributes: vec![],
             imports,
             comments: vec![],
+            docblock: false,
 
             id: 0,
 
@@ -150,6 +152,18 @@ impl<'a> State<'a> {
         }
     }
 
+    pub const fn is_in_docblock(&self) -> bool {
+        self.docblock
+    }
+
+    pub fn enter_docblock(&mut self) {
+        self.docblock = true;
+    }
+
+    pub fn exit_docblock(&mut self) {
+        self.docblock = false;
+    }
+
     /// Check if current token is EOF.
     pub fn is_eof(&self) -> bool {
         if self.cursor >= self.length {
@@ -157,6 +171,16 @@ impl<'a> State<'a> {
         }
 
         self.tokens[self.cursor].kind == TokenKind::Eof
+    }
+
+    pub fn skip_doc_eol(&mut self) {
+        if self.current().kind == TokenKind::PhpDocEol {
+            self.next();
+        }
+
+        while self.current().kind == TokenKind::PhpDocHorizontalWhitespace {
+            self.next();
+        }
     }
 
     fn collect_comments(&mut self) {
@@ -390,7 +414,7 @@ impl<'a> State<'a> {
     }
 
     pub fn strip_leading_namespace_qualifier(&mut self, symbol: &ByteString) -> ByteString {
-        if symbol.starts_with(&[b'\\']) {
+        if symbol.starts_with(b"\\") {
             ByteString::from(&symbol[1..])
         } else {
             symbol.clone()

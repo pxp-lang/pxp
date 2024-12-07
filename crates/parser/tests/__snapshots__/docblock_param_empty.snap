@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 9,
+        id: 10,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 8,
+                id: 9,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -20,16 +20,16 @@
         },
     },
     Statement {
-        id: 18,
+        id: 19,
         kind: Function(
             FunctionStatement {
-                id: 17,
+                id: 18,
                 span: Span {
                     start: 21,
                     end: 36,
                 },
                 comments: CommentGroup {
-                    id: 11,
+                    id: 12,
                     comments: [],
                 },
                 attributes: [],
@@ -39,10 +39,10 @@
                 },
                 ampersand: None,
                 name: Name {
-                    id: 12,
+                    id: 13,
                     kind: Resolved(
                         ResolvedName {
-                            id: 12,
+                            id: 13,
                             span: Span {
                                 start: 30,
                                 end: 31,
@@ -57,13 +57,13 @@
                     },
                 },
                 parameters: FunctionParameterList {
-                    id: 14,
+                    id: 15,
                     span: Span {
                         start: 31,
                         end: 33,
                     },
                     comments: CommentGroup {
-                        id: 13,
+                        id: 14,
                         comments: [],
                     },
                     left_parenthesis: Span {
@@ -81,13 +81,13 @@
                 },
                 return_type: None,
                 body: FunctionBody {
-                    id: 16,
+                    id: 17,
                     span: Span {
                         start: 34,
                         end: 36,
                     },
                     comments: CommentGroup {
-                        id: 15,
+                        id: 16,
                         comments: [],
                     },
                     left_brace: Span {
@@ -107,7 +107,7 @@
             end: 36,
         },
         comments: CommentGroup {
-            id: 10,
+            id: 11,
             comments: [
                 Comment {
                     id: 2,
@@ -117,13 +117,13 @@
                     },
                     kind: DocBlock(
                         DocBlockComment {
-                            id: 6,
+                            id: 7,
                             span: Span {
                                 start: 7,
                                 end: 17,
                             },
                             doc: DocBlock {
-                                id: 7,
+                                id: 8,
                                 span: Span {
                                     start: 7,
                                     end: 17,
@@ -131,14 +131,14 @@
                                 nodes: [
                                     Tag(
                                         DocBlockTagNode {
-                                            id: 5,
+                                            id: 6,
                                             span: Span {
                                                 start: 11,
                                                 end: 17,
                                             },
                                             tag: Param(
                                                 DocBlockParamTag {
-                                                    id: 4,
+                                                    id: 5,
                                                     span: Span {
                                                         start: 11,
                                                         end: 17,
@@ -153,7 +153,18 @@
                                                             "@param",
                                                         ),
                                                     },
-                                                    data_type: None,
+                                                    data_type: Some(
+                                                        DataType {
+                                                            id: 4,
+                                                            kind: Missing,
+                                                            span: Span {
+                                                                start: 18,
+                                                                end: 17,
+                                                            },
+                                                        },
+                                                    ),
+                                                    ampersand: None,
+                                                    ellipsis: None,
                                                     variable: None,
                                                     text: None,
                                                 },
@@ -170,3 +181,13 @@
     },
 ]
 ---
+[
+    Diagnostic {
+        kind: MissingType,
+        severity: Warning,
+        span: Span {
+            start: 18,
+            end: 20,
+        },
+    },
+]

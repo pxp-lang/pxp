@@ -2028,6 +2028,8 @@ DocBlockParamTag:
   span: Span
   tag: Token
   data_type: Option<DataType>
+  ampersand: Option<Span>
+  ellipsis: Option<Span>
   variable: Option<SimpleVariable>
   text: Option<ByteString>
 
