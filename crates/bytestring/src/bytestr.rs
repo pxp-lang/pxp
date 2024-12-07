@@ -52,13 +52,13 @@ impl std::fmt::Debug for ByteStr {
     }
 }
 
-impl<'a, const N: usize> PartialEq<[u8; N]> for ByteStr {
+impl<const N: usize> PartialEq<[u8; N]> for ByteStr {
     fn eq(&self, other: &[u8; N]) -> bool {
         &self.0 == other
     }
 }
 
-impl<'a, const N: usize> PartialEq<[u8; N]> for &ByteStr {
+impl<const N: usize> PartialEq<[u8; N]> for &ByteStr {
     fn eq(&self, other: &[u8; N]) -> bool {
         &self.0 == other
     }
