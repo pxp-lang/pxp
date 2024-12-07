@@ -7,13 +7,11 @@ use crate::ByteStr;
 /// A wrapper for Vec<u8> that provides a human-readable Debug impl and
 /// a few other conveniences.
 #[derive(PartialOrd, PartialEq, Eq, Clone, Hash)]
-pub struct ByteString {
-    pub bytes: Vec<u8>,
-}
+pub struct ByteString(Vec<u8>);
 
 impl ByteString {
     pub fn new(bytes: Vec<u8>) -> Self {
-        ByteString { bytes }
+        ByteString(bytes)
     }
 
     pub fn empty() -> Self {
@@ -21,19 +19,19 @@ impl ByteString {
     }
 
     pub fn extend_with_bytes(&mut self, bytes: &[u8]) {
-        self.bytes.extend_from_slice(bytes);
+        self.0.extend_from_slice(bytes);
     }
 
     pub fn extend(&mut self, other: &ByteString) {
-        self.bytes.extend_from_slice(&other.bytes);
+        self.0.extend_from_slice(&other.0);
     }
 
     pub fn as_bytes(&self) -> &[u8] {
-        &self.bytes
+        &self.0
     }
 
     pub fn coagulate(&self, others: &[ByteString], with: Option<&[u8]>) -> Self {
-        let mut bytes = self.bytes.clone();
+        let mut bytes = self.0.clone();
 
         for other in others {
             if let Some(with) = with {
@@ -55,7 +53,7 @@ impl Default for ByteString {
 
 impl std::fmt::Display for ByteString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for &b in &self.bytes {
+        for &b in &self.0 {
             match b {
                 0 => write!(f, "\\0")?,
                 b'\n' | b'\r' | b'\t' => write!(f, "{}", b as char)?,
@@ -79,7 +77,7 @@ impl std::str::FromStr for ByteString {
 impl std::fmt::Debug for ByteString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "\"")?;
-        for &b in &self.bytes {
+        for &b in &self.0 {
             match b {
                 0 => write!(f, "\\0")?,
                 b'\n' | b'\r' | b'\t' => write!(f, "{}", b.escape_ascii())?,
@@ -94,13 +92,13 @@ impl std::fmt::Debug for ByteString {
 
 impl<const N: usize> PartialEq<&[u8; N]> for ByteString {
     fn eq(&self, other: &&[u8; N]) -> bool {
-        &self.bytes == other
+        &self.0 == other
     }
 }
 
 impl<const N: usize> PartialEq<&[u8; N]> for &ByteString {
     fn eq(&self, other: &&[u8; N]) -> bool {
-        &self.bytes == other
+        &self.0 == other
     }
 }
 
@@ -142,7 +140,7 @@ impl From<String> for ByteString {
 
 impl From<ByteString> for String {
     fn from(bytes: ByteString) -> Self {
-        String::from(from_utf8(&bytes.bytes).unwrap())
+        String::from(from_utf8(&bytes.0).unwrap())
     }
 }
 
@@ -150,23 +148,17 @@ impl Deref for ByteString {
     type Target = Vec<u8>;
 
     fn deref(&self) -> &Vec<u8> {
-        &self.bytes
+        &self.0
     }
 }
 
 impl DerefMut for ByteString {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.bytes
+        &mut self.0
     }
 }
 
-impl From<ByteStr<'_>> for ByteString {
-    fn from(bytes: ByteStr) -> Self {
-        ByteString::new(bytes.to_vec())
-    }
-}
-
-impl From<&ByteStr<'_>> for ByteString {
+impl From<&ByteStr> for ByteString {
     fn from(bytes: &ByteStr) -> Self {
         ByteString::new(bytes.to_vec())
     }
