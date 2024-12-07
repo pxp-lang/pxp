@@ -186,4 +186,15 @@ mod tests {
             r#""\x01\x10\x7f\xff""#
         );
     }
+
+    #[test]
+    fn test_bytestring_as_ref_bytestr() {
+        fn asref(s: &ByteStr) {
+            assert_eq!(s, ByteStr::new(b"abc"));
+        }
+
+        let bs = ByteString::from("abc");
+
+        asref(bs.as_ref());
+    }
 }
