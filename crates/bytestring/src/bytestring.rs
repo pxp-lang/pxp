@@ -164,6 +164,12 @@ impl From<&ByteStr> for ByteString {
     }
 }
 
+impl AsRef<ByteStr> for ByteString {
+    fn as_ref(&self) -> &ByteStr {
+        ByteStr::new(&self.0)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
