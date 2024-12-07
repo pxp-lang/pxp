@@ -1,8 +1,8 @@
+use std::collections::VecDeque;
+
 use crate::error::SyntaxError;
 use crate::error::SyntaxResult;
 use crate::state::source::Source;
-use crate::state::StackFrame;
-use crate::state::State;
 use pxp_bytestring::ByteString;
 
 use pxp_token::OpenTagKind;
@@ -15,24 +15,61 @@ pub mod state;
 
 #[derive(Debug)]
 pub struct Lexer<'a> {
-    state: State,
+    frames: VecDeque<StackFrame>,
     source: Source<'a>,
+}
+
+#[derive(Debug)]
+pub enum StackFrame {
+    Initial,
+    Scripting,
+    Halted,
+    DoubleQuote,
+    ShellExec,
+    DocString(
+        TokenKind,
+        ByteString,
+    ),
+    LookingForVarname,
+    LookingForProperty,
+    VarOffset,
+    DocBlock,
 }
 
 impl<'a> Lexer<'a> {
     pub fn new<B: ?Sized + AsRef<[u8]>>(input: &'a B) -> Self {
         Self {
             source: Source::new(input.as_ref()),
-            state: State::new(),
+            frames: VecDeque::from([StackFrame::Initial]),
         }
     }
 
     /// Tokenize the input in immediate mode, which means that the lexer will immediately
     /// enter scripting state and start parsing PHP tokens.
     pub fn tokenize_in_immediate_mode(&'a mut self) -> SyntaxResult<Vec<Token>> {
-        self.state.replace(StackFrame::Scripting);
+        self.replace(StackFrame::Scripting);
 
         self.tokenize()
+    }
+
+    pub fn frame(&self) -> &StackFrame {
+        self.frames
+            .back()
+            .unwrap_or_else(|| panic!("The lexer has reached an invalid state. This shouldn't happen, but somehow it has."))
+    }
+
+    pub fn replace(&mut self, state: StackFrame) {
+        let i = self.frames.len() - 1;
+
+        self.frames[i] = state;
+    }
+
+    pub fn enter(&mut self, state: StackFrame) {
+        self.frames.push_back(state);
+    }
+
+    pub fn exit(&mut self) {
+        self.frames.pop_back();
     }
 
     pub fn tokenize(&'a mut self) -> SyntaxResult<Vec<Token<'a>>> {
@@ -41,7 +78,7 @@ impl<'a> Lexer<'a> {
         while !self.source.eof() {
             self.source.start_token();
 
-            match self.state.frame()? {
+            match self.frame()? {
                 // The "Initial" state is used to parse inline HTML. It is essentially a catch-all
                 // state that will build up a single token buffer until it encounters an open tag
                 // of some description.
@@ -599,7 +636,7 @@ impl<'a> Lexer<'a> {
             }
         }
 
-        self.state.exit();
+        self.exit();
 
         Ok(())
     }
@@ -613,7 +650,7 @@ impl<'a> Lexer<'a> {
                 self.source.read_and_skip(5);
                 let tag_span = self.source.span();
 
-                self.state.replace(StackFrame::Scripting);
+                self.replace(StackFrame::Scripting);
 
                 if !inline_span.is_empty() {
                     tokens.push(Token::new_with_symbol(
@@ -637,7 +674,7 @@ impl<'a> Lexer<'a> {
 
                 let tag_span = self.source.span();
 
-                self.state.replace(StackFrame::Scripting);
+                self.replace(StackFrame::Scripting);
 
                 if !inline_span.is_empty() {
                     tokens.push(Token::new_with_symbol(
@@ -660,7 +697,7 @@ impl<'a> Lexer<'a> {
                 self.source.skip(2);
                 let tag_span = self.source.span();
 
-                self.state.replace(StackFrame::Scripting);
+                self.replace(StackFrame::Scripting);
 
                 if !inline_span.is_empty() {
                     tokens.push(Token::new_with_symbol(
@@ -717,7 +754,7 @@ impl<'a> Lexer<'a> {
             }
             [b'`', ..] => {
                 self.source.next();
-                self.state.replace(StackFrame::ShellExec);
+                self.replace(StackFrame::ShellExec);
                 (TokenKind::Backtick, false)
             }
             [b'@', ..] => {
@@ -748,7 +785,7 @@ impl<'a> Lexer<'a> {
                 // This is a close tag, we can enter "Initial" mode again.
                 self.source.skip(2);
 
-                self.state.replace(StackFrame::Initial);
+                self.replace(StackFrame::Initial);
 
                 (TokenKind::CloseTag, false)
             }
@@ -873,7 +910,7 @@ impl<'a> Lexer<'a> {
                             kind = TokenKind::OpenPhpDoc;
                             with_symbol = false;
 
-                            self.state.enter(StackFrame::DocBlock);
+                            self.enter(StackFrame::DocBlock);
 
                             break;
                         }
@@ -1011,7 +1048,7 @@ impl<'a> Lexer<'a> {
                 }
 
                 self.source.next();
-                self.state.replace(StackFrame::DocString(kind, label.clone()));
+                self.replace(StackFrame::DocString(kind, label.clone()));
 
                 (kind, true)
             }
@@ -1049,12 +1086,12 @@ impl<'a> Lexer<'a> {
             }
             [b'{', ..] => {
                 self.source.next();
-                self.state.enter(StackFrame::Scripting);
+                self.enter(StackFrame::Scripting);
                 (TokenKind::LeftBrace, false)
             }
             [b'}', ..] => {
                 self.source.next();
-                self.state.exit();
+                self.exit();
                 (TokenKind::RightBrace, false)
             }
             [b'(', ..] => {
@@ -1320,7 +1357,7 @@ impl<'a> Lexer<'a> {
                         match self.source.read(3) {
                             [b'(', b')', b';'] => {
                                 self.source.skip(3);
-                                self.state.replace(StackFrame::Halted);
+                                self.replace(StackFrame::Halted);
                             }
                             _ => {
                                 return Err(SyntaxError::InvalidHaltCompiler(
@@ -1371,7 +1408,7 @@ impl<'a> Lexer<'a> {
                     buffer_span = Some(self.source.span());
                     self.source.start_token();
                     self.source.skip(2);
-                    self.state.enter(StackFrame::LookingForVarname);
+                    self.enter(StackFrame::LookingForVarname);
                     break (TokenKind::DollarLeftBrace, false, self.source.span());
                 }
                 [b'{', b'$', ..] => {
@@ -1379,14 +1416,14 @@ impl<'a> Lexer<'a> {
                     self.source.start_token();
                     // Intentionally only consume the left brace.
                     self.source.next();
-                    self.state.enter(StackFrame::Scripting);
+                    self.enter(StackFrame::Scripting);
                     break (TokenKind::LeftBrace, false, self.source.span());
                 }
                 [b'"', ..] => {
                     buffer_span = Some(self.source.span());
                     self.source.start_token();
                     self.source.next();
-                    self.state.replace(StackFrame::Scripting);
+                    self.replace(StackFrame::Scripting);
                     break (TokenKind::DoubleQuote, false, self.source.span());
                 }
                 &[b'\\', b'"' | b'\\' | b'$', ..] => {
@@ -1471,9 +1508,9 @@ impl<'a> Lexer<'a> {
                     var.extend(self.consume_identifier());
 
                     match self.source.read(4) {
-                        [b'[', ..] => self.state.enter(StackFrame::VarOffset),
+                        [b'[', ..] => self.enter(StackFrame::VarOffset),
                         [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
-                            self.state.enter(StackFrame::LookingForProperty)
+                            self.enter(StackFrame::LookingForProperty)
                         }
                         _ => {}
                     }
@@ -1521,7 +1558,7 @@ impl<'a> Lexer<'a> {
                     buffer_span = Some(self.source.span());
                     self.source.start_token();
                     self.source.skip(2);
-                    self.state.enter(StackFrame::LookingForVarname);
+                    self.enter(StackFrame::LookingForVarname);
                     break (TokenKind::DollarLeftBrace, false);
                 }
                 [b'{', b'$'] => {
@@ -1529,12 +1566,12 @@ impl<'a> Lexer<'a> {
                     self.source.start_token();
                     // Intentionally only consume the left brace.
                     self.source.next();
-                    self.state.enter(StackFrame::Scripting);
+                    self.enter(StackFrame::Scripting);
                     break (TokenKind::LeftBrace, false);
                 }
                 [b'`', ..] => {
                     self.source.next();
-                    self.state.replace(StackFrame::Scripting);
+                    self.replace(StackFrame::Scripting);
                     break (TokenKind::Backtick, false);
                 }
                 [b'$', ident_start!()] => {
@@ -1542,9 +1579,9 @@ impl<'a> Lexer<'a> {
                     var.extend(self.consume_identifier());
 
                     match self.source.read(4) {
-                        [b'[', ..] => self.state.enter(StackFrame::VarOffset),
+                        [b'[', ..] => self.enter(StackFrame::VarOffset),
                         [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
-                            self.state.enter(StackFrame::LookingForProperty)
+                            self.enter(StackFrame::LookingForProperty)
                         }
                         _ => {}
                     }
@@ -1598,7 +1635,7 @@ impl<'a> Lexer<'a> {
                     buffer_span = Some(self.source.span());
                     self.source.start_token();
                     self.source.skip(2);
-                    self.state.enter(StackFrame::LookingForVarname);
+                    self.enter(StackFrame::LookingForVarname);
                     break (TokenKind::DollarLeftBrace, false);
                 }
                 [b'{', b'$', ..] => {
@@ -1606,7 +1643,7 @@ impl<'a> Lexer<'a> {
                     self.source.start_token();
                     // Intentionally only consume the left brace.
                     self.source.next();
-                    self.state.enter(StackFrame::Scripting);
+                    self.enter(StackFrame::Scripting);
                     break (TokenKind::LeftBrace, false);
                 }
                 [b'$', ident_start!(), ..] => {
@@ -1616,9 +1653,9 @@ impl<'a> Lexer<'a> {
                     var.extend(self.consume_identifier());
 
                     match self.source.read(4) {
-                        [b'[', ..] => self.state.enter(StackFrame::VarOffset),
+                        [b'[', ..] => self.enter(StackFrame::VarOffset),
                         [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
-                            self.state.enter(StackFrame::LookingForProperty)
+                            self.enter(StackFrame::LookingForProperty)
                         }
                         _ => {}
                     }
@@ -1635,7 +1672,7 @@ impl<'a> Lexer<'a> {
                         buffer_span = Some(self.source.span());
                         self.source.start_token();
                         self.source.skip(label.len());
-                        self.state.replace(StackFrame::Scripting);
+                        self.replace(StackFrame::Scripting);
                         break (TokenKind::EndHeredoc, true);
                     }
 
@@ -1648,7 +1685,7 @@ impl<'a> Lexer<'a> {
 
                         self.source.start_token();
                         self.source.skip(label.len());
-                        self.state.replace(StackFrame::Scripting);
+                        self.replace(StackFrame::Scripting);
 
                         break (TokenKind::EndHeredoc, true);
                     }
@@ -1708,7 +1745,7 @@ impl<'a> Lexer<'a> {
                         buffer_span = Some(self.source.span());
                         self.source.start_token();
                         self.source.skip(label.len());
-                        self.state.replace(StackFrame::Scripting);
+                        self.replace(StackFrame::Scripting);
                         last_was_newline = true;
                         break (TokenKind::EndNowdoc, true);
                     }
@@ -1725,7 +1762,7 @@ impl<'a> Lexer<'a> {
                         // the process along by reading over the label and breaking out
                         // with the EndHeredoc token, storing the kind and amount of whitespace.
                         self.source.skip(label.len());
-                        self.state.replace(StackFrame::Scripting);
+                        self.replace(StackFrame::Scripting);
                         break (TokenKind::EndNowdoc, true);
                     }
                 }
@@ -1774,7 +1811,7 @@ impl<'a> Lexer<'a> {
             if let [b'[' | b'}'] = self.source.peek(ident.len(), 1) {
                 self.source.skip(ident.len());
                 let span = self.source.span();
-                self.state.replace(StackFrame::Scripting);
+                self.replace(StackFrame::Scripting);
                 return Ok(Some(Token::new_with_symbol(
                     TokenKind::Identifier,
                     span,
@@ -1783,7 +1820,7 @@ impl<'a> Lexer<'a> {
             }
         }
 
-        self.state.replace(StackFrame::Scripting);
+        self.replace(StackFrame::Scripting);
 
         Ok(None)
     }
@@ -1800,7 +1837,7 @@ impl<'a> Lexer<'a> {
             }
             &[ident_start!(), ..] => {
                 self.consume_identifier();
-                self.state.exit();
+                self.exit();
                 (TokenKind::Identifier, true)
             }
             // Should be impossible as we already looked ahead this far inside double_quote.
@@ -1838,7 +1875,7 @@ impl<'a> Lexer<'a> {
             }
             [b']', ..] => {
                 self.source.next();
-                self.state.exit();
+                self.exit();
                 (TokenKind::RightBracket, false)
             }
             &[ident_start!(), ..] => {
@@ -1979,7 +2016,7 @@ impl<'a> Lexer<'a> {
         Ok(if constant {
             TokenKind::LiteralDoubleQuotedString
         } else {
-            self.state.replace(StackFrame::DoubleQuote);
+            self.replace(StackFrame::DoubleQuote);
             TokenKind::StringPart
         })
     }
