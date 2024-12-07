@@ -20,8 +20,6 @@ pub enum StackFrame {
     DocString(
         TokenKind,
         ByteString,
-        DocStringIndentationKind,
-        DocStringIndentationAmount,
     ),
     LookingForVarname,
     LookingForProperty,
@@ -44,7 +42,7 @@ impl State {
     pub fn frame(&self) -> SyntaxResult<&StackFrame> {
         self.stack
             .back()
-            .ok_or_else(|| SyntaxError::UnpredictableState)
+            .ok_or_else(|| panic!("The lexer has reached an invalid state. This shouldn't happen, but somehow it has."))
     }
 
     pub fn replace(&mut self, state: StackFrame) {

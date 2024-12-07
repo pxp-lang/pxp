@@ -82,7 +82,7 @@ impl<'a> Lexer<'a> {
                 // The shell exec state is entered when inside of a execution string (`).
                 StackFrame::ShellExec => self.shell_exec(&mut tokens)?,
                 // The doc string state is entered when tokenizing heredocs and nowdocs.
-                StackFrame::DocString(kind, label, ..) => {
+                StackFrame::DocString(kind, label) => {
                     let label = label.clone();
 
                     match kind {
@@ -1012,12 +1012,7 @@ impl<'a> Lexer<'a> {
                 }
 
                 self.source.next();
-                self.state.replace(StackFrame::DocString(
-                    kind,
-                    label.clone(),
-                    DocStringIndentationKind::None,
-                    0,
-                ));
+                self.state.replace(StackFrame::DocString(kind, label.clone()));
 
                 (kind, true)
             }
