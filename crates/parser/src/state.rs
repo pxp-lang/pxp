@@ -6,10 +6,7 @@ use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_span::Span;
 use pxp_token::{Token, TokenKind};
 
-use crate::{
-    internal::identifiers::is_soft_reserved_identifier,
-    ParserDiagnostic,
-};
+use crate::{internal::identifiers::is_soft_reserved_identifier, ParserDiagnostic};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum NamespaceType {

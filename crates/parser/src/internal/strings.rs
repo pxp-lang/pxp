@@ -118,7 +118,7 @@ pub fn nowdoc(state: &mut State) -> Expression {
 
     let end = state.current();
 
-    let span = if ! state.is_eof() && end.kind != TokenKind::EndNowdoc {
+    let span = if !state.is_eof() && end.kind != TokenKind::EndNowdoc {
         state.diagnostic(
             ParserDiagnostic::ExpectedToken {
                 expected: vec![TokenKind::EndNowdoc],

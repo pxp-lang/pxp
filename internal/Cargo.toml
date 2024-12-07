@@ -48,7 +48,3 @@ path = "bin/node_visit.rs"
 [[bin]]
 name = "infer"
 path = "bin/infer.rs"
-
-[[bin]]
-name = "multi-thread-parse"
-path = "bin/multi_thread_parse.rs"

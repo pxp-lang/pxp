@@ -4,7 +4,7 @@ use snappers::snap;
 
 mod parser;
 
-use parser::{snapper, process};
+use parser::{process, snapper};
 
 // DocBlocks
 snap!(

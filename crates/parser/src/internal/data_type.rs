@@ -222,7 +222,8 @@ fn docblock_atomic(state: &mut State) -> Type<Name> {
             }
         }
         _ => {
-            let r#type = optional_simple_data_type(state).unwrap_or_else(|| docblock_missing_type(state));
+            let r#type =
+                optional_simple_data_type(state).unwrap_or_else(|| docblock_missing_type(state));
 
             if r#type == Type::Missing {
                 return Type::Missing;
@@ -246,7 +247,7 @@ fn docblock_atomic(state: &mut State) -> Type<Name> {
             } else {
                 r#type
             }
-        },
+        }
     }
 }
 
@@ -254,7 +255,7 @@ fn docblock_generic(state: &mut State, lhs: Type<Name>) -> Type<Name> {
     state.next();
     let mut generic_types = vec![];
     let mut is_first = true;
-    
+
     while is_first || state.current().kind == TokenKind::Comma {
         if state.current().kind == TokenKind::Comma {
             state.next();
@@ -262,7 +263,7 @@ fn docblock_generic(state: &mut State, lhs: Type<Name>) -> Type<Name> {
 
         state.skip_doc_eol();
 
-        if ! is_first && state.current().kind == TokenKind::GreaterThan {
+        if !is_first && state.current().kind == TokenKind::GreaterThan {
             break;
         }
 
@@ -294,7 +295,7 @@ fn docblock_array_or_offset_access(state: &mut State, lhs: Type<Name>) -> Type<N
 
     while let TokenKind::LeftBracket = state.current().kind {
         state.next();
-        
+
         // FIXME: Add offset type parsing here.
 
         if state.current().kind == TokenKind::RightBracket {

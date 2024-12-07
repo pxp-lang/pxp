@@ -1640,10 +1640,7 @@ impl<'a, 'b> Lexer<'a> {
                         self.state.source.start_token();
                         self.state.source.skip(label.len());
                         self.state.replace(StackFrame::Scripting);
-                        break (
-                            TokenKind::EndHeredoc,
-                            true,
-                        );
+                        break (TokenKind::EndHeredoc, true);
                     }
 
                     self.skip_horizontal_whitespace();
@@ -1657,10 +1654,7 @@ impl<'a, 'b> Lexer<'a> {
                         self.state.source.skip(label.len());
                         self.state.replace(StackFrame::Scripting);
 
-                        break (
-                            TokenKind::EndHeredoc,
-                            true,
-                        );
+                        break (TokenKind::EndHeredoc, true);
                     }
                 }
                 &[b, ..] => {
@@ -1720,10 +1714,7 @@ impl<'a, 'b> Lexer<'a> {
                         self.state.source.skip(label.len());
                         self.state.replace(StackFrame::Scripting);
                         last_was_newline = true;
-                        break (
-                            TokenKind::EndNowdoc,
-                            true,
-                        );
+                        break (TokenKind::EndNowdoc, true);
                     }
 
                     self.skip_horizontal_whitespace();
@@ -1739,10 +1730,7 @@ impl<'a, 'b> Lexer<'a> {
                         // with the EndHeredoc token, storing the kind and amount of whitespace.
                         self.state.source.skip(label.len());
                         self.state.replace(StackFrame::Scripting);
-                        break (
-                            TokenKind::EndNowdoc,
-                            true,
-                        );
+                        break (TokenKind::EndNowdoc, true);
                     }
                 }
                 &[b, ..] => {

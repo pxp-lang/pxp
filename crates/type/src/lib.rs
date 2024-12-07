@@ -84,7 +84,16 @@ impl<N: Debug + Display> Display for Type<N> {
         match &self {
             Type::Named(inner) => write!(f, "{}", inner),
             Type::NamedWithGenerics(inner, templates) => {
-                write!(f, "{}<{}>", inner, templates.iter().map(|t| t.to_string()).collect::<Vec<String>>().join(", "))
+                write!(
+                    f,
+                    "{}<{}>",
+                    inner,
+                    templates
+                        .iter()
+                        .map(|t| t.to_string())
+                        .collect::<Vec<String>>()
+                        .join(", ")
+                )
             }
             Type::Nullable(inner) => write!(f, "?{}", inner),
             Type::Union(inner) => write!(
