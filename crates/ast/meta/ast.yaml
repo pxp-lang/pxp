@@ -1986,8 +1986,16 @@ HashMarkComment:
   content: ByteString
 
 DocBlockComment:
+  feature: docblocks
+  children: [doc]
   span: Span
   doc: DocBlock
+
+DocBlockCommentDisabled:
+  feature: "!docblocks"
+  rename: "DocBlockComment"
+  span: Span
+  content: ByteString
 
 DocBlock:
   children: [nodes]

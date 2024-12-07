@@ -860,10 +860,12 @@ impl<'a, 'b> Lexer<'a> {
                 self.state.source.next();
 
                 let mut kind = TokenKind::MultiLineComment;
+                #[allow(unused)]
                 let mut with_symbol = true;
 
                 loop {
                     match self.state.source.read(2) {
+                        #[cfg(feature = "docblocks")]
                         [b'*', b'*', ..] => {
                             self.state.source.skip(2);
 
@@ -877,6 +879,11 @@ impl<'a, 'b> Lexer<'a> {
                         [b'*', b'/', ..] => {
                             self.state.source.skip(2);
                             break;
+                        }
+                        #[cfg(not(feature = "docblocks"))]
+                        [b'*', b'*', ..] if kind != TokenKind::DocBlockComment => {
+                            self.state.source.skip(2);
+                            kind = TokenKind::DocBlockComment;
                         }
                         &[..] => {
                             self.state.source.next();

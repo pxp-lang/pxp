@@ -5,6 +5,7 @@ pub(crate) mod classes;
 pub(crate) mod constants;
 pub(crate) mod control_flow;
 pub(crate) mod data_type;
+#[cfg(feature = "docblocks")]
 pub(crate) mod docblock;
 pub(crate) mod enums;
 pub(crate) mod functions;

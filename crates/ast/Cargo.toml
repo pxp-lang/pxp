@@ -9,3 +9,7 @@ pxp-token = { path = "../token" }
 pxp-span = { path = "../span" }
 pxp-type = { path = "../type" }
 pxp-bytestring = { version = "0.1.0", path = "../bytestring" }
+
+[features]
+default = []
+docblocks = []

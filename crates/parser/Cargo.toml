@@ -14,3 +14,7 @@ pxp-diagnostics = { path = "../diagnostics" }
 
 [dev-dependencies]
 snappers = { path = "../snappers" }
+
+[features]
+default = []
+docblocks = ["pxp-ast/docblocks", "pxp-lexer/docblocks"]

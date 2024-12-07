@@ -4,6 +4,25 @@ use Symfony\Component\Yaml\Yaml;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+function feature_flag($structure): string
+{
+    if (! is_array($structure)) {
+        return '';
+    }
+
+    if (! isset($structure['feature'])) {
+        return '';
+    }
+
+    $feature = $structure['feature'];
+
+    if (str_starts_with($feature, '!')) {
+        return "#[cfg(not(feature = \"" . substr($feature, 1) . "\"))]\n";
+    }
+
+    return "#[cfg(feature = \"{$feature}\")]\n";
+}
+
 class VisitorGenerator
 {
     public array $yaml;
@@ -48,14 +67,13 @@ class VisitorGenerator
                 continue;
             }
 
-            $method = sprintf("fn %s(&mut self, node: %s%s) {\n", $this->generateVisitorMethodName($type), $template->getNodeTypePrefix(), $this->stripTypeToRoot($type));
+            $method = feature_flag($fields) . sprintf("fn %s(&mut self, node: %s%s) {\n", $this->generateVisitorMethodName($type, $fields), $template->getNodeTypePrefix(), $this->stripTypeToRoot($type, $fields));
             $fields = $this->getAllVisitableFields($fields);
 
             if (count($fields) > 0) {
                 $method .= sprintf("%s(self, node);\n", $this->generateWalkMethodName($type, $template));
             }
 
-            close_method:
             $method .= "}\n";
 
             $methods[] = $method;
@@ -74,6 +92,7 @@ class VisitorGenerator
             }
 
             $isEnum = $this->isEnum($fields);
+            $originalFields = $fields;
             $fields = $this->getAllVisitableFields($fields);
 
             // We don't need to generate `walk` methods for things that
@@ -81,8 +100,12 @@ class VisitorGenerator
             if (count($fields) === 0) {
                 continue;
             }
+            
+            if (isset($fields['rename'])) {
+                $type = $fields['rename'];
+            }
 
-            $function = sprintf(
+            $function = feature_flag($originalFields) . sprintf(
                 "pub fn %s<V: %s + ?Sized>(visitor: &mut V, node: %s%s) {\n",
                 $this->generateWalkMethodName($type, $template),
                 class_basename($template),
@@ -220,7 +243,7 @@ class VisitorGenerator
         return collect($fields)
             ->filter(function (mixed $field, string $key) {
                 // These are reserved keys.
-                if (in_array($key, ['as', 'derive', 'node', 'children'])) {
+                if (in_array($key, ['as', 'derive', 'node', 'children', 'feature', 'rename'])) {
                     return false;
                 }
 
@@ -235,10 +258,14 @@ class VisitorGenerator
             ->all();
     }
 
-    private function generateVisitorMethodName(string $type): string
+    private function generateVisitorMethodName(string $type, $fields = null): string
     {
         if ($type === 'Block') {
             return 'visit';
+        }
+
+        if (is_array($fields) && isset($fields['rename'])) {
+            $type = $fields['rename'];
         }
         
         return str($this->stripTypeToRoot($type))->snake()->prepend('visit_');
@@ -249,8 +276,12 @@ class VisitorGenerator
         return str($this->stripTypeToRoot($type))->snake()->prepend('walk_')->append($template->getWalkMethodSuffix());
     }
 
-    private function stripTypeToRoot(string $type): string
+    private function stripTypeToRoot(string $type, $fields = null): string
     {
+        if (isset($fields['rename'])) {
+            $type = $fields['rename'];
+        }
+
         return str($type)->afterLast('<')->before('>');
     }
 

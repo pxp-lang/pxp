@@ -2401,6 +2401,7 @@ pub fn walk_comment_kind_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut
     }
 }
 
+#[cfg(feature = "docblocks")]
 pub fn walk_doc_block_comment_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
     node: &mut DocBlockComment,

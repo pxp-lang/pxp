@@ -7,7 +7,7 @@ use pxp_span::Span;
 use pxp_token::{Token, TokenKind};
 
 use crate::{
-    internal::{docblock::docblock, identifiers::is_soft_reserved_identifier},
+    internal::identifiers::is_soft_reserved_identifier,
     ParserDiagnostic,
 };
 
@@ -196,6 +196,7 @@ impl<'a> State<'a> {
                 TokenKind::SingleLineComment
                     | TokenKind::MultiLineComment
                     | TokenKind::HashMarkComment
+                    | TokenKind::DocBlockComment
                     | TokenKind::OpenPhpDoc,
             ) {
                 break;
@@ -252,11 +253,29 @@ impl<'a> State<'a> {
                     },
                     true,
                 ),
+                #[cfg(not(feature = "docblocks"))]
+                Token {
+                    kind: TokenKind::DocBlockComment,
+                    span,
+                    symbol,
+                } => (
+                    Comment {
+                        id,
+                        span: *span,
+                        kind: CommentKind::DocBlock(DocBlockComment {
+                            id: comment_id,
+                            span: *span,
+                            content: symbol.as_ref().unwrap().clone(),
+                        }),
+                    },
+                    true,
+                ),
+                #[cfg(feature = "docblocks")]
                 Token {
                     kind: TokenKind::OpenPhpDoc,
                     ..
                 } => {
-                    let docblock = docblock(self);
+                    let docblock = crate::internal::docblock::docblock(self);
 
                     (
                         Comment {

@@ -22,7 +22,7 @@ use std::ptr::NonNull;
 
 RUST;
 
-$reserved = ['as', 'derive', 'node', 'children'];
+$reserved = ['as', 'derive', 'node', 'children', 'feature', 'rename'];
 
 function is_spanned(string $node, array $structure): bool {
     if (isset($structure['span'])) {
@@ -46,11 +46,31 @@ function is_spanned(string $node, array $structure): bool {
     return false;
 }
 
+function feature_flag($structure): string {
+    if (! is_array($structure)) {
+        return '';
+    }
+
+    if (! isset($structure['feature'])) {
+        return '';
+    }
+
+    $feature = $structure['feature'];
+
+    if (str_starts_with($feature, '!')) {
+        return "#[cfg(not(feature = \"" . substr($feature, 1) . "\"))]\n";
+    }
+
+    return "#[cfg(feature = \"{$feature}\")]\n";
+}
+
 foreach ($ast as $node => $structure) {
     if (is_string($structure)) {
         $output .= "pub type {$node} = {$structure};\n\n";
         continue;
     }
+
+    $output .= feature_flag($structure);
 
     $derive = 'Debug, PartialEq, Eq, Clone';
 
@@ -60,6 +80,10 @@ foreach ($ast as $node => $structure) {
 
     $output .= "#[derive({$derive})]\n";
     $enum = isset($structure['as']) && $structure['as'] === 'Enum';
+
+    if (isset($structure['rename'])) {
+        $node = $structure['rename'];
+    }
 
     if ($enum) {
         $output .= "pub enum {$node} {\n";
@@ -109,9 +133,8 @@ foreach ($ast as $node => $structure) {
 
     $output .= "}\n\n";
 
-    if (
-        !isset($structure['node'])
-    ) {
+    if (!isset($structure['node'])) {
+        $output .= feature_flag($structure);
         $output .= "impl HasId for {$node} {\n";
         $output .= "    fn id(&self) -> NodeId {\n";
 
@@ -143,6 +166,7 @@ foreach ($ast as $node => $structure) {
         continue;
     }
 
+    $output .= feature_flag($structure);
     $output .= "impl Spanned for {$node} {\n";
     $output .= "    fn span(&self) -> Span {\n";
     
@@ -181,6 +205,12 @@ foreach ($ast as $node => $structure) {
         continue;
     }
 
+    $output .= feature_flag($structure);
+
+    if (isset($structure['rename'])) {
+        $node = $structure['rename'];
+    }
+
     $output .= "    {$node}(&'a {$node}),\n";
 }
 
@@ -197,6 +227,12 @@ foreach ($ast as $node => $structure) {
         continue;
     }
 
+    if (isset($structure['rename'])) {
+        $node = $structure['rename'];
+    }
+
+    $output .= feature_flag($structure);
+
     $kebab = strtolower(Str::snake($node));
 
     $output .= "    pub fn as_{$kebab}(self) -> Option<&'a {$node}> {\n";
@@ -205,6 +241,8 @@ foreach ($ast as $node => $structure) {
     $output .= "            _ => None,\n";
     $output .= "        }\n";
     $output .= "    }\n\n";
+
+    $output .= feature_flag($structure);
 
     $output .= "    pub fn is_{$kebab}(&self) -> bool {\n";
     $output .= "        matches!(&self.kind, NodeKind::{$node}(_))\n";
@@ -223,6 +261,11 @@ foreach ($ast as $node => $structure) {
         continue;
     }
 
+    if (isset($structure['rename'])) {
+        $node = $structure['rename'];
+    }
+
+    $output .= feature_flag($structure);
     $output .= "    NodeKind::{$node}(_) => \"{$node}\",\n";
 }
 
@@ -237,6 +280,12 @@ foreach ($ast as $node => $structure) {
     if (! isset($structure['children'])) {
         continue;
     }
+
+    if (isset($structure['rename'])) {
+        $node = $structure['rename'];
+    }
+
+    $output .= feature_flag($structure);
 
     $output .= "    NodeKind::{$node}(node) => {\n";
 
@@ -361,6 +410,12 @@ foreach ($ast as $node => $structure) {
         continue;
     }
 
+    if (isset($structure['rename'])) {
+        $node = $structure['rename'];
+    }
+
+    $output .= feature_flag($structure);
+
     $output .= "NodeKind::{$node}(node) => NonNull::from(node).cast(),\n";
 }
 
@@ -381,6 +436,12 @@ foreach ($ast as $node => $structure) {
     if (is_string($structure)) {
         continue;
     }
+
+    if (isset($structure['rename'])) {
+        $node = $structure['rename'];
+    }
+
+    $output .= feature_flag($structure);
 
     $output .= "impl<'a> From<&'a {$node}> for Node<'a> {\n";
     $output .= "    fn from(node: &'a {$node}) -> Self {\n";

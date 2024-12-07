@@ -2149,6 +2149,7 @@ pub fn walk_comment_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &CommentKin
     }
 }
 
+#[cfg(feature = "docblocks")]
 pub fn walk_doc_block_comment<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockComment) {
     visitor.visit_doc_block(&node.doc);
 }

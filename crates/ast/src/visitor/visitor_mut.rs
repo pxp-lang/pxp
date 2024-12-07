@@ -967,9 +967,13 @@ pub trait VisitorMut {
 
     fn visit_hash_mark_comment(&mut self, node: &mut HashMarkComment) {}
 
+    #[cfg(feature = "docblocks")]
     fn visit_doc_block_comment(&mut self, node: &mut DocBlockComment) {
         walk_doc_block_comment_mut(self, node);
     }
+
+    #[cfg(not(feature = "docblocks"))]
+    fn visit_doc_block_comment(&mut self, node: &mut DocBlockComment) {}
 
     fn visit_doc_block(&mut self, node: &mut DocBlock) {
         walk_doc_block_mut(self, node);

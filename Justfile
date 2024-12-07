@@ -1,5 +1,6 @@
 test:
     cargo test --lib --bins --tests
+    cargo test --lib --bins --tests --features docblocks
 
 tokenise +args:
     RUSTFLAGS=-Awarnings cargo build -q --package pxp-internal --bin tokenise --release
@@ -13,18 +14,11 @@ bench-tokenise +args:
 parse +args:
     RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin parse -- {{args}}
 
-multi-thread-parse +args:
-    RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin multi-thread-parse -- {{args}}
-
 node-finder +args:
     RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin node-finder -- {{args}}
 
 infer +args:
     RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin infer -- {{args}}
-
-pls:
-    cargo build --package pls
-    just --working-directory ./crates/pls/editors/vscode --justfile=./crates/pls/editors/vscode/Justfile package-install
 
 generate-ast:
     php ./meta/scripts/generate-ast.php
@@ -34,34 +28,30 @@ generate-visitor:
     php ./meta/scripts/generate-visitor.php
     cargo fmt --package pxp-ast
 
-generate-node-finder:
-    php ./meta/scripts/generate-node-finder.php
-    cargo fmt --package pxp-node-finder
-
-bench-parser:
+bench-parser +args:
     cargo build --release --bin parse
     hyperfine --warmup=1 --runs=1 \
-        --command-name="PHP (AST Ext)" "php ./benches/parsing/core.php ./playground/framework" \
-        --command-name="PXP (Release)" "./target/release/parse ./playground/framework --no-output"
+        --command-name="PHP (AST Ext)" "php ./benches/parsing/core.php {{args}}" \
+        --command-name="PXP (Release)" "./target/release/parse {{args}} --no-output"
 
-bench-lexer:
+bench-lexer +args:
     cargo build --release --bin tokenise
     hyperfine --warmup=1 --runs=1 \
-        --command-name="PHP (Core)" "php ./benches/lexing/php.php ./playground/framework" \
-        --command-name="PHP (Core + Opcache)" "php -d opcache.enable_cli=1 ./benches/lexing/php.php ./playground/framework" \
-        --command-name="PXP (Release)" "./target/release/tokenise ./playground/framework --no-output"
+        --command-name="PHP (Core)" "php ./benches/lexing/php.php {{args}}" \
+        --command-name="PHP (Core + Opcache)" "php -d opcache.enable_cli=1 ./benches/lexing/php.php {{args}}" \
+        --command-name="PXP (Release)" "./target/release/tokenise {{args}} --no-output"
 
-bench-indexer:
+bench-indexer +args:
     cargo build --release --bin index
     hyperfine --warmup=1 --runs=1 \
-        --command-name="Indexer (Release)" "./target/release/index ./playground/framework --no-output"
+        --command-name="Indexer (Release)" "./target/release/index {{args}} --no-output"
 
-bench-visitor:
+bench-visitor +args:
     cargo build --release --bin visit
     hyperfine --warmup=1 --runs=1 \
-        --command-name="Visitor (Release)" "./target/release/visit ./playground/framework --no-output"
+        --command-name="Visitor (Release)" "./target/release/visit {{args}} --no-output"
 
-bench-node-visitor:
+bench-node-visitor +args:
     cargo build --release --bin node-visit
     hyperfine --warmup=1 --runs=1 \
-        --command-name="Node Visitor (Release)" "./target/release/node-visit ./playground/framework --no-output"
+        --command-name="Node Visitor (Release)" "./target/release/node-visit {{args}} --no-output"
