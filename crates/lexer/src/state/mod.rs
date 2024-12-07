@@ -30,15 +30,13 @@ pub enum StackFrame {
 }
 
 #[derive(Debug)]
-pub struct State<'a> {
-    pub source: Source<'a>,
+pub struct State {
     pub stack: VecDeque<StackFrame>,
 }
 
-impl<'a> State<'a> {
-    pub fn new(source: Source<'a>) -> Self {
+impl State {
+    pub fn new() -> Self {
         Self {
-            source,
             stack: VecDeque::from([StackFrame::Initial]),
         }
     }
@@ -46,7 +44,7 @@ impl<'a> State<'a> {
     pub fn frame(&self) -> SyntaxResult<&StackFrame> {
         self.stack
             .back()
-            .ok_or_else(|| SyntaxError::UnpredictableState(self.source.span()))
+            .ok_or_else(|| SyntaxError::UnpredictableState)
     }
 
     pub fn replace(&mut self, state: StackFrame) {

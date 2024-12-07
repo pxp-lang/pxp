@@ -16,29 +16,31 @@ pub mod state;
 
 #[derive(Debug)]
 pub struct Lexer<'a> {
-    state: State<'a>,
+    state: State,
+    source: Source<'a>,
 }
 
-impl<'a, 'b> Lexer<'a> {
+impl<'a> Lexer<'a> {
     pub fn new<B: ?Sized + AsRef<[u8]>>(input: &'a B) -> Self {
         Self {
-            state: State::new(Source::new(input.as_ref())),
+            source: Source::new(input.as_ref()),
+            state: State::new(),
         }
     }
 
     /// Tokenize the input in immediate mode, which means that the lexer will immediately
     /// enter scripting state and start parsing PHP tokens.
-    pub fn tokenize_in_immediate_mode(&'b mut self) -> SyntaxResult<Vec<Token>> {
+    pub fn tokenize_in_immediate_mode(&'a mut self) -> SyntaxResult<Vec<Token>> {
         self.state.replace(StackFrame::Scripting);
 
         self.tokenize()
     }
 
-    pub fn tokenize(&'b mut self) -> SyntaxResult<Vec<Token>> {
+    pub fn tokenize(&'a mut self) -> SyntaxResult<Vec<Token<'a>>> {
         let mut tokens = Vec::new();
 
-        while !self.state.source.eof() {
-            self.state.source.start_token();
+        while !self.source.eof() {
+            self.source.start_token();
 
             match self.state.frame()? {
                 // The "Initial" state is used to parse inline HTML. It is essentially a catch-all
@@ -52,10 +54,10 @@ impl<'a, 'b> Lexer<'a> {
 
                     // If we have consumed whitespace, we should restart the token's position tracking
                     // to ensure we accurately track the span of the token.
-                    self.state.source.start_token();
+                    self.source.start_token();
 
                     // If we have consumed whitespace and then reached the end of the file, we should break.
-                    if self.state.source.eof() {
+                    if self.source.eof() {
                         break;
                     }
 
@@ -65,12 +67,12 @@ impl<'a, 'b> Lexer<'a> {
                 // In this state, all the text that follows is no longer parsed as PHP as is collected
                 // into a single "InlineHtml" token (kind of cheating, oh well).
                 StackFrame::Halted => {
-                    let symbol = self.state.source.read_remaining();
+                    let symbol = self.source.read_remaining();
 
-                    tokens.push(Token::new_with_symbol(
+                    tokens.push(Token::new(
                         TokenKind::InlineHtml,
-                        self.state.source.span(),
-                        ByteString::from(symbol),
+                        self.source.span(),
+                        symbol,
                     ));
                     break;
                 }
@@ -104,7 +106,7 @@ impl<'a, 'b> Lexer<'a> {
                     tokens.push(self.looking_for_property()?);
                 }
                 StackFrame::VarOffset => {
-                    if self.state.source.eof() {
+                    if self.source.eof() {
                         break;
                     }
 
@@ -119,7 +121,7 @@ impl<'a, 'b> Lexer<'a> {
 
         tokens.push(Token::new_without_symbol(
             TokenKind::Eof,
-            self.state.source.span(),
+            self.source.span(),
         ));
 
         Ok(tokens)
@@ -132,7 +134,7 @@ impl<'a, 'b> Lexer<'a> {
             .current()
             .map(|u: &u8| u == &b' ' || u == &b'\t')
         {
-            self.state.source.next();
+            self.source.next();
         }
     }
 
@@ -143,7 +145,7 @@ impl<'a, 'b> Lexer<'a> {
             .current()
             .map(|u: &u8| u.is_ascii_whitespace())
         {
-            self.state.source.next();
+            self.source.next();
         }
     }
 
@@ -155,8 +157,8 @@ impl<'a, 'b> Lexer<'a> {
             .current()
             .map(|u: &u8| u.is_ascii_whitespace())
         {
-            buffer.push(*self.state.source.current().unwrap());
-            self.state.source.next();
+            buffer.push(*self.source.current().unwrap());
+            self.source.next();
         }
         buffer
     }
@@ -166,19 +168,19 @@ impl<'a, 'b> Lexer<'a> {
         // We need to consume horizontal whitespace.
         self.skip_horizontal_whitespace();
 
-        if matches!(self.state.source.current(), Some(b'*'))
-            && !matches!(self.state.source.read(2), [b'*', b'/', ..])
+        if matches!(self.source.current(), Some(b'*'))
+            && !matches!(self.source.read(2), [b'*', b'/', ..])
         {
-            self.state.source.next();
+            self.source.next();
 
             // We also want to skip the next space character here.
-            if let Some(b' ') = self.state.source.current() {
-                self.state.source.next();
+            if let Some(b' ') = self.source.current() {
+                self.source.next();
             }
         }
 
-        let span = self.state.source.span();
-        let symbol = self.state.source.span_range(span);
+        let span = self.source.span();
+        let symbol = self.source.span_range(span);
 
         Ok(Token::new_with_symbol(
             TokenKind::PhpDocEol,
@@ -187,17 +189,17 @@ impl<'a, 'b> Lexer<'a> {
         ))
     }
 
-    fn docblock(&mut self, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
-        while !self.state.source.eof() {
-            self.state.source.start_token();
+    fn docblock(&mut self, tokens: &mut Vec<Token<'a>>) -> SyntaxResult<()> {
+        while !self.source.eof() {
+            self.source.start_token();
 
-            if matches!(self.state.source.read(2), [b'\r', b'\n', ..] | [b'\n', ..]) {
-                let b = self.state.source.current().unwrap();
+            if matches!(self.source.read(2), [b'\r', b'\n', ..] | [b'\n', ..]) {
+                let b = self.source.current().unwrap();
 
                 if b == &b'\r' {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 } else {
-                    self.state.source.skip(1);
+                    self.source.skip(1);
                 }
 
                 tokens.push(self.docblock_eol()?);
@@ -205,16 +207,16 @@ impl<'a, 'b> Lexer<'a> {
                 continue;
             }
 
-            match &self.state.source.read(2) {
+            match &self.source.read(2) {
                 [b'@', ident_start!(), ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
 
-                    while let Some(ident_start!() | b'\\') = self.state.source.current() {
-                        self.state.source.next();
+                    while let Some(ident_start!() | b'\\') = self.source.current() {
+                        self.source.next();
                     }
 
-                    let span = self.state.source.span();
-                    let symbol = self.state.source.span_range(span);
+                    let span = self.source.span();
+                    let symbol = self.source.span_range(span);
 
                     tokens.push(Token::new_with_symbol(
                         TokenKind::PhpDocTag,
@@ -226,15 +228,15 @@ impl<'a, 'b> Lexer<'a> {
                 }
                 [b'$', ident_start!(), ..] => {
                     let variable = self.tokenize_variable();
-                    let span = self.state.source.span();
-                    let symbol = self.state.source.span_range(span);
+                    let span = self.source.span();
+                    let symbol = self.source.span_range(span);
 
                     tokens.push(Token::new_with_symbol(variable, span, symbol.into()));
                 }
                 [b'\\', ident_start!(), ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let mut span = self.state.source.span();
+                    let mut span = self.source.span();
 
                     let kind = match self.scripting()? {
                         Token {
@@ -279,19 +281,19 @@ impl<'a, 'b> Lexer<'a> {
                     tokens.push(Token::new_with_symbol(
                         kind,
                         span,
-                        self.state.source.span_range(span).into(),
+                        self.source.span_range(span).into(),
                     ));
                 }
                 [b @ ident_start!(), ..] => {
-                    self.state.source.next();
+                    self.source.next();
                     let mut qualified = false;
                     let mut last_was_slash = false;
 
                     let mut buffer = vec![*b];
-                    while let Some(next @ ident!() | next @ b'\\') = self.state.source.current() {
+                    while let Some(next @ ident!() | next @ b'\\') = self.source.current() {
                         if matches!(next, ident!()) {
                             buffer.push(*next);
-                            self.state.source.next();
+                            self.source.next();
                             last_was_slash = false;
                             continue;
                         }
@@ -300,7 +302,7 @@ impl<'a, 'b> Lexer<'a> {
                             qualified = true;
                             last_was_slash = true;
                             buffer.push(*next);
-                            self.state.source.next();
+                            self.source.next();
                             continue;
                         }
 
@@ -313,166 +315,166 @@ impl<'a, 'b> Lexer<'a> {
                         identifier_to_keyword(&buffer).unwrap_or(TokenKind::Identifier)
                     };
 
-                    let span = self.state.source.span();
-                    let symbol = self.state.source.span_range(span);
+                    let span = self.source.span();
+                    let symbol = self.source.span_range(span);
 
                     tokens.push(Token::new_with_symbol(kind, span, symbol.into()));
                 }
                 [b'|', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Pipe, span));
                 }
                 [b'&', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Ampersand, span));
                 }
                 [b'!', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Bang, span));
                 }
                 [b'?', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Question, span));
                 }
                 [b'(', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::LeftParen, span));
                 }
                 [b')', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::RightParen, span));
                 }
                 [b'[', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::LeftBracket, span));
                 }
                 [b']', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::RightBracket, span));
                 }
                 [b'{', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::LeftBrace, span));
                 }
                 [b'}', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::RightBrace, span));
                 }
                 [b'<', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::LessThan, span));
                 }
                 [b'>', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::GreaterThan, span));
                 }
                 [b'.', b'.', b'.', ..] => {
-                    self.state.source.skip(3);
+                    self.source.skip(3);
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Ellipsis, span));
                 }
                 [b'=', b'>', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::DoubleArrow, span));
                 }
                 [b'-', b'>', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Arrow, span));
                 }
                 [b'=', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Equals, span));
                 }
                 [b':', b':', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::DoubleColon, span));
                 }
                 [b':', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Colon, span));
                 }
                 [b',', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Comma, span));
                 }
                 [b'0'..=b'9', ..] => {
                     let number = self.tokenize_number()?;
-                    let span = self.state.source.span();
-                    let symbol = self.state.source.span_range(span);
+                    let span = self.source.span();
+                    let symbol = self.source.span_range(span);
 
                     tokens.push(Token::new_with_symbol(number, span, symbol.into()));
                 }
                 // We only need to consider these things strings if they are closed before the end of the line.
                 [b'\'', ..] => {
                     // First we can grab the current offset, in case we need to backtrack.
-                    let offset = self.state.source.offset();
+                    let offset = self.source.offset();
 
-                    self.state.source.next();
+                    self.source.next();
 
                     let is_single_quoted_string = loop {
-                        let Some(c) = self.state.source.current() else {
+                        let Some(c) = self.source.current() else {
                             break false;
                         };
 
                         // If we encounter a single quote, we can break out of the loop since we've found the end of the string.
                         if *c == b'\'' {
-                            self.state.source.next();
+                            self.source.next();
                             break true;
                         }
 
@@ -481,12 +483,12 @@ impl<'a, 'b> Lexer<'a> {
                             break false;
                         }
 
-                        self.state.source.next();
+                        self.source.next();
                     };
 
                     if is_single_quoted_string {
-                        let span = self.state.source.span();
-                        let symbol = self.state.source.span_range(span);
+                        let span = self.source.span();
+                        let symbol = self.source.span_range(span);
 
                         tokens.push(Token::new_with_symbol(
                             TokenKind::LiteralSingleQuotedString,
@@ -494,11 +496,11 @@ impl<'a, 'b> Lexer<'a> {
                             symbol.into(),
                         ));
                     } else {
-                        self.state.source.goto(offset);
-                        self.state.source.next();
+                        self.source.goto(offset);
+                        self.source.next();
 
-                        let span = self.state.source.span();
-                        let symbol = self.state.source.span_range(span);
+                        let span = self.source.span();
+                        let symbol = self.source.span_range(span);
 
                         tokens.push(Token::new_with_symbol(
                             TokenKind::PhpDocOther,
@@ -508,18 +510,18 @@ impl<'a, 'b> Lexer<'a> {
                     }
                 }
                 [b'"', ..] => {
-                    let offset = self.state.source.offset();
+                    let offset = self.source.offset();
 
-                    self.state.source.next();
+                    self.source.next();
 
                     let is_single_quoted_string = loop {
-                        let Some(c) = self.state.source.current() else {
+                        let Some(c) = self.source.current() else {
                             break false;
                         };
 
                         // If we encounter a single quote, we can break out of the loop since we've found the end of the string.
                         if *c == b'"' {
-                            self.state.source.next();
+                            self.source.next();
                             break true;
                         }
 
@@ -528,12 +530,12 @@ impl<'a, 'b> Lexer<'a> {
                             break false;
                         }
 
-                        self.state.source.next();
+                        self.source.next();
                     };
 
                     if is_single_quoted_string {
-                        let span = self.state.source.span();
-                        let symbol = self.state.source.span_range(span);
+                        let span = self.source.span();
+                        let symbol = self.source.span_range(span);
 
                         tokens.push(Token::new_with_symbol(
                             TokenKind::LiteralDoubleQuotedString,
@@ -541,11 +543,11 @@ impl<'a, 'b> Lexer<'a> {
                             symbol.into(),
                         ));
                     } else {
-                        self.state.source.goto(offset);
-                        self.state.source.next();
+                        self.source.goto(offset);
+                        self.source.next();
 
-                        let span = self.state.source.span();
-                        let symbol = self.state.source.span_range(span);
+                        let span = self.source.span();
+                        let symbol = self.source.span_range(span);
 
                         tokens.push(Token::new_with_symbol(
                             TokenKind::PhpDocOther,
@@ -555,27 +557,27 @@ impl<'a, 'b> Lexer<'a> {
                     }
                 }
                 [b'*', b'/', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
 
                     tokens.push(Token::new_without_symbol(
                         TokenKind::ClosePhpDoc,
-                        self.state.source.span(),
+                        self.source.span(),
                     ));
 
                     break;
                 }
                 [b'*', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
+                    let span = self.source.span();
 
                     tokens.push(Token::new_without_symbol(TokenKind::Asterisk, span));
                 }
                 [b' ' | b'\t', ..] => {
                     self.skip_horizontal_whitespace();
 
-                    let span = self.state.source.span();
-                    let symbol = self.state.source.span_range(span);
+                    let span = self.source.span();
+                    let symbol = self.source.span_range(span);
 
                     tokens.push(Token::new_with_symbol(
                         TokenKind::PhpDocHorizontalWhitespace,
@@ -584,10 +586,10 @@ impl<'a, 'b> Lexer<'a> {
                     ));
                 }
                 _ => {
-                    self.state.source.next();
+                    self.source.next();
 
-                    let span = self.state.source.span();
-                    let symbol = self.state.source.span_range(span);
+                    let span = self.source.span();
+                    let symbol = self.source.span_range(span);
 
                     tokens.push(Token::new_with_symbol(
                         TokenKind::PhpDocOther,
@@ -604,13 +606,13 @@ impl<'a, 'b> Lexer<'a> {
     }
 
     fn initial(&mut self, tokens: &mut Vec<Token>) -> SyntaxResult<()> {
-        while self.state.source.current().is_some() {
-            if self.state.source.at_case_insensitive(b"<?php", 5) {
-                let inline_span = self.state.source.span();
+        while self.source.current().is_some() {
+            if self.source.at_case_insensitive(b"<?php", 5) {
+                let inline_span = self.source.span();
 
-                self.state.source.start_token();
-                self.state.source.read_and_skip(5);
-                let tag_span = self.state.source.span();
+                self.source.start_token();
+                self.source.read_and_skip(5);
+                let tag_span = self.source.span();
 
                 self.state.replace(StackFrame::Scripting);
 
@@ -618,7 +620,7 @@ impl<'a, 'b> Lexer<'a> {
                     tokens.push(Token::new_with_symbol(
                         TokenKind::InlineHtml,
                         inline_span,
-                        ByteString::from(self.state.source.span_range(inline_span)),
+                        ByteString::from(self.source.span_range(inline_span)),
                     ));
                 }
 
@@ -628,13 +630,13 @@ impl<'a, 'b> Lexer<'a> {
                 ));
 
                 return Ok(());
-            } else if self.state.source.at_case_insensitive(b"<?=", 3) {
-                let inline_span = self.state.source.span();
+            } else if self.source.at_case_insensitive(b"<?=", 3) {
+                let inline_span = self.source.span();
 
-                self.state.source.start_token();
-                self.state.source.skip(3);
+                self.source.start_token();
+                self.source.skip(3);
 
-                let tag_span = self.state.source.span();
+                let tag_span = self.source.span();
 
                 self.state.replace(StackFrame::Scripting);
 
@@ -642,7 +644,7 @@ impl<'a, 'b> Lexer<'a> {
                     tokens.push(Token::new_with_symbol(
                         TokenKind::InlineHtml,
                         inline_span,
-                        ByteString::from(self.state.source.span_range(inline_span)),
+                        ByteString::from(self.source.span_range(inline_span)),
                     ));
                 }
 
@@ -652,12 +654,12 @@ impl<'a, 'b> Lexer<'a> {
                 ));
 
                 return Ok(());
-            } else if self.state.source.at_case_insensitive(b"<?", 2) {
-                let inline_span = self.state.source.span();
+            } else if self.source.at_case_insensitive(b"<?", 2) {
+                let inline_span = self.source.span();
 
-                self.state.source.start_token();
-                self.state.source.skip(2);
-                let tag_span = self.state.source.span();
+                self.source.start_token();
+                self.source.skip(2);
+                let tag_span = self.source.span();
 
                 self.state.replace(StackFrame::Scripting);
 
@@ -665,7 +667,7 @@ impl<'a, 'b> Lexer<'a> {
                     tokens.push(Token::new_with_symbol(
                         TokenKind::InlineHtml,
                         inline_span,
-                        ByteString::from(self.state.source.span_range(inline_span)),
+                        ByteString::from(self.source.span_range(inline_span)),
                     ));
                 }
 
@@ -677,140 +679,140 @@ impl<'a, 'b> Lexer<'a> {
                 return Ok(());
             }
 
-            self.state.source.next();
+            self.source.next();
         }
 
-        let inline_span = self.state.source.span();
+        let inline_span = self.source.span();
 
         tokens.push(Token::new_with_symbol(
             TokenKind::InlineHtml,
             inline_span,
-            ByteString::from(self.state.source.span_range(inline_span)),
+            ByteString::from(self.source.span_range(inline_span)),
         ));
 
         Ok(())
     }
 
     fn scripting(&mut self) -> SyntaxResult<Token> {
-        let (kind, with_symbol): (TokenKind, bool) = match self.state.source.read(3) {
+        let (kind, with_symbol): (TokenKind, bool) = match self.source.read(3) {
             [b'!', b'=', b'='] => {
-                self.state.source.skip(3);
+                self.source.skip(3);
 
                 (TokenKind::BangDoubleEquals, false)
             }
             [b'?', b'?', b'='] => {
-                self.state.source.skip(3);
+                self.source.skip(3);
                 (TokenKind::DoubleQuestionEquals, false)
             }
             [b'?', b'-', b'>'] => {
-                self.state.source.skip(3);
+                self.source.skip(3);
                 (TokenKind::QuestionArrow, false)
             }
             [b'=', b'=', b'='] => {
-                self.state.source.skip(3);
+                self.source.skip(3);
                 (TokenKind::TripleEquals, false)
             }
             [b'.', b'.', b'.'] => {
-                self.state.source.skip(3);
+                self.source.skip(3);
                 (TokenKind::Ellipsis, false)
             }
             [b'`', ..] => {
-                self.state.source.next();
+                self.source.next();
                 self.state.replace(StackFrame::ShellExec);
                 (TokenKind::Backtick, false)
             }
             [b'@', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::At, false)
             }
             [b'!', b'=', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::BangEquals, false)
             }
             [b'!', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Bang, false)
             }
             [b'&', b'&', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::BooleanAnd, false)
             }
             [b'&', b'=', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::AmpersandEquals, false)
             }
             [b'&', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Ampersand, false)
             }
             [b'?', b'>', ..] => {
                 // This is a close tag, we can enter "Initial" mode again.
-                self.state.source.skip(2);
+                self.source.skip(2);
 
                 self.state.replace(StackFrame::Initial);
 
                 (TokenKind::CloseTag, false)
             }
             [b'?', b'?', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::DoubleQuestion, false)
             }
             [b'?', b':', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::QuestionColon, false)
             }
             [b'?', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Question, false)
             }
             [b'=', b'>', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::DoubleArrow, false)
             }
             [b'=', b'=', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::DoubleEquals, false)
             }
             [b'=', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Equals, false)
             }
             // Single quoted string.
             [b'\'', ..] => {
-                self.state.source.skip(1);
+                self.source.skip(1);
                 (self.tokenize_single_quote_string()?, true)
             }
             [b'b' | b'B', b'\'', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (self.tokenize_single_quote_string()?, true)
             }
             [b'"', ..] => {
-                self.state.source.skip(1);
+                self.source.skip(1);
                 (self.tokenize_double_quote_string()?, true)
             }
             [b'b' | b'B', b'"', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (self.tokenize_double_quote_string()?, true)
             }
             [b'$', ident_start!(), ..] => (self.tokenize_variable(), true),
             [b'$', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Dollar, false)
             }
             [b'.', b'=', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::DotEquals, false)
             }
             [b'0'..=b'9', ..] => (self.tokenize_number()?, true),
             [b'.', b'0'..=b'9', ..] => (self.tokenize_number()?, true),
             [b'.', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Dot, false)
             }
             [b'\\', ident_start!(), ..] => {
-                self.state.source.next();
+                self.source.next();
 
-                let mut span = self.state.source.span();
+                let mut span = self.source.span();
 
                 match self.scripting()? {
                     Token {
@@ -853,21 +855,21 @@ impl<'a, 'b> Lexer<'a> {
                 }
             }
             [b'\\', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::NamespaceSeparator, false)
             }
             [b'/', b'*', ..] => {
-                self.state.source.next();
+                self.source.next();
 
                 let mut kind = TokenKind::MultiLineComment;
                 #[allow(unused)]
                 let mut with_symbol = true;
 
                 loop {
-                    match self.state.source.read(2) {
+                    match self.source.read(2) {
                         #[cfg(feature = "docblocks")]
                         [b'*', b'*', ..] => {
-                            self.state.source.skip(2);
+                            self.source.skip(2);
 
                             kind = TokenKind::OpenPhpDoc;
                             with_symbol = false;
@@ -877,16 +879,16 @@ impl<'a, 'b> Lexer<'a> {
                             break;
                         }
                         [b'*', b'/', ..] => {
-                            self.state.source.skip(2);
+                            self.source.skip(2);
                             break;
                         }
                         #[cfg(not(feature = "docblocks"))]
                         [b'*', b'*', ..] if kind != TokenKind::DocBlockComment => {
-                            self.state.source.skip(2);
+                            self.source.skip(2);
                             kind = TokenKind::DocBlockComment;
                         }
                         &[..] => {
-                            self.state.source.next();
+                            self.source.next();
                         }
                     }
                 }
@@ -894,89 +896,89 @@ impl<'a, 'b> Lexer<'a> {
                 (kind, with_symbol)
             }
             [b'#', b'[', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::Attribute, false)
             }
             [ch @ b'/', b'/', ..] | [ch @ b'#', ..] => {
                 let kind = if *ch == b'/' {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                     TokenKind::SingleLineComment
                 } else {
-                    self.state.source.next();
+                    self.source.next();
                     TokenKind::HashMarkComment
                 };
 
-                while let Some(c) = self.state.source.current() {
+                while let Some(c) = self.source.current() {
                     if *c == b'\n' {
-                        self.state.source.next();
+                        self.source.next();
                         break;
                     }
 
-                    if self.state.source.read(2) == [b'?', b'>'] {
+                    if self.source.read(2) == [b'?', b'>'] {
                         break;
                     }
 
-                    self.state.source.next();
+                    self.source.next();
                 }
 
                 (kind, true)
             }
             [b'/', b'=', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::SlashEquals, false)
             }
             [b'/', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Slash, false)
             }
             [b'*', b'*', b'=', ..] => {
-                self.state.source.skip(3);
+                self.source.skip(3);
                 (TokenKind::PowEquals, false)
             }
             [b'<', b'<', b'='] => {
-                self.state.source.skip(3);
+                self.source.skip(3);
 
                 (TokenKind::LeftShiftEquals, false)
             }
             [b'<', b'=', b'>'] => {
-                self.state.source.skip(3);
+                self.source.skip(3);
                 (TokenKind::Spaceship, false)
             }
             [b'>', b'>', b'='] => {
-                self.state.source.skip(3);
+                self.source.skip(3);
                 (TokenKind::RightShiftEquals, false)
             }
             [b'<', b'<', b'<'] => {
-                self.state.source.skip(3);
+                self.source.skip(3);
                 let mut buffer = b"<<<".to_vec();
                 buffer.extend(self.read_and_skip_whitespace());
 
-                let kind = match self.state.source.read(1) {
+                let kind = match self.source.read(1) {
                     [b'\''] => {
                         buffer.push(b'\'');
-                        self.state.source.next();
+                        self.source.next();
                         TokenKind::StartNowdoc
                     }
                     [b'"'] => {
                         buffer.push(b'"');
-                        self.state.source.next();
+                        self.source.next();
                         TokenKind::StartHeredoc
                     }
                     [_, ..] => TokenKind::StartHeredoc,
                     [] => {
-                        return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span()));
+                        return Err(SyntaxError::UnexpectedEndOfFile(self.source.span()));
                     }
                 };
 
                 let label: ByteString = match self.peek_identifier() {
                     Some(_) => self.consume_identifier().into(),
                     None => {
-                        return match self.state.source.current() {
+                        return match self.source.current() {
                             Some(c) => Err(SyntaxError::UnexpectedCharacter(
                                 *c,
-                                self.state.source.span(),
+                                self.source.span(),
                             )),
-                            None => Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
+                            None => Err(SyntaxError::UnexpectedEndOfFile(self.source.span())),
                         }
                     }
                 };
@@ -984,32 +986,32 @@ impl<'a, 'b> Lexer<'a> {
                 buffer.extend_from_slice(&label);
 
                 if kind == TokenKind::StartNowdoc {
-                    match self.state.source.current() {
+                    match self.source.current() {
                         Some(b'\'') => {
                             buffer.push(b'\'');
-                            self.state.source.next();
+                            self.source.next();
                         }
                         _ => {
                             // FIXME: this is most likely a bug, what if current is none?
                             return Err(SyntaxError::UnexpectedCharacter(
-                                *self.state.source.current().unwrap(),
-                                self.state.source.span(),
+                                *self.source.current().unwrap(),
+                                self.source.span(),
                             ));
                         }
                     };
-                } else if let Some(b'"') = self.state.source.current() {
+                } else if let Some(b'"') = self.source.current() {
                     buffer.push(b'"');
-                    self.state.source.next();
+                    self.source.next();
                 }
 
-                if !matches!(self.state.source.current(), Some(b'\n')) {
+                if !matches!(self.source.current(), Some(b'\n')) {
                     return Err(SyntaxError::UnexpectedCharacter(
-                        *self.state.source.current().unwrap(),
-                        self.state.source.span(),
+                        *self.source.current().unwrap(),
+                        self.source.span(),
                     ));
                 }
 
-                self.state.source.next();
+                self.source.next();
                 self.state.replace(StackFrame::DocString(
                     kind,
                     label.clone(),
@@ -1020,49 +1022,49 @@ impl<'a, 'b> Lexer<'a> {
                 (kind, true)
             }
             [b'*', b'*', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::Pow, false)
             }
             [b'*', b'=', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::AsteriskEquals, false)
             }
             [b'*', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Asterisk, false)
             }
             [b'|', b'|', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::BooleanOr, false)
             }
             [b'|', b'=', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::PipeEquals, false)
             }
             [b'|', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Pipe, false)
             }
             [b'^', b'=', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::CaretEquals, false)
             }
             [b'^', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Caret, false)
             }
             [b'{', ..] => {
-                self.state.source.next();
+                self.source.next();
                 self.state.enter(StackFrame::Scripting);
                 (TokenKind::LeftBrace, false)
             }
             [b'}', ..] => {
-                self.state.source.next();
+                self.source.next();
                 self.state.exit();
                 (TokenKind::RightBrace, false)
             }
             [b'(', ..] => {
-                self.state.source.next();
+                self.source.next();
 
                 // Inlined so we can add whitespace to the buffer.
                 while let Some(true) = self
@@ -1071,120 +1073,120 @@ impl<'a, 'b> Lexer<'a> {
                     .current()
                     .map(|u: &u8| u.is_ascii_whitespace())
                 {
-                    self.state.source.next();
+                    self.source.next();
                 }
 
-                if self.state.source.at_case_insensitive(b"int", 3) {
-                    if self.state.source.at_case_insensitive(b"integer", 7)
-                        && self.state.source.peek_ignoring_whitespace(7, 1) == [b')']
+                if self.source.at_case_insensitive(b"int", 3) {
+                    if self.source.at_case_insensitive(b"integer", 7)
+                        && self.source.peek_ignoring_whitespace(7, 1) == [b')']
                     {
-                        self.state.source.read_and_skip(7);
+                        self.source.read_and_skip(7);
                         self.read_and_skip_whitespace();
-                        self.state.source.read_and_skip(1);
+                        self.source.read_and_skip(1);
 
                         (TokenKind::IntegerCast, true)
-                    } else if self.state.source.peek_ignoring_whitespace(3, 1) == [b')'] {
-                        self.state.source.read_and_skip(3);
+                    } else if self.source.peek_ignoring_whitespace(3, 1) == [b')'] {
+                        self.source.read_and_skip(3);
                         self.read_and_skip_whitespace();
-                        self.state.source.read_and_skip(1);
+                        self.source.read_and_skip(1);
 
                         (TokenKind::IntCast, true)
                     } else {
                         (TokenKind::LeftParen, false)
                     }
-                } else if self.state.source.at_case_insensitive(b"bool", 4) {
-                    if self.state.source.at_case_insensitive(b"boolean", 7)
-                        && self.state.source.peek_ignoring_whitespace(7, 1) == [b')']
+                } else if self.source.at_case_insensitive(b"bool", 4) {
+                    if self.source.at_case_insensitive(b"boolean", 7)
+                        && self.source.peek_ignoring_whitespace(7, 1) == [b')']
                     {
-                        self.state.source.read_and_skip(7);
+                        self.source.read_and_skip(7);
                         self.read_and_skip_whitespace();
-                        self.state.source.read_and_skip(1);
+                        self.source.read_and_skip(1);
 
                         (TokenKind::BooleanCast, true)
-                    } else if self.state.source.peek_ignoring_whitespace(4, 1) == [b')'] {
-                        self.state.source.read_and_skip(4);
+                    } else if self.source.peek_ignoring_whitespace(4, 1) == [b')'] {
+                        self.source.read_and_skip(4);
                         self.read_and_skip_whitespace();
-                        self.state.source.read_and_skip(1);
+                        self.source.read_and_skip(1);
 
                         (TokenKind::BoolCast, true)
                     } else {
                         (TokenKind::LeftParen, true)
                     }
-                } else if self.state.source.at_case_insensitive(b"float", 5) {
-                    if self.state.source.peek_ignoring_whitespace(5, 1) == [b')'] {
-                        self.state.source.read_and_skip(5);
+                } else if self.source.at_case_insensitive(b"float", 5) {
+                    if self.source.peek_ignoring_whitespace(5, 1) == [b')'] {
+                        self.source.read_and_skip(5);
                         self.read_and_skip_whitespace();
-                        self.state.source.read_and_skip(1);
+                        self.source.read_and_skip(1);
 
                         (TokenKind::FloatCast, true)
                     } else {
                         (TokenKind::LeftParen, true)
                     }
-                } else if self.state.source.at_case_insensitive(b"double", 6) {
-                    if self.state.source.peek_ignoring_whitespace(6, 1) == [b')'] {
-                        self.state.source.read_and_skip(6);
+                } else if self.source.at_case_insensitive(b"double", 6) {
+                    if self.source.peek_ignoring_whitespace(6, 1) == [b')'] {
+                        self.source.read_and_skip(6);
                         self.read_and_skip_whitespace();
-                        self.state.source.read_and_skip(1);
+                        self.source.read_and_skip(1);
 
                         (TokenKind::DoubleCast, true)
                     } else {
                         (TokenKind::LeftParen, true)
                     }
-                } else if self.state.source.at_case_insensitive(b"real", 4) {
-                    if self.state.source.peek_ignoring_whitespace(4, 1) == [b')'] {
-                        self.state.source.read_and_skip(4);
+                } else if self.source.at_case_insensitive(b"real", 4) {
+                    if self.source.peek_ignoring_whitespace(4, 1) == [b')'] {
+                        self.source.read_and_skip(4);
                         self.read_and_skip_whitespace();
-                        self.state.source.read_and_skip(1);
+                        self.source.read_and_skip(1);
 
                         (TokenKind::RealCast, true)
                     } else {
                         (TokenKind::LeftParen, true)
                     }
-                } else if self.state.source.at_case_insensitive(b"string", 6) {
-                    if self.state.source.peek_ignoring_whitespace(6, 1) == [b')'] {
-                        self.state.source.read_and_skip(6);
+                } else if self.source.at_case_insensitive(b"string", 6) {
+                    if self.source.peek_ignoring_whitespace(6, 1) == [b')'] {
+                        self.source.read_and_skip(6);
                         self.read_and_skip_whitespace();
-                        self.state.source.read_and_skip(1);
+                        self.source.read_and_skip(1);
 
                         (TokenKind::StringCast, true)
                     } else {
                         (TokenKind::LeftParen, true)
                     }
-                } else if self.state.source.at_case_insensitive(b"binary", 6) {
-                    if self.state.source.peek_ignoring_whitespace(6, 1) == [b')'] {
-                        self.state.source.read_and_skip(6);
+                } else if self.source.at_case_insensitive(b"binary", 6) {
+                    if self.source.peek_ignoring_whitespace(6, 1) == [b')'] {
+                        self.source.read_and_skip(6);
                         self.read_and_skip_whitespace();
-                        self.state.source.read_and_skip(1);
+                        self.source.read_and_skip(1);
 
                         (TokenKind::BinaryCast, true)
                     } else {
                         (TokenKind::LeftParen, true)
                     }
-                } else if self.state.source.at_case_insensitive(b"array", 5) {
-                    if self.state.source.peek_ignoring_whitespace(5, 1) == [b')'] {
-                        self.state.source.read_and_skip(5);
+                } else if self.source.at_case_insensitive(b"array", 5) {
+                    if self.source.peek_ignoring_whitespace(5, 1) == [b')'] {
+                        self.source.read_and_skip(5);
                         self.read_and_skip_whitespace();
-                        self.state.source.read_and_skip(1);
+                        self.source.read_and_skip(1);
 
                         (TokenKind::ArrayCast, true)
                     } else {
                         (TokenKind::LeftParen, true)
                     }
-                } else if self.state.source.at_case_insensitive(b"object", 6) {
-                    if self.state.source.peek_ignoring_whitespace(6, 1) == [b')'] {
-                        self.state.source.read_and_skip(6);
+                } else if self.source.at_case_insensitive(b"object", 6) {
+                    if self.source.peek_ignoring_whitespace(6, 1) == [b')'] {
+                        self.source.read_and_skip(6);
                         self.read_and_skip_whitespace();
-                        self.state.source.read_and_skip(1);
+                        self.source.read_and_skip(1);
 
                         (TokenKind::ObjectCast, true)
                     } else {
                         (TokenKind::LeftParen, true)
                     }
-                } else if self.state.source.at_case_insensitive(b"unset", 5) {
-                    if self.state.source.peek_ignoring_whitespace(5, 1) == [b')'] {
-                        self.state.source.read_and_skip(5);
+                } else if self.source.at_case_insensitive(b"unset", 5) {
+                    if self.source.peek_ignoring_whitespace(5, 1) == [b')'] {
+                        self.source.read_and_skip(5);
                         self.read_and_skip_whitespace();
-                        self.state.source.read_and_skip(1);
+                        self.source.read_and_skip(1);
 
                         (TokenKind::UnsetCast, true)
                     } else {
@@ -1195,111 +1197,111 @@ impl<'a, 'b> Lexer<'a> {
                 }
             }
             [b')', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::RightParen, false)
             }
             [b';', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::SemiColon, false)
             }
             [b'+', b'+', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::Increment, false)
             }
             [b'+', b'=', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::PlusEquals, false)
             }
             [b'+', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Plus, false)
             }
             [b'%', b'=', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::PercentEquals, false)
             }
             [b'%', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Percent, false)
             }
             [b'-', b'-', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::Decrement, false)
             }
             [b'-', b'>', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::Arrow, false)
             }
             [b'-', b'=', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::MinusEquals, false)
             }
             [b'-', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Minus, false)
             }
             [b'<', b'<', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::LeftShift, false)
             }
             [b'<', b'=', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::LessThanEquals, false)
             }
             [b'<', b'>', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::AngledLeftRight, false)
             }
             [b'<', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::LessThan, false)
             }
             [b'>', b'>', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::RightShift, false)
             }
             [b'>', b'=', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::GreaterThanEquals, false)
             }
             [b'>', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::GreaterThan, false)
             }
             [b',', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Comma, false)
             }
             [b'[', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::LeftBracket, false)
             }
             [b']', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::RightBracket, false)
             }
             [b':', b':', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::DoubleColon, false)
             }
             [b':', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Colon, false)
             }
             [b'~', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::BitwiseNot, false)
             }
             [b @ ident_start!(), ..] => {
-                self.state.source.next();
+                self.source.next();
                 let mut qualified = false;
                 let mut last_was_slash = false;
 
                 let mut buffer = vec![*b];
-                while let Some(next @ ident!() | next @ b'\\') = self.state.source.current() {
+                while let Some(next @ ident!() | next @ b'\\') = self.source.current() {
                     if matches!(next, ident!()) {
                         buffer.push(*next);
-                        self.state.source.next();
+                        self.source.next();
                         last_was_slash = false;
                         continue;
                     }
@@ -1308,7 +1310,7 @@ impl<'a, 'b> Lexer<'a> {
                         qualified = true;
                         last_was_slash = true;
                         buffer.push(*next);
-                        self.state.source.next();
+                        self.source.next();
                         continue;
                     }
 
@@ -1321,14 +1323,14 @@ impl<'a, 'b> Lexer<'a> {
                     let kind = identifier_to_keyword(&buffer).unwrap_or(TokenKind::Identifier);
 
                     if kind == TokenKind::HaltCompiler {
-                        match self.state.source.read(3) {
+                        match self.source.read(3) {
                             [b'(', b')', b';'] => {
-                                self.state.source.skip(3);
+                                self.source.skip(3);
                                 self.state.replace(StackFrame::Halted);
                             }
                             _ => {
                                 return Err(SyntaxError::InvalidHaltCompiler(
-                                    self.state.source.span(),
+                                    self.source.span(),
                                 ))
                             }
                         }
@@ -1340,14 +1342,14 @@ impl<'a, 'b> Lexer<'a> {
             [b, ..] => unimplemented!(
                 "<scripting> {} at offset: {}",
                 *b as char,
-                self.state.source.offset(),
+                self.source.offset(),
             ),
             // We should never reach this point since we have the empty checks surrounding
             // the call to this function, but it's better to be safe than sorry.
-            [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
+            [] => return Err(SyntaxError::UnexpectedEndOfFile(self.source.span())),
         };
 
-        let mut span = self.state.source.span();
+        let mut span = self.source.span();
 
         // FIXME: This is a bit hacky, but it works for now.
         //        We're doing this so that the closing double quote isn't included in the span.
@@ -1359,7 +1361,7 @@ impl<'a, 'b> Lexer<'a> {
             kind,
             span,
             match with_symbol {
-                true => Some(ByteString::from(self.state.source.span_range(span))),
+                true => Some(ByteString::from(self.source.span_range(span))),
                 false => None,
             },
         ))
@@ -1370,111 +1372,111 @@ impl<'a, 'b> Lexer<'a> {
         let mut buffer_span = None;
 
         let (kind, with_symbol, span) = loop {
-            match self.state.source.read(3) {
+            match self.source.read(3) {
                 [b'$', b'{', ..] => {
-                    buffer_span = Some(self.state.source.span());
-                    self.state.source.start_token();
-                    self.state.source.skip(2);
+                    buffer_span = Some(self.source.span());
+                    self.source.start_token();
+                    self.source.skip(2);
                     self.state.enter(StackFrame::LookingForVarname);
-                    break (TokenKind::DollarLeftBrace, false, self.state.source.span());
+                    break (TokenKind::DollarLeftBrace, false, self.source.span());
                 }
                 [b'{', b'$', ..] => {
-                    buffer_span = Some(self.state.source.span());
-                    self.state.source.start_token();
+                    buffer_span = Some(self.source.span());
+                    self.source.start_token();
                     // Intentionally only consume the left brace.
-                    self.state.source.next();
+                    self.source.next();
                     self.state.enter(StackFrame::Scripting);
-                    break (TokenKind::LeftBrace, false, self.state.source.span());
+                    break (TokenKind::LeftBrace, false, self.source.span());
                 }
                 [b'"', ..] => {
-                    buffer_span = Some(self.state.source.span());
-                    self.state.source.start_token();
-                    self.state.source.next();
+                    buffer_span = Some(self.source.span());
+                    self.source.start_token();
+                    self.source.next();
                     self.state.replace(StackFrame::Scripting);
-                    break (TokenKind::DoubleQuote, false, self.state.source.span());
+                    break (TokenKind::DoubleQuote, false, self.source.span());
                 }
                 &[b'\\', b'"' | b'\\' | b'$', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 &[b'\\', b'n', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 &[b'\\', b'r', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 &[b'\\', b't', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 &[b'\\', b'v', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 &[b'\\', b'e', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 &[b'\\', b'f', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 &[b'\\', b'x', b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')] => {
-                    self.state.source.skip(3);
+                    self.source.skip(3);
 
                     let mut hex = String::from(b as char);
                     if let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
-                        self.state.source.current()
+                        self.source.current()
                     {
-                        self.state.source.next();
+                        self.source.next();
                         hex.push(*b as char);
                     }
                 }
                 &[b'\\', b'u', b'{'] => {
-                    self.state.source.skip(3);
+                    self.source.skip(3);
 
                     let mut code_point = String::new();
                     while let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
-                        self.state.source.current()
+                        self.source.current()
                     {
-                        self.state.source.next();
+                        self.source.next();
                         code_point.push(*b as char);
                     }
 
-                    if code_point.is_empty() || self.state.source.current() != Some(&b'}') {
-                        return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
+                    if code_point.is_empty() || self.source.current() != Some(&b'}') {
+                        return Err(SyntaxError::InvalidUnicodeEscape(self.source.span()));
                     }
-                    self.state.source.next();
+                    self.source.next();
 
                     let c = if let Ok(c) = u32::from_str_radix(&code_point, 16) {
                         c
                     } else {
-                        return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
+                        return Err(SyntaxError::InvalidUnicodeEscape(self.source.span()));
                     };
 
                     if char::from_u32(c).is_none() {
-                        return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
+                        return Err(SyntaxError::InvalidUnicodeEscape(self.source.span()));
                     }
                 }
                 &[b'\\', b @ b'0'..=b'7', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
 
                     let mut octal = String::from(b as char);
-                    if let Some(b @ b'0'..=b'7') = self.state.source.current() {
-                        self.state.source.next();
+                    if let Some(b @ b'0'..=b'7') = self.source.current() {
+                        self.source.next();
                         octal.push(*b as char);
                     }
-                    if let Some(b @ b'0'..=b'7') = self.state.source.current() {
-                        self.state.source.next();
+                    if let Some(b @ b'0'..=b'7') = self.source.current() {
+                        self.source.next();
                         octal.push(*b as char);
                     }
 
                     if u8::from_str_radix(&octal, 8).is_err() {
-                        return Err(SyntaxError::InvalidOctalEscape(self.state.source.span()));
+                        return Err(SyntaxError::InvalidOctalEscape(self.source.span()));
                     }
                 }
                 [b'$', ident_start!(), ..] => {
-                    buffer_span = Some(self.state.source.span());
-                    self.state.source.start_token();
-                    let mut var = self.state.source.read_and_skip(1).to_vec();
+                    buffer_span = Some(self.source.span());
+                    self.source.start_token();
+                    let mut var = self.source.read_and_skip(1).to_vec();
                     var.extend(self.consume_identifier());
 
-                    match self.state.source.read(4) {
+                    match self.source.read(4) {
                         [b'[', ..] => self.state.enter(StackFrame::VarOffset),
                         [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
                             self.state.enter(StackFrame::LookingForProperty)
@@ -1482,25 +1484,25 @@ impl<'a, 'b> Lexer<'a> {
                         _ => {}
                     }
 
-                    break (TokenKind::Variable, true, self.state.source.span());
+                    break (TokenKind::Variable, true, self.source.span());
                 }
                 &[_, ..] => {
-                    self.state.source.next();
+                    self.source.next();
                 }
-                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
+                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.source.span())),
             }
         };
 
         let buffer_span = match buffer_span {
             Some(span) => span,
-            None => self.state.source.span(),
+            None => self.source.span(),
         };
 
         if !buffer_span.is_empty() {
             tokens.push(Token::new_with_symbol(
                 TokenKind::StringPart,
                 buffer_span,
-                ByteString::from(self.state.source.span_range(buffer_span)),
+                ByteString::from(self.source.span_range(buffer_span)),
             ));
         }
 
@@ -1508,7 +1510,7 @@ impl<'a, 'b> Lexer<'a> {
             kind,
             span,
             match with_symbol {
-                true => Some(ByteString::from(self.state.source.span_range(span))),
+                true => Some(ByteString::from(self.source.span_range(span))),
                 false => None,
             },
         ));
@@ -1520,32 +1522,32 @@ impl<'a, 'b> Lexer<'a> {
         let mut buffer_span = None;
 
         let (kind, with_symbol) = loop {
-            match self.state.source.read(2) {
+            match self.source.read(2) {
                 [b'$', b'{'] => {
-                    buffer_span = Some(self.state.source.span());
-                    self.state.source.start_token();
-                    self.state.source.skip(2);
+                    buffer_span = Some(self.source.span());
+                    self.source.start_token();
+                    self.source.skip(2);
                     self.state.enter(StackFrame::LookingForVarname);
                     break (TokenKind::DollarLeftBrace, false);
                 }
                 [b'{', b'$'] => {
-                    buffer_span = Some(self.state.source.span());
-                    self.state.source.start_token();
+                    buffer_span = Some(self.source.span());
+                    self.source.start_token();
                     // Intentionally only consume the left brace.
-                    self.state.source.next();
+                    self.source.next();
                     self.state.enter(StackFrame::Scripting);
                     break (TokenKind::LeftBrace, false);
                 }
                 [b'`', ..] => {
-                    self.state.source.next();
+                    self.source.next();
                     self.state.replace(StackFrame::Scripting);
                     break (TokenKind::Backtick, false);
                 }
                 [b'$', ident_start!()] => {
-                    let mut var = self.state.source.read_and_skip(1).to_vec();
+                    let mut var = self.source.read_and_skip(1).to_vec();
                     var.extend(self.consume_identifier());
 
-                    match self.state.source.read(4) {
+                    match self.source.read(4) {
                         [b'[', ..] => self.state.enter(StackFrame::VarOffset),
                         [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
                             self.state.enter(StackFrame::LookingForProperty)
@@ -1556,31 +1558,31 @@ impl<'a, 'b> Lexer<'a> {
                     break (TokenKind::Variable, true);
                 }
                 &[_, ..] => {
-                    self.state.source.next();
+                    self.source.next();
                 }
-                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
+                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.source.span())),
             }
         };
 
         let buffer_span = match buffer_span {
             Some(span) => span,
-            None => self.state.source.span(),
+            None => self.source.span(),
         };
 
         if !buffer_span.is_empty() {
             tokens.push(Token::new_with_symbol(
                 TokenKind::StringPart,
                 buffer_span,
-                ByteString::from(self.state.source.span_range(buffer_span)),
+                ByteString::from(self.source.span_range(buffer_span)),
             ))
         }
 
-        let span = self.state.source.span();
+        let span = self.source.span();
         tokens.push(Token::new(
             kind,
             span,
             match with_symbol {
-                true => Some(ByteString::from(self.state.source.span_range(span))),
+                true => Some(ByteString::from(self.source.span_range(span))),
                 false => None,
             },
         ));
@@ -1594,32 +1596,32 @@ impl<'a, 'b> Lexer<'a> {
         let mut last_was_newline = false;
 
         let (kind, with_symbol) = loop {
-            match self.state.source.read(3) {
+            match self.source.read(3) {
                 [b'\\', b'"' | b'\\' | b'$', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 [b'$', b'{', ..] => {
-                    buffer_span = Some(self.state.source.span());
-                    self.state.source.start_token();
-                    self.state.source.skip(2);
+                    buffer_span = Some(self.source.span());
+                    self.source.start_token();
+                    self.source.skip(2);
                     self.state.enter(StackFrame::LookingForVarname);
                     break (TokenKind::DollarLeftBrace, false);
                 }
                 [b'{', b'$', ..] => {
-                    buffer_span = Some(self.state.source.span());
-                    self.state.source.start_token();
+                    buffer_span = Some(self.source.span());
+                    self.source.start_token();
                     // Intentionally only consume the left brace.
-                    self.state.source.next();
+                    self.source.next();
                     self.state.enter(StackFrame::Scripting);
                     break (TokenKind::LeftBrace, false);
                 }
                 [b'$', ident_start!(), ..] => {
-                    buffer_span = Some(self.state.source.span());
-                    self.state.source.start_token();
-                    let mut var = self.state.source.read_and_skip(1).to_vec();
+                    buffer_span = Some(self.source.span());
+                    self.source.start_token();
+                    let mut var = self.source.read_and_skip(1).to_vec();
                     var.extend(self.consume_identifier());
 
-                    match self.state.source.read(4) {
+                    match self.source.read(4) {
                         [b'[', ..] => self.state.enter(StackFrame::VarOffset),
                         [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
                             self.state.enter(StackFrame::LookingForProperty)
@@ -1632,13 +1634,13 @@ impl<'a, 'b> Lexer<'a> {
                 // If we find a new-line, we can start to check if we can see the EndHeredoc token.
                 [b'\n', ..] => {
                     last_was_newline = true;
-                    self.state.source.next();
+                    self.source.next();
 
                     // Check if we can see the closing label right here.
-                    if self.state.source.at(&label, label.len()) {
-                        buffer_span = Some(self.state.source.span());
-                        self.state.source.start_token();
-                        self.state.source.skip(label.len());
+                    if self.source.at(&label, label.len()) {
+                        buffer_span = Some(self.source.span());
+                        self.source.start_token();
+                        self.source.skip(label.len());
                         self.state.replace(StackFrame::Scripting);
                         break (TokenKind::EndHeredoc, true);
                     }
@@ -1647,27 +1649,27 @@ impl<'a, 'b> Lexer<'a> {
 
                     // We've consumed all leading whitespace on this line now,
                     // so let's try to read the label again.
-                    if self.state.source.at(&label, label.len()) {
-                        buffer_span = Some(self.state.source.span());
+                    if self.source.at(&label, label.len()) {
+                        buffer_span = Some(self.source.span());
 
-                        self.state.source.start_token();
-                        self.state.source.skip(label.len());
+                        self.source.start_token();
+                        self.source.skip(label.len());
                         self.state.replace(StackFrame::Scripting);
 
                         break (TokenKind::EndHeredoc, true);
                     }
                 }
                 &[b, ..] => {
-                    self.state.source.next();
+                    self.source.next();
                     last_was_newline = b == b'\n';
                 }
-                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
+                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.source.span())),
             }
         };
 
         let mut buffer_span = match buffer_span {
             Some(span) => span,
-            None => self.state.source.span(),
+            None => self.source.span(),
         };
 
         // Any trailing line breaks should be removed from the final heredoc.
@@ -1679,16 +1681,16 @@ impl<'a, 'b> Lexer<'a> {
             tokens.push(Token::new_with_symbol(
                 TokenKind::StringPart,
                 buffer_span,
-                ByteString::from(self.state.source.span_range(buffer_span)),
+                ByteString::from(self.source.span_range(buffer_span)),
             ));
         }
 
-        let span = self.state.source.span();
+        let span = self.source.span();
         tokens.push(Token::new(
             kind,
             span,
             match with_symbol {
-                true => Some(ByteString::from(self.state.source.span_range(span))),
+                true => Some(ByteString::from(self.source.span_range(span))),
                 false => None,
             },
         ));
@@ -1702,16 +1704,16 @@ impl<'a, 'b> Lexer<'a> {
         let mut last_was_newline = false;
 
         let (kind, with_symbol) = loop {
-            match self.state.source.read(3) {
+            match self.source.read(3) {
                 // If we find a new-line, we can start to check if we can see the EndHeredoc token.
                 [b'\n', ..] => {
-                    self.state.source.next();
+                    self.source.next();
 
                     // Check if we can see the closing label right here.
-                    if self.state.source.at(&label, label.len()) {
-                        buffer_span = Some(self.state.source.span());
-                        self.state.source.start_token();
-                        self.state.source.skip(label.len());
+                    if self.source.at(&label, label.len()) {
+                        buffer_span = Some(self.source.span());
+                        self.source.start_token();
+                        self.source.skip(label.len());
                         self.state.replace(StackFrame::Scripting);
                         last_was_newline = true;
                         break (TokenKind::EndNowdoc, true);
@@ -1721,29 +1723,29 @@ impl<'a, 'b> Lexer<'a> {
 
                     // We've consumed all leading whitespace on this line now,
                     // so let's try to read the label again.
-                    if self.state.source.at(&label, label.len()) {
-                        buffer_span = Some(self.state.source.span());
-                        self.state.source.start_token();
+                    if self.source.at(&label, label.len()) {
+                        buffer_span = Some(self.source.span());
+                        self.source.start_token();
 
                         // If we get here, only 1 type of indentation was found. We can move
                         // the process along by reading over the label and breaking out
                         // with the EndHeredoc token, storing the kind and amount of whitespace.
-                        self.state.source.skip(label.len());
+                        self.source.skip(label.len());
                         self.state.replace(StackFrame::Scripting);
                         break (TokenKind::EndNowdoc, true);
                     }
                 }
                 &[b, ..] => {
-                    self.state.source.next();
+                    self.source.next();
                     last_was_newline = b == b'\n';
                 }
-                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
+                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.source.span())),
             }
         };
 
         let mut buffer_span = match buffer_span {
             Some(span) => span,
-            None => self.state.source.span(),
+            None => self.source.span(),
         };
 
         // Any trailing line breaks should be removed from the final heredoc.
@@ -1754,16 +1756,16 @@ impl<'a, 'b> Lexer<'a> {
         tokens.push(Token::new_with_symbol(
             TokenKind::StringPart,
             buffer_span,
-            ByteString::from(self.state.source.span_range(buffer_span)),
+            ByteString::from(self.source.span_range(buffer_span)),
         ));
 
-        let span = self.state.source.span();
+        let span = self.source.span();
 
         tokens.push(Token::new(
             kind,
             span,
             match with_symbol {
-                true => Some(ByteString::from(self.state.source.span_range(span))),
+                true => Some(ByteString::from(self.source.span_range(span))),
                 false => None,
             },
         ));
@@ -1775,14 +1777,14 @@ impl<'a, 'b> Lexer<'a> {
         let identifier = self.peek_identifier();
 
         if let Some(ident) = identifier {
-            if let [b'[' | b'}'] = self.state.source.peek(ident.len(), 1) {
-                self.state.source.skip(ident.len());
-                let span = self.state.source.span();
+            if let [b'[' | b'}'] = self.source.peek(ident.len(), 1) {
+                self.source.skip(ident.len());
+                let span = self.source.span();
                 self.state.replace(StackFrame::Scripting);
                 return Ok(Some(Token::new_with_symbol(
                     TokenKind::Identifier,
                     span,
-                    ByteString::from(self.state.source.span_range(span)),
+                    ByteString::from(self.source.span_range(span)),
                 )));
             }
         }
@@ -1793,13 +1795,13 @@ impl<'a, 'b> Lexer<'a> {
     }
 
     fn looking_for_property(&mut self) -> SyntaxResult<Token> {
-        let (kind, with_symbol) = match self.state.source.read(3) {
+        let (kind, with_symbol) = match self.source.read(3) {
             [b'?', b'-', b'>'] => {
-                self.state.source.skip(3);
+                self.source.skip(3);
                 (TokenKind::QuestionArrow, false)
             }
             [b'-', b'>', ..] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (TokenKind::Arrow, false)
             }
             &[ident_start!(), ..] => {
@@ -1811,20 +1813,20 @@ impl<'a, 'b> Lexer<'a> {
             _ => unreachable!(),
         };
 
-        let span = self.state.source.span();
+        let span = self.source.span();
 
         Ok(Token::new(
             kind,
             span,
             match with_symbol {
-                true => Some(ByteString::from(self.state.source.span_range(span))),
+                true => Some(ByteString::from(self.source.span_range(span))),
                 false => None,
             },
         ))
     }
 
     fn var_offset(&mut self) -> SyntaxResult<Token> {
-        let (kind, with_symbol) = match self.state.source.read(2) {
+        let (kind, with_symbol) = match self.source.read(2) {
             [b'$', ident_start!()] => (self.tokenize_variable(), true),
             [b'0'..=b'9', ..] => {
                 // FIXME: all integer literals are allowed, but only decimal integers with no underscores
@@ -1833,15 +1835,15 @@ impl<'a, 'b> Lexer<'a> {
                 (self.tokenize_number()?, true)
             }
             [b'[', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::LeftBracket, false)
             }
             [b'-', ..] => {
-                self.state.source.next();
+                self.source.next();
                 (TokenKind::Minus, false)
             }
             [b']', ..] => {
-                self.state.source.next();
+                self.source.next();
                 self.state.exit();
                 (TokenKind::RightBracket, false)
             }
@@ -1849,17 +1851,17 @@ impl<'a, 'b> Lexer<'a> {
                 self.consume_identifier();
                 (TokenKind::Identifier, true)
             }
-            &[b, ..] => return Err(SyntaxError::UnrecognisedToken(b, self.state.source.span())),
-            [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
+            &[b, ..] => return Err(SyntaxError::UnrecognisedToken(b, self.source.span())),
+            [] => return Err(SyntaxError::UnexpectedEndOfFile(self.source.span())),
         };
 
-        let span = self.state.source.span();
+        let span = self.source.span();
 
         Ok(Token::new(
             kind,
             span,
             match with_symbol {
-                true => Some(ByteString::from(self.state.source.span_range(span))),
+                true => Some(ByteString::from(self.source.span_range(span))),
                 false => None,
             },
         ))
@@ -1867,18 +1869,18 @@ impl<'a, 'b> Lexer<'a> {
 
     fn tokenize_single_quote_string(&mut self) -> SyntaxResult<TokenKind> {
         loop {
-            match self.state.source.read(2) {
+            match self.source.read(2) {
                 [b'\'', ..] => {
-                    self.state.source.next();
+                    self.source.next();
                     break;
                 }
                 &[b'\\', b'\'' | b'\\'] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 &[_, ..] => {
-                    self.state.source.next();
+                    self.source.next();
                 }
-                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
+                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.source.span())),
             }
         }
 
@@ -1886,97 +1888,97 @@ impl<'a, 'b> Lexer<'a> {
     }
 
     fn tokenize_double_quote_string(&mut self) -> SyntaxResult<TokenKind> {
-        self.state.source.start_token();
+        self.source.start_token();
 
         let constant = loop {
-            match self.state.source.read(3) {
+            match self.source.read(3) {
                 [b'"', ..] => {
-                    self.state.source.next();
+                    self.source.next();
                     break true;
                 }
                 &[b'\\', b'"' | b'\\' | b'$', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 &[b'\\', b'n', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 &[b'\\', b'r', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 &[b'\\', b't', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 &[b'\\', b'v', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 &[b'\\', b'e', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 &[b'\\', b'f', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
                 }
                 &[b'\\', b'x', b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')] => {
-                    self.state.source.skip(3);
+                    self.source.skip(3);
 
                     let mut hex = String::from(b as char);
                     if let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
-                        self.state.source.current()
+                        self.source.current()
                     {
-                        self.state.source.next();
+                        self.source.next();
                         hex.push(*b as char);
                     }
                 }
                 &[b'\\', b'u', b'{'] => {
-                    self.state.source.skip(3);
+                    self.source.skip(3);
 
                     let mut code_point = String::new();
                     while let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
-                        self.state.source.current()
+                        self.source.current()
                     {
-                        self.state.source.next();
+                        self.source.next();
                         code_point.push(*b as char);
                     }
 
-                    if code_point.is_empty() || self.state.source.current() != Some(&b'}') {
-                        return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
+                    if code_point.is_empty() || self.source.current() != Some(&b'}') {
+                        return Err(SyntaxError::InvalidUnicodeEscape(self.source.span()));
                     }
-                    self.state.source.next();
+                    self.source.next();
 
                     let c = if let Ok(c) = u32::from_str_radix(&code_point, 16) {
                         c
                     } else {
-                        return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
+                        return Err(SyntaxError::InvalidUnicodeEscape(self.source.span()));
                     };
 
                     if char::from_u32(c).is_none() {
-                        return Err(SyntaxError::InvalidUnicodeEscape(self.state.source.span()));
+                        return Err(SyntaxError::InvalidUnicodeEscape(self.source.span()));
                     }
                 }
                 &[b'\\', b @ b'0'..=b'7', ..] => {
-                    self.state.source.skip(2);
+                    self.source.skip(2);
 
                     let mut octal = String::from(b as char);
-                    if let Some(b @ b'0'..=b'7') = self.state.source.current() {
-                        self.state.source.next();
+                    if let Some(b @ b'0'..=b'7') = self.source.current() {
+                        self.source.next();
                         octal.push(*b as char);
                     }
 
-                    if let Some(b @ b'0'..=b'7') = self.state.source.current() {
-                        self.state.source.next();
+                    if let Some(b @ b'0'..=b'7') = self.source.current() {
+                        self.source.next();
                         octal.push(*b as char);
                     }
 
                     if u8::from_str_radix(&octal, 8).is_err() {
-                        return Err(SyntaxError::InvalidOctalEscape(self.state.source.span()));
+                        return Err(SyntaxError::InvalidOctalEscape(self.source.span()));
                     }
                 }
                 [b'$', ident_start!(), ..] | [b'{', b'$', ..] | [b'$', b'{', ..] => {
                     break false;
                 }
                 &[_, ..] => {
-                    self.state.source.next();
+                    self.source.next();
                 }
-                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.state.source.span())),
+                [] => return Err(SyntaxError::UnexpectedEndOfFile(self.source.span())),
             }
         };
 
@@ -1991,13 +1993,13 @@ impl<'a, 'b> Lexer<'a> {
     fn peek_identifier(&self) -> Option<&[u8]> {
         let mut size = 0;
 
-        if let [ident_start!()] = self.state.source.read(1) {
+        if let [ident_start!()] = self.source.read(1) {
             size += 1;
-            while let [ident!()] = self.state.source.peek(size, 1) {
+            while let [ident!()] = self.source.peek(size, 1) {
                 size += 1;
             }
 
-            Some(self.state.source.read(size))
+            Some(self.source.read(size))
         } else {
             None
         }
@@ -2005,30 +2007,30 @@ impl<'a, 'b> Lexer<'a> {
 
     fn consume_identifier(&mut self) -> Vec<u8> {
         let ident = self.peek_identifier().unwrap().to_vec();
-        self.state.source.skip(ident.len());
+        self.source.skip(ident.len());
 
         ident
     }
 
     fn tokenize_variable(&mut self) -> TokenKind {
-        self.state.source.skip(1);
+        self.source.skip(1);
         self.consume_identifier();
 
         TokenKind::Variable
     }
 
     fn tokenize_number(&mut self) -> SyntaxResult<TokenKind> {
-        let (base, kind) = match self.state.source.read(2) {
+        let (base, kind) = match self.source.read(2) {
             [b'0', b'B' | b'b'] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (2, NumberKind::Int)
             }
             [b'0', b'O' | b'o'] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (8, NumberKind::Int)
             }
             [b'0', b'X' | b'x'] => {
-                self.state.source.skip(2);
+                self.source.skip(2);
                 (16, NumberKind::Int)
             }
             [b'0', ..] => (10, NumberKind::OctalOrFloat),
@@ -2045,7 +2047,7 @@ impl<'a, 'b> Lexer<'a> {
 
         // Remaining cases: decimal integer, legacy octal integer, or float.
         let is_float = matches!(
-            self.state.source.read(3),
+            self.source.read(3),
             [b'.', ..] | [b'e' | b'E', b'-' | b'+', b'0'..=b'9'] | [b'e' | b'E', b'0'..=b'9', ..]
         );
 
@@ -2053,16 +2055,16 @@ impl<'a, 'b> Lexer<'a> {
             return Ok(TokenKind::LiteralInteger);
         }
 
-        if let Some(b'.') = self.state.source.current() {
-            self.state.source.next();
+        if let Some(b'.') = self.source.current() {
+            self.source.next();
             self.read_digits(10);
         }
 
-        if let Some(b'e' | b'E') = self.state.source.current() {
-            self.state.source.next();
+        if let Some(b'e' | b'E') = self.source.current() {
+            self.source.next();
 
-            if let Some(b'-' | b'+') = self.state.source.current() {
-                self.state.source.next();
+            if let Some(b'-' | b'+') = self.source.current() {
+                self.source.next();
             }
 
             self.read_digits(10);
@@ -2081,22 +2083,22 @@ impl<'a, 'b> Lexer<'a> {
     }
 
     fn read_digits_fn<F: Fn(&u8) -> bool>(&mut self, is_digit: F) {
-        if let Some(b) = self.state.source.current() {
+        if let Some(b) = self.source.current() {
             if is_digit(b) {
-                self.state.source.next();
+                self.source.next();
             } else {
                 return;
             }
         }
 
         loop {
-            match self.state.source.read(2) {
+            match self.source.read(2) {
                 [b, ..] if is_digit(b) => {
-                    self.state.source.next();
+                    self.source.next();
                 }
                 [b'_', b] if is_digit(b) => {
-                    self.state.source.next();
-                    self.state.source.next();
+                    self.source.next();
+                    self.source.next();
                 }
                 _ => {
                     break;

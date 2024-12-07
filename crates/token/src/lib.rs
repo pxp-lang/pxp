@@ -1,6 +1,6 @@
-use std::fmt::Display;
+use std::{borrow::Borrow, fmt::Display};
 
-use pxp_bytestring::ByteString;
+use pxp_bytestring::{ByteStr, ByteString};
 use pxp_span::{Span, Spanned};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -246,49 +246,55 @@ pub enum TokenKind {
     PhpDocOther,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
-
-pub struct Token {
+#[derive(Debug, PartialEq, Eq)]
+pub struct Token<'a> {
     pub kind: TokenKind,
     pub span: Span,
-    pub symbol: Option<ByteString>,
+    pub symbol: &'a ByteStr,
 }
 
-impl Spanned for Token {
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct OwnedToken {
+    pub kind: TokenKind,
+    pub span: Span,
+    pub symbol: ByteString,
+}
+
+impl Spanned for Token<'_> {
     fn span(&self) -> Span {
         self.span
     }
 }
 
-impl Default for Token {
-    fn default() -> Self {
-        Self {
-            kind: TokenKind::Eof,
-            span: Span::default(),
-            symbol: None,
-        }
+impl Spanned for OwnedToken {
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
-impl Token {
-    pub fn new(kind: TokenKind, span: Span, symbol: Option<ByteString>) -> Self {
+impl<'a> Token<'a> {
+    pub fn new(kind: TokenKind, span: Span, symbol: &'a ByteStr) -> Self {
         Self { kind, span, symbol }
     }
 
+    pub fn new_without_symbol(kind: TokenKind, span: Span) -> Self {
+        Self { kind, span, symbol: ByteStr::new(&[]) }
+    }
+
     pub fn missing(span: Span) -> Self {
-        Self::new(TokenKind::Missing, span, None)
+        Self::new(TokenKind::Missing, span, ByteStr::new(&[]))
     }
 
     pub fn is_missing(&self) -> bool {
         self.kind == TokenKind::Missing
     }
 
-    pub fn new_with_symbol(kind: TokenKind, span: Span, symbol: ByteString) -> Self {
-        Self::new(kind, span, Some(symbol))
-    }
-
-    pub fn new_without_symbol(kind: TokenKind, span: Span) -> Self {
-        Self::new(kind, span, None)
+    pub fn to_owned(&self) -> OwnedToken {
+        OwnedToken {
+            kind: self.kind,
+            span: self.span,
+            symbol: self.symbol.into(),
+        }
     }
 }
 

@@ -13,7 +13,7 @@ pub enum SyntaxError {
     InvalidOctalEscape(Span),
     InvalidOctalLiteral(Span),
     InvalidUnicodeEscape(Span),
-    UnpredictableState(Span),
+    UnpredictableState,
     InvalidDocIndentation(Span),
     InvalidDocBodyIndentationLevel(usize, Span),
     UnrecognisedToken(u8, Span),

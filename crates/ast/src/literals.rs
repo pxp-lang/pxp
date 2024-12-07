@@ -1,10 +1,10 @@
 use pxp_span::Span;
-use pxp_token::Token;
+use pxp_token::{OwnedToken, Token};
 
 use crate::{Literal, LiteralKind, NodeId};
 
 impl Literal {
-    pub fn new(id: NodeId, kind: LiteralKind, token: Token, span: Span) -> Literal {
+    pub fn new(id: NodeId, kind: LiteralKind, token: OwnedToken, span: Span) -> Literal {
         Literal {
             id,
             kind,
@@ -17,7 +17,7 @@ impl Literal {
         Literal {
             id,
             kind: LiteralKind::Missing,
-            token: Token::missing(span),
+            token: Token::missing(span).to_owned(),
             span,
         }
     }
