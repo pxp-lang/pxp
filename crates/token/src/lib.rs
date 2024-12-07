@@ -11,37 +11,6 @@ pub enum OpenTagKind {
     Echo,  // `<?=`
 }
 
-pub type DocStringIndentationAmount = usize;
-
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-
-pub enum DocStringIndentationKind {
-    Space,
-    Tab,
-    None,
-    Both,
-}
-
-impl From<u8> for DocStringIndentationKind {
-    fn from(byte: u8) -> Self {
-        match byte {
-            b' ' => Self::Space,
-            b'\t' => Self::Tab,
-            _ => unreachable!(),
-        }
-    }
-}
-
-impl From<DocStringIndentationKind> for u8 {
-    fn from(kind: DocStringIndentationKind) -> Self {
-        match kind {
-            DocStringIndentationKind::Space => b' ',
-            DocStringIndentationKind::Tab => b'\t',
-            _ => unreachable!(),
-        }
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 
 pub enum TokenKind {

@@ -5,7 +5,6 @@ use crate::state::StackFrame;
 use crate::state::State;
 use pxp_bytestring::ByteString;
 
-use pxp_token::DocStringIndentationKind;
 use pxp_token::OpenTagKind;
 use pxp_token::Token;
 use pxp_token::TokenKind;
