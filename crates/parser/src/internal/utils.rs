@@ -27,7 +27,7 @@ pub fn skip_ending(state: &mut State) -> Ending {
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::CloseTag, TokenKind::SemiColon],
-                    found: current.clone(),
+                    found: current.to_owned(),
                 },
                 Severity::Error,
                 span,
@@ -49,7 +49,7 @@ pub fn skip_semicolon(state: &mut State) -> Span {
         state.diagnostic(
             ParserDiagnostic::ExpectedToken {
                 expected: vec![TokenKind::SemiColon],
-                found: current.clone(),
+                found: current.to_owned(),
             },
             Severity::Error,
             current.span,
@@ -115,7 +115,7 @@ pub fn skip(state: &mut State, kind: TokenKind) -> Span {
         state.diagnostic(
             ParserDiagnostic::ExpectedToken {
                 expected: vec![kind],
-                found: current.clone(),
+                found: current.to_owned(),
             },
             Severity::Error,
             current.span,
@@ -142,7 +142,7 @@ pub fn skip_any_of(state: &mut State, kinds: &[TokenKind]) -> Span {
         state.diagnostic(
             ParserDiagnostic::ExpectedToken {
                 expected: kinds.to_vec(),
-                found: current.clone(),
+                found: current.to_owned(),
             },
             Severity::Error,
             current.span,

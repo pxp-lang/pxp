@@ -184,7 +184,7 @@ pub fn switch_statement(state: &mut State) -> StatementKind {
                 state.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::Case, TokenKind::Default, end_token],
-                        found: state.current().clone(),
+                        found: state.current().to_owned(),
                     },
                     Severity::Error,
                     state.current().span,

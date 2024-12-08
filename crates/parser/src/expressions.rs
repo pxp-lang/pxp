@@ -101,7 +101,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
             if rpred == precedence && matches!(rpred.associativity(), Some(Associativity::Non)) {
                 state.diagnostic(
                     ParserDiagnostic::UnexpectedToken {
-                        token: current.clone(),
+                        token: current.to_owned(),
                     },
                     Severity::Error,
                     current.span,
@@ -259,11 +259,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                     let right = Expression::new(
                         state.id(),
                         ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier::new(
-                                state.id(),
-                                op.symbol.as_ref().unwrap().clone(),
-                                enum_span,
-                            ),
+                            SimpleIdentifier::new(state.id(), op.symbol.to_bytestring(), enum_span),
                         )),
                         enum_span,
                         CommentGroup::default(),
@@ -283,11 +279,7 @@ fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
                     let right = Expression::new(
                         state.id(),
                         ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier::new(
-                                state.id(),
-                                op.symbol.as_ref().unwrap().clone(),
-                                op.span,
-                            ),
+                            SimpleIdentifier::new(state.id(), op.symbol.to_bytestring(), op.span),
                         )),
                         Span::new(start_span.start, from_span.end),
                         CommentGroup::default(),
@@ -1471,7 +1463,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                 ExpressionKind::Bool(BoolExpression {
                     id: state.id(),
                     span,
-                    value,
+                    value: value.to_owned(),
                 }),
                 span,
                 CommentGroup::default(),
@@ -1488,7 +1480,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                 ExpressionKind::Bool(BoolExpression {
                     id: state.id(),
                     span,
-                    value,
+                    value: value.to_owned(),
                 }),
                 span,
                 CommentGroup::default(),
@@ -1519,7 +1511,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                     ExpressionKind::Literal(Literal::new(
                         state.id(),
                         LiteralKind::Integer,
-                        current.clone(),
+                        current.to_owned(),
                         span,
                     )),
                     span,
@@ -1542,7 +1534,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                     ExpressionKind::Literal(Literal::new(
                         state.id(),
                         LiteralKind::Float,
-                        current.clone(),
+                        current.to_owned(),
                         span,
                     )),
                     span,
@@ -1565,7 +1557,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                     ExpressionKind::Literal(Literal::new(
                         state.id(),
                         LiteralKind::String,
-                        current.clone(),
+                        current.to_owned(),
                         span,
                     )),
                     span,
@@ -1579,7 +1571,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                     ExpressionKind::Literal(Literal::new(
                         state.id(),
                         LiteralKind::String,
-                        current.clone(),
+                        current.to_owned(),
                         span,
                     )),
                     span,
@@ -1720,7 +1712,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                         ExpressionKind::Name(Name::special(
                             state.id(),
                             SpecialNameKind::Self_(token.span),
-                            token.symbol.as_ref().unwrap().clone(),
+                            token.symbol.to_bytestring(),
                             token.span,
                         )),
                         token.span,
@@ -1737,7 +1729,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                         ExpressionKind::Name(Name::special(
                             state.id(),
                             SpecialNameKind::Static(token.span),
-                            token.symbol.as_ref().unwrap().clone(),
+                            token.symbol.to_bytestring(),
                             token.span,
                         )),
                         token.span,
@@ -1754,7 +1746,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                         ExpressionKind::Name(Name::special(
                             state.id(),
                             SpecialNameKind::Parent(token.span),
-                            token.symbol.as_ref().unwrap().clone(),
+                            token.symbol.to_bytestring(),
                             token.span,
                         )),
                         token.span,
@@ -1765,7 +1757,7 @@ fn left(state: &mut State, precedence: &Precedence) -> Expression {
                     let token = state.current();
 
                     let span = token.span;
-                    let symbol = token.symbol.as_ref().unwrap().clone();
+                    let symbol = token.symbol.to_bytestring();
                     let resolved = state.strip_leading_namespace_qualifier(&symbol);
 
                     state.next();
@@ -2218,7 +2210,7 @@ fn unexpected_token(state: &mut State, _: &Precedence) -> Expression {
 
     state.diagnostic(
         ParserDiagnostic::UnexpectedToken {
-            token: current.clone(),
+            token: current.to_owned(),
         },
         Severity::Error,
         current.span,
@@ -2340,7 +2332,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                 TokenKind::Class => {
                     state.next();
 
-                    let symbol = current.symbol.as_ref().unwrap().clone();
+                    let symbol = current.symbol.to_bytestring();
 
                     ExpressionKind::Identifier(Identifier::SimpleIdentifier(SimpleIdentifier::new(
                         state.id(),
@@ -2356,7 +2348,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                                 TokenKind::Dollar,
                                 TokenKind::Identifier,
                             ],
-                            found: current.clone(),
+                            found: current.to_owned(),
                         },
                         Severity::Error,
                         current.span,
@@ -2544,7 +2536,7 @@ fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
                                 TokenKind::Dollar,
                                 TokenKind::Identifier,
                             ],
-                            found: state.current().clone(),
+                            found: state.current().to_owned(),
                         },
                         Severity::Error,
                         span,

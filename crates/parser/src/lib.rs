@@ -26,7 +26,6 @@ use pxp_span::Span;
 use pxp_span::Spanned;
 
 use pxp_token::OpenTagKind;
-use pxp_token::Token;
 use pxp_token::TokenKind;
 
 use pxp_ast::ClosingTagStatement;
@@ -55,20 +54,12 @@ pub struct ParseResult {
     pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
 }
 
-pub fn parse<B: Sized + AsRef<[u8]>>(input: &B) -> ParseResult {
-    let mut lexer = Lexer::new(input);
-    let tokens = match lexer.tokenize() {
-        Ok(tokens) => tokens,
-        Err(error) => {
-            todo!("{:?}", error);
-        }
-    };
-
-    construct(&tokens)
+pub fn parse<'a, B: Sized + AsRef<[u8]>>(input: &'a B) -> ParseResult {
+    construct(Lexer::new(input))
 }
 
-pub fn construct(tokens: &[Token]) -> ParseResult {
-    let mut state = State::new(tokens);
+pub fn construct<'a>(lexer: Lexer<'a>) -> ParseResult {
+    let mut state = State::new(lexer);
     let mut ast = Vec::new();
 
     while !state.is_eof() {
@@ -99,7 +90,7 @@ fn top_level_statement(state: &mut State) -> Statement {
                     let (span, content) = if let TokenKind::InlineHtml = state.current().kind {
                         let content = state.current().clone();
                         state.next();
-                        (Span::combine(start, content.span), Some(content))
+                        (Span::combine(start, content.span), Some(content.to_owned()))
                     } else {
                         (start, None)
                     };
@@ -451,7 +442,7 @@ fn statement(state: &mut State) -> Statement {
                 })
             }
             TokenKind::InlineHtml => {
-                let html = state.current().clone();
+                let html = state.current().to_owned();
                 state.next();
 
                 StatementKind::InlineHtml(InlineHtmlStatement {
