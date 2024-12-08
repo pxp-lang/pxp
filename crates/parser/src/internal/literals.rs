@@ -4,47 +4,49 @@ use pxp_token::TokenKind;
 
 use crate::{state::State, ParserDiagnostic};
 
-pub fn expect_literal(state: &mut State) -> Literal {
-    let token = state.current();
-    let kind = match &token.kind {
-        TokenKind::LiteralInteger => {
-            state.next();
+impl<'a> Parser<'a> {
+    pub fn expect_literal(state: &mut State) -> Literal {
+        let token = state.current();
+        let kind = match &token.kind {
+            TokenKind::LiteralInteger => {
+                state.next();
 
-            LiteralKind::Integer
+                LiteralKind::Integer
+            }
+            TokenKind::LiteralFloat => {
+                state.next();
+
+                LiteralKind::Float
+            }
+            TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString => {
+                state.next();
+
+                LiteralKind::String
+            }
+            _ => {
+                state.diagnostic(
+                    ParserDiagnostic::ExpectedToken {
+                        expected: vec![
+                            TokenKind::LiteralInteger,
+                            TokenKind::LiteralFloat,
+                            TokenKind::LiteralSingleQuotedString,
+                            TokenKind::LiteralDoubleQuotedString,
+                        ],
+                        found: token.to_owned(),
+                    },
+                    Severity::Error,
+                    token.span,
+                );
+
+                return Literal::missing(state.id(), token.span);
+            }
+        };
+
+        Literal {
+            id: state.id(),
+            span: token.span,
+            kind,
+            token: token.to_owned(),
         }
-        TokenKind::LiteralFloat => {
-            state.next();
-
-            LiteralKind::Float
-        }
-        TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString => {
-            state.next();
-
-            LiteralKind::String
-        }
-        _ => {
-            state.diagnostic(
-                ParserDiagnostic::ExpectedToken {
-                    expected: vec![
-                        TokenKind::LiteralInteger,
-                        TokenKind::LiteralFloat,
-                        TokenKind::LiteralSingleQuotedString,
-                        TokenKind::LiteralDoubleQuotedString,
-                    ],
-                    found: token.to_owned(),
-                },
-                Severity::Error,
-                token.span,
-            );
-
-            return Literal::missing(state.id(), token.span);
-        }
-    };
-
-    Literal {
-        id: state.id(),
-        span: token.span,
-        kind,
-        token: token.to_owned(),
     }
 }

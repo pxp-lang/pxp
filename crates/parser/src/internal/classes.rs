@@ -1,13 +1,7 @@
-use crate::internal::attributes;
-use crate::internal::constants::classish;
-use crate::internal::functions::method;
 use crate::internal::functions::Method;
 use crate::internal::modifiers;
 use crate::internal::parameters;
-use crate::internal::properties;
-use crate::internal::traits;
 use crate::internal::utils;
-use crate::state::State;
 use crate::Parser;
 use crate::ParserDiagnostic;
 use pxp_ast::Expression;
