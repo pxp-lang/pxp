@@ -26,14 +26,14 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
         TokenKind::Variable => {
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap();
+            let symbol = current.symbol;
 
             let name = symbol.clone();
             let stripped = ByteString::from(&name[1..]);
 
             SimpleVariable {
                 id: state.id(),
-                symbol: current.symbol.as_ref().unwrap().clone(),
+                symbol: current.symbol.to_bytestring(),
                 stripped,
                 span: current.span,
             }
@@ -58,7 +58,7 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Variable],
-                    found: current.clone(),
+                    found: current.to_owned(),
                 },
                 Severity::Error,
                 current.span,
@@ -75,13 +75,13 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
         TokenKind::Variable => {
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap();
+            let symbol = current.symbol;
             let name = symbol.clone();
             let stripped = ByteString::from(&name[1..]);
 
             Variable::SimpleVariable(SimpleVariable {
                 id: state.id(),
-                symbol: current.symbol.as_ref().unwrap().clone(),
+                symbol: current.symbol.to_bytestring(),
                 stripped,
                 span: current.span,
             })
@@ -138,7 +138,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
                     state.diagnostic(
                         ParserDiagnostic::ExpectedToken {
                             expected: vec![TokenKind::Variable],
-                            found: current.clone(),
+                            found: current.to_owned(),
                         },
                         Severity::Error,
                         current.span,
@@ -152,7 +152,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Variable],
-                    found: current.clone(),
+                    found: current.to_owned(),
                 },
                 Severity::Error,
                 current.span,

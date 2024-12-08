@@ -12,3 +12,7 @@ pxp-bytestring = { path = "../bytestring" }
 [features]
 default = []
 docblocks = []
+
+[[bin]]
+name = "tokenise"
+path = "bin/tokenise.rs"

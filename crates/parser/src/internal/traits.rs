@@ -66,7 +66,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
                 state.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::As, TokenKind::Insteadof],
-                        found: token.clone(),
+                        found: token.to_owned(),
                     },
                     Severity::Error,
                     token.span,
