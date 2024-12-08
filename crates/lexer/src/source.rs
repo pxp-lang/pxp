@@ -78,12 +78,14 @@ impl<'a> Source<'a> {
     }
 
     #[inline(always)]
-    pub fn read_remaining(&self) -> &ByteStr {
-        ByteStr::new(&self.input[(if self.offset >= self.length {
-            self.length
-        } else {
-            self.offset
-        })..])
+    pub fn read_remaining(&self) -> &'a ByteStr {
+        ByteStr::new(
+            &self.input[(if self.offset >= self.length {
+                self.length
+            } else {
+                self.offset
+            })..],
+        )
     }
 
     pub fn at(&self, search: &[u8], len: usize) -> bool {

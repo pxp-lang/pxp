@@ -1,4 +1,4 @@
-use std::{borrow::Borrow, fmt::Display};
+use std::fmt::Display;
 
 use pxp_bytestring::{ByteStr, ByteString};
 use pxp_span::{Span, Spanned};
@@ -215,7 +215,7 @@ pub enum TokenKind {
     PhpDocOther,
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Token<'a> {
     pub kind: TokenKind,
     pub span: Span,
@@ -247,7 +247,11 @@ impl<'a> Token<'a> {
     }
 
     pub fn new_without_symbol(kind: TokenKind, span: Span) -> Self {
-        Self { kind, span, symbol: ByteStr::new(&[]) }
+        Self {
+            kind,
+            span,
+            symbol: ByteStr::new(&[]),
+        }
     }
 
     pub fn missing(span: Span) -> Self {
