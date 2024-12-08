@@ -81,6 +81,11 @@ impl<'a> State<'a> {
         self.lexer.current()
     }
 
+    /// Check if the current token is of the given kind.
+    pub fn is(&self, kind: TokenKind) -> bool {
+        self.current().kind == kind
+    }
+
     /// Get previous token.
     pub fn previous(&'a self) -> Token<'a> {
         self.lexer.previous().unwrap_or_else(|| self.current())
@@ -147,15 +152,15 @@ impl<'a> State<'a> {
 
     /// Check if current token is EOF.
     pub fn is_eof(&self) -> bool {
-        self.current().kind == TokenKind::Eof
+        self.is(TokenKind::Eof)
     }
 
     pub fn skip_doc_eol(&mut self) {
-        if self.current().kind == TokenKind::PhpDocEol {
+        if self.is(TokenKind::PhpDocEol) {
             self.next();
         }
 
-        while self.current().kind == TokenKind::PhpDocHorizontalWhitespace {
+        while self.is(TokenKind::PhpDocHorizontalWhitespace) {
             self.next();
         }
     }
