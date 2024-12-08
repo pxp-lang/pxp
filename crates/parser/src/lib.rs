@@ -131,10 +131,10 @@ impl<'a> Parser<'a> {
         let peek = state.peek();
         let statement = if has_attributes {
             match &current.kind {
-                TokenKind::Abstract => classes::parse(state),
-                TokenKind::Readonly if peek.kind != TokenKind::LeftParen => classes::parse(state),
-                TokenKind::Final => classes::parse(state),
-                TokenKind::Class => classes::parse(state),
+                TokenKind::Abstract => self.parse_class(),
+                TokenKind::Readonly if peek.kind != TokenKind::LeftParen => self.parse_class(),
+                TokenKind::Final => self.parse_class(),
+                TokenKind::Class => self.parse_class(),
                 TokenKind::Interface => interfaces::parse(state),
                 TokenKind::Trait => traits::parse(state),
                 TokenKind::Enum
@@ -224,10 +224,10 @@ impl<'a> Parser<'a> {
                         span,
                     })
                 }
-                TokenKind::Abstract => classes::parse(state),
-                TokenKind::Readonly if peek.kind != TokenKind::LeftParen => classes::parse(state),
-                TokenKind::Final => classes::parse(state),
-                TokenKind::Class => classes::parse(state),
+                TokenKind::Abstract => self.parse_class(),
+                TokenKind::Readonly if peek.kind != TokenKind::LeftParen => self.parse_class(),
+                TokenKind::Final => self.parse_class(),
+                TokenKind::Class => self.parse_class(),
                 TokenKind::Interface => interfaces::parse(state),
                 TokenKind::Trait => traits::parse(state),
                 TokenKind::Enum

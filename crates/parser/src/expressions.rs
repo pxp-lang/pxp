@@ -1,13 +1,6 @@
 use crate::internal::attributes;
-use crate::internal::control_flow;
-use crate::internal::functions;
-use crate::internal::identifiers;
-use crate::internal::names;
 use crate::internal::precedences::Associativity;
 use crate::internal::precedences::Precedence;
-use crate::internal::strings;
-use crate::internal::utils;
-use crate::internal::variables;
 use crate::Parser;
 use crate::ParserDiagnostic;
 use pxp_ast::Expression;
