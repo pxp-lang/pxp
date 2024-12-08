@@ -13,14 +13,14 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
         TokenKind::Identifier => {
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap().clone();
+            let symbol = current.symbol.to_bytestring();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         TokenKind::Enum | TokenKind::From => {
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap().clone();
+            let symbol = current.symbol.to_bytestring();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
@@ -33,7 +33,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
 
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap().clone();
+            let symbol = current.symbol.to_bytestring();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
@@ -46,7 +46,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
 
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap().clone();
+            let symbol = current.symbol.to_bytestring();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
@@ -54,7 +54,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier],
-                    found: current.clone(),
+                    found: current.to_owned(),
                 },
                 Severity::Error,
                 current.span,
@@ -72,14 +72,14 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
         TokenKind::Identifier => {
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap().clone();
+            let symbol = current.symbol.to_bytestring();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         TokenKind::Enum | TokenKind::From => {
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap().clone();
+            let symbol = current.symbol.to_bytestring();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
@@ -92,7 +92,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
 
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap().clone();
+            let symbol = current.symbol.to_bytestring();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
@@ -105,7 +105,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
 
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap().clone();
+            let symbol = current.symbol.to_bytestring();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
@@ -113,7 +113,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier],
-                    found: current.clone(),
+                    found: current.to_owned(),
                 },
                 Severity::Error,
                 current.span,
@@ -130,7 +130,7 @@ pub fn identifier(state: &mut State) -> SimpleIdentifier {
     if let TokenKind::Identifier = &current.kind {
         state.next();
 
-        let symbol = current.symbol.as_ref().unwrap().clone();
+        let symbol = current.symbol.to_bytestring();
 
         SimpleIdentifier::new(state.id(), symbol, current.span)
     } else {
@@ -138,7 +138,7 @@ pub fn identifier(state: &mut State) -> SimpleIdentifier {
 
         state.diagnostic(
             ParserDiagnostic::UnexpectedToken {
-                token: current.clone(),
+                token: current.to_owned(),
             },
             Severity::Error,
             current.span,
@@ -164,7 +164,7 @@ pub fn name(state: &mut State) -> SimpleIdentifier {
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier, TokenKind::QualifiedIdentifier],
-                    found: state.current().clone(),
+                    found: state.current().to_owned(),
                 },
                 Severity::Error,
                 span,
@@ -176,7 +176,7 @@ pub fn name(state: &mut State) -> SimpleIdentifier {
 
     state.next();
 
-    SimpleIdentifier::new(state.id(), name.symbol.unwrap(), name.span)
+    SimpleIdentifier::new(state.id(), name.symbol.to_bytestring(), name.span)
 }
 
 /// Expect an optional unqualified or qualified identifier such as Foo, Bar or Foo\Bar.
@@ -187,14 +187,14 @@ pub fn optional_name(state: &mut State) -> Option<SimpleIdentifier> {
         TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap().clone();
+            let symbol = current.symbol.to_bytestring();
 
             Some(SimpleIdentifier::new(state.id(), symbol, current.span))
         }
         t if is_reserved_identifier(t) => {
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap().clone();
+            let symbol = current.symbol.to_bytestring();
 
             Some(SimpleIdentifier::new(state.id(), symbol, current.span))
         }
@@ -211,7 +211,7 @@ pub fn full_name(state: &mut State) -> SimpleIdentifier {
         | TokenKind::FullyQualifiedIdentifier => {
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap().clone();
+            let symbol = current.symbol.to_bytestring();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
@@ -219,7 +219,7 @@ pub fn full_name(state: &mut State) -> SimpleIdentifier {
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier],
-                    found: current.clone(),
+                    found: current.to_owned(),
                 },
                 Severity::Error,
                 current.span,
@@ -239,14 +239,14 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
         | TokenKind::FullyQualifiedIdentifier => {
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap().clone();
+            let symbol = current.symbol.to_bytestring();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
         TokenKind::Enum | TokenKind::From => {
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap().clone();
+            let symbol = current.symbol.to_bytestring();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
@@ -259,7 +259,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
 
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap().clone();
+            let symbol = current.symbol.to_bytestring();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
@@ -272,7 +272,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
 
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap().clone();
+            let symbol = current.symbol.to_bytestring();
 
             SimpleIdentifier::new(state.id(), symbol, current.span)
         }
@@ -280,7 +280,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
             state.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::Identifier],
-                    found: current.clone(),
+                    found: current.to_owned(),
                 },
                 Severity::Error,
                 current.span,
@@ -297,7 +297,7 @@ pub fn identifier_maybe_reserved(state: &mut State) -> SimpleIdentifier {
     if is_reserved_identifier(&current.kind) {
         state.next();
 
-        let symbol = current.symbol.as_ref().unwrap().clone();
+        let symbol = current.symbol.to_bytestring();
 
         SimpleIdentifier::new(state.id(), symbol, current.span)
     } else {

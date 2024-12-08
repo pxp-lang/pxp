@@ -3,8 +3,9 @@ use std::collections::{HashMap, VecDeque};
 use pxp_ast::*;
 use pxp_bytestring::ByteString;
 use pxp_diagnostics::{Diagnostic, Severity};
+use pxp_lexer::Lexer;
 use pxp_span::Span;
-use pxp_token::{Token, TokenKind};
+use pxp_token::{OwnedToken, Token, TokenKind};
 
 use crate::{internal::identifiers::is_soft_reserved_identifier, ParserDiagnostic};
 
@@ -34,16 +35,14 @@ pub struct State<'a> {
     docblock: bool,
 
     // Token Stream
-    tokens: &'a [Token],
-    length: usize,
-    cursor: usize,
+    lexer: Lexer<'a>,
 
     // Diagnostics
     pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
 }
 
 impl<'a> State<'a> {
-    pub fn new(tokens: &'a [Token]) -> Self {
+    pub fn new(lexer: Lexer<'a>) -> Self {
         let mut imports = HashMap::new();
         imports.insert(UseKind::Normal, HashMap::new());
         imports.insert(UseKind::Function, HashMap::new());
@@ -59,9 +58,7 @@ impl<'a> State<'a> {
 
             id: 0,
 
-            tokens,
-            length: tokens.len(),
-            cursor: 0,
+            lexer,
 
             diagnostics: vec![],
         };
@@ -75,38 +72,25 @@ impl<'a> State<'a> {
     ///
     /// Comments are collected.
     pub fn next(&mut self) {
-        self.cursor += 1;
+        self.lexer.next();
         self.collect_comments();
     }
 
     /// Get current token.
-    pub const fn current(&self) -> &'a Token {
-        let position = if self.cursor >= self.length {
-            self.length - 1
-        } else {
-            self.cursor
-        };
-
-        &self.tokens[position]
+    pub fn current(&'a self) -> Token<'a> {
+        self.lexer.current()
     }
 
     /// Get previous token.
-    pub const fn previous(&self) -> &'a Token {
-        let position = if self.cursor == 0 { 0 } else { self.cursor - 1 };
-        let position = if position >= self.length {
-            self.length - 1
-        } else {
-            position
-        };
-
-        &self.tokens[position]
+    pub fn previous(&'a self) -> Token<'a> {
+        self.lexer.previous().unwrap_or_else(|| self.current())
     }
 
     /// Peek next token.
     ///
     /// All comments are skipped.
-    pub const fn peek(&self) -> &'a Token {
-        self.peek_nth(1)
+    pub fn peek(&'a mut self) -> Token<'a> {
+        self.lexer.peek()
     }
 
     /// Peek nth+1 token.
@@ -163,11 +147,7 @@ impl<'a> State<'a> {
 
     /// Check if current token is EOF.
     pub fn is_eof(&self) -> bool {
-        if self.cursor >= self.length {
-            return true;
-        }
-
-        self.tokens[self.cursor].kind == TokenKind::Eof
+        self.current().kind == TokenKind::Eof
     }
 
     pub fn skip_doc_eol(&mut self) {
@@ -182,11 +162,11 @@ impl<'a> State<'a> {
 
     fn collect_comments(&mut self) {
         loop {
-            if self.cursor >= self.length {
+            if self.is_eof() {
                 break;
             }
 
-            let current = &self.tokens[self.cursor];
+            let current = self.current();
 
             if !matches!(
                 current.kind,
@@ -199,10 +179,12 @@ impl<'a> State<'a> {
                 break;
             }
 
+            let current = current.to_owned();
+
             let id = self.id();
             let comment_id = self.id();
             let (comment, move_forward) = match &current {
-                Token {
+                OwnedToken {
                     kind: TokenKind::SingleLineComment,
                     span,
                     symbol,
@@ -213,12 +195,12 @@ impl<'a> State<'a> {
                         kind: CommentKind::SingleLine(SingleLineComment {
                             id: comment_id,
                             span: *span,
-                            content: symbol.as_ref().unwrap().clone(),
+                            content: symbol.clone(),
                         }),
                     },
                     true,
                 ),
-                Token {
+                OwnedToken {
                     kind: TokenKind::MultiLineComment,
                     span,
                     symbol,
@@ -229,12 +211,12 @@ impl<'a> State<'a> {
                         kind: CommentKind::MultiLine(MultiLineComment {
                             id: comment_id,
                             span: *span,
-                            content: symbol.as_ref().unwrap().clone(),
+                            content: symbol.clone(),
                         }),
                     },
                     true,
                 ),
-                Token {
+                OwnedToken {
                     kind: TokenKind::HashMarkComment,
                     span,
                     symbol,
@@ -245,13 +227,13 @@ impl<'a> State<'a> {
                         kind: CommentKind::HashMark(HashMarkComment {
                             id: comment_id,
                             span: *span,
-                            content: symbol.as_ref().unwrap().clone(),
+                            content: symbol.clone(),
                         }),
                     },
                     true,
                 ),
                 #[cfg(not(feature = "docblocks"))]
-                Token {
+                OwnedToken {
                     kind: TokenKind::DocBlockComment,
                     span,
                     symbol,
@@ -262,7 +244,7 @@ impl<'a> State<'a> {
                         kind: CommentKind::DocBlock(DocBlockComment {
                             id: comment_id,
                             span: *span,
-                            content: symbol.as_ref().unwrap().clone(),
+                            content: symbol.clone(),
                         }),
                     },
                     true,
@@ -289,7 +271,7 @@ impl<'a> State<'a> {
             self.comments.push(comment);
 
             if move_forward {
-                self.cursor += 1;
+                self.next();
             }
         }
     }
@@ -339,18 +321,19 @@ impl<'a> State<'a> {
     }
 
     pub fn maybe_resolve_identifier(&mut self, token: &Token, kind: UseKind) -> Name {
-        let symbol = token.symbol.as_ref().unwrap();
+        let symbol = token.symbol;
+
         let part = match &token.kind {
             TokenKind::Identifier | TokenKind::Enum | TokenKind::From => {
-                token.symbol.as_ref().unwrap().clone()
+                token.symbol.to_bytestring()
             }
             TokenKind::QualifiedIdentifier => {
-                let bytestring = token.symbol.as_ref().unwrap();
+                let bytestring = token.symbol.to_bytestring();
                 let parts = bytestring.split(|c| *c == b'\\').collect::<Vec<_>>();
 
                 ByteString::from(parts.first().unwrap().to_vec())
             }
-            _ if is_soft_reserved_identifier(&token.kind) => token.symbol.as_ref().unwrap().clone(),
+            _ if is_soft_reserved_identifier(&token.kind) => token.symbol.to_bytestring(),
             _ => unreachable!(),
         };
 
@@ -361,7 +344,7 @@ impl<'a> State<'a> {
         if let Some(imported) = map.get(&part) {
             match &token.kind {
                 TokenKind::Identifier | TokenKind::From | TokenKind::Enum => {
-                    Name::resolved(id, imported.clone(), symbol.clone(), token.span)
+                    Name::resolved(id, imported.clone(), symbol.to_bytestring(), token.span)
                 }
                 TokenKind::QualifiedIdentifier => {
                     // Qualified identifiers might be aliased, so we need to take the full un-aliased import and
@@ -371,7 +354,7 @@ impl<'a> State<'a> {
                     let rest = parts[1].to_vec().into();
                     let coagulated = imported.coagulate(&[rest], Some(b"\\"));
 
-                    Name::resolved(id, coagulated, symbol.clone(), token.span)
+                    Name::resolved(id, coagulated, symbol.to_bytestring(), token.span)
                 }
                 _ => unreachable!(),
             }
@@ -383,8 +366,8 @@ impl<'a> State<'a> {
         } else if kind == UseKind::Normal || token.kind == TokenKind::QualifiedIdentifier {
             Name::resolved(
                 id,
-                self.join_with_namespace(symbol),
-                symbol.clone(),
+                self.join_with_namespace(&symbol.to_bytestring()),
+                symbol.to_bytestring(),
                 token.span,
             )
         // Unqualified names in the global namespace can be resolved without any imports, since we can
@@ -393,9 +376,14 @@ impl<'a> State<'a> {
             && token.kind == TokenKind::Identifier
             && self.namespace().is_none()
         {
-            Name::resolved(id, symbol.clone(), symbol.clone(), token.span)
+            Name::resolved(
+                id,
+                symbol.to_bytestring(),
+                symbol.to_bytestring(),
+                token.span,
+            )
         } else {
-            Name::unresolved(id, symbol.clone(), token.kind.into(), token.span)
+            Name::unresolved(id, symbol.to_bytestring(), token.kind.into(), token.span)
         }
     }
 

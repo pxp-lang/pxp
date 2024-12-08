@@ -288,7 +288,7 @@ fn loop_level(state: &mut State) -> Level {
             literal: Literal::new(
                 state.id(),
                 LiteralKind::Integer,
-                current.clone(),
+                current.to_owned(),
                 current.span,
             ),
         });

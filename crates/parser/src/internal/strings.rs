@@ -77,7 +77,7 @@ pub fn shell_exec(state: &mut State) -> Expression {
 #[inline(always)]
 pub fn heredoc(state: &mut State) -> Expression {
     let span = state.current().span;
-    let label = state.current().symbol.as_ref().unwrap();
+    let label = state.current().symbol.to_bytestring();
     state.next();
 
     let mut parts = Vec::new();
@@ -122,7 +122,7 @@ pub fn nowdoc(state: &mut State) -> Expression {
         state.diagnostic(
             ParserDiagnostic::ExpectedToken {
                 expected: vec![TokenKind::EndNowdoc],
-                found: end.clone(),
+                found: end.to_owned(),
             },
             Severity::Error,
             end.span,
@@ -142,8 +142,8 @@ pub fn nowdoc(state: &mut State) -> Expression {
         ExpressionKind::Nowdoc(NowdocExpression {
             id: state.id(),
             span,
-            label,
-            value: string_part,
+            label: label.to_owned(),
+            value: string_part.to_owned(),
         }),
         span,
         CommentGroup::default(),
@@ -158,7 +158,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                 Some(StringPart::Literal(LiteralStringPart {
                     id: state.id(),
                     span: s.span,
-                    value: s.symbol.unwrap(),
+                    value: s.symbol.to_bytestring(),
                 }))
             } else {
                 None
@@ -217,7 +217,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                             ExpressionKind::Literal(Literal::new(
                                 state.id(),
                                 LiteralKind::Integer,
-                                current.clone(),
+                                current.to_owned(),
                                 current.span,
                             ))
                         }
@@ -230,7 +230,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                                 let kind = ExpressionKind::Literal(Literal::new(
                                     state.id(),
                                     LiteralKind::Integer,
-                                    literal.clone(),
+                                    literal.to_owned(),
                                     literal.span,
                                 ));
                                 let expression = Expression::new(
@@ -253,7 +253,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                                 state.diagnostic(
                                     ParserDiagnostic::ExpectedToken {
                                         expected: vec![TokenKind::LiteralInteger],
-                                        found: literal.clone(),
+                                        found: literal.to_owned(),
                                     },
                                     Severity::Error,
                                     literal.span,
@@ -273,7 +273,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                             ExpressionKind::Literal(Literal::new(
                                 state.id(),
                                 LiteralKind::String,
-                                current.clone(),
+                                current.to_owned(),
                                 current.span,
                             ))
                         }
@@ -288,7 +288,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                                         TokenKind::Identifier,
                                         TokenKind::Variable,
                                     ],
-                                    found: current.clone(),
+                                    found: current.to_owned(),
                                 },
                                 Severity::Error,
                                 current.span,
@@ -387,7 +387,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                         TokenKind::DoubleQuote,
                         TokenKind::Variable,
                     ],
-                    found: state.current().clone(),
+                    found: state.current().to_owned(),
                 },
                 Severity::Error,
                 span,

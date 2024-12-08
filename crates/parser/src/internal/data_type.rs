@@ -212,7 +212,7 @@ fn docblock_atomic(state: &mut State) -> Type<Name> {
                 inner
             }
         }
-        TokenKind::Variable if current.symbol.as_ref().is_some_and(|sym| sym == b"$this") => {
+        TokenKind::Variable if current.symbol == b"$this" => {
             state.next();
 
             if state.current().kind == TokenKind::LeftBracket {
@@ -323,9 +323,7 @@ fn docblock_subparse(state: &mut State) -> Type<Name> {
 
             let current = state.current();
 
-            if current.kind == TokenKind::Identifier
-                && current.symbol.as_ref().is_some_and(|sym| sym == b"is")
-            {
+            if current.kind == TokenKind::Identifier && current.symbol == b"is" {
                 todo!("parse docblock conditional type");
             }
 
@@ -367,7 +365,7 @@ fn dnf(state: &mut State) -> Type<Name> {
         _ => {
             state.diagnostic(
                 ParserDiagnostic::UnexpectedToken {
-                    token: state.current().clone(),
+                    token: state.current().to_owned(),
                 },
                 Severity::Error,
                 state.current().span,
@@ -430,7 +428,7 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
             ))
         }
         TokenKind::Identifier => {
-            let id = current.symbol.as_ref().unwrap();
+            let id = current.symbol;
             state.next();
 
             let name = &id[..];
@@ -458,8 +456,8 @@ fn optional_simple_data_type(state: &mut State) -> Option<Type<Name>> {
         TokenKind::FullyQualifiedIdentifier => {
             state.next();
 
-            let symbol = current.symbol.as_ref().unwrap();
-            let resolved = state.strip_leading_namespace_qualifier(symbol);
+            let symbol = current.symbol.to_bytestring();
+            let resolved = state.strip_leading_namespace_qualifier(&symbol);
 
             Some(Type::Named(Name::resolved(
                 state.id(),

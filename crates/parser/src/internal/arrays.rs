@@ -207,7 +207,7 @@ fn array_pair(state: &mut State) -> ArrayItem {
         if let Some(ampersand) = ampersand {
             state.diagnostic(
                 ParserDiagnostic::UnexpectedToken {
-                    token: ampersand.clone(),
+                    token: ampersand.to_owned(),
                 },
                 Severity::Error,
                 ampersand.span,

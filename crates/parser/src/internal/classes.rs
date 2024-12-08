@@ -235,7 +235,7 @@ pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
 
         state.diagnostic(
             ParserDiagnostic::UnexpectedToken {
-                token: current.clone(),
+                token: current.to_owned(),
             },
             Severity::Error,
             current.span,
