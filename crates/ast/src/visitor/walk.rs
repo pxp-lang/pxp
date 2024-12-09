@@ -1392,7 +1392,7 @@ pub fn walk_constant_modifier_group<V: Visitor + ?Sized>(
 }
 
 pub fn walk_unbraced_namespace<V: Visitor + ?Sized>(visitor: &mut V, node: &UnbracedNamespace) {
-    visitor.visit_name(&node.name);
+    visitor.visit_simple_identifier(&node.name);
     for item in &node.statements {
         visitor.visit_statement(item);
     }
@@ -1400,7 +1400,7 @@ pub fn walk_unbraced_namespace<V: Visitor + ?Sized>(visitor: &mut V, node: &Unbr
 
 pub fn walk_braced_namespace<V: Visitor + ?Sized>(visitor: &mut V, node: &BracedNamespace) {
     if let Some(item) = &node.name {
-        visitor.visit_name(item);
+        visitor.visit_simple_identifier(item);
     }
     visitor.visit_braced_namespace_body(&node.body);
 }

@@ -4194,7 +4194,7 @@ pub struct UnbracedNamespace {
     pub id: NodeId,
     pub span: Span,
     pub start: Span,
-    pub name: Name,
+    pub name: SimpleIdentifier,
     pub end: Span,
     pub statements: Vec<Statement>,
 }
@@ -4216,7 +4216,7 @@ pub struct BracedNamespace {
     pub id: NodeId,
     pub span: Span,
     pub namespace: Span,
-    pub name: Option<Name>,
+    pub name: Option<SimpleIdentifier>,
     pub body: BracedNamespaceBody,
 }
 

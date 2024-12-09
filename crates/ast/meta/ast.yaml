@@ -1452,7 +1452,7 @@ UnbracedNamespace:
   children: [statements]
   span: Span
   start: Span
-  name: Name
+  name: SimpleIdentifier
   end: Span
   statements: Vec<Statement>
 
@@ -1460,7 +1460,7 @@ BracedNamespace:
   children: [name?, body]
   span: Span
   namespace: Span
-  name: Option<Name>
+  name: Option<SimpleIdentifier>
   body: BracedNamespaceBody
 
 BracedNamespaceBody:

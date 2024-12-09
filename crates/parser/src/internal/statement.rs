@@ -15,6 +15,9 @@ impl<'a> Parser<'a> {
     }
 
     pub(crate) fn parse_statement(&mut self) -> Statement {
-        todo!()
+        match self.current_kind() {
+            TokenKind::OpenTag(_) => self.parse_open_tag(),
+            _ => todo!(),
+        }
     }
 }

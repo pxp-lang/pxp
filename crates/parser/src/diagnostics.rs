@@ -8,6 +8,10 @@ pub enum ParserDiagnostic {
         token: OwnedToken,
     },
     ExpectedToken {
+        expected: TokenKind,
+        found: OwnedToken,
+    },
+    ExpectedOneOfTokens {
         expected: Vec<TokenKind>,
         found: OwnedToken,
     },
@@ -64,7 +68,7 @@ impl Display for ParserDiagnostic {
             ParserDiagnostic::UnexpectedToken { token } => {
                 write!(f, "unexpected token {}", token.kind)
             }
-            ParserDiagnostic::ExpectedToken { expected, found } => {
+            ParserDiagnostic::ExpectedOneOfTokens { expected, found } => {
                 if expected.len() == 1 {
                     write!(
                         f,
@@ -84,6 +88,9 @@ impl Display for ParserDiagnostic {
                             .join(", ")
                     )
                 }
+            }
+            ParserDiagnostic::ExpectedToken { expected, found } => {
+                write!(f, "expected token {}, found {}", expected, found.kind)
             }
             ParserDiagnostic::ExpectedTokenExFound { expected } => {
                 if expected.len() == 1 {

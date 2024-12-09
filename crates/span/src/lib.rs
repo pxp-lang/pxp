@@ -13,6 +13,10 @@ impl Span {
         Self { start, end }
     }
 
+    pub fn missing() -> Self {
+        Self::default()
+    }
+
     pub fn flat(offset: ByteOffset) -> Self {
         Self {
             start: offset,
