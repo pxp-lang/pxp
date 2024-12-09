@@ -1,10 +1,12 @@
 use pxp_ast::Statement;
+use pxp_bytestring::ByteStr;
 use pxp_lexer::Lexer;
 
 mod internal;
 mod diagnostics;
 
 pub use diagnostics::ParserDiagnostic;
+use pxp_span::Span;
 use pxp_token::TokenKind;
 
 #[derive(Debug)]
@@ -44,7 +46,27 @@ impl<'a> Parser<'a> {
         self.lexer.current().kind
     }
 
+    fn current_span(&self) -> Span {
+        self.lexer.current().span
+    }
+
+    fn current_symbol(&self) -> &ByteStr {
+        self.lexer.current().symbol
+    }
+
     fn peek_kind(&mut self) -> TokenKind {
         self.lexer.peek().kind
+    }
+
+    fn peek_span(&mut self) -> Span {
+        self.lexer.peek().span
+    }
+
+    fn peek_symbol(&mut self) -> &ByteStr {
+        self.lexer.peek().symbol
+    }
+
+    fn next(&mut self) {
+        self.lexer.next();
     }
 }
