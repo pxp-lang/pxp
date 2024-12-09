@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use pxp_token::{OwnedToken, Token, TokenKind};
+use pxp_token::{OwnedToken, TokenKind};
 
 #[derive(Debug, Clone)]
 pub enum ParserDiagnostic {
@@ -56,8 +56,6 @@ pub enum ParserDiagnostic {
         expected: Vec<TokenKind>,
     },
     MixedImportTypes,
-    InvalidDocBodyIndentationLevel(usize),
-    InvalidDocIndentation,
 }
 
 impl Display for ParserDiagnostic {
@@ -215,15 +213,7 @@ impl Display for ParserDiagnostic {
                     )
                 }
             }
-            ParserDiagnostic::MixedImportTypes => write!(f, "cannot mix import types"),
-            ParserDiagnostic::InvalidDocBodyIndentationLevel(level) => write!(
-                f,
-                "heredoc / nowdoc body indentation level [{}] is invalid",
-                level
-            ),
-            ParserDiagnostic::InvalidDocIndentation => {
-                write!(f, "heredoc / nowdoc body indentation is invalid")
-            }
+            ParserDiagnostic::MixedImportTypes => write!(f, "cannot mix import types")
         }
     }
 }

@@ -1,7 +1,4 @@
 use std::path::PathBuf;
-
-use pxp_parser::parse;
-
 use snappers::{snap, Snapper};
 
 // Tags
@@ -970,6 +967,7 @@ pub fn snapper() -> Snapper {
 }
 
 pub fn process(string_or_file: &str) -> String {
+    todo!();
     let path = format!("{}/tests/{}", env!("CARGO_MANIFEST_DIR"), string_or_file);
     let path = PathBuf::from(path);
     let input = if path.exists() {
