@@ -189,9 +189,7 @@ pub fn walk_use<V: Visitor + ?Sized>(visitor: &mut V, node: &Use) {
     if let Some(item) = &node.alias {
         visitor.visit_simple_identifier(item);
     }
-    if let Some(item) = &node.kind {
-        visitor.visit_use_kind(item);
-    }
+    visitor.visit_use_kind(&node.kind);
 }
 
 pub fn walk_use_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &UseKind) {
@@ -1392,7 +1390,7 @@ pub fn walk_constant_modifier_group<V: Visitor + ?Sized>(
 }
 
 pub fn walk_unbraced_namespace<V: Visitor + ?Sized>(visitor: &mut V, node: &UnbracedNamespace) {
-    visitor.visit_name(&node.name);
+    visitor.visit_simple_identifier(&node.name);
     for item in &node.statements {
         visitor.visit_statement(item);
     }
@@ -1400,7 +1398,7 @@ pub fn walk_unbraced_namespace<V: Visitor + ?Sized>(visitor: &mut V, node: &Unbr
 
 pub fn walk_braced_namespace<V: Visitor + ?Sized>(visitor: &mut V, node: &BracedNamespace) {
     if let Some(item) = &node.name {
-        visitor.visit_name(item);
+        visitor.visit_simple_identifier(item);
     }
     visitor.visit_braced_namespace_body(&node.body);
 }

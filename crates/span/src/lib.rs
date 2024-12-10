@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Default, Serialize, Deserialize, Hash)]
@@ -11,11 +13,19 @@ impl Span {
         Self { start, end }
     }
 
+    pub fn missing() -> Self {
+        Self::default()
+    }
+
     pub fn flat(offset: ByteOffset) -> Self {
         Self {
             start: offset,
             end: offset,
         }
+    }
+
+    pub fn to_range(&self) -> Range<ByteOffset> {
+        self.start..self.end
     }
 
     pub fn len(&self) -> ByteOffset {
@@ -28,6 +38,17 @@ impl Span {
 
     pub fn combine(start: Span, end: Span) -> Span {
         Span::new(start.start, end.end)
+    }
+
+    pub fn join(&self, other: Span) -> Span {
+        Span::new(self.start, other.end)
+    }
+
+    pub fn maybe_join(&self, other: Option<Span>) -> Span {
+        match other {
+            Some(other) => self.join(other),
+            None => *self,
+        }
     }
 
     pub fn contains_offset(&self, offset: ByteOffset) -> bool {
@@ -281,5 +302,12 @@ mod tests {
         assert_eq!(byte_offset_to_line_and_column(source, 5), (0, 5));
         assert_eq!(byte_offset_to_line_and_column(source, 6), (1, 1));
         assert_eq!(byte_offset_to_line_and_column(source, 11), (1, 6));
+    }
+
+    #[test]
+    fn test_to_range() {
+        let span = Span::new(0, 5);
+
+        assert_eq!(span.to_range(), 0..5);
     }
 }

@@ -1,7 +1,8 @@
 use discoverer::discover;
 use pxp_bytestring::ByteString;
 use pxp_index::{Index, Indexer};
-use pxp_parser::parse;
+use pxp_lexer::Lexer;
+use pxp_parser::Parser;
 use pxp_type::Type;
 
 #[test]
@@ -349,7 +350,8 @@ fn index() -> Index {
     let files = discover(&["php"], &["tests/fixtures"]).expect("failed to discover files");
 
     for file in files.iter() {
-        let result = parse(&std::fs::read(file).expect("failed to read file"));
+        let contents= std::fs::read(file).unwrap();
+        let result = Parser::parse(Lexer::new(&contents));
         indexer.index(&result.ast);
     }
 

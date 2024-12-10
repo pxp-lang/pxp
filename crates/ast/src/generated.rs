@@ -5,7 +5,7 @@
 use crate::{name::NameQualification, utils::CommaSeparated, HasId, Node};
 use pxp_bytestring::ByteString;
 use pxp_span::{Span, Spanned};
-use pxp_token::Token;
+use pxp_token::OwnedToken;
 use pxp_type::Type;
 use std::ptr::NonNull;
 
@@ -376,7 +376,7 @@ impl Spanned for CommentStatement {
 pub struct InlineHtmlStatement {
     pub id: NodeId,
     pub span: Span,
-    pub html: Token,
+    pub html: OwnedToken,
 }
 
 impl HasId for InlineHtmlStatement {
@@ -577,7 +577,7 @@ pub struct Use {
     pub span: Span,
     pub name: Name,
     pub alias: Option<SimpleIdentifier>,
-    pub kind: Option<UseKind>,
+    pub kind: UseKind,
 }
 
 impl HasId for Use {
@@ -1330,8 +1330,8 @@ impl Spanned for HeredocExpression {
 pub struct NowdocExpression {
     pub id: NodeId,
     pub span: Span,
-    pub label: Token,
-    pub value: Token,
+    pub label: OwnedToken,
+    pub value: OwnedToken,
 }
 
 impl HasId for NowdocExpression {
@@ -1369,7 +1369,7 @@ impl Spanned for ShellExecExpression {
 pub struct BoolExpression {
     pub id: NodeId,
     pub span: Span,
-    pub value: Token,
+    pub value: OwnedToken,
 }
 
 impl HasId for BoolExpression {
@@ -3446,7 +3446,7 @@ pub struct Literal {
     pub id: NodeId,
     pub span: Span,
     pub kind: LiteralKind,
-    pub token: Token,
+    pub token: OwnedToken,
 }
 
 impl HasId for Literal {
@@ -4194,7 +4194,7 @@ pub struct UnbracedNamespace {
     pub id: NodeId,
     pub span: Span,
     pub start: Span,
-    pub name: Name,
+    pub name: SimpleIdentifier,
     pub end: Span,
     pub statements: Vec<Statement>,
 }
@@ -4216,7 +4216,7 @@ pub struct BracedNamespace {
     pub id: NodeId,
     pub span: Span,
     pub namespace: Span,
-    pub name: Option<Name>,
+    pub name: Option<SimpleIdentifier>,
     pub body: BracedNamespaceBody,
 }
 
@@ -5517,7 +5517,7 @@ impl Spanned for GroupUseStatement {
 pub struct HaltCompilerStatement {
     pub id: NodeId,
     pub span: Span,
-    pub content: Option<Token>,
+    pub content: Option<OwnedToken>,
 }
 
 impl HasId for HaltCompilerStatement {
@@ -5802,7 +5802,7 @@ impl HasId for DocBlockTag {
 pub struct DocBlockParamTag {
     pub id: NodeId,
     pub span: Span,
-    pub tag: Token,
+    pub tag: OwnedToken,
     pub data_type: Option<DataType>,
     pub ampersand: Option<Span>,
     pub ellipsis: Option<Span>,
@@ -5826,7 +5826,7 @@ impl Spanned for DocBlockParamTag {
 pub struct DocBlockReturnTag {
     pub id: NodeId,
     pub span: Span,
-    pub tag: Token,
+    pub tag: OwnedToken,
     pub data_type: Option<DataType>,
     pub text: Option<ByteString>,
 }
@@ -5847,7 +5847,7 @@ impl Spanned for DocBlockReturnTag {
 pub struct DocBlockThrowsTag {
     pub id: NodeId,
     pub span: Span,
-    pub tag: Token,
+    pub tag: OwnedToken,
     pub data_type: Option<DataType>,
     pub text: Option<ByteString>,
 }
@@ -5868,7 +5868,7 @@ impl Spanned for DocBlockThrowsTag {
 pub struct DocBlockVarTag {
     pub id: NodeId,
     pub span: Span,
-    pub tag: Token,
+    pub tag: OwnedToken,
     pub data_type: Option<DataType>,
     pub variable: Option<SimpleVariable>,
     pub text: Option<ByteString>,
@@ -5890,7 +5890,7 @@ impl Spanned for DocBlockVarTag {
 pub struct DocBlockPropertyTag {
     pub id: NodeId,
     pub span: Span,
-    pub tag: Token,
+    pub tag: OwnedToken,
     pub data_type: Option<DataType>,
     pub variable: Option<SimpleVariable>,
     pub text: Option<ByteString>,
@@ -5912,7 +5912,7 @@ impl Spanned for DocBlockPropertyTag {
 pub struct DocBlockMethodTag {
     pub id: NodeId,
     pub span: Span,
-    pub tag: Token,
+    pub tag: OwnedToken,
     pub r#static: Option<Span>,
     pub return_type: Option<DataType>,
     pub name: SimpleIdentifier,
@@ -5938,7 +5938,7 @@ impl Spanned for DocBlockMethodTag {
 pub struct DocBlockTemplateTag {
     pub id: NodeId,
     pub span: Span,
-    pub tag: Token,
+    pub tag: OwnedToken,
     pub placeholder: SimpleIdentifier,
     pub constraint: Option<DataType>,
     pub text: Option<ByteString>,
@@ -5960,7 +5960,7 @@ impl Spanned for DocBlockTemplateTag {
 pub struct DocBlockExtendsTag {
     pub id: NodeId,
     pub span: Span,
-    pub tag: Token,
+    pub tag: OwnedToken,
     pub data_type: Option<DataType>,
     pub text: Option<ByteString>,
 }
@@ -5981,7 +5981,7 @@ impl Spanned for DocBlockExtendsTag {
 pub struct DocBlockImplementsTag {
     pub id: NodeId,
     pub span: Span,
-    pub tag: Token,
+    pub tag: OwnedToken,
     pub data_type: Option<DataType>,
     pub text: Option<ByteString>,
 }
@@ -6002,7 +6002,7 @@ impl Spanned for DocBlockImplementsTag {
 pub struct DocBlockUsesTag {
     pub id: NodeId,
     pub span: Span,
-    pub tag: Token,
+    pub tag: OwnedToken,
     pub data_type: Option<DataType>,
     pub text: Option<ByteString>,
 }
@@ -6023,7 +6023,7 @@ impl Spanned for DocBlockUsesTag {
 pub struct DocBlockDeprecatedTag {
     pub id: NodeId,
     pub span: Span,
-    pub tag: Token,
+    pub tag: OwnedToken,
     pub text: Option<ByteString>,
 }
 
@@ -6043,7 +6043,7 @@ impl Spanned for DocBlockDeprecatedTag {
 pub struct DocBlockGenericTag {
     pub id: NodeId,
     pub span: Span,
-    pub tag: Token,
+    pub tag: OwnedToken,
     pub text: Option<ByteString>,
 }
 

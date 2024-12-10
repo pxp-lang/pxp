@@ -154,7 +154,7 @@ CommentStatement:
 
 InlineHtmlStatement:
   span: Span
-  html: Token
+  html: OwnedToken
 
 FullOpeningTagStatement:
   span: Span
@@ -210,7 +210,7 @@ Use:
   span: Span
   name: Name
   alias: Option<SimpleIdentifier>
-  kind: Option<UseKind>
+  kind: UseKind
 
 UseKind:
   node: false
@@ -459,8 +459,8 @@ HeredocExpression:
 
 NowdocExpression:
   span: Span
-  label: Token
-  value: Token
+  label: OwnedToken
+  value: OwnedToken
 
 ShellExecExpression:
   children: [parts]
@@ -469,7 +469,7 @@ ShellExecExpression:
 
 BoolExpression:
   span: Span
-  value: Token
+  value: OwnedToken
 
 ArrayIndexExpression:
   children: [array, index?]
@@ -1216,7 +1216,7 @@ InterfaceStatement:
 Literal:
   span: Span
   kind: LiteralKind
-  token: Token
+  token: OwnedToken
 
 LiteralKind:
   as: Enum
@@ -1452,7 +1452,7 @@ UnbracedNamespace:
   children: [statements]
   span: Span
   start: Span
-  name: Name
+  name: SimpleIdentifier
   end: Span
   statements: Vec<Statement>
 
@@ -1460,7 +1460,7 @@ BracedNamespace:
   children: [name?, body]
   span: Span
   namespace: Span
-  name: Option<Name>
+  name: Option<SimpleIdentifier>
   body: BracedNamespaceBody
 
 BracedNamespaceBody:
@@ -1952,7 +1952,7 @@ GroupUseStatement:
 
 HaltCompilerStatement:
   span: Span
-  content: Option<Token>
+  content: Option<OwnedToken>
 
 StaticVar:
   children: [var, default?]
@@ -2034,7 +2034,7 @@ DocBlockTag:
 
 DocBlockParamTag:
   span: Span
-  tag: Token
+  tag: OwnedToken
   data_type: Option<DataType>
   ampersand: Option<Span>
   ellipsis: Option<Span>
@@ -2043,33 +2043,33 @@ DocBlockParamTag:
 
 DocBlockReturnTag:
   span: Span
-  tag: Token
+  tag: OwnedToken
   data_type: Option<DataType>
   text: Option<ByteString>
 
 DocBlockThrowsTag:
   span: Span
-  tag: Token
+  tag: OwnedToken
   data_type: Option<DataType>
   text: Option<ByteString>
 
 DocBlockVarTag:
   span: Span
-  tag: Token
+  tag: OwnedToken
   data_type: Option<DataType>
   variable: Option<SimpleVariable>
   text: Option<ByteString>
 
 DocBlockPropertyTag:
   span: Span
-  tag: Token
+  tag: OwnedToken
   data_type: Option<DataType>
   variable: Option<SimpleVariable>
   text: Option<ByteString>
 
 DocBlockMethodTag:
   span: Span
-  tag: Token
+  tag: OwnedToken
   r#static: Option<Span>
   return_type: Option<DataType>
   name: SimpleIdentifier
@@ -2080,37 +2080,37 @@ DocBlockMethodTag:
 
 DocBlockTemplateTag:
   span: Span
-  tag: Token
+  tag: OwnedToken
   placeholder: SimpleIdentifier
   constraint: Option<DataType>
   text: Option<ByteString>
 
 DocBlockExtendsTag:
   span: Span
-  tag: Token
+  tag: OwnedToken
   data_type: Option<DataType>
   text: Option<ByteString>
 
 DocBlockImplementsTag:
   span: Span
-  tag: Token
+  tag: OwnedToken
   data_type: Option<DataType>
   text: Option<ByteString>
 
 DocBlockUsesTag:
   span: Span
-  tag: Token
+  tag: OwnedToken
   data_type: Option<DataType>
   text: Option<ByteString>
 
 DocBlockDeprecatedTag:
   span: Span
-  tag: Token
+  tag: OwnedToken
   text: Option<ByteString>
 
 DocBlockGenericTag:
   span: Span
-  tag: Token
+  tag: OwnedToken
   text: Option<ByteString>
 
 CommentGroup:

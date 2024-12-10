@@ -2,7 +2,8 @@ use std::path::Path;
 
 use pxp_ast::{visitor::*, UnbracedNamespace, *};
 use pxp_bytestring::ByteString;
-use pxp_parser::parse;
+use pxp_lexer::Lexer;
+use pxp_parser::Parser;
 use pxp_span::Span;
 use pxp_type::Type;
 
@@ -36,7 +37,7 @@ impl<'a> Indexer<'a> {
             return;
         };
 
-        let parse_result = parse(&content);
+        let parse_result = Parser::parse(Lexer::new(&content));
 
         self.index(&parse_result.ast);
     }
@@ -128,7 +129,7 @@ impl IndexerContext {
 
 impl<'a> Visitor for Indexer<'a> {
     fn visit_unbraced_namespace(&mut self, node: &UnbracedNamespace) {
-        self.context.namespace = Some(node.name.as_resolved().unwrap().resolved.clone());
+        self.context.namespace = Some(node.name.symbol.clone());
         walk_unbraced_namespace(self, node);
         self.context.namespace = None;
     }
@@ -137,7 +138,7 @@ impl<'a> Visitor for Indexer<'a> {
         self.context.namespace = node
             .name
             .as_ref()
-            .map(|n| n.as_resolved().unwrap().resolved.clone());
+            .map(|n| n.symbol.clone());
         walk_braced_namespace(self, node);
         self.context.namespace = None;
     }

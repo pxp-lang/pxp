@@ -48,6 +48,10 @@ impl SimpleIdentifier {
         Self { id, symbol, span }
     }
 
+    pub fn missing(id: NodeId, span: Span) -> Self {
+        Self::new(id, ByteString::empty(), span)
+    }
+
     pub fn is_missing(&self) -> bool {
         self.symbol.is_empty()
     }
