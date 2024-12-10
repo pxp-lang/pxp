@@ -189,9 +189,7 @@ pub fn walk_use<V: Visitor + ?Sized>(visitor: &mut V, node: &Use) {
     if let Some(item) = &node.alias {
         visitor.visit_simple_identifier(item);
     }
-    if let Some(item) = &node.kind {
-        visitor.visit_use_kind(item);
-    }
+    visitor.visit_use_kind(&node.kind);
 }
 
 pub fn walk_use_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &UseKind) {

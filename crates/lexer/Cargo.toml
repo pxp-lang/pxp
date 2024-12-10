@@ -8,11 +8,15 @@ license-file.workspace = true
 pxp-token = { path = "../token" }
 pxp-span = { path = "../span" }
 pxp-bytestring = { path = "../bytestring" }
+discoverer = { version = "0.2.0", optional = true }
 
 [features]
 default = []
 docblocks = []
+tokenise = ["discoverer"]
 
 [[bin]]
 name = "tokenise"
 path = "bin/tokenise.rs"
+required-features = ["tokenise"]
+

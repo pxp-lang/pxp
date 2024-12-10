@@ -120,6 +120,12 @@ impl From<&[u8]> for ByteString {
     }
 }
 
+impl From<&&[u8]> for ByteString {
+    fn from(bytes: &&[u8]) -> Self {
+        ByteString::new(bytes.to_vec())
+    }
+}
+
 impl<const N: usize> From<&[u8; N]> for ByteString {
     fn from(bytes: &[u8; N]) -> Self {
         ByteString::new(bytes.to_vec())

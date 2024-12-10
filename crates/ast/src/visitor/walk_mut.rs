@@ -201,9 +201,7 @@ pub fn walk_use_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Use) {
     if let Some(item) = &mut node.alias {
         visitor.visit_simple_identifier(item);
     }
-    if let Some(item) = &mut node.kind {
-        visitor.visit_use_kind(item);
-    }
+    visitor.visit_use_kind(&mut node.kind);
 }
 
 pub fn walk_use_kind_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut UseKind) {

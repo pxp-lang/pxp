@@ -1,4 +1,6 @@
 use std::path::PathBuf;
+use pxp_lexer::Lexer;
+use pxp_parser::Parser;
 use snappers::{snap, Snapper};
 
 // Tags
@@ -967,7 +969,6 @@ pub fn snapper() -> Snapper {
 }
 
 pub fn process(string_or_file: &str) -> String {
-    todo!();
     let path = format!("{}/tests/{}", env!("CARGO_MANIFEST_DIR"), string_or_file);
     let path = PathBuf::from(path);
     let input = if path.exists() {
@@ -976,7 +977,7 @@ pub fn process(string_or_file: &str) -> String {
         string_or_file.as_bytes().to_vec()
     };
 
-    let result = parse(&input);
+    let result = Parser::parse(Lexer::new(&input));
     let mut output = format!("{:#?}\n---\n", result.ast);
 
     if !result.diagnostics.is_empty() {

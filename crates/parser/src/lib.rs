@@ -1,10 +1,12 @@
+use imports::ImportMap;
 use pxp_ast::{NodeId, Statement};
-use pxp_bytestring::ByteStr;
+use pxp_bytestring::{ByteStr, ByteString};
 use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::Lexer;
 
 mod internal;
 mod diagnostics;
+mod imports;
 
 pub use diagnostics::ParserDiagnostic;
 use pxp_span::Span;
@@ -16,6 +18,7 @@ pub struct Parser<'a> {
     diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
 
     id: NodeId,
+    imports: ImportMap,
 }
 
 #[derive(Debug, Clone)]
@@ -26,7 +29,13 @@ pub struct ParseResult {
 
 impl<'a> Parser<'a> {
     fn new(lexer: Lexer<'a>) -> Self {
-        Self { id: 0, lexer, diagnostics: Vec::new() }
+        Self {
+            lexer,
+            diagnostics: Vec::new(),
+
+            id: 0,
+            imports: ImportMap::new(),
+        }
     }
 
     pub fn parse(lexer: Lexer<'a>) -> ParseResult {
@@ -70,6 +79,10 @@ impl<'a> Parser<'a> {
         self.lexer.current().symbol
     }
 
+    fn current_symbol_as_bytestring(&self) -> ByteString {
+        self.current_symbol().to_bytestring()
+    }
+
     fn peek_kind(&mut self) -> TokenKind {
         self.lexer.peek().kind
     }
@@ -92,8 +105,12 @@ impl<'a> Parser<'a> {
     }
 
     /// Consume the current token.
-    fn next(&mut self) {
+    fn next(&mut self) -> Span {
+        let span = self.current_span();
+
         self.lexer.next();
+
+        span
     }
 
     /// Collect a series of nodes into a `Vec` until the given `TokenKind` is encountered.
@@ -141,18 +158,6 @@ impl<'a> Parser<'a> {
 
             span
         }
-    }
-
-    pub(crate) fn unexpected_end_of_file(&mut self) {
-        self.diagnostic(ParserDiagnostic::UnexpectedEndOfFile, Severity::Error, self.current_span());
-    }
-
-    pub(crate) fn expected_token(&mut self, kind: TokenKind) {
-        self.diagnostic(ParserDiagnostic::ExpectedToken { expected: kind, found: self.current().to_owned() }, Severity::Error, self.current_span());
-    }
-
-    pub(crate) fn expected_any_of_tokens(&mut self, kinds: &[TokenKind]) {
-        self.diagnostic(ParserDiagnostic::ExpectedOneOfTokens { expected: kinds.to_vec(), found: self.current().to_owned() }, Severity::Error, self.current_span());
     }
 
     /// Optionally consume the given `TokenKind`.

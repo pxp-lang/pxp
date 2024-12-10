@@ -577,7 +577,7 @@ pub struct Use {
     pub span: Span,
     pub name: Name,
     pub alias: Option<SimpleIdentifier>,
-    pub kind: Option<UseKind>,
+    pub kind: UseKind,
 }
 
 impl HasId for Use {

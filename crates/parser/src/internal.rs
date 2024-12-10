@@ -6,3 +6,5 @@ pub mod halt_compiler;
 pub mod identifiers;
 pub mod names;
 pub mod open_tags;
+pub mod diagnostics;
+pub mod utilities;

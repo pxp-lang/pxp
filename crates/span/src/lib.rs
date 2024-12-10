@@ -40,6 +40,17 @@ impl Span {
         Span::new(start.start, end.end)
     }
 
+    pub fn join(&self, other: Span) -> Span {
+        Span::new(self.start, other.end)
+    }
+
+    pub fn maybe_join(&self, other: Option<Span>) -> Span {
+        match other {
+            Some(other) => self.join(other),
+            None => *self,
+        }
+    }
+
     pub fn contains_offset(&self, offset: ByteOffset) -> bool {
         offset >= self.start && offset <= self.end
     }
