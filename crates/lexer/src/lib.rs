@@ -19,7 +19,6 @@ pub struct Lexer<'a> {
     frames: VecDeque<StackFrame>,
     source: Source<'a>,
 
-    previous: Option<Token<'a>>,
     current: Token<'a>,
     peek: Option<Token<'a>>,
 }
@@ -44,7 +43,6 @@ impl<'a> Lexer<'a> {
             source: Source::new(input.as_ref()),
             frames: VecDeque::from([StackFrame::Initial]),
 
-            previous: None,
             current: Token::new(TokenKind::Eof, Span::default(), ByteStr::new(&[])),
             peek: None,
         };
@@ -78,10 +76,6 @@ impl<'a> Lexer<'a> {
         tokens
     }
 
-    pub fn previous(&self) -> Option<Token> {
-        self.previous.clone()
-    }
-
     pub fn current(&self) -> Token {
         self.current
     }
@@ -100,14 +94,12 @@ impl<'a> Lexer<'a> {
 
     pub fn next(&mut self) {
         if self.peek.is_some() {
-            self.previous = Some(self.current.clone());
             self.current = self.peek.take().unwrap();
             self.peek = None;
 
             return;
         }
 
-        self.previous = Some(self.current.clone());
         self.current = self.read_next();
     }
 
