@@ -53,7 +53,8 @@ impl<'a> NodeVisitor<'a> for NodeFinder<'a> {
 #[cfg(test)]
 mod tests {
     use pxp_ast::ExpressionKind;
-    use pxp_parser::{parse, ParseResult};
+    use pxp_lexer::Lexer;
+    use pxp_parser::{Parser, ParseResult};
 
     use super::*;
 
@@ -82,7 +83,7 @@ mod tests {
     fn parse_with_offset_indicator(input: &'static str) -> (ParseResult, ByteOffset) {
         let offset = input.find('§').unwrap();
         let input = input.replace('§', "");
-        let result = parse(&input);
+        let result = Parser::parse(Lexer::new(&input));
 
         (result, offset)
     }
