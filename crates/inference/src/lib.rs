@@ -75,8 +75,9 @@ mod tests {
 
     use pxp_bytestring::ByteString;
     use pxp_index::Indexer;
+    use pxp_lexer::Lexer;
     use pxp_node_finder::NodeFinder;
-    use pxp_parser::parse;
+    use pxp_parser::Parser;
 
     use super::*;
 
@@ -292,7 +293,7 @@ mod tests {
     fn infer(input: &str, index: Option<Index>) -> Type<ByteString> {
         let offset = input.find('§').expect("failed to locate cursor marker");
         let input = input.replace('§', "");
-        let result = parse(&input);
+        let result = Parser::parse(Lexer::new(&input));
         let index = index.unwrap_or_else(|| {
             let mut index = Index::new();
             let mut indexer = Indexer::new(&mut index);
@@ -318,7 +319,8 @@ mod tests {
         let paths = ["tests/fixtures/Foo.php", "tests/fixtures/Bar.php"];
 
         for path in paths {
-            let result = parse(&std::fs::read(path).expect("failed to read fixture path"));
+            let content = std::fs::read(path).expect("failed to read fixture path");
+            let result = Parser::parse(Lexer::new(&content));
 
             indexer.index(&result.ast);
         }
