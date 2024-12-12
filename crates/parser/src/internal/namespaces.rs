@@ -14,9 +14,9 @@ use pxp_span::Span;
 use pxp_span::Spanned;
 use pxp_token::TokenKind;
 
-pub fn namespace(state: &mut State) -> StatementKind {
+pub fn parse_namespace(state: &mut State) -> StatementKind {
     let start = utils::skip(state, TokenKind::Namespace);
-    let name = identifiers::optional_name(state);
+    let name = identifiers::parse_optional_name_identifier(state);
 
     let current = state.current();
 
@@ -30,7 +30,7 @@ pub fn namespace(state: &mut State) -> StatementKind {
                 );
             }
 
-            return unbraced_namespace(state, start, name.clone());
+            return parse_unbraced_namespace(state, start, name.clone());
         }
     }
 
@@ -42,7 +42,7 @@ pub fn namespace(state: &mut State) -> StatementKind {
                 current.span,
             );
 
-            braced_namespace(state, start, name)
+            parse_braced_namespace(state, start, name)
         }
         Some(NamespaceType::Braced) if state.namespace().is_some() => {
             state.diagnostic(
@@ -51,13 +51,13 @@ pub fn namespace(state: &mut State) -> StatementKind {
                 current.span,
             );
 
-            braced_namespace(state, start, name)
+            parse_braced_namespace(state, start, name)
         }
-        _ => braced_namespace(state, start, name),
+        _ => parse_braced_namespace(state, start, name),
     }
 }
 
-fn unbraced_namespace(state: &mut State, start: Span, name: SimpleIdentifier) -> StatementKind {
+fn parse_unbraced_namespace(state: &mut State, start: Span, name: SimpleIdentifier) -> StatementKind {
     let end = utils::skip_semicolon(state);
 
     let statements = scoped!(state, Scope::Namespace(name.symbol.clone()), {
@@ -93,7 +93,7 @@ fn unbraced_namespace(state: &mut State, start: Span, name: SimpleIdentifier) ->
     }))
 }
 
-fn braced_namespace(
+fn parse_braced_namespace(
     state: &mut State,
     span: Span,
     name: Option<SimpleIdentifier>,

@@ -19,7 +19,7 @@ use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
-pub fn list_expression(state: &mut State) -> Expression {
+pub fn parse_list_expression(state: &mut State) -> Expression {
     let list = utils::skip(state, TokenKind::List);
     let start = utils::skip_left_parenthesis(state);
     let items = {
@@ -134,7 +134,7 @@ pub fn list_expression(state: &mut State) -> Expression {
     Expression::new(state.id(), kind, span, CommentGroup::default())
 }
 
-pub fn short_array_expression(state: &mut State) -> Expression {
+pub fn parse_short_array_expression(state: &mut State) -> Expression {
     let start = utils::skip(state, TokenKind::LeftBracket);
     let items = utils::comma_separated(
         state,
@@ -143,7 +143,7 @@ pub fn short_array_expression(state: &mut State) -> Expression {
             if current.kind == TokenKind::Comma {
                 ArrayItem::Skipped(current.span)
             } else {
-                array_pair(state)
+                parse_array_pair(state)
             }
         },
         TokenKind::RightBracket,
@@ -162,10 +162,10 @@ pub fn short_array_expression(state: &mut State) -> Expression {
     Expression::new(state.id(), kind, span, CommentGroup::default())
 }
 
-pub fn array_expression(state: &mut State) -> Expression {
+pub fn parse_array_expression(state: &mut State) -> Expression {
     let array = utils::skip(state, TokenKind::Array);
     let start = utils::skip_left_parenthesis(state);
-    let items = utils::comma_separated(state, &array_pair, TokenKind::RightParen);
+    let items = utils::comma_separated(state, &parse_array_pair, TokenKind::RightParen);
     let end = utils::skip_right_parenthesis(state);
     let span = Span::combine(array, end);
 
@@ -181,7 +181,7 @@ pub fn array_expression(state: &mut State) -> Expression {
     Expression::new(state.id(), kind, span, CommentGroup::default())
 }
 
-fn array_pair(state: &mut State) -> ArrayItem {
+fn parse_array_pair(state: &mut State) -> ArrayItem {
     let mut current = state.current();
     let ellipsis = if current.kind == TokenKind::Ellipsis {
         state.next();

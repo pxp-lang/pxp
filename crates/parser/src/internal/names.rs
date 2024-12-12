@@ -8,7 +8,7 @@ use crate::{state::State, ParserDiagnostic};
 
 use super::identifiers::{self, is_reserved_identifier, is_soft_reserved_identifier};
 
-pub fn full_name(state: &mut State, kind: UseKind) -> Name {
+pub fn parse_full_name(state: &mut State, kind: UseKind) -> Name {
     let current = state.current();
 
     match &current.kind {
@@ -40,7 +40,7 @@ pub fn full_name(state: &mut State, kind: UseKind) -> Name {
     }
 }
 
-pub fn type_name_maybe_soft_reserved(state: &mut State) -> Name {
+pub fn parse_type_name_maybe_soft_reserved(state: &mut State) -> Name {
     let current = state.current();
 
     if is_soft_reserved_identifier(&current.kind) {
@@ -51,11 +51,11 @@ pub fn type_name_maybe_soft_reserved(state: &mut State) -> Name {
 
         Name::resolved(state.id(), resolved, symbol.clone(), current.span)
     } else {
-        type_name(state)
+        parse_type_name(state)
     }
 }
 
-pub fn name_maybe_soft_reserved(state: &mut State, kind: UseKind) -> Name {
+pub fn parse_name_maybe_soft_reserved(state: &mut State, kind: UseKind) -> Name {
     let current = state.current();
 
     if is_soft_reserved_identifier(&current.kind) {
@@ -63,11 +63,11 @@ pub fn name_maybe_soft_reserved(state: &mut State, kind: UseKind) -> Name {
 
         state.maybe_resolve_identifier(current, kind)
     } else {
-        full_name(state, kind)
+        parse_full_name(state, kind)
     }
 }
 
-pub fn type_name(state: &mut State) -> Name {
+pub fn parse_type_name(state: &mut State) -> Name {
     let current = state.current();
 
     match &current.kind {
@@ -128,8 +128,8 @@ pub fn type_name(state: &mut State) -> Name {
 }
 
 // Names inside of a `use` statement are always resolved.
-pub fn use_name(state: &mut State) -> Name {
-    let identifier = identifiers::full_type_name(state);
+pub fn parse_use_name(state: &mut State) -> Name {
+    let identifier = identifiers::parse_full_type_name_identifier(state);
 
     if identifier.symbol.is_empty() {
         return Name::missing(state.id(), identifier.span);
@@ -143,7 +143,7 @@ pub fn use_name(state: &mut State) -> Name {
     )
 }
 
-pub fn full_name_including_self(state: &mut State) -> Name {
+pub fn parse_full_name_including_self(state: &mut State) -> Name {
     let current = state.current();
     match &current.kind {
         TokenKind::FullyQualifiedIdentifier => {
@@ -207,7 +207,7 @@ pub fn full_name_including_self(state: &mut State) -> Name {
     }
 }
 
-pub fn constant_identifier(state: &mut State) -> Name {
+pub fn parse_constant_identifier(state: &mut State) -> Name {
     let current = state.current();
     match &current.kind {
         TokenKind::Identifier

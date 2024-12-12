@@ -6,17 +6,17 @@ use pxp_ast::*;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
-use super::data_type::data_type;
+use super::data_type::parse_data_type;
 use super::names;
 
-pub fn parse(state: &mut State) -> ConstantStatement {
+pub fn parse_constant(state: &mut State) -> ConstantStatement {
     let comments = state.comments();
     let start = utils::skip(state, TokenKind::Const);
 
     let mut entries = vec![];
 
     loop {
-        let name = names::constant_identifier(state);
+        let name = names::parse_constant_identifier(state);
         let span = utils::skip(state, TokenKind::Equals);
         let value = expressions::create(state);
 
@@ -48,14 +48,14 @@ pub fn parse(state: &mut State) -> ConstantStatement {
     }
 }
 
-pub fn classish(state: &mut State, modifiers: ConstantModifierGroup) -> ClassishConstant {
+pub fn parse_classish_constant(state: &mut State, modifiers: ConstantModifierGroup) -> ClassishConstant {
     let attributes = state.get_attributes();
 
     let comments = state.comments();
     let start = utils::skip(state, TokenKind::Const);
 
     let data_type = if state.peek().kind == TokenKind::Identifier {
-        Some(data_type(state))
+        Some(parse_data_type(state))
     } else {
         None
     };
@@ -63,7 +63,7 @@ pub fn classish(state: &mut State, modifiers: ConstantModifierGroup) -> Classish
     let mut entries = vec![];
 
     loop {
-        let name = identifiers::identifier_maybe_reserved(state);
+        let name = identifiers::parse_identifier_maybe_reserved(state);
         let span = utils::skip(state, TokenKind::Equals);
         let value = expressions::create(state);
 

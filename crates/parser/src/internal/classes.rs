@@ -1,6 +1,6 @@
 use crate::internal::attributes;
-use crate::internal::constants::classish;
-use crate::internal::functions::method;
+use crate::internal::constants::parse_classish_constant;
+use crate::internal::functions::parse_method;
 use crate::internal::functions::Method;
 use crate::internal::modifiers;
 use crate::internal::parameters;
@@ -22,19 +22,19 @@ use pxp_token::TokenKind;
 
 use super::names;
 
-pub fn parse(state: &mut State) -> StatementKind {
+pub fn parse_class(state: &mut State) -> StatementKind {
     let attributes = state.get_attributes();
 
-    let modifiers = modifiers::collect(state);
-    let modifiers = modifiers::class_group(state, modifiers);
+    let modifiers = modifiers::collect_modifiers(state);
+    let modifiers = modifiers::parse_class_group(state, modifiers);
     let class = utils::skip(state, TokenKind::Class);
-    let name = names::type_name(state);
+    let name = names::parse_type_name(state);
     let current = state.current();
     let extends = if current.kind == TokenKind::Extends {
         let span = current.span;
 
         state.next();
-        let parent = names::full_name(state, UseKind::Normal);
+        let parent = names::parse_full_name(state, UseKind::Normal);
 
         Some(ClassExtends {
             id: state.id(),
@@ -53,7 +53,7 @@ pub fn parse(state: &mut State) -> StatementKind {
         state.next();
 
         let interfaces = utils::at_least_one_comma_separated_no_trailing::<Name>(state, &|state| {
-            names::full_name(state, UseKind::Normal)
+            names::parse_full_name(state, UseKind::Normal)
         });
 
         Some(ClassImplements {
@@ -75,7 +75,7 @@ pub fn parse(state: &mut State) -> StatementKind {
                 break;
             }
 
-            members.push(member(state, has_abstract));
+            members.push(parse_classish_member(state, has_abstract));
         }
 
         members
@@ -109,7 +109,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     })
 }
 
-pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
+pub fn parse_anonymous_class(state: &mut State, span: Option<Span>) -> Expression {
     let new = match span {
         Some(span) => span,
         None => utils::skip(state, TokenKind::New),
@@ -124,7 +124,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
     let class_span = class;
 
     let arguments = if state.current().kind == TokenKind::LeftParen {
-        Some(parameters::argument_list(state))
+        Some(parameters::parse_argument_list(state))
     } else {
         None
     };
@@ -134,7 +134,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
         state.next();
 
         let extends = current.span;
-        let parent = names::full_name(state, UseKind::Normal);
+        let parent = names::parse_full_name(state, UseKind::Normal);
 
         Some(ClassExtends {
             id: state.id(),
@@ -152,7 +152,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
 
         let implements = current.span;
         let interfaces = utils::at_least_one_comma_separated_no_trailing::<Name>(state, &|state| {
-            names::full_name(state, UseKind::Normal)
+            names::parse_full_name(state, UseKind::Normal)
         });
 
         Some(ClassImplements {
@@ -169,7 +169,7 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
     let members = {
         let mut members = Vec::new();
         while state.current().kind != TokenKind::RightBrace {
-            members.push(member(state, false));
+            members.push(parse_classish_member(state, false));
         }
         members
     };
@@ -215,18 +215,18 @@ pub fn parse_anonymous(state: &mut State, span: Option<Span>) -> Expression {
     )
 }
 
-pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
+pub fn parse_classish_member(state: &mut State, has_abstract: bool) -> ClassishMember {
     let has_attributes = attributes::gather_attributes(state);
 
     if !has_attributes && state.current().kind == TokenKind::Use {
-        return ClassishMember::TraitUsage(traits::usage(state));
+        return ClassishMember::TraitUsage(traits::parse_trait_usage(state));
     }
 
     if state.current().kind == TokenKind::Var {
-        return ClassishMember::VariableProperty(properties::parse_var(state));
+        return ClassishMember::VariableProperty(properties::parse_var_property(state));
     }
 
-    let modifiers = modifiers::collect(state);
+    let modifiers = modifiers::collect_modifiers(state);
 
     if modifiers.is_empty()
         && !matches!(state.current().kind, TokenKind::Const | TokenKind::Function)
@@ -250,13 +250,13 @@ pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
     }
 
     if state.current().kind == TokenKind::Const {
-        let modifiers = modifiers::constant_group(state, modifiers);
-        return ClassishMember::Constant(classish(state, modifiers));
+        let modifiers = modifiers::parse_constant_group(state, modifiers);
+        return ClassishMember::Constant(parse_classish_constant(state, modifiers));
     }
 
     if state.current().kind == TokenKind::Function {
-        let modifiers = modifiers::method_group(state, modifiers);
-        let method = method(state, modifiers);
+        let modifiers = modifiers::parse_method_group(state, modifiers);
+        let method = parse_method(state, modifiers);
 
         return match method {
             Method::Abstract(method) => {
@@ -287,7 +287,7 @@ pub fn member(state: &mut State, has_abstract: bool) -> ClassishMember {
     }
 
     // e.g: public static
-    let modifiers = modifiers::property_group(state, modifiers);
+    let modifiers = modifiers::parse_property_group(state, modifiers);
 
-    ClassishMember::Property(properties::parse(state, modifiers))
+    ClassishMember::Property(properties::parse_property(state, modifiers))
 }

@@ -7,7 +7,7 @@ use pxp_span::Span;
 use pxp_token::{Token, TokenKind};
 
 /// Expect an unqualified identifier such as Foo or Bar for a class, interface, trait, or an enum name.
-pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
+pub fn parse_type_identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.current();
     match &current.kind {
         TokenKind::Identifier => {
@@ -66,7 +66,7 @@ pub fn type_identifier(state: &mut State) -> SimpleIdentifier {
 }
 
 /// Expect an unqualified identifier such as foo or bar for a goto label name.
-pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
+pub fn parse_label_identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.current();
     match &current.kind {
         TokenKind::Identifier => {
@@ -125,7 +125,7 @@ pub fn label_identifier(state: &mut State) -> SimpleIdentifier {
 }
 
 /// Expect an unqualified identifier such as Foo or Bar.
-pub fn identifier(state: &mut State) -> SimpleIdentifier {
+pub fn parse_identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.current();
     if let TokenKind::Identifier = &current.kind {
         state.next();
@@ -155,7 +155,7 @@ pub fn identifier(state: &mut State) -> SimpleIdentifier {
 }
 
 /// Expect an unqualified or qualified identifier such as Foo, Bar or Foo\Bar.
-pub fn name(state: &mut State) -> SimpleIdentifier {
+pub fn parse_name_identifier(state: &mut State) -> SimpleIdentifier {
     let name = match state.current().kind {
         TokenKind::Identifier | TokenKind::QualifiedIdentifier => state.current().clone(),
         _ => {
@@ -180,7 +180,7 @@ pub fn name(state: &mut State) -> SimpleIdentifier {
 }
 
 /// Expect an optional unqualified or qualified identifier such as Foo, Bar or Foo\Bar.
-pub fn optional_name(state: &mut State) -> Option<SimpleIdentifier> {
+pub fn parse_optional_name_identifier(state: &mut State) -> Option<SimpleIdentifier> {
     let current = state.current();
 
     match &current.kind {
@@ -203,7 +203,7 @@ pub fn optional_name(state: &mut State) -> Option<SimpleIdentifier> {
 }
 
 /// Expect an unqualified, qualified or fully qualified identifier such as Foo, Foo\Bar or \Foo\Bar.
-pub fn full_name(state: &mut State) -> SimpleIdentifier {
+pub fn parse_full_name_identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.current();
     match &current.kind {
         TokenKind::Identifier
@@ -231,7 +231,7 @@ pub fn full_name(state: &mut State) -> SimpleIdentifier {
 }
 
 /// Expect an unqualified, qualified or fully qualified identifier such as Foo, Foo\Bar or \Foo\Bar.
-pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
+pub fn parse_full_type_name_identifier(state: &mut State) -> SimpleIdentifier {
     let current = state.current();
     match &current.kind {
         TokenKind::Identifier
@@ -291,7 +291,7 @@ pub fn full_type_name(state: &mut State) -> SimpleIdentifier {
     }
 }
 
-pub fn identifier_maybe_reserved(state: &mut State) -> SimpleIdentifier {
+pub fn parse_identifier_maybe_reserved(state: &mut State) -> SimpleIdentifier {
     let current = state.current();
 
     if is_reserved_identifier(&current.kind) {
@@ -301,7 +301,7 @@ pub fn identifier_maybe_reserved(state: &mut State) -> SimpleIdentifier {
 
         SimpleIdentifier::new(state.id(), symbol, current.span)
     } else {
-        identifier(state)
+        parse_identifier(state)
     }
 }
 

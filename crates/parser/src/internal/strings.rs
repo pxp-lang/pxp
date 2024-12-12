@@ -19,12 +19,12 @@ use pxp_span::Span;
 use pxp_token::TokenKind;
 
 #[inline(always)]
-pub fn interpolated(state: &mut State) -> Expression {
+pub fn parse_interpolated_string(state: &mut State) -> Expression {
     let start_span = state.current().span;
     let mut parts = Vec::new();
 
     while state.current().kind != TokenKind::DoubleQuote {
-        if let Some(part) = part(state) {
+        if let Some(part) = maybe_parse_string_part(state) {
             parts.push(part);
         }
     }
@@ -46,14 +46,14 @@ pub fn interpolated(state: &mut State) -> Expression {
 }
 
 #[inline(always)]
-pub fn shell_exec(state: &mut State) -> Expression {
+pub fn parse_shell_exec_string(state: &mut State) -> Expression {
     let start_span = state.current().span;
     state.next();
 
     let mut parts = Vec::new();
 
     while state.current().kind != TokenKind::Backtick {
-        if let Some(part) = part(state) {
+        if let Some(part) = maybe_parse_string_part(state) {
             parts.push(part);
         }
     }
@@ -75,7 +75,7 @@ pub fn shell_exec(state: &mut State) -> Expression {
 }
 
 #[inline(always)]
-pub fn heredoc(state: &mut State) -> Expression {
+pub fn parse_heredoc(state: &mut State) -> Expression {
     let span = state.current().span;
     let label = state.current().symbol.as_ref().unwrap();
     state.next();
@@ -83,7 +83,7 @@ pub fn heredoc(state: &mut State) -> Expression {
     let mut parts = Vec::new();
 
     while !matches!(state.current().kind, TokenKind::EndHeredoc) {
-        if let Some(part) = part(state) {
+        if let Some(part) = maybe_parse_string_part(state) {
             parts.push(part);
         }
     }
@@ -106,7 +106,7 @@ pub fn heredoc(state: &mut State) -> Expression {
 }
 
 #[inline(always)]
-pub fn nowdoc(state: &mut State) -> Expression {
+pub fn parse_nowdoc(state: &mut State) -> Expression {
     let span = state.current().span;
     let label = state.current().clone();
 
@@ -150,7 +150,7 @@ pub fn nowdoc(state: &mut State) -> Expression {
     )
 }
 
-fn part(state: &mut State) -> Option<StringPart> {
+fn maybe_parse_string_part(state: &mut State) -> Option<StringPart> {
     match &state.current().kind {
         TokenKind::StringPart => {
             let s = state.current().clone();
@@ -169,7 +169,7 @@ fn part(state: &mut State) -> Option<StringPart> {
         }
         TokenKind::DollarLeftBrace => {
             let start_span = state.current().span;
-            let variable = variables::dynamic_variable(state);
+            let variable = variables::parse_dynamic_variable(state);
             let expression = Expression::new(
                 state.id(),
                 ExpressionKind::Variable(variable),
@@ -197,7 +197,7 @@ fn part(state: &mut State) -> Option<StringPart> {
         TokenKind::Variable => {
             // "$expr", "$expr[0]", "$expr[name]", "$expr->a"
             let variable_span = state.current().span;
-            let variable = ExpressionKind::Variable(variables::dynamic_variable(state));
+            let variable = ExpressionKind::Variable(variables::parse_dynamic_variable(state));
             let variable =
                 Expression::new(state.id(), variable, variable_span, CommentGroup::default());
 
@@ -278,7 +278,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                             ))
                         }
                         TokenKind::Variable => ExpressionKind::Variable(Variable::SimpleVariable(
-                            variables::simple_variable(state),
+                            variables::parse_simple_variable(state),
                         )),
                         _ => {
                             state.diagnostic(
@@ -326,7 +326,7 @@ fn part(state: &mut State) -> Option<StringPart> {
 
                     state.next();
 
-                    let identifier = identifiers::identifier_maybe_reserved(state);
+                    let identifier = identifiers::parse_identifier_maybe_reserved(state);
                     let id_span = identifier.span;
                     let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier));
                     let identifier_expression =
@@ -344,7 +344,7 @@ fn part(state: &mut State) -> Option<StringPart> {
                     let span = current.span;
                     state.next();
 
-                    let ident = identifiers::identifier_maybe_reserved(state);
+                    let ident = identifiers::parse_identifier_maybe_reserved(state);
                     let ident_span = ident.span;
                     let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(ident));
 

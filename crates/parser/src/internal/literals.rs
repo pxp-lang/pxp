@@ -4,7 +4,7 @@ use pxp_token::TokenKind;
 
 use crate::{state::State, ParserDiagnostic};
 
-pub fn expect_literal(state: &mut State) -> Literal {
+pub fn parse_literal(state: &mut State) -> Literal {
     let token = state.current();
     let kind = match &token.kind {
         TokenKind::LiteralInteger => {

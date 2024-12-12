@@ -176,7 +176,7 @@ impl State {
                     kind: TokenKind::OpenPhpDoc,
                     ..
                 } => {
-                    let docblock = crate::internal::docblock::docblock(self);
+                    let docblock = crate::internal::docblock::parse_docblock(self);
 
                     (
                         Comment {

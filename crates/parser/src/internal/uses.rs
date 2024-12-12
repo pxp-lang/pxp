@@ -14,7 +14,7 @@ use pxp_token::TokenKind;
 
 use super::names;
 
-pub fn use_statement(state: &mut State) -> StatementKind {
+pub fn parse_use_statement(state: &mut State) -> StatementKind {
     let r#use = state.current().span;
 
     state.next();
@@ -32,7 +32,7 @@ pub fn use_statement(state: &mut State) -> StatementKind {
     };
 
     if state.peek().kind == TokenKind::LeftBrace {
-        let prefix = identifiers::full_name(state);
+        let prefix = identifiers::parse_full_name_identifier(state);
         let prefix_symbol = prefix.symbol.clone();
 
         state.next();
@@ -68,11 +68,11 @@ pub fn use_statement(state: &mut State) -> StatementKind {
                 _ => None,
             };
 
-            let name = identifiers::full_type_name(state);
+            let name = identifiers::parse_full_type_name_identifier(state);
             let mut alias = None;
             if state.current().kind == TokenKind::As {
                 state.next();
-                alias = Some(identifiers::type_identifier(state));
+                alias = Some(identifiers::parse_type_identifier(state));
             }
 
             let symbol = name.symbol.clone();
@@ -117,11 +117,11 @@ pub fn use_statement(state: &mut State) -> StatementKind {
         let mut uses = Vec::new();
         while !state.is_eof() {
             let start_span = state.current().span;
-            let name = names::use_name(state);
+            let name = names::parse_use_name(state);
             let mut alias = None;
             if state.current().kind == TokenKind::As {
                 state.next();
-                alias = Some(identifiers::type_identifier(state));
+                alias = Some(identifiers::parse_type_identifier(state));
             }
 
             let alias_symbol = alias.as_ref().map(|a| a.symbol.clone());

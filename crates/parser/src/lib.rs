@@ -16,7 +16,7 @@ use crate::internal::uses;
 use crate::internal::utils;
 use crate::internal::variables;
 use crate::state::State;
-use internal::literals::expect_literal;
+use internal::literals::parse_literal;
 use pxp_ast::Statement;
 use pxp_ast::*;
 use pxp_ast::{StatementKind, StaticVar};
@@ -190,9 +190,9 @@ fn top_level_statement(state: &mut State) -> Statement {
         TokenKind::Namespace | TokenKind::Use | TokenKind::Const | TokenKind::HaltCompiler => {
             let comments = state.comments();
             let kind = match &state.current().kind {
-                TokenKind::Namespace => namespaces::namespace(state),
-                TokenKind::Use => uses::use_statement(state),
-                TokenKind::Const => StatementKind::Constant(constants::parse(state)),
+                TokenKind::Namespace => namespaces::parse_namespace(state),
+                TokenKind::Use => uses::parse_use_statement(state),
+                TokenKind::Const => StatementKind::Constant(constants::parse_constant(state)),
                 TokenKind::HaltCompiler => {
                     let start = current.span;
 
@@ -235,19 +235,19 @@ fn statement(state: &mut State) -> Statement {
     let peek = state.peek();
     let statement = if has_attributes {
         match &current.kind {
-            TokenKind::Abstract => classes::parse(state),
-            TokenKind::Readonly if peek.kind != TokenKind::LeftParen => classes::parse(state),
-            TokenKind::Final => classes::parse(state),
-            TokenKind::Class => classes::parse(state),
-            TokenKind::Interface => interfaces::parse(state),
-            TokenKind::Trait => traits::parse(state),
+            TokenKind::Abstract => classes::parse_class(state),
+            TokenKind::Readonly if peek.kind != TokenKind::LeftParen => classes::parse_class(state),
+            TokenKind::Final => classes::parse_class(state),
+            TokenKind::Class => classes::parse_class(state),
+            TokenKind::Interface => interfaces::parse_interface(state),
+            TokenKind::Trait => traits::parse_trait(state),
             TokenKind::Enum
                 if !matches!(
                     peek.kind,
                     TokenKind::LeftParen | TokenKind::DoubleColon | TokenKind::Colon,
                 ) =>
             {
-                enums::parse(state)
+                enums::parse_enum(state)
             }
             TokenKind::Function
                 if identifiers::is_identifier_maybe_soft_reserved(&peek.kind)
@@ -270,9 +270,9 @@ fn statement(state: &mut State) -> Statement {
                         return Statement::new(state.id(), kind, span, comments);
                     }
 
-                    functions::function(state)
+                    functions::parse_function(state)
                 } else {
-                    functions::function(state)
+                    functions::parse_function(state)
                 }
             }
             _ => {
@@ -327,19 +327,19 @@ fn statement(state: &mut State) -> Statement {
                     span,
                 })
             }
-            TokenKind::Abstract => classes::parse(state),
-            TokenKind::Readonly if peek.kind != TokenKind::LeftParen => classes::parse(state),
-            TokenKind::Final => classes::parse(state),
-            TokenKind::Class => classes::parse(state),
-            TokenKind::Interface => interfaces::parse(state),
-            TokenKind::Trait => traits::parse(state),
+            TokenKind::Abstract => classes::parse_class(state),
+            TokenKind::Readonly if peek.kind != TokenKind::LeftParen => classes::parse_class(state),
+            TokenKind::Final => classes::parse_class(state),
+            TokenKind::Class => classes::parse_class(state),
+            TokenKind::Interface => interfaces::parse_interface(state),
+            TokenKind::Trait => traits::parse_trait(state),
             TokenKind::Enum
                 if !matches!(
                     peek.kind,
                     TokenKind::LeftParen | TokenKind::DoubleColon | TokenKind::Colon,
                 ) =>
             {
-                enums::parse(state)
+                enums::parse_enum(state)
             }
             TokenKind::Function
                 if identifiers::is_identifier_maybe_soft_reserved(&peek.kind)
@@ -363,17 +363,17 @@ fn statement(state: &mut State) -> Statement {
                         return Statement::new(state.id(), kind, span, comments);
                     }
 
-                    functions::function(state)
+                    functions::parse_function(state)
                 } else {
-                    functions::function(state)
+                    functions::parse_function(state)
                 }
             }
-            TokenKind::Goto => goto::goto_statement(state),
+            TokenKind::Goto => goto::parse_goto_statement(state),
             token
                 if identifiers::is_identifier_maybe_reserved(token)
                     && peek.kind == TokenKind::Colon =>
             {
-                goto::label_statement(state)
+                goto::parse_label_statement(state)
             }
             TokenKind::Declare => {
                 let declare = utils::skip(state, TokenKind::Declare);
@@ -382,10 +382,10 @@ fn statement(state: &mut State) -> Statement {
                     let start = utils::skip_left_parenthesis(state);
                     let mut entries = Vec::new();
                     loop {
-                        let key = identifiers::identifier(state);
+                        let key = identifiers::parse_identifier(state);
                         let start = key.span;
                         let equals = utils::skip(state, TokenKind::Equals);
-                        let value = expect_literal(state);
+                        let value = parse_literal(state);
                         let end = value.span;
 
                         entries.push(DeclareEntry {
@@ -428,7 +428,7 @@ fn statement(state: &mut State) -> Statement {
                     TokenKind::LeftBrace => {
                         let start = utils::skip_left_brace(state);
                         let statements =
-                            blocks::multiple_statements_until(state, &TokenKind::RightBrace);
+                            blocks::parse_multiple_statements_until(state, &TokenKind::RightBrace);
                         let end = utils::skip_right_brace(state);
 
                         DeclareBody::Braced(DeclareBodyBraced {
@@ -442,7 +442,7 @@ fn statement(state: &mut State) -> Statement {
                     TokenKind::Colon => {
                         let start = utils::skip_colon(state);
                         let statements =
-                            blocks::multiple_statements_until(state, &TokenKind::EndDeclare);
+                            blocks::parse_multiple_statements_until(state, &TokenKind::EndDeclare);
                         let enddeclare = utils::skip(state, TokenKind::EndDeclare);
                         let semicolon = utils::skip_semicolon(state);
 
@@ -486,7 +486,7 @@ fn statement(state: &mut State) -> Statement {
                 let mut variables = vec![];
                 // `loop` instead of `while` as we don't allow for extra commas.
                 loop {
-                    variables.push(variables::dynamic_variable(state));
+                    variables.push(variables::parse_dynamic_variable(state));
 
                     if state.current().kind == TokenKind::Comma {
                         state.next();
@@ -513,7 +513,7 @@ fn statement(state: &mut State) -> Statement {
 
                 // `loop` instead of `while` as we don't allow for extra commas.
                 loop {
-                    let var = variables::simple_variable(state);
+                    let var = variables::parse_simple_variable(state);
                     let mut default = None;
 
                     if state.current().kind == TokenKind::Equals {
@@ -562,16 +562,16 @@ fn statement(state: &mut State) -> Statement {
                     html,
                 })
             }
-            TokenKind::Do => loops::do_while_statement(state),
-            TokenKind::While => loops::while_statement(state),
-            TokenKind::For => loops::for_statement(state),
-            TokenKind::Foreach => loops::foreach_statement(state),
-            TokenKind::Continue => loops::continue_statement(state),
-            TokenKind::Break => loops::break_statement(state),
-            TokenKind::Switch => control_flow::switch_statement(state),
-            TokenKind::If => control_flow::if_statement(state),
-            TokenKind::Try => try_block::try_block(state),
-            TokenKind::LeftBrace => blocks::block_statement(state),
+            TokenKind::Do => loops::parse_do_while_statement(state),
+            TokenKind::While => loops::parse_while_statement(state),
+            TokenKind::For => loops::parse_for_statement(state),
+            TokenKind::Foreach => loops::parse_foreach_statement(state),
+            TokenKind::Continue => loops::parse_continue_statement(state),
+            TokenKind::Break => loops::parse_break_statement(state),
+            TokenKind::Switch => control_flow::parse_switch_statement(state),
+            TokenKind::If => control_flow::parse_if_statement(state),
+            TokenKind::Try => try_block::parse_try_block(state),
+            TokenKind::LeftBrace => blocks::parse_block_statement(state),
             TokenKind::SemiColon => {
                 let start = current.span;
 

@@ -7,13 +7,13 @@ use pxp_span::Span;
 use pxp_span::Spanned;
 use pxp_token::TokenKind;
 
-use super::classes::member;
+use super::classes::parse_classish_member;
 use super::names;
 
-pub fn parse(state: &mut State) -> StatementKind {
+pub fn parse_interface(state: &mut State) -> StatementKind {
     let span = utils::skip(state, TokenKind::Interface);
 
-    let name = names::type_name(state);
+    let name = names::parse_type_name(state);
 
     let current = state.current();
     let extends = if current.kind == TokenKind::Extends {
@@ -22,7 +22,7 @@ pub fn parse(state: &mut State) -> StatementKind {
         state.next();
 
         let parents = utils::at_least_one_comma_separated_no_trailing::<Name>(state, &|state| {
-            names::full_name(state, UseKind::Normal)
+            names::parse_full_name(state, UseKind::Normal)
         });
 
         Some(InterfaceExtends {
@@ -41,7 +41,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     let members = {
         let mut members = Vec::new();
         while state.current().kind != TokenKind::RightBrace {
-            members.push(member(state, true));
+            members.push(parse_classish_member(state, true));
         }
 
         members

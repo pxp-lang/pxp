@@ -6,9 +6,9 @@ use pxp_ast::*;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
-pub fn label_statement(state: &mut State) -> StatementKind {
+pub fn parse_label_statement(state: &mut State) -> StatementKind {
     let comments = state.comments();
-    let label = identifiers::label_identifier(state);
+    let label = identifiers::parse_label_identifier(state);
     let colon = utils::skip_colon(state);
 
     StatementKind::Label(LabelStatement {
@@ -20,10 +20,10 @@ pub fn label_statement(state: &mut State) -> StatementKind {
     })
 }
 
-pub fn goto_statement(state: &mut State) -> StatementKind {
+pub fn parse_goto_statement(state: &mut State) -> StatementKind {
     let comments = state.comments();
     let keyword = utils::skip(state, TokenKind::Goto);
-    let label = identifiers::label_identifier(state);
+    let label = identifiers::parse_label_identifier(state);
     let semicolon = utils::skip_semicolon(state);
 
     StatementKind::Goto(GotoStatement {

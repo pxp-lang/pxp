@@ -11,13 +11,13 @@ use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
-use super::classes::member;
+use super::classes::parse_classish_member;
 use super::names;
 
-pub fn parse(state: &mut State) -> StatementKind {
+pub fn parse_enum(state: &mut State) -> StatementKind {
     let span = utils::skip(state, TokenKind::Enum);
 
-    let name = names::type_name(state);
+    let name = names::parse_type_name(state);
 
     let backed_type: Option<(Span, BackedEnumType)> = if state.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
@@ -81,7 +81,7 @@ pub fn parse(state: &mut State) -> StatementKind {
         state.next();
 
         while state.current().kind != TokenKind::LeftBrace {
-            implements.push(names::full_name(state, UseKind::Normal));
+            implements.push(names::parse_full_name(state, UseKind::Normal));
 
             if state.current().kind == TokenKind::Comma {
                 state.next();
@@ -97,7 +97,7 @@ pub fn parse(state: &mut State) -> StatementKind {
         let members = {
             let mut members = Vec::new();
             while state.current().kind != TokenKind::RightBrace {
-                if let Some(member) = backed_member(state) {
+                if let Some(member) = parse_backed_member(state) {
                     members.push(member);
                 }
             }
@@ -130,7 +130,7 @@ pub fn parse(state: &mut State) -> StatementKind {
         let members = {
             let mut members = Vec::new();
             while state.current().kind != TokenKind::RightBrace {
-                if let Some(member) = unit_member(state) {
+                if let Some(member) = parse_unit_member(state) {
                     members.push(member);
                 }
             }
@@ -159,7 +159,7 @@ pub fn parse(state: &mut State) -> StatementKind {
     }
 }
 
-fn unit_member(state: &mut State) -> Option<UnitEnumMember> {
+fn parse_unit_member(state: &mut State) -> Option<UnitEnumMember> {
     let _has_attributes = attributes::gather_attributes(state);
 
     let current = state.current();
@@ -169,7 +169,7 @@ fn unit_member(state: &mut State) -> Option<UnitEnumMember> {
         let start = current.span;
         state.next();
 
-        let name = identifiers::identifier_maybe_reserved(state);
+        let name = identifiers::parse_identifier_maybe_reserved(state);
 
         let current = state.current();
         if current.kind == TokenKind::Equals {
@@ -199,10 +199,10 @@ fn unit_member(state: &mut State) -> Option<UnitEnumMember> {
         }));
     }
 
-    Some(UnitEnumMember::Classish(member(state, false)))
+    Some(UnitEnumMember::Classish(parse_classish_member(state, false)))
 }
 
-fn backed_member(state: &mut State) -> Option<BackedEnumMember> {
+fn parse_backed_member(state: &mut State) -> Option<BackedEnumMember> {
     let _has_attributes = attributes::gather_attributes(state);
 
     let current = state.current();
@@ -212,7 +212,7 @@ fn backed_member(state: &mut State) -> Option<BackedEnumMember> {
         let case = current.span;
         state.next();
 
-        let name = identifiers::identifier_maybe_reserved(state);
+        let name = identifiers::parse_identifier_maybe_reserved(state);
 
         let current = state.current();
         if current.kind == TokenKind::SemiColon {
@@ -246,5 +246,5 @@ fn backed_member(state: &mut State) -> Option<BackedEnumMember> {
         }));
     }
 
-    Some(BackedEnumMember::Classish(member(state, false)))
+    Some(BackedEnumMember::Classish(parse_classish_member(state, false)))
 }

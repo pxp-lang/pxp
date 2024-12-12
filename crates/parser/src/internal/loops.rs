@@ -10,7 +10,7 @@ use pxp_span::Spanned;
 use pxp_token::Token;
 use pxp_token::TokenKind;
 
-pub fn foreach_statement(state: &mut State) -> StatementKind {
+pub fn parse_foreach_statement(state: &mut State) -> StatementKind {
     let foreach = utils::skip(state, TokenKind::Foreach);
 
     let (left_parenthesis, iterator, right_parenthesis) =
@@ -70,7 +70,7 @@ pub fn foreach_statement(state: &mut State) -> StatementKind {
 
     let body = if state.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
-        let statements = blocks::multiple_statements_until(state, &TokenKind::EndForeach);
+        let statements = blocks::parse_multiple_statements_until(state, &TokenKind::EndForeach);
         let endforeach = utils::skip(state, TokenKind::EndForeach);
         let ending = utils::skip_ending(state);
 
@@ -103,7 +103,7 @@ pub fn foreach_statement(state: &mut State) -> StatementKind {
     })
 }
 
-pub fn for_statement(state: &mut State) -> StatementKind {
+pub fn parse_for_statement(state: &mut State) -> StatementKind {
     let r#for = utils::skip(state, TokenKind::For);
 
     let (left_parenthesis, iterator, right_parenthesis) = utils::parenthesized(state, &|state| {
@@ -136,7 +136,7 @@ pub fn for_statement(state: &mut State) -> StatementKind {
 
     let body = if state.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
-        let statements = blocks::multiple_statements_until(state, &TokenKind::EndFor);
+        let statements = blocks::parse_multiple_statements_until(state, &TokenKind::EndFor);
         let endfor = utils::skip(state, TokenKind::EndFor);
         let ending = utils::skip_ending(state);
 
@@ -169,7 +169,7 @@ pub fn for_statement(state: &mut State) -> StatementKind {
     })
 }
 
-pub fn do_while_statement(state: &mut State) -> StatementKind {
+pub fn parse_do_while_statement(state: &mut State) -> StatementKind {
     let r#do = utils::skip(state, TokenKind::Do);
 
     let body = Box::new(statement(state));
@@ -194,7 +194,7 @@ pub fn do_while_statement(state: &mut State) -> StatementKind {
     })
 }
 
-pub fn while_statement(state: &mut State) -> StatementKind {
+pub fn parse_while_statement(state: &mut State) -> StatementKind {
     let r#while = utils::skip(state, TokenKind::While);
 
     let (left_parenthesis, condition, right_parenthesis) =
@@ -202,7 +202,7 @@ pub fn while_statement(state: &mut State) -> StatementKind {
 
     let body = if state.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
-        let statements = blocks::multiple_statements_until(state, &TokenKind::EndWhile);
+        let statements = blocks::parse_multiple_statements_until(state, &TokenKind::EndWhile);
         let endwhile = utils::skip(state, TokenKind::EndWhile);
         let ending = utils::skip_ending(state);
 
@@ -235,9 +235,9 @@ pub fn while_statement(state: &mut State) -> StatementKind {
     })
 }
 
-pub fn continue_statement(state: &mut State) -> StatementKind {
+pub fn parse_continue_statement(state: &mut State) -> StatementKind {
     let r#continue = utils::skip(state, TokenKind::Continue);
-    let level = maybe_loop_level(state);
+    let level = maybe_parse_loop_level(state);
     let ending = utils::skip_ending(state);
 
     StatementKind::Continue(ContinueStatement {
@@ -249,9 +249,9 @@ pub fn continue_statement(state: &mut State) -> StatementKind {
     })
 }
 
-pub fn break_statement(state: &mut State) -> StatementKind {
+pub fn parse_break_statement(state: &mut State) -> StatementKind {
     let r#break = utils::skip(state, TokenKind::Break);
-    let level = maybe_loop_level(state);
+    let level = maybe_parse_loop_level(state);
     let ending = utils::skip_ending(state);
 
     StatementKind::Break(BreakStatement {
@@ -263,17 +263,17 @@ pub fn break_statement(state: &mut State) -> StatementKind {
     })
 }
 
-fn maybe_loop_level(state: &mut State) -> Option<Level> {
+fn maybe_parse_loop_level(state: &mut State) -> Option<Level> {
     let current = &state.current().kind;
 
     if current == &TokenKind::SemiColon || current == &TokenKind::CloseTag {
         None
     } else {
-        Some(loop_level(state))
+        Some(parse_loop_level(state))
     }
 }
 
-fn loop_level(state: &mut State) -> Level {
+fn parse_loop_level(state: &mut State) -> Level {
     let current = state.current();
 
     if let Token {
@@ -295,7 +295,7 @@ fn loop_level(state: &mut State) -> Level {
     }
 
     let (left_parenthesis, level, right_parenthesis) =
-        utils::parenthesized(state, &|state| Box::new(loop_level(state)));
+        utils::parenthesized(state, &|state| Box::new(parse_loop_level(state)));
 
     Level::Parenthesized(ParenthesizedLevel {
         id: state.id(),

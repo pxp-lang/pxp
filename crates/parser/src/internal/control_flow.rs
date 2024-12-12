@@ -19,7 +19,7 @@ use pxp_span::Span;
 use pxp_span::Spanned;
 use pxp_token::TokenKind;
 
-pub fn match_expression(state: &mut State) -> Expression {
+pub fn parse_match_expression(state: &mut State) -> Expression {
     let keyword = utils::skip(state, TokenKind::Match);
 
     let (left_parenthesis, condition, right_parenthesis) =
@@ -118,7 +118,7 @@ pub fn match_expression(state: &mut State) -> Expression {
     )
 }
 
-pub fn switch_statement(state: &mut State) -> StatementKind {
+pub fn parse_switch_statement(state: &mut State) -> StatementKind {
     let switch = utils::skip(state, TokenKind::Switch);
 
     let (left_parenthesis, condition, right_parenthesis) =
@@ -211,16 +211,16 @@ pub fn switch_statement(state: &mut State) -> StatementKind {
     })
 }
 
-pub fn if_statement(state: &mut State) -> StatementKind {
+pub fn parse_if_statement(state: &mut State) -> StatementKind {
     let r#if = utils::skip(state, TokenKind::If);
 
     let (left_parenthesis, condition, right_parenthesis) =
         utils::parenthesized(state, &expressions::create);
 
     let body = if state.current().kind == TokenKind::Colon {
-        if_statement_block_body(state)
+        parse_if_statement_block_body(state)
     } else {
-        if_statement_statement_body(state)
+        parse_if_statement_statement_body(state)
     };
 
     StatementKind::If(IfStatement {
@@ -234,7 +234,7 @@ pub fn if_statement(state: &mut State) -> StatementKind {
     })
 }
 
-fn if_statement_statement_body(state: &mut State) -> IfStatementBody {
+fn parse_if_statement_statement_body(state: &mut State) -> IfStatementBody {
     let statement = Box::new(statement(state));
 
     let mut elseifs: Vec<IfStatementElseIf> = vec![];
@@ -288,9 +288,9 @@ fn if_statement_statement_body(state: &mut State) -> IfStatementBody {
     })
 }
 
-fn if_statement_block_body(state: &mut State) -> IfStatementBody {
+fn parse_if_statement_block_body(state: &mut State) -> IfStatementBody {
     let colon = utils::skip(state, TokenKind::Colon);
-    let statements = blocks::multiple_statements_until_any(
+    let statements = blocks::parse_multiple_statements_until_any(
         state,
         &[TokenKind::Else, TokenKind::ElseIf, TokenKind::EndIf],
     );
@@ -305,7 +305,7 @@ fn if_statement_block_body(state: &mut State) -> IfStatementBody {
 
         let colon = utils::skip(state, TokenKind::Colon);
 
-        let statements = blocks::multiple_statements_until_any(
+        let statements = blocks::parse_multiple_statements_until_any(
             state,
             &[TokenKind::Else, TokenKind::ElseIf, TokenKind::EndIf],
         );
@@ -330,7 +330,7 @@ fn if_statement_block_body(state: &mut State) -> IfStatementBody {
         state.next();
 
         let colon = utils::skip(state, TokenKind::Colon);
-        let statements = blocks::multiple_statements_until(state, &TokenKind::EndIf);
+        let statements = blocks::parse_multiple_statements_until(state, &TokenKind::EndIf);
 
         Some(IfStatementElseBlock {
             id: state.id(),

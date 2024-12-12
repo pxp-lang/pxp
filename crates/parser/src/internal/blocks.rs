@@ -8,9 +8,9 @@ use pxp_span::Span;
 use pxp_token::OpenTagKind;
 use pxp_token::TokenKind;
 
-pub fn block_statement(state: &mut State) -> StatementKind {
+pub fn parse_block_statement(state: &mut State) -> StatementKind {
     let (left_brace, statements, right_brace) = utils::braced(state, &|state: &mut State| {
-        multiple_statements_until(state, &TokenKind::RightBrace)
+        parse_multiple_statements_until(state, &TokenKind::RightBrace)
     });
 
     StatementKind::Block(BlockStatement {
@@ -22,7 +22,7 @@ pub fn block_statement(state: &mut State) -> StatementKind {
     })
 }
 
-pub fn multiple_statements_until(state: &mut State, until: &TokenKind) -> Vec<Statement> {
+pub fn parse_multiple_statements_until(state: &mut State, until: &TokenKind) -> Vec<Statement> {
     let mut statements = Vec::new();
 
     let mut current = state.current();
@@ -41,7 +41,7 @@ pub fn multiple_statements_until(state: &mut State, until: &TokenKind) -> Vec<St
     statements
 }
 
-pub fn multiple_statements_until_any(state: &mut State, until: &[TokenKind]) -> Vec<Statement> {
+pub fn parse_multiple_statements_until_any(state: &mut State, until: &[TokenKind]) -> Vec<Statement> {
     let mut statements = Vec::new();
 
     let mut current = state.current();

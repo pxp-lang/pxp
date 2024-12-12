@@ -7,7 +7,7 @@ use pxp_span::{Span, Spanned};
 use pxp_token::TokenKind;
 
 #[inline(always)]
-pub fn class_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ClassModifierGroup {
+pub fn parse_class_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ClassModifierGroup {
     let modifiers = input
         .iter()
         .filter_map(|(span, token)| match token {
@@ -48,7 +48,7 @@ pub fn class_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ClassMod
 }
 
 #[inline(always)]
-pub fn method_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> MethodModifierGroup {
+pub fn parse_method_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> MethodModifierGroup {
     let modifiers = input
         .iter()
         .filter_map(|(span, token)| match token {
@@ -92,7 +92,7 @@ pub fn method_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> MethodM
 }
 
 #[inline(always)]
-pub fn property_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> PropertyModifierGroup {
+pub fn parse_property_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> PropertyModifierGroup {
     let modifiers = input
         .iter()
         .filter_map(|(span, token)| match token {
@@ -121,7 +121,7 @@ pub fn property_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Prope
 }
 
 #[inline(always)]
-pub fn promoted_property_group(
+pub fn parse_promoted_property_group(
     state: &mut State,
     input: Vec<(Span, TokenKind)>,
 ) -> PromotedPropertyModifierGroup {
@@ -151,7 +151,7 @@ pub fn promoted_property_group(
     }
 }
 
-pub fn constant_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ConstantModifierGroup {
+pub fn parse_constant_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> ConstantModifierGroup {
     let modifiers = input
         .iter()
         .filter_map(|(span, token)| match token {
@@ -192,7 +192,7 @@ pub fn constant_group(state: &mut State, input: Vec<(Span, TokenKind)>) -> Const
     group
 }
 
-pub fn collect(state: &mut State) -> Vec<(Span, TokenKind)> {
+pub fn collect_modifiers(state: &mut State) -> Vec<(Span, TokenKind)> {
     let mut collected: Vec<(Span, TokenKind)> = vec![];
 
     let collectable_tokens = [

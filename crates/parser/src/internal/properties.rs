@@ -11,13 +11,13 @@ use pxp_span::Span;
 use pxp_span::Spanned;
 use pxp_token::TokenKind;
 
-pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
-    let ty = data_type::optional_data_type(state);
+pub fn parse_property(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
+    let ty = data_type::parse_optional_data_type(state);
 
     let mut entries = vec![];
     let mut type_checked = false;
     loop {
-        let variable = variables::simple_variable(state);
+        let variable = variables::parse_simple_variable(state);
 
         if !type_checked {
             type_checked = true;
@@ -112,15 +112,15 @@ pub fn parse(state: &mut State, modifiers: PropertyModifierGroup) -> Property {
     }
 }
 
-pub fn parse_var(state: &mut State) -> VariableProperty {
+pub fn parse_var_property(state: &mut State) -> VariableProperty {
     utils::skip(state, TokenKind::Var);
 
-    let ty = data_type::optional_data_type(state);
+    let ty = data_type::parse_optional_data_type(state);
 
     let mut entries: Vec<PropertyEntry> = vec![];
     let mut type_checked = false;
     loop {
-        let variable = variables::simple_variable(state);
+        let variable = variables::parse_simple_variable(state);
 
         if !type_checked {
             type_checked = true;

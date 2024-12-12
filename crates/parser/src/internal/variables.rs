@@ -9,17 +9,17 @@ use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
-pub fn optional_simple_variable(state: &mut State) -> Option<SimpleVariable> {
+pub fn parse_optional_simple_variable(state: &mut State) -> Option<SimpleVariable> {
     let current = state.current();
 
     if TokenKind::Variable == current.kind {
-        Some(simple_variable(state))
+        Some(parse_simple_variable(state))
     } else {
         None
     }
 }
 
-pub fn simple_variable(state: &mut State) -> SimpleVariable {
+pub fn parse_simple_variable(state: &mut State) -> SimpleVariable {
     let current = state.current();
 
     match &current.kind {
@@ -69,7 +69,7 @@ pub fn simple_variable(state: &mut State) -> SimpleVariable {
     }
 }
 
-pub fn dynamic_variable(state: &mut State) -> Variable {
+pub fn parse_dynamic_variable(state: &mut State) -> Variable {
     let current = state.current();
     match &current.kind {
         TokenKind::Variable => {
@@ -125,7 +125,7 @@ pub fn dynamic_variable(state: &mut State) -> Variable {
 
             match state.current().kind {
                 TokenKind::Dollar | TokenKind::Variable => {
-                    let variable = dynamic_variable(state);
+                    let variable = parse_dynamic_variable(state);
 
                     Variable::VariableVariable(VariableVariable {
                         id: state.id(),

@@ -13,7 +13,7 @@ use super::{
     variables::{optional_simple_variable, simple_variable},
 };
 
-pub fn docblock(state: &mut State) -> DocBlockComment {
+pub fn parse_docblock(state: &mut State) -> DocBlockComment {
     let current = state.current();
 
     if !matches!(current.kind, TokenKind::OpenPhpDoc) {
@@ -43,12 +43,12 @@ pub fn docblock(state: &mut State) -> DocBlockComment {
                 state.next();
             }
             TokenKind::PhpDocTag => {
-                let tag = docblock_tag(state);
+                let tag = parse_docblock_tag(state);
 
                 nodes.push(DocBlockNode::Tag(tag))
             }
             _ => {
-                if let Some(text) = docblock_text(state) {
+                if let Some(text) = parse_docblock_text(state) {
                     nodes.push(DocBlockNode::Text(text))
                 }
             }
@@ -70,7 +70,7 @@ pub fn docblock(state: &mut State) -> DocBlockComment {
     }
 }
 
-fn docblock_tag(state: &mut State) -> DocBlockTagNode {
+fn parse_docblock_tag(state: &mut State) -> DocBlockTagNode {
     let tag = state.current();
     let symbol = tag.symbol.as_ref().unwrap();
 
@@ -170,7 +170,7 @@ fn generic_tag(state: &mut State) -> DocBlockTag {
     })
 }
 
-fn docblock_text(state: &mut State) -> Option<DocBlockTextNode> {
+fn parse_docblock_text(state: &mut State) -> Option<DocBlockTextNode> {
     let (content, span) = read_text_until_eol_or_close(state);
 
     content.as_ref()?;

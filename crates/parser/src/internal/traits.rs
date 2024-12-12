@@ -11,10 +11,10 @@ use pxp_span::Spanned;
 use pxp_token::Token;
 use pxp_token::TokenKind;
 
-use super::classes::member;
+use super::classes::parse_classish_member;
 use super::names;
 
-pub fn usage(state: &mut State) -> TraitUsage {
+pub fn parse_trait_usage(state: &mut State) -> TraitUsage {
     let span = utils::skip(state, TokenKind::Use);
 
     let mut traits = Vec::new();
@@ -22,7 +22,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
     while state.current().kind != TokenKind::SemiColon
         && state.current().kind != TokenKind::LeftBrace
     {
-        let t = names::full_name(state, UseKind::Normal);
+        let t = names::parse_full_name(state, UseKind::Normal);
         traits.push(t);
 
         if state.current().kind == TokenKind::Comma {
@@ -49,12 +49,12 @@ pub fn usage(state: &mut State) -> TraitUsage {
         while state.current().kind != TokenKind::RightBrace {
             let (r#trait, method): (Option<Name>, SimpleIdentifier) = match state.peek().kind {
                 TokenKind::DoubleColon => {
-                    let r#trait = names::full_name_including_self(state);
+                    let r#trait = names::parse_full_name_including_self(state);
                     state.next();
-                    let method = identifiers::identifier(state);
+                    let method = identifiers::parse_identifier(state);
                     (Some(r#trait), method)
                 }
-                _ => (None, identifiers::identifier(state)),
+                _ => (None, identifiers::parse_identifier(state)),
             };
 
             while !state.is_eof()
@@ -112,7 +112,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
                                     ),
                                 });
                             } else {
-                                let alias: SimpleIdentifier = identifiers::name(state);
+                                let alias: SimpleIdentifier = identifiers::parse_name_identifier(state);
                                 let span = if r#trait.is_some() {
                                     Span::combine(r#trait.span(), visibility.span())
                                 } else {
@@ -136,7 +136,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
                             }
                         }
                         _ => {
-                            let alias: SimpleIdentifier = identifiers::name(state);
+                            let alias: SimpleIdentifier = identifiers::parse_name_identifier(state);
                             let span = if r#trait.is_some() {
                                 Span::combine(r#trait.span(), alias.span())
                             } else {
@@ -161,7 +161,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
                 TokenKind::Insteadof => {
                     state.next();
 
-                    let mut insteadof = vec![identifiers::full_type_name(state)];
+                    let mut insteadof = vec![identifiers::parse_full_type_name_identifier(state)];
 
                     if state.current().kind == TokenKind::Comma {
                         if state.peek().kind == TokenKind::SemiColon {
@@ -173,7 +173,7 @@ pub fn usage(state: &mut State) -> TraitUsage {
                         state.next();
 
                         while state.current().kind != TokenKind::SemiColon {
-                            insteadof.push(identifiers::full_type_name(state));
+                            insteadof.push(identifiers::parse_full_type_name_identifier(state));
 
                             if state.current().kind == TokenKind::Comma {
                                 if state.peek().kind == TokenKind::SemiColon {
@@ -229,16 +229,16 @@ pub fn usage(state: &mut State) -> TraitUsage {
     }
 }
 
-pub fn parse(state: &mut State) -> StatementKind {
+pub fn parse_trait(state: &mut State) -> StatementKind {
     let span = utils::skip(state, TokenKind::Trait);
-    let name = names::type_name(state);
+    let name = names::parse_type_name(state);
     let attributes = state.get_attributes();
 
     let left_brace = utils::skip_left_brace(state);
     let members = {
         let mut members = Vec::new();
         while state.current().kind != TokenKind::RightBrace && !state.is_eof() {
-            members.push(member(state, true));
+            members.push(parse_classish_member(state, true));
         }
         members
     };

@@ -14,7 +14,7 @@ use pxp_span::Span;
 use pxp_span::Spanned;
 use pxp_token::TokenKind;
 
-pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
+pub fn parse_function_parameter_list(state: &mut State) -> FunctionParameterList {
     let comments = state.comments();
     let left_parenthesis = utils::skip_left_parenthesis(state);
     let parameters = utils::comma_separated(
@@ -22,7 +22,7 @@ pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
         &|state| {
             attributes::gather_attributes(state);
 
-            let ty = data_type::optional_data_type(state);
+            let ty = data_type::parse_optional_data_type(state);
 
             let mut current = state.current();
             let ampersand = if current.kind == TokenKind::Ampersand {
@@ -42,7 +42,7 @@ pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
             };
 
             // 2. Then expect a variable.
-            let var = variables::simple_variable(state);
+            let var = variables::parse_simple_variable(state);
 
             let mut default = None;
             if state.current().kind == TokenKind::Equals {
@@ -82,7 +82,7 @@ pub fn function_parameter_list(state: &mut State) -> FunctionParameterList {
     }
 }
 
-pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList {
+pub fn parse_constructor_parameter_list(state: &mut State) -> ConstructorParameterList {
     let comments = state.comments();
 
     let left_parenthesis = utils::skip_left_parenthesis(state);
@@ -91,10 +91,10 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
         &|state| {
             attributes::gather_attributes(state);
 
-            let modifiers = modifiers::collect(state);
-            let modifiers = modifiers::promoted_property_group(state, modifiers);
+            let modifiers = modifiers::collect_modifiers(state);
+            let modifiers = modifiers::parse_promoted_property_group(state, modifiers);
 
-            let ty = data_type::optional_data_type(state);
+            let ty = data_type::parse_optional_data_type(state);
 
             let mut current = state.current();
             let ampersand = if matches!(current.kind, TokenKind::Ampersand) {
@@ -109,7 +109,7 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
 
             let (ellipsis, var) = if matches!(current.kind, TokenKind::Ellipsis) {
                 state.next();
-                let var = variables::simple_variable(state);
+                let var = variables::parse_simple_variable(state);
                 if !modifiers.is_empty() {
                     state.diagnostic(
                         ParserDiagnostic::PromotedPropertyCannotBeVariadic,
@@ -120,7 +120,7 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
 
                 (Some(current.span), var)
             } else {
-                (None, variables::simple_variable(state))
+                (None, variables::parse_simple_variable(state))
             };
 
             // 2. Then expect a variable.
@@ -186,7 +186,7 @@ pub fn constructor_parameter_list(state: &mut State) -> ConstructorParameterList
     }
 }
 
-pub fn argument_list(state: &mut State) -> ArgumentList {
+pub fn parse_argument_list(state: &mut State) -> ArgumentList {
     let comments = state.comments();
     let start = utils::skip_left_parenthesis(state);
 
@@ -195,7 +195,7 @@ pub fn argument_list(state: &mut State) -> ArgumentList {
 
     while !state.is_eof() && state.current().kind != TokenKind::RightParen {
         let span = state.current().span;
-        let (named, argument) = argument(state);
+        let (named, argument) = parse_argument(state);
         if named {
             has_used_named_arguments = true;
         } else if has_used_named_arguments {
@@ -227,7 +227,7 @@ pub fn argument_list(state: &mut State) -> ArgumentList {
     }
 }
 
-pub fn single_argument(
+pub fn parse_single_argument(
     state: &mut State,
     required: bool,
     only_positional: bool,
@@ -244,7 +244,7 @@ pub fn single_argument(
 
     while !state.is_eof() && state.current().kind != TokenKind::RightParen {
         let span = state.current().span;
-        let (named, argument) = argument(state);
+        let (named, argument) = parse_argument(state);
         if only_positional && named {
             state.diagnostic(
                 ParserDiagnostic::PositionalArgumentsOnly,
@@ -290,11 +290,11 @@ pub fn single_argument(
     })
 }
 
-fn argument(state: &mut State) -> (bool, Argument) {
+fn parse_argument(state: &mut State) -> (bool, Argument) {
     if identifiers::is_identifier_maybe_reserved(&state.current().kind)
         && state.peek().kind == TokenKind::Colon
     {
-        let name = identifiers::identifier_maybe_reserved(state);
+        let name = identifiers::parse_identifier_maybe_reserved(state);
         let colon = utils::skip(state, TokenKind::Colon);
         let ellipsis = if state.current().kind == TokenKind::Ellipsis {
             Some(utils::skip(state, TokenKind::Ellipsis))

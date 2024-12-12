@@ -19,9 +19,9 @@ pub fn gather_attributes(state: &mut State) -> bool {
 
     loop {
         let start = state.current().span;
-        let name = names::full_name_including_self(state);
+        let name = names::parse_full_name_including_self(state);
         let arguments = if state.current().kind == TokenKind::LeftParen {
-            Some(parameters::argument_list(state))
+            Some(parameters::parse_argument_list(state))
         } else {
             None
         };

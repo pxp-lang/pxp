@@ -13,13 +13,13 @@ use pxp_token::TokenKind;
 
 use super::variables;
 
-pub fn try_block(state: &mut State) -> StatementKind {
+pub fn parse_try_block(state: &mut State) -> StatementKind {
     let start = state.current().span;
 
     state.next();
     utils::skip_left_brace(state);
 
-    let body = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
+    let body = blocks::parse_multiple_statements_until(state, &TokenKind::RightBrace);
 
     let last_right_brace = utils::skip_right_brace(state);
 
@@ -34,17 +34,17 @@ pub fn try_block(state: &mut State) -> StatementKind {
         state.next();
         utils::skip_left_parenthesis(state);
 
-        let types = catch_type(state);
+        let types = parse_catch_type(state);
         let var = if state.current().kind == TokenKind::RightParen {
             None
         } else {
-            Some(variables::simple_variable(state))
+            Some(variables::parse_simple_variable(state))
         };
 
         utils::skip_right_parenthesis(state);
         utils::skip_left_brace(state);
 
-        let catch_body = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
+        let catch_body = blocks::parse_multiple_statements_until(state, &TokenKind::RightBrace);
 
         utils::skip_right_brace(state);
 
@@ -67,7 +67,7 @@ pub fn try_block(state: &mut State) -> StatementKind {
         state.next();
         utils::skip_left_brace(state);
 
-        let finally_body = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
+        let finally_body = blocks::parse_multiple_statements_until(state, &TokenKind::RightBrace);
 
         utils::skip_right_brace(state);
         let finally_end = state.current().span;
@@ -103,8 +103,8 @@ pub fn try_block(state: &mut State) -> StatementKind {
 }
 
 #[inline(always)]
-fn catch_type(state: &mut State) -> CatchType {
-    let id = identifiers::full_name(state);
+fn parse_catch_type(state: &mut State) -> CatchType {
+    let id = identifiers::parse_full_name_identifier(state);
 
     if state.current().kind == TokenKind::Pipe {
         state.next();
@@ -112,7 +112,7 @@ fn catch_type(state: &mut State) -> CatchType {
         let mut types = vec![id];
 
         while !state.is_eof() {
-            let id = identifiers::full_name(state);
+            let id = identifiers::parse_full_name_identifier(state);
             types.push(id);
 
             if state.current().kind != TokenKind::Pipe {

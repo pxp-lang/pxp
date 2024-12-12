@@ -22,7 +22,7 @@ pub enum Method {
     ConcreteConstructor(ConcreteConstructor),
 }
 
-pub fn anonymous_function(state: &mut State) -> Expression {
+pub fn parse_anonymous_function(state: &mut State) -> Expression {
     let comments = state.comments();
     let start_span = state.current().span;
     let attributes = state.get_attributes();
@@ -46,7 +46,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
         None
     };
 
-    let parameters = parameters::function_parameter_list(state);
+    let parameters = parameters::parse_function_parameter_list(state);
 
     let current = state.current();
     let uses = if current.kind == TokenKind::Use {
@@ -66,7 +66,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
                     None
                 };
 
-                let var = variables::simple_variable(state);
+                let var = variables::parse_simple_variable(state);
 
                 ClosureUseVariable {
                     id: state.id(),
@@ -96,7 +96,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
 
     let return_type = if state.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
-        let data_type = data_type::data_type(state);
+        let data_type = data_type::parse_data_type(state);
 
         Some(ReturnType {
             id: state.id(),
@@ -110,7 +110,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
 
     let body_comments = state.comments();
     let left_brace = utils::skip_left_brace(state);
-    let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
+    let statements = blocks::parse_multiple_statements_until(state, &TokenKind::RightBrace);
     let right_brace = utils::skip_right_brace(state);
 
     let body = FunctionBody {
@@ -144,7 +144,7 @@ pub fn anonymous_function(state: &mut State) -> Expression {
     )
 }
 
-pub fn arrow_function(state: &mut State) -> Expression {
+pub fn parse_arrow_function(state: &mut State) -> Expression {
     let comments = state.comments();
     let start_span = state.current().span;
     let current = state.current();
@@ -168,10 +168,10 @@ pub fn arrow_function(state: &mut State) -> Expression {
     };
 
     let attributes = state.get_attributes();
-    let parameters = parameters::function_parameter_list(state);
+    let parameters = parameters::parse_function_parameter_list(state);
     let return_type = if state.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
-        let data_type = data_type::data_type(state);
+        let data_type = data_type::parse_data_type(state);
 
         Some(ReturnType {
             id: state.id(),
@@ -208,7 +208,7 @@ pub fn arrow_function(state: &mut State) -> Expression {
     )
 }
 
-pub fn function(state: &mut State) -> StatementKind {
+pub fn parse_function(state: &mut State) -> StatementKind {
     let comments = state.comments();
 
     let function = utils::skip(state, TokenKind::Function);
@@ -222,16 +222,16 @@ pub fn function(state: &mut State) -> StatementKind {
         None
     };
 
-    let name = names::type_name_maybe_soft_reserved(state);
+    let name = names::parse_type_name_maybe_soft_reserved(state);
 
     // get attributes before processing parameters, otherwise
     // parameters will steal attributes of this function.
     let attributes = state.get_attributes();
 
-    let parameters = parameters::function_parameter_list(state);
+    let parameters = parameters::parse_function_parameter_list(state);
     let return_type = if state.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
-        let data_type = data_type::data_type(state);
+        let data_type = data_type::parse_data_type(state);
 
         Some(ReturnType {
             id: state.id(),
@@ -245,7 +245,7 @@ pub fn function(state: &mut State) -> StatementKind {
 
     let body_comments = state.comments();
     let left_brace = utils::skip_left_brace(state);
-    let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
+    let statements = blocks::parse_multiple_statements_until(state, &TokenKind::RightBrace);
     let right_brace = utils::skip_right_brace(state);
 
     let body = FunctionBody {
@@ -271,7 +271,7 @@ pub fn function(state: &mut State) -> StatementKind {
     })
 }
 
-pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
+pub fn parse_method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
     let comments = state.comments();
     let attributes = state.get_attributes();
     let function = utils::skip(state, TokenKind::Function);
@@ -285,18 +285,18 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
         None
     };
 
-    let name = identifiers::identifier_maybe_reserved(state);
+    let name = identifiers::parse_identifier_maybe_reserved(state);
 
     let symbol = &name.symbol;
     let is_constructor = symbol == b"__construct";
 
     if is_constructor {
-        let parameters = parameters::constructor_parameter_list(state);
+        let parameters = parameters::parse_constructor_parameter_list(state);
 
         return if state.current().kind == TokenKind::LeftBrace {
             let body_comments = state.comments();
             let left_brace = utils::skip_left_brace(state);
-            let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
+            let statements = blocks::parse_multiple_statements_until(state, &TokenKind::RightBrace);
             let right_brace = utils::skip_right_brace(state);
 
             let body = MethodBody {
@@ -338,10 +338,10 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
         };
     }
 
-    let parameters = parameters::function_parameter_list(state);
+    let parameters = parameters::parse_function_parameter_list(state);
     let return_type = if state.current().kind == TokenKind::Colon {
         let colon = utils::skip_colon(state);
-        let data_type = data_type::data_type(state);
+        let data_type = data_type::parse_data_type(state);
 
         Some(ReturnType {
             id: state.id(),
@@ -356,7 +356,7 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
     if state.current().kind == TokenKind::LeftBrace {
         let body_comments = state.comments();
         let left_brace = utils::skip_left_brace(state);
-        let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
+        let statements = blocks::parse_multiple_statements_until(state, &TokenKind::RightBrace);
         let right_brace = utils::skip_right_brace(state);
 
         let body = MethodBody {
