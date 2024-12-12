@@ -1,19 +1,15 @@
 use std::fmt::Display;
 
-use pxp_token::{OwnedToken, TokenKind};
+use pxp_token::{Token, TokenKind};
 
 #[derive(Debug, Clone)]
 pub enum ParserDiagnostic {
     UnexpectedToken {
-        token: OwnedToken,
+        token: Token,
     },
     ExpectedToken {
-        expected: TokenKind,
-        found: OwnedToken,
-    },
-    ExpectedOneOfTokens {
         expected: Vec<TokenKind>,
-        found: OwnedToken,
+        found: Token,
     },
     ExpectedTokenExFound {
         expected: Vec<TokenKind>,
@@ -60,6 +56,8 @@ pub enum ParserDiagnostic {
         expected: Vec<TokenKind>,
     },
     MixedImportTypes,
+    InvalidDocBodyIndentationLevel(usize),
+    InvalidDocIndentation,
 }
 
 impl Display for ParserDiagnostic {
@@ -68,7 +66,7 @@ impl Display for ParserDiagnostic {
             ParserDiagnostic::UnexpectedToken { token } => {
                 write!(f, "unexpected token {}", token.kind)
             }
-            ParserDiagnostic::ExpectedOneOfTokens { expected, found } => {
+            ParserDiagnostic::ExpectedToken { expected, found } => {
                 if expected.len() == 1 {
                     write!(
                         f,
@@ -88,9 +86,6 @@ impl Display for ParserDiagnostic {
                             .join(", ")
                     )
                 }
-            }
-            ParserDiagnostic::ExpectedToken { expected, found } => {
-                write!(f, "expected token {}, found {}", expected, found.kind)
             }
             ParserDiagnostic::ExpectedTokenExFound { expected } => {
                 if expected.len() == 1 {
@@ -220,7 +215,15 @@ impl Display for ParserDiagnostic {
                     )
                 }
             }
-            ParserDiagnostic::MixedImportTypes => write!(f, "cannot mix import types")
+            ParserDiagnostic::MixedImportTypes => write!(f, "cannot mix import types"),
+            ParserDiagnostic::InvalidDocBodyIndentationLevel(level) => write!(
+                f,
+                "heredoc / nowdoc body indentation level [{}] is invalid",
+                level
+            ),
+            ParserDiagnostic::InvalidDocIndentation => {
+                write!(f, "heredoc / nowdoc body indentation is invalid")
+            }
         }
     }
 }
