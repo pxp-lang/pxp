@@ -135,10 +135,7 @@ impl<'a> Visitor for Indexer<'a> {
     }
 
     fn visit_braced_namespace(&mut self, node: &BracedNamespace) {
-        self.context.namespace = node
-            .name
-            .as_ref()
-            .map(|n| n.symbol.clone());
+        self.context.namespace = node.name.as_ref().map(|n| n.symbol.clone());
         walk_braced_namespace(self, node);
         self.context.namespace = None;
     }

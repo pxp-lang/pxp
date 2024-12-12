@@ -350,7 +350,7 @@ fn index() -> Index {
     let files = discover(&["php"], &["tests/fixtures"]).expect("failed to discover files");
 
     for file in files.iter() {
-        let contents= std::fs::read(file).unwrap();
+        let contents = std::fs::read(file).unwrap();
         let result = Parser::parse(Lexer::new(&contents));
         indexer.index(&result.ast);
     }

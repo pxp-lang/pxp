@@ -54,7 +54,7 @@ impl<'a> NodeVisitor<'a> for NodeFinder<'a> {
 mod tests {
     use pxp_ast::ExpressionKind;
     use pxp_lexer::Lexer;
-    use pxp_parser::{Parser, ParseResult};
+    use pxp_parser::{ParseResult, Parser};
 
     use super::*;
 

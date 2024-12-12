@@ -1,7 +1,7 @@
-use std::path::PathBuf;
 use pxp_lexer::Lexer;
 use pxp_parser::Parser;
 use snappers::{snap, Snapper};
+use std::path::PathBuf;
 
 // Tags
 snap!(snapper, empty_file, process("fixtures/tags/empty-file.php"));

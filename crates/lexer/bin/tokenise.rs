@@ -1,4 +1,7 @@
-use std::{env::args, path::{Path, PathBuf}};
+use std::{
+    env::args,
+    path::{Path, PathBuf},
+};
 
 use discoverer::discover;
 use pxp_lexer::Lexer;

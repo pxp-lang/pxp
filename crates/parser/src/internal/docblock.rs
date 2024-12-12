@@ -13,7 +13,7 @@ use super::{
     variables::{optional_simple_variable, simple_variable},
 };
 
-pub fn parse_docblock(state: &mut State) -> DocBlockComment {
+pub fn parse_docblock(&mut self) -> DocBlockComment {
     let current = state.current();
 
     if !matches!(current.kind, TokenKind::OpenPhpDoc) {
@@ -70,7 +70,7 @@ pub fn parse_docblock(state: &mut State) -> DocBlockComment {
     }
 }
 
-fn parse_docblock_tag(state: &mut State) -> DocBlockTagNode {
+fn parse_docblock_tag(&mut self) -> DocBlockTagNode {
     let tag = state.current();
     let symbol = tag.symbol.as_ref().unwrap();
 
@@ -87,7 +87,7 @@ fn parse_docblock_tag(state: &mut State) -> DocBlockTagNode {
     }
 }
 
-fn param_tag(state: &mut State) -> DocBlockTag {
+fn param_tag(&mut self) -> DocBlockTag {
     let tag = state.current();
 
     state.next();
@@ -118,7 +118,7 @@ fn param_tag(state: &mut State) -> DocBlockTag {
     })
 }
 
-fn var_tag(state: &mut State) -> DocBlockTag {
+fn var_tag(&mut self) -> DocBlockTag {
     let tag = state.current();
 
     state.next();
@@ -147,7 +147,7 @@ fn var_tag(state: &mut State) -> DocBlockTag {
     })
 }
 
-fn generic_tag(state: &mut State) -> DocBlockTag {
+fn generic_tag(&mut self) -> DocBlockTag {
     let tag = state.current();
 
     state.next();
@@ -170,7 +170,7 @@ fn generic_tag(state: &mut State) -> DocBlockTag {
     })
 }
 
-fn parse_docblock_text(state: &mut State) -> Option<DocBlockTextNode> {
+fn parse_docblock_text(&mut self) -> Option<DocBlockTextNode> {
     let (content, span) = read_text_until_eol_or_close(state);
 
     content.as_ref()?;
@@ -182,7 +182,7 @@ fn parse_docblock_text(state: &mut State) -> Option<DocBlockTextNode> {
     })
 }
 
-fn read_text_until_eol_or_close(state: &mut State) -> (Option<ByteString>, Option<Span>) {
+fn read_text_until_eol_or_close(&mut self) -> (Option<ByteString>, Option<Span>) {
     let mut text = ByteString::empty();
     let start_span = state.current().span;
 
@@ -216,7 +216,7 @@ fn read_text_until_eol_or_close(state: &mut State) -> (Option<ByteString>, Optio
     (Some(text), Some(span))
 }
 
-fn skip_horizontal_whitespace(state: &mut State) {
+fn skip_horizontal_whitespace(&mut self) {
     while let TokenKind::PhpDocHorizontalWhitespace = state.current().kind {
         state.next();
     }

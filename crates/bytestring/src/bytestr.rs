@@ -30,13 +30,21 @@ impl ByteStr {
     }
 
     pub fn before_first(&self, needle: u8) -> &ByteStr {
-        let end = self.0.iter().position(|&b| b == needle).unwrap_or(self.0.len());
-        
+        let end = self
+            .0
+            .iter()
+            .position(|&b| b == needle)
+            .unwrap_or(self.0.len());
+
         ByteStr::new(&self.0[..end])
     }
 
     pub fn after_last(&self, needle: u8) -> &ByteStr {
-        let start = self.0.iter().rposition(|&b| b == needle).map_or(0, |i| i + 1);
+        let start = self
+            .0
+            .iter()
+            .rposition(|&b| b == needle)
+            .map_or(0, |i| i + 1);
 
         ByteStr::new(&self.0[start..])
     }
