@@ -20,7 +20,10 @@ use internal::literals::expect_literal;
 use pxp_ast::Statement;
 use pxp_ast::*;
 use pxp_ast::{StatementKind, StaticVar};
+use pxp_bytestring::ByteStr;
+use pxp_bytestring::ByteString;
 use pxp_diagnostics::Diagnostic;
+use pxp_diagnostics::Severity;
 use pxp_lexer::Lexer;
 use pxp_span::Span;
 use pxp_span::Spanned;
@@ -55,29 +58,128 @@ pub struct ParseResult {
     pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
 }
 
-pub fn parse<B: Sized + AsRef<[u8]>>(input: &B) -> ParseResult {
-    let mut lexer = Lexer::new(input);
-    let tokens = match lexer.tokenize() {
-        Ok(tokens) => tokens,
-        Err(error) => {
-            todo!("{:?}", error);
-        }
-    };
-
-    construct(&tokens)
+#[derive(Debug)]
+pub struct Parser<'a> {
+    lexer: Lexer<'a>,
+    state: State,
 }
 
-pub fn construct(tokens: &[Token]) -> ParseResult {
-    let mut state = State::new(tokens);
-    let mut ast = Vec::new();
-
-    while !state.is_eof() {
-        ast.push(top_level_statement(&mut state));
+impl<'a> Parser<'a> {
+    pub fn new(lexer: Lexer<'a>) -> Self {
+        Self {
+            lexer,
+            state: State::new(),
+        }
     }
 
-    let diagnostics = state.diagnostics;
+    fn next(&mut self) -> Span {
+        let span = self.current_span();
 
-    ParseResult { ast, diagnostics }
+        self.lexer.next();
+
+        span
+    }
+
+    fn is_eof(&self) -> bool {
+        self.current_kind() == TokenKind::Eof
+    }
+
+    fn current(&self) -> Token {
+        self.lexer.current()
+    }
+
+    fn current_kind(&self) -> TokenKind {
+        self.current().kind
+    }
+
+    fn current_span(&self) -> Span {
+        self.current().span
+    }
+
+    fn current_symbol(&self) -> &ByteStr {
+        self.current().symbol
+    }
+
+    fn current_symbol_as_bytestring(&self) -> ByteString {
+        self.current_symbol().to_bytestring()
+    }
+
+    fn peek(&mut self) -> Token {
+        self.lexer.peek()
+    }
+
+    fn peek_kind(&mut self) -> TokenKind {
+        self.lexer.peek().kind
+    }
+
+    fn next_but_first<T>(&mut self, mut cb: impl FnMut(&mut Self) -> T) -> T {
+        let result = cb(self);
+
+        self.next();
+
+        result
+    }
+
+    fn collect_until<T>(&mut self, kind: TokenKind, mut cb: impl FnMut(&mut Self) -> T) -> Vec<T> {
+        let mut items = Vec::new();
+
+        while self.current_kind() != kind {
+            items.push(cb(self));
+        }
+
+        items
+    }
+
+    fn expect_any(&mut self, kinds: &[TokenKind]) -> Span {
+        for kind in kinds {
+            if self.current_kind() == *kind {
+                let span = self.current_span();
+
+                self.next();
+
+                return span;
+            }
+        }
+
+        self.expected_any_of_tokens(kinds);
+
+        Span::missing()
+    }
+
+    fn expect(&mut self, kind: TokenKind) -> Span {
+        let span = self.current_span();
+
+        if self.is_eof() && kind != TokenKind::Eof {
+            self.unexpected_end_of_file();
+
+            Span::missing()
+        } else if self.current_kind() != kind {
+            self.expected_token(kind);
+
+            Span::missing()
+        } else {
+            self.next();
+
+            span
+        }
+    }
+
+    fn try_consume(&mut self, kind: TokenKind) -> Option<Span> {
+        match self.current_kind() {
+            k if k == kind => {
+                let span = self.current_span();
+
+                self.next();
+
+                Some(span)
+            }
+            _ => None,
+        }
+    }
+
+    fn diagnostic(&mut self, diagnostic: ParserDiagnostic, severity: Severity, span: Span) {
+        self.state.diagnostics.push(Diagnostic::new(diagnostic, severity, span));
+    }
 }
 
 fn top_level_statement(state: &mut State) -> Statement {

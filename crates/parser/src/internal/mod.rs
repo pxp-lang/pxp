@@ -26,3 +26,4 @@ pub(crate) mod try_block;
 pub(crate) mod uses;
 pub(crate) mod utils;
 pub(crate) mod variables;
+pub(crate) mod diagnostics;

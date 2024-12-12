@@ -21,7 +21,7 @@ pub enum Scope {
 }
 
 #[derive(Debug)]
-pub struct State<'a> {
+pub struct State {
     // Unique identifier for each node.
     id: u32,
 
@@ -33,17 +33,12 @@ pub struct State<'a> {
     comments: Vec<Comment>,
     docblock: bool,
 
-    // Token Stream
-    tokens: &'a [Token],
-    length: usize,
-    cursor: usize,
-
     // Diagnostics
     pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
 }
 
-impl<'a> State<'a> {
-    pub fn new(tokens: &'a [Token]) -> Self {
+impl State {
+    pub fn new() -> Self {
         let mut imports = HashMap::new();
         imports.insert(UseKind::Normal, HashMap::new());
         imports.insert(UseKind::Function, HashMap::new());
@@ -59,94 +54,12 @@ impl<'a> State<'a> {
 
             id: 0,
 
-            tokens,
-            length: tokens.len(),
-            cursor: 0,
-
             diagnostics: vec![],
         };
 
         this.collect_comments();
 
         this
-    }
-
-    /// Move cursor to next token.
-    ///
-    /// Comments are collected.
-    pub fn next(&mut self) {
-        self.cursor += 1;
-        self.collect_comments();
-    }
-
-    /// Get current token.
-    pub const fn current(&self) -> &'a Token {
-        let position = if self.cursor >= self.length {
-            self.length - 1
-        } else {
-            self.cursor
-        };
-
-        &self.tokens[position]
-    }
-
-    /// Get previous token.
-    pub const fn previous(&self) -> &'a Token {
-        let position = if self.cursor == 0 { 0 } else { self.cursor - 1 };
-        let position = if position >= self.length {
-            self.length - 1
-        } else {
-            position
-        };
-
-        &self.tokens[position]
-    }
-
-    /// Peek next token.
-    ///
-    /// All comments are skipped.
-    pub const fn peek(&self) -> &'a Token {
-        self.peek_nth(1)
-    }
-
-    /// Peek nth+1 token.
-    ///
-    /// All comments are skipped.
-    pub const fn lookahead(&self, n: usize) -> &'a Token {
-        self.peek_nth(n + 1)
-    }
-
-    /// Peek nth token.
-    ///
-    /// All comments are skipped.
-    #[inline(always)]
-    const fn peek_nth(&self, n: usize) -> &'a Token {
-        let mut cursor = self.cursor + 1;
-        let mut target = 1;
-        loop {
-            if cursor >= self.length {
-                return &self.tokens[self.length - 1];
-            }
-
-            let current = &self.tokens[cursor];
-
-            if matches!(
-                current.kind,
-                TokenKind::SingleLineComment
-                    | TokenKind::MultiLineComment
-                    | TokenKind::HashMarkComment
-            ) {
-                cursor += 1;
-                continue;
-            }
-
-            if target == n {
-                return current;
-            }
-
-            target += 1;
-            cursor += 1;
-        }
     }
 
     pub const fn is_in_docblock(&self) -> bool {
@@ -159,15 +72,6 @@ impl<'a> State<'a> {
 
     pub fn exit_docblock(&mut self) {
         self.docblock = false;
-    }
-
-    /// Check if current token is EOF.
-    pub fn is_eof(&self) -> bool {
-        if self.cursor >= self.length {
-            return true;
-        }
-
-        self.tokens[self.cursor].kind == TokenKind::Eof
     }
 
     pub fn skip_doc_eol(&mut self) {
