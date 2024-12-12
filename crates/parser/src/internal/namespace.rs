@@ -1,11 +1,11 @@
 use pxp_ast::{
-    BracedNamespace, BracedNamespaceBody, CommentGroup, Name, NamespaceStatement, SimpleIdentifier,
+    BracedNamespace, BracedNamespaceBody, CommentGroup, NamespaceStatement, SimpleIdentifier,
     Statement, StatementKind, UnbracedNamespace,
 };
 use pxp_span::{Span, Spanned};
 use pxp_token::TokenKind;
 
-use crate::{Parser, ParserDiagnostic};
+use crate::Parser;
 
 impl<'a> Parser<'a> {
     pub(crate) fn parse_namespace(&mut self) -> Statement {

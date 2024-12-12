@@ -35,6 +35,21 @@ impl<'a> Parser<'a> {
         })
     }
 
+    pub(crate) fn parse_identifier(&mut self) -> SimpleIdentifier {
+        match self.current_kind() {
+            TokenKind::Identifier | TokenKind::QualifiedIdentifier | TokenKind::FullyQualifiedIdentifier => self.next_but_first(|parser| SimpleIdentifier::new(
+                parser.id(),
+                parser.current_symbol_as_bytestring(),
+                parser.current_span(),
+            )),
+            _ => {
+                self.expected_token(TokenKind::Identifier);
+
+                SimpleIdentifier::missing(self.id(), self.current_span())
+            }
+        }
+    }
+
     pub(crate) fn parse_type_identifier(&mut self) -> SimpleIdentifier {
         match self.current_kind() {
             TokenKind::Identifier | TokenKind::Enum | TokenKind::From => self.next_but_first(|parser| SimpleIdentifier::new(

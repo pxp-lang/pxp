@@ -13,6 +13,17 @@ impl ByteStr {
     pub fn to_bytestring(&self) -> ByteString {
         ByteString::from(self)
     }
+
+    pub fn coagulate(&self, others: &[&ByteStr], with: u8) -> ByteString {
+        let mut bytes = self.0.to_vec();
+
+        for other in others {
+            bytes.push(with);
+            bytes.extend_from_slice(&other.0);
+        }
+
+        ByteString::new(bytes)
+    }
 }
 
 impl std::fmt::Display for ByteStr {

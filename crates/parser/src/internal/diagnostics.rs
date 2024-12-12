@@ -19,4 +19,8 @@ impl<'a> Parser<'a> {
     pub(crate) fn cannot_use_reserved_keyword_as_type_name(&mut self){ 
         self.diagnostic(ParserDiagnostic::CannotUseReservedKeywordAsTypeName, Severity::Error, self.current_span());
     }
+
+    pub(crate) fn mixed_import_types(&mut self) {
+        self.diagnostic(ParserDiagnostic::MixedImportTypes, Severity::Error, self.current_span());
+    }
 }
