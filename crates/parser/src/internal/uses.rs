@@ -17,11 +17,11 @@ use super::names;
 
 impl<'a> Parser<'a> {
     pub fn parse_use_statement(&mut self) -> StatementKind {
-        let r#use = self.current().span;
+        let r#use = self.current_span();
 
         self.next();
 
-        let kind = match self.current().kind {
+        let kind = match self.current_kind() {
             TokenKind::Function => {
                 self.next();
                 UseKind::Function
@@ -34,21 +34,21 @@ impl<'a> Parser<'a> {
         };
 
         if state.peek().kind == TokenKind::LeftBrace {
-            let prefix = identifiers::parse_full_name_identifier();
+            let prefix = self.parse_full_name_identifier();
             let prefix_symbol = prefix.symbol.clone();
 
             self.next();
 
             let mut uses = Vec::new();
-            while self.current().kind != TokenKind::RightBrace {
-                let start_span = self.current().span;
-                let use_kind = match self.current().kind {
+            while self.current_kind() != TokenKind::RightBrace {
+                let start_span = self.current_span();
+                let use_kind = match self.current_kind() {
                     TokenKind::Function => {
                         if kind != UseKind::Normal {
                             self.diagnostic(
                                 ParserDiagnostic::MixedImportTypes,
                                 Severity::Error,
-                                self.current().span,
+                                self.current_span(),
                             );
                         }
 
@@ -60,7 +60,7 @@ impl<'a> Parser<'a> {
                             self.diagnostic(
                                 ParserDiagnostic::MixedImportTypes,
                                 Severity::Error,
-                                self.current().span,
+                                self.current_span(),
                             );
                         }
 
@@ -70,11 +70,11 @@ impl<'a> Parser<'a> {
                     _ => None,
                 };
 
-                let name = identifiers::parse_full_type_name_identifier();
+                let name = self.parse_full_type_name_identifier();
                 let mut alias = None;
-                if self.current().kind == TokenKind::As {
+                if self.current_kind() == TokenKind::As {
                     self.next();
-                    alias = Some(identifiers::parse_type_identifier());
+                    alias = Some(self.parse_type_identifier());
                 }
 
                 let symbol = name.symbol.clone();
@@ -104,14 +104,14 @@ impl<'a> Parser<'a> {
                     alias_symbol,
                 );
 
-                if self.current().kind == TokenKind::Comma {
+                if self.current_kind() == TokenKind::Comma {
                     self.next();
                     continue;
                 }
             }
 
-            utils::skip_right_brace();
-            let semicolon = utils::skip_semicolon();
+            self.skip_right_brace();
+            let semicolon = self.skip_semicolon();
 
             StatementKind::GroupUse(GroupUseStatement {
                 id: self.state.id(),
@@ -122,13 +122,13 @@ impl<'a> Parser<'a> {
             })
         } else {
             let mut uses = Vec::new();
-            while !state.is_eof() {
-                let start_span = self.current().span;
-                let name = names::parse_use_name();
+            while !self.is_eof() {
+                let start_span = self.current_span();
+                let name = self.parse_use_name();
                 let mut alias = None;
-                if self.current().kind == TokenKind::As {
+                if self.current_kind() == TokenKind::As {
                     self.next();
-                    alias = Some(identifiers::parse_type_identifier());
+                    alias = Some(self.parse_type_identifier());
                 }
 
                 let alias_symbol = alias.as_ref().map(|a| a.symbol.clone());
@@ -144,12 +144,12 @@ impl<'a> Parser<'a> {
 
                 state.add_import(&kind, name.symbol().clone(), alias_symbol);
 
-                if self.current().kind == TokenKind::Comma {
+                if self.current_kind() == TokenKind::Comma {
                     self.next();
                     continue;
                 }
 
-                utils::skip_semicolon();
+                self.skip_semicolon();
                 break;
             }
 

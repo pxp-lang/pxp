@@ -22,7 +22,7 @@ impl<'a> Parser<'a> {
         } else {
             let span = Span::flat(previous.span.end);
 
-            if state.is_eof() {
+            if self.is_eof() {
                 self.diagnostic(ParserDiagnostic::UnexpectedEndOfFile, Severity::Error, span);
             } else {
                 self.diagnostic(
@@ -61,46 +61,46 @@ impl<'a> Parser<'a> {
     }
 
     pub fn skip_left_brace(&mut self) -> Span {
-        skip(state, TokenKind::LeftBrace)
+        skip(TokenKind::LeftBrace)
     }
 
     pub fn skip_right_brace(&mut self) -> Span {
-        skip(state, TokenKind::RightBrace)
+        skip(TokenKind::RightBrace)
     }
 
     pub fn skip_left_parenthesis(&mut self) -> Span {
-        skip(state, TokenKind::LeftParen)
+        skip(TokenKind::LeftParen)
     }
 
     pub fn skip_right_parenthesis(&mut self) -> Span {
-        skip(state, TokenKind::RightParen)
+        skip(TokenKind::RightParen)
     }
 
     pub fn skip_left_bracket(&mut self) -> Span {
-        skip(state, TokenKind::LeftBracket)
+        skip(TokenKind::LeftBracket)
     }
 
     pub fn skip_right_bracket(&mut self) -> Span {
-        skip(state, TokenKind::RightBracket)
+        skip(TokenKind::RightBracket)
     }
 
     pub fn skip_double_arrow(&mut self) -> Span {
-        skip(state, TokenKind::DoubleArrow)
+        skip(TokenKind::DoubleArrow)
     }
 
     pub fn skip_double_colon(&mut self) -> Span {
-        skip(state, TokenKind::DoubleColon)
+        skip(TokenKind::DoubleColon)
     }
 
     pub fn skip_colon(&mut self) -> Span {
-        skip(state, TokenKind::Colon)
+        skip(TokenKind::Colon)
     }
 
     pub fn skip(&mut self, kind: TokenKind) -> Span {
-        while self.current().kind != kind {
+        while self.current_kind() != kind {
             let current = self.current();
 
-            if state.is_eof() {
+            if self.is_eof() {
                 self.diagnostic(
                     ParserDiagnostic::UnexpectedEndOfFileExpected {
                         expected: vec![kind],
@@ -123,7 +123,7 @@ impl<'a> Parser<'a> {
             );
         }
 
-        let end = self.current().span;
+        let end = self.current_span();
 
         self.next();
 
@@ -157,10 +157,10 @@ impl<'a> Parser<'a> {
     ///
     /// This function will skip the left parenthesis, call the given function,
     /// and then skip the right parenthesis.
-    pub fn parenthesized<T>(&mut self, func: &(dyn Fn(&mut State) -> T)) -> (Span, T, Span) {
-        let left_parenthesis = skip_left_parenthesis();
-        let inner = func();
-        let right_parenthesis = skip_right_parenthesis();
+    pub fn parenthesized<T>(&mut self, mut func: impl FnMut(&mut Parser) -> T) -> (Span, T, Span) {
+        let left_parenthesis = self.skip_left_parenthesis();
+        let inner = func(self);
+        let right_parenthesis = self.skip_right_parenthesis();
 
         (left_parenthesis, inner, right_parenthesis)
     }
@@ -169,17 +169,17 @@ impl<'a> Parser<'a> {
     ///
     /// This function will skip the left brace, call the given function,
     /// and then skip the right brace.
-    pub fn braced<T>(&mut self, func: &(dyn Fn(&mut State) -> T)) -> (Span, T, Span) {
-        let left_brace = skip_left_brace();
-        let inner = func();
-        let right_brace = skip_right_brace();
+    pub fn braced<T>(&mut self, mut func: impl FnMut(&mut Parser) -> T) -> (Span, T, Span) {
+        let left_brace = self.skip_left_brace();
+        let inner = func(self);
+        let right_brace = self.skip_right_brace();
 
         (left_brace, inner, right_brace)
     }
 
-    pub fn semicolon_terminated<T>(&mut self, func: &(dyn Fn(&mut State) -> T)) -> (Span, T) {
-        let inner = func();
-        let semicolon = skip_semicolon();
+    pub fn semicolon_terminated<T>(&mut self, mut func: impl FnMut(&mut Parser) -> T) -> (Span, T) {
+        let inner = func(self);
+        let semicolon = self.skip_semicolon();
         (semicolon, inner)
     }
 
@@ -248,22 +248,19 @@ impl<'a> Parser<'a> {
     /// Parse a comma-separated list of items, requiring at least one item, and not allowing trailing commas.
     pub fn at_least_one_comma_separated_no_trailing<T>(
         &mut self,
-        func: &(dyn Fn(&mut State) -> T),
+        mut func: impl FnMut(&mut Parser) -> T,
     ) -> CommaSeparated<T> {
         let mut inner: Vec<T> = vec![];
         let mut commas: Vec<Span> = vec![];
 
         loop {
-            inner.push(func());
+            inner.push(func(self));
 
-            let current = self.current();
-            if current.kind != TokenKind::Comma {
+            if self.current_kind() != TokenKind::Comma {
                 break;
             }
 
-            commas.push(current.span);
-
-            self.next();
+            commas.push(self.next());
         }
 
         CommaSeparated { inner, commas }

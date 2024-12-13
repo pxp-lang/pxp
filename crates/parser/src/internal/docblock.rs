@@ -9,8 +9,8 @@ use pxp_token::TokenKind;
 use crate::state::State;
 
 use super::{
-    data_type::optional_data_type,
-    variables::{optional_simple_variable, simple_variable},
+    self.optional_data_type,
+    self.{optional_simple_variable, simple_variable},
 };
 
 pub fn parse_docblock(&mut self) -> DocBlockComment {
@@ -27,7 +27,7 @@ pub fn parse_docblock(&mut self) -> DocBlockComment {
     let mut nodes = Vec::new();
 
     loop {
-        if state.is_eof() {
+        if self.is_eof() {
             break;
         }
 
@@ -184,7 +184,7 @@ fn parse_docblock_text(&mut self) -> Option<DocBlockTextNode> {
 
 fn read_text_until_eol_or_close(&mut self) -> (Option<ByteString>, Option<Span>) {
     let mut text = ByteString::empty();
-    let start_span = self.current().span;
+    let start_span = self.current_span();
 
     loop {
         let current = self.current();
@@ -210,14 +210,14 @@ fn read_text_until_eol_or_close(&mut self) -> (Option<ByteString>, Option<Span>)
         return (None, None);
     }
 
-    let end_span = self.current().span;
+    let end_span = self.current_span();
     let span = Span::combine(start_span, end_span);
 
     (Some(text), Some(span))
 }
 
 fn skip_horizontal_whitespace(&mut self) {
-    while let TokenKind::PhpDocHorizontalWhitespace = self.current().kind {
+    while let TokenKind::PhpDocHorizontalWhitespace = self.current_kind() {
         self.next();
     }
 }

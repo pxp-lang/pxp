@@ -25,56 +25,49 @@ impl<'a> Parser<'a> {
             let mut items = Vec::new();
             let mut has_at_least_one_key = false;
 
-            let mut current = self.current();
-            while current.kind != TokenKind::RightParen {
-                if current.kind == TokenKind::Comma {
-                    self.next();
+            while self.current_kind() != TokenKind::RightParen {
+                if self.current_kind() == TokenKind::Comma {
+                    let span = self.next();
 
-                    items.push(ListEntry::Skipped(current.span));
-
-                    current = self.current();
+                    items.push(ListEntry::Skipped(span));
 
                     continue;
                 }
 
-                if current.kind == TokenKind::Ellipsis {
-                    self.next();
+                if self.current_kind() == TokenKind::Ellipsis {
+                    let span = self.next();
 
                     self.diagnostic(
                         ParserDiagnostic::InvalidSpreadOperator,
                         Severity::Error,
-                        current.span,
+                        span,
                     );
                 }
 
                 let mut value = self.parse_expression();
-                current = self.current();
-                if current.kind == TokenKind::DoubleArrow {
+
+                if self.current_kind() == TokenKind::DoubleArrow {
                     if !has_at_least_one_key && !items.is_empty() {
                         self.diagnostic(
                             ParserDiagnostic::CannotMixKeyedAndUnkeyedListEntries,
                             Severity::Error,
-                            current.span,
+                            self.current_span(),
                         );
                     }
 
-                    let double_arrow = current.span;
+                    let double_arrow = self.next();
 
-                    self.next();
-
-                    current = self.current();
-                    if current.kind == TokenKind::Ellipsis {
-                        self.next();
+                    if self.current_kind() == TokenKind::Ellipsis {
+                        let span = self.next();
 
                         self.diagnostic(
                             ParserDiagnostic::InvalidSpreadOperator,
                             Severity::Error,
-                            current.span,
+                            span,
                         );
                     }
 
                     let mut key = self.parse_expression();
-                    current = self.current();
 
                     std::mem::swap(&mut key, &mut value);
 
@@ -92,7 +85,7 @@ impl<'a> Parser<'a> {
                         self.diagnostic(
                             ParserDiagnostic::CannotMixKeyedAndUnkeyedListEntries,
                             Severity::Error,
-                            current.span,
+                            self.current_span(),
                         );
                     }
 
@@ -103,15 +96,14 @@ impl<'a> Parser<'a> {
                     }));
                 }
 
-                if current.kind == TokenKind::Comma {
+                if self.current_kind() == TokenKind::Comma {
                     self.next();
-                    current = self.current();
                 } else {
                     break;
                 }
             }
 
-            if current.kind == TokenKind::Comma {
+            if self.current_kind() == TokenKind::Comma {
                 self.next();
             }
 
@@ -180,21 +172,24 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_array_pair(&mut self) -> ArrayItem {
-        let mut current = self.current();
-        let ellipsis = if current.kind == TokenKind::Ellipsis {
-            self.next();
-            let span = current.span;
-            current = self.current();
-
-            Some(span)
+        let ellipsis = if self.current_kind() == TokenKind::Ellipsis {
+            Some(self.next())
         } else {
             None
         };
 
-        let mut ampersand = if current.kind == TokenKind::Ampersand {
-            self.next();
+        let mut ampersand = if self.current_kind() == TokenKind::Ampersand {
+            if ellipsis.is_some() {
+                self.diagnostic(
+                    ParserDiagnostic::UnexpectedToken {
+                        token: self.current().to_owned(),
+                    },
+                    Severity::Error,
+                    self.current_span(),
+                );
+            }
 
-            Some(current)
+            Some(self.next())
         } else {
             None
         };
@@ -202,16 +197,6 @@ impl<'a> Parser<'a> {
         let mut value = self.parse_expression();
 
         if let Some(ellipsis) = ellipsis {
-            if let Some(ampersand) = ampersand {
-                self.diagnostic(
-                    ParserDiagnostic::UnexpectedToken {
-                        token: ampersand.to_owned(),
-                    },
-                    Severity::Error,
-                    ampersand.span,
-                );
-            }
-
             return ArrayItem::SpreadValue(ArrayItemSpreadValue {
                 id: self.state.id(),
                 span: Span::combine(ellipsis, value.span),
@@ -223,33 +208,27 @@ impl<'a> Parser<'a> {
         if let Some(ampersand) = ampersand {
             return ArrayItem::ReferencedValue(ArrayItemReferencedValue {
                 id: self.state.id(),
-                span: Span::combine(ampersand.span, value.span),
-                ampersand: ampersand.span,
+                span: Span::combine(ampersand, value.span),
+                ampersand: ampersand,
                 value,
             });
         }
 
-        let mut current = self.current();
-        if current.kind == TokenKind::DoubleArrow {
-            let double_arrow = current.span;
+        if self.current_kind() == TokenKind::DoubleArrow {
+            let double_arrow = self.next();
 
-            self.next();
-
-            current = self.current();
-            if current.kind == TokenKind::Ellipsis {
-                self.next();
+            if self.current_kind() == TokenKind::Ellipsis {
+                let span = self.next();
 
                 self.diagnostic(
                     ParserDiagnostic::InvalidSpreadOperator,
                     Severity::Error,
-                    current.span,
+                    span,
                 );
             }
 
-            ampersand = if current.kind == TokenKind::Ampersand {
-                self.next();
-
-                Some(current)
+            ampersand = if self.current_kind() == TokenKind::Ampersand {
+                Some(self.next())
             } else {
                 None
             };
@@ -265,7 +244,7 @@ impl<'a> Parser<'a> {
                     key,
                     double_arrow,
                     value,
-                    ampersand: ampersand.span,
+                    ampersand,
                 }),
                 None => ArrayItem::KeyValue(ArrayItemKeyValue {
                     id: self.state.id(),

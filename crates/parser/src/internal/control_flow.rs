@@ -1,8 +1,3 @@
-use crate::expressions;
-use crate::internal::blocks;
-use crate::internal::utils;
-use crate::state::State;
-use crate::statement;
 use crate::Parser;
 use crate::ParserDiagnostic;
 use pxp_ast::Case;
@@ -25,48 +20,46 @@ impl<'a> Parser<'a> {
         let keyword = self.skip(TokenKind::Match);
 
         let (left_parenthesis, condition, right_parenthesis) =
-            utils::parenthesized(state, &|&mut self| Box::new(self.parse_expression()));
+            self.parenthesized(|parser| Box::new(parser.parse_expression()));
 
-        let left_brace = utils::skip_left_brace();
+        let left_brace = self.skip_left_brace();
 
         let mut default: Option<Box<DefaultMatchArm>> = None;
         let mut arms = Vec::new();
-        while self.current().kind != TokenKind::RightBrace {
-            let current = self.current();
-            if current.kind == TokenKind::Default {
+        while self.current_kind() != TokenKind::RightBrace {
+            if self.current_kind() == TokenKind::Default {
                 if default.is_some() {
                     self.diagnostic(
                         ParserDiagnostic::CannotHaveMultipleDefaultArmsInMatch,
                         Severity::Error,
-                        current.span,
+                        self.current_span(),
                     );
                 }
 
-                self.next();
+                let start = self.next();
 
                 // match conditions can have an extra comma at the end, including `default`.
-                if self.current().kind == TokenKind::Comma {
+                if self.current_kind() == TokenKind::Comma {
                     self.next();
                 }
 
-                let arrow = utils::skip_double_arrow();
-
+                let arrow = self.skip_double_arrow();
                 let body = self.parse_expression();
 
                 default = Some(Box::new(DefaultMatchArm {
                     id: self.state.id(),
-                    span: Span::combine(current.span, body.span),
-                    keyword: current.span,
+                    span: Span::combine(start, body.span),
+                    keyword: start,
                     double_arrow: arrow,
                     body,
                 }));
             } else {
                 let mut conditions = Vec::new();
 
-                while self.current().kind != TokenKind::DoubleArrow {
+                while self.current_kind() != TokenKind::DoubleArrow {
                     conditions.push(self.parse_expression());
 
-                    if self.current().kind == TokenKind::Comma {
+                    if self.current_kind() == TokenKind::Comma {
                         self.next();
                     } else {
                         break;
@@ -77,7 +70,7 @@ impl<'a> Parser<'a> {
                     break;
                 }
 
-                let arrow = utils::skip_double_arrow();
+                let arrow = self.skip_double_arrow();
 
                 let body = self.parse_expression();
 
@@ -90,14 +83,14 @@ impl<'a> Parser<'a> {
                 });
             }
 
-            if self.current().kind == TokenKind::Comma {
+            if self.current_kind() == TokenKind::Comma {
                 self.next();
             } else {
                 break;
             }
         }
 
-        let right_brace = utils::skip_right_brace();
+        let right_brace = self.skip_right_brace();
 
         Expression::new(
             self.state.id(),
@@ -122,34 +115,34 @@ impl<'a> Parser<'a> {
         let switch = self.skip(TokenKind::Switch);
 
         let (left_parenthesis, condition, right_parenthesis) =
-            utils::parenthesized(state, &expressions::create);
+            self.parenthesized(|parser| parser.parse_expression());
 
-        let end_token = if self.current().kind == TokenKind::Colon {
-            utils::skip_colon();
+        let end_token = if self.current_kind() == TokenKind::Colon {
+            self.skip_colon();
             TokenKind::EndSwitch
         } else {
-            utils::skip_left_brace();
+            self.skip_left_brace();
             TokenKind::RightBrace
         };
 
         let mut cases = Vec::new();
-        while self.current().kind != end_token {
-            match self.current().kind {
+        while self.current_kind() != end_token {
+            match self.current_kind() {
                 TokenKind::Case => {
                     self.next();
 
                     let condition = self.parse_expression();
 
-                    utils::skip_any_of(state, &[TokenKind::Colon, TokenKind::SemiColon]);
+                    self.skip_any_of(&[TokenKind::Colon, TokenKind::SemiColon]);
 
                     let mut body = Block::new();
 
-                    while self.current().kind != TokenKind::Case
-                        && self.current().kind != TokenKind::Default
-                        && self.current().kind != TokenKind::RightBrace
-                        && self.current().kind != end_token
+                    while self.current_kind() != TokenKind::Case
+                        && self.current_kind() != TokenKind::Default
+                        && self.current_kind() != TokenKind::RightBrace
+                        && self.current_kind() != end_token
                     {
-                        body.push(statement());
+                        body.push(self.parse_statement());
                     }
 
                     cases.push(Case {
@@ -162,15 +155,15 @@ impl<'a> Parser<'a> {
                 TokenKind::Default => {
                     self.next();
 
-                    utils::skip_any_of(state, &[TokenKind::Colon, TokenKind::SemiColon]);
+                    self.skip_any_of(&[TokenKind::Colon, TokenKind::SemiColon]);
 
                     let mut body = Block::new();
 
-                    while self.current().kind != TokenKind::Case
-                        && self.current().kind != TokenKind::Default
-                        && self.current().kind != end_token
+                    while self.current_kind() != TokenKind::Case
+                        && self.current_kind() != TokenKind::Default
+                        && self.current_kind() != end_token
                     {
-                        body.push(statement());
+                        body.push(self.parse_statement());
                     }
 
                     cases.push(Case {
@@ -184,10 +177,10 @@ impl<'a> Parser<'a> {
                     self.diagnostic(
                         ParserDiagnostic::ExpectedToken {
                             expected: vec![TokenKind::Case, TokenKind::Default, end_token],
-                            found: self.current().clone(),
+                            found: self.current().to_owned(),
                         },
                         Severity::Error,
-                        self.current().span,
+                        self.current_span()
                     );
                 }
             }
@@ -195,9 +188,9 @@ impl<'a> Parser<'a> {
 
         if end_token == TokenKind::EndSwitch {
             self.skip(TokenKind::EndSwitch);
-            utils::skip_ending();
+            self.skip_ending();
         } else {
-            utils::skip_right_brace();
+            self.skip_right_brace();
         }
 
         StatementKind::Switch(SwitchStatement {
@@ -215,12 +208,12 @@ impl<'a> Parser<'a> {
         let r#if = self.skip(TokenKind::If);
 
         let (left_parenthesis, condition, right_parenthesis) =
-            utils::parenthesized(state, &expressions::create);
+            self.parenthesized(|parser| parser.parse_expression());
 
-        let body = if self.current().kind == TokenKind::Colon {
-            parse_if_statement_block_body()
+        let body = if self.current_kind() == TokenKind::Colon {
+            self.parse_if_statement_block_body()
         } else {
-            parse_if_statement_statement_body()
+            self.parse_if_statement_statement_body()
         };
 
         StatementKind::If(IfStatement {
@@ -235,40 +228,38 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_if_statement_statement_body(&mut self) -> IfStatementBody {
-        let statement = Box::new(statement());
+        let statement = Box::new(self.parse_statement());
 
         let mut elseifs: Vec<IfStatementElseIf> = vec![];
-        let mut current = self.current();
-        while current.kind == TokenKind::ElseIf {
-            self.next();
+
+        while self.current_kind() == TokenKind::ElseIf {
+            let start = self.next();
 
             let (left_parenthesis, condition, right_parenthesis) =
-                utils::parenthesized(state, &expressions::create);
+                self.parenthesized(|parser| parser.parse_expression());
 
-            let statement = crate::statement();
+            let statement = self.parse_statement();
 
             elseifs.push(IfStatementElseIf {
                 id: self.state.id(),
-                span: Span::combine(current.span, statement.span),
-                elseif: current.span,
+                span: Span::combine(start, statement.span),
+                elseif: start,
                 left_parenthesis,
                 condition,
                 right_parenthesis,
                 statement: Box::new(statement),
             });
-
-            current = self.current();
         }
 
-        let r#else = if current.kind == TokenKind::Else {
-            self.next();
+        let r#else = if self.current_kind() == TokenKind::Else {
+            let start = self.next();
 
-            let statement = crate::statement();
+            let statement = self.parse_statement();
 
             Some(IfStatementElse {
                 id: self.state.id(),
-                span: Span::combine(current.span, statement.span),
-                r#else: current.span,
+                span: Span::combine(start, statement.span),
+                r#else: start,
                 statement: Box::new(statement),
             })
         } else {
@@ -290,52 +281,48 @@ impl<'a> Parser<'a> {
 
     fn parse_if_statement_block_body(&mut self) -> IfStatementBody {
         let colon = self.skip(TokenKind::Colon);
-        let statements = blocks::parse_multiple_statements_until_any(
-            state,
+        let statements = self.parse_multiple_statements_until_any(
             &[TokenKind::Else, TokenKind::ElseIf, TokenKind::EndIf],
         );
 
         let mut elseifs: Vec<IfStatementElseIfBlock> = vec![];
-        let mut current = self.current();
-        while current.kind == TokenKind::ElseIf {
-            self.next();
+
+        while self.current_kind() == TokenKind::ElseIf {
+            let start = self.next();
 
             let (left_parenthesis, condition, right_parenthesis) =
-                utils::parenthesized(state, &expressions::create);
+                self.parenthesized(|parser| parser.parse_expression());
 
             let colon = self.skip(TokenKind::Colon);
 
-            let statements = blocks::parse_multiple_statements_until_any(
-                state,
+            let statements = self.parse_multiple_statements_until_any(
                 &[TokenKind::Else, TokenKind::ElseIf, TokenKind::EndIf],
             );
 
-            let span = Span::combine(current.span, statements.span());
+            let span = Span::combine(start, statements.span());
 
             elseifs.push(IfStatementElseIfBlock {
                 id: self.state.id(),
                 span,
-                elseif: current.span,
+                elseif: start,
                 left_parenthesis,
                 condition,
                 right_parenthesis,
                 colon,
                 statements,
             });
-
-            current = self.current();
         }
 
-        let r#else = if current.kind == TokenKind::Else {
-            self.next();
+        let r#else = if self.current_kind() == TokenKind::Else {
+            let start = self.next();
 
             let colon = self.skip(TokenKind::Colon);
-            let statements = blocks::parse_multiple_statements_until(state, &TokenKind::EndIf);
+            let statements = self.parse_multiple_statements_until(TokenKind::EndIf);
 
             Some(IfStatementElseBlock {
                 id: self.state.id(),
-                span: Span::combine(current.span, statements.span()),
-                r#else: current.span,
+                span: Span::combine(start, statements.span()),
+                r#else: start,
                 colon,
                 statements,
             })
@@ -344,7 +331,7 @@ impl<'a> Parser<'a> {
         };
 
         let endif = self.skip(TokenKind::EndIf);
-        let ending = utils::skip_ending();
+        let ending = self.skip_ending();
 
         IfStatementBody::Block(IfStatementBodyBlock {
             id: self.state.id(),

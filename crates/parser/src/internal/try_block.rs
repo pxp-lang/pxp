@@ -16,41 +16,41 @@ use super::variables;
 
 impl<'a> Parser<'a> {
     pub fn parse_try_block(&mut self) -> StatementKind {
-        let start = self.current().span;
+        let start = self.current_span();
 
         self.next();
-        utils::skip_left_brace();
+        self.skip_left_brace();
 
-        let body = blocks::parse_multiple_statements_until(state, &TokenKind::RightBrace);
+        let body = self.parse_multiple_statements_until(TokenKind::RightBrace);
 
-        let last_right_brace = utils::skip_right_brace();
+        let last_right_brace = self.skip_right_brace();
 
         let mut catches = Vec::new();
         loop {
-            if self.current().kind != TokenKind::Catch {
+            if self.current_kind() != TokenKind::Catch {
                 break;
             }
 
-            let catch_start = self.current().span;
+            let catch_start = self.current_span();
 
             self.next();
             self.skip_left_parenthesis();
 
             let types = parse_catch_type();
-            let var = if self.current().kind == TokenKind::RightParen {
+            let var = if self.current_kind() == TokenKind::RightParen {
                 None
             } else {
-                Some(variables::parse_simple_variable())
+                Some(self.parse_simple_variable())
             };
 
             self.skip_right_parenthesis();
-            utils::skip_left_brace();
+            self.skip_left_brace();
 
-            let catch_body = blocks::parse_multiple_statements_until(state, &TokenKind::RightBrace);
+            let catch_body = self.parse_multiple_statements_until(TokenKind::RightBrace);
 
-            utils::skip_right_brace();
+            self.skip_right_brace();
 
-            let catch_end = self.current().span;
+            let catch_end = self.current_span();
 
             catches.push(CatchBlock {
                 id: self.state.id(),
@@ -64,16 +64,16 @@ impl<'a> Parser<'a> {
         }
 
         let mut finally = None;
-        if self.current().kind == TokenKind::Finally {
-            let finally_start = self.current().span;
+        if self.current_kind() == TokenKind::Finally {
+            let finally_start = self.current_span();
             self.next();
-            utils::skip_left_brace();
+            self.skip_left_brace();
 
             let finally_body =
-                blocks::parse_multiple_statements_until(state, &TokenKind::RightBrace);
+                self.parse_multiple_statements_until(TokenKind::RightBrace);
 
-            utils::skip_right_brace();
-            let finally_end = self.current().span;
+            self.skip_right_brace();
+            let finally_end = self.current_span();
 
             finally = Some(FinallyBlock {
                 id: self.state.id(),
@@ -107,18 +107,18 @@ impl<'a> Parser<'a> {
 
     #[inline(always)]
     fn parse_catch_type(&mut self) -> CatchType {
-        let id = identifiers::parse_full_name_identifier();
+        let id = self.parse_full_name_identifier();
 
-        if self.current().kind == TokenKind::Pipe {
+        if self.current_kind() == TokenKind::Pipe {
             self.next();
 
             let mut types = vec![id];
 
-            while !state.is_eof() {
-                let id = identifiers::parse_full_name_identifier();
+            while !self.is_eof() {
+                let id = self.parse_full_name_identifier();
                 types.push(id);
 
-                if self.current().kind != TokenKind::Pipe {
+                if self.current_kind() != TokenKind::Pipe {
                     break;
                 }
 

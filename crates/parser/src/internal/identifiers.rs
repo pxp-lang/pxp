@@ -157,10 +157,10 @@ impl<'a> Parser<'a> {
 
     /// Expect an unqualified or qualified identifier such as Foo, Bar or Foo\Bar.
     pub fn parse_name_identifier(&mut self) -> SimpleIdentifier {
-        let name = match self.current().kind {
+        let name = match self.current_kind() {
             TokenKind::Identifier | TokenKind::QualifiedIdentifier => self.current().clone(),
             _ => {
-                let span = self.current().span;
+                let span = self.current_span();
 
                 self.diagnostic(
                     ParserDiagnostic::ExpectedToken {
@@ -171,7 +171,7 @@ impl<'a> Parser<'a> {
                     span,
                 );
 
-                Token::missing(self.current().span)
+                Token::missing(self.current_span())
             }
         };
 

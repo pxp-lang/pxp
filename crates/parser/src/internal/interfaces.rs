@@ -15,7 +15,7 @@ impl<'a> Parser<'a> {
     pub fn parse_interface(&mut self) -> StatementKind {
         let span = self.skip(TokenKind::Interface);
 
-        let name = names::parse_type_name();
+        let name = self.parse_type_name();
 
         let current = self.current();
         let extends = if current.kind == TokenKind::Extends {
@@ -24,8 +24,8 @@ impl<'a> Parser<'a> {
             self.next();
 
             let parents =
-                utils::at_least_one_comma_separated_no_trailing::<Name>(state, &|state| {
-                    names::parse_full_name(state, UseKind::Normal)
+                self.at_least_one_comma_separated_no_trailing::<Name>(&|state| {
+                    self.parse_full_name(UseKind::Normal)
                 });
 
             Some(InterfaceExtends {
@@ -38,18 +38,18 @@ impl<'a> Parser<'a> {
             None
         };
 
-        let attributes = state.get_attributes();
+        let attributes = self.state.get_attributes();
 
-        let left_brace = utils::skip_left_brace();
+        let left_brace = self.skip_left_brace();
         let members = {
             let mut members = Vec::new();
-            while self.current().kind != TokenKind::RightBrace {
-                members.push(parse_classish_member(state, true));
+            while self.current_kind() != TokenKind::RightBrace {
+                members.push(parse_classish_member(true));
             }
 
             members
         };
-        let right_brace = utils::skip_right_brace();
+        let right_brace = self.skip_right_brace();
 
         let body = InterfaceBody {
             id: self.state.id(),

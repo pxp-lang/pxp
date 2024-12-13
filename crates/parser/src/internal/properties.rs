@@ -14,12 +14,12 @@ use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
     pub fn parse_property(&mut self, modifiers: PropertyModifierGroup) -> Property {
-        let ty = data_type::parse_optional_data_type();
+        let ty = self.parse_optional_data_type();
 
         let mut entries = vec![];
         let mut type_checked = false;
         loop {
-            let variable = variables::parse_simple_variable();
+            let variable = self.parse_simple_variable();
 
             if !type_checked {
                 type_checked = true;
@@ -27,7 +27,7 @@ impl<'a> Parser<'a> {
                     self.diagnostic(
                         ParserDiagnostic::StaticPropertyCannotBeReadonly,
                         Severity::Error,
-                        self.current().span,
+                        self.current_span(),
                     );
                 }
 
@@ -90,14 +90,14 @@ impl<'a> Parser<'a> {
                 });
             }
 
-            if self.current().kind == TokenKind::Comma {
+            if self.current_kind() == TokenKind::Comma {
                 self.next();
             } else {
                 break;
             }
         }
 
-        let end = utils::skip_semicolon();
+        let end = self.skip_semicolon();
 
         Property {
             id: self.state.id(),
@@ -117,12 +117,12 @@ impl<'a> Parser<'a> {
     pub fn parse_var_property(&mut self) -> VariableProperty {
         self.skip(TokenKind::Var);
 
-        let ty = data_type::parse_optional_data_type();
+        let ty = self.parse_optional_data_type();
 
         let mut entries: Vec<PropertyEntry> = vec![];
         let mut type_checked = false;
         loop {
-            let variable = variables::parse_simple_variable();
+            let variable = self.parse_simple_variable();
 
             if !type_checked {
                 type_checked = true;
@@ -167,14 +167,14 @@ impl<'a> Parser<'a> {
                 });
             }
 
-            if self.current().kind == TokenKind::Comma {
+            if self.current_kind() == TokenKind::Comma {
                 self.next();
             } else {
                 break;
             }
         }
 
-        let end = utils::skip_semicolon();
+        let end = self.skip_semicolon();
 
         VariableProperty {
             id: self.state.id(),

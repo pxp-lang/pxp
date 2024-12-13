@@ -47,6 +47,7 @@ impl<'a> Parser<'a> {
         }
     }
 
+    /// Return the current span and move on to the next token.
     fn next(&mut self) -> Span {
         let span = self.current_span();
 

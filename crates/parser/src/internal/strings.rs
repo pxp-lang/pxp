@@ -22,10 +22,10 @@ use pxp_token::TokenKind;
 impl<'a> Parser<'a> {
     #[inline(always)]
     pub fn parse_interpolated_string(&mut self) -> Expression {
-        let start_span = self.current().span;
+        let start_span = self.current_span();
         let mut parts = Vec::new();
 
-        while self.current().kind != TokenKind::DoubleQuote {
+        while self.current_kind() != TokenKind::DoubleQuote {
             if let Some(part) = maybe_parse_string_part() {
                 parts.push(part);
             }
@@ -33,7 +33,7 @@ impl<'a> Parser<'a> {
 
         self.next();
 
-        let end_span = self.current().span;
+        let end_span = self.current_span();
 
         Expression::new(
             self.state.id(),
@@ -49,12 +49,12 @@ impl<'a> Parser<'a> {
 
     #[inline(always)]
     pub fn parse_shell_exec_string(&mut self) -> Expression {
-        let start_span = self.current().span;
+        let start_span = self.current_span();
         self.next();
 
         let mut parts = Vec::new();
 
-        while self.current().kind != TokenKind::Backtick {
+        while self.current_kind() != TokenKind::Backtick {
             if let Some(part) = maybe_parse_string_part() {
                 parts.push(part);
             }
@@ -62,7 +62,7 @@ impl<'a> Parser<'a> {
 
         self.next();
 
-        let end_span = self.current().span;
+        let end_span = self.current_span();
 
         Expression::new(
             self.state.id(),
@@ -78,13 +78,13 @@ impl<'a> Parser<'a> {
 
     #[inline(always)]
     pub fn parse_heredoc(&mut self) -> Expression {
-        let span = self.current().span;
+        let span = self.current_span();
         let label = self.current().symbol.as_ref().unwrap();
         self.next();
 
         let mut parts = Vec::new();
 
-        while !matches!(self.current().kind, TokenKind::EndHeredoc) {
+        while !matches!(self.current_kind(), TokenKind::EndHeredoc) {
             if let Some(part) = maybe_parse_string_part() {
                 parts.push(part);
             }
@@ -109,7 +109,7 @@ impl<'a> Parser<'a> {
 
     #[inline(always)]
     pub fn parse_nowdoc(&mut self) -> Expression {
-        let span = self.current().span;
+        let span = self.current_span();
         let label = self.current().clone();
 
         self.next();
@@ -120,7 +120,7 @@ impl<'a> Parser<'a> {
 
         let end = self.current();
 
-        let span = if !state.is_eof() && end.kind != TokenKind::EndNowdoc {
+        let span = if !self.is_eof() && end.kind != TokenKind::EndNowdoc {
             self.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::EndNowdoc],
@@ -153,7 +153,7 @@ impl<'a> Parser<'a> {
     }
 
     fn maybe_parse_string_part(&mut self) -> Option<StringPart> {
-        match &self.current().kind {
+        match &self.current_kind() {
             TokenKind::StringPart => {
                 let s = self.current().clone();
                 let part = if !s.span.is_empty() {
@@ -170,8 +170,8 @@ impl<'a> Parser<'a> {
                 part
             }
             TokenKind::DollarLeftBrace => {
-                let start_span = self.current().span;
-                let variable = variables::parse_dynamic_variable();
+                let start_span = self.current_span();
+                let variable = self.parse_dynamic_variable();
                 let expression = Expression::new(
                     self.state.id(),
                     ExpressionKind::Variable(variable),
@@ -189,7 +189,7 @@ impl<'a> Parser<'a> {
                 // "{$expr}"
                 self.next();
                 let e = create();
-                utils::skip_right_brace();
+                self.skip_right_brace();
                 Some(StringPart::Expression(ExpressionStringPart {
                     id: self.state.id(),
                     span: e.span,
@@ -198,15 +198,15 @@ impl<'a> Parser<'a> {
             }
             TokenKind::Variable => {
                 // "$expr", "$expr[0]", "$expr[name]", "$expr->a"
-                let variable_span = self.current().span;
-                let variable = ExpressionKind::Variable(variables::parse_dynamic_variable());
+                let variable_span = self.current_span();
+                let variable = ExpressionKind::Variable(self.parse_dynamic_variable());
                 let variable =
                     Expression::new(self.state.id(), variable, variable_span, CommentGroup::default());
 
                 let current = self.current();
                 let e = match &current.kind {
                     TokenKind::LeftBracket => {
-                        let left_bracket = utils::skip_left_bracket();
+                        let left_bracket = self.skip_left_bracket();
 
                         let current = self.current();
                         let index_start_span = current.span;
@@ -227,7 +227,7 @@ impl<'a> Parser<'a> {
                                 self.next();
                                 let literal = self.current();
                                 if let TokenKind::LiteralInteger = &literal.kind {
-                                    let span = self.current().span;
+                                    let span = self.current_span();
                                     self.next();
                                     let kind = ExpressionKind::Literal(Literal::new(
                                         self.state.id(),
@@ -282,7 +282,7 @@ impl<'a> Parser<'a> {
                                 ))
                             }
                             TokenKind::Variable => ExpressionKind::Variable(
-                                Variable::SimpleVariable(variables::parse_simple_variable()),
+                                Variable::SimpleVariable(self.parse_simple_variable()),
                             ),
                             _ => {
                                 self.diagnostic(
@@ -314,7 +314,7 @@ impl<'a> Parser<'a> {
                             CommentGroup::default(),
                         );
 
-                        let right_bracket = utils::skip_right_bracket();
+                        let right_bracket = self.skip_right_bracket();
 
                         ExpressionKind::ArrayIndex(ArrayIndexExpression {
                             id: self.state.id(),
@@ -330,7 +330,7 @@ impl<'a> Parser<'a> {
 
                         self.next();
 
-                        let identifier = identifiers::parse_identifier_maybe_reserved();
+                        let identifier = self.parse_identifier_maybe_reserved();
                         let id_span = identifier.span;
                         let kind =
                             ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier));
@@ -349,7 +349,7 @@ impl<'a> Parser<'a> {
                         let span = current.span;
                         self.next();
 
-                        let ident = identifiers::parse_identifier_maybe_reserved();
+                        let ident = self.parse_identifier_maybe_reserved();
                         let ident_span = ident.span;
                         let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(ident));
 
@@ -382,7 +382,7 @@ impl<'a> Parser<'a> {
                 }))
             }
             _ => {
-                let span = self.current().span;
+                let span = self.current_span();
 
                 self.diagnostic(
                     ParserDiagnostic::ExpectedToken {

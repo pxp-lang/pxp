@@ -6,8 +6,6 @@ use pxp_token::TokenKind;
 
 use crate::{state::State, Parser, ParserDiagnostic};
 
-use super::identifiers::{self, is_reserved_identifier, is_soft_reserved_identifier};
-
 impl<'a> Parser<'a> {
     pub fn parse_full_name(&mut self, kind: UseKind) -> Name {
         let current = self.current();
@@ -44,7 +42,7 @@ impl<'a> Parser<'a> {
     pub fn parse_type_name_maybe_soft_reserved(&mut self) -> Name {
         let current = self.current();
 
-        if is_soft_reserved_identifier(&current.kind) {
+        if self.is_soft_reserved_identifier(&current.kind) {
             let symbol = current.symbol.as_ref().unwrap();
             let resolved = state.join_with_namespace(symbol);
 
@@ -52,7 +50,7 @@ impl<'a> Parser<'a> {
 
             Name::resolved(self.state.id(), resolved, symbol.clone(), current.span)
         } else {
-            parse_type_name()
+            self.parse_type_name()
         }
     }
 
@@ -64,7 +62,7 @@ impl<'a> Parser<'a> {
 
             state.maybe_resolve_identifier(current, kind)
         } else {
-            parse_full_name(state, kind)
+            parse_full_name(kind)
         }
     }
 
@@ -130,7 +128,7 @@ impl<'a> Parser<'a> {
 
     // Names inside of a `use` statement are always resolved.
     pub fn parse_use_name(&mut self) -> Name {
-        let identifier = identifiers::parse_full_type_name_identifier();
+        let identifier = self.parse_full_type_name_identifier();
 
         if identifier.symbol.is_empty() {
             return Name::missing(self.state.id(), identifier.span);

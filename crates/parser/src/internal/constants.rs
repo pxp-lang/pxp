@@ -1,24 +1,17 @@
-use crate::expressions;
-use crate::internal::identifiers;
-use crate::internal::utils;
-use crate::state::State;
 use crate::Parser;
 use pxp_ast::*;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
-use super::data_type::parse_data_type;
-use super::names;
-
 impl<'a> Parser<'a> {
     pub fn parse_constant(&mut self) -> ConstantStatement {
-        let comments = state.comments();
+        let comments = self.state.comments();
         let start = self.skip(TokenKind::Const);
 
         let mut entries = vec![];
 
         loop {
-            let name = names::parse_constant_identifier();
+            let name = self.parse_constant_identifier();
             let span = self.skip(TokenKind::Equals);
             let value = self.parse_expression();
 
@@ -30,14 +23,14 @@ impl<'a> Parser<'a> {
                 value,
             });
 
-            if self.current().kind == TokenKind::Comma {
+            if self.current_kind() == TokenKind::Comma {
                 self.next();
             } else {
                 break;
             }
         }
 
-        let end = utils::skip_semicolon();
+        let end = self.skip_semicolon();
         let span = Span::combine(start, end);
 
         ConstantStatement {
@@ -54,13 +47,12 @@ impl<'a> Parser<'a> {
         &mut self,
         modifiers: ConstantModifierGroup,
     ) -> ClassishConstant {
-        let attributes = state.get_attributes();
-
-        let comments = state.comments();
+        let attributes = self.state.get_attributes();
+        let comments = self.state.comments();
         let start = self.skip(TokenKind::Const);
 
-        let data_type = if state.peek().kind == TokenKind::Identifier {
-            Some(parse_data_type())
+        let data_type = if self.peek_kind() == TokenKind::Identifier {
+            Some(self.parse_data_type())
         } else {
             None
         };
@@ -68,7 +60,7 @@ impl<'a> Parser<'a> {
         let mut entries = vec![];
 
         loop {
-            let name = identifiers::parse_identifier_maybe_reserved();
+            let name = self.parse_identifier_maybe_reserved();
             let span = self.skip(TokenKind::Equals);
             let value = self.parse_expression();
 
@@ -80,14 +72,14 @@ impl<'a> Parser<'a> {
                 value,
             });
 
-            if self.current().kind == TokenKind::Comma {
+            if self.current_kind() == TokenKind::Comma {
                 self.next();
             } else {
                 break;
             }
         }
 
-        let end = utils::skip_semicolon();
+        let end = self.skip_semicolon();
 
         ClassishConstant {
             id: self.state.id(),

@@ -93,7 +93,7 @@ impl<'a> Parser<'a> {
 
                 let expr = self.parse_expression();
 
-                let end = utils::skip_right_brace();
+                let end = self.skip_right_brace();
 
                 Variable::BracedVariableVariable(BracedVariableVariable {
                     id: self.state.id(),
@@ -110,7 +110,7 @@ impl<'a> Parser<'a> {
 
                 let expr = self.parse_expression();
 
-                let end = utils::skip_right_brace();
+                let end = self.skip_right_brace();
 
                 Variable::BracedVariableVariable(BracedVariableVariable {
                     id: self.state.id(),
@@ -124,7 +124,7 @@ impl<'a> Parser<'a> {
                 let span = current.span;
                 self.next();
 
-                match self.current().kind {
+                match self.current_kind() {
                     TokenKind::Dollar | TokenKind::Variable => {
                         let variable = parse_dynamic_variable();
 

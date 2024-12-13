@@ -1,13 +1,4 @@
-use crate::internal::attributes;
-use crate::internal::constants::parse_classish_constant;
-use crate::internal::functions::parse_method;
 use crate::internal::functions::Method;
-use crate::internal::modifiers;
-use crate::internal::parameters;
-use crate::internal::properties;
-use crate::internal::traits;
-use crate::internal::utils;
-use crate::state::State;
 use crate::Parser;
 use crate::ParserDiagnostic;
 use pxp_ast::Expression;
@@ -21,22 +12,18 @@ use pxp_span::Span;
 use pxp_span::Spanned;
 use pxp_token::TokenKind;
 
-use super::names;
-
 impl<'a> Parser<'a> {
     pub fn parse_class(&mut self) -> StatementKind {
-        let attributes = state.get_attributes();
+        let attributes = self.state.get_attributes();
 
-        let modifiers = modifiers::collect_modifiers();
-        let modifiers = modifiers::parse_class_group(state, modifiers);
+        let modifiers = self.collect_modifiers();
+        let modifiers = self.parse_class_group(modifiers);
         let class = self.skip(TokenKind::Class);
-        let name = names::parse_type_name();
-        let current = self.current();
-        let extends = if current.kind == TokenKind::Extends {
-            let span = current.span;
-
-            self.next();
-            let parent = names::parse_full_name(state, UseKind::Normal);
+        let name = self.parse_type_name();
+        
+        let extends = if self.current_kind() == TokenKind::Extends {
+            let span = self.next();
+            let parent = self.parse_full_name(UseKind::Normal);
 
             Some(ClassExtends {
                 id: self.state.id(),
@@ -48,15 +35,12 @@ impl<'a> Parser<'a> {
             None
         };
 
-        let current = self.current();
-        let implements = if current.kind == TokenKind::Implements {
-            let span = current.span;
-
-            self.next();
+        let implements = if self.current_kind() == TokenKind::Implements {
+            let span = self.next();
 
             let interfaces =
-                utils::at_least_one_comma_separated_no_trailing::<Name>(state, &|state| {
-                    names::parse_full_name(state, UseKind::Normal)
+                self.at_least_one_comma_separated_no_trailing::<Name>(|parser| {
+                    parser.parse_full_name(UseKind::Normal)
                 });
 
             Some(ClassImplements {
@@ -70,20 +54,23 @@ impl<'a> Parser<'a> {
         };
 
         let has_abstract = modifiers.has_abstract();
-        let left_brace = utils::skip_left_brace();
+        let left_brace = self.skip_left_brace();
+
         let members = {
             let mut members = Vec::new();
-            while self.current().kind != TokenKind::RightBrace {
-                if state.is_eof() {
+
+            while self.current_kind() != TokenKind::RightBrace {
+                if self.is_eof() {
                     break;
                 }
 
-                members.push(parse_classish_member(state, has_abstract));
+                members.push(self.parse_classish_member(has_abstract));
             }
 
             members
         };
-        let right_brace = utils::skip_right_brace();
+
+        let right_brace = self.skip_right_brace();
 
         let body = ClassBody {
             id: self.state.id(),
@@ -120,24 +107,21 @@ impl<'a> Parser<'a> {
 
         let start_span = new;
 
-        attributes::gather_attributes();
+        self.gather_attributes();
 
-        let attributes = state.get_attributes();
+        let attributes = self.state.get_attributes();
         let class = self.skip(TokenKind::Class);
         let class_span = class;
 
-        let arguments = if self.current().kind == TokenKind::LeftParen {
-            Some(parameters::parse_argument_list())
+        let arguments = if self.current_kind() == TokenKind::LeftParen {
+            Some(self.parse_argument_list())
         } else {
             None
         };
 
-        let current = self.current();
-        let extends = if current.kind == TokenKind::Extends {
-            self.next();
-
-            let extends = current.span;
-            let parent = names::parse_full_name(state, UseKind::Normal);
+        let extends = if self.current_kind() == TokenKind::Extends {
+            let extends = self.next();
+            let parent = self.parse_full_name(UseKind::Normal);
 
             Some(ClassExtends {
                 id: self.state.id(),
@@ -149,14 +133,11 @@ impl<'a> Parser<'a> {
             None
         };
 
-        let current = self.current();
-        let implements = if current.kind == TokenKind::Implements {
-            self.next();
-
-            let implements = current.span;
+        let implements = if self.current_kind() == TokenKind::Implements {
+            let implements = self.next();
             let interfaces =
-                utils::at_least_one_comma_separated_no_trailing::<Name>(state, &|state| {
-                    names::parse_full_name(state, UseKind::Normal)
+                self.at_least_one_comma_separated_no_trailing::<Name>(|parser| {
+                    parser.parse_full_name(UseKind::Normal)
                 });
 
             Some(ClassImplements {
@@ -169,15 +150,15 @@ impl<'a> Parser<'a> {
             None
         };
 
-        let left_brace = utils::skip_left_brace();
+        let left_brace = self.skip_left_brace();
         let members = {
             let mut members = Vec::new();
-            while self.current().kind != TokenKind::RightBrace {
-                members.push(parse_classish_member(state, false));
+            while self.current_kind() != TokenKind::RightBrace {
+                members.push(self.parse_classish_member(false));
             }
             members
         };
-        let right_brace = utils::skip_right_brace();
+        let right_brace = self.skip_right_brace();
         let span = Span::combine(left_brace, right_brace);
 
         let body = AnonymousClassBody {
@@ -205,62 +186,62 @@ impl<'a> Parser<'a> {
             CommentGroup::default(),
         );
 
+        let span = Span::combine(new, arguments.span());
+
         Expression::new(
             self.state.id(),
             ExpressionKind::New(NewExpression {
                 id: self.state.id(),
-                span: Span::combine(new, arguments.span()),
+                span,
                 target: Box::new(anonymous_class),
                 new,
                 arguments,
             }),
-            Span::new(start_span.start, state.previous().span.end),
+            span,
             CommentGroup::default(),
         )
     }
 
     pub fn parse_classish_member(&mut self, has_abstract: bool) -> ClassishMember {
-        let has_attributes = attributes::gather_attributes();
+        let has_attributes = self.gather_attributes();
 
-        if !has_attributes && self.current().kind == TokenKind::Use {
-            return ClassishMember::TraitUsage(traits::parse_trait_usage());
+        if !has_attributes && self.current_kind() == TokenKind::Use {
+            return ClassishMember::TraitUsage(self.parse_trait_usage());
         }
 
-        if self.current().kind == TokenKind::Var {
-            return ClassishMember::VariableProperty(properties::parse_var_property());
+        if self.current_kind() == TokenKind::Var {
+            return ClassishMember::VariableProperty(self.parse_var_property());
         }
 
-        let modifiers = modifiers::collect_modifiers();
+        let modifiers = self.collect_modifiers();
 
         if modifiers.is_empty()
-            && !matches!(self.current().kind, TokenKind::Const | TokenKind::Function)
+            && !matches!(self.current_kind(), TokenKind::Const | TokenKind::Function)
         {
-            let current = self.current();
-
             self.diagnostic(
                 ParserDiagnostic::UnexpectedToken {
-                    token: current.clone(),
+                    token: self.current().to_owned(),
                 },
                 Severity::Error,
-                current.span,
+                self.current_span(),
             );
 
-            self.next();
+            let span = self.next();
 
             return ClassishMember::Missing(MissingClassishMember {
                 id: self.state.id(),
-                span: current.span,
+                span,
             });
         }
 
-        if self.current().kind == TokenKind::Const {
-            let modifiers = modifiers::parse_constant_group(state, modifiers);
-            return ClassishMember::Constant(parse_classish_constant(state, modifiers));
+        if self.current_kind() == TokenKind::Const {
+            let modifiers = self.parse_constant_group(modifiers);
+            return ClassishMember::Constant(self.parse_classish_constant(modifiers));
         }
 
-        if self.current().kind == TokenKind::Function {
-            let modifiers = modifiers::parse_method_group(state, modifiers);
-            let method = parse_method(state, modifiers);
+        if self.current_kind() == TokenKind::Function {
+            let modifiers = self.parse_method_group(modifiers);
+            let method = self.parse_method(modifiers);
 
             return match method {
                 Method::Abstract(method) => {
@@ -291,8 +272,8 @@ impl<'a> Parser<'a> {
         }
 
         // e.g: public static
-        let modifiers = modifiers::parse_property_group(state, modifiers);
+        let modifiers = self.parse_property_group(modifiers);
 
-        ClassishMember::Property(properties::parse_property(state, modifiers))
+        ClassishMember::Property(self.parse_property(modifiers))
     }
 }

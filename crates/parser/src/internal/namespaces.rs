@@ -18,7 +18,7 @@ use pxp_token::TokenKind;
 impl<'a> Parser<'a> {
     pub fn parse_namespace(&mut self) -> StatementKind {
         let start = self.skip(TokenKind::Namespace);
-        let name = identifiers::parse_optional_name_identifier();
+        let name = self.parse_optional_name_identifier();
 
         let current = self.current();
 
@@ -32,7 +32,7 @@ impl<'a> Parser<'a> {
                     );
                 }
 
-                return parse_unbraced_namespace(state, start, name.clone());
+                return parse_unbraced_namespace(start, name.clone());
             }
         }
 
@@ -44,7 +44,7 @@ impl<'a> Parser<'a> {
                     current.span,
                 );
 
-                parse_braced_namespace(state, start, name)
+                parse_braced_namespace(start, name)
             }
             Some(NamespaceType::Braced) if state.namespace().is_some() => {
                 self.diagnostic(
@@ -53,22 +53,22 @@ impl<'a> Parser<'a> {
                     current.span,
                 );
 
-                parse_braced_namespace(state, start, name)
+                parse_braced_namespace(start, name)
             }
-            _ => parse_braced_namespace(state, start, name),
+            _ => parse_braced_namespace(start, name),
         }
     }
 
     fn parse_unbraced_namespace(&mut self, start: Span, name: SimpleIdentifier) -> StatementKind {
-        let end = utils::skip_semicolon();
+        let end = self.skip_semicolon();
 
-        let statements = scoped!(state, Scope::Namespace(name.symbol.clone()), {
+        let statements = scoped!(Scope::Namespace(name.symbol.clone()), {
             let mut statements = Block::new();
 
-            while self.current().kind != TokenKind::Namespace && !state.is_eof() {
+            while self.current_kind() != TokenKind::Namespace && !self.is_eof() {
                 // NOTE: If we encounter a right-brace here, it's possible that we're in a nested namespace.
                 // We should check to see if the previous scope is a BracedNamespace and break out of this scope.
-                if self.current().kind == TokenKind::RightBrace {
+                if self.current_kind() == TokenKind::RightBrace {
                     if let Some(Scope::BracedNamespace(_)) = state.previous_scope() {
                         break;
                     }
@@ -104,14 +104,14 @@ impl<'a> Parser<'a> {
             state,
             Scope::BracedNamespace(name.as_ref().map(|n| n.symbol.clone())),
             {
-                let start = utils::skip_left_brace();
+                let start = self.skip_left_brace();
 
                 let mut statements = Block::new();
-                while self.current().kind != TokenKind::RightBrace && !state.is_eof() {
+                while self.current_kind() != TokenKind::RightBrace && !self.is_eof() {
                     statements.push(crate::top_level_statement());
                 }
 
-                let end = utils::skip_right_brace();
+                let end = self.skip_right_brace();
 
                 BracedNamespaceBody {
                     id: self.state.id(),

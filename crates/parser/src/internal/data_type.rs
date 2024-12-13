@@ -9,58 +9,58 @@ use pxp_type::Type;
 
 impl<'a> Parser<'a> {
     pub fn parse_data_type(&mut self) -> DataType {
-        let start = self.current().span;
+        let start = self.current_span();
 
-        let kind = if state.is_in_docblock() {
-            parse_docblock_type()
-        } else if self.current().kind == TokenKind::Question {
-            parse_nullable_type()
-        } else if self.current().kind == TokenKind::LeftParen {
-            parse_dnf_type()
+        let (kind, span) = if self.state.is_in_docblock() {
+            self.parse_docblock_type()
+        } else if self.current_kind() == TokenKind::Question {
+            self.parse_nullable_type()
+        } else if self.current_kind() == TokenKind::LeftParen {
+            self.parse_dnf_type()
         } else {
-            let ty = parse_simple_data_type();
+            let ty = self.parse_simple_data_type();
 
-            if self.current().kind == TokenKind::Pipe {
-                parse_union_type(state, ty, false)
-            } else if self.current().kind == TokenKind::Ampersand
+            if self.current_kind() == TokenKind::Pipe {
+                self.parse_union_type(ty, false)
+            } else if self.current_kind() == TokenKind::Ampersand
                 && !matches!(
-                    state.peek().kind,
+                    self.peek_kind(),
                     TokenKind::Variable | TokenKind::Ellipsis | TokenKind::Ampersand
                 )
             {
-                parse_intersection_type(state, ty, false)
+                self.parse_intersection_type(ty, false)
             } else {
                 ty
             }
         };
 
-        let end = state.previous().span;
+        let span = start.join(span);
 
-        DataType::new(self.state.id(), kind, Span::new(start.start, end.end))
+        DataType::new(self.state.id(), kind, span)
     }
 
     pub fn parse_optional_data_type(&mut self) -> Option<DataType> {
-        let start = self.current().span;
-        let kind = if state.is_in_docblock() {
-            parse_docblock_type()
-        } else if self.current().kind == TokenKind::Question {
-            parse_nullable_type()
-        } else if self.current().kind == TokenKind::LeftParen {
-            parse_dnf_type()
+        let start = self.current_span();
+        let (kind, span) = if self.state.is_in_docblock() {
+            self.parse_docblock_type()
+        } else if self.current_kind() == TokenKind::Question {
+            self.parse_nullable_type()
+        } else if self.current_kind() == TokenKind::LeftParen {
+            self.parse_dnf_type()
         } else {
-            let ty = parse_optional_simple_data_type();
+            let ty = self.parse_optional_simple_data_type();
 
             match ty {
                 Some(ty) => {
-                    if self.current().kind == TokenKind::Pipe {
-                        parse_union_type(state, ty, false)
-                    } else if self.current().kind == TokenKind::Ampersand
+                    if self.current_kind() == TokenKind::Pipe {
+                        self.parse_union_type(ty, false)
+                    } else if self.current_kind() == TokenKind::Ampersand
                         && !matches!(
-                            state.peek().kind,
+                            self.peek_kind(),
                             TokenKind::Variable | TokenKind::Ellipsis | TokenKind::Ampersand
                         )
                     {
-                        parse_intersection_type(state, ty, false)
+                        self.parse_intersection_type(ty, false)
                     } else {
                         ty
                     }
@@ -69,33 +69,29 @@ impl<'a> Parser<'a> {
             }
         };
 
-        let end = state.previous().span;
+        let span = start.join(span);
 
         Some(DataType::new(
             self.state.id(),
             kind,
-            Span::new(start.start, end.end),
+            span,
         ))
     }
 
     // Special type parsing logic for DocBlock comments, heavily based on the phpstan/phpdoc-parser package.
     fn parse_docblock_type(&mut self) -> Type<Name> {
-        let current = self.current();
-
-        match current.kind {
-            TokenKind::Question => parse_docblock_nullable(),
+        match self.current_kind() {
+            TokenKind::Question => self.parse_docblock_nullable(),
             _ => {
-                let r#type = parse_docblock_atomic();
+                let r#type = self.parse_docblock_atomic();
 
                 if r#type == Type::Missing {
                     return Type::Missing;
                 }
 
-                let current = self.current();
-
-                match current.kind {
-                    TokenKind::Pipe => parse_docblock_union(state, r#type),
-                    TokenKind::Ampersand => parse_docblock_intersection(state, r#type),
+                match self.current_kind() {
+                    TokenKind::Pipe => self.parse_docblock_union(r#type),
+                    TokenKind::Ampersand => self.parse_docblock_intersection(r#type),
                     _ => r#type,
                 }
             }
@@ -105,7 +101,7 @@ impl<'a> Parser<'a> {
     fn parse_docblock_nullable(&mut self) -> Type<Name> {
         self.next();
 
-        let inner = parse_docblock_atomic();
+        let inner = self.parse_docblock_atomic();
 
         if inner == Type::Missing {
             return Type::Missing;
@@ -117,11 +113,11 @@ impl<'a> Parser<'a> {
     fn parse_docblock_union(&mut self, lhs: Type<Name>) -> Type<Name> {
         let mut types = vec![lhs];
 
-        while let TokenKind::Pipe = self.current().kind {
+        while let TokenKind::Pipe = self.current_kind() {
             self.next();
 
             // FIXME: Warn about invalid types inside of union.
-            types.push(parse_docblock_atomic());
+            types.push(self.parse_docblock_atomic());
         }
 
         Type::Union(types)
@@ -130,13 +126,13 @@ impl<'a> Parser<'a> {
     fn parse_docblock_subparse_union(&mut self, lhs: Type<Name>) -> Type<Name> {
         let mut types = vec![lhs];
 
-        while let TokenKind::Pipe = self.current().kind {
+        while let TokenKind::Pipe = self.current_kind() {
             self.next();
 
-            state.skip_doc_eol();
+            self.state.skip_doc_eol();
             // FIXME: Warn about invalid types inside of union.
-            types.push(parse_docblock_atomic());
-            state.skip_doc_eol();
+            types.push(self.parse_docblock_atomic());
+            self.state.skip_doc_eol();
         }
 
         Type::Union(types)
@@ -145,11 +141,11 @@ impl<'a> Parser<'a> {
     fn parse_docblock_intersection(&mut self, lhs: Type<Name>) -> Type<Name> {
         let mut types = vec![lhs];
 
-        while let TokenKind::Ampersand = self.current().kind {
+        while let TokenKind::Ampersand = self.current_kind() {
             self.next();
 
             // FIXME: Warn about invalid types inside of intersection.
-            types.push(parse_docblock_atomic());
+            types.push(self.parse_docblock_atomic());
         }
 
         Type::Intersection(types)
@@ -158,13 +154,13 @@ impl<'a> Parser<'a> {
     fn parse_docblock_subparse_intersection(&mut self, lhs: Type<Name>) -> Type<Name> {
         let mut types = vec![lhs];
 
-        while let TokenKind::Ampersand = self.current().kind {
+        while let TokenKind::Ampersand = self.current_kind() {
             self.next();
 
-            state.skip_doc_eol();
+            self.state.skip_doc_eol();
             // FIXME: Warn about invalid types inside of intersection.
-            types.push(parse_docblock_atomic());
-            state.skip_doc_eol();
+            types.push(self.parse_docblock_atomic());
+            self.state.skip_doc_eol();
         }
 
         Type::Intersection(types)
@@ -174,7 +170,7 @@ impl<'a> Parser<'a> {
         self.diagnostic(
             ParserDiagnostic::MissingType,
             Severity::Warning,
-            self.current().span,
+            self.current_span(),
         );
 
         Type::Missing
@@ -183,49 +179,49 @@ impl<'a> Parser<'a> {
     fn parse_docblock_atomic(&mut self) -> Type<Name> {
         let current = self.current();
 
-        match current.kind {
+        match self.current_kind() {
             TokenKind::LeftParen => {
                 self.next();
-                state.skip_doc_eol();
+                self.state.skip_doc_eol();
 
-                let inner = parse_docblock_subparse();
+                let inner = self.parse_docblock_subparse();
 
                 if inner == Type::Missing {
-                    return parse_docblock_missing_type();
+                    return self.parse_docblock_missing_type();
                 }
 
-                state.skip_doc_eol();
+                self.state.skip_doc_eol();
 
-                if self.current().kind != TokenKind::RightParen {
+                if self.current_kind() != TokenKind::RightParen {
                     self.diagnostic(
                         ParserDiagnostic::ExpectedTokenExFound {
                             expected: vec![TokenKind::RightParen],
                         },
                         Severity::Warning,
-                        self.current().span,
+                        self.current_span(),
                     );
                 } else {
                     self.next();
                 }
 
-                if self.current().kind == TokenKind::LeftBracket {
-                    parse_docblock_array_or_offset_access(state, inner)
+                if self.current_kind() == TokenKind::LeftBracket {
+                    self.parse_docblock_array_or_offset_access(inner)
                 } else {
                     inner
                 }
             }
-            TokenKind::Variable if current.symbol.as_ref().is_some_and(|sym| sym == b"$this") => {
+            TokenKind::Variable if self.current_symbol() == b"$this" => {
                 self.next();
 
-                if self.current().kind == TokenKind::LeftBracket {
-                    parse_docblock_array_or_offset_access(state, Type::This)
+                if self.current_kind() == TokenKind::LeftBracket {
+                    self.parse_docblock_array_or_offset_access(Type::This)
                 } else {
                     Type::This
                 }
             }
             _ => {
-                let r#type = parse_optional_simple_data_type()
-                    .unwrap_or_else(|| parse_docblock_missing_type());
+                let r#type = self.parse_optional_simple_data_type()
+                    .unwrap_or_else(|| self.parse_docblock_missing_type());
 
                 if r#type == Type::Missing {
                     return Type::Missing;
@@ -235,17 +231,17 @@ impl<'a> Parser<'a> {
                 let current = self.current();
 
                 if current.kind == TokenKind::LessThan {
-                    let mut r#type = parse_docblock_generic(state, r#type);
+                    let mut r#type = self.parse_docblock_generic(r#type);
 
-                    if self.current().kind == TokenKind::LeftBracket {
-                        r#type = parse_docblock_array_or_offset_access(state, r#type);
+                    if self.current_kind() == TokenKind::LeftBracket {
+                        r#type = self.parse_docblock_array_or_offset_access(r#type);
                     }
 
                     r#type
                 } else if current.kind == TokenKind::LeftParen {
                     todo!("parse docblock callable type");
                 } else if current.kind == TokenKind::LeftBracket {
-                    parse_docblock_array_or_offset_access(state, r#type)
+                    self.parse_docblock_array_or_offset_access(r#type)
                 } else {
                     r#type
                 }
@@ -258,26 +254,26 @@ impl<'a> Parser<'a> {
         let mut generic_types = vec![];
         let mut is_first = true;
 
-        while is_first || self.current().kind == TokenKind::Comma {
-            if self.current().kind == TokenKind::Comma {
+        while is_first || self.current_kind() == TokenKind::Comma {
+            if self.current_kind() == TokenKind::Comma {
                 self.next();
             }
 
-            state.skip_doc_eol();
+            self.state.skip_doc_eol();
 
-            if !is_first && self.current().kind == TokenKind::GreaterThan {
+            if !is_first && self.current_kind() == TokenKind::GreaterThan {
                 break;
             }
 
             is_first = false;
 
             // FIXME: Parse variance keywords and wildcards here too.
-            generic_types.push(parse_docblock_type());
+            generic_types.push(self.parse_docblock_type());
 
-            state.skip_doc_eol();
+            self.state.skip_doc_eol();
         }
 
-        if self.current().kind == TokenKind::GreaterThan {
+        if self.current_kind() == TokenKind::GreaterThan {
             self.next();
         } else {
             self.diagnostic(
@@ -285,7 +281,7 @@ impl<'a> Parser<'a> {
                     expected: vec![TokenKind::GreaterThan],
                 },
                 Severity::Warning,
-                self.current().span,
+                self.current_span(),
             );
         }
 
@@ -295,12 +291,12 @@ impl<'a> Parser<'a> {
     fn parse_docblock_array_or_offset_access(&mut self, lhs: Type<Name>) -> Type<Name> {
         let mut r#type = lhs;
 
-        while let TokenKind::LeftBracket = self.current().kind {
+        while let TokenKind::LeftBracket = self.current_kind() {
             self.next();
 
             // FIXME: Add offset type parsing here.
 
-            if self.current().kind == TokenKind::RightBracket {
+            if self.current_kind() == TokenKind::RightBracket {
                 self.next();
 
                 r#type = Type::TypedArray(Box::new(Type::array_key_types()), Box::new(r#type));
@@ -311,34 +307,28 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_docblock_subparse(&mut self) -> Type<Name> {
-        let current = self.current();
-
-        match &current.kind {
-            TokenKind::Question => parse_docblock_nullable(),
+        match self.current_kind() {
+            TokenKind::Question => self.parse_docblock_nullable(),
             TokenKind::Variable => todo!(),
             _ => {
-                let r#type = parse_docblock_atomic();
+                let r#type = self.parse_docblock_atomic();
 
                 if r#type == Type::Missing {
                     return Type::Missing;
                 }
 
-                let current = self.current();
-
-                if current.kind == TokenKind::Identifier
-                    && current.symbol.as_ref().is_some_and(|sym| sym == b"is")
+                if self.current_kind() == TokenKind::Identifier
+                    && self.current_symbol() == b"is"
                 {
                     todo!("parse docblock conditional type");
                 }
 
-                state.skip_doc_eol();
+                self.state.skip_doc_eol();
 
-                let current = self.current();
-
-                if current.kind == TokenKind::Pipe {
-                    parse_docblock_subparse_union(state, r#type)
-                } else if current.kind == TokenKind::Ampersand {
-                    parse_docblock_subparse_intersection(state, r#type)
+                if self.current_kind() == TokenKind::Pipe {
+                    self.parse_docblock_subparse_union(r#type)
+                } else if self.current_kind() == TokenKind::Ampersand {
+                    self.parse_docblock_subparse_intersection(r#type)
                 } else {
                     r#type
                 }
@@ -349,30 +339,30 @@ impl<'a> Parser<'a> {
     fn parse_dnf_type(&mut self) -> Type<Name> {
         // (A|B|..)&C.. or (A&B&..)|C..
         self.next();
-        let ty = parse_simple_data_type();
+        let ty = self.parse_simple_data_type();
 
-        match self.current().kind {
+        match self.current_kind() {
             TokenKind::Pipe => {
-                let union = parse_union_type(state, ty, true);
+                let union = self.parse_union_type(ty, true);
 
                 self.skip_right_parenthesis();
 
-                parse_intersection_type(state, union, false)
+                self.parse_intersection_type(union, false)
             }
             TokenKind::Ampersand => {
-                let intersection = parse_intersection_type(state, ty, true);
+                let intersection = self.parse_intersection_type(ty, true);
 
                 self.skip_right_parenthesis();
 
-                parse_union_type(state, intersection, false)
+                self.parse_union_type(intersection, false)
             }
             _ => {
                 self.diagnostic(
                     ParserDiagnostic::UnexpectedToken {
-                        token: self.current().clone(),
+                        token: self.current().to_owned(),
                     },
                     Severity::Error,
-                    self.current().span,
+                    self.current_span(),
                 );
 
                 Type::Missing
@@ -381,9 +371,7 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_optional_simple_data_type(&mut self) -> Option<Type<Name>> {
-        let current = self.current();
-
-        match &current.kind {
+        match self.current_kind() {
             TokenKind::Array => {
                 self.next();
 
@@ -428,11 +416,11 @@ impl<'a> Parser<'a> {
                 self.next();
 
                 Some(Type::Named(
-                    state.maybe_resolve_identifier(current, UseKind::Normal),
+                    self.state.maybe_resolve_identifier(&self.current(), UseKind::Normal),
                 ))
             }
             TokenKind::Identifier => {
-                let id = current.symbol.as_ref().unwrap();
+                let id = self.current_symbol_as_bytestring();
                 self.next();
 
                 let name = &id[..];
@@ -453,27 +441,26 @@ impl<'a> Parser<'a> {
                     b"array" => Some(Type::Array),
                     b"callable" => Some(Type::Callable),
                     _ => Some(Type::Named(
-                        state.maybe_resolve_identifier(current, UseKind::Normal),
+                        self.state.maybe_resolve_identifier(&self.current(), UseKind::Normal),
                     )),
                 }
             }
             TokenKind::FullyQualifiedIdentifier => {
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap();
-                let resolved = state.strip_leading_namespace_qualifier(symbol);
+                let span = self.next();
+                let symbol = self.current_symbol_as_bytestring();
+                let resolved = self.state.strip_leading_namespace_qualifier(&symbol);
 
                 Some(Type::Named(Name::resolved(
                     self.state.id(),
                     resolved,
-                    symbol.clone(),
-                    current.span,
+                    symbol,
+                    span,
                 )))
             }
             TokenKind::QualifiedIdentifier => {
                 self.next();
 
-                let name = state.maybe_resolve_identifier(current, UseKind::Normal);
+                let name = self.state.maybe_resolve_identifier(&self.current(), UseKind::Normal);
 
                 Some(Type::Named(name))
             }
@@ -482,13 +469,13 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_simple_data_type(&mut self) -> Type<Name> {
-        match parse_optional_simple_data_type() {
+        match self.parse_optional_simple_data_type() {
             Some(ty) => ty,
             None => {
                 self.diagnostic(
                     ParserDiagnostic::MissingType,
                     Severity::Error,
-                    self.current().span,
+                    self.current_span(),
                 );
 
                 Type::Missing
@@ -497,17 +484,15 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_nullable_type(&mut self) -> Type<Name> {
-        let current = self.current();
+        let span = self.next();
 
-        self.next();
-
-        let ty = parse_simple_data_type();
+        let ty = self.parse_simple_data_type();
 
         if ty.standalone() {
             self.diagnostic(
                 ParserDiagnostic::StandaloneTypeUsedInNullableType,
                 Severity::Error,
-                current.span,
+                span,
             );
         }
 
@@ -519,7 +504,7 @@ impl<'a> Parser<'a> {
             self.diagnostic(
                 ParserDiagnostic::StandaloneTypeUsedInUnionType,
                 Severity::Error,
-                self.current().span,
+                self.current_span(),
             );
         }
 
@@ -552,14 +537,14 @@ impl<'a> Parser<'a> {
 
                 self.next();
 
-                let other = parse_simple_data_type();
-                let ty = parse_intersection_type(state, other, true);
+                let other = self.parse_simple_data_type();
+                let ty = self.parse_intersection_type(other, true);
 
                 self.skip_right_parenthesis();
 
                 ty
             } else {
-                let ty = parse_simple_data_type();
+                let ty = self.parse_simple_data_type();
                 if ty.standalone() {
                     self.diagnostic(
                         ParserDiagnostic::StandaloneTypeUsedInUnionType,
@@ -573,7 +558,7 @@ impl<'a> Parser<'a> {
 
             types.push(ty);
 
-            if self.current().kind == TokenKind::Pipe {
+            if self.current_kind() == TokenKind::Pipe {
                 last_pipe = self.skip(TokenKind::Pipe);
             } else {
                 break;
@@ -588,7 +573,7 @@ impl<'a> Parser<'a> {
             self.diagnostic(
                 ParserDiagnostic::StandaloneTypeUsedInIntersectionType,
                 Severity::Error,
-                self.current().span,
+                self.current_span(),
             );
         }
 
@@ -623,14 +608,14 @@ impl<'a> Parser<'a> {
 
                 self.next();
 
-                let other = parse_simple_data_type();
-                let ty = parse_union_type(state, other, true);
+                let other = self.parse_simple_data_type();
+                let ty = self.parse_union_type(other, true);
 
                 self.skip_right_parenthesis();
 
                 ty
             } else {
-                let ty = parse_simple_data_type();
+                let ty = self.parse_simple_data_type();
                 if ty.standalone() {
                     self.diagnostic(
                         ParserDiagnostic::StandaloneTypeUsedInIntersectionType,
@@ -644,9 +629,9 @@ impl<'a> Parser<'a> {
 
             types.push(ty);
 
-            if self.current().kind == TokenKind::Ampersand
+            if self.current_kind() == TokenKind::Ampersand
                 && !matches!(
-                    state.peek().kind,
+                    self.peek_kind(),
                     TokenKind::Variable | TokenKind::Ellipsis | TokenKind::Ampersand
                 )
             {
