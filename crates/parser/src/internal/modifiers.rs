@@ -16,7 +16,7 @@ impl<'a> Parser<'a> {
                 TokenKind::Final => Some(ClassModifier::Final(*span)),
                 TokenKind::Abstract => Some(ClassModifier::Abstract(*span)),
                 _ => {
-                    state.diagnostic(
+                    self.diagnostic(
                         ParserDiagnostic::InvalidClassModifier,
                         Severity::Error,
                         *span,
@@ -28,7 +28,7 @@ impl<'a> Parser<'a> {
             .collect::<Vec<ClassModifier>>();
 
         let group = ClassModifierGroup {
-            id: state.id(),
+            id: self.state.id(),
             span: modifiers.span(),
             modifiers,
         };
@@ -38,7 +38,7 @@ impl<'a> Parser<'a> {
             let end = input.last().unwrap().0;
             let span = Span::new(start.start, end.end);
 
-            state.diagnostic(
+            self.diagnostic(
                 ParserDiagnostic::CannotUseFinalWithAbstract,
                 Severity::Error,
                 span,
@@ -60,7 +60,7 @@ impl<'a> Parser<'a> {
                 TokenKind::Public => Some(MethodModifier::Public(*span)),
                 TokenKind::Static => Some(MethodModifier::Static(*span)),
                 _ => {
-                    state.diagnostic(
+                    self.diagnostic(
                         ParserDiagnostic::InvalidMethodModifier,
                         Severity::Error,
                         *span,
@@ -72,7 +72,7 @@ impl<'a> Parser<'a> {
             .collect::<Vec<MethodModifier>>();
 
         let group = MethodModifierGroup {
-            id: state.id(),
+            id: self.state.id(),
             span: modifiers.span(),
             modifiers,
         };
@@ -82,7 +82,7 @@ impl<'a> Parser<'a> {
             let end = input.last().unwrap().0;
             let span = Span::new(start.start, end.end);
 
-            state.diagnostic(
+            self.diagnostic(
                 ParserDiagnostic::CannotUseFinalWithAbstract,
                 Severity::Error,
                 span,
@@ -103,7 +103,7 @@ impl<'a> Parser<'a> {
                 TokenKind::Protected => Some(PropertyModifier::Protected(*span)),
                 TokenKind::Private => Some(PropertyModifier::Private(*span)),
                 _ => {
-                    state.diagnostic(
+                    self.diagnostic(
                         ParserDiagnostic::InvalidPropertyModifier,
                         Severity::Error,
                         *span,
@@ -115,7 +115,7 @@ impl<'a> Parser<'a> {
             .collect::<Vec<PropertyModifier>>();
 
         PropertyModifierGroup {
-            id: state.id(),
+            id: self.state.id(),
             span: modifiers.span(),
             modifiers,
         }
@@ -134,7 +134,7 @@ impl<'a> Parser<'a> {
                 TokenKind::Protected => Some(PromotedPropertyModifier::Protected(*span)),
                 TokenKind::Public => Some(PromotedPropertyModifier::Public(*span)),
                 _ => {
-                    state.diagnostic(
+                    self.diagnostic(
                         ParserDiagnostic::InvalidPropertyModifier,
                         Severity::Error,
                         *span,
@@ -146,7 +146,7 @@ impl<'a> Parser<'a> {
             .collect::<Vec<PromotedPropertyModifier>>();
 
         PromotedPropertyModifierGroup {
-            id: state.id(),
+            id: self.state.id(),
             span: modifiers.span(),
             modifiers,
         }
@@ -161,7 +161,7 @@ impl<'a> Parser<'a> {
                 TokenKind::Private => Some(ConstantModifier::Private(*span)),
                 TokenKind::Final => Some(ConstantModifier::Final(*span)),
                 _ => {
-                    state.diagnostic(
+                    self.diagnostic(
                         ParserDiagnostic::InvalidConstantModifier,
                         Severity::Error,
                         *span,
@@ -173,7 +173,7 @@ impl<'a> Parser<'a> {
             .collect::<Vec<ConstantModifier>>();
 
         let group = ConstantModifierGroup {
-            id: state.id(),
+            id: self.state.id(),
             span: modifiers.span(),
             modifiers,
         };
@@ -183,7 +183,7 @@ impl<'a> Parser<'a> {
             let end = input.last().unwrap().0;
             let span = Span::new(start.start, end.end);
 
-            state.diagnostic(
+            self.diagnostic(
                 ParserDiagnostic::CannotUseFinalWithPrivateOnConstant,
                 Severity::Error,
                 span,
@@ -206,13 +206,13 @@ impl<'a> Parser<'a> {
             TokenKind::Readonly,
         ];
 
-        let mut current = state.current().clone();
+        let mut current = self.current().clone();
         let mut current_kind = current.kind;
         let mut current_span = current.span;
 
         while collectable_tokens.contains(&current_kind) {
             if let Some((span, _)) = collected.iter().find(|(_, kind)| kind == &current_kind) {
-                state.diagnostic(ParserDiagnostic::DuplicateModifier, Severity::Error, *span);
+                self.diagnostic(ParserDiagnostic::DuplicateModifier, Severity::Error, *span);
             }
 
             // guard against multiple visibility modifiers, we don't care where these modifiers are used.
@@ -226,7 +226,7 @@ impl<'a> Parser<'a> {
                         TokenKind::Public | TokenKind::Protected | TokenKind::Private
                     ) && kind != &current_kind
                 }) {
-                    state.diagnostic(
+                    self.diagnostic(
                         ParserDiagnostic::MultipleVisibilityModifiers,
                         Severity::Error,
                         *span,
@@ -236,9 +236,9 @@ impl<'a> Parser<'a> {
 
             collected.push((current_span, current_kind));
 
-            state.next();
+            self.next();
 
-            current = state.current().clone();
+            current = self.current().clone();
             current_kind = current.kind;
             current_span = current.span;
         }

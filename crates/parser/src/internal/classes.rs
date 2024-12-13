@@ -27,19 +27,19 @@ impl<'a> Parser<'a> {
     pub fn parse_class(&mut self) -> StatementKind {
         let attributes = state.get_attributes();
 
-        let modifiers = modifiers::collect_modifiers(state);
+        let modifiers = modifiers::collect_modifiers();
         let modifiers = modifiers::parse_class_group(state, modifiers);
-        let class = utils::skip(state, TokenKind::Class);
-        let name = names::parse_type_name(state);
-        let current = state.current();
+        let class = self.skip(TokenKind::Class);
+        let name = names::parse_type_name();
+        let current = self.current();
         let extends = if current.kind == TokenKind::Extends {
             let span = current.span;
 
-            state.next();
+            self.next();
             let parent = names::parse_full_name(state, UseKind::Normal);
 
             Some(ClassExtends {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(span, parent.span),
                 extends: span,
                 parent,
@@ -48,11 +48,11 @@ impl<'a> Parser<'a> {
             None
         };
 
-        let current = state.current();
+        let current = self.current();
         let implements = if current.kind == TokenKind::Implements {
             let span = current.span;
 
-            state.next();
+            self.next();
 
             let interfaces =
                 utils::at_least_one_comma_separated_no_trailing::<Name>(state, &|state| {
@@ -60,7 +60,7 @@ impl<'a> Parser<'a> {
                 });
 
             Some(ClassImplements {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(span, interfaces.span()),
                 implements: span,
                 interfaces,
@@ -70,10 +70,10 @@ impl<'a> Parser<'a> {
         };
 
         let has_abstract = modifiers.has_abstract();
-        let left_brace = utils::skip_left_brace(state);
+        let left_brace = utils::skip_left_brace();
         let members = {
             let mut members = Vec::new();
-            while state.current().kind != TokenKind::RightBrace {
+            while self.current().kind != TokenKind::RightBrace {
                 if state.is_eof() {
                     break;
                 }
@@ -83,10 +83,10 @@ impl<'a> Parser<'a> {
 
             members
         };
-        let right_brace = utils::skip_right_brace(state);
+        let right_brace = utils::skip_right_brace();
 
         let body = ClassBody {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(left_brace, right_brace),
             left_brace,
             members,
@@ -100,7 +100,7 @@ impl<'a> Parser<'a> {
         };
 
         StatementKind::Class(ClassStatement {
-            id: state.id(),
+            id: self.state.id(),
             span,
             class,
             name,
@@ -115,32 +115,32 @@ impl<'a> Parser<'a> {
     pub fn parse_anonymous_class(&mut self, span: Option<Span>) -> Expression {
         let new = match span {
             Some(span) => span,
-            None => utils::skip(state, TokenKind::New),
+            None => self.skip(TokenKind::New),
         };
 
         let start_span = new;
 
-        attributes::gather_attributes(state);
+        attributes::gather_attributes();
 
         let attributes = state.get_attributes();
-        let class = utils::skip(state, TokenKind::Class);
+        let class = self.skip(TokenKind::Class);
         let class_span = class;
 
-        let arguments = if state.current().kind == TokenKind::LeftParen {
-            Some(parameters::parse_argument_list(state))
+        let arguments = if self.current().kind == TokenKind::LeftParen {
+            Some(parameters::parse_argument_list())
         } else {
             None
         };
 
-        let current = state.current();
+        let current = self.current();
         let extends = if current.kind == TokenKind::Extends {
-            state.next();
+            self.next();
 
             let extends = current.span;
             let parent = names::parse_full_name(state, UseKind::Normal);
 
             Some(ClassExtends {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(extends, parent.span),
                 extends,
                 parent,
@@ -149,9 +149,9 @@ impl<'a> Parser<'a> {
             None
         };
 
-        let current = state.current();
+        let current = self.current();
         let implements = if current.kind == TokenKind::Implements {
-            state.next();
+            self.next();
 
             let implements = current.span;
             let interfaces =
@@ -160,7 +160,7 @@ impl<'a> Parser<'a> {
                 });
 
             Some(ClassImplements {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(implements, interfaces.span()),
                 implements,
                 interfaces,
@@ -169,19 +169,19 @@ impl<'a> Parser<'a> {
             None
         };
 
-        let left_brace = utils::skip_left_brace(state);
+        let left_brace = utils::skip_left_brace();
         let members = {
             let mut members = Vec::new();
-            while state.current().kind != TokenKind::RightBrace {
+            while self.current().kind != TokenKind::RightBrace {
                 members.push(parse_classish_member(state, false));
             }
             members
         };
-        let right_brace = utils::skip_right_brace(state);
+        let right_brace = utils::skip_right_brace();
         let span = Span::combine(left_brace, right_brace);
 
         let body = AnonymousClassBody {
-            id: state.id(),
+            id: self.state.id(),
             span,
             left_brace,
             members,
@@ -191,9 +191,9 @@ impl<'a> Parser<'a> {
         let end_span = body.right_brace;
 
         let anonymous_class = Expression::new(
-            state.id(),
+            self.state.id(),
             ExpressionKind::AnonymousClass(AnonymousClassExpression {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(class, body.span),
                 class,
                 extends,
@@ -206,9 +206,9 @@ impl<'a> Parser<'a> {
         );
 
         Expression::new(
-            state.id(),
+            self.state.id(),
             ExpressionKind::New(NewExpression {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(new, arguments.span()),
                 target: Box::new(anonymous_class),
                 new,
@@ -220,24 +220,24 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_classish_member(&mut self, has_abstract: bool) -> ClassishMember {
-        let has_attributes = attributes::gather_attributes(state);
+        let has_attributes = attributes::gather_attributes();
 
-        if !has_attributes && state.current().kind == TokenKind::Use {
-            return ClassishMember::TraitUsage(traits::parse_trait_usage(state));
+        if !has_attributes && self.current().kind == TokenKind::Use {
+            return ClassishMember::TraitUsage(traits::parse_trait_usage());
         }
 
-        if state.current().kind == TokenKind::Var {
-            return ClassishMember::VariableProperty(properties::parse_var_property(state));
+        if self.current().kind == TokenKind::Var {
+            return ClassishMember::VariableProperty(properties::parse_var_property());
         }
 
-        let modifiers = modifiers::collect_modifiers(state);
+        let modifiers = modifiers::collect_modifiers();
 
         if modifiers.is_empty()
-            && !matches!(state.current().kind, TokenKind::Const | TokenKind::Function)
+            && !matches!(self.current().kind, TokenKind::Const | TokenKind::Function)
         {
-            let current = state.current();
+            let current = self.current();
 
-            state.diagnostic(
+            self.diagnostic(
                 ParserDiagnostic::UnexpectedToken {
                     token: current.clone(),
                 },
@@ -245,27 +245,27 @@ impl<'a> Parser<'a> {
                 current.span,
             );
 
-            state.next();
+            self.next();
 
             return ClassishMember::Missing(MissingClassishMember {
-                id: state.id(),
+                id: self.state.id(),
                 span: current.span,
             });
         }
 
-        if state.current().kind == TokenKind::Const {
+        if self.current().kind == TokenKind::Const {
             let modifiers = modifiers::parse_constant_group(state, modifiers);
             return ClassishMember::Constant(parse_classish_constant(state, modifiers));
         }
 
-        if state.current().kind == TokenKind::Function {
+        if self.current().kind == TokenKind::Function {
             let modifiers = modifiers::parse_method_group(state, modifiers);
             let method = parse_method(state, modifiers);
 
             return match method {
                 Method::Abstract(method) => {
                     if !has_abstract && method.modifiers.has_abstract() {
-                        state.diagnostic(
+                        self.diagnostic(
                             ParserDiagnostic::AbstractMethodInNonAbstractClass,
                             Severity::Error,
                             method.modifiers.get_abstract().unwrap().span(),
@@ -277,7 +277,7 @@ impl<'a> Parser<'a> {
                 Method::Concrete(method) => ClassishMember::ConcreteMethod(method),
                 Method::AbstractConstructor(ctor) => {
                     if !has_abstract {
-                        state.diagnostic(
+                        self.diagnostic(
                             ParserDiagnostic::AbstractMethodInNonAbstractClass,
                             Severity::Error,
                             ctor.span(),

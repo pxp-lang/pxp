@@ -18,25 +18,25 @@ use pxp_token::TokenKind;
 impl<'a> Parser<'a> {
     pub fn parse_function_parameter_list(&mut self) -> FunctionParameterList {
         let comments = state.comments();
-        let left_parenthesis = utils::skip_left_parenthesis(state);
-        let parameters = utils::comma_separated(
+        let left_parenthesis = self.skip_left_parenthesis();
+        let parameters = self.comma_separated(
             state,
             &|state| {
-                attributes::gather_attributes(state);
+                attributes::gather_attributes();
 
-                let ty = data_type::parse_optional_data_type(state);
+                let ty = data_type::parse_optional_data_type();
 
-                let mut current = state.current();
+                let mut current = self.current();
                 let ampersand = if current.kind == TokenKind::Ampersand {
-                    state.next();
-                    current = state.current();
+                    self.next();
+                    current = self.current();
                     Some(current.span)
                 } else {
                     None
                 };
 
                 let ellipsis = if current.kind == TokenKind::Ellipsis {
-                    state.next();
+                    self.next();
 
                     Some(current.span)
                 } else {
@@ -44,16 +44,16 @@ impl<'a> Parser<'a> {
                 };
 
                 // 2. Then expect a variable.
-                let var = variables::parse_simple_variable(state);
+                let var = variables::parse_simple_variable();
 
                 let mut default = None;
-                if state.current().kind == TokenKind::Equals {
-                    state.next();
-                    default = Some(expressions::create(state));
+                if self.current().kind == TokenKind::Equals {
+                    self.next();
+                    default = Some(self.parse_expression());
                 }
 
                 FunctionParameter {
-                    id: state.id(),
+                    id: self.state.id(),
                     // FIXME: This isn't taking other fields into account.
                     span: if ty.is_some() {
                         Span::combine(ty.span(), var.span)
@@ -72,10 +72,10 @@ impl<'a> Parser<'a> {
             TokenKind::RightParen,
         );
 
-        let right_parenthesis = utils::skip_right_parenthesis(state);
+        let right_parenthesis = self.skip_right_parenthesis();
 
         FunctionParameterList {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(left_parenthesis, right_parenthesis),
             comments,
             left_parenthesis,
@@ -87,22 +87,22 @@ impl<'a> Parser<'a> {
     pub fn parse_constructor_parameter_list(&mut self) -> ConstructorParameterList {
         let comments = state.comments();
 
-        let left_parenthesis = utils::skip_left_parenthesis(state);
+        let left_parenthesis = self.skip_left_parenthesis();
         let parameters = utils::comma_separated::<ConstructorParameter>(
             state,
             &|state| {
-                attributes::gather_attributes(state);
+                attributes::gather_attributes();
 
-                let modifiers = modifiers::collect_modifiers(state);
+                let modifiers = modifiers::collect_modifiers();
                 let modifiers = modifiers::parse_promoted_property_group(state, modifiers);
 
-                let ty = data_type::parse_optional_data_type(state);
+                let ty = data_type::parse_optional_data_type();
 
-                let mut current = state.current();
+                let mut current = self.current();
                 let ampersand = if matches!(current.kind, TokenKind::Ampersand) {
-                    state.next();
+                    self.next();
 
-                    current = state.current();
+                    current = self.current();
 
                     Some(current.span)
                 } else {
@@ -110,10 +110,10 @@ impl<'a> Parser<'a> {
                 };
 
                 let (ellipsis, var) = if matches!(current.kind, TokenKind::Ellipsis) {
-                    state.next();
-                    let var = variables::parse_simple_variable(state);
+                    self.next();
+                    let var = variables::parse_simple_variable();
                     if !modifiers.is_empty() {
-                        state.diagnostic(
+                        self.diagnostic(
                             ParserDiagnostic::PromotedPropertyCannotBeVariadic,
                             Severity::Error,
                             current.span,
@@ -122,7 +122,7 @@ impl<'a> Parser<'a> {
 
                     (Some(current.span), var)
                 } else {
-                    (None, variables::parse_simple_variable(state))
+                    (None, variables::parse_simple_variable())
                 };
 
                 // 2. Then expect a variable.
@@ -131,7 +131,7 @@ impl<'a> Parser<'a> {
                     match &ty {
                         Some(ty) => {
                             if ty.includes_callable() || ty.is_bottom() {
-                                state.diagnostic(
+                                self.diagnostic(
                                     ParserDiagnostic::ForbiddenTypeUsedInProperty,
                                     Severity::Error,
                                     ty.get_span(),
@@ -140,7 +140,7 @@ impl<'a> Parser<'a> {
                         }
                         None => {
                             if let Some(modifier) = modifiers.get_readonly() {
-                                state.diagnostic(
+                                self.diagnostic(
                                     ParserDiagnostic::ReadonlyPropertyMustHaveType,
                                     Severity::Error,
                                     modifier.span(),
@@ -151,13 +151,13 @@ impl<'a> Parser<'a> {
                 }
 
                 let mut default = None;
-                if state.current().kind == TokenKind::Equals {
-                    state.next();
-                    default = Some(expressions::create(state));
+                if self.current().kind == TokenKind::Equals {
+                    self.next();
+                    default = Some(self.parse_expression());
                 }
 
                 ConstructorParameter {
-                    id: state.id(),
+                    id: self.state.id(),
                     span: if ty.is_some() {
                         Span::combine(ty.span(), var.span)
                     } else {
@@ -176,10 +176,10 @@ impl<'a> Parser<'a> {
             TokenKind::RightParen,
         );
 
-        let right_parenthesis = utils::skip_right_parenthesis(state);
+        let right_parenthesis = self.skip_right_parenthesis();
 
         ConstructorParameterList {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(left_parenthesis, right_parenthesis),
             comments,
             left_parenthesis,
@@ -190,18 +190,18 @@ impl<'a> Parser<'a> {
 
     pub fn parse_argument_list(&mut self) -> ArgumentList {
         let comments = state.comments();
-        let start = utils::skip_left_parenthesis(state);
+        let start = self.skip_left_parenthesis();
 
         let mut arguments = Vec::new();
         let mut has_used_named_arguments = false;
 
-        while !state.is_eof() && state.current().kind != TokenKind::RightParen {
-            let span = state.current().span;
-            let (named, argument) = parse_argument(state);
+        while !state.is_eof() && self.current().kind != TokenKind::RightParen {
+            let span = self.current().span;
+            let (named, argument) = parse_argument();
             if named {
                 has_used_named_arguments = true;
             } else if has_used_named_arguments {
-                state.diagnostic(
+                self.diagnostic(
                     ParserDiagnostic::CannotUsePositionalArgumentAfterNamedArgument,
                     Severity::Error,
                     span,
@@ -210,17 +210,17 @@ impl<'a> Parser<'a> {
 
             arguments.push(argument);
 
-            if state.current().kind == TokenKind::Comma {
-                state.next();
+            if self.current().kind == TokenKind::Comma {
+                self.next();
             } else {
                 break;
             }
         }
 
-        let end = utils::skip_right_parenthesis(state);
+        let end = self.skip_right_parenthesis();
 
         ArgumentList {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(start, end),
             comments,
             left_parenthesis: start,
@@ -236,19 +236,19 @@ impl<'a> Parser<'a> {
     ) -> Option<SingleArgument> {
         let comments = state.comments();
 
-        if state.current().kind != TokenKind::LeftParen {
+        if self.current().kind != TokenKind::LeftParen {
             return None;
         }
 
-        let start = utils::skip_left_parenthesis(state);
+        let start = self.skip_left_parenthesis();
 
         let mut first_argument = None;
 
-        while !state.is_eof() && state.current().kind != TokenKind::RightParen {
-            let span = state.current().span;
-            let (named, argument) = parse_argument(state);
+        while !state.is_eof() && self.current().kind != TokenKind::RightParen {
+            let span = self.current().span;
+            let (named, argument) = parse_argument();
             if only_positional && named {
-                state.diagnostic(
+                self.diagnostic(
                     ParserDiagnostic::PositionalArgumentsOnly,
                     Severity::Error,
                     span,
@@ -256,7 +256,7 @@ impl<'a> Parser<'a> {
             }
 
             if first_argument.is_some() {
-                state.diagnostic(
+                self.diagnostic(
                     ParserDiagnostic::OnlyAllowedOneArgument,
                     Severity::Error,
                     span,
@@ -265,25 +265,25 @@ impl<'a> Parser<'a> {
 
             first_argument = Some(argument);
 
-            if state.current().kind == TokenKind::Comma {
-                state.next();
+            if self.current().kind == TokenKind::Comma {
+                self.next();
             } else {
                 break;
             }
         }
 
         if required && first_argument.is_none() {
-            state.diagnostic(
+            self.diagnostic(
                 ParserDiagnostic::ArgumentRequired,
                 Severity::Error,
-                state.current().span,
+                self.current().span,
             );
         }
 
-        let end = utils::skip_right_parenthesis(state);
+        let end = self.skip_right_parenthesis();
 
         Some(SingleArgument {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(start, end),
             comments,
             left_parenthesis: start,
@@ -293,22 +293,22 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_argument(&mut self) -> (bool, Argument) {
-        if identifiers::is_identifier_maybe_reserved(&state.current().kind)
+        if identifiers::is_identifier_maybe_reserved(&self.current().kind)
             && state.peek().kind == TokenKind::Colon
         {
-            let name = identifiers::parse_identifier_maybe_reserved(state);
-            let colon = utils::skip(state, TokenKind::Colon);
-            let ellipsis = if state.current().kind == TokenKind::Ellipsis {
-                Some(utils::skip(state, TokenKind::Ellipsis))
+            let name = identifiers::parse_identifier_maybe_reserved();
+            let colon = self.skip(TokenKind::Colon);
+            let ellipsis = if self.current().kind == TokenKind::Ellipsis {
+                Some(self.skip(TokenKind::Ellipsis))
             } else {
                 None
             };
-            let value = expressions::create(state);
+            let value = self.parse_expression();
 
             return (
                 true,
                 Argument::Named(NamedArgument {
-                    id: state.id(),
+                    id: self.state.id(),
                     span: Span::combine(name.span, value.span),
                     comments: state.comments(),
                     name,
@@ -319,18 +319,18 @@ impl<'a> Parser<'a> {
             );
         }
 
-        let ellipsis = if state.current().kind == TokenKind::Ellipsis {
-            Some(utils::skip(state, TokenKind::Ellipsis))
+        let ellipsis = if self.current().kind == TokenKind::Ellipsis {
+            Some(self.skip(TokenKind::Ellipsis))
         } else {
             None
         };
 
-        let value = expressions::create(state);
+        let value = self.parse_expression();
 
         (
             false,
             Argument::Positional(PositionalArgument {
-                id: state.id(),
+                id: self.state.id(),
                 span: value.span,
                 comments: state.comments(),
                 ellipsis,

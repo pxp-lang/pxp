@@ -17,27 +17,27 @@ use super::names;
 
 impl<'a> Parser<'a> {
     pub fn parse_trait_usage(&mut self) -> TraitUsage {
-        let span = utils::skip(state, TokenKind::Use);
+        let span = self.skip(TokenKind::Use);
 
         let mut traits = Vec::new();
 
-        while state.current().kind != TokenKind::SemiColon
-            && state.current().kind != TokenKind::LeftBrace
+        while self.current().kind != TokenKind::SemiColon
+            && self.current().kind != TokenKind::LeftBrace
         {
             let t = names::parse_full_name(state, UseKind::Normal);
             traits.push(t);
 
-            if state.current().kind == TokenKind::Comma {
+            if self.current().kind == TokenKind::Comma {
                 if state.peek().kind == TokenKind::SemiColon {
                     // will fail with unexpected token `,`
                     // as `use` doesn't allow for trailing commas.
-                    utils::skip_semicolon(state);
+                    utils::skip_semicolon();
                 } else if state.peek().kind == TokenKind::LeftBrace {
                     // will fail with unexpected token `{`
                     // as `use` doesn't allow for trailing commas.
-                    utils::skip_left_brace(state);
+                    utils::skip_left_brace();
                 } else {
-                    state.next();
+                    self.next();
                 }
             } else {
                 break;
@@ -45,27 +45,27 @@ impl<'a> Parser<'a> {
         }
 
         let mut adaptations = Vec::new();
-        if state.current().kind == TokenKind::LeftBrace {
-            utils::skip_left_brace(state);
+        if self.current().kind == TokenKind::LeftBrace {
+            utils::skip_left_brace();
 
-            while state.current().kind != TokenKind::RightBrace {
+            while self.current().kind != TokenKind::RightBrace {
                 let (r#trait, method): (Option<Name>, SimpleIdentifier) = match state.peek().kind {
                     TokenKind::DoubleColon => {
-                        let r#trait = names::parse_full_name_including_self(state);
-                        state.next();
-                        let method = identifiers::parse_identifier(state);
+                        let r#trait = names::parse_full_name_including_self();
+                        self.next();
+                        let method = identifiers::parse_identifier();
                         (Some(r#trait), method)
                     }
-                    _ => (None, identifiers::parse_identifier(state)),
+                    _ => (None, identifiers::parse_identifier()),
                 };
 
                 while !state.is_eof()
-                    && !matches!(state.current().kind, TokenKind::As | TokenKind::Insteadof)
+                    && !matches!(self.current().kind, TokenKind::As | TokenKind::Insteadof)
                 {
-                    let token = state.current();
-                    state.next();
+                    let token = self.current();
+                    self.next();
 
-                    state.diagnostic(
+                    self.diagnostic(
                         ParserDiagnostic::ExpectedToken {
                             expected: vec![TokenKind::As, TokenKind::Insteadof],
                             found: token.clone(),
@@ -75,37 +75,37 @@ impl<'a> Parser<'a> {
                     );
                 }
 
-                match state.current().kind {
+                match self.current().kind {
                     TokenKind::As => {
-                        state.next();
+                        self.next();
 
-                        match state.current() {
+                        match self.current() {
                             Token {
                                 kind: TokenKind::Public | TokenKind::Protected | TokenKind::Private,
                                 span,
                                 ..
                             } => {
-                                let visibility = match state.current().kind {
+                                let visibility = match self.current().kind {
                                     TokenKind::Public => VisibilityModifier::Public(*span),
                                     TokenKind::Protected => VisibilityModifier::Protected(*span),
                                     TokenKind::Private => VisibilityModifier::Private(*span),
                                     _ => unreachable!(),
                                 };
 
-                                state.next();
+                                self.next();
 
-                                if state.current().kind == TokenKind::SemiColon {
+                                if self.current().kind == TokenKind::SemiColon {
                                     let span = if r#trait.is_some() {
                                         Span::combine(r#trait.span(), visibility.span())
                                     } else {
                                         Span::combine(method.span, visibility.span())
                                     };
                                     adaptations.push(TraitUsageAdaptation {
-                                        id: state.id(),
+                                        id: self.state.id(),
                                         span,
                                         kind: TraitUsageAdaptationKind::Visibility(
                                             TraitUsageAdaptationVisibility {
-                                                id: state.id(),
+                                                id: self.state.id(),
                                                 span,
                                                 r#trait,
                                                 method,
@@ -115,7 +115,7 @@ impl<'a> Parser<'a> {
                                     });
                                 } else {
                                     let alias: SimpleIdentifier =
-                                        identifiers::parse_name_identifier(state);
+                                        identifiers::parse_name_identifier();
                                     let span = if r#trait.is_some() {
                                         Span::combine(r#trait.span(), visibility.span())
                                     } else {
@@ -123,11 +123,11 @@ impl<'a> Parser<'a> {
                                     };
 
                                     adaptations.push(TraitUsageAdaptation {
-                                        id: state.id(),
+                                        id: self.state.id(),
                                         span,
                                         kind: TraitUsageAdaptationKind::Alias(
                                             TraitUsageAdaptationAlias {
-                                                id: state.id(),
+                                                id: self.state.id(),
                                                 span,
                                                 r#trait,
                                                 method,
@@ -140,7 +140,7 @@ impl<'a> Parser<'a> {
                             }
                             _ => {
                                 let alias: SimpleIdentifier =
-                                    identifiers::parse_name_identifier(state);
+                                    identifiers::parse_name_identifier();
                                 let span = if r#trait.is_some() {
                                     Span::combine(r#trait.span(), alias.span())
                                 } else {
@@ -148,11 +148,11 @@ impl<'a> Parser<'a> {
                                 };
 
                                 adaptations.push(TraitUsageAdaptation {
-                                    id: state.id(),
+                                    id: self.state.id(),
                                     span,
                                     kind: TraitUsageAdaptationKind::Alias(
                                         TraitUsageAdaptationAlias {
-                                            id: state.id(),
+                                            id: self.state.id(),
                                             span,
                                             r#trait,
                                             method,
@@ -165,30 +165,30 @@ impl<'a> Parser<'a> {
                         }
                     }
                     TokenKind::Insteadof => {
-                        state.next();
+                        self.next();
 
                         let mut insteadof =
-                            vec![identifiers::parse_full_type_name_identifier(state)];
+                            vec![identifiers::parse_full_type_name_identifier()];
 
-                        if state.current().kind == TokenKind::Comma {
+                        if self.current().kind == TokenKind::Comma {
                             if state.peek().kind == TokenKind::SemiColon {
                                 // will fail with unexpected token `,`
                                 // as `insteadof` doesn't allow for trailing commas.
-                                utils::skip_semicolon(state);
+                                utils::skip_semicolon();
                             }
 
-                            state.next();
+                            self.next();
 
-                            while state.current().kind != TokenKind::SemiColon {
-                                insteadof.push(identifiers::parse_full_type_name_identifier(state));
+                            while self.current().kind != TokenKind::SemiColon {
+                                insteadof.push(identifiers::parse_full_type_name_identifier());
 
-                                if state.current().kind == TokenKind::Comma {
+                                if self.current().kind == TokenKind::Comma {
                                     if state.peek().kind == TokenKind::SemiColon {
                                         // will fail with unexpected token `,`
                                         // as `insteadof` doesn't allow for trailing commas.
-                                        utils::skip_semicolon(state);
+                                        utils::skip_semicolon();
                                     } else {
-                                        state.next();
+                                        self.next();
                                     }
                                 } else {
                                     break;
@@ -203,11 +203,11 @@ impl<'a> Parser<'a> {
                         };
 
                         adaptations.push(TraitUsageAdaptation {
-                            id: state.id(),
+                            id: self.state.id(),
                             span,
                             kind: TraitUsageAdaptationKind::Precedence(
                                 TraitUsageAdaptationPrecedence {
-                                    id: state.id(),
+                                    id: self.state.id(),
                                     span,
                                     r#trait,
                                     method,
@@ -216,19 +216,19 @@ impl<'a> Parser<'a> {
                             ),
                         });
                     }
-                    _ => unreachable!("{:?}", state.current()),
+                    _ => unreachable!("{:?}", self.current()),
                 };
 
-                utils::skip_semicolon(state);
+                utils::skip_semicolon();
             }
 
-            utils::skip_right_brace(state);
+            utils::skip_right_brace();
         } else {
-            utils::skip_semicolon(state);
+            utils::skip_semicolon();
         }
 
         TraitUsage {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(span, adaptations.span()),
             r#use: span,
             traits,
@@ -237,22 +237,22 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_trait(&mut self) -> StatementKind {
-        let span = utils::skip(state, TokenKind::Trait);
-        let name = names::parse_type_name(state);
+        let span = self.skip(TokenKind::Trait);
+        let name = names::parse_type_name();
         let attributes = state.get_attributes();
 
-        let left_brace = utils::skip_left_brace(state);
+        let left_brace = utils::skip_left_brace();
         let members = {
             let mut members = Vec::new();
-            while state.current().kind != TokenKind::RightBrace && !state.is_eof() {
+            while self.current().kind != TokenKind::RightBrace && !state.is_eof() {
                 members.push(parse_classish_member(state, true));
             }
             members
         };
-        let right_brace = utils::skip_right_brace(state);
+        let right_brace = utils::skip_right_brace();
 
         let body = TraitBody {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(left_brace, right_brace),
             left_brace,
             members,
@@ -260,7 +260,7 @@ impl<'a> Parser<'a> {
         };
 
         StatementKind::Trait(TraitStatement {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(span, body.span),
             r#trait: span,
             name,

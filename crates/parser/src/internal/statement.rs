@@ -25,7 +25,7 @@ impl<'a> Parser<'a> {
                         };
 
                         StatementKind::HaltCompiler(HaltCompilerStatement {
-                            id: self.state.id(),
+                            id: self.self.state.id(),
                             span,
                             content,
                         })
@@ -36,7 +36,7 @@ impl<'a> Parser<'a> {
                 let span = kind.span();
 
                 Statement::new(
-                    self.state.id(),
+                    self.self.state.id(),
                     kind,
                     span,
                     comments,
@@ -83,13 +83,13 @@ impl<'a> Parser<'a> {
 
                             let span = Span::combine(start, ending_span);
                             let kind = StatementKind::Expression(ExpressionStatement {
-                                id: self.state.id(),
+                                id: self.self.state.id(),
                                 span,
                                 expression,
                                 ending,
                             });
 
-                            return Statement::new(self.state.id(), kind, span, comments);
+                            return Statement::new(self.self.state.id(), kind, span, comments);
                         }
 
                         self.parse_function()
@@ -104,7 +104,7 @@ impl<'a> Parser<'a> {
                     let ending_span = ending.span();
 
                     StatementKind::Expression(ExpressionStatement {
-                        id: self.state.id(),
+                        id: self.self.state.id(),
                         span: Span::combine(start, ending_span),
                         expression,
                         ending,
@@ -118,7 +118,7 @@ impl<'a> Parser<'a> {
                     self.next();
 
                     StatementKind::EchoOpeningTag(EchoOpeningTagStatement {
-                        id: self.state.id(),
+                        id: self.self.state.id(),
                         span,
                     })
                 }
@@ -127,7 +127,7 @@ impl<'a> Parser<'a> {
                     self.next();
 
                     StatementKind::FullOpeningTag(FullOpeningTagStatement {
-                        id: self.state.id(),
+                        id: self.self.state.id(),
                         span,
                     })
                 }
@@ -136,7 +136,7 @@ impl<'a> Parser<'a> {
                     self.next();
 
                     StatementKind::ShortOpeningTag(ShortOpeningTagStatement {
-                        id: self.state.id(),
+                        id: self.self.state.id(),
                         span,
                     })
                 }
@@ -145,7 +145,7 @@ impl<'a> Parser<'a> {
                     self.next();
 
                     StatementKind::ClosingTag(ClosingTagStatement {
-                        id: self.state.id(),
+                        id: self.self.state.id(),
                         span,
                     })
                 }
@@ -179,13 +179,13 @@ impl<'a> Parser<'a> {
                             let span = Span::combine(start, ending_span);
 
                             let kind = StatementKind::Expression(ExpressionStatement {
-                                id: self.state.id(),
+                                id: self.self.state.id(),
                                 span,
                                 expression,
                                 ending,
                             });
 
-                            return Statement::new(self.state.id(), kind, span, comments);
+                            return Statement::new(self.self.state.id(), kind, span, comments);
                         }
 
                         self.parse_function()
@@ -214,7 +214,7 @@ impl<'a> Parser<'a> {
                             let end = value.span;
 
                             entries.push(DeclareEntry {
-                                id: self.state.id(),
+                                id: self.self.state.id(),
                                 span: Span::combine(start, end),
                                 key,
                                 equals,
@@ -232,7 +232,7 @@ impl<'a> Parser<'a> {
                         let span = Span::combine(start, end);
 
                         DeclareEntryGroup {
-                            id: self.state.id(),
+                            id: self.self.state.id(),
                             span,
                             left_parenthesis: start,
                             entries,
@@ -245,7 +245,7 @@ impl<'a> Parser<'a> {
                             let span = self.skip_semicolon();
 
                             DeclareBody::Noop(DeclareBodyNoop {
-                                id: self.state.id(),
+                                id: self.self.state.id(),
                                 span,
                                 semicolon: span,
                             })
@@ -258,7 +258,7 @@ impl<'a> Parser<'a> {
                             let end = self.skip_right_brace();
 
                             DeclareBody::Braced(DeclareBodyBraced {
-                                id: self.state.id(),
+                                id: self.self.state.id(),
                                 span: Span::combine(start, end),
                                 left_brace: start,
                                 statements,
@@ -274,7 +274,7 @@ impl<'a> Parser<'a> {
                             let semicolon = self.skip_semicolon();
 
                             DeclareBody::Block(DeclareBodyBlock {
-                                id: self.state.id(),
+                                id: self.self.state.id(),
                                 span: Span::combine(start, semicolon),
                                 colon: start,
                                 statements,
@@ -283,12 +283,12 @@ impl<'a> Parser<'a> {
                             })
                         }
                         _ => {
-                            let expression = self.create();
+                            let expression = self.parse_expression();
                             let end = self.skip_semicolon();
                             let span = Span::combine(expression.span(), end.span());
 
                             DeclareBody::Expression(DeclareBodyExpression {
-                                id: self.state.id(),
+                                id: self.self.state.id(),
                                 span,
                                 expression,
                                 semicolon: end,
@@ -299,7 +299,7 @@ impl<'a> Parser<'a> {
                     let span = Span::combine(declare, body.span());
 
                     StatementKind::Declare(DeclareStatement {
-                        id: self.state.id(),
+                        id: self.self.state.id(),
                         span,
                         declare,
                         entries,
@@ -326,7 +326,7 @@ impl<'a> Parser<'a> {
                     let span = Span::combine(global, semicolon);
 
                     StatementKind::Global(GlobalStatement {
-                        id: self.state.id(),
+                        id: self.self.state.id(),
                         span,
                         global,
                         variables,
@@ -346,7 +346,7 @@ impl<'a> Parser<'a> {
                         if self.current_kind() == TokenKind::Equals {
                             self.next();
 
-                            default = Some(self.create());
+                            default = Some(self.parse_expression());
                         }
 
                         let span = if let Some(default) = &default {
@@ -356,7 +356,7 @@ impl<'a> Parser<'a> {
                         };
 
                         vars.push(StaticVar {
-                            id: self.state.id(),
+                            id: self.self.state.id(),
                             span,
                             var: Variable::SimpleVariable(var),
                             default,
@@ -373,7 +373,7 @@ impl<'a> Parser<'a> {
                     let span = Span::combine(current.span, semicolon);
 
                     StatementKind::Static(StaticStatement {
-                        id: self.state.id(),
+                        id: self.self.state.id(),
                         span,
                         vars,
                         semicolon,
@@ -384,7 +384,7 @@ impl<'a> Parser<'a> {
                     self.next();
 
                     StatementKind::InlineHtml(InlineHtmlStatement {
-                        id: self.state.id(),
+                        id: self.self.state.id(),
                         span: html.span,
                         html,
                     })
@@ -416,7 +416,7 @@ impl<'a> Parser<'a> {
                     //        but a more appropriate error would be that the expression is missing and
                     //        that the semi-colon is fine where it is (or at least not the real problem).
                     loop {
-                        values.push(self.create());
+                        values.push(self.parse_expression());
 
                         if self.current_kind() == TokenKind::Comma {
                             self.next();
@@ -429,7 +429,7 @@ impl<'a> Parser<'a> {
                     let end = ending.span();
 
                     StatementKind::Echo(EchoStatement {
-                        id: self.state.id(),
+                        id: self.self.state.id(),
                         span: Span::combine(echo, end),
                         echo,
                         values,
@@ -447,14 +447,14 @@ impl<'a> Parser<'a> {
                     ) {
                         None
                     } else {
-                        Some(self.create())
+                        Some(self.parse_expression())
                     };
 
                     let ending = self.skip_ending();
                     let end = ending.span();
 
                     StatementKind::Return(ReturnStatement {
-                        id: self.state.id(),
+                        id: self.self.state.id(),
                         span: Span::combine(r#return, end),
                         r#return,
                         value,
@@ -462,11 +462,11 @@ impl<'a> Parser<'a> {
                     })
                 }
                 _ => {
-                    let expression = self.create();
+                    let expression = self.parse_expression();
                     let ending = self.skip_ending();
 
                     StatementKind::Expression(ExpressionStatement {
-                        id: self.state.id(),
+                        id: self.self.state.id(),
                         span: Span::combine(expression.span, ending.span()),
                         expression,
                         ending,
@@ -477,6 +477,6 @@ impl<'a> Parser<'a> {
 
         let span = statement.span();
 
-        Statement::new(self.state.id(), statement, span, comments)
+        Statement::new(self.self.state.id(), statement, span, comments)
     }
 }

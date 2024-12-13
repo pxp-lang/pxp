@@ -14,27 +14,27 @@ use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
     pub fn parse_property(&mut self, modifiers: PropertyModifierGroup) -> Property {
-        let ty = data_type::parse_optional_data_type(state);
+        let ty = data_type::parse_optional_data_type();
 
         let mut entries = vec![];
         let mut type_checked = false;
         loop {
-            let variable = variables::parse_simple_variable(state);
+            let variable = variables::parse_simple_variable();
 
             if !type_checked {
                 type_checked = true;
                 if modifiers.has_readonly() && modifiers.has_static() {
-                    state.diagnostic(
+                    self.diagnostic(
                         ParserDiagnostic::StaticPropertyCannotBeReadonly,
                         Severity::Error,
-                        state.current().span,
+                        self.current().span,
                     );
                 }
 
                 match &ty {
                     Some(ty) => {
                         if ty.includes_callable() || ty.is_bottom() {
-                            state.diagnostic(
+                            self.diagnostic(
                                 ParserDiagnostic::ForbiddenTypeUsedInProperty,
                                 Severity::Error,
                                 ty.get_span(),
@@ -43,7 +43,7 @@ impl<'a> Parser<'a> {
                     }
                     None => {
                         if let Some(modifier) = modifiers.get_readonly() {
-                            state.diagnostic(
+                            self.diagnostic(
                                 ParserDiagnostic::ReadonlyPropertyMustHaveType,
                                 Severity::Error,
                                 modifier.span(),
@@ -53,25 +53,25 @@ impl<'a> Parser<'a> {
                 }
             }
 
-            let current = state.current();
+            let current = self.current();
             if current.kind == TokenKind::Equals {
                 if let Some(modifier) = modifiers.get_readonly() {
-                    state.diagnostic(
+                    self.diagnostic(
                         ParserDiagnostic::ReadonlyPropertyCannotHaveDefaultValue,
                         Severity::Error,
                         modifier.span(),
                     );
                 }
 
-                state.next();
-                let value = expressions::create(state);
+                self.next();
+                let value = self.parse_expression();
                 let span = Span::combine(variable.span, value.span);
 
                 entries.push(PropertyEntry {
-                    id: state.id(),
+                    id: self.state.id(),
                     span,
                     kind: PropertyEntryKind::Initialized(InitializedPropertyEntry {
-                        id: state.id(),
+                        id: self.state.id(),
                         span,
                         variable,
                         equals: current.span,
@@ -80,27 +80,27 @@ impl<'a> Parser<'a> {
                 });
             } else {
                 entries.push(PropertyEntry {
-                    id: state.id(),
+                    id: self.state.id(),
                     span: variable.span,
                     kind: PropertyEntryKind::Uninitialized(UninitializedPropertyEntry {
-                        id: state.id(),
+                        id: self.state.id(),
                         span: variable.span,
                         variable,
                     }),
                 });
             }
 
-            if state.current().kind == TokenKind::Comma {
-                state.next();
+            if self.current().kind == TokenKind::Comma {
+                self.next();
             } else {
                 break;
             }
         }
 
-        let end = utils::skip_semicolon(state);
+        let end = utils::skip_semicolon();
 
         Property {
-            id: state.id(),
+            id: self.state.id(),
             span: if ty.is_some() {
                 Span::combine(ty.span(), end)
             } else {
@@ -115,21 +115,21 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_var_property(&mut self) -> VariableProperty {
-        utils::skip(state, TokenKind::Var);
+        self.skip(TokenKind::Var);
 
-        let ty = data_type::parse_optional_data_type(state);
+        let ty = data_type::parse_optional_data_type();
 
         let mut entries: Vec<PropertyEntry> = vec![];
         let mut type_checked = false;
         loop {
-            let variable = variables::parse_simple_variable(state);
+            let variable = variables::parse_simple_variable();
 
             if !type_checked {
                 type_checked = true;
 
                 if let Some(ty) = &ty {
                     if ty.includes_callable() || ty.is_bottom() {
-                        state.diagnostic(
+                        self.diagnostic(
                             ParserDiagnostic::ForbiddenTypeUsedInProperty,
                             Severity::Error,
                             ty.get_span(),
@@ -138,17 +138,17 @@ impl<'a> Parser<'a> {
                 }
             }
 
-            let current = state.current();
+            let current = self.current();
             if current.kind == TokenKind::Equals {
-                state.next();
-                let value = expressions::create(state);
+                self.next();
+                let value = self.parse_expression();
                 let span = Span::combine(variable.span, value.span);
 
                 entries.push(PropertyEntry {
-                    id: state.id(),
+                    id: self.state.id(),
                     span,
                     kind: PropertyEntryKind::Initialized(InitializedPropertyEntry {
-                        id: state.id(),
+                        id: self.state.id(),
                         span,
                         variable,
                         equals: span,
@@ -157,27 +157,27 @@ impl<'a> Parser<'a> {
                 });
             } else {
                 entries.push(PropertyEntry {
-                    id: state.id(),
+                    id: self.state.id(),
                     span: variable.span,
                     kind: PropertyEntryKind::Uninitialized(UninitializedPropertyEntry {
-                        id: state.id(),
+                        id: self.state.id(),
                         span: variable.span,
                         variable,
                     }),
                 });
             }
 
-            if state.current().kind == TokenKind::Comma {
-                state.next();
+            if self.current().kind == TokenKind::Comma {
+                self.next();
             } else {
                 break;
             }
         }
 
-        let end = utils::skip_semicolon(state);
+        let end = utils::skip_semicolon();
 
         VariableProperty {
-            id: state.id(),
+            id: self.state.id(),
             span: if ty.is_some() {
                 Span::combine(ty.span(), end)
             } else {

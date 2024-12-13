@@ -8,24 +8,24 @@ use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
     pub fn skip_ending(&mut self) -> Ending {
-        let current = state.current();
+        let current = self.current();
         let previous = state.previous();
 
         if current.kind == TokenKind::CloseTag {
-            state.next();
+            self.next();
 
             Ending::CloseTag(current.span)
         } else if current.kind == TokenKind::SemiColon {
-            state.next();
+            self.next();
 
             Ending::Semicolon(current.span)
         } else {
             let span = Span::flat(previous.span.end);
 
             if state.is_eof() {
-                state.diagnostic(ParserDiagnostic::UnexpectedEndOfFile, Severity::Error, span);
+                self.diagnostic(ParserDiagnostic::UnexpectedEndOfFile, Severity::Error, span);
             } else {
-                state.diagnostic(
+                self.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::CloseTag, TokenKind::SemiColon],
                         found: current.clone(),
@@ -40,14 +40,14 @@ impl<'a> Parser<'a> {
     }
 
     pub fn skip_semicolon(&mut self) -> Span {
-        let current = state.current();
+        let current = self.current();
 
         if current.kind == TokenKind::SemiColon {
-            state.next();
+            self.next();
 
             current.span
         } else {
-            state.diagnostic(
+            self.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::SemiColon],
                     found: current.clone(),
@@ -97,11 +97,11 @@ impl<'a> Parser<'a> {
     }
 
     pub fn skip(&mut self, kind: TokenKind) -> Span {
-        while state.current().kind != kind {
-            let current = state.current();
+        while self.current().kind != kind {
+            let current = self.current();
 
             if state.is_eof() {
-                state.diagnostic(
+                self.diagnostic(
                     ParserDiagnostic::UnexpectedEndOfFileExpected {
                         expected: vec![kind],
                     },
@@ -111,9 +111,9 @@ impl<'a> Parser<'a> {
                 break;
             }
 
-            state.next();
+            self.next();
 
-            state.diagnostic(
+            self.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![kind],
                     found: current.clone(),
@@ -123,24 +123,24 @@ impl<'a> Parser<'a> {
             );
         }
 
-        let end = state.current().span;
+        let end = self.current().span;
 
-        state.next();
+        self.next();
 
         end
     }
 
     pub fn skip_any_of(&mut self, kinds: &[TokenKind]) -> Span {
-        let current = state.current();
+        let current = self.current();
 
         if kinds.contains(&current.kind) {
             let end = current.span;
 
-            state.next();
+            self.next();
 
             end
         } else {
-            state.diagnostic(
+            self.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: kinds.to_vec(),
                     found: current.clone(),
@@ -158,9 +158,9 @@ impl<'a> Parser<'a> {
     /// This function will skip the left parenthesis, call the given function,
     /// and then skip the right parenthesis.
     pub fn parenthesized<T>(&mut self, func: &(dyn Fn(&mut State) -> T)) -> (Span, T, Span) {
-        let left_parenthesis = skip_left_parenthesis(state);
-        let inner = func(state);
-        let right_parenthesis = skip_right_parenthesis(state);
+        let left_parenthesis = skip_left_parenthesis();
+        let inner = func();
+        let right_parenthesis = skip_right_parenthesis();
 
         (left_parenthesis, inner, right_parenthesis)
     }
@@ -170,42 +170,42 @@ impl<'a> Parser<'a> {
     /// This function will skip the left brace, call the given function,
     /// and then skip the right brace.
     pub fn braced<T>(&mut self, func: &(dyn Fn(&mut State) -> T)) -> (Span, T, Span) {
-        let left_brace = skip_left_brace(state);
-        let inner = func(state);
-        let right_brace = skip_right_brace(state);
+        let left_brace = skip_left_brace();
+        let inner = func();
+        let right_brace = skip_right_brace();
 
         (left_brace, inner, right_brace)
     }
 
     pub fn semicolon_terminated<T>(&mut self, func: &(dyn Fn(&mut State) -> T)) -> (Span, T) {
-        let inner = func(state);
-        let semicolon = skip_semicolon(state);
+        let inner = func();
+        let semicolon = skip_semicolon();
         (semicolon, inner)
     }
 
     /// Parse a comma-separated list of items, allowing a trailing comma.
     pub fn comma_separated<T>(
         &mut self,
-        func: &(dyn Fn(&mut State) -> T),
+        mut func: impl FnMut(&mut Parser) -> T,
         until: TokenKind,
     ) -> CommaSeparated<T> {
         let mut inner: Vec<T> = vec![];
         let mut commas: Vec<Span> = vec![];
-        let mut current = state.current();
+        let mut current = self.current();
 
         while current.kind != until {
-            inner.push(func(state));
+            inner.push(func(self));
 
-            current = state.current();
+            current = self.current();
             if current.kind != TokenKind::Comma {
                 break;
             }
 
             commas.push(current.span);
 
-            state.next();
+            self.next();
 
-            current = state.current();
+            current = self.current();
         }
 
         CommaSeparated { inner, commas }
@@ -219,12 +219,12 @@ impl<'a> Parser<'a> {
     ) -> CommaSeparated<T> {
         let mut inner: Vec<T> = vec![];
         let mut commas: Vec<Span> = vec![];
-        let mut current = state.current();
+        let mut current = self.current();
 
         while current.kind != until {
-            inner.push(func(state));
+            inner.push(func());
 
-            current = state.current();
+            current = self.current();
             if current.kind != TokenKind::Comma {
                 break;
             }
@@ -237,9 +237,9 @@ impl<'a> Parser<'a> {
 
             commas.push(current.span);
 
-            state.next();
+            self.next();
 
-            current = state.current();
+            current = self.current();
         }
 
         CommaSeparated { inner, commas }
@@ -254,16 +254,16 @@ impl<'a> Parser<'a> {
         let mut commas: Vec<Span> = vec![];
 
         loop {
-            inner.push(func(state));
+            inner.push(func());
 
-            let current = state.current();
+            let current = self.current();
             if current.kind != TokenKind::Comma {
                 break;
             }
 
             commas.push(current.span);
 
-            state.next();
+            self.next();
         }
 
         CommaSeparated { inner, commas }

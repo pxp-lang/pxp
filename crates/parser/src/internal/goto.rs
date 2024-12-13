@@ -10,11 +10,11 @@ use pxp_token::TokenKind;
 impl<'a> Parser<'a> {
     pub fn parse_label_statement(&mut self) -> StatementKind {
         let comments = state.comments();
-        let label = identifiers::parse_label_identifier(state);
-        let colon = utils::skip_colon(state);
+        let label = identifiers::parse_label_identifier();
+        let colon = utils::skip_colon();
 
         StatementKind::Label(LabelStatement {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(label.span, colon),
             comments,
             label,
@@ -24,12 +24,12 @@ impl<'a> Parser<'a> {
 
     pub fn parse_goto_statement(&mut self) -> StatementKind {
         let comments = state.comments();
-        let keyword = utils::skip(state, TokenKind::Goto);
-        let label = identifiers::parse_label_identifier(state);
-        let semicolon = utils::skip_semicolon(state);
+        let keyword = self.skip(TokenKind::Goto);
+        let label = identifiers::parse_label_identifier();
+        let semicolon = utils::skip_semicolon();
 
         StatementKind::Goto(GotoStatement {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(keyword, semicolon),
             comments,
             keyword,

@@ -13,43 +13,43 @@ use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
     pub fn parse_foreach_statement(&mut self) -> StatementKind {
-        let foreach = utils::skip(state, TokenKind::Foreach);
+        let foreach = self.skip(TokenKind::Foreach);
 
         let (left_parenthesis, iterator, right_parenthesis) =
             utils::parenthesized(state, &|&mut self| {
-                let expression = expressions::create(state);
+                let expression = self.parse_expression();
 
-                let r#as = utils::skip(state, TokenKind::As);
+                let r#as = self.skip(TokenKind::As);
 
-                let current = state.current();
+                let current = self.current();
                 let ampersand = if current.kind == TokenKind::Ampersand {
-                    state.next();
+                    self.next();
                     Some(current.span)
                 } else {
                     None
                 };
 
-                let mut value = expressions::create(state);
+                let mut value = self.parse_expression();
 
-                let current = state.current();
+                let current = self.current();
                 if current.kind == TokenKind::DoubleArrow {
-                    state.next();
+                    self.next();
                     let arrow = current.span;
 
-                    let current = state.current();
+                    let current = self.current();
                     let ampersand = if current.kind == TokenKind::Ampersand {
-                        state.next();
+                        self.next();
                         Some(current.span)
                     } else {
                         None
                     };
 
-                    let mut key = expressions::create(state);
+                    let mut key = self.parse_expression();
 
                     std::mem::swap(&mut value, &mut key);
 
                     ForeachStatementIterator::KeyAndValue(ForeachStatementIteratorKeyAndValue {
-                        id: state.id(),
+                        id: self.state.id(),
                         span: Span::combine(expression.span, value.span),
                         expression,
                         r#as,
@@ -60,7 +60,7 @@ impl<'a> Parser<'a> {
                     })
                 } else {
                     ForeachStatementIterator::Value(ForeachStatementIteratorValue {
-                        id: state.id(),
+                        id: self.state.id(),
                         span: Span::combine(expression.span, value.span),
                         expression,
                         r#as,
@@ -70,14 +70,14 @@ impl<'a> Parser<'a> {
                 }
             });
 
-        let body = if state.current().kind == TokenKind::Colon {
-            let colon = utils::skip_colon(state);
+        let body = if self.current().kind == TokenKind::Colon {
+            let colon = utils::skip_colon();
             let statements = blocks::parse_multiple_statements_until(state, &TokenKind::EndForeach);
-            let endforeach = utils::skip(state, TokenKind::EndForeach);
-            let ending = utils::skip_ending(state);
+            let endforeach = self.skip(TokenKind::EndForeach);
+            let ending = utils::skip_ending();
 
             ForeachStatementBody::Block(ForeachStatementBodyBlock {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(colon, ending.span()),
                 colon,
                 statements,
@@ -85,17 +85,17 @@ impl<'a> Parser<'a> {
                 ending,
             })
         } else {
-            let statement = statement(state);
+            let statement = statement();
 
             ForeachStatementBody::Statement(ForeachStatementBodyStatement {
-                id: state.id(),
+                id: self.state.id(),
                 span: statement.span,
                 statement: Box::new(statement),
             })
         };
 
         StatementKind::Foreach(ForeachStatement {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(foreach, body.span()),
             foreach,
             left_parenthesis,
@@ -106,7 +106,7 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_for_statement(&mut self) -> StatementKind {
-        let r#for = utils::skip(state, TokenKind::For);
+        let r#for = self.skip(TokenKind::For);
 
         let (left_parenthesis, iterator, right_parenthesis) =
             utils::parenthesized(state, &|state| {
@@ -135,7 +135,7 @@ impl<'a> Parser<'a> {
                 );
 
                 ForStatementIterator {
-                    id: state.id(),
+                    id: self.state.id(),
                     span: Span::combine(initializations.span(), r#loop.span()),
                     initializations,
                     initializations_semicolon,
@@ -145,14 +145,14 @@ impl<'a> Parser<'a> {
                 }
             });
 
-        let body = if state.current().kind == TokenKind::Colon {
-            let colon = utils::skip_colon(state);
+        let body = if self.current().kind == TokenKind::Colon {
+            let colon = utils::skip_colon();
             let statements = blocks::parse_multiple_statements_until(state, &TokenKind::EndFor);
-            let endfor = utils::skip(state, TokenKind::EndFor);
-            let ending = utils::skip_ending(state);
+            let endfor = self.skip(TokenKind::EndFor);
+            let ending = utils::skip_ending();
 
             ForStatementBody::Block(ForStatementBodyBlock {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(colon, ending.span()),
                 colon,
                 statements,
@@ -160,17 +160,17 @@ impl<'a> Parser<'a> {
                 ending,
             })
         } else {
-            let x = statement(state);
+            let x = statement();
 
             ForStatementBody::Statement(ForStatementBodyStatement {
-                id: state.id(),
+                id: self.state.id(),
                 span: x.span,
                 statement: Box::new(x),
             })
         };
 
         StatementKind::For(ForStatement {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(r#for, body.span()),
             r#for,
             left_parenthesis,
@@ -181,11 +181,11 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_do_while_statement(&mut self) -> StatementKind {
-        let r#do = utils::skip(state, TokenKind::Do);
+        let r#do = self.skip(TokenKind::Do);
 
-        let body = Box::new(statement(state));
+        let body = Box::new(statement());
 
-        let r#while = utils::skip(state, TokenKind::While);
+        let r#while = self.skip(TokenKind::While);
 
         let (semicolon, (left_parenthesis, condition, right_parenthesis)) =
             utils::semicolon_terminated(state, &|state| {
@@ -193,7 +193,7 @@ impl<'a> Parser<'a> {
             });
 
         StatementKind::DoWhile(DoWhileStatement {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(r#do, right_parenthesis),
             r#do,
             body,
@@ -206,19 +206,19 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_while_statement(&mut self) -> StatementKind {
-        let r#while = utils::skip(state, TokenKind::While);
+        let r#while = self.skip(TokenKind::While);
 
         let (left_parenthesis, condition, right_parenthesis) =
             utils::parenthesized(state, &expressions::create);
 
-        let body = if state.current().kind == TokenKind::Colon {
-            let colon = utils::skip_colon(state);
+        let body = if self.current().kind == TokenKind::Colon {
+            let colon = utils::skip_colon();
             let statements = blocks::parse_multiple_statements_until(state, &TokenKind::EndWhile);
-            let endwhile = utils::skip(state, TokenKind::EndWhile);
-            let ending = utils::skip_ending(state);
+            let endwhile = self.skip(TokenKind::EndWhile);
+            let ending = utils::skip_ending();
 
             WhileStatementBody::Block(WhileStatementBodyBlock {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(colon, ending.span()),
                 colon,
                 statements,
@@ -226,17 +226,17 @@ impl<'a> Parser<'a> {
                 ending,
             })
         } else {
-            let x = statement(state);
+            let x = statement();
 
             WhileStatementBody::Statement(WhileStatementBodyStatement {
-                id: state.id(),
+                id: self.state.id(),
                 span: x.span,
                 statement: Box::new(x),
             })
         };
 
         StatementKind::While(WhileStatement {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(r#while, body.span()),
             r#while,
             left_parenthesis,
@@ -247,12 +247,12 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_continue_statement(&mut self) -> StatementKind {
-        let r#continue = utils::skip(state, TokenKind::Continue);
-        let level = maybe_parse_loop_level(state);
-        let ending = utils::skip_ending(state);
+        let r#continue = self.skip(TokenKind::Continue);
+        let level = maybe_parse_loop_level();
+        let ending = utils::skip_ending();
 
         StatementKind::Continue(ContinueStatement {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(r#continue, ending.span()),
             r#continue,
             level,
@@ -261,12 +261,12 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_break_statement(&mut self) -> StatementKind {
-        let r#break = utils::skip(state, TokenKind::Break);
-        let level = maybe_parse_loop_level(state);
-        let ending = utils::skip_ending(state);
+        let r#break = self.skip(TokenKind::Break);
+        let level = maybe_parse_loop_level();
+        let ending = utils::skip_ending();
 
         StatementKind::Break(BreakStatement {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(r#break, ending.span()),
             r#break,
             level,
@@ -275,29 +275,29 @@ impl<'a> Parser<'a> {
     }
 
     fn maybe_parse_loop_level(&mut self) -> Option<Level> {
-        let current = &state.current().kind;
+        let current = &self.current().kind;
 
         if current == &TokenKind::SemiColon || current == &TokenKind::CloseTag {
             None
         } else {
-            Some(parse_loop_level(state))
+            Some(parse_loop_level())
         }
     }
 
     fn parse_loop_level(&mut self) -> Level {
-        let current = state.current();
+        let current = self.current();
 
         if let Token {
             kind: TokenKind::LiteralInteger,
             ..
         } = current
         {
-            state.next();
+            self.next();
 
             return Level::Literal(LiteralLevel {
-                id: state.id(),
+                id: self.state.id(),
                 literal: Literal::new(
-                    state.id(),
+                    self.state.id(),
                     LiteralKind::Integer,
                     current.clone(),
                     current.span,
@@ -306,10 +306,10 @@ impl<'a> Parser<'a> {
         }
 
         let (left_parenthesis, level, right_parenthesis) =
-            utils::parenthesized(state, &|state| Box::new(parse_loop_level(state)));
+            utils::parenthesized(state, &|state| Box::new(parse_loop_level()));
 
         Level::Parenthesized(ParenthesizedLevel {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(left_parenthesis, right_parenthesis),
             left_parenthesis,
             level,

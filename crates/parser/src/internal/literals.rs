@@ -6,25 +6,25 @@ use crate::{state::State, Parser, ParserDiagnostic};
 
 impl<'a> Parser<'a> {
     pub fn parse_literal(&mut self) -> Literal {
-        let token = state.current();
+        let token = self.current();
         let kind = match &token.kind {
             TokenKind::LiteralInteger => {
-                state.next();
+                self.next();
 
                 LiteralKind::Integer
             }
             TokenKind::LiteralFloat => {
-                state.next();
+                self.next();
 
                 LiteralKind::Float
             }
             TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString => {
-                state.next();
+                self.next();
 
                 LiteralKind::String
             }
             _ => {
-                state.diagnostic(
+                self.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![
                             TokenKind::LiteralInteger,
@@ -38,12 +38,12 @@ impl<'a> Parser<'a> {
                     token.span,
                 );
 
-                return Literal::missing(state.id(), token.span);
+                return Literal::missing(self.state.id(), token.span);
             }
         };
 
         Literal {
-            id: state.id(),
+            id: self.state.id(),
             span: token.span,
             kind,
             token: token.clone(),

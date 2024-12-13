@@ -17,14 +17,14 @@ use super::names;
 
 impl<'a> Parser<'a> {
     pub fn parse_enum(&mut self) -> StatementKind {
-        let span = utils::skip(state, TokenKind::Enum);
+        let span = self.skip(TokenKind::Enum);
 
-        let name = names::parse_type_name(state);
+        let name = names::parse_type_name();
 
         let backed_type: Option<(Span, BackedEnumType)> =
-            if state.current().kind == TokenKind::Colon {
-                let colon = utils::skip_colon(state);
-                let current = state.current();
+            if self.current().kind == TokenKind::Colon {
+                let colon = utils::skip_colon();
+                let current = self.current();
 
                 match current.kind {
                     TokenKind::Identifier => {
@@ -32,17 +32,17 @@ impl<'a> Parser<'a> {
 
                         Some(match &symbol[..] {
                             b"string" => {
-                                state.next();
+                                self.next();
                                 (colon, BackedEnumType::String(current.span))
                             }
                             b"int" => {
-                                state.next();
+                                self.next();
                                 (colon, BackedEnumType::Int(current.span))
                             }
                             _ => {
-                                state.next();
+                                self.next();
 
-                                state.diagnostic(
+                                self.diagnostic(
                                     ParserDiagnostic::InvalidBackedEnumType,
                                     Severity::Error,
                                     current.span,
@@ -53,7 +53,7 @@ impl<'a> Parser<'a> {
                         })
                     }
                     TokenKind::LeftBrace => {
-                        state.diagnostic(
+                        self.diagnostic(
                             ParserDiagnostic::UnexpectedToken {
                                 token: current.clone(),
                             },
@@ -64,9 +64,9 @@ impl<'a> Parser<'a> {
                         Some((colon, BackedEnumType::Invalid))
                     }
                     _ => {
-                        state.next();
+                        self.next();
 
-                        state.diagnostic(
+                        self.diagnostic(
                             ParserDiagnostic::InvalidBackedEnumType,
                             Severity::Error,
                             current.span,
@@ -80,14 +80,14 @@ impl<'a> Parser<'a> {
             };
 
         let mut implements = Vec::new();
-        if state.current().kind == TokenKind::Implements {
-            state.next();
+        if self.current().kind == TokenKind::Implements {
+            self.next();
 
-            while state.current().kind != TokenKind::LeftBrace {
+            while self.current().kind != TokenKind::LeftBrace {
                 implements.push(names::parse_full_name(state, UseKind::Normal));
 
-                if state.current().kind == TokenKind::Comma {
-                    state.next();
+                if self.current().kind == TokenKind::Comma {
+                    self.next();
                 } else {
                     break;
                 }
@@ -96,21 +96,21 @@ impl<'a> Parser<'a> {
 
         let attributes = state.get_attributes();
         if let Some((colon, backed_type)) = backed_type {
-            let left_brace = utils::skip_left_brace(state);
+            let left_brace = utils::skip_left_brace();
             let members = {
                 let mut members = Vec::new();
-                while state.current().kind != TokenKind::RightBrace {
-                    if let Some(member) = parse_backed_member(state) {
+                while self.current().kind != TokenKind::RightBrace {
+                    if let Some(member) = parse_backed_member() {
                         members.push(member);
                     }
                 }
 
                 members
             };
-            let right_brace = utils::skip_right_brace(state);
+            let right_brace = utils::skip_right_brace();
 
             let body = BackedEnumBody {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(left_brace, right_brace),
                 left_brace,
                 members,
@@ -118,7 +118,7 @@ impl<'a> Parser<'a> {
             };
 
             StatementKind::BackedEnum(BackedEnumStatement {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(span, body.span),
                 r#enum: span,
                 name,
@@ -129,21 +129,21 @@ impl<'a> Parser<'a> {
                 body,
             })
         } else {
-            let left_brace = utils::skip_left_brace(state);
+            let left_brace = utils::skip_left_brace();
             let members = {
                 let mut members = Vec::new();
-                while state.current().kind != TokenKind::RightBrace {
-                    if let Some(member) = parse_unit_member(state) {
+                while self.current().kind != TokenKind::RightBrace {
+                    if let Some(member) = parse_unit_member() {
                         members.push(member);
                     }
                 }
 
                 members
             };
-            let right_brace = utils::skip_right_brace(state);
+            let right_brace = utils::skip_right_brace();
 
             let body = UnitEnumBody {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(left_brace, right_brace),
                 left_brace,
                 members,
@@ -151,7 +151,7 @@ impl<'a> Parser<'a> {
             };
 
             StatementKind::UnitEnum(UnitEnumStatement {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(span, body.span),
                 r#enum: span,
                 name,
@@ -163,25 +163,25 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_unit_member(&mut self) -> Option<UnitEnumMember> {
-        let _has_attributes = attributes::gather_attributes(state);
+        let _has_attributes = attributes::gather_attributes();
 
-        let current = state.current();
+        let current = self.current();
         if current.kind == TokenKind::Case {
             let attributes = state.get_attributes();
 
             let start = current.span;
-            state.next();
+            self.next();
 
-            let name = identifiers::parse_identifier_maybe_reserved(state);
+            let name = identifiers::parse_identifier_maybe_reserved();
 
-            let current = state.current();
+            let current = self.current();
             if current.kind == TokenKind::Equals {
                 // parse the value, but don't do anything with it.
-                let equals = utils::skip(state, TokenKind::Equals);
-                let expression = expressions::create(state);
-                utils::skip_semicolon(state);
+                let equals = self.skip(TokenKind::Equals);
+                let expression = self.parse_expression();
+                utils::skip_semicolon();
 
-                state.diagnostic(
+                self.diagnostic(
                     ParserDiagnostic::UnitEnumsCannotHaveCaseValues,
                     Severity::Error,
                     Span::new(equals.start, expression.span.end),
@@ -190,10 +190,10 @@ impl<'a> Parser<'a> {
                 return None;
             }
 
-            let end = utils::skip_semicolon(state);
+            let end = utils::skip_semicolon();
 
             return Some(UnitEnumMember::Case(UnitEnumCase {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(start, end),
                 start,
                 end,
@@ -208,23 +208,23 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_backed_member(&mut self) -> Option<BackedEnumMember> {
-        let _has_attributes = attributes::gather_attributes(state);
+        let _has_attributes = attributes::gather_attributes();
 
-        let current = state.current();
+        let current = self.current();
         if current.kind == TokenKind::Case {
             let attributes = state.get_attributes();
 
             let case = current.span;
-            state.next();
+            self.next();
 
-            let name = identifiers::parse_identifier_maybe_reserved(state);
+            let name = identifiers::parse_identifier_maybe_reserved();
 
-            let current = state.current();
+            let current = self.current();
             if current.kind == TokenKind::SemiColon {
                 // parse the semicolon, but don't do anything with it.
-                let semi = utils::skip_semicolon(state);
+                let semi = utils::skip_semicolon();
 
-                state.diagnostic(
+                self.diagnostic(
                     ParserDiagnostic::BackedEnumCaseMustHaveValue,
                     Severity::Error,
                     Span::new(case.start, semi.end),
@@ -233,14 +233,14 @@ impl<'a> Parser<'a> {
                 return None;
             }
 
-            let equals = utils::skip(state, TokenKind::Equals);
+            let equals = self.skip(TokenKind::Equals);
 
-            let value = expressions::create(state);
+            let value = self.parse_expression();
 
-            let semicolon = utils::skip_semicolon(state);
+            let semicolon = utils::skip_semicolon();
 
             return Some(BackedEnumMember::Case(BackedEnumCase {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(case, semicolon),
                 attributes,
                 case,

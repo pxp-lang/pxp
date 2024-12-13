@@ -1,15 +1,15 @@
 use std::fmt::Display;
 
-use pxp_token::{Token, TokenKind};
+use pxp_token::{OwnedToken, TokenKind};
 
 #[derive(Debug, Clone)]
 pub enum ParserDiagnostic {
     UnexpectedToken {
-        token: Token,
+        token: OwnedToken,
     },
     ExpectedToken {
         expected: Vec<TokenKind>,
-        found: Token,
+        found: OwnedToken,
     },
     ExpectedTokenExFound {
         expected: Vec<TokenKind>,

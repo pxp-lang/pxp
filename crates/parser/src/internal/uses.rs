@@ -17,64 +17,64 @@ use super::names;
 
 impl<'a> Parser<'a> {
     pub fn parse_use_statement(&mut self) -> StatementKind {
-        let r#use = state.current().span;
+        let r#use = self.current().span;
 
-        state.next();
+        self.next();
 
-        let kind = match state.current().kind {
+        let kind = match self.current().kind {
             TokenKind::Function => {
-                state.next();
+                self.next();
                 UseKind::Function
             }
             TokenKind::Const => {
-                state.next();
+                self.next();
                 UseKind::Const
             }
             _ => UseKind::Normal,
         };
 
         if state.peek().kind == TokenKind::LeftBrace {
-            let prefix = identifiers::parse_full_name_identifier(state);
+            let prefix = identifiers::parse_full_name_identifier();
             let prefix_symbol = prefix.symbol.clone();
 
-            state.next();
+            self.next();
 
             let mut uses = Vec::new();
-            while state.current().kind != TokenKind::RightBrace {
-                let start_span = state.current().span;
-                let use_kind = match state.current().kind {
+            while self.current().kind != TokenKind::RightBrace {
+                let start_span = self.current().span;
+                let use_kind = match self.current().kind {
                     TokenKind::Function => {
                         if kind != UseKind::Normal {
-                            state.diagnostic(
+                            self.diagnostic(
                                 ParserDiagnostic::MixedImportTypes,
                                 Severity::Error,
-                                state.current().span,
+                                self.current().span,
                             );
                         }
 
-                        state.next();
+                        self.next();
                         Some(UseKind::Function)
                     }
                     TokenKind::Const => {
                         if kind != UseKind::Normal {
-                            state.diagnostic(
+                            self.diagnostic(
                                 ParserDiagnostic::MixedImportTypes,
                                 Severity::Error,
-                                state.current().span,
+                                self.current().span,
                             );
                         }
 
-                        state.next();
+                        self.next();
                         Some(UseKind::Const)
                     }
                     _ => None,
                 };
 
-                let name = identifiers::parse_full_type_name_identifier(state);
+                let name = identifiers::parse_full_type_name_identifier();
                 let mut alias = None;
-                if state.current().kind == TokenKind::As {
-                    state.next();
-                    alias = Some(identifiers::parse_type_identifier(state));
+                if self.current().kind == TokenKind::As {
+                    self.next();
+                    alias = Some(identifiers::parse_type_identifier());
                 }
 
                 let symbol = name.symbol.clone();
@@ -83,10 +83,10 @@ impl<'a> Parser<'a> {
                 let end_span = state.previous().span;
 
                 uses.push(Use {
-                    id: state.id(),
+                    id: self.state.id(),
                     span: Span::combine(start_span, end_span),
                     name: Name::resolved(
-                        state.id(),
+                        self.state.id(),
                         prefix_symbol
                             .clone()
                             .coagulate(&[name.symbol.clone()], Some(b"\\")),
@@ -104,17 +104,17 @@ impl<'a> Parser<'a> {
                     alias_symbol,
                 );
 
-                if state.current().kind == TokenKind::Comma {
-                    state.next();
+                if self.current().kind == TokenKind::Comma {
+                    self.next();
                     continue;
                 }
             }
 
-            utils::skip_right_brace(state);
-            let semicolon = utils::skip_semicolon(state);
+            utils::skip_right_brace();
+            let semicolon = utils::skip_semicolon();
 
             StatementKind::GroupUse(GroupUseStatement {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(prefix.span, semicolon),
                 prefix,
                 kind,
@@ -123,19 +123,19 @@ impl<'a> Parser<'a> {
         } else {
             let mut uses = Vec::new();
             while !state.is_eof() {
-                let start_span = state.current().span;
-                let name = names::parse_use_name(state);
+                let start_span = self.current().span;
+                let name = names::parse_use_name();
                 let mut alias = None;
-                if state.current().kind == TokenKind::As {
-                    state.next();
-                    alias = Some(identifiers::parse_type_identifier(state));
+                if self.current().kind == TokenKind::As {
+                    self.next();
+                    alias = Some(identifiers::parse_type_identifier());
                 }
 
                 let alias_symbol = alias.as_ref().map(|a| a.symbol.clone());
                 let end_span = state.previous().span;
 
                 uses.push(Use {
-                    id: state.id(),
+                    id: self.state.id(),
                     span: Span::combine(start_span, end_span),
                     name: name.clone(),
                     kind: None,
@@ -144,19 +144,19 @@ impl<'a> Parser<'a> {
 
                 state.add_import(&kind, name.symbol().clone(), alias_symbol);
 
-                if state.current().kind == TokenKind::Comma {
-                    state.next();
+                if self.current().kind == TokenKind::Comma {
+                    self.next();
                     continue;
                 }
 
-                utils::skip_semicolon(state);
+                utils::skip_semicolon();
                 break;
             }
 
             let span = Span::combine(r#use, state.previous().span);
 
             StatementKind::Use(UseStatement {
-                id: state.id(),
+                id: self.state.id(),
                 span,
                 uses,
                 kind,

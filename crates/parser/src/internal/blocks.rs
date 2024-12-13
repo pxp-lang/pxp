@@ -16,7 +16,7 @@ impl<'a> Parser<'a> {
         });
 
         StatementKind::Block(BlockStatement {
-            id: state.id(),
+            id: self.state.id(),
             span: Span::combine(left_brace, right_brace),
             left_brace,
             statements,
@@ -27,17 +27,17 @@ impl<'a> Parser<'a> {
     pub fn parse_multiple_statements_until(&mut self, until: &TokenKind) -> Vec<Statement> {
         let mut statements = Vec::new();
 
-        let mut current = state.current();
+        let mut current = self.current();
         while &current.kind != until {
             if let TokenKind::OpenTag(OpenTagKind::Full) = current.kind {
-                state.next();
+                self.next();
 
-                current = state.current();
+                current = self.current();
                 continue;
             }
 
-            statements.push(statement(state));
-            current = state.current();
+            statements.push(statement());
+            current = self.current();
         }
 
         statements
@@ -46,17 +46,17 @@ impl<'a> Parser<'a> {
     pub fn parse_multiple_statements_until_any(&mut self, until: &[TokenKind]) -> Vec<Statement> {
         let mut statements = Vec::new();
 
-        let mut current = state.current();
+        let mut current = self.current();
         while !until.contains(&current.kind) {
             if let TokenKind::OpenTag(OpenTagKind::Full) = current.kind {
-                state.next();
+                self.next();
 
-                current = state.current();
+                current = self.current();
                 continue;
             }
 
-            statements.push(statement(state));
-            current = state.current();
+            statements.push(statement());
+            current = self.current();
         }
 
         statements
