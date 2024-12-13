@@ -54,20 +54,20 @@ use pxp_ast::YieldExpression;
 use pxp_ast::YieldFromExpression;
 
 impl<'a> Parser<'a> {
-    pub fn create(state: &mut State) -> Expression {
-        for_precedence(state, Precedence::Lowest)
+    pub fn create(&mut self) -> Expression {
+        self.for_precedence(Precedence::Lowest)
     }
 
-    fn null_coalesce_precedence(state: &mut State) -> Expression {
-        for_precedence(state, Precedence::NullCoalesce)
+    fn null_coalesce_precedence(&mut self) -> Expression {
+        self.for_precedence(Precedence::NullCoalesce)
     }
 
-    fn clone_or_new_precedence(state: &mut State) -> Expression {
-        for_precedence(state, Precedence::CloneOrNew)
+    fn clone_or_new_precedence(&mut self) -> Expression {
+        self.for_precedence(Precedence::CloneOrNew)
     }
 
-    fn for_precedence(state: &mut State, precedence: Precedence) -> Expression {
-        let mut left = left(state, &precedence);
+    fn for_precedence(&mut self, precedence: Precedence) -> Expression {
+        let mut left = self.left(&precedence);
 
         loop {
             let current = state.current();
@@ -1103,7 +1103,7 @@ impl<'a> Parser<'a> {
         *expr = new_expression;
     }
 
-    pub fn attributes(state: &mut State) -> Expression {
+    pub fn attributes(&mut self) -> Expression {
         attributes::gather_attributes(state);
 
         let current = state.current();
@@ -1129,7 +1129,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn left(state: &mut State, precedence: &Precedence) -> Expression {
+    fn left(&mut self, precedence: &Precedence) -> Expression {
         if state.is_eof() {
             state.diagnostic(
                 ParserDiagnostic::UnexpectedEndOfFile,
@@ -2231,7 +2231,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn unexpected_token(state: &mut State, _: &Precedence) -> Expression {
+    fn unexpected_token(&mut self, _: &Precedence) -> Expression {
         let current = state.current();
 
         state.diagnostic(
@@ -2250,7 +2250,7 @@ impl<'a> Parser<'a> {
         Expression::missing(state.id(), current.span)
     }
 
-    fn postfix(state: &mut State, lhs: Expression, op: &TokenKind) -> Expression {
+    fn postfix(&mut self, lhs: Expression, op: &TokenKind) -> Expression {
         let start_span = state.current().span;
         let kind = match op {
             TokenKind::DoubleQuestion => {

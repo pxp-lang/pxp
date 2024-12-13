@@ -1,32 +1,31 @@
+use pxp_ast::{ClosingTagStatement, DeclareBody, DeclareBodyBlock, DeclareBodyBraced, DeclareBodyExpression, DeclareBodyNoop, DeclareEntry, DeclareEntryGroup, DeclareStatement, EchoOpeningTagStatement, EchoStatement, ExpressionStatement, FullOpeningTagStatement, GlobalStatement, HaltCompilerStatement, InlineHtmlStatement, ReturnStatement, ShortOpeningTagStatement, Statement, StatementKind, StaticStatement, StaticVar, Variable};
+use pxp_span::{Span, Spanned};
+use pxp_token::{OpenTagKind, TokenKind};
+
 use crate::Parser;
 
 impl<'a> Parser<'a> {
-    fn top_level_statement(&mut self) -> Statement {
-        let start_span = state.current().span;
-        let current = state.current();
-
-        match &current.kind {
+    pub(crate) fn parse_top_level_statement(&mut self) -> Statement {
+        match self.current_kind() {
             TokenKind::Namespace | TokenKind::Use | TokenKind::Const | TokenKind::HaltCompiler => {
-                let comments = state.comments();
-                let kind = match &state.current().kind {
-                    TokenKind::Namespace => namespaces::parse_namespace(state),
-                    TokenKind::Use => uses::parse_use_statement(state),
-                    TokenKind::Const => StatementKind::Constant(constants::parse_constant(state)),
+                let comments = self.state.comments();
+                let kind = match self.current_kind() {
+                    TokenKind::Namespace => self.parse_namespace(),
+                    TokenKind::Use => self.parse_use_statement(),
+                    TokenKind::Const => StatementKind::Constant(self.parse_constant()),
                     TokenKind::HaltCompiler => {
-                        let start = current.span;
+                        let start = self.next();
 
-                        state.next();
+                        let (span, content) = if let TokenKind::InlineHtml = self.current_kind() {
+                            let content = self.next_but_first(|parser| parser.current().to_owned());
 
-                        let (span, content) = if let TokenKind::InlineHtml = state.current().kind {
-                            let content = state.current().clone();
-                            state.next();
                             (Span::combine(start, content.span), Some(content))
                         } else {
                             (start, None)
                         };
 
                         StatementKind::HaltCompiler(HaltCompilerStatement {
-                            id: state.id(),
+                            id: self.state.id(),
                             span,
                             content,
                         })
@@ -34,77 +33,78 @@ impl<'a> Parser<'a> {
                     _ => unreachable!(),
                 };
 
+                let span = kind.span();
+
                 Statement::new(
-                    state.id(),
+                    self.state.id(),
                     kind,
-                    Span::new(start_span.start, state.previous().span.end),
+                    span,
                     comments,
                 )
             }
-            _ => statement(state),
+            _ => self.parse_statement(),
         }
     }
 
-    fn statement(&mut self) -> Statement {
-        let start_span = state.current().span;
-        let comments = state.comments();
+    pub(crate) fn parse_statement(&mut self) -> Statement {
+        let start = self.current_span();
+        let comments = self.state.comments();
 
-        let has_attributes = attributes::gather_attributes(state);
-        let current = state.current();
-        let peek = state.peek();
+        let has_attributes = self.gather_attributes();
+        let current = self.current();
+        let peek = self.peek();
+
         let statement = if has_attributes {
-            match &current.kind {
-                TokenKind::Abstract => classes::parse_class(state),
-                TokenKind::Readonly if peek.kind != TokenKind::LeftParen => {
-                    classes::parse_class(state)
-                }
-                TokenKind::Final => classes::parse_class(state),
-                TokenKind::Class => classes::parse_class(state),
-                TokenKind::Interface => interfaces::parse_interface(state),
-                TokenKind::Trait => traits::parse_trait(state),
+            match self.current_kind() {
+                TokenKind::Abstract => self.parse_class(),
+                TokenKind::Readonly if peek.kind != TokenKind::LeftParen => self.parse_class(),
+                TokenKind::Final => self.parse_class(),
+                TokenKind::Class => self.parse_class(),
+                TokenKind::Interface => self.parse_interface(),
+                TokenKind::Trait => self.parse_trait(),
                 TokenKind::Enum
                     if !matches!(
                         peek.kind,
                         TokenKind::LeftParen | TokenKind::DoubleColon | TokenKind::Colon,
                     ) =>
                 {
-                    enums::parse_enum(state)
+                    self.parse_enum()
                 }
                 TokenKind::Function
-                    if identifiers::is_identifier_maybe_soft_reserved(&peek.kind)
+                    if self.is_identifier_maybe_soft_reserved(&peek.kind)
                         || peek.kind == TokenKind::Ampersand =>
                 {
                     if peek.kind == TokenKind::Ampersand {
-                        if !identifiers::is_identifier_maybe_soft_reserved(&state.lookahead(1).kind)
+                        if !self.is_identifier_maybe_soft_reserved(&state.lookahead(1).kind)
                         {
-                            let expression = expressions::attributes(state);
-                            let ending = utils::skip_ending(state);
+                            let expression = self.attributes();
+                            let ending = self.skip_ending();
                             let ending_span = ending.span();
 
-                            let span = Span::combine(start_span, ending_span);
+                            let span = Span::combine(start, ending_span);
                             let kind = StatementKind::Expression(ExpressionStatement {
-                                id: state.id(),
+                                id: self.state.id(),
                                 span,
                                 expression,
                                 ending,
                             });
 
-                            return Statement::new(state.id(), kind, span, comments);
+                            return Statement::new(self.state.id(), kind, span, comments);
                         }
 
-                        functions::parse_function(state)
+                        self.parse_function()
                     } else {
-                        functions::parse_function(state)
+                        self.parse_function()
                     }
                 }
                 _ => {
                     let start = current.span;
-                    let expression = expressions::attributes(state);
-                    let ending = utils::skip_ending(state);
+                    let expression = self.attributes();
+                    let ending = self.skip_ending();
                     let ending_span = ending.span();
 
                     StatementKind::Expression(ExpressionStatement {
-                        id: state.id(),
+                        id: self.state.id(),
                         span: Span::combine(start, ending_span),
                         expression,
                         ending,
@@ -115,124 +115,124 @@ impl<'a> Parser<'a> {
             match &current.kind {
                 TokenKind::OpenTag(OpenTagKind::Echo) => {
                     let span = current.span;
-                    state.next();
+                    self.next();
 
                     StatementKind::EchoOpeningTag(EchoOpeningTagStatement {
-                        id: state.id(),
+                        id: self.state.id(),
                         span,
                     })
                 }
                 TokenKind::OpenTag(OpenTagKind::Full) => {
                     let span = current.span;
-                    state.next();
+                    self.next();
 
                     StatementKind::FullOpeningTag(FullOpeningTagStatement {
-                        id: state.id(),
+                        id: self.state.id(),
                         span,
                     })
                 }
                 TokenKind::OpenTag(OpenTagKind::Short) => {
                     let span = current.span;
-                    state.next();
+                    self.next();
 
                     StatementKind::ShortOpeningTag(ShortOpeningTagStatement {
-                        id: state.id(),
+                        id: self.state.id(),
                         span,
                     })
                 }
                 TokenKind::CloseTag => {
                     let span = current.span;
-                    state.next();
+                    self.next();
 
                     StatementKind::ClosingTag(ClosingTagStatement {
-                        id: state.id(),
+                        id: self.state.id(),
                         span,
                     })
                 }
-                TokenKind::Abstract => classes::parse_class(state),
+                TokenKind::Abstract => self.parse_class(),
                 TokenKind::Readonly if peek.kind != TokenKind::LeftParen => {
-                    classes::parse_class(state)
+                    self.parse_class()
                 }
-                TokenKind::Final => classes::parse_class(state),
-                TokenKind::Class => classes::parse_class(state),
-                TokenKind::Interface => interfaces::parse_interface(state),
-                TokenKind::Trait => traits::parse_trait(state),
+                TokenKind::Final => self.parse_class(),
+                TokenKind::Class => self.parse_class(),
+                TokenKind::Interface => self.parse_interface(),
+                TokenKind::Trait => self.parse_trait(),
                 TokenKind::Enum
                     if !matches!(
                         peek.kind,
                         TokenKind::LeftParen | TokenKind::DoubleColon | TokenKind::Colon,
                     ) =>
                 {
-                    enums::parse_enum(state)
+                    self.parse_enum()
                 }
                 TokenKind::Function
-                    if identifiers::is_identifier_maybe_soft_reserved(&peek.kind)
+                    if self.is_identifier_maybe_soft_reserved(&peek.kind)
                         || peek.kind == TokenKind::Ampersand =>
                 {
                     if peek.kind == TokenKind::Ampersand {
-                        if !identifiers::is_identifier_maybe_soft_reserved(&state.lookahead(1).kind)
+                        if !self.is_identifier_maybe_soft_reserved(&state.lookahead(1).kind)
                         {
-                            let expression = expressions::attributes(state);
-                            let ending = utils::skip_ending(state);
+                            let expression = self.attributes();
+                            let ending = self.skip_ending();
                             let ending_span = ending.span();
 
-                            let span = Span::combine(start_span, ending_span);
+                            let span = Span::combine(start, ending_span);
 
                             let kind = StatementKind::Expression(ExpressionStatement {
-                                id: state.id(),
+                                id: self.state.id(),
                                 span,
                                 expression,
                                 ending,
                             });
 
-                            return Statement::new(state.id(), kind, span, comments);
+                            return Statement::new(self.state.id(), kind, span, comments);
                         }
 
-                        functions::parse_function(state)
+                        self.parse_function()
                     } else {
-                        functions::parse_function(state)
+                        self.parse_function()
                     }
                 }
-                TokenKind::Goto => goto::parse_goto_statement(state),
+                TokenKind::Goto => self.parse_goto_statement(),
                 token
-                    if identifiers::is_identifier_maybe_reserved(token)
+                    if self.is_identifier_maybe_reserved(token)
                         && peek.kind == TokenKind::Colon =>
                 {
-                    goto::parse_label_statement(state)
+                    self.parse_label_statement()
                 }
                 TokenKind::Declare => {
-                    let declare = utils::skip(state, TokenKind::Declare);
+                    let declare = self.skip(TokenKind::Declare);
 
                     let entries = {
-                        let start = utils::skip_left_parenthesis(state);
+                        let start = self.skip_left_parenthesis();
                         let mut entries = Vec::new();
                         loop {
-                            let key = identifiers::parse_identifier(state);
+                            let key = self.parse_identifier();
                             let start = key.span;
-                            let equals = utils::skip(state, TokenKind::Equals);
-                            let value = parse_literal(state);
+                            let equals = self.skip(TokenKind::Equals);
+                            let value = self.parse_literal();
                             let end = value.span;
 
                             entries.push(DeclareEntry {
-                                id: state.id(),
+                                id: self.state.id(),
                                 span: Span::combine(start, end),
                                 key,
                                 equals,
                                 value,
                             });
 
-                            if state.current().kind == TokenKind::Comma {
-                                state.next();
+                            if self.current_kind() == TokenKind::Comma {
+                                self.next();
                             } else {
                                 break;
                             }
                         }
 
-                        let end = utils::skip_right_parenthesis(state);
+                        let end = self.skip_right_parenthesis();
                         let span = Span::combine(start, end);
 
                         DeclareEntryGroup {
-                            id: state.id(),
+                            id: self.state.id(),
                             span,
                             left_parenthesis: start,
                             entries,
@@ -240,26 +240,25 @@ impl<'a> Parser<'a> {
                         }
                     };
 
-                    let body = match state.current().kind {
+                    let body = match self.current_kind() {
                         TokenKind::SemiColon => {
-                            let span = utils::skip_semicolon(state);
+                            let span = self.skip_semicolon();
 
                             DeclareBody::Noop(DeclareBodyNoop {
-                                id: state.id(),
+                                id: self.state.id(),
                                 span,
                                 semicolon: span,
                             })
                         }
                         TokenKind::LeftBrace => {
-                            let start = utils::skip_left_brace(state);
-                            let statements = blocks::parse_multiple_statements_until(
-                                state,
+                            let start = self.skip_left_brace();
+                            let statements = self.parse_multiple_statements_until(
                                 &TokenKind::RightBrace,
                             );
-                            let end = utils::skip_right_brace(state);
+                            let end = self.skip_right_brace();
 
                             DeclareBody::Braced(DeclareBodyBraced {
-                                id: state.id(),
+                                id: self.state.id(),
                                 span: Span::combine(start, end),
                                 left_brace: start,
                                 statements,
@@ -267,16 +266,15 @@ impl<'a> Parser<'a> {
                             })
                         }
                         TokenKind::Colon => {
-                            let start = utils::skip_colon(state);
-                            let statements = blocks::parse_multiple_statements_until(
-                                state,
+                            let start = self.skip_colon();
+                            let statements = self.parse_multiple_statements_until(
                                 &TokenKind::EndDeclare,
                             );
-                            let enddeclare = utils::skip(state, TokenKind::EndDeclare);
-                            let semicolon = utils::skip_semicolon(state);
+                            let enddeclare = self.skip(TokenKind::EndDeclare);
+                            let semicolon = self.skip_semicolon();
 
                             DeclareBody::Block(DeclareBodyBlock {
-                                id: state.id(),
+                                id: self.state.id(),
                                 span: Span::combine(start, semicolon),
                                 colon: start,
                                 statements,
@@ -285,12 +283,12 @@ impl<'a> Parser<'a> {
                             })
                         }
                         _ => {
-                            let expression = expressions::create(state);
-                            let end = utils::skip_semicolon(state);
+                            let expression = self.create();
+                            let end = self.skip_semicolon();
                             let span = Span::combine(expression.span(), end.span());
 
                             DeclareBody::Expression(DeclareBodyExpression {
-                                id: state.id(),
+                                id: self.state.id(),
                                 span,
                                 expression,
                                 semicolon: end,
@@ -301,7 +299,7 @@ impl<'a> Parser<'a> {
                     let span = Span::combine(declare, body.span());
 
                     StatementKind::Declare(DeclareStatement {
-                        id: state.id(),
+                        id: self.state.id(),
                         span,
                         declare,
                         entries,
@@ -310,25 +308,25 @@ impl<'a> Parser<'a> {
                 }
                 TokenKind::Global => {
                     let global = current.span;
-                    state.next();
+                    self.next();
 
                     let mut variables = vec![];
                     // `loop` instead of `while` as we don't allow for extra commas.
                     loop {
-                        variables.push(variables::parse_dynamic_variable(state));
+                        variables.push(self.parse_dynamic_variable());
 
-                        if state.current().kind == TokenKind::Comma {
-                            state.next();
+                        if self.current_kind() == TokenKind::Comma {
+                            self.next();
                         } else {
                             break;
                         }
                     }
 
-                    let semicolon = utils::skip_semicolon(state);
+                    let semicolon = self.skip_semicolon();
                     let span = Span::combine(global, semicolon);
 
                     StatementKind::Global(GlobalStatement {
-                        id: state.id(),
+                        id: self.state.id(),
                         span,
                         global,
                         variables,
@@ -336,19 +334,19 @@ impl<'a> Parser<'a> {
                     })
                 }
                 TokenKind::Static if matches!(peek.kind, TokenKind::Variable) => {
-                    state.next();
+                    self.next();
 
                     let mut vars = vec![];
 
                     // `loop` instead of `while` as we don't allow for extra commas.
                     loop {
-                        let var = variables::parse_simple_variable(state);
+                        let var = self.parse_simple_variable();
                         let mut default = None;
 
-                        if state.current().kind == TokenKind::Equals {
-                            state.next();
+                        if self.current_kind() == TokenKind::Equals {
+                            self.next();
 
-                            default = Some(expressions::create(state));
+                            default = Some(self.create());
                         }
 
                         let span = if let Some(default) = &default {
@@ -358,59 +356,59 @@ impl<'a> Parser<'a> {
                         };
 
                         vars.push(StaticVar {
-                            id: state.id(),
+                            id: self.state.id(),
                             span,
                             var: Variable::SimpleVariable(var),
                             default,
                         });
 
-                        if state.current().kind == TokenKind::Comma {
-                            state.next();
+                        if self.current_kind() == TokenKind::Comma {
+                            self.next();
                         } else {
                             break;
                         }
                     }
 
-                    let semicolon = utils::skip_semicolon(state);
+                    let semicolon = self.skip_semicolon();
                     let span = Span::combine(current.span, semicolon);
 
                     StatementKind::Static(StaticStatement {
-                        id: state.id(),
+                        id: self.state.id(),
                         span,
                         vars,
                         semicolon,
                     })
                 }
                 TokenKind::InlineHtml => {
-                    let html = state.current().clone();
-                    state.next();
+                    let html = self.current().to_owned();
+                    self.next();
 
                     StatementKind::InlineHtml(InlineHtmlStatement {
-                        id: state.id(),
+                        id: self.state.id(),
                         span: html.span,
                         html,
                     })
                 }
-                TokenKind::Do => loops::parse_do_while_statement(state),
-                TokenKind::While => loops::parse_while_statement(state),
-                TokenKind::For => loops::parse_for_statement(state),
-                TokenKind::Foreach => loops::parse_foreach_statement(state),
-                TokenKind::Continue => loops::parse_continue_statement(state),
-                TokenKind::Break => loops::parse_break_statement(state),
-                TokenKind::Switch => control_flow::parse_switch_statement(state),
-                TokenKind::If => control_flow::parse_if_statement(state),
-                TokenKind::Try => try_block::parse_try_block(state),
-                TokenKind::LeftBrace => blocks::parse_block_statement(state),
+                TokenKind::Do => self.parse_do_while_statement(),
+                TokenKind::While => self.parse_while_statement(),
+                TokenKind::For => self.parse_for_statement(),
+                TokenKind::Foreach => self.parse_foreach_statement(),
+                TokenKind::Continue => self.parse_continue_statement(),
+                TokenKind::Break => self.parse_break_statement(),
+                TokenKind::Switch => self.parse_switch_statement(),
+                TokenKind::If => self.parse_if_statement(),
+                TokenKind::Try => self.parse_try_block(),
+                TokenKind::LeftBrace => self.parse_block_statement(),
                 TokenKind::SemiColon => {
                     let start = current.span;
 
-                    state.next();
+                    self.next();
 
                     StatementKind::Noop(start)
                 }
                 TokenKind::Echo => {
                     let echo = current.span;
-                    state.next();
+                    self.next();
 
                     let mut values = Vec::new();
                     // FIXME: We should check for a semi-colon here and produce a better error,
@@ -418,20 +416,20 @@ impl<'a> Parser<'a> {
                     //        but a more appropriate error would be that the expression is missing and
                     //        that the semi-colon is fine where it is (or at least not the real problem).
                     loop {
-                        values.push(expressions::create(state));
+                        values.push(self.create());
 
-                        if state.current().kind == TokenKind::Comma {
-                            state.next();
+                        if self.current_kind() == TokenKind::Comma {
+                            self.next();
                         } else {
                             break;
                         }
                     }
 
-                    let ending = utils::skip_ending(state);
+                    let ending = self.skip_ending();
                     let end = ending.span();
 
                     StatementKind::Echo(EchoStatement {
-                        id: state.id(),
+                        id: self.state.id(),
                         span: Span::combine(echo, end),
                         echo,
                         values,
@@ -441,22 +439,22 @@ impl<'a> Parser<'a> {
                 TokenKind::Return => {
                     let r#return = current.span;
 
-                    state.next();
+                    self.next();
 
                     let value = if matches!(
-                        state.current().kind,
+                        self.current_kind(),
                         TokenKind::SemiColon | TokenKind::CloseTag
                     ) {
                         None
                     } else {
-                        Some(expressions::create(state))
+                        Some(self.create())
                     };
 
-                    let ending = utils::skip_ending(state);
+                    let ending = self.skip_ending();
                     let end = ending.span();
 
                     StatementKind::Return(ReturnStatement {
-                        id: state.id(),
+                        id: self.state.id(),
                         span: Span::combine(r#return, end),
                         r#return,
                         value,
@@ -464,11 +462,11 @@ impl<'a> Parser<'a> {
                     })
                 }
                 _ => {
-                    let expression = expressions::create(state);
-                    let ending = utils::skip_ending(state);
+                    let expression = self.create();
+                    let ending = self.skip_ending();
 
                     StatementKind::Expression(ExpressionStatement {
-                        id: state.id(),
+                        id: self.state.id(),
                         span: Span::combine(expression.span, ending.span()),
                         expression,
                         ending,
@@ -479,6 +477,6 @@ impl<'a> Parser<'a> {
 
         let span = statement.span();
 
-        Statement::new(state.id(), statement, span, comments)
+        Statement::new(self.state.id(), statement, span, comments)
     }
 }

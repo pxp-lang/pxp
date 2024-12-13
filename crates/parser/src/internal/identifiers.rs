@@ -306,23 +306,23 @@ impl<'a> Parser<'a> {
         }
     }
 
-    pub fn is_identifier_maybe_soft_reserved(kind: &TokenKind) -> bool {
+    pub fn is_identifier_maybe_soft_reserved(&self, kind: &TokenKind) -> bool {
         if let TokenKind::Identifier = kind {
             return true;
         }
 
-        is_soft_reserved_identifier(kind)
+        self.is_soft_reserved_identifier(kind)
     }
 
-    pub fn is_identifier_maybe_reserved(kind: &TokenKind) -> bool {
+    pub fn is_identifier_maybe_reserved(&self, kind: &TokenKind) -> bool {
         if let TokenKind::Identifier = kind {
             return true;
         }
 
-        is_reserved_identifier(kind)
+        self.is_reserved_identifier(kind)
     }
 
-    pub fn is_soft_reserved_identifier(kind: &TokenKind) -> bool {
+    pub fn is_soft_reserved_identifier(&self, kind: &TokenKind) -> bool {
         matches!(kind, |TokenKind::Parent| TokenKind::Self_
             | TokenKind::True
             | TokenKind::False
@@ -333,8 +333,8 @@ impl<'a> Parser<'a> {
             | TokenKind::Readonly)
     }
 
-    pub fn is_reserved_identifier(kind: &TokenKind) -> bool {
-        if is_soft_reserved_identifier(kind) {
+    pub fn is_reserved_identifier(&self, kind: &TokenKind) -> bool {
+        if self.is_soft_reserved_identifier(kind) {
             return true;
         }
 

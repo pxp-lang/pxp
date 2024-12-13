@@ -3,6 +3,7 @@ use crate::internal::attributes;
 use crate::internal::identifiers;
 use crate::internal::utils;
 use crate::state::State;
+use crate::Parser;
 use crate::ParserDiagnostic;
 use pxp_ast::StatementKind;
 use pxp_ast::*;

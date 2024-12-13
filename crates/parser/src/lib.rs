@@ -1,49 +1,3 @@
-use crate::internal::attributes;
-use crate::internal::blocks;
-use crate::internal::classes;
-use crate::internal::constants;
-use crate::internal::control_flow;
-use crate::internal::enums;
-use crate::internal::functions;
-use crate::internal::goto;
-use crate::internal::identifiers;
-use crate::internal::interfaces;
-use crate::internal::loops;
-use crate::internal::namespaces;
-use crate::internal::traits;
-use crate::internal::try_block;
-use crate::internal::uses;
-use crate::internal::utils;
-use crate::internal::variables;
-use crate::state::State;
-use internal::literals::parse_literal;
-use pxp_ast::Statement;
-use pxp_ast::*;
-use pxp_ast::{StatementKind, StaticVar};
-use pxp_bytestring::ByteStr;
-use pxp_bytestring::ByteString;
-use pxp_diagnostics::Diagnostic;
-use pxp_diagnostics::Severity;
-use pxp_lexer::Lexer;
-use pxp_span::Span;
-use pxp_span::Spanned;
-
-use pxp_token::OpenTagKind;
-use pxp_token::Token;
-use pxp_token::TokenKind;
-
-use pxp_ast::ClosingTagStatement;
-use pxp_ast::EchoOpeningTagStatement;
-use pxp_ast::EchoStatement;
-use pxp_ast::ExpressionStatement;
-use pxp_ast::FullOpeningTagStatement;
-use pxp_ast::GlobalStatement;
-use pxp_ast::HaltCompilerStatement;
-use pxp_ast::InlineHtmlStatement;
-use pxp_ast::ReturnStatement;
-use pxp_ast::ShortOpeningTagStatement;
-use pxp_ast::StaticStatement;
-
 mod diagnostics;
 mod expressions;
 mod internal;
@@ -51,6 +5,13 @@ mod macros;
 mod state;
 
 pub use diagnostics::ParserDiagnostic;
+use pxp_ast::Statement;
+use pxp_bytestring::{ByteStr, ByteString};
+use pxp_diagnostics::{Diagnostic, Severity};
+use pxp_lexer::Lexer;
+use pxp_span::Span;
+use pxp_token::{Token, TokenKind};
+use state::State;
 
 #[derive(Debug)]
 pub struct ParseResult {
@@ -65,7 +26,21 @@ pub struct Parser<'a> {
 }
 
 impl<'a> Parser<'a> {
-    pub fn new(lexer: Lexer<'a>) -> Self {
+    pub fn parse(lexer: Lexer<'a>) -> ParseResult {
+        let mut parser = Parser::new(lexer);
+        let mut ast = Vec::new();
+
+        while !parser.is_eof() {
+            ast.push(parser.parse_top_level_statement());
+        }
+
+        ParseResult {
+            ast,
+            diagnostics: parser.state.diagnostics.clone(),
+        }
+    }
+
+    fn new(lexer: Lexer<'a>) -> Self {
         Self {
             lexer,
             state: State::new(),
