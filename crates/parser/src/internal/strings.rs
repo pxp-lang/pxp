@@ -1,8 +1,3 @@
-use crate::expressions::create;
-use crate::internal::identifiers;
-use crate::internal::utils;
-use crate::internal::variables;
-use crate::state::State;
 use crate::Parser;
 use crate::ParserDiagnostic;
 use pxp_ast::Expression;
@@ -17,6 +12,7 @@ use pxp_ast::{
 };
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
+use pxp_span::Spanned;
 use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
@@ -26,7 +22,7 @@ impl<'a> Parser<'a> {
         let mut parts = Vec::new();
 
         while self.current_kind() != TokenKind::DoubleQuote {
-            if let Some(part) = maybe_parse_string_part() {
+            if let Some(part) = self.maybe_parse_string_part() {
                 parts.push(part);
             }
         }
@@ -55,7 +51,7 @@ impl<'a> Parser<'a> {
         let mut parts = Vec::new();
 
         while self.current_kind() != TokenKind::Backtick {
-            if let Some(part) = maybe_parse_string_part() {
+            if let Some(part) = self.maybe_parse_string_part() {
                 parts.push(part);
             }
         }
@@ -79,30 +75,29 @@ impl<'a> Parser<'a> {
     #[inline(always)]
     pub fn parse_heredoc(&mut self) -> Expression {
         let span = self.current_span();
-        let label = self.current().symbol.as_ref().unwrap();
+        let label = self.current_symbol_as_bytestring();
+
         self.next();
 
         let mut parts = Vec::new();
 
         while !matches!(self.current_kind(), TokenKind::EndHeredoc) {
-            if let Some(part) = maybe_parse_string_part() {
+            if let Some(part) = self.maybe_parse_string_part() {
                 parts.push(part);
             }
         }
 
-        let end = self.current();
-
-        self.next();
+        let end = self.next();
 
         Expression::new(
             self.state.id(),
             ExpressionKind::Heredoc(HeredocExpression {
                 id: self.state.id(),
-                span: Span::combine(span, end.span),
+                span: Span::combine(span, end),
                 label: label.clone(),
                 parts,
             }),
-            Span::combine(span, end.span),
+            Span::combine(span, end),
             CommentGroup::default(),
         )
     }
@@ -110,31 +105,27 @@ impl<'a> Parser<'a> {
     #[inline(always)]
     pub fn parse_nowdoc(&mut self) -> Expression {
         let span = self.current_span();
-        let label = self.current().clone();
+        let label = self.current().to_owned();
 
         self.next();
 
-        let string_part = self.current().clone();
+        let string_part = self.current().to_owned();
 
         self.next();
 
-        let end = self.current();
-
-        let span = if !self.is_eof() && end.kind != TokenKind::EndNowdoc {
+        let span = if !self.is_eof() && self.current_kind() != TokenKind::EndNowdoc {
             self.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::EndNowdoc],
-                    found: end.clone(),
+                    found: self.current().to_owned(),
                 },
                 Severity::Error,
-                end.span,
+                self.current_span(),
             );
 
             span
-        } else if end.kind == TokenKind::EndNowdoc {
-            self.next();
-
-            Span::combine(span, end.span)
+        } else if self.current_kind() == TokenKind::EndNowdoc {
+            Span::combine(span, self.next())
         } else {
             span
         };
@@ -155,12 +146,13 @@ impl<'a> Parser<'a> {
     fn maybe_parse_string_part(&mut self) -> Option<StringPart> {
         match &self.current_kind() {
             TokenKind::StringPart => {
-                let s = self.current().clone();
-                let part = if !s.span.is_empty() {
+                let span = self.current_span();
+
+                let part = if !span.is_empty() {
                     Some(StringPart::Literal(LiteralStringPart {
                         id: self.state.id(),
-                        span: s.span,
-                        value: s.symbol.unwrap(),
+                        span,
+                        value: self.current_symbol_as_bytestring(),
                     }))
                 } else {
                     None
@@ -172,10 +164,12 @@ impl<'a> Parser<'a> {
             TokenKind::DollarLeftBrace => {
                 let start_span = self.current_span();
                 let variable = self.parse_dynamic_variable();
+                let span = Span::combine(start_span, variable.span());
+
                 let expression = Expression::new(
                     self.state.id(),
                     ExpressionKind::Variable(variable),
-                    Span::new(start_span.start, state.previous().span.end),
+                    span,
                     CommentGroup::default(),
                 );
 
@@ -188,7 +182,7 @@ impl<'a> Parser<'a> {
             TokenKind::LeftBrace => {
                 // "{$expr}"
                 self.next();
-                let e = create();
+                let e = self.parse_expression();
                 self.skip_right_brace();
                 Some(StringPart::Expression(ExpressionStringPart {
                     id: self.state.id(),
@@ -203,38 +197,39 @@ impl<'a> Parser<'a> {
                 let variable =
                     Expression::new(self.state.id(), variable, variable_span, CommentGroup::default());
 
-                let current = self.current();
-                let e = match &current.kind {
+                let e = match self.current_kind() {
                     TokenKind::LeftBracket => {
                         let left_bracket = self.skip_left_bracket();
 
-                        let current = self.current();
-                        let index_start_span = current.span;
                         // Full expression syntax is not allowed here,
                         // so we can't call expression.
-                        let index = match &current.kind {
+                        let index = match self.current_kind() {
                             TokenKind::LiteralInteger => {
                                 self.next();
 
                                 ExpressionKind::Literal(Literal::new(
                                     self.state.id(),
                                     LiteralKind::Integer,
-                                    current.clone(),
-                                    current.span,
+                                    self.current().to_owned(),
+                                    self.current_span(),
                                 ))
                             }
                             TokenKind::Minus => {
                                 self.next();
-                                let literal = self.current();
-                                if let TokenKind::LiteralInteger = &literal.kind {
+
+                                if let TokenKind::LiteralInteger = self.current_kind() {
                                     let span = self.current_span();
+                                    let literal = self.current().to_owned();
+
                                     self.next();
+                                    
                                     let kind = ExpressionKind::Literal(Literal::new(
                                         self.state.id(),
                                         LiteralKind::Integer,
-                                        literal.clone(),
-                                        literal.span,
+                                        literal,
+                                        span,
                                     ));
+                                    
                                     let expression = Expression::new(
                                         self.state.id(),
                                         kind,
@@ -254,37 +249,39 @@ impl<'a> Parser<'a> {
                                         },
                                     )
                                 } else {
+                                    let span = self.current_span();
+
                                     self.diagnostic(
                                         ParserDiagnostic::ExpectedToken {
                                             expected: vec![TokenKind::LiteralInteger],
-                                            found: literal.clone(),
+                                            found: self.current().to_owned(),
                                         },
                                         Severity::Error,
-                                        literal.span,
+                                        span,
                                     );
 
                                     self.next();
 
                                     ExpressionKind::Missing(MissingExpression {
                                         id: 0,
-                                        span: literal.span,
+                                        span,
                                     })
                                 }
                             }
-                            TokenKind::Identifier => {
-                                self.next();
-
+                            TokenKind::Identifier => self.next_but_first(|parser| {
                                 ExpressionKind::Literal(Literal::new(
-                                    self.state.id(),
+                                    parser.state.id(),
                                     LiteralKind::String,
-                                    current.clone(),
-                                    current.span,
+                                    parser.current().to_owned(),  
+                                    parser.current_span(),
                                 ))
-                            }
+                            }),
                             TokenKind::Variable => ExpressionKind::Variable(
                                 Variable::SimpleVariable(self.parse_simple_variable()),
                             ),
                             _ => {
+                                let span = self.current_span();
+
                                 self.diagnostic(
                                     ParserDiagnostic::ExpectedToken {
                                         expected: vec![
@@ -292,25 +289,27 @@ impl<'a> Parser<'a> {
                                             TokenKind::Identifier,
                                             TokenKind::Variable,
                                         ],
-                                        found: current.clone(),
+                                        found: self.current().to_owned(),
                                     },
                                     Severity::Error,
-                                    current.span,
+                                    span,
                                 );
 
                                 self.next();
 
                                 ExpressionKind::Missing(MissingExpression {
                                     id: 0,
-                                    span: current.span,
+                                    span,
                                 })
                             }
                         };
-                        let index_end_span = state.previous().span;
+
+                        let span = index.span();
+
                         let index = Expression::new(
                             self.state.id(),
                             index,
-                            Span::new(index_start_span.start, index_end_span.end),
+                            span,
                             CommentGroup::default(),
                         );
 
@@ -326,7 +325,7 @@ impl<'a> Parser<'a> {
                         })
                     }
                     TokenKind::Arrow => {
-                        let span = current.span;
+                        let span = self.current_span();
 
                         self.next();
 
@@ -346,9 +345,7 @@ impl<'a> Parser<'a> {
                         })
                     }
                     TokenKind::QuestionArrow => {
-                        let span = current.span;
-                        self.next();
-
+                        let span = self.next();
                         let ident = self.parse_identifier_maybe_reserved();
                         let ident_span = ident.span;
                         let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(ident));
@@ -370,13 +367,15 @@ impl<'a> Parser<'a> {
                     _ => variable.kind.clone(),
                 };
 
+                let span = Span::combine(variable_span, e.span());
+
                 Some(StringPart::Expression(ExpressionStringPart {
                     id: self.state.id(),
-                    span: Span::combine(variable_span, state.previous().span),
+                    span,
                     expression: Box::new(Expression::new(
                         self.state.id(),
                         e,
-                        Span::new(variable_span.start, state.previous().span.end),
+                        span,
                         CommentGroup::default(),
                     )),
                 }))
@@ -392,7 +391,7 @@ impl<'a> Parser<'a> {
                             TokenKind::DoubleQuote,
                             TokenKind::Variable,
                         ],
-                        found: self.current().clone(),
+                        found: self.current().to_owned(),
                     },
                     Severity::Error,
                     span,

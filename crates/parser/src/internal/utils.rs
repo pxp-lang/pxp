@@ -8,19 +8,12 @@ use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
     pub fn skip_ending(&mut self) -> Ending {
-        let current = self.current();
-        let previous = state.previous();
-
-        if current.kind == TokenKind::CloseTag {
-            self.next();
-
-            Ending::CloseTag(current.span)
-        } else if current.kind == TokenKind::SemiColon {
-            self.next();
-
-            Ending::Semicolon(current.span)
+        if self.current_kind() == TokenKind::CloseTag {
+            Ending::CloseTag(self.next())
+        } else if self.current_kind() == TokenKind::SemiColon {
+            Ending::Semicolon(self.next())
         } else {
-            let span = Span::flat(previous.span.end);
+            let span = Span::flat(self.current_span().start);
 
             if self.is_eof() {
                 self.diagnostic(ParserDiagnostic::UnexpectedEndOfFile, Severity::Error, span);
@@ -28,7 +21,7 @@ impl<'a> Parser<'a> {
                 self.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::CloseTag, TokenKind::SemiColon],
-                        found: current.clone(),
+                        found: self.current().to_owned(),
                     },
                     Severity::Error,
                     span,
@@ -40,87 +33,81 @@ impl<'a> Parser<'a> {
     }
 
     pub fn skip_semicolon(&mut self) -> Span {
-        let current = self.current();
-
-        if current.kind == TokenKind::SemiColon {
-            self.next();
-
-            current.span
+        if self.current_kind() == TokenKind::SemiColon {
+            self.next()
         } else {
             self.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![TokenKind::SemiColon],
-                    found: current.clone(),
+                    found: self.current().to_owned(),
                 },
                 Severity::Error,
-                current.span,
+                self.current_span(),
             );
 
-            current.span
+            self.current_span()
         }
     }
 
     pub fn skip_left_brace(&mut self) -> Span {
-        skip(TokenKind::LeftBrace)
+        self.skip(TokenKind::LeftBrace)
     }
 
     pub fn skip_right_brace(&mut self) -> Span {
-        skip(TokenKind::RightBrace)
+        self.skip(TokenKind::RightBrace)
     }
 
     pub fn skip_left_parenthesis(&mut self) -> Span {
-        skip(TokenKind::LeftParen)
+        self.skip(TokenKind::LeftParen)
     }
 
     pub fn skip_right_parenthesis(&mut self) -> Span {
-        skip(TokenKind::RightParen)
+        self.skip(TokenKind::RightParen)
     }
 
     pub fn skip_left_bracket(&mut self) -> Span {
-        skip(TokenKind::LeftBracket)
+        self.skip(TokenKind::LeftBracket)
     }
 
     pub fn skip_right_bracket(&mut self) -> Span {
-        skip(TokenKind::RightBracket)
+        self.skip(TokenKind::RightBracket)
     }
 
     pub fn skip_double_arrow(&mut self) -> Span {
-        skip(TokenKind::DoubleArrow)
+        self.skip(TokenKind::DoubleArrow)
     }
 
     pub fn skip_double_colon(&mut self) -> Span {
-        skip(TokenKind::DoubleColon)
+        self.skip(TokenKind::DoubleColon)
     }
 
     pub fn skip_colon(&mut self) -> Span {
-        skip(TokenKind::Colon)
+        self.skip(TokenKind::Colon)
     }
 
     pub fn skip(&mut self, kind: TokenKind) -> Span {
         while self.current_kind() != kind {
-            let current = self.current();
-
             if self.is_eof() {
                 self.diagnostic(
                     ParserDiagnostic::UnexpectedEndOfFileExpected {
                         expected: vec![kind],
                     },
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
                 break;
             }
 
-            self.next();
-
             self.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: vec![kind],
-                    found: current.clone(),
+                    found: self.current().to_owned(),
                 },
                 Severity::Error,
-                current.span,
+                self.current_span(),
             );
+
+            self.next();
         }
 
         let end = self.current_span();
@@ -131,25 +118,19 @@ impl<'a> Parser<'a> {
     }
 
     pub fn skip_any_of(&mut self, kinds: &[TokenKind]) -> Span {
-        let current = self.current();
-
-        if kinds.contains(&current.kind) {
-            let end = current.span;
-
-            self.next();
-
-            end
+        if kinds.contains(&self.current_kind()) {
+            self.next()
         } else {
             self.diagnostic(
                 ParserDiagnostic::ExpectedToken {
                     expected: kinds.to_vec(),
-                    found: current.clone(),
+                    found: self.current().to_owned(),
                 },
                 Severity::Error,
-                current.span,
+                self.current_span(),
             );
 
-            current.span
+            self.current_span()
         }
     }
 
@@ -214,32 +195,26 @@ impl<'a> Parser<'a> {
     /// Parse a comma-separated list of items, not allowing trailing commas.
     pub fn comma_separated_no_trailing<T>(
         &mut self,
-        func: &(dyn Fn(&mut State) -> T),
+        mut func: impl FnMut(&mut Parser) -> T,
         until: TokenKind,
     ) -> CommaSeparated<T> {
         let mut inner: Vec<T> = vec![];
         let mut commas: Vec<Span> = vec![];
-        let mut current = self.current();
 
-        while current.kind != until {
-            inner.push(func());
+        while self.current_kind() != until {
+            inner.push(func(self));
 
-            current = self.current();
-            if current.kind != TokenKind::Comma {
+            if self.current_kind() != TokenKind::Comma {
                 break;
             }
 
             // If the next token is the until token, we don't want to consume the comma.
             // This ensures that trailing commas are not allowed.
-            if state.peek().kind == until {
+            if self.peek_kind() == until {
                 break;
             }
 
-            commas.push(current.span);
-
-            self.next();
-
-            current = self.current();
+            commas.push(self.next());
         }
 
         CommaSeparated { inner, commas }

@@ -2,27 +2,16 @@ use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;
 
-use crate::{state::State, Parser, ParserDiagnostic};
+use crate::{Parser, ParserDiagnostic};
 
 impl<'a> Parser<'a> {
     pub fn parse_literal(&mut self) -> Literal {
-        let token = self.current();
-        let kind = match &token.kind {
-            TokenKind::LiteralInteger => {
-                self.next();
-
-                LiteralKind::Integer
-            }
-            TokenKind::LiteralFloat => {
-                self.next();
-
-                LiteralKind::Float
-            }
-            TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString => {
-                self.next();
-
-                LiteralKind::String
-            }
+        let token = self.current().to_owned();
+        let span = self.current_span();
+        let kind = match self.current_kind() {
+            TokenKind::LiteralInteger => self.next_but_first(|_| LiteralKind::Integer),
+            TokenKind::LiteralFloat => self.next_but_first(|_| LiteralKind::Float),
+            TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString => self.next_but_first(|_| LiteralKind::String),
             _ => {
                 self.diagnostic(
                     ParserDiagnostic::ExpectedToken {
@@ -32,21 +21,21 @@ impl<'a> Parser<'a> {
                             TokenKind::LiteralSingleQuotedString,
                             TokenKind::LiteralDoubleQuotedString,
                         ],
-                        found: token.clone(),
+                        found: token,
                     },
                     Severity::Error,
-                    token.span,
+                    span,
                 );
 
-                return Literal::missing(self.state.id(), token.span);
+                return Literal::missing(self.state.id(), span);
             }
         };
 
         Literal {
             id: self.state.id(),
-            span: token.span,
+            span,
             kind,
-            token: token.clone(),
+            token,
         }
     }
 }

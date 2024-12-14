@@ -183,17 +183,10 @@ impl<'a> Parser<'a> {
         )
     }
 
-    pub fn parse_function(&mut self) -> StatementKind {
+    pub fn parse_function(&mut self, ampersand: Option<Span>) -> StatementKind {
         let comments = self.state.comments();
 
         let function = self.skip(TokenKind::Function);
-
-        let ampersand = if self.current_kind() == TokenKind::Ampersand {
-            Some(self.next())
-        } else {
-            None
-        };
-
         let name = self.parse_type_name_maybe_soft_reserved();
 
         // get attributes before processing parameters, otherwise

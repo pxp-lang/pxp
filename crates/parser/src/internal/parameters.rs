@@ -20,49 +20,43 @@ impl<'a> Parser<'a> {
         let comments = self.state.comments();
         let left_parenthesis = self.skip_left_parenthesis();
         let parameters = self.comma_separated(
-            state,
-            &|state| {
-                attributes::gather_attributes();
+            |parser| {
+                parser.gather_attributes();
 
-                let ty = self.parse_optional_data_type();
+                let ty = parser.parse_optional_data_type();
 
-                let mut current = self.current();
-                let ampersand = if current.kind == TokenKind::Ampersand {
-                    self.next();
-                    current = self.current();
-                    Some(current.span)
+                let ampersand = if parser.current_kind() == TokenKind::Ampersand {
+                    Some(parser.next())
                 } else {
                     None
                 };
 
-                let ellipsis = if current.kind == TokenKind::Ellipsis {
-                    self.next();
-
-                    Some(current.span)
+                let ellipsis = if parser.current_kind() == TokenKind::Ellipsis {
+                    Some(parser.next())
                 } else {
                     None
                 };
 
                 // 2. Then expect a variable.
-                let var = self.parse_simple_variable();
+                let var = parser.parse_simple_variable();
 
                 let mut default = None;
-                if self.current_kind() == TokenKind::Equals {
-                    self.next();
-                    default = Some(self.parse_expression());
+                if parser.current_kind() == TokenKind::Equals {
+                    parser.next();
+                    default = Some(parser.parse_expression());
                 }
 
                 FunctionParameter {
-                    id: self.state.id(),
+                    id: parser.state.id(),
                     // FIXME: This isn't taking other fields into account.
                     span: if ty.is_some() {
                         Span::combine(ty.span(), var.span)
                     } else {
                         var.span
                     },
-                    comments: state.comments(),
+                    comments: parser.state.comments(),
                     name: var,
-                    attributes: state.get_attributes(),
+                    attributes: parser.state.get_attributes(),
                     data_type: ty,
                     ellipsis,
                     default,
@@ -89,40 +83,35 @@ impl<'a> Parser<'a> {
 
         let left_parenthesis = self.skip_left_parenthesis();
         let parameters = self.comma_separated::<ConstructorParameter>(
-            state,
-            &|state| {
-                attributes::gather_attributes();
+            |parser| {
+                parser.gather_attributes();
 
-                let modifiers = modifiers::collect_modifiers();
-                let modifiers = modifiers::parse_promoted_property_group(modifiers);
+                let modifiers = parser.collect_modifiers();
+                let modifiers = parser.parse_promoted_property_group(modifiers);
 
-                let ty = self.parse_optional_data_type();
+                let ty = parser.parse_optional_data_type();
 
-                let mut current = self.current();
-                let ampersand = if matches!(current.kind, TokenKind::Ampersand) {
-                    self.next();
-
-                    current = self.current();
-
-                    Some(current.span)
+                let ampersand = if parser.current_kind() == TokenKind::Ampersand {
+                    Some(parser.next())
                 } else {
                     None
                 };
 
-                let (ellipsis, var) = if matches!(current.kind, TokenKind::Ellipsis) {
-                    self.next();
-                    let var = self.parse_simple_variable();
+                let (ellipsis, var) = if parser.current_kind() == TokenKind::Ellipsis {
+                    let ellipsis = parser.next();
+                    let var = parser.parse_simple_variable();
+                    
                     if !modifiers.is_empty() {
-                        self.diagnostic(
+                        parser.diagnostic(
                             ParserDiagnostic::PromotedPropertyCannotBeVariadic,
                             Severity::Error,
-                            current.span,
+                            ellipsis,
                         );
                     }
 
-                    (Some(current.span), var)
+                    (Some(ellipsis), var)
                 } else {
-                    (None, self.parse_simple_variable())
+                    (None, parser.parse_simple_variable())
                 };
 
                 // 2. Then expect a variable.
@@ -131,7 +120,7 @@ impl<'a> Parser<'a> {
                     match &ty {
                         Some(ty) => {
                             if ty.includes_callable() || ty.is_bottom() {
-                                self.diagnostic(
+                                parser.diagnostic(
                                     ParserDiagnostic::ForbiddenTypeUsedInProperty,
                                     Severity::Error,
                                     ty.get_span(),
@@ -140,7 +129,7 @@ impl<'a> Parser<'a> {
                         }
                         None => {
                             if let Some(modifier) = modifiers.get_readonly() {
-                                self.diagnostic(
+                                parser.diagnostic(
                                     ParserDiagnostic::ReadonlyPropertyMustHaveType,
                                     Severity::Error,
                                     modifier.span(),
@@ -151,21 +140,21 @@ impl<'a> Parser<'a> {
                 }
 
                 let mut default = None;
-                if self.current_kind() == TokenKind::Equals {
-                    self.next();
-                    default = Some(self.parse_expression());
+                if parser.current_kind() == TokenKind::Equals {
+                    parser.next();
+                    default = Some(parser.parse_expression());
                 }
 
                 ConstructorParameter {
-                    id: self.state.id(),
+                    id: parser.state.id(),
                     span: if ty.is_some() {
                         Span::combine(ty.span(), var.span)
                     } else {
                         var.span
                     },
-                    comments: state.comments(),
+                    comments: parser.state.comments(),
                     name: var,
-                    attributes: state.get_attributes(),
+                    attributes: parser.state.get_attributes(),
                     data_type: ty,
                     ellipsis,
                     default,
@@ -197,7 +186,7 @@ impl<'a> Parser<'a> {
 
         while !self.is_eof() && self.current_kind() != TokenKind::RightParen {
             let span = self.current_span();
-            let (named, argument) = parse_argument();
+            let (named, argument) = self.parse_argument();
             if named {
                 has_used_named_arguments = true;
             } else if has_used_named_arguments {
@@ -246,7 +235,7 @@ impl<'a> Parser<'a> {
 
         while !self.is_eof() && self.current_kind() != TokenKind::RightParen {
             let span = self.current_span();
-            let (named, argument) = parse_argument();
+            let (named, argument) = self.parse_argument();
             if only_positional && named {
                 self.diagnostic(
                     ParserDiagnostic::PositionalArgumentsOnly,
@@ -293,8 +282,8 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_argument(&mut self) -> (bool, Argument) {
-        if self.is_identifier_maybe_reserved(&self.current_kind())
-            && state.peek().kind == TokenKind::Colon
+        if self.is_identifier_maybe_reserved(self.current_kind())
+            && self.peek_kind() == TokenKind::Colon
         {
             let name = self.parse_identifier_maybe_reserved();
             let colon = self.skip(TokenKind::Colon);
@@ -310,7 +299,7 @@ impl<'a> Parser<'a> {
                 Argument::Named(NamedArgument {
                     id: self.state.id(),
                     span: Span::combine(name.span, value.span),
-                    comments: state.comments(),
+                    comments: self.state.comments(),
                     name,
                     colon,
                     ellipsis,
@@ -332,7 +321,7 @@ impl<'a> Parser<'a> {
             Argument::Positional(PositionalArgument {
                 id: self.state.id(),
                 span: value.span,
-                comments: state.comments(),
+                comments: self.state.comments(),
                 ellipsis,
                 value,
             }),

@@ -1,6 +1,5 @@
-use crate::state::State;
 use crate::Parser;
-use crate::{internal::utils, ParserDiagnostic};
+use crate::ParserDiagnostic;
 use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
@@ -9,9 +8,7 @@ use pxp_type::Type;
 
 impl<'a> Parser<'a> {
     pub fn parse_data_type(&mut self) -> DataType {
-        let start = self.current_span();
-
-        let (kind, span) = if self.state.is_in_docblock() {
+        let kind = if self.state.is_in_docblock() {
             self.parse_docblock_type()
         } else if self.current_kind() == TokenKind::Question {
             self.parse_nullable_type()
@@ -34,14 +31,15 @@ impl<'a> Parser<'a> {
             }
         };
 
-        let span = start.join(span);
+        // FIXME: We need to create spans for types, but we don't have access to the previous token anymore.
+        let span = Span::missing();
 
         DataType::new(self.state.id(), kind, span)
     }
 
     pub fn parse_optional_data_type(&mut self) -> Option<DataType> {
         let start = self.current_span();
-        let (kind, span) = if self.state.is_in_docblock() {
+        let kind = if self.state.is_in_docblock() {
             self.parse_docblock_type()
         } else if self.current_kind() == TokenKind::Question {
             self.parse_nullable_type()
@@ -69,13 +67,10 @@ impl<'a> Parser<'a> {
             }
         };
 
-        let span = start.join(span);
+        // FIXME: We need to create spans for types, but we don't have access to the previous token anymore.
+        let span = Span::missing();
 
-        Some(DataType::new(
-            self.state.id(),
-            kind,
-            span,
-        ))
+        Some(DataType::new(self.state.id(), kind, span))
     }
 
     // Special type parsing logic for DocBlock comments, heavily based on the phpstan/phpdoc-parser package.
@@ -129,10 +124,10 @@ impl<'a> Parser<'a> {
         while let TokenKind::Pipe = self.current_kind() {
             self.next();
 
-            self.state.skip_doc_eol();
+            self.skip_doc_eol();
             // FIXME: Warn about invalid types inside of union.
             types.push(self.parse_docblock_atomic());
-            self.state.skip_doc_eol();
+            self.skip_doc_eol();
         }
 
         Type::Union(types)
@@ -157,10 +152,10 @@ impl<'a> Parser<'a> {
         while let TokenKind::Ampersand = self.current_kind() {
             self.next();
 
-            self.state.skip_doc_eol();
+            self.skip_doc_eol();
             // FIXME: Warn about invalid types inside of intersection.
             types.push(self.parse_docblock_atomic());
-            self.state.skip_doc_eol();
+            self.skip_doc_eol();
         }
 
         Type::Intersection(types)
@@ -182,7 +177,7 @@ impl<'a> Parser<'a> {
         match self.current_kind() {
             TokenKind::LeftParen => {
                 self.next();
-                self.state.skip_doc_eol();
+                self.skip_doc_eol();
 
                 let inner = self.parse_docblock_subparse();
 
@@ -190,7 +185,7 @@ impl<'a> Parser<'a> {
                     return self.parse_docblock_missing_type();
                 }
 
-                self.state.skip_doc_eol();
+                self.skip_doc_eol();
 
                 if self.current_kind() != TokenKind::RightParen {
                     self.diagnostic(
@@ -220,7 +215,8 @@ impl<'a> Parser<'a> {
                 }
             }
             _ => {
-                let r#type = self.parse_optional_simple_data_type()
+                let r#type = self
+                    .parse_optional_simple_data_type()
                     .unwrap_or_else(|| self.parse_docblock_missing_type());
 
                 if r#type == Type::Missing {
@@ -259,7 +255,7 @@ impl<'a> Parser<'a> {
                 self.next();
             }
 
-            self.state.skip_doc_eol();
+            self.skip_doc_eol();
 
             if !is_first && self.current_kind() == TokenKind::GreaterThan {
                 break;
@@ -270,7 +266,7 @@ impl<'a> Parser<'a> {
             // FIXME: Parse variance keywords and wildcards here too.
             generic_types.push(self.parse_docblock_type());
 
-            self.state.skip_doc_eol();
+            self.skip_doc_eol();
         }
 
         if self.current_kind() == TokenKind::GreaterThan {
@@ -317,13 +313,11 @@ impl<'a> Parser<'a> {
                     return Type::Missing;
                 }
 
-                if self.current_kind() == TokenKind::Identifier
-                    && self.current_symbol() == b"is"
-                {
+                if self.current_kind() == TokenKind::Identifier && self.current_symbol() == b"is" {
                     todo!("parse docblock conditional type");
                 }
 
-                self.state.skip_doc_eol();
+                self.skip_doc_eol();
 
                 if self.current_kind() == TokenKind::Pipe {
                     self.parse_docblock_subparse_union(r#type)
@@ -415,9 +409,13 @@ impl<'a> Parser<'a> {
             TokenKind::Enum | TokenKind::From => {
                 self.next();
 
-                Some(Type::Named(
-                    self.state.maybe_resolve_identifier(&self.current(), UseKind::Normal),
-                ))
+                let id = self.state.id();
+
+                Some(Type::Named(self.maybe_resolve_identifier(
+                    id,
+                    &self.current(),
+                    UseKind::Normal,
+                )))
             }
             TokenKind::Identifier => {
                 let id = self.current_symbol_as_bytestring();
@@ -440,9 +438,15 @@ impl<'a> Parser<'a> {
                     b"false" => Some(Type::False),
                     b"array" => Some(Type::Array),
                     b"callable" => Some(Type::Callable),
-                    _ => Some(Type::Named(
-                        self.state.maybe_resolve_identifier(&self.current(), UseKind::Normal),
-                    )),
+                    _ => {
+                        let id = self.state.id();
+
+                        Some(Type::Named(self.maybe_resolve_identifier(
+                            id,
+                            &self.current(),
+                            UseKind::Normal,
+                        )))
+                    }
                 }
             }
             TokenKind::FullyQualifiedIdentifier => {
@@ -460,7 +464,8 @@ impl<'a> Parser<'a> {
             TokenKind::QualifiedIdentifier => {
                 self.next();
 
-                let name = self.state.maybe_resolve_identifier(&self.current(), UseKind::Normal);
+                let id = self.state.id();
+                let name = self.maybe_resolve_identifier(id, &self.current(), UseKind::Normal);
 
                 Some(Type::Named(name))
             }

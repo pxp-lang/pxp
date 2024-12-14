@@ -1,7 +1,3 @@
-use crate::internal::blocks;
-use crate::internal::identifiers;
-use crate::internal::utils;
-use crate::state::State;
 use crate::Parser;
 use crate::ParserDiagnostic;
 use pxp_ast::StatementKind;
@@ -11,8 +7,6 @@ use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_span::Spanned;
 use pxp_token::TokenKind;
-
-use super::variables;
 
 impl<'a> Parser<'a> {
     pub fn parse_try_block(&mut self) -> StatementKind {
@@ -36,7 +30,7 @@ impl<'a> Parser<'a> {
             self.next();
             self.skip_left_parenthesis();
 
-            let types = parse_catch_type();
+            let types = self.parse_catch_type();
             let var = if self.current_kind() == TokenKind::RightParen {
                 None
             } else {
@@ -92,13 +86,19 @@ impl<'a> Parser<'a> {
             );
         }
 
-        let end = state.previous().span;
+        let span = if finally.is_some() {
+            Span::combine(start, finally.span())
+        } else if !catches.is_empty() {
+            Span::combine(start, catches.span())
+        } else {
+            Span::combine(start, last_right_brace)
+        };
 
         StatementKind::Try(TryStatement {
             id: self.state.id(),
-            span: Span::combine(start, end),
+            span,
             start,
-            end,
+            end: last_right_brace,
             body,
             catches,
             finally,

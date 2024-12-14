@@ -8,11 +8,6 @@ use pxp_token::TokenKind;
 
 use crate::state::State;
 
-use super::{
-    self.optional_data_type,
-    self.{optional_simple_variable, simple_variable},
-};
-
 pub fn parse_docblock(&mut self) -> DocBlockComment {
     let current = self.current();
 

@@ -4,123 +4,122 @@ use pxp_bytestring::ByteString;
 use pxp_diagnostics::Severity;
 use pxp_token::TokenKind;
 
-use crate::{state::State, Parser, ParserDiagnostic};
+use crate::{Parser, ParserDiagnostic};
 
 impl<'a> Parser<'a> {
     pub fn parse_full_name(&mut self, kind: UseKind) -> Name {
-        let current = self.current();
-
-        match &current.kind {
-            TokenKind::FullyQualifiedIdentifier => {
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap();
-                let resolved = state.strip_leading_namespace_qualifier(symbol);
-
-                Name::resolved(self.state.id(), resolved, symbol.clone(), current.span)
-            }
+        match self.current_kind() {
+            TokenKind::FullyQualifiedIdentifier => self.next_but_first(|parser| {
+                Name::resolved(
+                    parser.state.id(),
+                    parser
+                        .state
+                        .strip_leading_namespace_qualifier(&parser.current_symbol_as_bytestring()),
+                    parser.current_symbol_as_bytestring(),
+                    parser.current_span(),
+                )
+            }),
             TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
-                self.next();
+                self.next_but_first(|parser| {
+                    let id = parser.state.id();
 
-                state.maybe_resolve_identifier(current, kind)
+                    parser.maybe_resolve_identifier(id, &parser.current(), kind)
+                })
             }
             _ => {
                 self.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::Identifier],
-                        found: current.clone(),
+                        found: self.current().to_owned(),
                     },
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
 
-                Name::missing(self.state.id(), current.span)
+                Name::missing(self.state.id(), self.current_span())
             }
         }
     }
 
     pub fn parse_type_name_maybe_soft_reserved(&mut self) -> Name {
-        let current = self.current();
-
-        if self.is_soft_reserved_identifier(&current.kind) {
-            let symbol = current.symbol.as_ref().unwrap();
-            let resolved = state.join_with_namespace(symbol);
+        if self.is_soft_reserved_identifier(self.current_kind()) {
+            let symbol = self.current_symbol_as_bytestring();
+            let resolved = self.state.join_with_namespace(&symbol);
+            let span = self.current_span();
 
             self.next();
 
-            Name::resolved(self.state.id(), resolved, symbol.clone(), current.span)
+            Name::resolved(self.state.id(), resolved, symbol, span)
         } else {
             self.parse_type_name()
         }
     }
 
     pub fn parse_name_maybe_soft_reserved(&mut self, kind: UseKind) -> Name {
-        let current = self.current();
+        if self.is_soft_reserved_identifier(self.current_kind()) {
+            self.next_but_first(|parser| {
+                let id = parser.state.id();
 
-        if is_soft_reserved_identifier(&current.kind) {
-            self.next();
-
-            state.maybe_resolve_identifier(current, kind)
+                parser.maybe_resolve_identifier(id, &parser.current(), kind)
+            })
         } else {
-            parse_full_name(kind)
+            self.parse_full_name(kind)
         }
     }
 
     pub fn parse_type_name(&mut self) -> Name {
-        let current = self.current();
-
-        match &current.kind {
+        match self.current_kind() {
             TokenKind::Identifier | TokenKind::Enum | TokenKind::From => {
-                self.next();
+                self.next_but_first(|parser| {
+                    let symbol = parser.current_symbol_as_bytestring();
+                    let resolved = parser.state.join_with_namespace(&symbol);
 
-                let symbol = current.symbol.as_ref().unwrap();
-                let resolved = state.join_with_namespace(symbol);
-
-                Name::resolved(self.state.id(), resolved, symbol.clone(), current.span)
+                    Name::resolved(parser.state.id(), resolved, symbol, parser.current_span())
+                })
             }
             TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
                 self.diagnostic(
                     ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
 
-                self.next();
+                self.next_but_first(|parser| {
+                    let symbol = parser.current_symbol_as_bytestring();
+                    let resolved = parser.state.join_with_namespace(&symbol);
 
-                let symbol = current.symbol.as_ref().unwrap();
-                let resolved = state.join_with_namespace(symbol);
-
-                Name::resolved(self.state.id(), resolved, symbol.clone(), current.span)
+                    Name::resolved(parser.state.id(), resolved, symbol, parser.current_span())
+                })
             }
-            t if is_reserved_identifier(t) => {
+            t if self.is_reserved_identifier(t) => {
                 self.diagnostic(
                     ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
 
-                self.next();
+                self.next_but_first(|parser| {
+                    let symbol = parser.current_symbol_as_bytestring();
+                    let resolved = parser.state.join_with_namespace(&symbol);
 
-                let symbol = current.symbol.as_ref().unwrap();
-                let resolved = state.join_with_namespace(symbol);
-
-                Name::resolved(self.state.id(), resolved, symbol.clone(), current.span)
+                    Name::resolved(parser.state.id(), resolved, symbol, parser.current_span())
+                })
             }
             _ => {
                 self.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::Identifier],
-                        found: current.clone(),
+                        found: self.current().to_owned(),
                     },
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
 
                 Name::resolved(
                     self.state.id(),
                     ByteString::empty(),
                     ByteString::empty(),
-                    current.span,
+                    self.current_span(),
                 )
             }
         }
@@ -143,109 +142,103 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_full_name_including_self(&mut self) -> Name {
-        let current = self.current();
-        match &current.kind {
-            TokenKind::FullyQualifiedIdentifier => {
-                self.next();
+        match self.current_kind() {
+            TokenKind::FullyQualifiedIdentifier => self.next_but_first(|parser| {
+                let symbol = parser.current_symbol_as_bytestring();
+                let resolved = parser.state.strip_leading_namespace_qualifier(&symbol);
 
-                let symbol = current.symbol.as_ref().unwrap();
-                let resolved = state.strip_leading_namespace_qualifier(symbol);
-
-                Name::resolved(self.state.id(), resolved, symbol.clone(), current.span)
-            }
+                Name::resolved(parser.state.id(), resolved, symbol, parser.current_span())
+            }),
             TokenKind::Identifier
             | TokenKind::QualifiedIdentifier
             | TokenKind::Enum
-            | TokenKind::From => {
-                self.next();
+            | TokenKind::From => self.next_but_first(|parser| {
+                let id = parser.state.id();
 
-                state.maybe_resolve_identifier(current, UseKind::Normal)
-            }
+                parser.maybe_resolve_identifier(id, &parser.current(), UseKind::Normal)
+            }),
             TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
-                self.next();
+                self.next_but_first(|parser| {
+                    let symbol = parser.current_symbol_as_bytestring();
 
-                let symbol = current.symbol.as_ref().unwrap();
-
-                Name::special(
-                    self.state.id(),
-                    SpecialNameKind::from(current.clone()),
-                    symbol.clone(),
-                    current.span,
-                )
+                    Name::special(
+                        parser.state.id(),
+                        SpecialNameKind::from(parser.current()),
+                        symbol,
+                        parser.current_span(),
+                    )
+                })
             }
-            t if is_reserved_identifier(t) => {
+            t if self.is_reserved_identifier(t) => {
                 self.diagnostic(
                     ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
 
-                self.next();
+                self.next_but_first(|parser| {
+                    let symbol = parser.current_symbol_as_bytestring();
 
-                let symbol = current.symbol.as_ref().unwrap();
-
-                Name::unresolved(
-                    self.state.id(),
-                    symbol.clone(),
-                    NameQualification::Unqualified,
-                    current.span,
-                )
+                    Name::unresolved(
+                        parser.state.id(),
+                        symbol,
+                        NameQualification::Unqualified,
+                        parser.current_span(),
+                    )
+                })
             }
             _ => {
                 self.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::Identifier],
-                        found: current.clone(),
+                        found: self.current().to_owned(),
                     },
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
 
-                Name::missing(self.state.id(), current.span)
+                Name::missing(self.state.id(), self.current_span())
             }
         }
     }
 
     pub fn parse_constant_identifier(&mut self) -> Name {
-        let current = self.current();
-        match &current.kind {
+        match self.current_kind() {
             TokenKind::Identifier
             | TokenKind::Enum
             | TokenKind::From
             | TokenKind::Self_
-            | TokenKind::Parent => {
-                self.next();
+            | TokenKind::Parent => self.next_but_first(|parser| {
+                let symbol = parser.current_symbol_as_bytestring();
+                let resolved = parser.state.join_with_namespace(&symbol);
 
-                let symbol = current.symbol.as_ref().unwrap();
-                let resolved = state.join_with_namespace(symbol);
-
-                Name::resolved(self.state.id(), resolved, symbol.clone(), current.span)
-            }
-            t if is_reserved_identifier(t) => {
+                Name::resolved(parser.state.id(), resolved, symbol, parser.current_span())
+            }),
+            t if self.is_reserved_identifier(t) => {
                 self.diagnostic(
                     ParserDiagnostic::CannotUseReservedKeywordAsConstantName,
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
 
-                self.next();
+                self.next_but_first(|parser| {
+                    let symbol = parser.current_symbol_as_bytestring();
+                    let resolved = parser.state.join_with_namespace(&symbol);
 
-                let symbol = current.symbol.as_ref().unwrap();
-                let resolved = state.join_with_namespace(symbol);
-
-                Name::resolved(self.state.id(), resolved, symbol.clone(), current.span)
+                    Name::resolved(parser.state.id(), resolved, symbol, parser.current_span())
+                })
             }
             _ => {
                 self.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::Identifier],
-                        found: current.clone(),
+                        found: self.current().to_owned(),
                     },
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
 
-                Name::missing(self.state.id(), current.span)
+                Name::missing(self.state.id(), self.current_span())
             }
         }
     }

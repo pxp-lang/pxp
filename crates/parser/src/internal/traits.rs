@@ -1,6 +1,3 @@
-use crate::internal::identifiers;
-use crate::internal::utils;
-use crate::state::State;
 use crate::Parser;
 use crate::ParserDiagnostic;
 use pxp_ast::StatementKind;
@@ -11,9 +8,6 @@ use pxp_span::Span;
 use pxp_span::Spanned;
 use pxp_token::Token;
 use pxp_token::TokenKind;
-
-use super::classes::parse_classish_member;
-use super::names;
 
 impl<'a> Parser<'a> {
     pub fn parse_trait_usage(&mut self) -> TraitUsage {
@@ -28,11 +22,11 @@ impl<'a> Parser<'a> {
             traits.push(t);
 
             if self.current_kind() == TokenKind::Comma {
-                if state.peek().kind == TokenKind::SemiColon {
+                if self.peek_kind() == TokenKind::SemiColon {
                     // will fail with unexpected token `,`
                     // as `use` doesn't allow for trailing commas.
                     self.skip_semicolon();
-                } else if state.peek().kind == TokenKind::LeftBrace {
+                } else if self.peek_kind() == TokenKind::LeftBrace {
                     // will fail with unexpected token `{`
                     // as `use` doesn't allow for trailing commas.
                     self.skip_left_brace();
@@ -49,7 +43,7 @@ impl<'a> Parser<'a> {
             self.skip_left_brace();
 
             while self.current_kind() != TokenKind::RightBrace {
-                let (r#trait, method): (Option<Name>, SimpleIdentifier) = match state.peek().kind {
+                let (r#trait, method): (Option<Name>, SimpleIdentifier) = match self.peek_kind() {
                     TokenKind::DoubleColon => {
                         let r#trait = self.parse_full_name_including_self();
                         self.next();
@@ -62,16 +56,18 @@ impl<'a> Parser<'a> {
                 while !self.is_eof()
                     && !matches!(self.current_kind(), TokenKind::As | TokenKind::Insteadof)
                 {
-                    let token = self.current();
+                    let token = self.current().to_owned();
+                    let span = token.span;
+
                     self.next();
 
                     self.diagnostic(
                         ParserDiagnostic::ExpectedToken {
                             expected: vec![TokenKind::As, TokenKind::Insteadof],
-                            found: token.clone(),
+                            found: token,
                         },
                         Severity::Error,
-                        token.span,
+                        span,
                     );
                 }
 
@@ -79,16 +75,14 @@ impl<'a> Parser<'a> {
                     TokenKind::As => {
                         self.next();
 
-                        match self.current() {
-                            Token {
-                                kind: TokenKind::Public | TokenKind::Protected | TokenKind::Private,
-                                span,
-                                ..
-                            } => {
+                        match self.current_kind() {
+                            TokenKind::Public | TokenKind::Protected | TokenKind::Private => {
+                                let span = self.current_span();
+
                                 let visibility = match self.current_kind() {
-                                    TokenKind::Public => VisibilityModifier::Public(*span),
-                                    TokenKind::Protected => VisibilityModifier::Protected(*span),
-                                    TokenKind::Private => VisibilityModifier::Private(*span),
+                                    TokenKind::Public => VisibilityModifier::Public(span),
+                                    TokenKind::Protected => VisibilityModifier::Protected(span),
+                                    TokenKind::Private => VisibilityModifier::Private(span),
                                     _ => unreachable!(),
                                 };
 
@@ -171,7 +165,7 @@ impl<'a> Parser<'a> {
                             vec![self.parse_full_type_name_identifier()];
 
                         if self.current_kind() == TokenKind::Comma {
-                            if state.peek().kind == TokenKind::SemiColon {
+                            if self.peek_kind() == TokenKind::SemiColon {
                                 // will fail with unexpected token `,`
                                 // as `insteadof` doesn't allow for trailing commas.
                                 self.skip_semicolon();
@@ -183,7 +177,7 @@ impl<'a> Parser<'a> {
                                 insteadof.push(self.parse_full_type_name_identifier());
 
                                 if self.current_kind() == TokenKind::Comma {
-                                    if state.peek().kind == TokenKind::SemiColon {
+                                    if self.peek_kind() == TokenKind::SemiColon {
                                         // will fail with unexpected token `,`
                                         // as `insteadof` doesn't allow for trailing commas.
                                         self.skip_semicolon();
@@ -245,7 +239,7 @@ impl<'a> Parser<'a> {
         let members = {
             let mut members = Vec::new();
             while self.current_kind() != TokenKind::RightBrace && !self.is_eof() {
-                members.push(parse_classish_member(true));
+                members.push(self.parse_classish_member(true));
             }
             members
         };

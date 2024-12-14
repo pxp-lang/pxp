@@ -1,14 +1,8 @@
-use crate::expressions;
-use crate::internal::blocks;
-use crate::internal::utils;
-use crate::state::State;
-use crate::statement;
 use crate::Parser;
 use pxp_ast::StatementKind;
 use pxp_ast::*;
 use pxp_span::Span;
 use pxp_span::Spanned;
-use pxp_token::Token;
 use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
@@ -16,40 +10,34 @@ impl<'a> Parser<'a> {
         let foreach = self.skip(TokenKind::Foreach);
 
         let (left_parenthesis, iterator, right_parenthesis) =
-            self.parenthesized(&|&mut self| {
-                let expression = self.parse_expression();
+            self.parenthesized(|parser| {
+                let expression = parser.parse_expression();
 
-                let r#as = self.skip(TokenKind::As);
+                let r#as = parser.skip(TokenKind::As);
 
-                let current = self.current();
-                let ampersand = if current.kind == TokenKind::Ampersand {
-                    self.next();
-                    Some(current.span)
+                let ampersand = if parser.current_kind() == TokenKind::Ampersand {
+                    Some(parser.next())
                 } else {
                     None
                 };
 
-                let mut value = self.parse_expression();
+                let mut value = parser.parse_expression();
 
-                let current = self.current();
-                if current.kind == TokenKind::DoubleArrow {
-                    self.next();
-                    let arrow = current.span;
+                if parser.current_kind() == TokenKind::DoubleArrow {
+                    let arrow = parser.next();
 
-                    let current = self.current();
-                    let ampersand = if current.kind == TokenKind::Ampersand {
-                        self.next();
-                        Some(current.span)
+                    let ampersand = if parser.current_kind() == TokenKind::Ampersand {
+                        Some(parser.next())
                     } else {
                         None
                     };
 
-                    let mut key = self.parse_expression();
+                    let mut key = parser.parse_expression();
 
                     std::mem::swap(&mut value, &mut key);
 
                     ForeachStatementIterator::KeyAndValue(ForeachStatementIteratorKeyAndValue {
-                        id: self.state.id(),
+                        id: parser.state.id(),
                         span: Span::combine(expression.span, value.span),
                         expression,
                         r#as,
@@ -60,7 +48,7 @@ impl<'a> Parser<'a> {
                     })
                 } else {
                     ForeachStatementIterator::Value(ForeachStatementIteratorValue {
-                        id: self.state.id(),
+                        id: parser.state.id(),
                         span: Span::combine(expression.span, value.span),
                         expression,
                         r#as,
@@ -85,7 +73,7 @@ impl<'a> Parser<'a> {
                 ending,
             })
         } else {
-            let statement = statement();
+            let statement = self.parse_statement();
 
             ForeachStatementBody::Statement(ForeachStatementBodyStatement {
                 id: self.state.id(),
@@ -109,33 +97,30 @@ impl<'a> Parser<'a> {
         let r#for = self.skip(TokenKind::For);
 
         let (left_parenthesis, iterator, right_parenthesis) =
-            self.parenthesized(&|state| {
+            self.parenthesized(|parser| {
                 let (initializations_semicolon, initializations) =
-                    self.semicolon_terminated(&|state| {
-                        self.comma_separated_no_trailing(
-                            state,
-                            &expressions::create,
+                    parser.semicolon_terminated(|parser| {
+                        parser.comma_separated_no_trailing(
+                            |parser| parser.parse_expression(),
                             TokenKind::SemiColon,
                         )
                     });
 
                 let (conditions_semicolon, conditions) =
-                    self.semicolon_terminated(&|state| {
-                        self.comma_separated_no_trailing(
-                            state,
-                            &expressions::create,
+                    parser.semicolon_terminated(|parser| {
+                        parser.comma_separated_no_trailing(
+                            |parser| parser.parse_expression(),
                             TokenKind::SemiColon,
                         )
                     });
 
-                let r#loop = self.comma_separated_no_trailing(
-                    state,
-                    &expressions::create,
+                let r#loop = parser.comma_separated_no_trailing(
+                    |parser| parser.parse_expression(),
                     TokenKind::RightParen,
                 );
 
                 ForStatementIterator {
-                    id: self.state.id(),
+                    id: parser.state.id(),
                     span: Span::combine(initializations.span(), r#loop.span()),
                     initializations,
                     initializations_semicolon,
@@ -160,7 +145,7 @@ impl<'a> Parser<'a> {
                 ending,
             })
         } else {
-            let x = statement();
+            let x = self.parse_statement();
 
             ForStatementBody::Statement(ForStatementBodyStatement {
                 id: self.state.id(),
@@ -183,13 +168,13 @@ impl<'a> Parser<'a> {
     pub fn parse_do_while_statement(&mut self) -> StatementKind {
         let r#do = self.skip(TokenKind::Do);
 
-        let body = Box::new(statement());
+        let body = Box::new(self.parse_statement());
 
         let r#while = self.skip(TokenKind::While);
 
         let (semicolon, (left_parenthesis, condition, right_parenthesis)) =
-            self.semicolon_terminated(&|state| {
-                self.parenthesized(|parser| parser.parse_expression())
+            self.semicolon_terminated(|parser| {
+                parser.parenthesized(|parser| parser.parse_expression())
             });
 
         StatementKind::DoWhile(DoWhileStatement {
@@ -226,7 +211,7 @@ impl<'a> Parser<'a> {
                 ending,
             })
         } else {
-            let x = statement();
+            let x = self.parse_statement();
 
             WhileStatementBody::Statement(WhileStatementBodyStatement {
                 id: self.state.id(),
@@ -248,7 +233,7 @@ impl<'a> Parser<'a> {
 
     pub fn parse_continue_statement(&mut self) -> StatementKind {
         let r#continue = self.skip(TokenKind::Continue);
-        let level = maybe_parse_loop_level();
+        let level = self.maybe_parse_loop_level();
         let ending = self.skip_ending();
 
         StatementKind::Continue(ContinueStatement {
@@ -262,7 +247,7 @@ impl<'a> Parser<'a> {
 
     pub fn parse_break_statement(&mut self) -> StatementKind {
         let r#break = self.skip(TokenKind::Break);
-        let level = maybe_parse_loop_level();
+        let level = self.maybe_parse_loop_level();
         let ending = self.skip_ending();
 
         StatementKind::Break(BreakStatement {
@@ -280,18 +265,14 @@ impl<'a> Parser<'a> {
         if current == &TokenKind::SemiColon || current == &TokenKind::CloseTag {
             None
         } else {
-            Some(parse_loop_level())
+            Some(self.parse_loop_level())
         }
     }
 
     fn parse_loop_level(&mut self) -> Level {
-        let current = self.current();
-
-        if let Token {
-            kind: TokenKind::LiteralInteger,
-            ..
-        } = current
-        {
+        if self.current_kind() == TokenKind::LiteralInteger {
+            let token = self.current().to_owned();
+            let span = token.span;
             self.next();
 
             return Level::Literal(LiteralLevel {
@@ -299,14 +280,14 @@ impl<'a> Parser<'a> {
                 literal: Literal::new(
                     self.state.id(),
                     LiteralKind::Integer,
-                    current.clone(),
-                    current.span,
+                    token,
+                    span,
                 ),
             });
         }
 
         let (left_parenthesis, level, right_parenthesis) =
-            self.parenthesized(&|state| Box::new(parse_loop_level()));
+            self.parenthesized(|parser| Box::new(parser.parse_loop_level()));
 
         Level::Parenthesized(ParenthesizedLevel {
             id: self.state.id(),

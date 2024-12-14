@@ -58,11 +58,10 @@ impl<'a> Parser<'a> {
         let mut left = self.left(&precedence);
 
         loop {
-            let current = self.current();
-            let span = current.span;
-            let kind = &current.kind;
+            let span = self.current_span();
+            let kind = self.current_kind();
 
-            if matches!(current.kind, TokenKind::SemiColon | TokenKind::Eof) {
+            if matches!(kind, TokenKind::SemiColon | TokenKind::Eof) {
                 break;
             }
 
@@ -93,17 +92,18 @@ impl<'a> Parser<'a> {
                 {
                     self.diagnostic(
                         ParserDiagnostic::UnexpectedToken {
-                            token: current.clone(),
+                            token: self.current().to_owned(),
                         },
                         Severity::Error,
-                        current.span,
+                        self.current_span(),
                     );
                 }
 
                 self.next();
 
-                let op = self.current();
-                let start_span = op.span;
+                let op = self.current().to_owned();
+                let start_span = self.current_span();
+
                 let kind = match kind {
                     TokenKind::Question => {
                         // this happens due to a comment, or whitespaces between the  and the :
@@ -251,11 +251,7 @@ impl<'a> Parser<'a> {
                         let right = Expression::new(
                             self.state.id(),
                             ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                                SimpleIdentifier::new(
-                                    self.state.id(),
-                                    op.symbol.as_ref().unwrap().clone(),
-                                    enum_span,
-                                ),
+                                SimpleIdentifier::new(self.state.id(), op.symbol, enum_span),
                             )),
                             enum_span,
                             CommentGroup::default(),
@@ -275,11 +271,7 @@ impl<'a> Parser<'a> {
                         let right = Expression::new(
                             self.state.id(),
                             ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                                SimpleIdentifier::new(
-                                    self.state.id(),
-                                    op.symbol.as_ref().unwrap().clone(),
-                                    op.span,
-                                ),
+                                SimpleIdentifier::new(self.state.id(), op.symbol, op.span),
                             )),
                             Span::new(start_span.start, from_span.end),
                             CommentGroup::default(),
@@ -801,14 +793,9 @@ impl<'a> Parser<'a> {
                     }
                 };
 
-                let end_span = state.previous().span;
+                let span = Span::combine(start_span, kind.span());
 
-                left = Expression::new(
-                    self.state.id(),
-                    kind,
-                    Span::new(start_span.start, end_span.end),
-                    CommentGroup::default(),
-                );
+                left = Expression::new(self.state.id(), kind, span, CommentGroup::default());
 
                 self.maybe_shift_assignment_operands(&mut left);
 
@@ -1094,25 +1081,21 @@ impl<'a> Parser<'a> {
     pub fn attributes(&mut self) -> Expression {
         self.gather_attributes();
 
-        let current = self.current();
-
-        match &current.kind {
-            TokenKind::Static if self.peek().kind == TokenKind::Function => {
+        match self.current_kind() {
+            TokenKind::Static if self.peek_kind() == TokenKind::Function => {
                 self.parse_anonymous_function()
             }
-            TokenKind::Static if self.peek().kind == TokenKind::Fn => {
-                self.parse_arrow_function()
-            }
+            TokenKind::Static if self.peek_kind() == TokenKind::Fn => self.parse_arrow_function(),
             TokenKind::Function => self.parse_anonymous_function(),
             TokenKind::Fn => self.parse_arrow_function(),
             _ => {
                 self.diagnostic(
                     ParserDiagnostic::InvalidTargetForAttributes,
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
 
-                Expression::missing(self.state.id(), current.span)
+                Expression::missing(self.state.id(), self.current_span())
             }
         }
     }
@@ -1128,10 +1111,7 @@ impl<'a> Parser<'a> {
             return Expression::missing(self.state.id(), self.current().span);
         }
 
-        let current = self.current();
-        let peek = self.peek();
-
-        match (&current.kind, &peek.kind) {
+        match (self.current_kind(), self.peek_kind()) {
             (TokenKind::Attribute, _) => self.attributes(),
 
             (TokenKind::Static, TokenKind::Fn) => self.parse_arrow_function(),
@@ -1143,36 +1123,30 @@ impl<'a> Parser<'a> {
             (TokenKind::Function, _) => self.parse_anonymous_function(),
 
             (TokenKind::Eval, TokenKind::LeftParen) => {
-                let start_span = self.current().span;
-                let eval = self.current().span;
-                self.next();
+                let eval = self.next();
 
-                let argument =
-                    Box::new(self.parse_single_argument(true, true).unwrap());
-                let end_span = state.previous().span;
+                let argument = Box::new(self.parse_single_argument(true, true).unwrap());
+
+                let span = Span::combine(eval, argument.span());
 
                 Expression::new(
                     self.state.id(),
                     ExpressionKind::Eval(EvalExpression {
                         id: self.state.id(),
-                        span: Span::combine(start_span, end_span),
+                        span,
                         eval,
                         argument,
                     }),
-                    Span::new(start_span.start, end_span.end),
+                    span,
                     CommentGroup::default(),
                 )
             }
 
             (TokenKind::Empty, TokenKind::LeftParen) => {
-                let start_span = self.current().span;
-                let empty = self.current().span;
-                self.next();
+                let empty = self.next();
 
-                let argument =
-                    Box::new(self.parse_single_argument(true, true).unwrap());
-                let end_span = state.previous().span;
-                let span = Span::combine(start_span, end_span);
+                let argument = Box::new(self.parse_single_argument(true, true).unwrap());
+                let span = Span::combine(empty, argument.span());
 
                 Expression::new(
                     self.state.id(),
@@ -1188,14 +1162,11 @@ impl<'a> Parser<'a> {
             }
 
             (TokenKind::Die, _) => {
-                let start_span = self.current().span;
-                let die = self.current().span;
-                self.next();
+                let die = self.next();
 
                 let argument = self.parse_single_argument(false, true).map(Box::new);
 
-                let end_span = state.previous().span;
-                let span = Span::combine(start_span, end_span);
+                let span = Span::combine(die, argument.span());
 
                 Expression::new(
                     self.state.id(),
@@ -1211,14 +1182,11 @@ impl<'a> Parser<'a> {
             }
 
             (TokenKind::Exit, _) => {
-                let start_span = self.current().span;
-                let exit = self.current().span;
-                self.next();
+                let exit = self.next();
 
                 let argument = self.parse_single_argument(false, true).map(Box::new);
 
-                let end_span = state.previous().span;
-                let span = Span::combine(start_span, end_span);
+                let span = Span::combine(exit, argument.span());
 
                 Expression::new(
                     self.state.id(),
@@ -1234,12 +1202,9 @@ impl<'a> Parser<'a> {
             }
 
             (TokenKind::Isset, TokenKind::LeftParen) => {
-                let start_span = self.current().span;
-                let isset = self.current().span;
-                self.next();
+                let isset = self.next();
                 let arguments = self.parse_argument_list();
-                let end_span = state.previous().span;
-                let span = Span::combine(start_span, end_span);
+                let span = Span::combine(isset, arguments.span());
 
                 Expression::new(
                     self.state.id(),
@@ -1255,12 +1220,9 @@ impl<'a> Parser<'a> {
             }
 
             (TokenKind::Unset, TokenKind::LeftParen) => {
-                let start_span = self.current().span;
-                let unset = self.current().span;
-                self.next();
+                let unset = self.next();
                 let arguments = self.parse_argument_list();
-                let end_span = state.previous().span;
-                let span = Span::combine(start_span, end_span);
+                let span = Span::combine(unset, arguments.span());
 
                 Expression::new(
                     self.state.id(),
@@ -1276,9 +1238,7 @@ impl<'a> Parser<'a> {
             }
 
             (TokenKind::Print, _) => {
-                let start_span = self.current().span;
-                let print = self.current().span;
-                self.next();
+                let print = self.next();
 
                 let mut value = None;
                 let mut argument = None;
@@ -1289,8 +1249,11 @@ impl<'a> Parser<'a> {
                     value = Some(Box::new(self.parse_expression()));
                 }
 
-                let end_span = state.previous().span;
-                let span = Span::combine(start_span, end_span);
+                let span = if let Some(argument) = &argument {
+                    Span::combine(print, argument.span())
+                } else {
+                    Span::combine(print, value.as_ref().unwrap().span())
+                };
 
                 Expression::new(
                     self.state.id(),
@@ -1327,7 +1290,7 @@ impl<'a> Parser<'a> {
                     CommentGroup::default(),
                 );
 
-                self.postfix(lhs, &TokenKind::LeftParen)
+                self.postfix(lhs, TokenKind::LeftParen)
             }
 
             (TokenKind::Enum | TokenKind::From, TokenKind::DoubleColon) => {
@@ -1341,7 +1304,7 @@ impl<'a> Parser<'a> {
                     CommentGroup::default(),
                 );
 
-                self.postfix(lhs, &TokenKind::DoubleColon)
+                self.postfix(lhs, TokenKind::DoubleColon)
             }
 
             (TokenKind::List, _) => self.parse_list_expression(),
@@ -1370,10 +1333,10 @@ impl<'a> Parser<'a> {
             }
 
             (TokenKind::Yield, _) => {
-                let start_span = self.current().span;
-                self.next();
-                if self.current().kind == TokenKind::SemiColon
-                    || self.current().kind == TokenKind::RightParen
+                let start_span = self.next();
+
+                if self.current_kind() == TokenKind::SemiColon
+                    || self.current_kind() == TokenKind::RightParen
                 {
                     Expression::new(
                         self.state.id(),
@@ -1390,22 +1353,20 @@ impl<'a> Parser<'a> {
                 } else {
                     let mut from = Span::default();
 
-                    if self.current().kind == TokenKind::From {
-                        from = self.current().span;
-                        self.next();
+                    if self.current_kind() == TokenKind::From {
+                        from = self.next();
                     }
 
                     let mut key = None;
                     let mut value = Box::new(self.parse_expression());
 
-                    if self.current().kind == TokenKind::DoubleArrow && !from.is_empty() {
+                    if self.current_kind() == TokenKind::DoubleArrow && !from.is_empty() {
                         self.next();
                         key = Some(value.clone());
                         value = Box::new(self.parse_expression());
                     }
 
-                    let end_span = state.previous().span;
-                    let span = Span::new(start_span.start, end_span.end);
+                    let span = Span::combine(start_span, value.span());
 
                     if !from.is_empty() {
                         Expression::new(
@@ -1438,13 +1399,11 @@ impl<'a> Parser<'a> {
             }
 
             (TokenKind::Clone, _) => {
-                let start_span = self.current().span;
-                self.next();
+                let start_span = self.next();
 
                 let target = self.for_precedence(Precedence::CloneOrNew);
 
-                let end_span = state.previous().span;
-                let span = Span::new(start_span.start, end_span.end);
+                let span = Span::combine(start_span, target.span());
 
                 Expression::new(
                     self.state.id(),
@@ -1460,9 +1419,8 @@ impl<'a> Parser<'a> {
             }
 
             (TokenKind::True, _) => {
-                let span = self.current().span;
-                let value = self.current().clone();
-                self.next();
+                let value = self.current().to_owned();
+                let span = self.next();
 
                 Expression::new(
                     self.state.id(),
@@ -1477,9 +1435,8 @@ impl<'a> Parser<'a> {
             }
 
             (TokenKind::False, _) => {
-                let span = self.current().span;
-                let value = self.current().clone();
-                self.next();
+                let value = self.current().to_owned();
+                let span = self.next();
 
                 Expression::new(
                     self.state.id(),
@@ -1494,8 +1451,7 @@ impl<'a> Parser<'a> {
             }
 
             (TokenKind::Null, _) => {
-                let span = self.current().span;
-                self.next();
+                let span = self.next();
 
                 Expression::new(
                     self.state.id(),
@@ -1506,46 +1462,40 @@ impl<'a> Parser<'a> {
             }
 
             (TokenKind::LiteralInteger, _) => {
-                let span = self.current().span;
-                let current = self.current();
-
-                if let TokenKind::LiteralInteger = &current.kind {
-                    self.next();
-
-                    Expression::new(
-                        self.state.id(),
-                        ExpressionKind::Literal(Literal::new(
-                            self.state.id(),
-                            LiteralKind::Integer,
-                            current.clone(),
-                            span,
-                        )),
-                        span,
-                        CommentGroup::default(),
-                    )
+                if self.current_kind() == TokenKind::LiteralInteger {
+                    self.next_but_first(|parser| {
+                        Expression::new(
+                            parser.state.id(),
+                            ExpressionKind::Literal(Literal::new(
+                                parser.state.id(),
+                                LiteralKind::Integer,
+                                parser.current().to_owned(),
+                                parser.current_span(),
+                            )),
+                            parser.current_span(),
+                            CommentGroup::default(),
+                        )
+                    })
                 } else {
                     unreachable!("{}:{}", file!(), line!());
                 }
             }
 
             (TokenKind::LiteralFloat, _) => {
-                let span = self.current().span;
-                let current = self.current();
-
-                if let TokenKind::LiteralFloat = &current.kind {
-                    self.next();
-
-                    Expression::new(
-                        self.state.id(),
-                        ExpressionKind::Literal(Literal::new(
-                            self.state.id(),
-                            LiteralKind::Float,
-                            current.clone(),
-                            span,
-                        )),
-                        span,
-                        CommentGroup::default(),
-                    )
+                if self.current_kind() == TokenKind::LiteralFloat {
+                    self.next_but_first(|parser| {
+                        Expression::new(
+                            parser.state.id(),
+                            ExpressionKind::Literal(Literal::new(
+                                parser.state.id(),
+                                LiteralKind::Float,
+                                parser.current().to_owned(),
+                                parser.current_span(),
+                            )),
+                            parser.current_span(),
+                            CommentGroup::default(),
+                        )
+                    })
                 } else {
                     unreachable!("{}:{}", file!(), line!());
                 }
@@ -1553,36 +1503,24 @@ impl<'a> Parser<'a> {
 
             (TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString, _) => {
                 let span = self.current().span;
-                let current = self.current();
 
-                if let TokenKind::LiteralSingleQuotedString = &current.kind {
-                    self.next();
-
-                    Expression::new(
-                        self.state.id(),
-                        ExpressionKind::Literal(Literal::new(
-                            self.state.id(),
-                            LiteralKind::String,
-                            current.clone(),
-                            span,
-                        )),
-                        span,
-                        CommentGroup::default(),
-                    )
-                } else if let TokenKind::LiteralDoubleQuotedString = &current.kind {
-                    self.next();
-
-                    Expression::new(
-                        self.state.id(),
-                        ExpressionKind::Literal(Literal::new(
-                            self.state.id(),
-                            LiteralKind::String,
-                            current.clone(),
-                            span,
-                        )),
-                        span,
-                        CommentGroup::default(),
-                    )
+                if matches!(
+                    self.current_kind(),
+                    TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString
+                ) {
+                    self.next_but_first(|parser| {
+                        Expression::new(
+                            parser.state.id(),
+                            ExpressionKind::Literal(Literal::new(
+                                parser.state.id(),
+                                LiteralKind::String,
+                                parser.current().to_owned(),
+                                parser.current_span(),
+                            )),
+                            parser.current_span(),
+                            CommentGroup::default(),
+                        )
+                    })
                 } else {
                     unreachable!("{}:{}", file!(), line!());
                 }
@@ -1602,13 +1540,13 @@ impl<'a> Parser<'a> {
                 | TokenKind::FullyQualifiedIdentifier,
                 _,
             ) => {
-                let name = self.parse_full_name(
-                    match self.peek().kind {
-                        TokenKind::LeftParen => UseKind::Function,
-                        TokenKind::DoubleColon => UseKind::Normal,
-                        _ => UseKind::Const,
-                    },
-                );
+                let kind = match self.peek_kind() {
+                    TokenKind::LeftParen => UseKind::Function,
+                    TokenKind::DoubleColon => UseKind::Normal,
+                    _ => UseKind::Const,
+                };
+
+                let name = self.parse_full_name(kind);
 
                 let span = name.span;
 
@@ -1621,8 +1559,8 @@ impl<'a> Parser<'a> {
             }
 
             (TokenKind::Static, _) => {
-                let span = self.current().span;
-                self.next();
+                let span = self.next();
+
                 let expression = Expression::new(
                     self.state.id(),
                     ExpressionKind::Static(StaticExpression {
@@ -1633,12 +1571,11 @@ impl<'a> Parser<'a> {
                     CommentGroup::default(),
                 );
 
-                self.postfix(expression, &TokenKind::DoubleColon)
+                self.postfix(expression, TokenKind::DoubleColon)
             }
 
             (TokenKind::Self_, _) => {
-                let span = self.current().span;
-                self.next();
+                let span = self.next();
 
                 Expression::new(
                     self.state.id(),
@@ -1652,8 +1589,7 @@ impl<'a> Parser<'a> {
             }
 
             (TokenKind::Parent, _) => {
-                let span = self.current().span;
-                self.next();
+                let span = self.next();
 
                 Expression::new(
                     self.state.id(),
@@ -1667,8 +1603,7 @@ impl<'a> Parser<'a> {
             }
 
             (TokenKind::LeftParen, _) => {
-                let start = self.current().span;
-                self.next();
+                let start = self.next();
 
                 let expr = self.parse_expression();
 
@@ -1696,76 +1631,79 @@ impl<'a> Parser<'a> {
             (TokenKind::LeftBracket, _) => self.parse_short_array_expression(),
 
             (TokenKind::New, _) => {
-                let new = self.current().span;
+                let new = self.next();
 
-                self.next();
-
-                if self.current().kind == TokenKind::Class
-                    || self.current().kind == TokenKind::Attribute
+                if self.current_kind() == TokenKind::Class
+                    || self.current_kind() == TokenKind::Attribute
                 {
                     return self.parse_anonymous_class(Some(new));
                 };
 
-                let target = match self.current().kind {
+                let target = match self.current_kind() {
                     TokenKind::Self_ => {
-                        let token = self.current();
+                        let token = self.current().to_owned();
 
                         self.next();
+
+                        let span = token.span;
 
                         Expression::new(
                             self.state.id(),
                             ExpressionKind::Name(Name::special(
                                 self.state.id(),
-                                SpecialNameKind::Self_(token.span),
-                                token.symbol.as_ref().unwrap().clone(),
-                                token.span,
+                                SpecialNameKind::Self_(span),
+                                token.symbol,
+                                span
                             )),
-                            token.span,
+                            span,
                             CommentGroup::default(),
                         )
                     }
                     TokenKind::Static => {
-                        let token = self.current();
+                        let token = self.current().to_owned();
 
                         self.next();
+
+                        let span = token.span;
 
                         Expression::new(
                             self.state.id(),
                             ExpressionKind::Name(Name::special(
                                 self.state.id(),
-                                SpecialNameKind::Static(token.span),
-                                token.symbol.as_ref().unwrap().clone(),
-                                token.span,
+                                SpecialNameKind::Static(span),
+                                token.symbol,
+                                span,
                             )),
-                            token.span,
+                            span,
                             CommentGroup::default(),
                         )
                     }
                     TokenKind::Parent => {
-                        let token = self.current();
+                        let token = self.current().to_owned();
 
                         self.next();
+
+                        let span = token.span;
 
                         Expression::new(
                             self.state.id(),
                             ExpressionKind::Name(Name::special(
                                 self.state.id(),
-                                SpecialNameKind::Parent(token.span),
-                                token.symbol.as_ref().unwrap().clone(),
-                                token.span,
+                                SpecialNameKind::Parent(span),
+                                token.symbol,
+                                span,
                             )),
-                            token.span,
+                            span,
                             CommentGroup::default(),
                         )
                     }
                     TokenKind::FullyQualifiedIdentifier => {
-                        let token = self.current();
-
-                        let span = token.span;
-                        let symbol = token.symbol.as_ref().unwrap().clone();
-                        let resolved = self.state.strip_leading_namespace_qualifier(&symbol);
+                        let symbol = self.current_symbol_as_bytestring();
+                        let span = self.current_span();
 
                         self.next();
+
+                        let resolved = self.state.strip_leading_namespace_qualifier(&symbol);
 
                         Expression::new(
                             self.state.id(),
@@ -1783,29 +1721,33 @@ impl<'a> Parser<'a> {
                     | TokenKind::QualifiedIdentifier
                     | TokenKind::Enum
                     | TokenKind::From => {
-                        let token = self.current();
+                        self.next_but_first(|parser| {
+                            let id = parser.state.id();
 
-                        self.next();
-
-                        Expression::new(
-                            self.state.id(),
-                            ExpressionKind::Name(
-                                self.state.maybe_resolve_identifier(token, UseKind::Normal),
-                            ),
-                            token.span,
-                            CommentGroup::default(),
-                        )
+                            Expression::new(
+                                parser.state.id(),
+                                ExpressionKind::Name(
+                                    parser.maybe_resolve_identifier(id, &parser.current(), UseKind::Normal),
+                                ),
+                                parser.current_span(),
+                                CommentGroup::default(),
+                            )
+                        })
                     }
                     _ => self.clone_or_new_precedence(),
                 };
 
-                let arguments = if self.current().kind == TokenKind::LeftParen {
+                let arguments = if self.current_kind() == TokenKind::LeftParen {
                     Some(self.parse_argument_list())
                 } else {
                     None
                 };
 
-                let span = Span::combine(new, state.previous().span);
+                let span = if arguments.is_some() {
+                    Span::combine(new, arguments.span())
+                } else {
+                    Span::combine(new, target.span())
+                };
 
                 Expression::new(
                     self.state.id(),
@@ -1972,17 +1914,14 @@ impl<'a> Parser<'a> {
                 | TokenKind::RequireOnce,
                 _,
             ) => {
-                let start_span = self.current().span;
-                let current = self.current();
-                let keyword_span = current.span;
-
-                self.next();
+                let kind = self.current_kind();
+                let keyword_span = self.next();
 
                 let path = self.parse_expression();
-                let span = Span::combine(start_span, path.span);
+                let span = Span::combine(keyword_span, path.span);
                 let path = Box::new(path);
 
-                let kind = match current.kind {
+                let kind = match kind {
                     TokenKind::Include => ExpressionKind::Include(IncludeExpression {
                         id: self.state.id(),
                         span,
@@ -2010,12 +1949,12 @@ impl<'a> Parser<'a> {
                     _ => unreachable!(),
                 };
 
-                let end_span = state.previous().span;
+                let span = kind.span();
 
                 Expression::new(
                     self.state.id(),
                     kind,
-                    Span::new(start_span.start, end_span.end),
+                    span,
                     CommentGroup::default(),
                 )
             }
@@ -2238,7 +2177,7 @@ impl<'a> Parser<'a> {
         Expression::missing(self.state.id(), span)
     }
 
-    fn postfix(&mut self, lhs: Expression, op: &TokenKind) -> Expression {
+    fn postfix(&mut self, lhs: Expression, op: TokenKind) -> Expression {
         let start_span = self.current().span;
         let kind = match op {
             TokenKind::DoubleQuestion => {
@@ -2258,8 +2197,8 @@ impl<'a> Parser<'a> {
             }
             TokenKind::LeftParen => {
                 // `(...)` closure creation
-                if state.lookahead(0).kind == TokenKind::Ellipsis
-                    && state.lookahead(1).kind == TokenKind::RightParen
+                if self.peek_kind() == TokenKind::Ellipsis
+                    && self.peek_again_kind() == TokenKind::RightParen
                 {
                     let start = self.skip(TokenKind::LeftParen);
                     let ellipsis = self.skip(TokenKind::Ellipsis);
@@ -2297,7 +2236,7 @@ impl<'a> Parser<'a> {
             }
             TokenKind::LeftBracket => {
                 let left_bracket = self.skip_left_bracket();
-                let index = if self.current().kind == TokenKind::RightBracket {
+                let index = if self.current_kind() == TokenKind::RightBracket {
                     None
                 } else {
                     Some(Box::new(self.parse_expression()))
@@ -2316,21 +2255,18 @@ impl<'a> Parser<'a> {
             }
             TokenKind::DoubleColon => {
                 let double_colon = self.skip_double_colon();
-                let current = self.current();
 
-                let property = match current.kind {
+                let property = match self.current_kind() {
                     TokenKind::Variable | TokenKind::Dollar | TokenKind::DollarLeftBrace => {
                         ExpressionKind::Variable(self.parse_dynamic_variable())
                     }
-                    _ if self.is_identifier_maybe_reserved(&self.current().kind) => {
+                    _ if self.is_identifier_maybe_reserved(self.current_kind()) => {
                         ExpressionKind::Identifier(Identifier::SimpleIdentifier(
                             self.parse_identifier_maybe_reserved(),
                         ))
                     }
                     TokenKind::LeftBrace => {
-                        let start = current.span;
-
-                        self.next();
+                        let start = self.next();
 
                         let expr = Box::new(self.parse_expression());
                         let end = self.skip_right_brace();
@@ -2346,12 +2282,11 @@ impl<'a> Parser<'a> {
                         ))
                     }
                     TokenKind::Class => {
-                        self.next();
-
-                        let symbol = current.symbol.as_ref().unwrap().clone();
+                        let symbol = self.current_symbol_as_bytestring();
+                        let span = self.next();
 
                         ExpressionKind::Identifier(Identifier::SimpleIdentifier(
-                            SimpleIdentifier::new(self.state.id(), symbol, current.span),
+                            SimpleIdentifier::new(self.state.id(), symbol, span),
                         ))
                     }
                     _ => {
@@ -2362,26 +2297,28 @@ impl<'a> Parser<'a> {
                                     TokenKind::Dollar,
                                     TokenKind::Identifier,
                                 ],
-                                found: current.clone(),
+                                found: self.current().to_owned(),
                             },
                             Severity::Error,
-                            current.span,
+                            self.current().span,
                         );
+
+                        let span = self.current_span();
 
                         self.next();
 
                         ExpressionKind::Missing(MissingExpression {
                             id: 0,
-                            span: current.span,
+                            span,
                         })
                     }
                 };
 
                 let lhs = Box::new(lhs);
 
-                if self.current().kind == TokenKind::LeftParen {
-                    if state.lookahead(0).kind == TokenKind::Ellipsis
-                        && state.lookahead(1).kind == TokenKind::RightParen
+                if self.current_kind() == TokenKind::LeftParen {
+                    if self.peek_kind() == TokenKind::Ellipsis
+                        && self.peek_again_kind() == TokenKind::RightParen
                     {
                         let start = self.skip(TokenKind::LeftParen);
                         let ellipsis = self.skip(TokenKind::Ellipsis);
@@ -2391,7 +2328,7 @@ impl<'a> Parser<'a> {
                         let placeholder = ArgumentPlaceholder {
                             id: self.state.id(),
                             span,
-                            comments: state.comments(),
+                            comments: self.state.comments(),
                             left_parenthesis: start,
                             ellipsis,
                             right_parenthesis: end,
@@ -2491,34 +2428,32 @@ impl<'a> Parser<'a> {
                 }
             }
             TokenKind::Arrow | TokenKind::QuestionArrow => {
-                let span = self.current().span;
-                self.next();
+                let span = self.next();
 
-                let property = match self.current().kind {
+                let property = match self.current_kind() {
                     TokenKind::Variable | TokenKind::Dollar | TokenKind::DollarLeftBrace => {
-                        let start_span = self.current().span;
-                        let kind =
-                            ExpressionKind::Variable(self.parse_dynamic_variable());
-                        let end_span = state.previous().span;
+                        let start_span = self.current_span();
+                        let kind = ExpressionKind::Variable(self.parse_dynamic_variable());
+                        let span = Span::combine(start_span, kind.span());
 
                         Expression::new(
                             self.state.id(),
                             kind,
-                            Span::new(start_span.start, end_span.end),
+                            span,
                             CommentGroup::default(),
                         )
                     }
-                    _ if self.is_identifier_maybe_reserved(&self.current().kind) => {
-                        let start_span = self.current().span;
+                    _ if self.is_identifier_maybe_reserved(self.current_kind()) => {
+                        let start_span = self.current_span();
                         let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(
                             self.parse_identifier_maybe_reserved(),
                         ));
-                        let end_span = state.previous().span;
+                        let span = Span::combine(start_span, kind.span());
 
                         Expression::new(
                             self.state.id(),
                             kind,
-                            Span::new(start_span.start, end_span.end),
+                            span,
                             CommentGroup::default(),
                         )
                     }
@@ -2545,7 +2480,7 @@ impl<'a> Parser<'a> {
                         )
                     }
                     _ => {
-                        let span = self.current().span;
+                        let span = self.current_span();
 
                         self.diagnostic(
                             ParserDiagnostic::ExpectedToken {
@@ -2554,7 +2489,7 @@ impl<'a> Parser<'a> {
                                     TokenKind::Dollar,
                                     TokenKind::Identifier,
                                 ],
-                                found: self.current().clone(),
+                                found: self.current().to_owned(),
                             },
                             Severity::Error,
                             span,
@@ -2564,8 +2499,8 @@ impl<'a> Parser<'a> {
                     }
                 };
 
-                if self.current().kind == TokenKind::LeftParen {
-                    if op == &TokenKind::QuestionArrow {
+                if self.current_kind() == TokenKind::LeftParen {
+                    if op == TokenKind::QuestionArrow {
                         let arguments = self.parse_argument_list();
 
                         ExpressionKind::NullsafeMethodCall(NullsafeMethodCallExpression {
@@ -2578,8 +2513,8 @@ impl<'a> Parser<'a> {
                         })
                     } else {
                         // `(...)` closure creation
-                        if state.lookahead(0).kind == TokenKind::Ellipsis
-                            && state.lookahead(1).kind == TokenKind::RightParen
+                        if self.peek_kind() == TokenKind::Ellipsis
+                            && self.peek_again_kind() == TokenKind::RightParen
                         {
                             let start = self.skip(TokenKind::LeftParen);
                             let ellipsis = self.skip(TokenKind::Ellipsis);
@@ -2616,7 +2551,7 @@ impl<'a> Parser<'a> {
                             })
                         }
                     }
-                } else if op == &TokenKind::QuestionArrow {
+                } else if op == TokenKind::QuestionArrow {
                     ExpressionKind::NullsafePropertyFetch(NullsafePropertyFetchExpression {
                         id: self.state.id(),
                         span: Span::combine(lhs.span, property.span),
@@ -2665,17 +2600,17 @@ impl<'a> Parser<'a> {
             _ => unreachable!(),
         };
 
-        let end_span = state.previous().span;
+        let span = Span::combine(start_span, kind.span());
 
         Expression::new(
             self.state.id(),
             kind,
-            Span::new(start_span.start, end_span.end),
+            span,
             CommentGroup::default(),
         )
     }
 
-    fn is_infix(&self, t: &TokenKind) -> bool {
+    fn is_infix(&self, t: TokenKind) -> bool {
         matches!(
             t,
             TokenKind::Pow
@@ -2726,7 +2661,7 @@ impl<'a> Parser<'a> {
     }
 
     #[inline(always)]
-    fn is_postfix(&self, t: &TokenKind) -> bool {
+    fn is_postfix(&self, t: TokenKind) -> bool {
         matches!(
             t,
             TokenKind::Increment

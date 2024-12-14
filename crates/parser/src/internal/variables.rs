@@ -1,7 +1,5 @@
-use crate::internal::utils;
-use crate::state::State;
 use crate::ParserDiagnostic;
-use crate::{expressions, Parser};
+use crate::Parser;
 use pxp_ast::*;
 
 use pxp_bytestring::ByteString;
@@ -11,88 +9,78 @@ use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
     pub fn parse_optional_simple_variable(&mut self) -> Option<SimpleVariable> {
-        let current = self.current();
-
-        if TokenKind::Variable == current.kind {
-            Some(parse_simple_variable())
+        if self.current_kind() == TokenKind::Variable {
+            Some(self.parse_simple_variable())
         } else {
             None
         }
     }
 
     pub fn parse_simple_variable(&mut self) -> SimpleVariable {
-        let current = self.current();
-
-        match &current.kind {
+        match self.current_kind() {
             TokenKind::Variable => {
+                let symbol = self.current_symbol_as_bytestring();
+                let span = self.current_span();
+
                 self.next();
 
-                let symbol = current.symbol.as_ref().unwrap();
-
-                let name = symbol.clone();
-                let stripped = ByteString::from(&name[1..]);
+                let stripped = ByteString::from(&symbol[1..]);
 
                 SimpleVariable {
                     id: self.state.id(),
-                    symbol: current.symbol.as_ref().unwrap().clone(),
+                    symbol,
                     stripped,
-                    span: current.span,
+                    span,
                 }
             }
             TokenKind::Dollar => {
-                self.next();
+                let span = self.next();
 
                 self.diagnostic(
                     ParserDiagnostic::DynamicVariableNotAllowed,
                     Severity::Error,
-                    current.span,
+                    span,
                 );
 
                 SimpleVariable {
                     id: self.state.id(),
                     symbol: ByteString::empty(),
                     stripped: ByteString::empty(),
-                    span: current.span,
+                    span,
                 }
             }
             _ => {
                 self.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::Variable],
-                        found: current.clone(),
+                        found: self.current().to_owned(),
                     },
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
 
-                SimpleVariable::missing(self.state.id(), current.span)
+                SimpleVariable::missing(self.state.id(), self.current_span())
             }
         }
     }
 
     pub fn parse_dynamic_variable(&mut self) -> Variable {
-        let current = self.current();
-        match &current.kind {
+        match self.current_kind() {
             TokenKind::Variable => {
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap();
-                let name = symbol.clone();
-                let stripped = ByteString::from(&name[1..]);
+                let symbol = self.current_symbol_as_bytestring();
+                let span = self.next();
+                let stripped = ByteString::from(&symbol[1..]);
 
                 Variable::SimpleVariable(SimpleVariable {
                     id: self.state.id(),
-                    symbol: current.symbol.as_ref().unwrap().clone(),
+                    symbol,
                     stripped,
-                    span: current.span,
+                    span,
                 })
             }
             TokenKind::DollarLeftBrace => {
-                let start = current.span;
-                self.next();
-
+                let start = self.next();
                 let expr = self.parse_expression();
-
                 let end = self.skip_right_brace();
 
                 Variable::BracedVariableVariable(BracedVariableVariable {
@@ -103,9 +91,8 @@ impl<'a> Parser<'a> {
                     end,
                 })
             }
-            TokenKind::Dollar if state.peek().kind == TokenKind::LeftBrace => {
-                let start = current.span;
-                self.next();
+            TokenKind::Dollar if self.peek_kind() == TokenKind::LeftBrace => {
+                let start = self.next();
                 self.next();
 
                 let expr = self.parse_expression();
@@ -121,12 +108,11 @@ impl<'a> Parser<'a> {
                 })
             }
             TokenKind::Dollar => {
-                let span = current.span;
-                self.next();
+                let span = self.next();
 
                 match self.current_kind() {
                     TokenKind::Dollar | TokenKind::Variable => {
-                        let variable = parse_dynamic_variable();
+                        let variable = self.parse_dynamic_variable();
 
                         Variable::VariableVariable(VariableVariable {
                             id: self.state.id(),
@@ -139,13 +125,13 @@ impl<'a> Parser<'a> {
                         self.diagnostic(
                             ParserDiagnostic::ExpectedToken {
                                 expected: vec![TokenKind::Variable],
-                                found: current.clone(),
+                                found: self.current().to_owned(),
                             },
                             Severity::Error,
-                            current.span,
+                            self.current_span(),
                         );
 
-                        Variable::SimpleVariable(SimpleVariable::missing(self.state.id(), current.span))
+                        Variable::SimpleVariable(SimpleVariable::missing(self.state.id(), self.current_span()))
                     }
                 }
             }
@@ -153,13 +139,13 @@ impl<'a> Parser<'a> {
                 self.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::Variable],
-                        found: current.clone(),
+                        found: self.current().to_owned(),
                     },
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
 
-                Variable::SimpleVariable(SimpleVariable::missing(self.state.id(), current.span))
+                Variable::SimpleVariable(SimpleVariable::missing(self.state.id(), self.current_span()))
             }
         }
     }

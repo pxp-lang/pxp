@@ -21,6 +21,7 @@ pub struct Lexer<'a> {
 
     current: Token<'a>,
     peek: Option<Token<'a>>,
+    peek_again: Option<Token<'a>>,
 }
 
 #[derive(Debug)]
@@ -45,6 +46,7 @@ impl<'a> Lexer<'a> {
 
             current: Token::new(TokenKind::Eof, Span::default(), ByteStr::new(&[])),
             peek: None,
+            peek_again: None,
         };
 
         this.next();
@@ -88,6 +90,14 @@ impl<'a> Lexer<'a> {
         self.peek.unwrap()
     }
 
+    pub fn peek_again(&mut self) -> Token {
+        if self.peek_again.is_none() {
+            self.peek_again = Some(self.read_next());
+        }
+
+        self.peek_again.unwrap()
+    }
+
     pub fn set_peek(&mut self, token: Token<'a>) {
         self.peek = Some(token);
     }
@@ -96,6 +106,11 @@ impl<'a> Lexer<'a> {
         if self.peek.is_some() {
             self.current = self.peek.take().unwrap();
             self.peek = None;
+
+            if self.peek_again.is_some() {
+                self.peek = self.peek_again.take();
+                self.peek_again = None;
+            }
 
             return;
         }

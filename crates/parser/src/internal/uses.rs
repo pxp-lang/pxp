@@ -1,6 +1,3 @@
-use crate::internal::identifiers;
-use crate::internal::utils;
-use crate::state::State;
 use crate::Parser;
 use crate::ParserDiagnostic;
 use pxp_ast::GroupUseStatement;
@@ -11,9 +8,8 @@ use pxp_ast::UseStatement;
 use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
+use pxp_span::Spanned;
 use pxp_token::TokenKind;
-
-use super::names;
 
 impl<'a> Parser<'a> {
     pub fn parse_use_statement(&mut self) -> StatementKind {
@@ -33,7 +29,7 @@ impl<'a> Parser<'a> {
             _ => UseKind::Normal,
         };
 
-        if state.peek().kind == TokenKind::LeftBrace {
+        if self.peek_kind() == TokenKind::LeftBrace {
             let prefix = self.parse_full_name_identifier();
             let prefix_symbol = prefix.symbol.clone();
 
@@ -80,11 +76,15 @@ impl<'a> Parser<'a> {
                 let symbol = name.symbol.clone();
                 let alias_symbol = alias.as_ref().map(|a| a.symbol.clone());
                 let import_kind = use_kind.unwrap_or(kind);
-                let end_span = state.previous().span;
+                let span = if alias.is_some() {
+                    Span::combine(start_span, alias.span())
+                } else {
+                    start_span
+                };
 
                 uses.push(Use {
                     id: self.state.id(),
-                    span: Span::combine(start_span, end_span),
+                    span,
                     name: Name::resolved(
                         self.state.id(),
                         prefix_symbol
@@ -93,11 +93,11 @@ impl<'a> Parser<'a> {
                         name.symbol,
                         name.span,
                     ),
-                    kind: use_kind,
+                    kind: use_kind.unwrap_or(kind),
                     alias,
                 });
 
-                state.add_prefixed_import(
+                self.state.add_prefixed_import(
                     &import_kind,
                     prefix_symbol.clone(),
                     symbol,
@@ -132,17 +132,21 @@ impl<'a> Parser<'a> {
                 }
 
                 let alias_symbol = alias.as_ref().map(|a| a.symbol.clone());
-                let end_span = state.previous().span;
+                let span = if alias.is_some() {
+                    Span::combine(start_span, alias.span())
+                } else {
+                    start_span
+                };
 
                 uses.push(Use {
                     id: self.state.id(),
-                    span: Span::combine(start_span, end_span),
+                    span,
                     name: name.clone(),
-                    kind: None,
+                    kind,
                     alias,
                 });
 
-                state.add_import(&kind, name.symbol().clone(), alias_symbol);
+                self.state.add_import(&kind, name.symbol().clone(), alias_symbol);
 
                 if self.current_kind() == TokenKind::Comma {
                     self.next();
@@ -153,7 +157,7 @@ impl<'a> Parser<'a> {
                 break;
             }
 
-            let span = Span::combine(r#use, state.previous().span);
+            let span = Span::combine(r#use, uses.span());
 
             StatementKind::Use(UseStatement {
                 id: self.state.id(),

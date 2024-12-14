@@ -1,8 +1,3 @@
-use crate::expressions;
-use crate::internal::data_type;
-use crate::internal::utils;
-use crate::internal::variables;
-use crate::state::State;
 use crate::Parser;
 use crate::ParserDiagnostic;
 use pxp_ast::*;
@@ -53,8 +48,7 @@ impl<'a> Parser<'a> {
                 }
             }
 
-            let current = self.current();
-            if current.kind == TokenKind::Equals {
+            if self.current_kind() == TokenKind::Equals {
                 if let Some(modifier) = modifiers.get_readonly() {
                     self.diagnostic(
                         ParserDiagnostic::ReadonlyPropertyCannotHaveDefaultValue,
@@ -63,7 +57,7 @@ impl<'a> Parser<'a> {
                     );
                 }
 
-                self.next();
+                let equals = self.next();
                 let value = self.parse_expression();
                 let span = Span::combine(variable.span, value.span);
 
@@ -74,7 +68,7 @@ impl<'a> Parser<'a> {
                         id: self.state.id(),
                         span,
                         variable,
-                        equals: current.span,
+                        equals,
                         value,
                     }),
                 });
@@ -108,7 +102,7 @@ impl<'a> Parser<'a> {
             },
             r#type: ty,
             modifiers,
-            attributes: state.get_attributes(),
+            attributes: self.state.get_attributes(),
             entries,
             end,
         }
@@ -184,7 +178,7 @@ impl<'a> Parser<'a> {
                 entries.span()
             },
             r#type: ty,
-            attributes: state.get_attributes(),
+            attributes: self.state.get_attributes(),
             entries,
             end,
         }

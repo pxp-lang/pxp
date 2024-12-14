@@ -38,7 +38,7 @@ pub enum Precedence {
 }
 
 impl Precedence {
-    pub fn infix(kind: &TokenKind) -> Self {
+    pub fn infix(kind: TokenKind) -> Self {
         use TokenKind::*;
 
         match kind {
@@ -68,7 +68,7 @@ impl Precedence {
         }
     }
 
-    pub fn postfix(kind: &TokenKind) -> Self {
+    pub fn postfix(kind: TokenKind) -> Self {
         use TokenKind::*;
 
         match kind {

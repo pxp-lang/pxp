@@ -1,293 +1,279 @@
-use crate::{state::State, Parser, ParserDiagnostic};
+use crate::{Parser, ParserDiagnostic};
 use pxp_ast::*;
 use pxp_bytestring::ByteString;
 use pxp_diagnostics::Severity;
 
 use pxp_span::Span;
-use pxp_token::{Token, TokenKind};
+use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
     /// Expect an unqualified identifier such as Foo or Bar for a class, interface, trait, or an enum name.
     pub fn parse_type_identifier(&mut self) -> SimpleIdentifier {
-        let current = self.current();
-        match &current.kind {
-            TokenKind::Identifier => {
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap().clone();
-
-                SimpleIdentifier::new(self.state.id(), symbol, current.span)
-            }
-            TokenKind::Enum | TokenKind::From => {
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap().clone();
-
-                SimpleIdentifier::new(self.state.id(), symbol, current.span)
+        match self.current_kind() {
+            TokenKind::Identifier | TokenKind::Enum | TokenKind::From => {
+                self.next_but_first(|parser| {
+                    SimpleIdentifier::new(
+                        parser.state.id(),
+                        parser.current_symbol_as_bytestring(),
+                        parser.current_span(),
+                    )
+                })
             }
             TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
-                self.diagnostic(
+                self.next_but_first(|parser| {
+                    parser.diagnostic(
+                        ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
+                        Severity::Error,
+                        parser.current_span(),
+                    );
+
+                    SimpleIdentifier::new(
+                        parser.state.id(),
+                        parser.current_symbol_as_bytestring(),
+                        parser.current_span(),
+                    )
+                })
+            }
+            t if self.is_reserved_identifier(t) => self.next_but_first(|parser| {
+                parser.diagnostic(
                     ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
                     Severity::Error,
-                    current.span,
+                    parser.current_span(),
                 );
 
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap().clone();
-
-                SimpleIdentifier::new(self.state.id(), symbol, current.span)
-            }
-            t if is_reserved_identifier(t) => {
-                self.diagnostic(
-                    ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
-                    Severity::Error,
-                    current.span,
-                );
-
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap().clone();
-
-                SimpleIdentifier::new(self.state.id(), symbol, current.span)
-            }
+                SimpleIdentifier::new(
+                    parser.state.id(),
+                    parser.current_symbol_as_bytestring(),
+                    parser.current_span(),
+                )
+            }),
             _ => {
                 self.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::Identifier],
-                        found: current.clone(),
+                        found: self.current().to_owned(),
                     },
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
 
-                SimpleIdentifier::new(self.state.id(), ByteString::empty(), current.span)
+                SimpleIdentifier::new(self.state.id(), ByteString::empty(), self.current_span())
             }
         }
     }
 
     /// Expect an unqualified identifier such as foo or bar for a goto label name.
     pub fn parse_label_identifier(&mut self) -> SimpleIdentifier {
-        let current = self.current();
-        match &current.kind {
-            TokenKind::Identifier => {
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap().clone();
-
-                SimpleIdentifier::new(self.state.id(), symbol, current.span)
-            }
-            TokenKind::Enum | TokenKind::From => {
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap().clone();
-
-                SimpleIdentifier::new(self.state.id(), symbol, current.span)
+        match self.current_kind() {
+            TokenKind::Identifier | TokenKind::Enum | TokenKind::From => {
+                self.next_but_first(|parser| {
+                    SimpleIdentifier::new(
+                        parser.state.id(),
+                        parser.current_symbol_as_bytestring(),
+                        parser.current_span(),
+                    )
+                })
             }
             TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
-                self.diagnostic(
+                self.next_but_first(|parser| {
+                    parser.diagnostic(
+                        ParserDiagnostic::CannotUseReservedKeywordAsLabel,
+                        Severity::Error,
+                        parser.current_span(),
+                    );
+
+                    SimpleIdentifier::new(
+                        parser.state.id(),
+                        parser.current_symbol_as_bytestring(),
+                        parser.current_span(),
+                    )
+                })
+            }
+            t if self.is_reserved_identifier(t) => self.next_but_first(|parser| {
+                parser.diagnostic(
                     ParserDiagnostic::CannotUseReservedKeywordAsLabel,
                     Severity::Error,
-                    current.span,
+                    parser.current_span(),
                 );
 
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap().clone();
-
-                SimpleIdentifier::new(self.state.id(), symbol, current.span)
-            }
-            t if is_reserved_identifier(t) => {
-                self.diagnostic(
-                    ParserDiagnostic::CannotUseReservedKeywordAsLabel,
-                    Severity::Error,
-                    current.span,
-                );
-
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap().clone();
-
-                SimpleIdentifier::new(self.state.id(), symbol, current.span)
-            }
+                SimpleIdentifier::new(
+                    parser.state.id(),
+                    parser.current_symbol_as_bytestring(),
+                    parser.current_span(),
+                )
+            }),
             _ => {
                 self.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::Identifier],
-                        found: current.clone(),
+                        found: self.current().to_owned(),
                     },
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
 
-                SimpleIdentifier::new(self.state.id(), ByteString::empty(), current.span)
+                SimpleIdentifier::new(self.state.id(), ByteString::empty(), self.current_span())
             }
         }
     }
 
     /// Expect an unqualified identifier such as Foo or Bar.
     pub fn parse_identifier(&mut self) -> SimpleIdentifier {
-        let current = self.current();
-        if let TokenKind::Identifier = &current.kind {
-            self.next();
-
-            let symbol = current.symbol.as_ref().unwrap().clone();
-
-            SimpleIdentifier::new(self.state.id(), symbol, current.span)
+        if self.current_kind() == TokenKind::Identifier {
+            self.next_but_first(|parser| {
+                SimpleIdentifier::new(
+                    parser.state.id(),
+                    parser.current_symbol_as_bytestring(),
+                    parser.current_span(),
+                )
+            })
         } else {
-            let previous = state.previous();
-
             self.diagnostic(
                 ParserDiagnostic::UnexpectedToken {
-                    token: current.clone(),
+                    token: self.current().to_owned(),
                 },
                 Severity::Error,
-                current.span,
+                self.current_span(),
             );
+
+            self.next();
 
             // Because identifiers cannot contain spaces, we can assume that the next identifier starts
             // one byte after the previous token ends.
-            SimpleIdentifier::new(
-                self.state.id(),
-                ByteString::empty(),
-                Span::flat(previous.span.end + 1),
-            )
+            SimpleIdentifier::new(self.state.id(), ByteString::empty(), Span::missing())
         }
     }
 
     /// Expect an unqualified or qualified identifier such as Foo, Bar or Foo\Bar.
     pub fn parse_name_identifier(&mut self) -> SimpleIdentifier {
-        let name = match self.current_kind() {
-            TokenKind::Identifier | TokenKind::QualifiedIdentifier => self.current().clone(),
-            _ => {
-                let span = self.current_span();
-
-                self.diagnostic(
+        match self.current_kind() {
+            TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
+                self.next_but_first(|parser| {
+                    SimpleIdentifier::new(
+                        parser.state.id(),
+                        parser.current_symbol_as_bytestring(),
+                        parser.current_span(),
+                    )
+                })
+            }
+            _ => self.next_but_first(|parser| {
+                parser.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::Identifier, TokenKind::QualifiedIdentifier],
-                        found: self.current().clone(),
+                        found: parser.current().to_owned(),
                     },
                     Severity::Error,
-                    span,
+                    parser.current_span(),
                 );
 
-                Token::missing(self.current_span())
-            }
-        };
-
-        self.next();
-
-        SimpleIdentifier::new(self.state.id(), name.symbol.unwrap(), name.span)
+                SimpleIdentifier::new(parser.state.id(), ByteString::empty(), Span::missing())
+            }),
+        }
     }
 
     /// Expect an optional unqualified or qualified identifier such as Foo, Bar or Foo\Bar.
     pub fn parse_optional_name_identifier(&mut self) -> Option<SimpleIdentifier> {
         let current = self.current();
 
-        match &current.kind {
+        match self.current_kind() {
             TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap().clone();
-
-                Some(SimpleIdentifier::new(self.state.id(), symbol, current.span))
+                self.next_but_first(|parser| {
+                    Some(SimpleIdentifier::new(
+                        parser.state.id(),
+                        parser.current_symbol_as_bytestring(),
+                        parser.current_span(),
+                    ))
+                })
             }
-            t if is_reserved_identifier(t) => {
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap().clone();
-
-                Some(SimpleIdentifier::new(self.state.id(), symbol, current.span))
-            }
+            t if self.is_reserved_identifier(t) => self.next_but_first(|parser| {
+                Some(SimpleIdentifier::new(
+                    parser.state.id(),
+                    parser.current_symbol_as_bytestring(),
+                    parser.current_span(),
+                ))
+            }),
             _ => None,
         }
     }
 
     /// Expect an unqualified, qualified or fully qualified identifier such as Foo, Foo\Bar or \Foo\Bar.
     pub fn parse_full_name_identifier(&mut self) -> SimpleIdentifier {
-        let current = self.current();
-        match &current.kind {
+        match self.current_kind() {
             TokenKind::Identifier
             | TokenKind::QualifiedIdentifier
-            | TokenKind::FullyQualifiedIdentifier => {
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap().clone();
-
-                SimpleIdentifier::new(self.state.id(), symbol, current.span)
-            }
+            | TokenKind::FullyQualifiedIdentifier => self.next_but_first(|parser| {
+                SimpleIdentifier::new(
+                    parser.state.id(),
+                    parser.current_symbol_as_bytestring(),
+                    parser.current_span(),
+                )
+            }),
             _ => {
                 self.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::Identifier],
-                        found: current.clone(),
+                        found: self.current().to_owned(),
                     },
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
 
-                SimpleIdentifier::new(self.state.id(), ByteString::empty(), current.span)
+                SimpleIdentifier::new(self.state.id(), ByteString::empty(), self.current_span())
             }
         }
     }
 
     /// Expect an unqualified, qualified or fully qualified identifier such as Foo, Foo\Bar or \Foo\Bar.
     pub fn parse_full_type_name_identifier(&mut self) -> SimpleIdentifier {
-        let current = self.current();
-        match &current.kind {
+        match self.current_kind() {
             TokenKind::Identifier
             | TokenKind::QualifiedIdentifier
-            | TokenKind::FullyQualifiedIdentifier => {
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap().clone();
-
-                SimpleIdentifier::new(self.state.id(), symbol, current.span)
-            }
-            TokenKind::Enum | TokenKind::From => {
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap().clone();
-
-                SimpleIdentifier::new(self.state.id(), symbol, current.span)
-            }
-            TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
-                self.diagnostic(
+            | TokenKind::FullyQualifiedIdentifier
+            | TokenKind::Enum
+            | TokenKind::From => self.next_but_first(|parser| {
+                SimpleIdentifier::new(
+                    parser.state.id(),
+                    parser.current_symbol_as_bytestring(),
+                    parser.current_span(),
+                )
+            }),
+            TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => self.next_but_first(|parser| {
+                parser.diagnostic(
                     ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
                     Severity::Error,
-                    current.span,
+                    parser.current_span(),
                 );
 
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap().clone();
-
-                SimpleIdentifier::new(self.state.id(), symbol, current.span)
-            }
-            t if is_reserved_identifier(t) => {
-                self.diagnostic(
+                SimpleIdentifier::new(
+                    parser.state.id(),
+                    parser.current_symbol_as_bytestring(),
+                    parser.current_span(),
+                )
+            }),
+            t if self.is_reserved_identifier(t) => self.next_but_first(|parser| {
+                parser.diagnostic(
                     ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
                     Severity::Error,
-                    current.span,
+                    parser.current_span(),
                 );
 
-                self.next();
-
-                let symbol = current.symbol.as_ref().unwrap().clone();
-
-                SimpleIdentifier::new(self.state.id(), symbol, current.span)
-            }
+                SimpleIdentifier::new(
+                    parser.state.id(),
+                    parser.current_symbol_as_bytestring(),
+                    parser.current_span(),
+                )
+            }),
             _ => {
                 self.diagnostic(
                     ParserDiagnostic::ExpectedToken {
                         expected: vec![TokenKind::Identifier],
-                        found: current.clone(),
+                        found: self.current().to_owned(),
                     },
                     Severity::Error,
-                    current.span,
+                    self.current_span(),
                 );
 
-                SimpleIdentifier::new(self.state.id(), ByteString::empty(), current.span)
+                SimpleIdentifier::new(self.state.id(), ByteString::empty(), self.current_span())
             }
         }
     }
@@ -295,18 +281,20 @@ impl<'a> Parser<'a> {
     pub fn parse_identifier_maybe_reserved(&mut self) -> SimpleIdentifier {
         let current = self.current();
 
-        if is_reserved_identifier(&current.kind) {
-            self.next();
-
-            let symbol = current.symbol.as_ref().unwrap().clone();
-
-            SimpleIdentifier::new(self.state.id(), symbol, current.span)
+        if self.is_reserved_identifier(self.current_kind()) {
+            self.next_but_first(|parser| {
+                SimpleIdentifier::new(
+                    parser.state.id(),
+                    parser.current_symbol_as_bytestring(),
+                    parser.current_span(),
+                )
+            })
         } else {
-            parse_identifier()
+            self.parse_identifier()
         }
     }
 
-    pub fn is_identifier_maybe_soft_reserved(&self, kind: &TokenKind) -> bool {
+    pub fn is_identifier_maybe_soft_reserved(&self, kind: TokenKind) -> bool {
         if let TokenKind::Identifier = kind {
             return true;
         }
@@ -314,7 +302,7 @@ impl<'a> Parser<'a> {
         self.is_soft_reserved_identifier(kind)
     }
 
-    pub fn is_identifier_maybe_reserved(&self, kind: &TokenKind) -> bool {
+    pub fn is_identifier_maybe_reserved(&self, kind: TokenKind) -> bool {
         if let TokenKind::Identifier = kind {
             return true;
         }
@@ -322,7 +310,7 @@ impl<'a> Parser<'a> {
         self.is_reserved_identifier(kind)
     }
 
-    pub fn is_soft_reserved_identifier(&self, kind: &TokenKind) -> bool {
+    pub fn is_soft_reserved_identifier(&self, kind: TokenKind) -> bool {
         matches!(kind, |TokenKind::Parent| TokenKind::Self_
             | TokenKind::True
             | TokenKind::False
@@ -333,7 +321,7 @@ impl<'a> Parser<'a> {
             | TokenKind::Readonly)
     }
 
-    pub fn is_reserved_identifier(&self, kind: &TokenKind) -> bool {
+    pub fn is_reserved_identifier(&self, kind: TokenKind) -> bool {
         if self.is_soft_reserved_identifier(kind) {
             return true;
         }
