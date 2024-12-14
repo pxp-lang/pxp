@@ -173,8 +173,6 @@ impl<'a> Parser<'a> {
 
     /// Expect an optional unqualified or qualified identifier such as Foo, Bar or Foo\Bar.
     pub fn parse_optional_name_identifier(&mut self) -> Option<SimpleIdentifier> {
-        let current = self.current();
-
         match self.current_kind() {
             TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
                 self.next_but_first(|parser| {
@@ -237,19 +235,21 @@ impl<'a> Parser<'a> {
                     parser.current_span(),
                 )
             }),
-            TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => self.next_but_first(|parser| {
-                parser.diagnostic(
-                    ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
-                    Severity::Error,
-                    parser.current_span(),
-                );
+            TokenKind::Self_ | TokenKind::Static | TokenKind::Parent => {
+                self.next_but_first(|parser| {
+                    parser.diagnostic(
+                        ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
+                        Severity::Error,
+                        parser.current_span(),
+                    );
 
-                SimpleIdentifier::new(
-                    parser.state.id(),
-                    parser.current_symbol_as_bytestring(),
-                    parser.current_span(),
-                )
-            }),
+                    SimpleIdentifier::new(
+                        parser.state.id(),
+                        parser.current_symbol_as_bytestring(),
+                        parser.current_span(),
+                    )
+                })
+            }
             t if self.is_reserved_identifier(t) => self.next_but_first(|parser| {
                 parser.diagnostic(
                     ParserDiagnostic::CannotUseReservedKeywordAsTypeName,
@@ -279,8 +279,6 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_identifier_maybe_reserved(&mut self) -> SimpleIdentifier {
-        let current = self.current();
-
         if self.is_reserved_identifier(self.current_kind()) {
             self.next_but_first(|parser| {
                 SimpleIdentifier::new(

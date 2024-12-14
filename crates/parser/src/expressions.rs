@@ -1502,8 +1502,6 @@ impl<'a> Parser<'a> {
             }
 
             (TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString, _) => {
-                let span = self.current().span;
-
                 if matches!(
                     self.current_kind(),
                     TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString
@@ -1653,7 +1651,7 @@ impl<'a> Parser<'a> {
                                 self.state.id(),
                                 SpecialNameKind::Self_(span),
                                 token.symbol,
-                                span
+                                span,
                             )),
                             span,
                             CommentGroup::default(),
@@ -1720,20 +1718,20 @@ impl<'a> Parser<'a> {
                     TokenKind::Identifier
                     | TokenKind::QualifiedIdentifier
                     | TokenKind::Enum
-                    | TokenKind::From => {
-                        self.next_but_first(|parser| {
-                            let id = parser.state.id();
+                    | TokenKind::From => self.next_but_first(|parser| {
+                        let id = parser.state.id();
 
-                            Expression::new(
-                                parser.state.id(),
-                                ExpressionKind::Name(
-                                    parser.maybe_resolve_identifier(id, &parser.current(), UseKind::Normal),
-                                ),
-                                parser.current_span(),
-                                CommentGroup::default(),
-                            )
-                        })
-                    }
+                        Expression::new(
+                            parser.state.id(),
+                            ExpressionKind::Name(parser.maybe_resolve_identifier(
+                                id,
+                                &parser.current(),
+                                UseKind::Normal,
+                            )),
+                            parser.current_span(),
+                            CommentGroup::default(),
+                        )
+                    }),
                     _ => self.clone_or_new_precedence(),
                 };
 
@@ -1951,12 +1949,7 @@ impl<'a> Parser<'a> {
 
                 let span = kind.span();
 
-                Expression::new(
-                    self.state.id(),
-                    kind,
-                    span,
-                    CommentGroup::default(),
-                )
+                Expression::new(self.state.id(), kind, span, CommentGroup::default())
             }
 
             (
@@ -1977,7 +1970,7 @@ impl<'a> Parser<'a> {
                 let current = self.current();
 
                 let span = current.span;
-                let kind = current.clone().into();
+                let kind = current.into();
 
                 self.next();
 
@@ -2307,10 +2300,7 @@ impl<'a> Parser<'a> {
 
                         self.next();
 
-                        ExpressionKind::Missing(MissingExpression {
-                            id: 0,
-                            span,
-                        })
+                        ExpressionKind::Missing(MissingExpression { id: 0, span })
                     }
                 };
 
@@ -2436,12 +2426,7 @@ impl<'a> Parser<'a> {
                         let kind = ExpressionKind::Variable(self.parse_dynamic_variable());
                         let span = Span::combine(start_span, kind.span());
 
-                        Expression::new(
-                            self.state.id(),
-                            kind,
-                            span,
-                            CommentGroup::default(),
-                        )
+                        Expression::new(self.state.id(), kind, span, CommentGroup::default())
                     }
                     _ if self.is_identifier_maybe_reserved(self.current_kind()) => {
                         let start_span = self.current_span();
@@ -2450,12 +2435,7 @@ impl<'a> Parser<'a> {
                         ));
                         let span = Span::combine(start_span, kind.span());
 
-                        Expression::new(
-                            self.state.id(),
-                            kind,
-                            span,
-                            CommentGroup::default(),
-                        )
+                        Expression::new(self.state.id(), kind, span, CommentGroup::default())
                     }
                     TokenKind::LeftBrace => {
                         let start = self.current().span;
@@ -2602,12 +2582,7 @@ impl<'a> Parser<'a> {
 
         let span = Span::combine(start_span, kind.span());
 
-        Expression::new(
-            self.state.id(),
-            kind,
-            span,
-            CommentGroup::default(),
-        )
+        Expression::new(self.state.id(), kind, span, CommentGroup::default())
     }
 
     fn is_infix(&self, t: TokenKind) -> bool {

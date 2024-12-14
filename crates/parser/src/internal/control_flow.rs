@@ -180,7 +180,7 @@ impl<'a> Parser<'a> {
                             found: self.current().to_owned(),
                         },
                         Severity::Error,
-                        self.current_span()
+                        self.current_span(),
                     );
                 }
             }
@@ -281,9 +281,11 @@ impl<'a> Parser<'a> {
 
     fn parse_if_statement_block_body(&mut self) -> IfStatementBody {
         let colon = self.skip(TokenKind::Colon);
-        let statements = self.parse_multiple_statements_until_any(
-            &[TokenKind::Else, TokenKind::ElseIf, TokenKind::EndIf],
-        );
+        let statements = self.parse_multiple_statements_until_any(&[
+            TokenKind::Else,
+            TokenKind::ElseIf,
+            TokenKind::EndIf,
+        ]);
 
         let mut elseifs: Vec<IfStatementElseIfBlock> = vec![];
 
@@ -295,9 +297,11 @@ impl<'a> Parser<'a> {
 
             let colon = self.skip(TokenKind::Colon);
 
-            let statements = self.parse_multiple_statements_until_any(
-                &[TokenKind::Else, TokenKind::ElseIf, TokenKind::EndIf],
-            );
+            let statements = self.parse_multiple_statements_until_any(&[
+                TokenKind::Else,
+                TokenKind::ElseIf,
+                TokenKind::EndIf,
+            ]);
 
             let span = Span::combine(start, statements.span());
 

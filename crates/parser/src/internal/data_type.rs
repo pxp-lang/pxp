@@ -38,7 +38,6 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_optional_data_type(&mut self) -> Option<DataType> {
-        let start = self.current_span();
         let kind = if self.state.is_in_docblock() {
             self.parse_docblock_type()
         } else if self.current_kind() == TokenKind::Question {
@@ -172,8 +171,6 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_docblock_atomic(&mut self) -> Type<Name> {
-        let current = self.current();
-
         match self.current_kind() {
             TokenKind::LeftParen => {
                 self.next();

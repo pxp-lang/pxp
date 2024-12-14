@@ -1,12 +1,8 @@
-use crate::internal::parameters;
-use crate::internal::utils;
-use crate::state::State;
 use crate::Parser;
 use pxp_ast::*;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
-use super::names;
 
 impl<'a> Parser<'a> {
     pub fn gather_attributes(&mut self) -> bool {

@@ -13,62 +13,62 @@ impl<'a> Parser<'a> {
 
         let name = self.parse_type_name();
 
-        let backed_type: Option<(Span, BackedEnumType)> =
-            if self.current_kind() == TokenKind::Colon {
-                let colon = self.skip_colon();
+        let backed_type: Option<(Span, BackedEnumType)> = if self.current_kind() == TokenKind::Colon
+        {
+            let colon = self.skip_colon();
 
-                match self.current_kind() {
-                    TokenKind::Identifier => {
-                        let symbol = self.current_symbol();
+            match self.current_kind() {
+                TokenKind::Identifier => {
+                    let symbol = self.current_symbol();
 
-                        Some(match &symbol[..] {
-                            b"string" => {
-                                let span = self.next();
-                                (colon, BackedEnumType::String(span))
-                            }
-                            b"int" => {
-                                let span = self.next();
-                                (colon, BackedEnumType::Int(span))
-                            }
-                            _ => {
-                                let span = self.next();
+                    Some(match &symbol[..] {
+                        b"string" => {
+                            let span = self.next();
+                            (colon, BackedEnumType::String(span))
+                        }
+                        b"int" => {
+                            let span = self.next();
+                            (colon, BackedEnumType::Int(span))
+                        }
+                        _ => {
+                            let span = self.next();
 
-                                self.diagnostic(
-                                    ParserDiagnostic::InvalidBackedEnumType,
-                                    Severity::Error,
-                                    span,
-                                );
+                            self.diagnostic(
+                                ParserDiagnostic::InvalidBackedEnumType,
+                                Severity::Error,
+                                span,
+                            );
 
-                                (colon, BackedEnumType::Invalid)
-                            }
-                        })
-                    }
-                    TokenKind::LeftBrace => {
-                        self.diagnostic(
-                            ParserDiagnostic::UnexpectedToken {
-                                token: self.current().to_owned(),
-                            },
-                            Severity::Error,
-                            self.current_span(),
-                        );
-
-                        Some((colon, BackedEnumType::Invalid))
-                    }
-                    _ => {
-                        let span = self.next();
-
-                        self.diagnostic(
-                            ParserDiagnostic::InvalidBackedEnumType,
-                            Severity::Error,
-                            span,
-                        );
-
-                        Some((colon, BackedEnumType::Invalid))
-                    }
+                            (colon, BackedEnumType::Invalid)
+                        }
+                    })
                 }
-            } else {
-                None
-            };
+                TokenKind::LeftBrace => {
+                    self.diagnostic(
+                        ParserDiagnostic::UnexpectedToken {
+                            token: self.current().to_owned(),
+                        },
+                        Severity::Error,
+                        self.current_span(),
+                    );
+
+                    Some((colon, BackedEnumType::Invalid))
+                }
+                _ => {
+                    let span = self.next();
+
+                    self.diagnostic(
+                        ParserDiagnostic::InvalidBackedEnumType,
+                        Severity::Error,
+                        span,
+                    );
+
+                    Some((colon, BackedEnumType::Invalid))
+                }
+            }
+        } else {
+            None
+        };
 
         let mut implements = Vec::new();
         if self.current_kind() == TokenKind::Implements {
@@ -232,6 +232,8 @@ impl<'a> Parser<'a> {
             }));
         }
 
-        Some(BackedEnumMember::Classish(self.parse_classish_member(false)))
+        Some(BackedEnumMember::Classish(
+            self.parse_classish_member(false),
+        ))
     }
 }

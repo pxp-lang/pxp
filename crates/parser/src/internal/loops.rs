@@ -9,11 +9,21 @@ impl<'a> Parser<'a> {
     pub fn parse_foreach_statement(&mut self) -> StatementKind {
         let foreach = self.skip(TokenKind::Foreach);
 
-        let (left_parenthesis, iterator, right_parenthesis) =
-            self.parenthesized(|parser| {
-                let expression = parser.parse_expression();
+        let (left_parenthesis, iterator, right_parenthesis) = self.parenthesized(|parser| {
+            let expression = parser.parse_expression();
 
-                let r#as = parser.skip(TokenKind::As);
+            let r#as = parser.skip(TokenKind::As);
+
+            let ampersand = if parser.current_kind() == TokenKind::Ampersand {
+                Some(parser.next())
+            } else {
+                None
+            };
+
+            let mut value = parser.parse_expression();
+
+            if parser.current_kind() == TokenKind::DoubleArrow {
+                let arrow = parser.next();
 
                 let ampersand = if parser.current_kind() == TokenKind::Ampersand {
                     Some(parser.next())
@@ -21,42 +31,31 @@ impl<'a> Parser<'a> {
                     None
                 };
 
-                let mut value = parser.parse_expression();
+                let mut key = parser.parse_expression();
 
-                if parser.current_kind() == TokenKind::DoubleArrow {
-                    let arrow = parser.next();
+                std::mem::swap(&mut value, &mut key);
 
-                    let ampersand = if parser.current_kind() == TokenKind::Ampersand {
-                        Some(parser.next())
-                    } else {
-                        None
-                    };
-
-                    let mut key = parser.parse_expression();
-
-                    std::mem::swap(&mut value, &mut key);
-
-                    ForeachStatementIterator::KeyAndValue(ForeachStatementIteratorKeyAndValue {
-                        id: parser.state.id(),
-                        span: Span::combine(expression.span, value.span),
-                        expression,
-                        r#as,
-                        key,
-                        double_arrow: arrow,
-                        ampersand,
-                        value,
-                    })
-                } else {
-                    ForeachStatementIterator::Value(ForeachStatementIteratorValue {
-                        id: parser.state.id(),
-                        span: Span::combine(expression.span, value.span),
-                        expression,
-                        r#as,
-                        ampersand,
-                        value,
-                    })
-                }
-            });
+                ForeachStatementIterator::KeyAndValue(ForeachStatementIteratorKeyAndValue {
+                    id: parser.state.id(),
+                    span: Span::combine(expression.span, value.span),
+                    expression,
+                    r#as,
+                    key,
+                    double_arrow: arrow,
+                    ampersand,
+                    value,
+                })
+            } else {
+                ForeachStatementIterator::Value(ForeachStatementIteratorValue {
+                    id: parser.state.id(),
+                    span: Span::combine(expression.span, value.span),
+                    expression,
+                    r#as,
+                    ampersand,
+                    value,
+                })
+            }
+        });
 
         let body = if self.current_kind() == TokenKind::Colon {
             let colon = self.skip_colon();
@@ -96,39 +95,37 @@ impl<'a> Parser<'a> {
     pub fn parse_for_statement(&mut self) -> StatementKind {
         let r#for = self.skip(TokenKind::For);
 
-        let (left_parenthesis, iterator, right_parenthesis) =
-            self.parenthesized(|parser| {
-                let (initializations_semicolon, initializations) =
-                    parser.semicolon_terminated(|parser| {
-                        parser.comma_separated_no_trailing(
-                            |parser| parser.parse_expression(),
-                            TokenKind::SemiColon,
-                        )
-                    });
+        let (left_parenthesis, iterator, right_parenthesis) = self.parenthesized(|parser| {
+            let (initializations_semicolon, initializations) =
+                parser.semicolon_terminated(|parser| {
+                    parser.comma_separated_no_trailing(
+                        |parser| parser.parse_expression(),
+                        TokenKind::SemiColon,
+                    )
+                });
 
-                let (conditions_semicolon, conditions) =
-                    parser.semicolon_terminated(|parser| {
-                        parser.comma_separated_no_trailing(
-                            |parser| parser.parse_expression(),
-                            TokenKind::SemiColon,
-                        )
-                    });
-
-                let r#loop = parser.comma_separated_no_trailing(
+            let (conditions_semicolon, conditions) = parser.semicolon_terminated(|parser| {
+                parser.comma_separated_no_trailing(
                     |parser| parser.parse_expression(),
-                    TokenKind::RightParen,
-                );
-
-                ForStatementIterator {
-                    id: parser.state.id(),
-                    span: Span::combine(initializations.span(), r#loop.span()),
-                    initializations,
-                    initializations_semicolon,
-                    conditions,
-                    conditions_semicolon,
-                    r#loop,
-                }
+                    TokenKind::SemiColon,
+                )
             });
+
+            let r#loop = parser.comma_separated_no_trailing(
+                |parser| parser.parse_expression(),
+                TokenKind::RightParen,
+            );
+
+            ForStatementIterator {
+                id: parser.state.id(),
+                span: Span::combine(initializations.span(), r#loop.span()),
+                initializations,
+                initializations_semicolon,
+                conditions,
+                conditions_semicolon,
+                r#loop,
+            }
+        });
 
         let body = if self.current_kind() == TokenKind::Colon {
             let colon = self.skip_colon();
@@ -172,8 +169,8 @@ impl<'a> Parser<'a> {
 
         let r#while = self.skip(TokenKind::While);
 
-        let (semicolon, (left_parenthesis, condition, right_parenthesis)) =
-            self.semicolon_terminated(|parser| {
+        let (semicolon, (left_parenthesis, condition, right_parenthesis)) = self
+            .semicolon_terminated(|parser| {
                 parser.parenthesized(|parser| parser.parse_expression())
             });
 
@@ -277,12 +274,7 @@ impl<'a> Parser<'a> {
 
             return Level::Literal(LiteralLevel {
                 id: self.state.id(),
-                literal: Literal::new(
-                    self.state.id(),
-                    LiteralKind::Integer,
-                    token,
-                    span,
-                ),
+                literal: Literal::new(self.state.id(), LiteralKind::Integer, token, span),
             });
         }
 

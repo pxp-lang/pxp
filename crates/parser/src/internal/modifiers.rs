@@ -1,5 +1,5 @@
 use crate::ParserDiagnostic;
-use crate::{state::State, Parser};
+use crate::Parser;
 use pxp_ast::*;
 
 use pxp_diagnostics::Severity;
@@ -206,7 +206,7 @@ impl<'a> Parser<'a> {
             TokenKind::Readonly,
         ];
 
-        let mut current = self.current().clone();
+        let mut current = self.current();
         let mut current_kind = current.kind;
         let mut current_span = current.span;
 
@@ -238,7 +238,7 @@ impl<'a> Parser<'a> {
 
             self.next();
 
-            current = self.current().clone();
+            current = self.current();
             current_kind = current.kind;
             current_span = current.span;
         }

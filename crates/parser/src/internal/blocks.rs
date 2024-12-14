@@ -8,9 +8,8 @@ use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
     pub fn parse_block_statement(&mut self) -> StatementKind {
-        let (left_brace, statements, right_brace) = self.braced(|parser| {
-            parser.parse_multiple_statements_until(TokenKind::RightBrace)
-        });
+        let (left_brace, statements, right_brace) =
+            self.braced(|parser| parser.parse_multiple_statements_until(TokenKind::RightBrace));
 
         StatementKind::Block(BlockStatement {
             id: self.state.id(),

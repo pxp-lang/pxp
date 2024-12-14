@@ -20,7 +20,7 @@ impl<'a> Parser<'a> {
         let modifiers = self.parse_class_group(modifiers);
         let class = self.skip(TokenKind::Class);
         let name = self.parse_type_name();
-        
+
         let extends = if self.current_kind() == TokenKind::Extends {
             let span = self.next();
             let parent = self.parse_full_name(UseKind::Normal);
@@ -38,10 +38,9 @@ impl<'a> Parser<'a> {
         let implements = if self.current_kind() == TokenKind::Implements {
             let span = self.next();
 
-            let interfaces =
-                self.at_least_one_comma_separated_no_trailing::<Name>(|parser| {
-                    parser.parse_full_name(UseKind::Normal)
-                });
+            let interfaces = self.at_least_one_comma_separated_no_trailing::<Name>(|parser| {
+                parser.parse_full_name(UseKind::Normal)
+            });
 
             Some(ClassImplements {
                 id: self.state.id(),
@@ -105,8 +104,6 @@ impl<'a> Parser<'a> {
             None => self.skip(TokenKind::New),
         };
 
-        let start_span = new;
-
         self.gather_attributes();
 
         let attributes = self.state.get_attributes();
@@ -135,10 +132,9 @@ impl<'a> Parser<'a> {
 
         let implements = if self.current_kind() == TokenKind::Implements {
             let implements = self.next();
-            let interfaces =
-                self.at_least_one_comma_separated_no_trailing::<Name>(|parser| {
-                    parser.parse_full_name(UseKind::Normal)
-                });
+            let interfaces = self.at_least_one_comma_separated_no_trailing::<Name>(|parser| {
+                parser.parse_full_name(UseKind::Normal)
+            });
 
             Some(ClassImplements {
                 id: self.state.id(),

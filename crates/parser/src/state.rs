@@ -4,7 +4,6 @@ use pxp_ast::*;
 use pxp_bytestring::ByteString;
 use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_span::Span;
-use pxp_token::{Token, TokenKind};
 
 use crate::ParserDiagnostic;
 

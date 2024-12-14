@@ -1,4 +1,3 @@
-use crate::state::State;
 use crate::{Parser, ParserDiagnostic};
 use pxp_ast::utils::CommaSeparated;
 use pxp_ast::Ending;

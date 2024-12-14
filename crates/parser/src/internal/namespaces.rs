@@ -22,7 +22,7 @@ impl<'a> Parser<'a> {
                     self.diagnostic(
                         ParserDiagnostic::CannotMixBracketedAndUnbracketedNamespaceDeclarations,
                         Severity::Error,
-                        self.current_span()
+                        self.current_span(),
                     );
                 }
 

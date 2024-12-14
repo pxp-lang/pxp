@@ -2257,7 +2257,7 @@ enum NumberKind {
 mod tests {
     use super::Lexer;
 
-    use pxp_token::{OpenTagKind, Token, TokenKind};
+    use pxp_token::{OpenTagKind, TokenKind};
 
     #[test]
     fn it_can_tokenize_keywords() {

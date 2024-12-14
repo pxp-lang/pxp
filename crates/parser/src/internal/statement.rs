@@ -1,4 +1,10 @@
-use pxp_ast::{ClosingTagStatement, DeclareBody, DeclareBodyBlock, DeclareBodyBraced, DeclareBodyExpression, DeclareBodyNoop, DeclareEntry, DeclareEntryGroup, DeclareStatement, EchoOpeningTagStatement, EchoStatement, ExpressionStatement, FullOpeningTagStatement, GlobalStatement, HaltCompilerStatement, InlineHtmlStatement, ReturnStatement, ShortOpeningTagStatement, Statement, StatementKind, StaticStatement, StaticVar, Variable};
+use pxp_ast::{
+    ClosingTagStatement, DeclareBody, DeclareBodyBlock, DeclareBodyBraced, DeclareBodyExpression,
+    DeclareBodyNoop, DeclareEntry, DeclareEntryGroup, DeclareStatement, EchoOpeningTagStatement,
+    EchoStatement, ExpressionStatement, FullOpeningTagStatement, GlobalStatement,
+    HaltCompilerStatement, InlineHtmlStatement, ReturnStatement, ShortOpeningTagStatement,
+    Statement, StatementKind, StaticStatement, StaticVar, Variable,
+};
 use pxp_span::{Span, Spanned};
 use pxp_token::{OpenTagKind, TokenKind};
 
@@ -35,12 +41,7 @@ impl<'a> Parser<'a> {
 
                 let span = kind.span();
 
-                Statement::new(
-                    self.state.id(),
-                    kind,
-                    span,
-                    comments,
-                )
+                Statement::new(self.state.id(), kind, span, comments)
             }
             _ => self.parse_statement(),
         }
@@ -79,8 +80,7 @@ impl<'a> Parser<'a> {
                         let ampersand = self.next();
                         let peek_kind = self.peek_kind();
 
-                        if !self.is_identifier_maybe_soft_reserved(peek_kind)
-                        {
+                        if !self.is_identifier_maybe_soft_reserved(peek_kind) {
                             let expression = self.attributes();
                             let ending = self.skip_ending();
                             let ending_span = ending.span();
@@ -150,9 +150,7 @@ impl<'a> Parser<'a> {
                     })
                 }
                 TokenKind::Abstract => self.parse_class(),
-                TokenKind::Readonly if peek_kind != TokenKind::LeftParen => {
-                    self.parse_class()
-                }
+                TokenKind::Readonly if peek_kind != TokenKind::LeftParen => self.parse_class(),
                 TokenKind::Final => self.parse_class(),
                 TokenKind::Class => self.parse_class(),
                 TokenKind::Interface => self.parse_interface(),
@@ -172,8 +170,7 @@ impl<'a> Parser<'a> {
                     if peek_kind == TokenKind::Ampersand {
                         let ampersand = self.next();
                         let peek_kind = self.peek_kind();
-                        if !self.is_identifier_maybe_soft_reserved(peek_kind)
-                        {
+                        if !self.is_identifier_maybe_soft_reserved(peek_kind) {
                             let expression = self.attributes();
                             let ending = self.skip_ending();
                             let ending_span = ending.span();
@@ -254,7 +251,8 @@ impl<'a> Parser<'a> {
                         }
                         TokenKind::LeftBrace => {
                             let start = self.skip_left_brace();
-                            let statements = self.parse_multiple_statements_until(TokenKind::RightBrace);
+                            let statements =
+                                self.parse_multiple_statements_until(TokenKind::RightBrace);
                             let end = self.skip_right_brace();
 
                             DeclareBody::Braced(DeclareBodyBraced {
@@ -267,7 +265,8 @@ impl<'a> Parser<'a> {
                         }
                         TokenKind::Colon => {
                             let start = self.skip_colon();
-                            let statements = self.parse_multiple_statements_until(TokenKind::EndDeclare);
+                            let statements =
+                                self.parse_multiple_statements_until(TokenKind::EndDeclare);
                             let enddeclare = self.skip(TokenKind::EndDeclare);
                             let semicolon = self.skip_semicolon();
 

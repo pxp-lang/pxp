@@ -6,7 +6,6 @@ use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_span::Spanned;
-use pxp_token::Token;
 use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
@@ -108,8 +107,7 @@ impl<'a> Parser<'a> {
                                         ),
                                     });
                                 } else {
-                                    let alias: SimpleIdentifier =
-                                        self.parse_name_identifier();
+                                    let alias: SimpleIdentifier = self.parse_name_identifier();
                                     let span = if r#trait.is_some() {
                                         Span::combine(r#trait.span(), visibility.span())
                                     } else {
@@ -133,8 +131,7 @@ impl<'a> Parser<'a> {
                                 }
                             }
                             _ => {
-                                let alias: SimpleIdentifier =
-                                    self.parse_name_identifier();
+                                let alias: SimpleIdentifier = self.parse_name_identifier();
                                 let span = if r#trait.is_some() {
                                     Span::combine(r#trait.span(), alias.span())
                                 } else {
@@ -161,8 +158,7 @@ impl<'a> Parser<'a> {
                     TokenKind::Insteadof => {
                         self.next();
 
-                        let mut insteadof =
-                            vec![self.parse_full_type_name_identifier()];
+                        let mut insteadof = vec![self.parse_full_type_name_identifier()];
 
                         if self.current_kind() == TokenKind::Comma {
                             if self.peek_kind() == TokenKind::SemiColon {

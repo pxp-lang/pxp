@@ -1,5 +1,5 @@
-use crate::ParserDiagnostic;
 use crate::Parser;
+use crate::ParserDiagnostic;
 use pxp_ast::*;
 
 use pxp_bytestring::ByteString;
@@ -131,7 +131,10 @@ impl<'a> Parser<'a> {
                             self.current_span(),
                         );
 
-                        Variable::SimpleVariable(SimpleVariable::missing(self.state.id(), self.current_span()))
+                        Variable::SimpleVariable(SimpleVariable::missing(
+                            self.state.id(),
+                            self.current_span(),
+                        ))
                     }
                 }
             }
@@ -145,7 +148,10 @@ impl<'a> Parser<'a> {
                     self.current_span(),
                 );
 
-                Variable::SimpleVariable(SimpleVariable::missing(self.state.id(), self.current_span()))
+                Variable::SimpleVariable(SimpleVariable::missing(
+                    self.state.id(),
+                    self.current_span(),
+                ))
             }
         }
     }

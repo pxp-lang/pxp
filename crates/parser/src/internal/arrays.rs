@@ -209,7 +209,7 @@ impl<'a> Parser<'a> {
             return ArrayItem::ReferencedValue(ArrayItemReferencedValue {
                 id: self.state.id(),
                 span: Span::combine(ampersand, value.span),
-                ampersand: ampersand,
+                ampersand,
                 value,
             });
         }

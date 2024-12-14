@@ -258,8 +258,7 @@ impl<'a> Parser<'a> {
             return if self.current_kind() == TokenKind::LeftBrace {
                 let body_comments = self.state.comments();
                 let left_brace = self.skip_left_brace();
-                let statements =
-                    self.parse_multiple_statements_until(TokenKind::RightBrace);
+                let statements = self.parse_multiple_statements_until(TokenKind::RightBrace);
                 let right_brace = self.skip_right_brace();
 
                 let body = MethodBody {

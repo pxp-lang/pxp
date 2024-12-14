@@ -1,11 +1,3 @@
-use crate::expressions;
-use crate::internal::attributes;
-use crate::internal::data_type;
-use crate::internal::identifiers;
-use crate::internal::modifiers;
-use crate::internal::utils;
-use crate::internal::variables;
-use crate::state::State;
 use crate::Parser;
 use crate::ParserDiagnostic;
 use pxp_ast::*;
@@ -100,7 +92,7 @@ impl<'a> Parser<'a> {
                 let (ellipsis, var) = if parser.current_kind() == TokenKind::Ellipsis {
                     let ellipsis = parser.next();
                     let var = parser.parse_simple_variable();
-                    
+
                     if !modifiers.is_empty() {
                         parser.diagnostic(
                             ParserDiagnostic::PromotedPropertyCannotBeVariadic,

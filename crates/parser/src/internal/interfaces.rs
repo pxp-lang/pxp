@@ -1,5 +1,3 @@
-use crate::internal::utils;
-use crate::state::State;
 use crate::Parser;
 use pxp_ast::StatementKind;
 use pxp_ast::UseKind;
@@ -20,10 +18,9 @@ impl<'a> Parser<'a> {
 
             self.next();
 
-            let parents =
-                self.at_least_one_comma_separated_no_trailing::<Name>(|parser| {
-                    parser.parse_full_name(UseKind::Normal)
-                });
+            let parents = self.at_least_one_comma_separated_no_trailing::<Name>(|parser| {
+                parser.parse_full_name(UseKind::Normal)
+            });
 
             Some(InterfaceExtends {
                 id: self.state.id(),

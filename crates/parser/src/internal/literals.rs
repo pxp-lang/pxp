@@ -11,7 +11,9 @@ impl<'a> Parser<'a> {
         let kind = match self.current_kind() {
             TokenKind::LiteralInteger => self.next_but_first(|_| LiteralKind::Integer),
             TokenKind::LiteralFloat => self.next_but_first(|_| LiteralKind::Float),
-            TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString => self.next_but_first(|_| LiteralKind::String),
+            TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString => {
+                self.next_but_first(|_| LiteralKind::String)
+            }
             _ => {
                 self.diagnostic(
                     ParserDiagnostic::ExpectedToken {

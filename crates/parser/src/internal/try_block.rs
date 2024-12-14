@@ -63,8 +63,7 @@ impl<'a> Parser<'a> {
             self.next();
             self.skip_left_brace();
 
-            let finally_body =
-                self.parse_multiple_statements_until(TokenKind::RightBrace);
+            let finally_body = self.parse_multiple_statements_until(TokenKind::RightBrace);
 
             self.skip_right_brace();
             let finally_end = self.current_span();

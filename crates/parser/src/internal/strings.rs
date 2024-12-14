@@ -194,8 +194,12 @@ impl<'a> Parser<'a> {
                 // "$expr", "$expr[0]", "$expr[name]", "$expr->a"
                 let variable_span = self.current_span();
                 let variable = ExpressionKind::Variable(self.parse_dynamic_variable());
-                let variable =
-                    Expression::new(self.state.id(), variable, variable_span, CommentGroup::default());
+                let variable = Expression::new(
+                    self.state.id(),
+                    variable,
+                    variable_span,
+                    CommentGroup::default(),
+                );
 
                 let e = match self.current_kind() {
                     TokenKind::LeftBracket => {
@@ -222,14 +226,14 @@ impl<'a> Parser<'a> {
                                     let literal = self.current().to_owned();
 
                                     self.next();
-                                    
+
                                     let kind = ExpressionKind::Literal(Literal::new(
                                         self.state.id(),
                                         LiteralKind::Integer,
                                         literal,
                                         span,
                                     ));
-                                    
+
                                     let expression = Expression::new(
                                         self.state.id(),
                                         kind,
@@ -262,17 +266,14 @@ impl<'a> Parser<'a> {
 
                                     self.next();
 
-                                    ExpressionKind::Missing(MissingExpression {
-                                        id: 0,
-                                        span,
-                                    })
+                                    ExpressionKind::Missing(MissingExpression { id: 0, span })
                                 }
                             }
                             TokenKind::Identifier => self.next_but_first(|parser| {
                                 ExpressionKind::Literal(Literal::new(
                                     parser.state.id(),
                                     LiteralKind::String,
-                                    parser.current().to_owned(),  
+                                    parser.current().to_owned(),
                                     parser.current_span(),
                                 ))
                             }),
@@ -297,21 +298,14 @@ impl<'a> Parser<'a> {
 
                                 self.next();
 
-                                ExpressionKind::Missing(MissingExpression {
-                                    id: 0,
-                                    span,
-                                })
+                                ExpressionKind::Missing(MissingExpression { id: 0, span })
                             }
                         };
 
                         let span = index.span();
 
-                        let index = Expression::new(
-                            self.state.id(),
-                            index,
-                            span,
-                            CommentGroup::default(),
-                        );
+                        let index =
+                            Expression::new(self.state.id(), index, span, CommentGroup::default());
 
                         let right_bracket = self.skip_right_bracket();
 
@@ -333,8 +327,12 @@ impl<'a> Parser<'a> {
                         let id_span = identifier.span;
                         let kind =
                             ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier));
-                        let identifier_expression =
-                            Expression::new(self.state.id(), kind, id_span, CommentGroup::default());
+                        let identifier_expression = Expression::new(
+                            self.state.id(),
+                            kind,
+                            id_span,
+                            CommentGroup::default(),
+                        );
 
                         ExpressionKind::PropertyFetch(PropertyFetchExpression {
                             id: self.state.id(),

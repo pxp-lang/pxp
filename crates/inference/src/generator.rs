@@ -431,7 +431,7 @@ fn bytestring_type(ty: &Type<Name>) -> Type<ByteString> {
         Type::Named(inner) => Type::Named(inner.symbol().clone()),
         Type::NamedWithGenerics(inner, templates) => Type::NamedWithGenerics(
             Box::new(bytestring_type(inner)),
-            templates.iter().map(|t| bytestring_type(t)).collect(),
+            templates.iter().map(bytestring_type).collect(),
         ),
         Type::Nullable(inner) => Type::Nullable(Box::new(bytestring_type(inner))),
         Type::Union(tys) => Type::Union(tys.iter().map(bytestring_type).collect()),

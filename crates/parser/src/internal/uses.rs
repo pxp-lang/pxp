@@ -146,7 +146,8 @@ impl<'a> Parser<'a> {
                     alias,
                 });
 
-                self.state.add_import(&kind, name.symbol().clone(), alias_symbol);
+                self.state
+                    .add_import(&kind, name.symbol().clone(), alias_symbol);
 
                 if self.current_kind() == TokenKind::Comma {
                     self.next();
