@@ -77,10 +77,9 @@ impl<'a> Parser<'a> {
                         || peek_kind == TokenKind::Ampersand =>
                 {
                     if peek_kind == TokenKind::Ampersand {
-                        let ampersand = self.next();
-                        let peek_kind = self.peek_kind();
+                        let peek_again_kind = self.peek_again_kind();
 
-                        if !self.is_identifier_maybe_soft_reserved(peek_kind) {
+                        if !self.is_identifier_maybe_soft_reserved(peek_again_kind) {
                             let expression = self.attributes();
                             let ending = self.skip_ending();
                             let ending_span = ending.span();
@@ -96,9 +95,9 @@ impl<'a> Parser<'a> {
                             return Statement::new(self.state.id(), kind, span, comments);
                         }
 
-                        self.parse_function(Some(ampersand))
+                        self.parse_function()
                     } else {
-                        self.parse_function(None)
+                        self.parse_function()
                     }
                 }
                 _ => {
@@ -168,9 +167,9 @@ impl<'a> Parser<'a> {
                         || peek_kind == TokenKind::Ampersand =>
                 {
                     if peek_kind == TokenKind::Ampersand {
-                        let ampersand = self.next();
-                        let peek_kind = self.peek_kind();
-                        if !self.is_identifier_maybe_soft_reserved(peek_kind) {
+                        let peek_again_kind = self.peek_again_kind();
+
+                        if !self.is_identifier_maybe_soft_reserved(peek_again_kind) {
                             let expression = self.attributes();
                             let ending = self.skip_ending();
                             let ending_span = ending.span();
@@ -187,9 +186,9 @@ impl<'a> Parser<'a> {
                             return Statement::new(self.state.id(), kind, span, comments);
                         }
 
-                        self.parse_function(Some(ampersand))
+                        self.parse_function()
                     } else {
-                        self.parse_function(None)
+                        self.parse_function()
                     }
                 }
                 TokenKind::Goto => self.parse_goto_statement(),

@@ -66,5 +66,7 @@ fn main() {
             let result = Parser::parse(Lexer::new(&std::fs::read(file).unwrap()));
             indexer.index(&result.ast);
         }
+
+        dbg!(index);
     }
 }
