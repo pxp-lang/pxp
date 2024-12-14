@@ -4,8 +4,9 @@ use discoverer::discover;
 use indicatif::ProgressBar;
 use pxp_bytestring::ByteString;
 use pxp_index::{Index, Indexer};
-use pxp_parser::parse;
 
+use pxp_lexer::Lexer;
+use pxp_parser::Parser;
 use rustyline::DefaultEditor;
 
 fn main() {
@@ -24,7 +25,7 @@ fn main() {
         let bar = ProgressBar::new(files.len() as u64);
 
         for file in files.iter() {
-            let result = parse(&std::fs::read(file).unwrap());
+            let result = Parser::parse(Lexer::new(&std::fs::read(file).unwrap()));
             indexer.index(&result.ast);
 
             if with_output {
@@ -62,7 +63,7 @@ fn main() {
         }
     } else {
         for file in files.iter() {
-            let result = parse(&std::fs::read(file).unwrap());
+            let result = Parser::parse(Lexer::new(&std::fs::read(file).unwrap()));
             indexer.index(&result.ast);
         }
     }

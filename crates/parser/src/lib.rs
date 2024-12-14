@@ -283,7 +283,7 @@ impl<'a> Parser<'a> {
             }
             TokenKind::QualifiedIdentifier => token.symbol.before_first(b'\\').to_bytestring(),
             _ if self.is_soft_reserved_identifier(token.kind) => token.symbol.to_bytestring(),
-            _ => unreachable!(),
+            _ => unreachable!("{:?}", token.kind),
         };
 
         let map = self.state.imports.get(&kind).unwrap();

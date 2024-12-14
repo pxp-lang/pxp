@@ -1,5 +1,6 @@
+use pxp_lexer::Lexer;
 use pxp_node_finder::NodeFinder;
-use pxp_parser::parse;
+use pxp_parser::Parser;
 
 fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
@@ -10,7 +11,7 @@ fn main() {
     println!("Locating node at offset: {}", offset_marker);
 
     let input = input.replace('§', "");
-    let result = parse(&input);
+    let result = Parser::parse(Lexer::new(&input));
 
     // dbg!(&result.ast);
 
