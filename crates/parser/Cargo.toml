@@ -18,7 +18,3 @@ snappers = { path = "../snappers" }
 [features]
 default = []
 docblocks = ["pxp-ast/docblocks", "pxp-lexer/docblocks"]
-
-[[bin]]
-name = "parse"
-path = "bin/parse.rs"
