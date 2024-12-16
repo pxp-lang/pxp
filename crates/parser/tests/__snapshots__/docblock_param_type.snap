@@ -113,20 +113,20 @@
                     id: 2,
                     span: Span {
                         start: 7,
-                        end: 25,
+                        end: 27,
                     },
                     kind: DocBlock(
                         DocBlockComment {
                             id: 7,
                             span: Span {
                                 start: 7,
-                                end: 25,
+                                end: 27,
                             },
                             doc: DocBlock {
                                 id: 8,
                                 span: Span {
                                     start: 7,
-                                    end: 25,
+                                    end: 27,
                                 },
                                 nodes: [
                                     Tag(
@@ -134,32 +134,30 @@
                                             id: 6,
                                             span: Span {
                                                 start: 11,
-                                                end: 25,
+                                                end: 0,
                                             },
                                             tag: Param(
                                                 DocBlockParamTag {
                                                     id: 5,
                                                     span: Span {
                                                         start: 11,
-                                                        end: 25,
+                                                        end: 0,
                                                     },
-                                                    tag: Token {
+                                                    tag: OwnedToken {
                                                         kind: PhpDocTag,
                                                         span: Span {
                                                             start: 11,
                                                             end: 17,
                                                         },
-                                                        symbol: Some(
-                                                            "@param",
-                                                        ),
+                                                        symbol: "@param",
                                                     },
                                                     data_type: Some(
                                                         DataType {
                                                             id: 4,
                                                             kind: String,
                                                             span: Span {
-                                                                start: 18,
-                                                                end: 24,
+                                                                start: 0,
+                                                                end: 0,
                                                             },
                                                         },
                                                     ),

@@ -254,7 +254,7 @@ impl<'a> Parser<'a> {
                 ),
                 #[cfg(feature = "docblocks")]
                 TokenKind::OpenPhpDoc => {
-                    let docblock = crate::internal::docblock::parse_docblock(self);
+                    let docblock = self.parse_docblock();
 
                     (
                         Comment {

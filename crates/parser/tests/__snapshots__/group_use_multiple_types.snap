@@ -63,13 +63,13 @@
                             },
                         },
                         alias: None,
-                        kind: None,
+                        kind: Normal,
                     },
                     Use {
                         id: 10,
                         span: Span {
                             start: 30,
-                            end: 42,
+                            end: 38,
                         },
                         name: Name {
                             id: 11,
@@ -90,15 +90,13 @@
                             },
                         },
                         alias: None,
-                        kind: Some(
-                            Function,
-                        ),
+                        kind: Function,
                     },
                     Use {
                         id: 13,
                         span: Span {
                             start: 48,
-                            end: 56,
+                            end: 53,
                         },
                         name: Name {
                             id: 14,
@@ -119,15 +117,13 @@
                             },
                         },
                         alias: None,
-                        kind: Some(
-                            Const,
-                        ),
+                        kind: Const,
                     },
                 ],
             },
         ),
         span: Span {
-            start: 7,
+            start: 11,
             end: 59,
         },
         comments: CommentGroup {

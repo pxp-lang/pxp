@@ -116,15 +116,13 @@
                                                                 end: 19,
                                                             },
                                                             kind: Integer,
-                                                            token: Token {
+                                                            token: OwnedToken {
                                                                 kind: LiteralInteger,
                                                                 span: Span {
                                                                     start: 18,
                                                                     end: 19,
                                                                 },
-                                                                symbol: Some(
-                                                                    "1",
-                                                                ),
+                                                                symbol: "1",
                                                             },
                                                         },
                                                     ),

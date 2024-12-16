@@ -105,15 +105,13 @@
                                                             end: 12,
                                                         },
                                                         kind: Integer,
-                                                        token: Token {
+                                                        token: OwnedToken {
                                                             kind: LiteralInteger,
                                                             span: Span {
                                                                 start: 11,
                                                                 end: 12,
                                                             },
-                                                            symbol: Some(
-                                                                "1",
-                                                            ),
+                                                            symbol: "1",
                                                         },
                                                     },
                                                 ),
@@ -150,15 +148,13 @@
                                                             end: 15,
                                                         },
                                                         kind: Integer,
-                                                        token: Token {
+                                                        token: OwnedToken {
                                                             kind: LiteralInteger,
                                                             span: Span {
                                                                 start: 14,
                                                                 end: 15,
                                                             },
-                                                            symbol: Some(
-                                                                "2",
-                                                            ),
+                                                            symbol: "2",
                                                         },
                                                     },
                                                 ),

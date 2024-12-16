@@ -214,15 +214,13 @@
                                                                                     end: 43,
                                                                                 },
                                                                                 kind: String,
-                                                                                token: Token {
+                                                                                token: OwnedToken {
                                                                                     kind: LiteralDoubleQuotedString,
                                                                                     span: Span {
                                                                                         start: 38,
                                                                                         end: 43,
                                                                                     },
-                                                                                    symbol: Some(
-                                                                                        "hello",
-                                                                                    ),
+                                                                                    symbol: "hello",
                                                                                 },
                                                                             },
                                                                         ),

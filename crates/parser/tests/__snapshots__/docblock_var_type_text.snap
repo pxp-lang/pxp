@@ -77,15 +77,13 @@
                                                 end: 49,
                                             },
                                             kind: Integer,
-                                            token: Token {
+                                            token: OwnedToken {
                                                 kind: LiteralInteger,
                                                 span: Span {
                                                     start: 48,
                                                     end: 49,
                                                 },
-                                                symbol: Some(
-                                                    "1",
-                                                ),
+                                                symbol: "1",
                                             },
                                         },
                                     ),
@@ -129,20 +127,20 @@
                     id: 2,
                     span: Span {
                         start: 7,
-                        end: 40,
+                        end: 42,
                     },
                     kind: DocBlock(
                         DocBlockComment {
                             id: 7,
                             span: Span {
                                 start: 7,
-                                end: 40,
+                                end: 42,
                             },
                             doc: DocBlock {
                                 id: 8,
                                 span: Span {
                                     start: 7,
-                                    end: 40,
+                                    end: 42,
                                 },
                                 nodes: [
                                     Tag(
@@ -150,32 +148,30 @@
                                             id: 6,
                                             span: Span {
                                                 start: 11,
-                                                end: 40,
+                                                end: 42,
                                             },
                                             tag: Var(
                                                 DocBlockVarTag {
                                                     id: 5,
                                                     span: Span {
                                                         start: 11,
-                                                        end: 40,
+                                                        end: 42,
                                                     },
-                                                    tag: Token {
+                                                    tag: OwnedToken {
                                                         kind: PhpDocTag,
                                                         span: Span {
                                                             start: 11,
                                                             end: 15,
                                                         },
-                                                        symbol: Some(
-                                                            "@var",
-                                                        ),
+                                                        symbol: "@var",
                                                     },
                                                     data_type: Some(
                                                         DataType {
                                                             id: 4,
                                                             kind: Integer,
                                                             span: Span {
-                                                                start: 16,
-                                                                end: 19,
+                                                                start: 0,
+                                                                end: 0,
                                                             },
                                                         },
                                                     ),

@@ -38,15 +38,13 @@
                                 end: 12,
                             },
                             kind: Float,
-                            token: Token {
+                            token: OwnedToken {
                                 kind: LiteralFloat,
                                 span: Span {
                                     start: 7,
                                     end: 12,
                                 },
-                                symbol: Some(
-                                    "1.234",
-                                ),
+                                symbol: "1.234",
                             },
                         },
                     ),
@@ -95,15 +93,13 @@
                                 end: 23,
                             },
                             kind: Float,
-                            token: Token {
+                            token: OwnedToken {
                                 kind: LiteralFloat,
                                 span: Span {
                                     start: 14,
                                     end: 23,
                                 },
-                                symbol: Some(
-                                    "1_000.123",
-                                ),
+                                symbol: "1_000.123",
                             },
                         },
                     ),

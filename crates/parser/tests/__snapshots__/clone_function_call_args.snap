@@ -118,15 +118,13 @@
                                                                         end: 18,
                                                                     },
                                                                     kind: Integer,
-                                                                    token: Token {
+                                                                    token: OwnedToken {
                                                                         kind: LiteralInteger,
                                                                         span: Span {
                                                                             start: 17,
                                                                             end: 18,
                                                                         },
-                                                                        symbol: Some(
-                                                                            "1",
-                                                                        ),
+                                                                        symbol: "1",
                                                                     },
                                                                 },
                                                             ),
@@ -163,15 +161,13 @@
                                                                         end: 21,
                                                                     },
                                                                     kind: Integer,
-                                                                    token: Token {
+                                                                    token: OwnedToken {
                                                                         kind: LiteralInteger,
                                                                         span: Span {
                                                                             start: 20,
                                                                             end: 21,
                                                                         },
-                                                                        symbol: Some(
-                                                                            "2",
-                                                                        ),
+                                                                        symbol: "2",
                                                                     },
                                                                 },
                                                             ),

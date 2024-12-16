@@ -8,15 +8,13 @@
                     start: 0,
                     end: 4,
                 },
-                html: Token {
+                html: OwnedToken {
                     kind: InlineHtml,
                     span: Span {
                         start: 0,
                         end: 4,
                     },
-                    symbol: Some(
-                        "<h1>",
-                    ),
+                    symbol: "<h1>",
                 },
             },
         ),
@@ -73,15 +71,13 @@
                                     end: 29,
                                 },
                                 kind: String,
-                                token: Token {
+                                token: OwnedToken {
                                     kind: LiteralDoubleQuotedString,
                                     span: Span {
                                         start: 16,
                                         end: 29,
                                     },
-                                    symbol: Some(
-                                        "Hello, world!",
-                                    ),
+                                    symbol: "Hello, world!",
                                 },
                             },
                         ),
@@ -121,15 +117,13 @@
                     start: 33,
                     end: 38,
                 },
-                html: Token {
+                html: OwnedToken {
                     kind: InlineHtml,
                     span: Span {
                         start: 33,
                         end: 38,
                     },
-                    symbol: Some(
-                        "</h1>",
-                    ),
+                    symbol: "</h1>",
                 },
             },
         ),

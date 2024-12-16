@@ -8,15 +8,13 @@
                     start: 0,
                     end: 47,
                 },
-                html: Token {
+                html: OwnedToken {
                     kind: InlineHtml,
                     span: Span {
                         start: 0,
                         end: 47,
                     },
-                    symbol: Some(
-                        "<h1>Hello, world!</h1>\n<h2>Goodbye, world!</h2>",
-                    ),
+                    symbol: "<h1>Hello, world!</h1>\n<h2>Goodbye, world!</h2>",
                 },
             },
         ),

@@ -102,15 +102,13 @@
                                                     end: 88,
                                                 },
                                                 kind: String,
-                                                token: Token {
+                                                token: OwnedToken {
                                                     kind: LiteralSingleQuotedString,
                                                     span: Span {
                                                         start: 81,
                                                         end: 88,
                                                     },
-                                                    symbol: Some(
-                                                        "'other'",
-                                                    ),
+                                                    symbol: "'other'",
                                                 },
                                             },
                                         ),
@@ -143,15 +141,13 @@
                                                         end: 27,
                                                     },
                                                     kind: Integer,
-                                                    token: Token {
+                                                    token: OwnedToken {
                                                         kind: LiteralInteger,
                                                         span: Span {
                                                             start: 26,
                                                             end: 27,
                                                         },
-                                                        symbol: Some(
-                                                            "1",
-                                                        ),
+                                                        symbol: "1",
                                                     },
                                                 },
                                             ),
@@ -179,15 +175,13 @@
                                                     end: 36,
                                                 },
                                                 kind: String,
-                                                token: Token {
+                                                token: OwnedToken {
                                                     kind: LiteralSingleQuotedString,
                                                     span: Span {
                                                         start: 31,
                                                         end: 36,
                                                     },
-                                                    symbol: Some(
-                                                        "'one'",
-                                                    ),
+                                                    symbol: "'one'",
                                                 },
                                             },
                                         ),
@@ -218,15 +212,13 @@
                                                         end: 43,
                                                     },
                                                     kind: Integer,
-                                                    token: Token {
+                                                    token: OwnedToken {
                                                         kind: LiteralInteger,
                                                         span: Span {
                                                             start: 42,
                                                             end: 43,
                                                         },
-                                                        symbol: Some(
-                                                            "2",
-                                                        ),
+                                                        symbol: "2",
                                                     },
                                                 },
                                             ),
@@ -249,15 +241,13 @@
                                                         end: 46,
                                                     },
                                                     kind: Integer,
-                                                    token: Token {
+                                                    token: OwnedToken {
                                                         kind: LiteralInteger,
                                                         span: Span {
                                                             start: 45,
                                                             end: 46,
                                                         },
-                                                        symbol: Some(
-                                                            "3",
-                                                        ),
+                                                        symbol: "3",
                                                     },
                                                 },
                                             ),
@@ -285,15 +275,13 @@
                                                     end: 64,
                                                 },
                                                 kind: String,
-                                                token: Token {
+                                                token: OwnedToken {
                                                     kind: LiteralSingleQuotedString,
                                                     span: Span {
                                                         start: 50,
                                                         end: 64,
                                                     },
-                                                    symbol: Some(
-                                                        "'two or three'",
-                                                    ),
+                                                    symbol: "'two or three'",
                                                 },
                                             },
                                         ),

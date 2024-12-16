@@ -101,8 +101,8 @@
                                         id: 9,
                                         kind: Integer,
                                         span: Span {
-                                            start: 29,
-                                            end: 32,
+                                            start: 0,
+                                            end: 0,
                                         },
                                     },
                                 ),
@@ -135,15 +135,13 @@
                                                         end: 40,
                                                     },
                                                     kind: Integer,
-                                                    token: Token {
+                                                    token: OwnedToken {
                                                         kind: LiteralInteger,
                                                         span: Span {
                                                             start: 39,
                                                             end: 40,
                                                         },
-                                                        symbol: Some(
-                                                            "1",
-                                                        ),
+                                                        symbol: "1",
                                                     },
                                                 },
                                             ),

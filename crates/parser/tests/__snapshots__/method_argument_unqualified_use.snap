@@ -26,7 +26,7 @@
                 id: 8,
                 span: Span {
                     start: 7,
-                    end: 19,
+                    end: 18,
                 },
                 kind: Normal,
                 uses: [
@@ -55,14 +55,14 @@
                             },
                         },
                         alias: None,
-                        kind: None,
+                        kind: Normal,
                     },
                 ],
             },
         ),
         span: Span {
             start: 7,
-            end: 19,
+            end: 18,
         },
         comments: CommentGroup {
             id: 4,
@@ -76,7 +76,7 @@
                 id: 15,
                 span: Span {
                     start: 20,
-                    end: 43,
+                    end: 42,
                 },
                 kind: Normal,
                 uses: [
@@ -114,14 +114,14 @@
                                 },
                             },
                         ),
-                        kind: None,
+                        kind: Normal,
                     },
                 ],
             },
         ),
         span: Span {
             start: 20,
-            end: 43,
+            end: 42,
         },
         comments: CommentGroup {
             id: 10,
@@ -233,7 +233,7 @@
                                             FunctionParameter {
                                                 id: 27,
                                                 span: Span {
-                                                    start: 70,
+                                                    start: 0,
                                                     end: 76,
                                                 },
                                                 comments: CommentGroup {
@@ -274,8 +274,8 @@
                                                             },
                                                         ),
                                                         span: Span {
-                                                            start: 70,
-                                                            end: 73,
+                                                            start: 0,
+                                                            end: 0,
                                                         },
                                                     },
                                                 ),
@@ -286,7 +286,7 @@
                                             FunctionParameter {
                                                 id: 33,
                                                 span: Span {
-                                                    start: 78,
+                                                    start: 0,
                                                     end: 90,
                                                 },
                                                 comments: CommentGroup {
@@ -351,8 +351,8 @@
                                                             ],
                                                         ),
                                                         span: Span {
-                                                            start: 78,
-                                                            end: 87,
+                                                            start: 0,
+                                                            end: 0,
                                                         },
                                                     },
                                                 ),
@@ -363,7 +363,7 @@
                                             FunctionParameter {
                                                 id: 39,
                                                 span: Span {
-                                                    start: 92,
+                                                    start: 0,
                                                     end: 104,
                                                 },
                                                 comments: CommentGroup {
@@ -428,8 +428,8 @@
                                                             ],
                                                         ),
                                                         span: Span {
-                                                            start: 92,
-                                                            end: 101,
+                                                            start: 0,
+                                                            end: 0,
                                                         },
                                                     },
                                                 ),
@@ -440,7 +440,7 @@
                                             FunctionParameter {
                                                 id: 44,
                                                 span: Span {
-                                                    start: 106,
+                                                    start: 0,
                                                     end: 113,
                                                 },
                                                 comments: CommentGroup {
@@ -483,8 +483,8 @@
                                                             ),
                                                         ),
                                                         span: Span {
-                                                            start: 106,
-                                                            end: 110,
+                                                            start: 0,
+                                                            end: 0,
                                                         },
                                                     },
                                                 ),

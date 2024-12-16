@@ -26,7 +26,7 @@
                 id: 7,
                 span: Span {
                     start: 7,
-                    end: 25,
+                    end: 13,
                 },
                 echo: Span {
                     start: 7,
@@ -43,15 +43,13 @@
                                     end: 25,
                                 },
                                 kind: String,
-                                token: Token {
+                                token: OwnedToken {
                                     kind: LiteralDoubleQuotedString,
                                     span: Span {
                                         start: 13,
                                         end: 25,
                                     },
-                                    symbol: Some(
-                                        "Hello, world",
-                                    ),
+                                    symbol: "Hello, world",
                                 },
                             },
                         ),
@@ -67,15 +65,15 @@
                 ],
                 ending: Missing(
                     Span {
-                        start: 25,
-                        end: 25,
+                        start: 13,
+                        end: 13,
                     },
                 ),
             },
         ),
         span: Span {
             start: 7,
-            end: 25,
+            end: 13,
         },
         comments: CommentGroup {
             id: 4,
@@ -89,8 +87,8 @@
         kind: UnexpectedEndOfFile,
         severity: Error,
         span: Span {
-            start: 25,
-            end: 25,
+            start: 13,
+            end: 13,
         },
     },
 ]

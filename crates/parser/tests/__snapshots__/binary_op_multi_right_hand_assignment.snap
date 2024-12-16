@@ -48,15 +48,13 @@
                                                 start: 7,
                                                 end: 11,
                                             },
-                                            value: Token {
+                                            value: OwnedToken {
                                                 kind: True,
                                                 span: Span {
                                                     start: 7,
                                                     end: 11,
                                                 },
-                                                symbol: Some(
-                                                    "true",
-                                                ),
+                                                symbol: "true",
                                             },
                                         },
                                     ),
@@ -160,15 +158,13 @@
                                                                                 start: 26,
                                                                                 end: 30,
                                                                             },
-                                                                            value: Token {
+                                                                            value: OwnedToken {
                                                                                 kind: True,
                                                                                 span: Span {
                                                                                     start: 26,
                                                                                     end: 30,
                                                                                 },
-                                                                                symbol: Some(
-                                                                                    "true",
-                                                                                ),
+                                                                                symbol: "true",
                                                                             },
                                                                         },
                                                                     ),

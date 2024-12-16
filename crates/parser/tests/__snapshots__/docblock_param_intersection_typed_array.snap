@@ -75,7 +75,7 @@
                             FunctionParameter {
                                 id: 20,
                                 span: Span {
-                                    start: 47,
+                                    start: 0,
                                     end: 55,
                                 },
                                 comments: CommentGroup {
@@ -97,8 +97,8 @@
                                         id: 18,
                                         kind: Array,
                                         span: Span {
-                                            start: 47,
-                                            end: 52,
+                                            start: 0,
+                                            end: 0,
                                         },
                                     },
                                 ),
@@ -148,20 +148,20 @@
                     id: 2,
                     span: Span {
                         start: 7,
-                        end: 31,
+                        end: 35,
                     },
                     kind: DocBlock(
                         DocBlockComment {
                             id: 10,
                             span: Span {
                                 start: 7,
-                                end: 31,
+                                end: 35,
                             },
                             doc: DocBlock {
                                 id: 11,
                                 span: Span {
                                     start: 7,
-                                    end: 31,
+                                    end: 35,
                                 },
                                 nodes: [
                                     Tag(
@@ -178,15 +178,13 @@
                                                         start: 14,
                                                         end: 31,
                                                     },
-                                                    tag: Token {
+                                                    tag: OwnedToken {
                                                         kind: PhpDocTag,
                                                         span: Span {
                                                             start: 14,
                                                             end: 20,
                                                         },
-                                                        symbol: Some(
-                                                            "@param",
-                                                        ),
+                                                        symbol: "@param",
                                                     },
                                                     data_type: Some(
                                                         DataType {
@@ -244,8 +242,8 @@
                                                                 ),
                                                             ),
                                                             span: Span {
-                                                                start: 21,
-                                                                end: 28,
+                                                                start: 0,
+                                                                end: 0,
                                                             },
                                                         },
                                                     ),

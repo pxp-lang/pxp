@@ -52,15 +52,13 @@
                                                 end: 12,
                                             },
                                             kind: String,
-                                            token: Token {
+                                            token: OwnedToken {
                                                 kind: LiteralSingleQuotedString,
                                                 span: Span {
                                                     start: 9,
                                                     end: 12,
                                                 },
-                                                symbol: Some(
-                                                    "'a'",
-                                                ),
+                                                symbol: "'a'",
                                             },
                                         },
                                     ),

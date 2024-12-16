@@ -124,7 +124,7 @@
                                             FunctionParameter {
                                                 id: 13,
                                                 span: Span {
-                                                    start: 32,
+                                                    start: 0,
                                                     end: 38,
                                                 },
                                                 comments: CommentGroup {
@@ -146,8 +146,8 @@
                                                         id: 11,
                                                         kind: Integer,
                                                         span: Span {
-                                                            start: 32,
-                                                            end: 35,
+                                                            start: 0,
+                                                            end: 0,
                                                         },
                                                     },
                                                 ),
@@ -158,7 +158,7 @@
                                             FunctionParameter {
                                                 id: 17,
                                                 span: Span {
-                                                    start: 40,
+                                                    start: 0,
                                                     end: 54,
                                                 },
                                                 comments: CommentGroup {
@@ -185,8 +185,8 @@
                                                             ],
                                                         ),
                                                         span: Span {
-                                                            start: 40,
-                                                            end: 51,
+                                                            start: 0,
+                                                            end: 0,
                                                         },
                                                     },
                                                 ),

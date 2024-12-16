@@ -16,5 +16,5 @@ pxp-diagnostics = { path = "../diagnostics" }
 snappers = { path = "../snappers" }
 
 [features]
-default = []
+default = ["docblocks"]
 docblocks = ["pxp-ast/docblocks", "pxp-lexer/docblocks"]

@@ -20,7 +20,7 @@
         },
     },
     Statement {
-        id: 16,
+        id: 15,
         kind: Namespace(
             Unbraced(
                 UnbracedNamespace {
@@ -33,19 +33,9 @@
                         start: 7,
                         end: 16,
                     },
-                    name: Name {
-                        id: 15,
-                        kind: Resolved(
-                            ResolvedName {
-                                id: 15,
-                                span: Span {
-                                    start: 17,
-                                    end: 18,
-                                },
-                                resolved: "A",
-                                original: "A",
-                            },
-                        ),
+                    name: SimpleIdentifier {
+                        id: 5,
+                        symbol: "A",
                         span: Span {
                             start: 17,
                             end: 18,
@@ -112,15 +102,13 @@
                                                             end: 34,
                                                         },
                                                         kind: Integer,
-                                                        token: Token {
+                                                        token: OwnedToken {
                                                             kind: LiteralInteger,
                                                             span: Span {
                                                                 start: 33,
                                                                 end: 34,
                                                             },
-                                                            symbol: Some(
-                                                                "1",
-                                                            ),
+                                                            symbol: "1",
                                                         },
                                                     },
                                                 ),
