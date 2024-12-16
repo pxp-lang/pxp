@@ -76,7 +76,7 @@ impl Expression {
     }
 }
 
-impl From<Token> for CastKind {
+impl From<Token<'_>> for CastKind {
     fn from(token: Token) -> Self {
         match token.kind {
             TokenKind::StringCast | TokenKind::BinaryCast => Self::String(token.span),
@@ -99,8 +99,8 @@ impl From<&TokenKind> for CastKind {
     }
 }
 
-impl From<Token> for SpecialNameKind {
-    fn from(token: Token) -> Self {
+impl<'a> From<Token<'a>> for SpecialNameKind {
+    fn from(token: Token<'a>) -> Self {
         match token.kind {
             TokenKind::Self_ => Self::Self_(token.span),
             TokenKind::Parent => Self::Parent(token.span),

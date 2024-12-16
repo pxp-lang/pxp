@@ -14,7 +14,7 @@ $output = <<<'RUST'
 
 use crate::{HasId, utils::CommaSeparated, Node, name::NameQualification};
 use pxp_type::Type;
-use pxp_token::Token;
+use pxp_token::OwnedToken;
 use pxp_span::{Span, Spanned};
 use pxp_bytestring::ByteString;
 use std::ptr::NonNull;

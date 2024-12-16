@@ -126,15 +126,13 @@
                                                         end: 36,
                                                     },
                                                     kind: Integer,
-                                                    token: Token {
+                                                    token: OwnedToken {
                                                         kind: LiteralInteger,
                                                         span: Span {
                                                             start: 35,
                                                             end: 36,
                                                         },
-                                                        symbol: Some(
-                                                            "1",
-                                                        ),
+                                                        symbol: "1",
                                                     },
                                                 },
                                             ),
@@ -176,15 +174,13 @@
                                                         end: 45,
                                                     },
                                                     kind: Integer,
-                                                    token: Token {
+                                                    token: OwnedToken {
                                                         kind: LiteralInteger,
                                                         span: Span {
                                                             start: 44,
                                                             end: 45,
                                                         },
-                                                        symbol: Some(
-                                                            "2",
-                                                        ),
+                                                        symbol: "2",
                                                     },
                                                 },
                                             ),

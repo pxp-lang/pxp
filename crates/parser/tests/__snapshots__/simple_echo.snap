@@ -43,15 +43,13 @@
                                     end: 26,
                                 },
                                 kind: String,
-                                token: Token {
+                                token: OwnedToken {
                                     kind: LiteralDoubleQuotedString,
                                     span: Span {
                                         start: 13,
                                         end: 26,
                                     },
-                                    symbol: Some(
-                                        "Hello, world!",
-                                    ),
+                                    symbol: "Hello, world!",
                                 },
                             },
                         ),

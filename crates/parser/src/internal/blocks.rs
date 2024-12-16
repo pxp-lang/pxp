@@ -1,6 +1,4 @@
-use crate::internal::utils;
-use crate::state::State;
-use crate::statement;
+use crate::Parser;
 use pxp_ast::BlockStatement;
 use pxp_ast::Statement;
 use pxp_ast::StatementKind;
@@ -8,54 +6,49 @@ use pxp_span::Span;
 use pxp_token::OpenTagKind;
 use pxp_token::TokenKind;
 
-pub fn block_statement(state: &mut State) -> StatementKind {
-    let (left_brace, statements, right_brace) = utils::braced(state, &|state: &mut State| {
-        multiple_statements_until(state, &TokenKind::RightBrace)
-    });
+impl<'a> Parser<'a> {
+    pub fn parse_block_statement(&mut self) -> StatementKind {
+        let (left_brace, statements, right_brace) =
+            self.braced(|parser| parser.parse_multiple_statements_until(TokenKind::RightBrace));
 
-    StatementKind::Block(BlockStatement {
-        id: state.id(),
-        span: Span::combine(left_brace, right_brace),
-        left_brace,
-        statements,
-        right_brace,
-    })
-}
-
-pub fn multiple_statements_until(state: &mut State, until: &TokenKind) -> Vec<Statement> {
-    let mut statements = Vec::new();
-
-    let mut current = state.current();
-    while &current.kind != until {
-        if let TokenKind::OpenTag(OpenTagKind::Full) = current.kind {
-            state.next();
-
-            current = state.current();
-            continue;
-        }
-
-        statements.push(statement(state));
-        current = state.current();
+        StatementKind::Block(BlockStatement {
+            id: self.state.id(),
+            span: Span::combine(left_brace, right_brace),
+            left_brace,
+            statements,
+            right_brace,
+        })
     }
 
-    statements
-}
+    pub fn parse_multiple_statements_until(&mut self, until: TokenKind) -> Vec<Statement> {
+        let mut statements = Vec::new();
 
-pub fn multiple_statements_until_any(state: &mut State, until: &[TokenKind]) -> Vec<Statement> {
-    let mut statements = Vec::new();
+        while self.current_kind() != until {
+            if let TokenKind::OpenTag(OpenTagKind::Full) = self.current_kind() {
+                self.next();
 
-    let mut current = state.current();
-    while !until.contains(&current.kind) {
-        if let TokenKind::OpenTag(OpenTagKind::Full) = current.kind {
-            state.next();
+                continue;
+            }
 
-            current = state.current();
-            continue;
+            statements.push(self.parse_statement());
         }
 
-        statements.push(statement(state));
-        current = state.current();
+        statements
     }
 
-    statements
+    pub fn parse_multiple_statements_until_any(&mut self, until: &[TokenKind]) -> Vec<Statement> {
+        let mut statements = Vec::new();
+
+        while !until.contains(&self.current_kind()) {
+            if let TokenKind::OpenTag(OpenTagKind::Full) = self.current_kind() {
+                self.next();
+
+                continue;
+            }
+
+            statements.push(self.parse_statement());
+        }
+
+        statements
+    }
 }

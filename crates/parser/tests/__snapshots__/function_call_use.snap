@@ -26,7 +26,7 @@
                 id: 8,
                 span: Span {
                     start: 7,
-                    end: 28,
+                    end: 27,
                 },
                 kind: Function,
                 uses: [
@@ -55,14 +55,14 @@
                             },
                         },
                         alias: None,
-                        kind: None,
+                        kind: Function,
                     },
                 ],
             },
         ),
         span: Span {
             start: 7,
-            end: 28,
+            end: 27,
         },
         comments: CommentGroup {
             id: 4,

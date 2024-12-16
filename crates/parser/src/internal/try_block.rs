@@ -1,7 +1,4 @@
-use crate::internal::blocks;
-use crate::internal::identifiers;
-use crate::internal::utils;
-use crate::state::State;
+use crate::Parser;
 use crate::ParserDiagnostic;
 use pxp_ast::StatementKind;
 use pxp_ast::*;
@@ -11,137 +8,143 @@ use pxp_span::Span;
 use pxp_span::Spanned;
 use pxp_token::TokenKind;
 
-use super::variables;
+impl<'a> Parser<'a> {
+    pub fn parse_try_block(&mut self) -> StatementKind {
+        let start = self.current_span();
 
-pub fn try_block(state: &mut State) -> StatementKind {
-    let start = state.current().span;
+        self.next();
+        self.skip_left_brace();
 
-    state.next();
-    utils::skip_left_brace(state);
+        let body = self.parse_multiple_statements_until(TokenKind::RightBrace);
 
-    let body = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
+        let last_right_brace = self.skip_right_brace();
 
-    let last_right_brace = utils::skip_right_brace(state);
-
-    let mut catches = Vec::new();
-    loop {
-        if state.current().kind != TokenKind::Catch {
-            break;
-        }
-
-        let catch_start = state.current().span;
-
-        state.next();
-        utils::skip_left_parenthesis(state);
-
-        let types = catch_type(state);
-        let var = if state.current().kind == TokenKind::RightParen {
-            None
-        } else {
-            Some(variables::simple_variable(state))
-        };
-
-        utils::skip_right_parenthesis(state);
-        utils::skip_left_brace(state);
-
-        let catch_body = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
-
-        utils::skip_right_brace(state);
-
-        let catch_end = state.current().span;
-
-        catches.push(CatchBlock {
-            id: state.id(),
-            span: Span::combine(catch_start, catch_body.span()),
-            start: catch_start,
-            end: catch_end,
-            types,
-            var,
-            body: catch_body,
-        })
-    }
-
-    let mut finally = None;
-    if state.current().kind == TokenKind::Finally {
-        let finally_start = state.current().span;
-        state.next();
-        utils::skip_left_brace(state);
-
-        let finally_body = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
-
-        utils::skip_right_brace(state);
-        let finally_end = state.current().span;
-
-        finally = Some(FinallyBlock {
-            id: state.id(),
-            span: Span::combine(finally_start, finally_body.span()),
-            start: finally_start,
-            end: finally_end,
-            body: finally_body,
-        });
-    }
-
-    if catches.is_empty() && finally.is_none() {
-        state.diagnostic(
-            ParserDiagnostic::TryMustHaveCatchOrFinally,
-            Severity::Error,
-            last_right_brace,
-        );
-    }
-
-    let end = state.previous().span;
-
-    StatementKind::Try(TryStatement {
-        id: state.id(),
-        span: Span::combine(start, end),
-        start,
-        end,
-        body,
-        catches,
-        finally,
-    })
-}
-
-#[inline(always)]
-fn catch_type(state: &mut State) -> CatchType {
-    let id = identifiers::full_name(state);
-
-    if state.current().kind == TokenKind::Pipe {
-        state.next();
-
-        let mut types = vec![id];
-
-        while !state.is_eof() {
-            let id = identifiers::full_name(state);
-            types.push(id);
-
-            if state.current().kind != TokenKind::Pipe {
+        let mut catches = Vec::new();
+        loop {
+            if self.current_kind() != TokenKind::Catch {
                 break;
             }
 
-            state.next();
+            let catch_start = self.current_span();
+
+            self.next();
+            self.skip_left_parenthesis();
+
+            let types = self.parse_catch_type();
+            let var = if self.current_kind() == TokenKind::RightParen {
+                None
+            } else {
+                Some(self.parse_simple_variable())
+            };
+
+            self.skip_right_parenthesis();
+            self.skip_left_brace();
+
+            let catch_body = self.parse_multiple_statements_until(TokenKind::RightBrace);
+
+            self.skip_right_brace();
+
+            let catch_end = self.current_span();
+
+            catches.push(CatchBlock {
+                id: self.state.id(),
+                span: Span::combine(catch_start, catch_body.span()),
+                start: catch_start,
+                end: catch_end,
+                types,
+                var,
+                body: catch_body,
+            })
         }
 
-        let span = types.span();
+        let mut finally = None;
+        if self.current_kind() == TokenKind::Finally {
+            let finally_start = self.current_span();
+            self.next();
+            self.skip_left_brace();
 
-        return CatchType {
-            id: state.id(),
-            span,
-            kind: CatchTypeKind::Union(CatchTypeKindUnion {
-                id: state.id(),
-                span,
-                identifiers: types,
-            }),
+            let finally_body = self.parse_multiple_statements_until(TokenKind::RightBrace);
+
+            self.skip_right_brace();
+            let finally_end = self.current_span();
+
+            finally = Some(FinallyBlock {
+                id: self.state.id(),
+                span: Span::combine(finally_start, finally_body.span()),
+                start: finally_start,
+                end: finally_end,
+                body: finally_body,
+            });
+        }
+
+        if catches.is_empty() && finally.is_none() {
+            self.diagnostic(
+                ParserDiagnostic::TryMustHaveCatchOrFinally,
+                Severity::Error,
+                last_right_brace,
+            );
+        }
+
+        let span = if finally.is_some() {
+            Span::combine(start, finally.span())
+        } else if !catches.is_empty() {
+            Span::combine(start, catches.span())
+        } else {
+            Span::combine(start, last_right_brace)
         };
+
+        StatementKind::Try(TryStatement {
+            id: self.state.id(),
+            span,
+            start,
+            end: last_right_brace,
+            body,
+            catches,
+            finally,
+        })
     }
 
-    CatchType {
-        id: state.id(),
-        span: id.span(),
-        kind: CatchTypeKind::Identifier(CatchTypeKindIdentifier {
-            id: state.id(),
+    #[inline(always)]
+    fn parse_catch_type(&mut self) -> CatchType {
+        let id = self.parse_full_name_identifier();
+
+        if self.current_kind() == TokenKind::Pipe {
+            self.next();
+
+            let mut types = vec![id];
+
+            while !self.is_eof() {
+                let id = self.parse_full_name_identifier();
+                types.push(id);
+
+                if self.current_kind() != TokenKind::Pipe {
+                    break;
+                }
+
+                self.next();
+            }
+
+            let span = types.span();
+
+            return CatchType {
+                id: self.state.id(),
+                span,
+                kind: CatchTypeKind::Union(CatchTypeKindUnion {
+                    id: self.state.id(),
+                    span,
+                    identifiers: types,
+                }),
+            };
+        }
+
+        CatchType {
+            id: self.state.id(),
             span: id.span(),
-            identifier: id,
-        }),
+            kind: CatchTypeKind::Identifier(CatchTypeKindIdentifier {
+                id: self.state.id(),
+                span: id.span(),
+                identifier: id,
+            }),
+        }
     }
 }

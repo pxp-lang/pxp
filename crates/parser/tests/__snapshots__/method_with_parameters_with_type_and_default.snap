@@ -124,7 +124,7 @@
                                             FunctionParameter {
                                                 id: 15,
                                                 span: Span {
-                                                    start: 32,
+                                                    start: 0,
                                                     end: 38,
                                                 },
                                                 comments: CommentGroup {
@@ -146,8 +146,8 @@
                                                         id: 11,
                                                         kind: Integer,
                                                         span: Span {
-                                                            start: 32,
-                                                            end: 35,
+                                                            start: 0,
+                                                            end: 0,
                                                         },
                                                     },
                                                 ),
@@ -163,15 +163,13 @@
                                                                     end: 42,
                                                                 },
                                                                 kind: Integer,
-                                                                token: Token {
+                                                                token: OwnedToken {
                                                                     kind: LiteralInteger,
                                                                     span: Span {
                                                                         start: 41,
                                                                         end: 42,
                                                                     },
-                                                                    symbol: Some(
-                                                                        "2",
-                                                                    ),
+                                                                    symbol: "2",
                                                                 },
                                                             },
                                                         ),

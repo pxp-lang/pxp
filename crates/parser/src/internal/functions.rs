@@ -1,19 +1,10 @@
-use crate::expressions;
-use crate::internal::blocks;
-use crate::internal::data_type;
-use crate::internal::identifiers;
-use crate::internal::parameters;
-use crate::internal::utils;
-use crate::internal::variables;
-use crate::state::State;
+use crate::Parser;
 use pxp_ast::Expression;
 use pxp_ast::ExpressionKind;
 use pxp_ast::StatementKind;
 use pxp_ast::*;
 use pxp_span::Span;
 use pxp_token::TokenKind;
-
-use super::names;
 
 pub enum Method {
     Abstract(AbstractMethod),
@@ -22,285 +13,323 @@ pub enum Method {
     ConcreteConstructor(ConcreteConstructor),
 }
 
-pub fn anonymous_function(state: &mut State) -> Expression {
-    let comments = state.comments();
-    let start_span = state.current().span;
-    let attributes = state.get_attributes();
-    let current = state.current();
-    let r#static = if current.kind == TokenKind::Static {
-        state.next();
+impl<'a> Parser<'a> {
+    pub fn parse_anonymous_function(&mut self) -> Expression {
+        let comments = self.state.comments();
+        let start_span = self.current_span();
+        let attributes = self.state.get_attributes();
+        let r#static = if self.current_kind() == TokenKind::Static {
+            Some(self.next())
+        } else {
+            None
+        };
 
-        Some(current.span)
-    } else {
-        None
-    };
+        let function = self.skip(TokenKind::Function);
 
-    let function = utils::skip(state, TokenKind::Function);
+        let ampersand = if self.current_kind() == TokenKind::Ampersand {
+            Some(self.next())
+        } else {
+            None
+        };
 
-    let current = state.current();
-    let ampersand = if current.kind == TokenKind::Ampersand {
-        state.next();
+        let parameters = self.parse_function_parameter_list();
 
-        Some(current.span)
-    } else {
-        None
-    };
+        let uses = if self.current_kind() == TokenKind::Use {
+            let r#use = self.next();
+            let left_parenthesis = self.skip_left_parenthesis();
+            let variables = self.comma_separated::<ClosureUseVariable>(
+                |parser| {
+                    let use_comments = parser.state.comments();
+                    let use_ampersand = if parser.current_kind() == TokenKind::Ampersand {
+                        Some(parser.next())
+                    } else {
+                        None
+                    };
 
-    let parameters = parameters::function_parameter_list(state);
+                    let var = parser.parse_simple_variable();
 
-    let current = state.current();
-    let uses = if current.kind == TokenKind::Use {
-        state.next();
+                    ClosureUseVariable {
+                        id: parser.state.id(),
+                        span: var.span,
+                        comments: use_comments,
+                        variable: var,
+                        ampersand: use_ampersand,
+                    }
+                },
+                TokenKind::RightParen,
+            );
 
-        let left_parenthesis = utils::skip_left_parenthesis(state);
-        let variables = utils::comma_separated::<ClosureUseVariable>(
-            state,
-            &|state| {
-                let use_comments = state.comments();
-                let current = state.current();
-                let use_ampersand = if current.kind == TokenKind::Ampersand {
-                    state.next();
+            let right_parenthesis = self.skip_right_parenthesis();
 
-                    Some(current.span)
-                } else {
-                    None
-                };
+            Some(ClosureUse {
+                id: self.state.id(),
+                span: Span::combine(r#use, right_parenthesis),
+                comments: self.state.comments(),
+                r#use,
+                left_parenthesis,
+                variables,
+                right_parenthesis,
+            })
+        } else {
+            None
+        };
 
-                let var = variables::simple_variable(state);
+        let return_type = if self.current_kind() == TokenKind::Colon {
+            let colon = self.skip_colon();
+            let data_type = self.parse_data_type();
 
-                ClosureUseVariable {
-                    id: state.id(),
-                    span: var.span,
-                    comments: use_comments,
-                    variable: var,
-                    ampersand: use_ampersand,
-                }
-            },
-            TokenKind::RightParen,
-        );
+            Some(ReturnType {
+                id: self.state.id(),
+                span: Span::combine(colon, data_type.span),
+                colon,
+                data_type,
+            })
+        } else {
+            None
+        };
 
-        let right_parenthesis = utils::skip_right_parenthesis(state);
+        let body_comments = self.state.comments();
+        let left_brace = self.skip_left_brace();
+        let statements = self.parse_multiple_statements_until(TokenKind::RightBrace);
+        let right_brace = self.skip_right_brace();
 
-        Some(ClosureUse {
-            id: state.id(),
-            span: Span::combine(current.span, right_parenthesis),
-            comments: state.comments(),
-            r#use: current.span,
-            left_parenthesis,
-            variables,
-            right_parenthesis,
-        })
-    } else {
-        None
-    };
+        let body = FunctionBody {
+            id: self.state.id(),
+            span: Span::combine(left_brace, right_brace),
+            comments: body_comments,
+            left_brace,
+            statements,
+            right_brace,
+        };
 
-    let return_type = if state.current().kind == TokenKind::Colon {
-        let colon = utils::skip_colon(state);
-        let data_type = data_type::data_type(state);
+        let end_span = body.right_brace;
 
-        Some(ReturnType {
-            id: state.id(),
-            span: Span::combine(colon, data_type.span),
-            colon,
-            data_type,
-        })
-    } else {
-        None
-    };
+        Expression::new(
+            self.state.id(),
+            ExpressionKind::Closure(ClosureExpression {
+                id: self.state.id(),
+                span: Span::combine(function, body.span),
+                comments,
+                attributes,
+                r#static,
+                function,
+                ampersand,
+                parameters,
+                uses,
+                return_type,
+                body,
+            }),
+            Span::new(start_span.start, end_span.end),
+            CommentGroup::default(),
+        )
+    }
 
-    let body_comments = state.comments();
-    let left_brace = utils::skip_left_brace(state);
-    let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
-    let right_brace = utils::skip_right_brace(state);
+    pub fn parse_arrow_function(&mut self) -> Expression {
+        let comments = self.state.comments();
+        let start_span = self.current_span();
 
-    let body = FunctionBody {
-        id: state.id(),
-        span: Span::combine(left_brace, right_brace),
-        comments: body_comments,
-        left_brace,
-        statements,
-        right_brace,
-    };
+        let r#static = if self.current_kind() == TokenKind::Static {
+            Some(self.next())
+        } else {
+            None
+        };
 
-    let end_span = body.right_brace;
+        let r#fn = self.skip(TokenKind::Fn);
 
-    Expression::new(
-        state.id(),
-        ExpressionKind::Closure(ClosureExpression {
-            id: state.id(),
+        let ampersand = if self.current_kind() == TokenKind::Ampersand {
+            Some(self.next())
+        } else {
+            None
+        };
+
+        let attributes = self.state.get_attributes();
+        let parameters = self.parse_function_parameter_list();
+        let return_type = if self.current_kind() == TokenKind::Colon {
+            let colon = self.skip_colon();
+            let data_type = self.parse_data_type();
+
+            Some(ReturnType {
+                id: self.state.id(),
+                span: Span::combine(colon, data_type.span),
+                colon,
+                data_type,
+            })
+        } else {
+            None
+        };
+
+        let double_arrow = self.skip(TokenKind::DoubleArrow);
+
+        let body = Box::new(self.parse_expression());
+        let end_span = body.span;
+
+        Expression::new(
+            self.state.id(),
+            ExpressionKind::ArrowFunction(ArrowFunctionExpression {
+                id: self.state.id(),
+                span: Span::combine(r#fn, end_span),
+                comments,
+                attributes,
+                r#static,
+                r#fn,
+                ampersand,
+                parameters,
+                return_type,
+                double_arrow,
+                body,
+            }),
+            Span::new(start_span.start, end_span.end),
+            CommentGroup::default(),
+        )
+    }
+
+    pub fn parse_function(&mut self) -> StatementKind {
+        let comments = self.state.comments();
+
+        let function = self.skip(TokenKind::Function);
+        
+        let ampersand = if self.current_kind() == TokenKind::Ampersand {
+            Some(self.next())
+        } else {
+            None
+        };
+
+        let name = self.parse_type_name_maybe_soft_reserved();
+
+        // get attributes before processing parameters, otherwise
+        // parameters will steal attributes of this function.
+        let attributes = self.state.get_attributes();
+
+        let parameters = self.parse_function_parameter_list();
+        let return_type = if self.current_kind() == TokenKind::Colon {
+            let colon = self.skip_colon();
+            let data_type = self.parse_data_type();
+
+            Some(ReturnType {
+                id: self.state.id(),
+                span: Span::combine(colon, data_type.span),
+                colon,
+                data_type,
+            })
+        } else {
+            None
+        };
+
+        let body_comments = self.state.comments();
+        let left_brace = self.skip_left_brace();
+        let statements = self.parse_multiple_statements_until(TokenKind::RightBrace);
+        let right_brace = self.skip_right_brace();
+
+        let body = FunctionBody {
+            id: self.state.id(),
+            span: Span::combine(left_brace, right_brace),
+            comments: body_comments,
+            left_brace,
+            statements,
+            right_brace,
+        };
+
+        StatementKind::Function(FunctionStatement {
+            id: self.state.id(),
             span: Span::combine(function, body.span),
             comments,
-            attributes,
-            r#static,
             function,
-            ampersand,
-            parameters,
-            uses,
-            return_type,
-            body,
-        }),
-        Span::new(start_span.start, end_span.end),
-        CommentGroup::default(),
-    )
-}
-
-pub fn arrow_function(state: &mut State) -> Expression {
-    let comments = state.comments();
-    let start_span = state.current().span;
-    let current = state.current();
-    let r#static = if current.kind == TokenKind::Static {
-        state.next();
-
-        Some(current.span)
-    } else {
-        None
-    };
-
-    let r#fn = utils::skip(state, TokenKind::Fn);
-
-    let current = state.current();
-    let ampersand = if state.current().kind == TokenKind::Ampersand {
-        state.next();
-
-        Some(current.span)
-    } else {
-        None
-    };
-
-    let attributes = state.get_attributes();
-    let parameters = parameters::function_parameter_list(state);
-    let return_type = if state.current().kind == TokenKind::Colon {
-        let colon = utils::skip_colon(state);
-        let data_type = data_type::data_type(state);
-
-        Some(ReturnType {
-            id: state.id(),
-            span: Span::combine(colon, data_type.span),
-            colon,
-            data_type,
-        })
-    } else {
-        None
-    };
-
-    let double_arrow = utils::skip(state, TokenKind::DoubleArrow);
-
-    let body = Box::new(expressions::create(state));
-    let end_span = body.span;
-
-    Expression::new(
-        state.id(),
-        ExpressionKind::ArrowFunction(ArrowFunctionExpression {
-            id: state.id(),
-            span: Span::combine(r#fn, end_span),
-            comments,
+            name,
             attributes,
-            r#static,
-            r#fn,
-            ampersand,
             parameters,
             return_type,
-            double_arrow,
             body,
-        }),
-        Span::new(start_span.start, end_span.end),
-        CommentGroup::default(),
-    )
-}
-
-pub fn function(state: &mut State) -> StatementKind {
-    let comments = state.comments();
-
-    let function = utils::skip(state, TokenKind::Function);
-
-    let current = state.current();
-    let ampersand = if current.kind == TokenKind::Ampersand {
-        state.next();
-
-        Some(current.span)
-    } else {
-        None
-    };
-
-    let name = names::type_name_maybe_soft_reserved(state);
-
-    // get attributes before processing parameters, otherwise
-    // parameters will steal attributes of this function.
-    let attributes = state.get_attributes();
-
-    let parameters = parameters::function_parameter_list(state);
-    let return_type = if state.current().kind == TokenKind::Colon {
-        let colon = utils::skip_colon(state);
-        let data_type = data_type::data_type(state);
-
-        Some(ReturnType {
-            id: state.id(),
-            span: Span::combine(colon, data_type.span),
-            colon,
-            data_type,
+            ampersand,
         })
-    } else {
-        None
-    };
+    }
 
-    let body_comments = state.comments();
-    let left_brace = utils::skip_left_brace(state);
-    let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
-    let right_brace = utils::skip_right_brace(state);
+    pub fn parse_method(&mut self, modifiers: MethodModifierGroup) -> Method {
+        let comments = self.state.comments();
+        let attributes = self.state.get_attributes();
+        let function = self.skip(TokenKind::Function);
 
-    let body = FunctionBody {
-        id: state.id(),
-        span: Span::combine(left_brace, right_brace),
-        comments: body_comments,
-        left_brace,
-        statements,
-        right_brace,
-    };
+        let ampersand = if self.current_kind() == TokenKind::Ampersand {
+            Some(self.next())
+        } else {
+            None
+        };
 
-    StatementKind::Function(FunctionStatement {
-        id: state.id(),
-        span: Span::combine(function, body.span),
-        comments,
-        function,
-        name,
-        attributes,
-        parameters,
-        return_type,
-        body,
-        ampersand,
-    })
-}
+        let name = self.parse_identifier_maybe_reserved();
 
-pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
-    let comments = state.comments();
-    let attributes = state.get_attributes();
-    let function = utils::skip(state, TokenKind::Function);
+        let symbol = &name.symbol;
+        let is_constructor = symbol == b"__construct";
 
-    let current = state.current();
-    let ampersand = if current.kind == TokenKind::Ampersand {
-        state.next();
+        if is_constructor {
+            let parameters = self.parse_constructor_parameter_list();
 
-        Some(current.span)
-    } else {
-        None
-    };
+            return if self.current_kind() == TokenKind::LeftBrace {
+                let body_comments = self.state.comments();
+                let left_brace = self.skip_left_brace();
+                let statements = self.parse_multiple_statements_until(TokenKind::RightBrace);
+                let right_brace = self.skip_right_brace();
 
-    let name = identifiers::identifier_maybe_reserved(state);
+                let body = MethodBody {
+                    id: self.state.id(),
+                    span: Span::combine(left_brace, right_brace),
+                    comments: body_comments,
+                    left_brace,
+                    statements,
+                    right_brace,
+                };
 
-    let symbol = &name.symbol;
-    let is_constructor = symbol == b"__construct";
+                return Method::ConcreteConstructor(ConcreteConstructor {
+                    id: self.state.id(),
+                    span: Span::combine(function, body.span),
+                    comments,
+                    attributes,
+                    modifiers,
+                    function,
+                    ampersand,
+                    name,
+                    parameters,
+                    body,
+                });
+            } else {
+                let semicolon = self.skip_semicolon();
 
-    if is_constructor {
-        let parameters = parameters::constructor_parameter_list(state);
+                Method::AbstractConstructor(AbstractConstructor {
+                    id: self.state.id(),
+                    span: Span::combine(function, semicolon),
+                    comments,
+                    attributes,
+                    modifiers,
+                    function,
+                    ampersand,
+                    name,
+                    parameters,
+                    semicolon,
+                })
+            };
+        }
 
-        return if state.current().kind == TokenKind::LeftBrace {
-            let body_comments = state.comments();
-            let left_brace = utils::skip_left_brace(state);
-            let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
-            let right_brace = utils::skip_right_brace(state);
+        let parameters = self.parse_function_parameter_list();
+        let return_type = if self.current_kind() == TokenKind::Colon {
+            let colon = self.skip_colon();
+            let data_type = self.parse_data_type();
+
+            Some(ReturnType {
+                id: self.state.id(),
+                span: Span::combine(colon, data_type.span),
+                colon,
+                data_type,
+            })
+        } else {
+            None
+        };
+
+        if self.current_kind() == TokenKind::LeftBrace {
+            let body_comments = self.state.comments();
+            let left_brace = self.skip_left_brace();
+            let statements = self.parse_multiple_statements_until(TokenKind::RightBrace);
+            let right_brace = self.skip_right_brace();
 
             let body = MethodBody {
-                id: state.id(),
+                id: self.state.id(),
                 span: Span::combine(left_brace, right_brace),
                 comments: body_comments,
                 left_brace,
@@ -308,8 +337,8 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
                 right_brace,
             };
 
-            return Method::ConcreteConstructor(ConcreteConstructor {
-                id: state.id(),
+            Method::Concrete(ConcreteMethod {
+                id: self.state.id(),
                 span: Span::combine(function, body.span),
                 comments,
                 attributes,
@@ -318,13 +347,14 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
                 ampersand,
                 name,
                 parameters,
+                return_type,
                 body,
-            });
+            })
         } else {
-            let semicolon = utils::skip_semicolon(state);
+            let semicolon = self.skip_semicolon();
 
-            Method::AbstractConstructor(AbstractConstructor {
-                id: state.id(),
+            Method::Abstract(AbstractMethod {
+                id: self.state.id(),
                 span: Span::combine(function, semicolon),
                 comments,
                 attributes,
@@ -333,69 +363,9 @@ pub fn method(state: &mut State, modifiers: MethodModifierGroup) -> Method {
                 ampersand,
                 name,
                 parameters,
+                return_type,
                 semicolon,
             })
-        };
-    }
-
-    let parameters = parameters::function_parameter_list(state);
-    let return_type = if state.current().kind == TokenKind::Colon {
-        let colon = utils::skip_colon(state);
-        let data_type = data_type::data_type(state);
-
-        Some(ReturnType {
-            id: state.id(),
-            span: Span::combine(colon, data_type.span),
-            colon,
-            data_type,
-        })
-    } else {
-        None
-    };
-
-    if state.current().kind == TokenKind::LeftBrace {
-        let body_comments = state.comments();
-        let left_brace = utils::skip_left_brace(state);
-        let statements = blocks::multiple_statements_until(state, &TokenKind::RightBrace);
-        let right_brace = utils::skip_right_brace(state);
-
-        let body = MethodBody {
-            id: state.id(),
-            span: Span::combine(left_brace, right_brace),
-            comments: body_comments,
-            left_brace,
-            statements,
-            right_brace,
-        };
-
-        Method::Concrete(ConcreteMethod {
-            id: state.id(),
-            span: Span::combine(function, body.span),
-            comments,
-            attributes,
-            modifiers,
-            function,
-            ampersand,
-            name,
-            parameters,
-            return_type,
-            body,
-        })
-    } else {
-        let semicolon = utils::skip_semicolon(state);
-
-        Method::Abstract(AbstractMethod {
-            id: state.id(),
-            span: Span::combine(function, semicolon),
-            comments,
-            attributes,
-            modifiers,
-            function,
-            ampersand,
-            name,
-            parameters,
-            return_type,
-            semicolon,
-        })
+        }
     }
 }

@@ -38,15 +38,13 @@
                                 end: 8,
                             },
                             kind: Integer,
-                            token: Token {
+                            token: OwnedToken {
                                 kind: LiteralInteger,
                                 span: Span {
                                     start: 7,
                                     end: 8,
                                 },
-                                symbol: Some(
-                                    "1",
-                                ),
+                                symbol: "1",
                             },
                         },
                     ),
@@ -95,15 +93,13 @@
                                 end: 14,
                             },
                             kind: Integer,
-                            token: Token {
+                            token: OwnedToken {
                                 kind: LiteralInteger,
                                 span: Span {
                                     start: 10,
                                     end: 14,
                                 },
-                                symbol: Some(
-                                    "0123",
-                                ),
+                                symbol: "0123",
                             },
                         },
                     ),
@@ -152,15 +148,13 @@
                                 end: 21,
                             },
                             kind: Integer,
-                            token: Token {
+                            token: OwnedToken {
                                 kind: LiteralInteger,
                                 span: Span {
                                     start: 16,
                                     end: 21,
                                 },
-                                symbol: Some(
-                                    "0o123",
-                                ),
+                                symbol: "0o123",
                             },
                         },
                     ),
@@ -209,15 +203,13 @@
                                 end: 27,
                             },
                             kind: Integer,
-                            token: Token {
+                            token: OwnedToken {
                                 kind: LiteralInteger,
                                 span: Span {
                                     start: 23,
                                     end: 27,
                                 },
-                                symbol: Some(
-                                    "0x1A",
-                                ),
+                                symbol: "0x1A",
                             },
                         },
                     ),
@@ -266,15 +258,13 @@
                                 end: 39,
                             },
                             kind: Integer,
-                            token: Token {
+                            token: OwnedToken {
                                 kind: LiteralInteger,
                                 span: Span {
                                     start: 29,
                                     end: 39,
                                 },
-                                symbol: Some(
-                                    "0b11111111",
-                                ),
+                                symbol: "0b11111111",
                             },
                         },
                     ),
@@ -323,15 +313,13 @@
                                 end: 50,
                             },
                             kind: Integer,
-                            token: Token {
+                            token: OwnedToken {
                                 kind: LiteralInteger,
                                 span: Span {
                                     start: 41,
                                     end: 50,
                                 },
-                                symbol: Some(
-                                    "1_234_567",
-                                ),
+                                symbol: "1_234_567",
                             },
                         },
                     ),

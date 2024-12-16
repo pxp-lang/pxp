@@ -37,15 +37,13 @@
                                 start: 7,
                                 end: 11,
                             },
-                            value: Token {
+                            value: OwnedToken {
                                 kind: True,
                                 span: Span {
                                     start: 7,
                                     end: 11,
                                 },
-                                symbol: Some(
-                                    "true",
-                                ),
+                                symbol: "true",
                             },
                         },
                     ),
@@ -93,15 +91,13 @@
                                 start: 13,
                                 end: 18,
                             },
-                            value: Token {
+                            value: OwnedToken {
                                 kind: False,
                                 span: Span {
                                     start: 13,
                                     end: 18,
                                 },
-                                symbol: Some(
-                                    "false",
-                                ),
+                                symbol: "false",
                             },
                         },
                     ),

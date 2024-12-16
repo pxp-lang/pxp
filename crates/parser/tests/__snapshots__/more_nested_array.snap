@@ -82,15 +82,13 @@
                                                                                         end: 15,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 14,
                                                                                             end: 15,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "1",
-                                                                                        ),
+                                                                                        symbol: "1",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -122,15 +120,13 @@
                                                                                         end: 18,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 17,
                                                                                             end: 18,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "2",
-                                                                                        ),
+                                                                                        symbol: "2",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -162,15 +158,13 @@
                                                                                         end: 21,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 20,
                                                                                             end: 21,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "3",
-                                                                                        ),
+                                                                                        symbol: "3",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -202,15 +196,13 @@
                                                                                         end: 24,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 23,
                                                                                             end: 24,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "4",
-                                                                                        ),
+                                                                                        symbol: "4",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -242,15 +234,13 @@
                                                                                         end: 27,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 26,
                                                                                             end: 27,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "5",
-                                                                                        ),
+                                                                                        symbol: "5",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -341,15 +331,13 @@
                                                                                         end: 36,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 35,
                                                                                             end: 36,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "1",
-                                                                                        ),
+                                                                                        symbol: "1",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -381,15 +369,13 @@
                                                                                         end: 39,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 38,
                                                                                             end: 39,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "2",
-                                                                                        ),
+                                                                                        symbol: "2",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -421,15 +407,13 @@
                                                                                         end: 42,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 41,
                                                                                             end: 42,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "3",
-                                                                                        ),
+                                                                                        symbol: "3",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -461,15 +445,13 @@
                                                                                         end: 45,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 44,
                                                                                             end: 45,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "4",
-                                                                                        ),
+                                                                                        symbol: "4",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -501,15 +483,13 @@
                                                                                         end: 48,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 47,
                                                                                             end: 48,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "5",
-                                                                                        ),
+                                                                                        symbol: "5",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -600,15 +580,13 @@
                                                                                         end: 57,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 56,
                                                                                             end: 57,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "1",
-                                                                                        ),
+                                                                                        symbol: "1",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -640,15 +618,13 @@
                                                                                         end: 60,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 59,
                                                                                             end: 60,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "2",
-                                                                                        ),
+                                                                                        symbol: "2",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -680,15 +656,13 @@
                                                                                         end: 63,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 62,
                                                                                             end: 63,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "3",
-                                                                                        ),
+                                                                                        symbol: "3",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -720,15 +694,13 @@
                                                                                         end: 66,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 65,
                                                                                             end: 66,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "4",
-                                                                                        ),
+                                                                                        symbol: "4",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -760,15 +732,13 @@
                                                                                         end: 69,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 68,
                                                                                             end: 69,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "5",
-                                                                                        ),
+                                                                                        symbol: "5",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -859,15 +829,13 @@
                                                                                         end: 78,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 77,
                                                                                             end: 78,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "1",
-                                                                                        ),
+                                                                                        symbol: "1",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -899,15 +867,13 @@
                                                                                         end: 81,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 80,
                                                                                             end: 81,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "2",
-                                                                                        ),
+                                                                                        symbol: "2",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -939,15 +905,13 @@
                                                                                         end: 84,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 83,
                                                                                             end: 84,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "3",
-                                                                                        ),
+                                                                                        symbol: "3",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -979,15 +943,13 @@
                                                                                         end: 87,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 86,
                                                                                             end: 87,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "4",
-                                                                                        ),
+                                                                                        symbol: "4",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -1019,15 +981,13 @@
                                                                                         end: 90,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 89,
                                                                                             end: 90,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "5",
-                                                                                        ),
+                                                                                        symbol: "5",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -1118,15 +1078,13 @@
                                                                                         end: 99,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 98,
                                                                                             end: 99,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "1",
-                                                                                        ),
+                                                                                        symbol: "1",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -1158,15 +1116,13 @@
                                                                                         end: 102,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 101,
                                                                                             end: 102,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "2",
-                                                                                        ),
+                                                                                        symbol: "2",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -1198,15 +1154,13 @@
                                                                                         end: 105,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 104,
                                                                                             end: 105,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "3",
-                                                                                        ),
+                                                                                        symbol: "3",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -1238,15 +1192,13 @@
                                                                                         end: 108,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 107,
                                                                                             end: 108,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "4",
-                                                                                        ),
+                                                                                        symbol: "4",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -1278,15 +1230,13 @@
                                                                                         end: 111,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 110,
                                                                                             end: 111,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "5",
-                                                                                        ),
+                                                                                        symbol: "5",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -1377,15 +1327,13 @@
                                                                                         end: 120,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 119,
                                                                                             end: 120,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "1",
-                                                                                        ),
+                                                                                        symbol: "1",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -1417,15 +1365,13 @@
                                                                                         end: 123,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 122,
                                                                                             end: 123,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "2",
-                                                                                        ),
+                                                                                        symbol: "2",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -1457,15 +1403,13 @@
                                                                                         end: 126,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 125,
                                                                                             end: 126,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "3",
-                                                                                        ),
+                                                                                        symbol: "3",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -1497,15 +1441,13 @@
                                                                                         end: 129,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 128,
                                                                                             end: 129,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "4",
-                                                                                        ),
+                                                                                        symbol: "4",
                                                                                     },
                                                                                 },
                                                                             ),
@@ -1537,15 +1479,13 @@
                                                                                         end: 132,
                                                                                     },
                                                                                     kind: Integer,
-                                                                                    token: Token {
+                                                                                    token: OwnedToken {
                                                                                         kind: LiteralInteger,
                                                                                         span: Span {
                                                                                             start: 131,
                                                                                             end: 132,
                                                                                         },
-                                                                                        symbol: Some(
-                                                                                            "5",
-                                                                                        ),
+                                                                                        symbol: "5",
                                                                                     },
                                                                                 },
                                                                             ),

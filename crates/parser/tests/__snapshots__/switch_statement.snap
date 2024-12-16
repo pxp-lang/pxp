@@ -82,15 +82,13 @@
                                             end: 33,
                                         },
                                         kind: String,
-                                        token: Token {
+                                        token: OwnedToken {
                                             kind: LiteralSingleQuotedString,
                                             span: Span {
                                                 start: 30,
                                                 end: 33,
                                             },
-                                            symbol: Some(
-                                                "'a'",
-                                            ),
+                                            symbol: "'a'",
                                         },
                                     },
                                 ),
@@ -155,15 +153,13 @@
                                             end: 62,
                                         },
                                         kind: String,
-                                        token: Token {
+                                        token: OwnedToken {
                                             kind: LiteralSingleQuotedString,
                                             span: Span {
                                                 start: 59,
                                                 end: 62,
                                             },
-                                            symbol: Some(
-                                                "'b'",
-                                            ),
+                                            symbol: "'b'",
                                         },
                                     },
                                 ),
@@ -196,15 +192,13 @@
                                             end: 76,
                                         },
                                         kind: String,
-                                        token: Token {
+                                        token: OwnedToken {
                                             kind: LiteralSingleQuotedString,
                                             span: Span {
                                                 start: 73,
                                                 end: 76,
                                             },
-                                            symbol: Some(
-                                                "'c'",
-                                            ),
+                                            symbol: "'c'",
                                         },
                                     },
                                 ),

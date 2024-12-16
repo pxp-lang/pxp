@@ -37,25 +37,21 @@
                                 start: 7,
                                 end: 50,
                             },
-                            label: Token {
+                            label: OwnedToken {
                                 kind: StartNowdoc,
                                 span: Span {
                                     start: 7,
                                     end: 16,
                                 },
-                                symbol: Some(
-                                    "<<<'TXT'\n",
-                                ),
+                                symbol: "<<<'TXT'\n",
                             },
-                            value: Token {
+                            value: OwnedToken {
                                 kind: StringPart,
                                 span: Span {
                                     start: 16,
-                                    end: 46,
+                                    end: 47,
                                 },
-                                symbol: Some(
-                                    "Hello, world!\nHello, {$world}!",
-                                ),
+                                symbol: "Hello, world!\nHello, {$world}!\n",
                             },
                         },
                     ),

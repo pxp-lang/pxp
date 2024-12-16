@@ -113,20 +113,20 @@
                     id: 2,
                     span: Span {
                         start: 7,
-                        end: 92,
+                        end: 94,
                     },
                     kind: DocBlock(
                         DocBlockComment {
                             id: 6,
                             span: Span {
                                 start: 7,
-                                end: 92,
+                                end: 94,
                             },
                             doc: DocBlock {
                                 id: 7,
                                 span: Span {
                                     start: 7,
-                                    end: 92,
+                                    end: 94,
                                 },
                                 nodes: [
                                     Text(

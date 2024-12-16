@@ -3,8 +3,8 @@ test:
     cargo test --lib --bins --tests --features docblocks
 
 tokenise +args:
-    RUSTFLAGS=-Awarnings cargo build -q --package pxp-internal --bin tokenise --release
-    ./target/release/tokenise {{args}}
+    RUSTFLAGS=-Awarnings cargo build -q --package pxp-internal --bin tokenise
+    ./target/debug/tokenise {{args}}
 
 bench-tokenise +args:
     RUSTFLAGS=-Awarnings cargo build -q --package pxp-internal --bin tokenise --release
@@ -12,7 +12,8 @@ bench-tokenise +args:
         --command-name="PXP (Release)" "./target/release/tokenise {{args}}"
 
 parse +args:
-    RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin parse -- {{args}}
+    RUSTFLAGS=-Awarnings cargo build -q --package pxp-internal --bin parse
+    ./target/debug/parse {{args}}
 
 node-finder +args:
     RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin node-finder -- {{args}}

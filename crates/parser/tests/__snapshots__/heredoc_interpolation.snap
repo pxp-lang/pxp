@@ -390,15 +390,13 @@
                                                                         end: 110,
                                                                     },
                                                                     kind: Integer,
-                                                                    token: Token {
+                                                                    token: OwnedToken {
                                                                         kind: LiteralInteger,
                                                                         span: Span {
                                                                             start: 109,
                                                                             end: 110,
                                                                         },
-                                                                        symbol: Some(
-                                                                            "0",
-                                                                        ),
+                                                                        symbol: "0",
                                                                     },
                                                                 },
                                                             ),
@@ -434,9 +432,9 @@
                                         id: 40,
                                         span: Span {
                                             start: 112,
-                                            end: 113,
+                                            end: 114,
                                         },
-                                        value: ".",
+                                        value: ".\n",
                                     },
                                 ),
                             ],

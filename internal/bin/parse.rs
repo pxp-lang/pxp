@@ -1,7 +1,8 @@
 use std::{env::args, path::Path, process::exit};
 
 use discoverer::discover;
-use pxp_parser::parse;
+use pxp_lexer::Lexer;
+use pxp_parser::Parser;
 
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
@@ -18,8 +19,6 @@ fn main() {
         // let mut errors = Vec::new();
         let files = discover(&["php"], &[path.to_str().unwrap()]).unwrap();
         let print_filenames = args.contains(&"--print-filenames".to_string());
-        let stop_on_errors = args.contains(&"--stop-on-errors".to_string());
-        let no_output = args.contains(&"--no-output".to_string());
         let mut count = 0;
 
         for file in files.iter() {
@@ -37,19 +36,13 @@ fn main() {
             }
 
             let contents = std::fs::read(file).unwrap();
-            let ast = parse(&contents);
+            let ast = Parser::parse(Lexer::new(&contents));
 
-            if !ast.diagnostics.is_empty() && stop_on_errors {
-                ast.diagnostics.iter().for_each(|error| {
-                    println!("{:?}", error);
-                });
-
-                break;
-            }
-
-            if !no_output {
-                print!(".");
-            }
+            // if !ast.diagnostics.is_empty() {
+            //     ast.diagnostics.iter().for_each(|error| {
+            //         println!("{:?}", error);
+            //     });
+            // }
 
             count += 1;
         }
@@ -70,7 +63,7 @@ fn main() {
         // }
     } else {
         let contents = std::fs::read(path).unwrap();
-        let result = parse(&contents);
+        let result = Parser::parse(Lexer::new(&contents));
 
         if args.contains(&"--debug".to_string()) {
             dbg!(result.ast);

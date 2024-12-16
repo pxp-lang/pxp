@@ -20,7 +20,7 @@
         },
     },
     Statement {
-        id: 8,
+        id: 7,
         kind: Namespace(
             Unbraced(
                 UnbracedNamespace {
@@ -33,19 +33,9 @@
                         start: 7,
                         end: 16,
                     },
-                    name: Name {
-                        id: 7,
-                        kind: Resolved(
-                            ResolvedName {
-                                id: 7,
-                                span: Span {
-                                    start: 17,
-                                    end: 20,
-                                },
-                                resolved: "Foo",
-                                original: "Foo",
-                            },
-                        ),
+                    name: SimpleIdentifier {
+                        id: 5,
+                        symbol: "Foo",
                         span: Span {
                             start: 17,
                             end: 20,
@@ -61,7 +51,7 @@
         ),
         span: Span {
             start: 7,
-            end: 21,
+            end: 0,
         },
         comments: CommentGroup {
             id: 4,

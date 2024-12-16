@@ -77,15 +77,13 @@
                                                 end: 22,
                                             },
                                             kind: String,
-                                            token: Token {
+                                            token: OwnedToken {
                                                 kind: LiteralSingleQuotedString,
                                                 span: Span {
                                                     start: 13,
                                                     end: 22,
                                                 },
-                                                symbol: Some(
-                                                    "'Example'",
-                                                ),
+                                                symbol: "'Example'",
                                             },
                                         },
                                     ),

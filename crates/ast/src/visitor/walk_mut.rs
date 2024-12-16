@@ -201,9 +201,7 @@ pub fn walk_use_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Use) {
     if let Some(item) = &mut node.alias {
         visitor.visit_simple_identifier(item);
     }
-    if let Some(item) = &mut node.kind {
-        visitor.visit_use_kind(item);
-    }
+    visitor.visit_use_kind(&mut node.kind);
 }
 
 pub fn walk_use_kind_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut UseKind) {
@@ -1117,10 +1115,7 @@ pub fn walk_backed_enum_type_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
     node: &mut BackedEnumType,
 ) {
-    match node {
-        BackedEnumType::Invalid => {}
-        _ => {}
-    }
+    if node == &BackedEnumType::Invalid {}
 }
 
 pub fn walk_return_type_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut ReturnType) {
@@ -1611,7 +1606,7 @@ pub fn walk_unbraced_namespace_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
     node: &mut UnbracedNamespace,
 ) {
-    visitor.visit_name(&mut node.name);
+    visitor.visit_simple_identifier(&mut node.name);
     for item in &mut node.statements {
         visitor.visit_statement(item);
     }
@@ -1622,7 +1617,7 @@ pub fn walk_braced_namespace_mut<V: VisitorMut + ?Sized>(
     node: &mut BracedNamespace,
 ) {
     if let Some(item) = &mut node.name {
-        visitor.visit_name(item);
+        visitor.visit_simple_identifier(item);
     }
     visitor.visit_braced_namespace_body(&mut node.body);
 }

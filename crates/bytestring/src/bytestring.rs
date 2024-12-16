@@ -30,6 +30,10 @@ impl ByteString {
         &self.0
     }
 
+    pub fn as_bytestr(&self) -> &ByteStr {
+        ByteStr::new(&self.0)
+    }
+
     pub fn coagulate(&self, others: &[ByteString], with: Option<&[u8]>) -> Self {
         let mut bytes = self.0.clone();
 
@@ -116,6 +120,12 @@ impl From<Vec<u8>> for ByteString {
 
 impl From<&[u8]> for ByteString {
     fn from(bytes: &[u8]) -> Self {
+        ByteString::new(bytes.to_vec())
+    }
+}
+
+impl From<&&[u8]> for ByteString {
+    fn from(bytes: &&[u8]) -> Self {
         ByteString::new(bytes.to_vec())
     }
 }

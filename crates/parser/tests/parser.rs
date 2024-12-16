@@ -1,8 +1,7 @@
-use std::path::PathBuf;
-
-use pxp_parser::parse;
-
+use pxp_lexer::Lexer;
+use pxp_parser::Parser;
 use snappers::{snap, Snapper};
+use std::path::PathBuf;
 
 // Tags
 snap!(snapper, empty_file, process("fixtures/tags/empty-file.php"));
@@ -978,7 +977,7 @@ pub fn process(string_or_file: &str) -> String {
         string_or_file.as_bytes().to_vec()
     };
 
-    let result = parse(&input);
+    let result = Parser::parse(Lexer::new(&input));
     let mut output = format!("{:#?}\n---\n", result.ast);
 
     if !result.diagnostics.is_empty() {

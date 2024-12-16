@@ -6,218 +6,205 @@ use pxp_bytestring::ByteString;
 use pxp_span::{Span, Spanned};
 use pxp_token::TokenKind;
 
-use crate::state::State;
+use crate::Parser;
 
-use super::{
-    data_type::optional_data_type,
-    variables::{optional_simple_variable, simple_variable},
-};
-
-pub fn docblock(state: &mut State) -> DocBlockComment {
-    let current = state.current();
-
-    if !matches!(current.kind, TokenKind::OpenPhpDoc) {
-        unreachable!();
-    }
-
-    state.enter_docblock();
-    state.next();
-    skip_horizontal_whitespace(state);
-
-    let mut nodes = Vec::new();
-
-    loop {
-        if state.is_eof() {
-            break;
+impl<'a> Parser<'a> {
+    pub fn parse_docblock(&mut self) -> DocBlockComment {
+        if self.current_kind() != TokenKind::OpenPhpDoc {
+            unreachable!();
         }
 
-        let current = state.current();
+        self.state.enter_docblock();
 
-        if current.kind == TokenKind::ClosePhpDoc {
-            state.next();
-            break;
-        }
+        let start = self.next();
+        
+        self.skip_horizontal_whitespace();
 
-        match &current.kind {
-            TokenKind::PhpDocEol => {
-                state.next();
-            }
-            TokenKind::PhpDocTag => {
-                let tag = docblock_tag(state);
+        let mut nodes = Vec::new();
 
-                nodes.push(DocBlockNode::Tag(tag))
-            }
-            _ => {
-                if let Some(text) = docblock_text(state) {
-                    nodes.push(DocBlockNode::Text(text))
+        while ! self.is_eof() && self.current_kind() != TokenKind::ClosePhpDoc {
+            match self.current_kind() {
+                TokenKind::PhpDocEol => {
+                    self.next();
                 }
-            }
-        };
-    }
+                TokenKind::PhpDocTag => {
+                    let tag = self.parse_docblock_tag();
 
-    let span = Span::combine(current.span, nodes.span());
-
-    state.exit_docblock();
-
-    DocBlockComment {
-        id: state.id(),
-        span,
-        doc: DocBlock {
-            id: state.id(),
-            span,
-            nodes,
-        },
-    }
-}
-
-fn docblock_tag(state: &mut State) -> DocBlockTagNode {
-    let tag = state.current();
-    let symbol = tag.symbol.as_ref().unwrap();
-
-    let tag = match symbol.as_bytes() {
-        b"@param" => param_tag(state),
-        b"@var" => var_tag(state),
-        _ => generic_tag(state),
-    };
-
-    DocBlockTagNode {
-        id: state.id(),
-        span: tag.span(),
-        tag,
-    }
-}
-
-fn param_tag(state: &mut State) -> DocBlockTag {
-    let tag = state.current();
-
-    state.next();
-    skip_horizontal_whitespace(state);
-
-    let data_type = optional_data_type(state);
-
-    skip_horizontal_whitespace(state);
-
-    let variable = optional_simple_variable(state);
-
-    skip_horizontal_whitespace(state);
-
-    let (text, _) = read_text_until_eol_or_close(state);
-
-    let previous = state.previous();
-    let span = Span::combine(tag.span, previous.span);
-
-    DocBlockTag::Param(DocBlockParamTag {
-        id: state.id(),
-        span,
-        tag: tag.clone(),
-        ampersand: None,
-        ellipsis: None,
-        data_type,
-        variable,
-        text,
-    })
-}
-
-fn var_tag(state: &mut State) -> DocBlockTag {
-    let tag = state.current();
-
-    state.next();
-    skip_horizontal_whitespace(state);
-
-    let data_type = optional_data_type(state);
-
-    skip_horizontal_whitespace(state);
-
-    let variable = optional_simple_variable(state);
-
-    skip_horizontal_whitespace(state);
-
-    let (text, _) = read_text_until_eol_or_close(state);
-
-    let previous = state.previous();
-    let span = Span::combine(tag.span, previous.span);
-
-    DocBlockTag::Var(DocBlockVarTag {
-        id: state.id(),
-        span,
-        tag: tag.clone(),
-        data_type,
-        variable,
-        text,
-    })
-}
-
-fn generic_tag(state: &mut State) -> DocBlockTag {
-    let tag = state.current();
-
-    state.next();
-
-    skip_horizontal_whitespace(state);
-
-    let (text, text_span) = read_text_until_eol_or_close(state);
-
-    let span = if let Some(text_span) = text_span {
-        Span::combine(tag.span, text_span)
-    } else {
-        tag.span
-    };
-
-    DocBlockTag::Generic(DocBlockGenericTag {
-        id: state.id(),
-        span,
-        tag: tag.clone(),
-        text,
-    })
-}
-
-fn docblock_text(state: &mut State) -> Option<DocBlockTextNode> {
-    let (content, span) = read_text_until_eol_or_close(state);
-
-    content.as_ref()?;
-
-    Some(DocBlockTextNode {
-        id: state.id(),
-        span: span.unwrap(),
-        content: content.unwrap(),
-    })
-}
-
-fn read_text_until_eol_or_close(state: &mut State) -> (Option<ByteString>, Option<Span>) {
-    let mut text = ByteString::empty();
-    let start_span = state.current().span;
-
-    loop {
-        let current = state.current();
-
-        if matches!(current.kind, TokenKind::PhpDocEol | TokenKind::ClosePhpDoc) {
-            break;
+                    nodes.push(DocBlockNode::Tag(tag))
+                }
+                _ => {
+                    if let Some(text) = self.parse_docblock_text() {
+                        nodes.push(DocBlockNode::Text(text))
+                    }
+                }
+            };
         }
 
-        let bytes = match &current.symbol {
-            Some(symbol) => symbol.clone(),
-            None => {
-                let string = current.kind.to_string();
-                ByteString::new(string.as_bytes().to_vec())
-            }
+        let close_phpdoc = self.skip(TokenKind::ClosePhpDoc);
+        let span = start.join(close_phpdoc);
+
+        self.state.exit_docblock();
+
+        DocBlockComment {
+            id: self.state.id(),
+            span,
+            doc: DocBlock {
+                id: self.state.id(),
+                span,
+                nodes,
+            },
+        }
+    }
+
+    fn parse_docblock_tag(&mut self) -> DocBlockTagNode {
+        let tag = match self.current_symbol().as_ref() {
+            b"@param" => self.param_tag(),
+            b"@var" => self.var_tag(),
+            _ => self.generic_tag(),
         };
 
-        text.extend_with_bytes(&bytes);
-
-        state.next();
+        DocBlockTagNode {
+            id: self.state.id(),
+            span: tag.span(),
+            tag,
+        }
     }
 
-    if text.is_empty() {
-        return (None, None);
+    fn param_tag(&mut self) -> DocBlockTag {
+        let tag = self.current().to_owned();
+
+        self.next();
+        self.skip_horizontal_whitespace();
+
+        let data_type = self.parse_optional_data_type();
+
+        self.skip_horizontal_whitespace();
+
+        let variable = self.parse_optional_simple_variable();
+
+        self.skip_horizontal_whitespace();
+
+        let (text, text_span) = self.read_text_until_eol_or_close();
+
+        let span = if let Some(text_span) = text_span {
+            tag.span.join(text_span)
+        } else if variable.is_some() {
+            tag.span.join(variable.span())
+        } else if data_type.is_some() {
+            tag.span.join(data_type.span())
+        } else {
+            tag.span
+        };
+
+        DocBlockTag::Param(DocBlockParamTag {
+            id: self.state.id(),
+            span,
+            tag,
+            ampersand: None,
+            ellipsis: None,
+            data_type,
+            variable,
+            text,
+        })
     }
 
-    let end_span = state.current().span;
-    let span = Span::combine(start_span, end_span);
+    fn var_tag(&mut self) -> DocBlockTag {
+        let tag = self.current().to_owned();
 
-    (Some(text), Some(span))
-}
+        self.next();
+        self.skip_horizontal_whitespace();
 
-fn skip_horizontal_whitespace(state: &mut State) {
-    while let TokenKind::PhpDocHorizontalWhitespace = state.current().kind {
-        state.next();
+        let data_type = self.parse_optional_data_type();
+
+        self.skip_horizontal_whitespace();
+
+        let variable = self.parse_optional_simple_variable();
+
+        self.skip_horizontal_whitespace();
+
+        let (text, text_span) = self.read_text_until_eol_or_close();
+
+        let span = if let Some(text_span) = text_span {
+            tag.span.join(text_span)
+        } else if variable.is_some() {
+            tag.span.join(variable.span())
+        } else if data_type.is_some() {
+            tag.span.join(data_type.span())
+        } else {
+            tag.span
+        };
+
+        DocBlockTag::Var(DocBlockVarTag {
+            id: self.state.id(),
+            span,
+            tag,
+            data_type,
+            variable,
+            text,
+        })
+    }
+
+    fn generic_tag(&mut self) -> DocBlockTag {
+        let tag = self.current().to_owned();
+
+        self.next();
+        self.skip_horizontal_whitespace();
+
+        let (text, text_span) = self.read_text_until_eol_or_close();
+
+        let span = if let Some(text_span) = text_span {
+            Span::combine(tag.span, text_span)
+        } else {
+            tag.span
+        };
+
+        DocBlockTag::Generic(DocBlockGenericTag {
+            id: self.state.id(),
+            span,
+            tag: tag.clone(),
+            text,
+        })
+    }
+
+    fn parse_docblock_text(&mut self) -> Option<DocBlockTextNode> {
+        let (content, span) = self.read_text_until_eol_or_close();
+
+        content.as_ref()?;
+
+        Some(DocBlockTextNode {
+            id: self.state.id(),
+            span: span.unwrap(),
+            content: content.unwrap(),
+        })
+    }
+
+    fn read_text_until_eol_or_close(&mut self) -> (Option<ByteString>, Option<Span>) {
+        let mut text = ByteString::empty();
+        let start_span = self.current_span();
+
+        loop {
+            if matches!(self.current_kind(), TokenKind::PhpDocEol | TokenKind::ClosePhpDoc) {
+                break;
+            }
+
+            text.extend_with_bytes(&self.current_symbol());
+
+            self.next();
+        }
+
+        if text.is_empty() {
+            return (None, None);
+        }
+
+        let end_span = self.current_span();
+        let span = Span::combine(start_span, end_span);
+
+        (Some(text), Some(span))
+    }
+
+    fn skip_horizontal_whitespace(&mut self) {
+        while let TokenKind::PhpDocHorizontalWhitespace = self.current_kind() {
+            self.next();
+        }
     }
 }

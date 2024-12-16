@@ -26,7 +26,7 @@
                 id: 8,
                 span: Span {
                     start: 7,
-                    end: 28,
+                    end: 27,
                 },
                 echo: Span {
                     start: 7,
@@ -43,15 +43,13 @@
                                     end: 25,
                                 },
                                 kind: String,
-                                token: Token {
+                                token: OwnedToken {
                                     kind: LiteralDoubleQuotedString,
                                     span: Span {
                                         start: 13,
                                         end: 25,
                                     },
-                                    symbol: Some(
-                                        "Hello, world",
-                                    ),
+                                    symbol: "Hello, world",
                                 },
                             },
                         ),
@@ -87,15 +85,15 @@
                 ],
                 ending: Missing(
                     Span {
-                        start: 28,
-                        end: 28,
+                        start: 27,
+                        end: 27,
                     },
                 ),
             },
         ),
         span: Span {
             start: 7,
-            end: 28,
+            end: 27,
         },
         comments: CommentGroup {
             id: 4,
@@ -107,13 +105,13 @@
 [
     Diagnostic {
         kind: UnexpectedToken {
-            token: Token {
+            token: OwnedToken {
                 kind: SemiColon,
                 span: Span {
                     start: 27,
                     end: 28,
                 },
-                symbol: None,
+                symbol: ";",
             },
         },
         severity: Error,
@@ -126,8 +124,8 @@
         kind: UnexpectedEndOfFile,
         severity: Error,
         span: Span {
-            start: 28,
-            end: 28,
+            start: 27,
+            end: 27,
         },
     },
 ]

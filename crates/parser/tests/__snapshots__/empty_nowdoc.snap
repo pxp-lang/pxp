@@ -37,25 +37,21 @@
                                 start: 7,
                                 end: 20,
                             },
-                            label: Token {
+                            label: OwnedToken {
                                 kind: StartNowdoc,
                                 span: Span {
                                     start: 7,
                                     end: 16,
                                 },
-                                symbol: Some(
-                                    "<<<'TXT'\n",
-                                ),
+                                symbol: "<<<'TXT'\n",
                             },
-                            value: Token {
+                            value: OwnedToken {
                                 kind: StringPart,
                                 span: Span {
                                     start: 16,
-                                    end: 16,
+                                    end: 17,
                                 },
-                                symbol: Some(
-                                    "",
-                                ),
+                                symbol: "\n",
                             },
                         },
                     ),

@@ -75,7 +75,7 @@
                             FunctionParameter {
                                 id: 10,
                                 span: Span {
-                                    start: 20,
+                                    start: 0,
                                     end: 29,
                                 },
                                 comments: CommentGroup {
@@ -97,8 +97,8 @@
                                         id: 8,
                                         kind: String,
                                         span: Span {
-                                            start: 20,
-                                            end: 26,
+                                            start: 0,
+                                            end: 0,
                                         },
                                     },
                                 ),
@@ -109,7 +109,7 @@
                             FunctionParameter {
                                 id: 14,
                                 span: Span {
-                                    start: 31,
+                                    start: 0,
                                     end: 41,
                                 },
                                 comments: CommentGroup {
@@ -133,8 +133,8 @@
                                             String,
                                         ),
                                         span: Span {
-                                            start: 31,
-                                            end: 38,
+                                            start: 0,
+                                            end: 0,
                                         },
                                     },
                                 ),
@@ -145,7 +145,7 @@
                             FunctionParameter {
                                 id: 19,
                                 span: Span {
-                                    start: 43,
+                                    start: 0,
                                     end: 56,
                                 },
                                 comments: CommentGroup {
@@ -191,8 +191,8 @@
                                             ],
                                         ),
                                         span: Span {
-                                            start: 43,
-                                            end: 53,
+                                            start: 0,
+                                            end: 0,
                                         },
                                     },
                                 ),
@@ -203,7 +203,7 @@
                             FunctionParameter {
                                 id: 25,
                                 span: Span {
-                                    start: 58,
+                                    start: 0,
                                     end: 68,
                                 },
                                 comments: CommentGroup {
@@ -268,8 +268,8 @@
                                             ],
                                         ),
                                         span: Span {
-                                            start: 58,
-                                            end: 65,
+                                            start: 0,
+                                            end: 0,
                                         },
                                     },
                                 ),
@@ -280,7 +280,7 @@
                             FunctionParameter {
                                 id: 32,
                                 span: Span {
-                                    start: 70,
+                                    start: 0,
                                     end: 86,
                                 },
                                 comments: CommentGroup {
@@ -369,8 +369,8 @@
                                             ],
                                         ),
                                         span: Span {
-                                            start: 70,
-                                            end: 83,
+                                            start: 0,
+                                            end: 0,
                                         },
                                     },
                                 ),

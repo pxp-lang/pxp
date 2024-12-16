@@ -44,9 +44,9 @@
                                         id: 5,
                                         span: Span {
                                             start: 14,
-                                            end: 54,
+                                            end: 55,
                                         },
-                                        value: "Hello, world!\n\nThis is a heredoc string.",
+                                        value: "Hello, world!\n\nThis is a heredoc string.\n",
                                     },
                                 ),
                             ],

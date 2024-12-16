@@ -2,7 +2,8 @@ use std::{env::args, path::Path, process::exit};
 
 use discoverer::discover;
 use pxp_ast::visitor::NodeVisitor;
-use pxp_parser::parse;
+use pxp_lexer::Lexer;
+use pxp_parser::Parser;
 
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
@@ -36,7 +37,7 @@ fn main() {
             }
 
             let contents = std::fs::read(file).unwrap();
-            let ast = parse(&contents);
+            let ast = Parser::parse(Lexer::new(&contents));
 
             if !ast.diagnostics.is_empty() && stop_on_errors {
                 ast.diagnostics.iter().for_each(|error| {

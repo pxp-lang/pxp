@@ -63,7 +63,7 @@
                             },
                         },
                         alias: None,
-                        kind: None,
+                        kind: Normal,
                     },
                     Use {
                         id: 10,
@@ -90,13 +90,13 @@
                             },
                         },
                         alias: None,
-                        kind: None,
+                        kind: Normal,
                     },
                 ],
             },
         ),
         span: Span {
-            start: 7,
+            start: 11,
             end: 36,
         },
         comments: CommentGroup {

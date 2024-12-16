@@ -13,7 +13,6 @@ pub enum SyntaxError {
     InvalidOctalEscape(Span),
     InvalidOctalLiteral(Span),
     InvalidUnicodeEscape(Span),
-    UnpredictableState(Span),
     InvalidDocIndentation(Span),
     InvalidDocBodyIndentationLevel(usize, Span),
     UnrecognisedToken(u8, Span),
@@ -29,7 +28,6 @@ impl SyntaxError {
             Self::InvalidOctalEscape(span) => *span,
             Self::InvalidOctalLiteral(span) => *span,
             Self::InvalidUnicodeEscape(span) => *span,
-            Self::UnpredictableState(span) => *span,
             Self::InvalidDocIndentation(span) => *span,
             Self::InvalidDocBodyIndentationLevel(_, span) => *span,
             Self::UnrecognisedToken(_, span) => *span,
@@ -68,10 +66,6 @@ impl Display for SyntaxError {
             Self::InvalidUnicodeEscape(_) => write!(
                 f,
                 "Syntax Error: invalid unicode escape",
-            ),
-            Self::UnpredictableState(_) => write!(
-                f,
-                "Syntax Error: Reached an unpredictable state",
             ),
             Self::InvalidDocIndentation(_) => write!(
                 f,

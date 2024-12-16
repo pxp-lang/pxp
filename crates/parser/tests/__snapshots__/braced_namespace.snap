@@ -20,7 +20,7 @@
         },
     },
     Statement {
-        id: 9,
+        id: 8,
         kind: Namespace(
             Braced(
                 BracedNamespace {
@@ -34,19 +34,9 @@
                         end: 16,
                     },
                     name: Some(
-                        Name {
-                            id: 8,
-                            kind: Resolved(
-                                ResolvedName {
-                                    id: 8,
-                                    span: Span {
-                                        start: 17,
-                                        end: 20,
-                                    },
-                                    resolved: "Foo",
-                                    original: "Foo",
-                                },
-                            ),
+                        SimpleIdentifier {
+                            id: 5,
+                            symbol: "Foo",
                             span: Span {
                                 start: 17,
                                 end: 20,

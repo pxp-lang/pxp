@@ -26,7 +26,7 @@
                 id: 6,
                 span: Span {
                     start: 7,
-                    end: 12,
+                    end: 11,
                 },
                 echo: Span {
                     start: 7,
@@ -56,15 +56,15 @@
                 ],
                 ending: Missing(
                     Span {
-                        start: 12,
-                        end: 12,
+                        start: 11,
+                        end: 11,
                     },
                 ),
             },
         ),
         span: Span {
             start: 7,
-            end: 12,
+            end: 11,
         },
         comments: CommentGroup {
             id: 4,
@@ -76,13 +76,13 @@
 [
     Diagnostic {
         kind: UnexpectedToken {
-            token: Token {
+            token: OwnedToken {
                 kind: SemiColon,
                 span: Span {
                     start: 11,
                     end: 12,
                 },
-                symbol: None,
+                symbol: ";",
             },
         },
         severity: Error,
@@ -95,8 +95,8 @@
         kind: UnexpectedEndOfFile,
         severity: Error,
         span: Span {
-            start: 12,
-            end: 12,
+            start: 11,
+            end: 11,
         },
     },
 ]

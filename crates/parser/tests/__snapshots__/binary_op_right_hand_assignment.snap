@@ -48,15 +48,13 @@
                                                 start: 7,
                                                 end: 11,
                                             },
-                                            value: Token {
+                                            value: OwnedToken {
                                                 kind: True,
                                                 span: Span {
                                                     start: 7,
                                                     end: 11,
                                                 },
-                                                symbol: Some(
-                                                    "true",
-                                                ),
+                                                symbol: "true",
                                             },
                                         },
                                     ),
@@ -121,15 +119,13 @@
                                                                 start: 21,
                                                                 end: 25,
                                                             },
-                                                            value: Token {
+                                                            value: OwnedToken {
                                                                 kind: True,
                                                                 span: Span {
                                                                     start: 21,
                                                                     end: 25,
                                                                 },
-                                                                symbol: Some(
-                                                                    "true",
-                                                                ),
+                                                                symbol: "true",
                                                             },
                                                         },
                                                     ),

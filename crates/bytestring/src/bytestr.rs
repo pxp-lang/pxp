@@ -13,6 +13,52 @@ impl ByteStr {
     pub fn to_bytestring(&self) -> ByteString {
         ByteString::from(self)
     }
+
+    pub fn strip_prefix(&self, prefix: u8) -> &ByteStr {
+        let mut start = 0;
+        let mut end = self.0.len();
+
+        while start < end && self.0[start] == prefix {
+            start += 1;
+        }
+
+        while end > start && self.0[end - 1] == prefix {
+            end -= 1;
+        }
+
+        ByteStr::new(&self.0[start..end])
+    }
+
+    pub fn before_first(&self, needle: u8) -> &ByteStr {
+        let end = self
+            .0
+            .iter()
+            .position(|&b| b == needle)
+            .unwrap_or(self.0.len());
+
+        ByteStr::new(&self.0[..end])
+    }
+
+    pub fn after_last(&self, needle: u8) -> &ByteStr {
+        let start = self
+            .0
+            .iter()
+            .rposition(|&b| b == needle)
+            .map_or(0, |i| i + 1);
+
+        ByteStr::new(&self.0[start..])
+    }
+
+    pub fn coagulate(&self, others: &[&ByteStr], with: u8) -> ByteString {
+        let mut bytes = self.0.to_vec();
+
+        for other in others {
+            bytes.push(with);
+            bytes.extend_from_slice(&other.0);
+        }
+
+        ByteString::new(bytes)
+    }
 }
 
 impl std::fmt::Display for ByteStr {

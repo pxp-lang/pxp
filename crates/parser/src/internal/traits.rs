@@ -1,6 +1,4 @@
-use crate::internal::identifiers;
-use crate::internal::utils;
-use crate::state::State;
+use crate::Parser;
 use crate::ParserDiagnostic;
 use pxp_ast::StatementKind;
 use pxp_ast::TraitUsageAdaptation;
@@ -8,256 +6,256 @@ use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_span::Spanned;
-use pxp_token::Token;
 use pxp_token::TokenKind;
 
-use super::classes::member;
-use super::names;
+impl<'a> Parser<'a> {
+    pub fn parse_trait_usage(&mut self) -> TraitUsage {
+        let span = self.skip(TokenKind::Use);
 
-pub fn usage(state: &mut State) -> TraitUsage {
-    let span = utils::skip(state, TokenKind::Use);
+        let mut traits = Vec::new();
 
-    let mut traits = Vec::new();
+        while self.current_kind() != TokenKind::SemiColon
+            && self.current_kind() != TokenKind::LeftBrace
+        {
+            let t = self.parse_full_name(UseKind::Normal);
+            traits.push(t);
 
-    while state.current().kind != TokenKind::SemiColon
-        && state.current().kind != TokenKind::LeftBrace
-    {
-        let t = names::full_name(state, UseKind::Normal);
-        traits.push(t);
-
-        if state.current().kind == TokenKind::Comma {
-            if state.peek().kind == TokenKind::SemiColon {
-                // will fail with unexpected token `,`
-                // as `use` doesn't allow for trailing commas.
-                utils::skip_semicolon(state);
-            } else if state.peek().kind == TokenKind::LeftBrace {
-                // will fail with unexpected token `{`
-                // as `use` doesn't allow for trailing commas.
-                utils::skip_left_brace(state);
-            } else {
-                state.next();
-            }
-        } else {
-            break;
-        }
-    }
-
-    let mut adaptations = Vec::new();
-    if state.current().kind == TokenKind::LeftBrace {
-        utils::skip_left_brace(state);
-
-        while state.current().kind != TokenKind::RightBrace {
-            let (r#trait, method): (Option<Name>, SimpleIdentifier) = match state.peek().kind {
-                TokenKind::DoubleColon => {
-                    let r#trait = names::full_name_including_self(state);
-                    state.next();
-                    let method = identifiers::identifier(state);
-                    (Some(r#trait), method)
+            if self.current_kind() == TokenKind::Comma {
+                if self.peek_kind() == TokenKind::SemiColon {
+                    // will fail with unexpected token `,`
+                    // as `use` doesn't allow for trailing commas.
+                    self.skip_semicolon();
+                } else if self.peek_kind() == TokenKind::LeftBrace {
+                    // will fail with unexpected token `{`
+                    // as `use` doesn't allow for trailing commas.
+                    self.skip_left_brace();
+                } else {
+                    self.next();
                 }
-                _ => (None, identifiers::identifier(state)),
-            };
-
-            while !state.is_eof()
-                && !matches!(state.current().kind, TokenKind::As | TokenKind::Insteadof)
-            {
-                let token = state.current();
-                state.next();
-
-                state.diagnostic(
-                    ParserDiagnostic::ExpectedToken {
-                        expected: vec![TokenKind::As, TokenKind::Insteadof],
-                        found: token.clone(),
-                    },
-                    Severity::Error,
-                    token.span,
-                );
+            } else {
+                break;
             }
+        }
 
-            match state.current().kind {
-                TokenKind::As => {
-                    state.next();
+        let mut adaptations = Vec::new();
+        if self.current_kind() == TokenKind::LeftBrace {
+            self.skip_left_brace();
 
-                    match state.current() {
-                        Token {
-                            kind: TokenKind::Public | TokenKind::Protected | TokenKind::Private,
-                            span,
-                            ..
-                        } => {
-                            let visibility = match state.current().kind {
-                                TokenKind::Public => VisibilityModifier::Public(*span),
-                                TokenKind::Protected => VisibilityModifier::Protected(*span),
-                                TokenKind::Private => VisibilityModifier::Private(*span),
-                                _ => unreachable!(),
-                            };
+            while self.current_kind() != TokenKind::RightBrace {
+                let (r#trait, method): (Option<Name>, SimpleIdentifier) = match self.peek_kind() {
+                    TokenKind::DoubleColon => {
+                        let r#trait = self.parse_full_name_including_self();
+                        self.next();
+                        let method = self.parse_identifier();
+                        (Some(r#trait), method)
+                    }
+                    _ => (None, self.parse_identifier()),
+                };
 
-                            state.next();
+                while !self.is_eof()
+                    && !matches!(self.current_kind(), TokenKind::As | TokenKind::Insteadof)
+                {
+                    let token = self.current().to_owned();
+                    let span = token.span;
 
-                            if state.current().kind == TokenKind::SemiColon {
-                                let span = if r#trait.is_some() {
-                                    Span::combine(r#trait.span(), visibility.span())
-                                } else {
-                                    Span::combine(method.span, visibility.span())
+                    self.next();
+
+                    self.diagnostic(
+                        ParserDiagnostic::ExpectedToken {
+                            expected: vec![TokenKind::As, TokenKind::Insteadof],
+                            found: token,
+                        },
+                        Severity::Error,
+                        span,
+                    );
+                }
+
+                match self.current_kind() {
+                    TokenKind::As => {
+                        self.next();
+
+                        match self.current_kind() {
+                            TokenKind::Public | TokenKind::Protected | TokenKind::Private => {
+                                let span = self.current_span();
+
+                                let visibility = match self.current_kind() {
+                                    TokenKind::Public => VisibilityModifier::Public(span),
+                                    TokenKind::Protected => VisibilityModifier::Protected(span),
+                                    TokenKind::Private => VisibilityModifier::Private(span),
+                                    _ => unreachable!(),
                                 };
-                                adaptations.push(TraitUsageAdaptation {
-                                    id: state.id(),
-                                    span,
-                                    kind: TraitUsageAdaptationKind::Visibility(
-                                        TraitUsageAdaptationVisibility {
-                                            id: state.id(),
-                                            span,
-                                            r#trait,
-                                            method,
-                                            visibility,
-                                        },
-                                    ),
-                                });
-                            } else {
-                                let alias: SimpleIdentifier = identifiers::name(state);
-                                let span = if r#trait.is_some() {
-                                    Span::combine(r#trait.span(), visibility.span())
+
+                                self.next();
+
+                                if self.current_kind() == TokenKind::SemiColon {
+                                    let span = if r#trait.is_some() {
+                                        Span::combine(r#trait.span(), visibility.span())
+                                    } else {
+                                        Span::combine(method.span, visibility.span())
+                                    };
+                                    adaptations.push(TraitUsageAdaptation {
+                                        id: self.state.id(),
+                                        span,
+                                        kind: TraitUsageAdaptationKind::Visibility(
+                                            TraitUsageAdaptationVisibility {
+                                                id: self.state.id(),
+                                                span,
+                                                r#trait,
+                                                method,
+                                                visibility,
+                                            },
+                                        ),
+                                    });
                                 } else {
-                                    Span::combine(method.span, visibility.span())
+                                    let alias: SimpleIdentifier = self.parse_name_identifier();
+                                    let span = if r#trait.is_some() {
+                                        Span::combine(r#trait.span(), visibility.span())
+                                    } else {
+                                        Span::combine(method.span, visibility.span())
+                                    };
+
+                                    adaptations.push(TraitUsageAdaptation {
+                                        id: self.state.id(),
+                                        span,
+                                        kind: TraitUsageAdaptationKind::Alias(
+                                            TraitUsageAdaptationAlias {
+                                                id: self.state.id(),
+                                                span,
+                                                r#trait,
+                                                method,
+                                                alias,
+                                                visibility: Some(visibility),
+                                            },
+                                        ),
+                                    });
+                                }
+                            }
+                            _ => {
+                                let alias: SimpleIdentifier = self.parse_name_identifier();
+                                let span = if r#trait.is_some() {
+                                    Span::combine(r#trait.span(), alias.span())
+                                } else {
+                                    Span::combine(method.span, alias.span())
                                 };
 
                                 adaptations.push(TraitUsageAdaptation {
-                                    id: state.id(),
+                                    id: self.state.id(),
                                     span,
                                     kind: TraitUsageAdaptationKind::Alias(
                                         TraitUsageAdaptationAlias {
-                                            id: state.id(),
+                                            id: self.state.id(),
                                             span,
                                             r#trait,
                                             method,
                                             alias,
-                                            visibility: Some(visibility),
+                                            visibility: None,
                                         },
                                     ),
                                 });
                             }
                         }
-                        _ => {
-                            let alias: SimpleIdentifier = identifiers::name(state);
-                            let span = if r#trait.is_some() {
-                                Span::combine(r#trait.span(), alias.span())
-                            } else {
-                                Span::combine(method.span, alias.span())
-                            };
+                    }
+                    TokenKind::Insteadof => {
+                        self.next();
 
-                            adaptations.push(TraitUsageAdaptation {
-                                id: state.id(),
-                                span,
-                                kind: TraitUsageAdaptationKind::Alias(TraitUsageAdaptationAlias {
-                                    id: state.id(),
+                        let mut insteadof = vec![self.parse_full_type_name_identifier()];
+
+                        if self.current_kind() == TokenKind::Comma {
+                            if self.peek_kind() == TokenKind::SemiColon {
+                                // will fail with unexpected token `,`
+                                // as `insteadof` doesn't allow for trailing commas.
+                                self.skip_semicolon();
+                            }
+
+                            self.next();
+
+                            while self.current_kind() != TokenKind::SemiColon {
+                                insteadof.push(self.parse_full_type_name_identifier());
+
+                                if self.current_kind() == TokenKind::Comma {
+                                    if self.peek_kind() == TokenKind::SemiColon {
+                                        // will fail with unexpected token `,`
+                                        // as `insteadof` doesn't allow for trailing commas.
+                                        self.skip_semicolon();
+                                    } else {
+                                        self.next();
+                                    }
+                                } else {
+                                    break;
+                                }
+                            }
+                        }
+
+                        let span = if r#trait.is_some() {
+                            Span::combine(r#trait.span(), insteadof.span())
+                        } else {
+                            Span::combine(method.span, insteadof.span())
+                        };
+
+                        adaptations.push(TraitUsageAdaptation {
+                            id: self.state.id(),
+                            span,
+                            kind: TraitUsageAdaptationKind::Precedence(
+                                TraitUsageAdaptationPrecedence {
+                                    id: self.state.id(),
                                     span,
                                     r#trait,
                                     method,
-                                    alias,
-                                    visibility: None,
-                                }),
-                            });
-                        }
+                                    insteadof,
+                                },
+                            ),
+                        });
                     }
-                }
-                TokenKind::Insteadof => {
-                    state.next();
+                    _ => unreachable!("{:?}", self.current()),
+                };
 
-                    let mut insteadof = vec![identifiers::full_type_name(state)];
+                self.skip_semicolon();
+            }
 
-                    if state.current().kind == TokenKind::Comma {
-                        if state.peek().kind == TokenKind::SemiColon {
-                            // will fail with unexpected token `,`
-                            // as `insteadof` doesn't allow for trailing commas.
-                            utils::skip_semicolon(state);
-                        }
-
-                        state.next();
-
-                        while state.current().kind != TokenKind::SemiColon {
-                            insteadof.push(identifiers::full_type_name(state));
-
-                            if state.current().kind == TokenKind::Comma {
-                                if state.peek().kind == TokenKind::SemiColon {
-                                    // will fail with unexpected token `,`
-                                    // as `insteadof` doesn't allow for trailing commas.
-                                    utils::skip_semicolon(state);
-                                } else {
-                                    state.next();
-                                }
-                            } else {
-                                break;
-                            }
-                        }
-                    }
-
-                    let span = if r#trait.is_some() {
-                        Span::combine(r#trait.span(), insteadof.span())
-                    } else {
-                        Span::combine(method.span, insteadof.span())
-                    };
-
-                    adaptations.push(TraitUsageAdaptation {
-                        id: state.id(),
-                        span,
-                        kind: TraitUsageAdaptationKind::Precedence(
-                            TraitUsageAdaptationPrecedence {
-                                id: state.id(),
-                                span,
-                                r#trait,
-                                method,
-                                insteadof,
-                            },
-                        ),
-                    });
-                }
-                _ => unreachable!("{:?}", state.current()),
-            };
-
-            utils::skip_semicolon(state);
+            self.skip_right_brace();
+        } else {
+            self.skip_semicolon();
         }
 
-        utils::skip_right_brace(state);
-    } else {
-        utils::skip_semicolon(state);
-    }
-
-    TraitUsage {
-        id: state.id(),
-        span: Span::combine(span, adaptations.span()),
-        r#use: span,
-        traits,
-        adaptations,
-    }
-}
-
-pub fn parse(state: &mut State) -> StatementKind {
-    let span = utils::skip(state, TokenKind::Trait);
-    let name = names::type_name(state);
-    let attributes = state.get_attributes();
-
-    let left_brace = utils::skip_left_brace(state);
-    let members = {
-        let mut members = Vec::new();
-        while state.current().kind != TokenKind::RightBrace && !state.is_eof() {
-            members.push(member(state, true));
+        TraitUsage {
+            id: self.state.id(),
+            span: Span::combine(span, adaptations.span()),
+            r#use: span,
+            traits,
+            adaptations,
         }
-        members
-    };
-    let right_brace = utils::skip_right_brace(state);
+    }
 
-    let body = TraitBody {
-        id: state.id(),
-        span: Span::combine(left_brace, right_brace),
-        left_brace,
-        members,
-        right_brace,
-    };
+    pub fn parse_trait(&mut self) -> StatementKind {
+        let span = self.skip(TokenKind::Trait);
+        let name = self.parse_type_name();
+        let attributes = self.state.get_attributes();
 
-    StatementKind::Trait(TraitStatement {
-        id: state.id(),
-        span: Span::combine(span, body.span),
-        r#trait: span,
-        name,
-        attributes,
-        body,
-    })
+        let left_brace = self.skip_left_brace();
+        let members = {
+            let mut members = Vec::new();
+            while self.current_kind() != TokenKind::RightBrace && !self.is_eof() {
+                members.push(self.parse_classish_member(true));
+            }
+            members
+        };
+        let right_brace = self.skip_right_brace();
+
+        let body = TraitBody {
+            id: self.state.id(),
+            span: Span::combine(left_brace, right_brace),
+            left_brace,
+            members,
+            right_brace,
+        };
+
+        StatementKind::Trait(TraitStatement {
+            id: self.state.id(),
+            span: Span::combine(span, body.span),
+            r#trait: span,
+            name,
+            attributes,
+            body,
+        })
+    }
 }

@@ -38,15 +38,13 @@
                                 end: 20,
                             },
                             kind: String,
-                            token: Token {
+                            token: OwnedToken {
                                 kind: LiteralDoubleQuotedString,
                                 span: Span {
                                     start: 8,
                                     end: 20,
                                 },
-                                symbol: Some(
-                                    "Hello, world",
-                                ),
+                                symbol: "Hello, world",
                             },
                         },
                     ),
@@ -95,15 +93,13 @@
                                 end: 37,
                             },
                             kind: String,
-                            token: Token {
+                            token: OwnedToken {
                                 kind: LiteralSingleQuotedString,
                                 span: Span {
                                     start: 23,
                                     end: 37,
                                 },
-                                symbol: Some(
-                                    "'Hello, world'",
-                                ),
+                                symbol: "'Hello, world'",
                             },
                         },
                     ),
