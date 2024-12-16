@@ -168,7 +168,7 @@ impl<'a> Lexer<'a> {
                 let label = label.clone();
 
                 match kind {
-                    TokenKind::StartHeredoc => self.heredoc(label),
+                    TokenKind::StartHeredoc => self.heredoc(label, *expect_label),
                     TokenKind::StartNowdoc => self.nowdoc(label, *expect_label),
                     _ => unreachable!(),
                 }
@@ -1655,106 +1655,100 @@ impl<'a> Lexer<'a> {
         )
     }
 
-    fn heredoc(&mut self, label: ByteString) -> Token<'a> {
-        #[allow(unused_assignments)]
-        let mut buffer_span = None;
-        let mut last_was_newline = false;
+    fn heredoc(&mut self, label: ByteString, is_expecting_label: bool) -> Token<'a> {
+        // If we're expecting a label, we should check for it here.
+        // The second part of the condition isn't really needed, but it's better to be safe.
+        if is_expecting_label && self.source.at(&label, label.len()) {
+            self.source.skip(label.len());
+            self.replace(StackFrame::Scripting);
 
-        let kind = loop {
+            let span = self.source.span();
+
+            return Token::new(TokenKind::EndHeredoc, span, self.source.span_range(span));
+        }
+
+        // Now we can check for interpolation starters. These are going to produce
+        // their own tokens and then change the stack frame to the appropriate state.
+        match self.source.read(2) {
+            [b'$', b'{', ..] => {
+                self.source.skip(2);
+                
+                self.enter(StackFrame::LookingForVarname);
+                
+                let span = self.source.span();
+
+                return Token::new(TokenKind::DollarLeftBrace, span, self.source.span_range(span));
+            }
+            [b'{', b'$', ..] => {
+                self.source.next();
+
+                self.enter(StackFrame::Scripting);
+
+                let span = self.source.span();
+
+                return Token::new(TokenKind::LeftBrace, span, self.source.span_range(span));
+            }
+            [b'$', ident_start!(), ..] => {
+                let mut var = self.source.read_and_skip(1).to_vec();
+
+                var.extend(self.consume_identifier());
+
+                match self.source.read(4) {
+                    [b'[', ..] => self.enter(StackFrame::VarOffset),
+                    [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
+                        self.enter(StackFrame::LookingForProperty)
+                    }
+                    _ => {}
+                };
+
+                let span = self.source.span();
+
+                return Token::new(TokenKind::Variable, span, self.source.span_range(span));
+            },
+            _ => {},
+        };
+
+        let should_expect_label = loop {
+            if self.source.eof() {
+                break false;
+            }
+
             match self.source.read(3) {
                 [b'\\', b'"' | b'\\' | b'$', ..] => {
                     self.source.skip(2);
                 }
-                [b'$', b'{', ..] => {
-                    buffer_span = Some(self.source.span());
-                    self.source.start_token();
-                    self.source.skip(2);
-                    self.enter(StackFrame::LookingForVarname);
-                    break TokenKind::DollarLeftBrace;
-                }
-                [b'{', b'$', ..] => {
-                    buffer_span = Some(self.source.span());
-                    self.source.start_token();
-                    // Intentionally only consume the left brace.
-                    self.source.next();
-                    self.enter(StackFrame::Scripting);
-                    break TokenKind::LeftBrace;
-                }
-                [b'$', ident_start!(), ..] => {
-                    buffer_span = Some(self.source.span());
-                    self.source.start_token();
-                    let mut var = self.source.read_and_skip(1).to_vec();
-                    var.extend(self.consume_identifier());
-
-                    match self.source.read(4) {
-                        [b'[', ..] => self.enter(StackFrame::VarOffset),
-                        [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
-                            self.enter(StackFrame::LookingForProperty)
-                        }
-                        _ => {}
-                    }
-
-                    break TokenKind::Variable;
-                }
-                // If we find a new-line, we can start to check if we can see the EndHeredoc token.
+                // These characters start interpolation sequences, so if we find them
+                // here we need to break out of the loop and let them get picked up
+                // in the next iteration of the lexer.
+                [b'$', b'{', ..] | [b'{', b'$', ..] | [b'$', ident_start!(), ..] => {
+                    break false;
+                },
                 [b'\n', ..] => {
-                    last_was_newline = true;
                     self.source.next();
+                    self.skip_horizontal_whitespace();
 
                     // Check if we can see the closing label right here.
                     if self.source.at(&label, label.len()) {
-                        buffer_span = Some(self.source.span());
-                        self.source.start_token();
-                        self.source.skip(label.len());
-                        self.replace(StackFrame::Scripting);
-                        break TokenKind::EndHeredoc;
-                    }
-
-                    self.skip_horizontal_whitespace();
-
-                    // We've consumed all leading whitespace on this line now,
-                    // so let's try to read the label again.
-                    if self.source.at(&label, label.len()) {
-                        buffer_span = Some(self.source.span());
-
-                        self.source.start_token();
-                        self.source.skip(label.len());
-                        self.replace(StackFrame::Scripting);
-
-                        break TokenKind::EndHeredoc;
+                        // We've found the label so can update the stack frame
+                        // so it is consumed the next time.
+                        break true;
                     }
                 }
-                &[b, ..] => {
-                    self.source.next();
-                    last_was_newline = b == b'\n';
-                }
-                // FIXME: Push diagnostics for unexpected end of file.
-                [] => todo!(),
+                _ => self.source.next(),
             }
         };
 
-        let mut buffer_span = match buffer_span {
-            Some(span) => span,
-            None => self.source.span(),
-        };
-
-        // Any trailing line breaks should be removed from the final heredoc.
-        if last_was_newline {
-            buffer_span.end -= 1;
-        }
-
         let span = self.source.span();
 
-        if buffer_span.is_empty() {
-            return Token::new(kind, span, self.source.span_range(span));
-        }
-
-        self.set_peek(Token::new(kind, span, self.source.span_range(span)));
+        match self.frame_mut() {
+            StackFrame::DocString { expect_label, .. } => *expect_label = should_expect_label,
+            _ => unreachable!(),
+        };
 
         Token::new(
             TokenKind::StringPart,
-            buffer_span,
-            self.source.span_range(buffer_span),
+            span,
+            self.source.span_range(span),
         )
     }
 
