@@ -89,9 +89,9 @@ impl<'a> Parser<'a> {
         let span = if let Some(text_span) = text_span {
             tag.span.join(text_span)
         } else if variable.is_some() {
-            tag.span.join(variable.as_ref().unwrap().span())
+            tag.span.join(variable.span())
         } else if data_type.is_some() {
-            tag.span.join(data_type.as_ref().unwrap().span())
+            tag.span.join(data_type.span())
         } else {
             tag.span
         };
@@ -127,9 +127,9 @@ impl<'a> Parser<'a> {
         let span = if let Some(text_span) = text_span {
             tag.span.join(text_span)
         } else if variable.is_some() {
-            tag.span.join(variable.as_ref().unwrap().span())
+            tag.span.join(variable.span())
         } else if data_type.is_some() {
-            tag.span.join(data_type.as_ref().unwrap().span())
+            tag.span.join(data_type.span())
         } else {
             tag.span
         };
