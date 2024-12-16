@@ -1,15 +1,19 @@
 use std::collections::VecDeque;
 
 use crate::source::Source;
+use diagnostics::LexerDiagnostic;
 use pxp_bytestring::ByteStr;
 use pxp_bytestring::ByteString;
 
+use pxp_diagnostics::Diagnostic;
+use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::OpenTagKind;
 use pxp_token::OwnedToken;
 use pxp_token::Token;
 use pxp_token::TokenKind;
 
+pub mod diagnostics;
 pub mod error;
 pub mod macros;
 pub mod source;
@@ -22,6 +26,8 @@ pub struct Lexer<'a> {
     current: Token<'a>,
     peek: Option<Token<'a>>,
     peek_again: Option<Token<'a>>,
+
+    diagnostics: Vec<Diagnostic<LexerDiagnostic>>,
 }
 
 #[derive(Debug)]
@@ -51,6 +57,8 @@ impl<'a> Lexer<'a> {
             current: Token::new(TokenKind::Eof, Span::default(), ByteStr::new(&[])),
             peek: None,
             peek_again: None,
+
+            diagnostics: Vec::new(),
         };
 
         this.next();
@@ -62,6 +70,11 @@ impl<'a> Lexer<'a> {
 
         this.replace(StackFrame::Scripting);
         this
+    }
+
+    fn diagnostic(&mut self, diagnostic: LexerDiagnostic, severity: Severity, span: Span) {
+        self.diagnostics
+            .push(Diagnostic::new(diagnostic, severity, span));
     }
 
     pub fn collect(&'a mut self) -> Vec<OwnedToken> {
@@ -797,20 +810,17 @@ impl<'a> Lexer<'a> {
             // it means we need to produce that tag on the next iteration.
             if self.source.at_case_insensitive(b"<?php", 5)
                 || self.source.at_case_insensitive(b"<?=", 3)
-                || self.source.at_case_insensitive(b"<?", 2) {
-                    break;
-                }
+                || self.source.at_case_insensitive(b"<?", 2)
+            {
+                break;
+            }
 
             self.source.next();
         }
 
         let span = self.source.span();
 
-        Token::new(
-            TokenKind::InlineHtml,
-            span,
-            self.source.span_range(span),
-        )
+        Token::new(TokenKind::InlineHtml, span, self.source.span_range(span))
     }
 
     fn scripting(&mut self) -> Token<'a> {
@@ -1098,24 +1108,38 @@ impl<'a> Lexer<'a> {
                     }
                     [_, ..] => TokenKind::StartHeredoc,
                     [] => {
-                        // FIXME: Push diagnostics for unexpected end of file.
-                        todo!()
+                        self.diagnostic(
+                            LexerDiagnostic::UnexpectedEndOfFile,
+                            Severity::Error,
+                            self.source.span(),
+                        );
+
+                        TokenKind::Invalid
                     }
                 };
 
                 let label: ByteString = match self.peek_identifier() {
                     Some(_) => self.consume_identifier().into(),
-                    None => {
-                        #[allow(unreachable_code)]
-                        return match self.source.current() {
-                            Some(_c) => {
-                                // FIXME: Push diagnostics for unexpected character.
-                                todo!()
-                            }
-                            // FIXME: Push diagnostics for unexpected end of file.
-                            None => todo!(),
-                        };
-                    }
+                    None => match self.source.current() {
+                        Some(c) => {
+                            self.diagnostic(
+                                LexerDiagnostic::UnexpectedCharacter(*c),
+                                Severity::Error,
+                                Span::flat(self.source.offset()),
+                            );
+
+                            ByteString::empty()
+                        }
+                        None => {
+                            self.diagnostic(
+                                LexerDiagnostic::UnexpectedEndOfFile,
+                                Severity::Error,
+                                Span::flat(self.source.offset()),
+                            );
+
+                            ByteString::empty()
+                        }
+                    },
                 };
 
                 buffer.extend_from_slice(&label);
@@ -1126,22 +1150,32 @@ impl<'a> Lexer<'a> {
                             buffer.push(b'\'');
                             self.source.next();
                         }
-                        _ => {
-                            // FIXME: Push diagnostics for unexpected character / no character.
-                            todo!()
-                        }
+                        Some(c) => {
+                            self.diagnostic(
+                                LexerDiagnostic::UnexpectedCharacter(*c),
+                                Severity::Error,
+                                Span::flat(self.source.offset()),
+                            );
+
+                            self.next();
+                        },
+                        None => self.diagnostic(
+                            LexerDiagnostic::UnexpectedEndOfFile,
+                            Severity::Error,
+                            self.source.span(),
+                        ),
                     };
                 } else if let Some(b'"') = self.source.current() {
                     buffer.push(b'"');
                     self.source.next();
                 }
 
-                if !matches!(self.source.current(), Some(b'\n')) {
-                    // FIXME: Push diagnostics for unexpected character.
-                    todo!()
+                match self.source.current() {
+                    Some(b'\n') => self.source.next(),
+                    Some(c) => self.diagnostic(LexerDiagnostic::UnexpectedCharacter(*c), Severity::Error, Span::flat(self.source.offset())),
+                    None => self.diagnostic(LexerDiagnostic::UnexpectedEndOfFile, Severity::Error, self.source.span()),
                 }
 
-                self.source.next();
                 self.replace(StackFrame::DocString {
                     kind,
                     label: label.clone(),
@@ -1450,25 +1484,28 @@ impl<'a> Lexer<'a> {
                         match self.source.read(3) {
                             [b'(', b')', b';'] => {
                                 self.source.skip(3);
-                                self.replace(StackFrame::Halted);
                             }
-                            // FIXME: Push diagnostics for invalid halt compiler.
-                            _ => todo!(),
-                        }
+                            _ => {
+                                self.diagnostic(
+                                    LexerDiagnostic::InvalidHaltCompiler,
+                                    Severity::Error,
+                                    self.source.span(),
+                                );
+                            }
+                        };
+
+                        self.replace(StackFrame::Halted);
                     }
 
                     kind
                 }
             }
-            [b, ..] => unimplemented!(
-                "<scripting> {} at offset: {}",
-                *b as char,
-                self.source.offset(),
-            ),
-            // We should never reach this point since we have the empty checks surrounding
-            // the call to this function, but it's better to be safe than sorry.
-            // FIXME: Push diagnostics for unexpected end of file.
-            [] => todo!(),
+            [b, ..] => {
+                self.diagnostic(LexerDiagnostic::UnexpectedCharacter(*b), Severity::Error, self.source.span());
+
+                TokenKind::Invalid
+            },
+            [] => unreachable!(),
         };
 
         let mut span = self.source.span();
@@ -1483,151 +1520,71 @@ impl<'a> Lexer<'a> {
     }
 
     fn double_quote(&mut self) -> Token<'a> {
-        #[allow(unused_assignments)]
-        let mut buffer_span = None;
+        match self.source.read(2) {
+            [b'$', b'{', ..] => {
+                self.source.skip(2);
 
-        let (kind, span) = loop {
-            match self.source.read(3) {
-                [b'$', b'{', ..] => {
-                    buffer_span = Some(self.source.span());
-                    self.source.start_token();
-                    self.source.skip(2);
-                    self.enter(StackFrame::LookingForVarname);
-                    break (TokenKind::DollarLeftBrace, self.source.span());
+                self.enter(StackFrame::LookingForVarname);
+                
+                return Token::new(TokenKind::DollarLeftBrace, self.source.span(), self.source.span_range(self.source.span()))
+            },
+            [b'{', b'$', ..] => {
+                self.source.next();
+
+                self.enter(StackFrame::Scripting);
+
+                return Token::new(TokenKind::LeftBrace, self.source.span(), self.source.span_range(self.source.span()))
+            }
+            [b'$', ident_start!(), ..] => {
+                let mut var = self.source.read_and_skip(1).to_vec();
+                var.extend(self.consume_identifier());
+
+                match self.source.read(4) {
+                    [b'[', ..] => self.enter(StackFrame::VarOffset),
+                    [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
+                        self.enter(StackFrame::LookingForProperty)
+                    }
+                    _ => {}
                 }
-                [b'{', b'$', ..] => {
-                    buffer_span = Some(self.source.span());
-                    self.source.start_token();
-                    // Intentionally only consume the left brace.
-                    self.source.next();
-                    self.enter(StackFrame::Scripting);
-                    break (TokenKind::LeftBrace, self.source.span());
-                }
-                [b'"', ..] => {
-                    buffer_span = Some(self.source.span());
-                    self.source.start_token();
-                    self.source.next();
-                    self.replace(StackFrame::Scripting);
-                    break (TokenKind::DoubleQuote, self.source.span());
-                }
+
+                return Token::new(TokenKind::Variable, self.source.span(), self.source.span_range(self.source.span()))
+            },
+            [b'"', ..] => {
+                self.source.next();
+
+                self.replace(StackFrame::Scripting);
+
+                return Token::new(TokenKind::DoubleQuote, self.source.span(), self.source.span_range(self.source.span()))
+            },
+            _ => {}
+        };
+
+        loop {
+            match self.source.read(2) {
                 &[b'\\', b'"' | b'\\' | b'$', ..] => {
                     self.source.skip(2);
                 }
-                &[b'\\', b'n', ..] => {
-                    self.source.skip(2);
-                }
-                &[b'\\', b'r', ..] => {
-                    self.source.skip(2);
-                }
-                &[b'\\', b't', ..] => {
-                    self.source.skip(2);
-                }
-                &[b'\\', b'v', ..] => {
-                    self.source.skip(2);
-                }
-                &[b'\\', b'e', ..] => {
-                    self.source.skip(2);
-                }
-                &[b'\\', b'f', ..] => {
-                    self.source.skip(2);
-                }
-                &[b'\\', b'x', b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')] => {
-                    self.source.skip(3);
-
-                    let mut hex = String::from(b as char);
-                    if let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
-                        self.source.current()
-                    {
-                        self.source.next();
-                        hex.push(*b as char);
-                    }
-                }
-                &[b'\\', b'u', b'{'] => {
-                    self.source.skip(3);
-
-                    let mut code_point = String::new();
-                    while let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
-                        self.source.current()
-                    {
-                        self.source.next();
-                        code_point.push(*b as char);
-                    }
-
-                    if code_point.is_empty() || self.source.current() != Some(&b'}') {
-                        // FIXME: Push diagnostics for invalid unicode escape.
-                        todo!();
-                    }
-                    self.source.next();
-
-                    let c = if let Ok(c) = u32::from_str_radix(&code_point, 16) {
-                        c
-                    } else {
-                        // FIXME: Push diagnostics for invalid unicode escape.
-                        todo!();
-                    };
-
-                    if char::from_u32(c).is_none() {
-                        // FIXME: Push diagnostics for invalid unicode escape.
-                        todo!();
-                    }
-                }
-                &[b'\\', b @ b'0'..=b'7', ..] => {
-                    self.source.skip(2);
-
-                    let mut octal = String::from(b as char);
-                    if let Some(b @ b'0'..=b'7') = self.source.current() {
-                        self.source.next();
-                        octal.push(*b as char);
-                    }
-                    if let Some(b @ b'0'..=b'7') = self.source.current() {
-                        self.source.next();
-                        octal.push(*b as char);
-                    }
-
-                    if u8::from_str_radix(&octal, 8).is_err() {
-                        // FIXME: Push diagnostics for invalid octal escape.
-                        todo!();
-                    }
-                }
-                [b'$', ident_start!(), ..] => {
-                    buffer_span = Some(self.source.span());
-                    self.source.start_token();
-                    let mut var = self.source.read_and_skip(1).to_vec();
-                    var.extend(self.consume_identifier());
-
-                    match self.source.read(4) {
-                        [b'[', ..] => self.enter(StackFrame::VarOffset),
-                        [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
-                            self.enter(StackFrame::LookingForProperty)
-                        }
-                        _ => {}
-                    }
-
-                    break (TokenKind::Variable, self.source.span());
-                }
+                // If we spot any of these, we want to break to make sure they get picked up in the next iteration.
+                &[b'"', ..] | [b'$', b'{', ..] | [b'{', b'$', ..] | [b'$', ident_start!(), ..] => {
+                    break;
+                },
                 &[_, ..] => {
                     self.source.next();
                 }
-                // FIXME: Push diagnostics for unexpected end of file.
-                [] => todo!(),
+                [] => {
+                    self.diagnostic(LexerDiagnostic::UnexpectedEndOfFile, Severity::Error, Span::flat(self.source.offset()));
+
+                    break;
+                }
             }
         };
 
-        let buffer_span = match buffer_span {
-            Some(span) => span,
-            None => self.source.span(),
-        };
-
-        if buffer_span.is_empty() {
-            return Token::new(kind, span, self.source.span_range(span));
-        }
-
-        self.set_peek(Token::new(kind, span, self.source.span_range(span)));
+        let span = self.source.span();
 
         Token::new(
             TokenKind::StringPart,
-            buffer_span,
-            self.source.span_range(buffer_span),
+            span,
+            self.source.span_range(span),
         )
     }
 
@@ -1935,8 +1892,11 @@ impl<'a> Lexer<'a> {
                 &[_, ..] => {
                     self.source.next();
                 }
-                // FIXME: Push some diagnostics here for unexpected end of file.
-                [] => break,
+                [] => {
+                    self.diagnostic(LexerDiagnostic::UnexpectedEndOfFile, Severity::Error, Span::flat(self.source.offset()));
+
+                    break;
+                }
             }
         }
 
@@ -1952,95 +1912,17 @@ impl<'a> Lexer<'a> {
                     self.source.next();
                     break true;
                 }
-                &[b'\\', b'"' | b'\\' | b'$', ..] => {
-                    self.source.skip(2);
-                }
-                &[b'\\', b'n', ..] => {
-                    self.source.skip(2);
-                }
-                &[b'\\', b'r', ..] => {
-                    self.source.skip(2);
-                }
-                &[b'\\', b't', ..] => {
-                    self.source.skip(2);
-                }
-                &[b'\\', b'v', ..] => {
-                    self.source.skip(2);
-                }
-                &[b'\\', b'e', ..] => {
-                    self.source.skip(2);
-                }
-                &[b'\\', b'f', ..] => {
-                    self.source.skip(2);
-                }
-                &[b'\\', b'x', b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')] => {
-                    self.source.skip(3);
-
-                    let mut hex = String::from(b as char);
-                    if let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
-                        self.source.current()
-                    {
-                        self.source.next();
-                        hex.push(*b as char);
-                    }
-                }
-                &[b'\\', b'u', b'{'] => {
-                    self.source.skip(3);
-
-                    let mut code_point = String::new();
-                    while let Some(b @ (b'0'..=b'9' | b'a'..=b'f' | b'A'..=b'F')) =
-                        self.source.current()
-                    {
-                        self.source.next();
-                        code_point.push(*b as char);
-                    }
-
-                    if code_point.is_empty() || self.source.current() != Some(&b'}') {
-                        // FIXME: Push some diagnostics here for invalid unicode escape.
-                        todo!()
-                    }
-
-                    self.source.next();
-
-                    let c = if let Ok(c) = u32::from_str_radix(&code_point, 16) {
-                        c
-                    } else {
-                        // FIXME: Push some diagnostics here for invalid unicode escape.
-                        todo!()
-                    };
-
-                    if char::from_u32(c).is_none() {
-                        // FIXME: Push some diagnostics here for invalid unicode escape.
-                        todo!()
-                    }
-                }
-                &[b'\\', b @ b'0'..=b'7', ..] => {
-                    self.source.skip(2);
-
-                    let mut octal = String::from(b as char);
-                    if let Some(b @ b'0'..=b'7') = self.source.current() {
-                        self.source.next();
-                        octal.push(*b as char);
-                    }
-
-                    if let Some(b @ b'0'..=b'7') = self.source.current() {
-                        self.source.next();
-                        octal.push(*b as char);
-                    }
-
-                    if u8::from_str_radix(&octal, 8).is_err() {
-                        // FIXME: Push some diagnostics here for invalid octal escape.
-                        todo!()
-                    }
-                }
                 [b'$', ident_start!(), ..] | [b'{', b'$', ..] | [b'$', b'{', ..] => {
                     break false;
                 }
                 &[_, ..] => {
                     self.source.next();
                 }
-                // FIXME: Push some diagnostics here for unexpected end of file.
-                [] => todo!(),
+                [] => {
+                    self.diagnostic(LexerDiagnostic::UnexpectedEndOfFile, Severity::Error, Span::flat(self.source.offset()));
+
+                    break true
+                }
             }
         };
 
@@ -2048,6 +1930,7 @@ impl<'a> Lexer<'a> {
             TokenKind::LiteralDoubleQuotedString
         } else {
             self.replace(StackFrame::DoubleQuote);
+
             TokenKind::StringPart
         }
     }

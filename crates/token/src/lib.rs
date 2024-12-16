@@ -15,6 +15,7 @@ pub enum OpenTagKind {
 
 pub enum TokenKind {
     Missing,
+    Invalid,
     Die,
     // Can't use `Self` as a name here, so suffixing with an underscore.
     Self_,
@@ -471,6 +472,7 @@ impl Display for TokenKind {
             | Self::DocBlockComment => {
                 return write!(f, "{:?}", self);
             }
+            Self::Invalid => return write!(f, "<invalid>"),
             Self::Missing => return write!(f, "<missing>"),
             Self::OpenPhpDoc => "/**",
             Self::ClosePhpDoc => "*/",
