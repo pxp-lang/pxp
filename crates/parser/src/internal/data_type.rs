@@ -444,9 +444,9 @@ impl<'a> Parser<'a> {
                 })
             }
             TokenKind::FullyQualifiedIdentifier => {
-                let span = self.next();
                 let symbol = self.current_symbol_as_bytestring();
                 let resolved = self.state.strip_leading_namespace_qualifier(&symbol);
+                let span = self.next();
 
                 Some(Type::Named(Name::resolved(
                     self.state.id(),
@@ -456,10 +456,9 @@ impl<'a> Parser<'a> {
                 )))
             }
             TokenKind::QualifiedIdentifier => {
-                self.next();
-
                 let id = self.state.id();
                 let name = self.maybe_resolve_identifier(id, &self.current(), UseKind::Normal);
+                self.next();
 
                 Some(Type::Named(name))
             }
