@@ -133,7 +133,7 @@ impl<'a> Lexer<'a> {
             // The "Initial" state is used to parse inline HTML. It is essentially a catch-all
             // state that will build up a single token buffer until it encounters an open tag
             // of some description.
-            StackFrame::Initial => self.initial().unwrap_or_else(|| self.scripting()),
+            StackFrame::Initial => self.initial(),
             // The scripting state is entered when an open tag is encountered in the source code.
             // This tells the lexer to start analysing characters at PHP tokens instead of inline HTML.
             StackFrame::Scripting => {
@@ -164,7 +164,11 @@ impl<'a> Lexer<'a> {
             // The shell exec state is entered when inside of a execution string (`).
             StackFrame::ShellExec => self.shell_exec(),
             // The doc string state is entered when tokenizing heredocs and nowdocs.
-            StackFrame::DocString { kind, label, expect_label } => {
+            StackFrame::DocString {
+                kind,
+                label,
+                expect_label,
+            } => {
                 let label = label.clone();
 
                 match kind {
@@ -741,37 +745,72 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn initial(&mut self) -> Option<Token<'a>> {
-        while self.source.current().is_some() {
+    fn initial(&mut self) -> Token<'a> {
+        if self.source.at_case_insensitive(b"<?php", 5) {
+            self.source.skip(5);
+
+            let span = self.source.span();
+
+            self.replace(StackFrame::Scripting);
+
+            return Token::new(
+                TokenKind::OpenTag(OpenTagKind::Full),
+                span,
+                self.source.span_range(span),
+            );
+        }
+
+        if self.source.at_case_insensitive(b"<?=", 3) {
+            self.source.skip(3);
+
+            let span = self.source.span();
+
+            self.replace(StackFrame::Scripting);
+
+            return Token::new(
+                TokenKind::OpenTag(OpenTagKind::Echo),
+                span,
+                self.source.span_range(span),
+            );
+        }
+
+        if self.source.at_case_insensitive(b"<?", 2) {
+            self.source.skip(2);
+
+            let span = self.source.span();
+
+            self.replace(StackFrame::Scripting);
+
+            return Token::new(
+                TokenKind::OpenTag(OpenTagKind::Short),
+                span,
+                self.source.span_range(span),
+            );
+        }
+
+        loop {
+            if self.source.eof() {
+                break;
+            }
+
+            // If we can see an open tag here, we need to break because
+            // it means we need to produce that tag on the next iteration.
             if self.source.at_case_insensitive(b"<?php", 5)
                 || self.source.at_case_insensitive(b"<?=", 3)
-                || self.source.at_case_insensitive(b"<?", 2)
-            {
-                let inline_span = self.source.span();
-
-                self.replace(StackFrame::Scripting);
-
-                if !inline_span.is_empty() {
-                    return Some(Token::new(
-                        TokenKind::InlineHtml,
-                        inline_span,
-                        self.source.span_range(inline_span),
-                    ));
-                } else {
-                    return None;
+                || self.source.at_case_insensitive(b"<?", 2) {
+                    break;
                 }
-            }
 
             self.source.next();
         }
 
-        let inline_span = self.source.span();
+        let span = self.source.span();
 
-        Some(Token::new(
+        Token::new(
             TokenKind::InlineHtml,
-            inline_span,
-            self.source.span_range(inline_span),
-        ))
+            span,
+            self.source.span_range(span),
+        )
     }
 
     fn scripting(&mut self) -> Token<'a> {
@@ -1103,7 +1142,11 @@ impl<'a> Lexer<'a> {
                 }
 
                 self.source.next();
-                self.replace(StackFrame::DocString { kind, label: label.clone(), expect_label: false });
+                self.replace(StackFrame::DocString {
+                    kind,
+                    label: label.clone(),
+                    expect_label: false,
+                });
 
                 kind
             }
@@ -1672,12 +1715,16 @@ impl<'a> Lexer<'a> {
         match self.source.read(2) {
             [b'$', b'{', ..] => {
                 self.source.skip(2);
-                
+
                 self.enter(StackFrame::LookingForVarname);
-                
+
                 let span = self.source.span();
 
-                return Token::new(TokenKind::DollarLeftBrace, span, self.source.span_range(span));
+                return Token::new(
+                    TokenKind::DollarLeftBrace,
+                    span,
+                    self.source.span_range(span),
+                );
             }
             [b'{', b'$', ..] => {
                 self.source.next();
@@ -1704,8 +1751,8 @@ impl<'a> Lexer<'a> {
                 let span = self.source.span();
 
                 return Token::new(TokenKind::Variable, span, self.source.span_range(span));
-            },
-            _ => {},
+            }
+            _ => {}
         };
 
         let should_expect_label = loop {
@@ -1722,7 +1769,7 @@ impl<'a> Lexer<'a> {
                 // in the next iteration of the lexer.
                 [b'$', b'{', ..] | [b'{', b'$', ..] | [b'$', ident_start!(), ..] => {
                     break false;
-                },
+                }
                 [b'\n', ..] => {
                     self.source.next();
                     self.skip_horizontal_whitespace();
@@ -1745,11 +1792,7 @@ impl<'a> Lexer<'a> {
             _ => unreachable!(),
         };
 
-        Token::new(
-            TokenKind::StringPart,
-            span,
-            self.source.span_range(span),
-        )
+        Token::new(TokenKind::StringPart, span, self.source.span_range(span))
     }
 
     fn nowdoc(&mut self, label: ByteString, is_expecting_label: bool) -> Token<'a> {
@@ -1758,7 +1801,7 @@ impl<'a> Lexer<'a> {
             self.replace(StackFrame::Scripting);
 
             let span = self.source.span();
-            
+
             return Token::new(TokenKind::EndNowdoc, span, self.source.span_range(span));
         }
 
@@ -1780,7 +1823,7 @@ impl<'a> Lexer<'a> {
 
                     // Check if we can see the closing label right here.
                     if self.source.at(&label, label.len()) {
-                        // If we can, we need to break so that the next time we try to read a 
+                        // If we can, we need to break so that the next time we try to read a
                         // token from this method we produce the EndNowdoc token.
                         break true;
                     }
@@ -1796,11 +1839,7 @@ impl<'a> Lexer<'a> {
             _ => unreachable!(),
         };
 
-        Token::new(
-            TokenKind::StringPart,
-            span,
-            self.source.span_range(span),
-        )
+        Token::new(TokenKind::StringPart, span, self.source.span_range(span))
     }
 
     fn looking_for_varname(&mut self) -> Option<Token<'a>> {

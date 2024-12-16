@@ -4,7 +4,7 @@ test:
 
 tokenise +args:
     RUSTFLAGS=-Awarnings cargo build -q --package pxp-internal --bin tokenise
-    ./target/release/tokenise {{args}}
+    ./target/debug/tokenise {{args}}
 
 bench-tokenise +args:
     RUSTFLAGS=-Awarnings cargo build -q --package pxp-internal --bin tokenise --release
@@ -13,7 +13,7 @@ bench-tokenise +args:
 
 parse +args:
     RUSTFLAGS=-Awarnings cargo build -q --package pxp-internal --bin parse
-    ./target/release/parse {{args}}
+    ./target/debug/parse {{args}}
 
 node-finder +args:
     RUSTFLAGS=-Awarnings cargo run -q --package pxp-internal --bin node-finder -- {{args}}
