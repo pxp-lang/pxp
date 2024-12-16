@@ -31,7 +31,11 @@ pub enum StackFrame {
     Halted,
     DoubleQuote,
     ShellExec,
-    DocString(TokenKind, ByteString),
+    DocString {
+        kind: TokenKind,
+        label: ByteString,
+        expect_label: bool,
+    },
     LookingForVarname,
     LookingForProperty,
     VarOffset,
@@ -160,12 +164,12 @@ impl<'a> Lexer<'a> {
             // The shell exec state is entered when inside of a execution string (`).
             StackFrame::ShellExec => self.shell_exec(),
             // The doc string state is entered when tokenizing heredocs and nowdocs.
-            StackFrame::DocString(kind, label) => {
+            StackFrame::DocString { kind, label, expect_label } => {
                 let label = label.clone();
 
                 match kind {
                     TokenKind::StartHeredoc => self.heredoc(label),
-                    TokenKind::StartNowdoc => self.nowdoc(label),
+                    TokenKind::StartNowdoc => self.nowdoc(label, *expect_label),
                     _ => unreachable!(),
                 }
             }
@@ -200,6 +204,12 @@ impl<'a> Lexer<'a> {
     pub fn frame(&self) -> &StackFrame {
         self.frames
             .back()
+            .unwrap_or_else(|| panic!("The lexer has reached an invalid state. This shouldn't happen, but somehow it has."))
+    }
+
+    pub fn frame_mut(&mut self) -> &mut StackFrame {
+        self.frames
+            .back_mut()
             .unwrap_or_else(|| panic!("The lexer has reached an invalid state. This shouldn't happen, but somehow it has."))
     }
 
@@ -1093,7 +1103,7 @@ impl<'a> Lexer<'a> {
                 }
 
                 self.source.next();
-                self.replace(StackFrame::DocString(kind, label.clone()));
+                self.replace(StackFrame::DocString { kind, label: label.clone(), expect_label: false });
 
                 kind
             }
@@ -1748,70 +1758,54 @@ impl<'a> Lexer<'a> {
         )
     }
 
-    fn nowdoc(&mut self, label: ByteString) -> Token<'a> {
-        #[allow(unused_assignments)]
-        let mut buffer_span = None;
-        let mut last_was_newline = false;
+    fn nowdoc(&mut self, label: ByteString, is_expecting_label: bool) -> Token<'a> {
+        if is_expecting_label && self.source.at(&label, label.len()) {
+            self.source.skip(label.len());
+            self.replace(StackFrame::Scripting);
 
-        let kind = loop {
-            match self.source.read(3) {
+            let span = self.source.span();
+            
+            return Token::new(TokenKind::EndNowdoc, span, self.source.span_range(span));
+        }
+
+        let should_expect_label = loop {
+            // If we've reached the end of the input, we need to break otherwise
+            // we'll be here forever.
+            if self.source.eof() {
+                break false;
+            }
+
+            match self.source.read(1) {
                 // If we find a new-line, we can start to check if we can see the EndHeredoc token.
                 [b'\n', ..] => {
+                    // Skip over the line break.
                     self.source.next();
+
+                    // Skip over any leading whitespace.
+                    self.skip_horizontal_whitespace();
 
                     // Check if we can see the closing label right here.
                     if self.source.at(&label, label.len()) {
-                        buffer_span = Some(self.source.span());
-                        self.source.start_token();
-                        self.source.skip(label.len());
-                        self.replace(StackFrame::Scripting);
-                        last_was_newline = true;
-                        break TokenKind::EndNowdoc;
-                    }
-
-                    self.skip_horizontal_whitespace();
-
-                    // We've consumed all leading whitespace on this line now,
-                    // so let's try to read the label again.
-                    if self.source.at(&label, label.len()) {
-                        buffer_span = Some(self.source.span());
-                        self.source.start_token();
-
-                        // If we get here, only 1 type of indentation was found. We can move
-                        // the process along by reading over the label and breaking out
-                        // with the EndHeredoc token, storing the kind and amount of whitespace.
-                        self.source.skip(label.len());
-                        self.replace(StackFrame::Scripting);
-                        break TokenKind::EndNowdoc;
+                        // If we can, we need to break so that the next time we try to read a 
+                        // token from this method we produce the EndNowdoc token.
+                        break true;
                     }
                 }
-                &[b, ..] => {
-                    self.source.next();
-                    last_was_newline = b == b'\n';
-                }
-                // FIXME: Push diagnostics for unexpected end of file.
-                [] => todo!(),
+                _ => self.source.next(),
             }
         };
 
-        let mut buffer_span = match buffer_span {
-            Some(span) => span,
-            None => self.source.span(),
-        };
-
-        // Any trailing line breaks should be removed from the final heredoc.
-        if last_was_newline {
-            buffer_span.end -= 1;
-        }
-
         let span = self.source.span();
 
-        self.set_peek(Token::new(kind, span, self.source.span_range(span)));
+        match self.frame_mut() {
+            StackFrame::DocString { expect_label, .. } => *expect_label = should_expect_label,
+            _ => unreachable!(),
+        };
 
         Token::new(
             TokenKind::StringPart,
-            buffer_span,
-            self.source.span_range(buffer_span),
+            span,
+            self.source.span_range(span),
         )
     }
 

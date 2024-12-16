@@ -38,11 +38,11 @@ fn main() {
             let contents = std::fs::read(file).unwrap();
             let ast = Parser::parse(Lexer::new(&contents));
 
-            if !ast.diagnostics.is_empty() {
-                ast.diagnostics.iter().for_each(|error| {
-                    println!("{:?}", error);
-                });
-            }
+            // if !ast.diagnostics.is_empty() {
+            //     ast.diagnostics.iter().for_each(|error| {
+            //         println!("{:?}", error);
+            //     });
+            // }
 
             count += 1;
         }
