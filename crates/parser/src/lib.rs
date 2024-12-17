@@ -4,6 +4,8 @@ mod internal;
 mod macros;
 mod state;
 
+use std::collections::HashMap;
+
 pub use diagnostics::ParserDiagnostic;
 use pxp_ast::{
     Comment, CommentKind, DocBlockComment, HashMarkComment, MultiLineComment, Name, NodeId,
@@ -29,6 +31,7 @@ pub struct Parser<'a> {
 
     id: u32,
     comments: Vec<Comment>,
+    imports: HashMap<UseKind, HashMap<ByteString, ByteString>>,
 }
 
 impl<'a> Parser<'a> {
@@ -47,12 +50,18 @@ impl<'a> Parser<'a> {
     }
 
     fn new(lexer: Lexer<'a>) -> Self {
+        let mut imports = HashMap::new();
+        imports.insert(UseKind::Normal, HashMap::new());
+        imports.insert(UseKind::Function, HashMap::new());
+        imports.insert(UseKind::Const, HashMap::new());
+
         let mut this = Self {
             lexer,
             state: State::new(),
 
             id: 0,
             comments: vec![],
+            imports,
         };
 
         this.collect_comments();
@@ -130,74 +139,6 @@ impl<'a> Parser<'a> {
 
         while self.current_kind() == TokenKind::PhpDocHorizontalWhitespace {
             self.next();
-        }
-    }
-
-    pub fn maybe_resolve_identifier(&self, id: NodeId, token: &Token, kind: UseKind) -> Name {
-        let part = match &token.kind {
-            TokenKind::Identifier | TokenKind::Enum | TokenKind::From => {
-                token.symbol.to_bytestring()
-            }
-            TokenKind::QualifiedIdentifier => token.symbol.before_first(b'\\').to_bytestring(),
-            _ if self.is_soft_reserved_identifier(token.kind) => token.symbol.to_bytestring(),
-            _ => unreachable!("{:?}", token.kind),
-        };
-
-        let map = self.state.imports.get(&kind).unwrap();
-
-        // We found an import that matches the first part of the identifier, so we can resolve it.
-        if let Some(imported) = map.get(&part) {
-            match &token.kind {
-                TokenKind::Identifier | TokenKind::From | TokenKind::Enum => Name::resolved(
-                    id,
-                    imported.clone(),
-                    token.symbol.to_bytestring(),
-                    token.span,
-                ),
-                TokenKind::QualifiedIdentifier => {
-                    // Qualified identifiers might be aliased, so we need to take the full un-aliased import and
-                    // concatenate that with everything after the first part of the qualified identifier.
-                    let bytestring = token.symbol.to_bytestring();
-                    let parts = bytestring.splitn(2, |c| *c == b'\\').collect::<Vec<_>>();
-                    let rest = parts[1].to_vec().into();
-                    let coagulated = imported.coagulate(&[rest], Some(b"\\"));
-
-                    Name::resolved(id, coagulated, bytestring, token.span)
-                }
-                _ => unreachable!(),
-            }
-        // We didn't find an import, but since we're trying to resolve the name of a class like, we can
-        // follow PHP's name resolution rules and just prepend the current namespace.
-        //
-        // Additionally, if the name we're trying to resolve is qualified, then PHP's name resolution rules say that
-        // we should just prepend the current namespace if the import map doesn't contain the first part.
-        } else if kind == UseKind::Normal || token.kind == TokenKind::QualifiedIdentifier {
-            Name::resolved(
-                id,
-                self.state
-                    .join_with_namespace(&token.symbol.to_bytestring()),
-                token.symbol.to_bytestring(),
-                token.span,
-            )
-        // Unqualified names in the global namespace can be resolved without any imports, since we can
-        // only be referencing something else inside of the global namespace.
-        } else if (kind == UseKind::Function || kind == UseKind::Const)
-            && token.kind == TokenKind::Identifier
-            && self.state.namespace().is_none()
-        {
-            Name::resolved(
-                id,
-                token.symbol.to_bytestring(),
-                token.symbol.to_bytestring(),
-                token.span,
-            )
-        } else {
-            Name::unresolved(
-                id,
-                token.symbol.to_bytestring(),
-                token.kind.into(),
-                token.span,
-            )
         }
     }
 }

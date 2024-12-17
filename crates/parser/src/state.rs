@@ -1,4 +1,4 @@
-use std::collections::{HashMap, VecDeque};
+use std::collections::VecDeque;
 
 use pxp_ast::*;
 use pxp_bytestring::ByteString;
@@ -22,7 +22,6 @@ pub enum Scope {
 pub struct State {
     // Scope Tracking
     pub stack: VecDeque<Scope>,
-    pub imports: HashMap<UseKind, HashMap<ByteString, ByteString>>,
     pub namespace_type: Option<NamespaceType>,
     pub attributes: Vec<AttributeGroup>,
     docblock: bool,
@@ -33,16 +32,10 @@ pub struct State {
 
 impl State {
     pub fn new() -> Self {
-        let mut imports = HashMap::new();
-        imports.insert(UseKind::Normal, HashMap::new());
-        imports.insert(UseKind::Function, HashMap::new());
-        imports.insert(UseKind::Const, HashMap::new());
-
         Self {
             stack: VecDeque::with_capacity(32),
             namespace_type: None,
             attributes: vec![],
-            imports,
             docblock: false,
 
             diagnostics: vec![],
@@ -88,36 +81,6 @@ impl State {
 
     pub fn namespace(&self) -> Option<&Scope> {
         self.stack.iter().next()
-    }
-
-    pub fn add_prefixed_import(
-        &mut self,
-        kind: &UseKind,
-        prefix: ByteString,
-        name: ByteString,
-        alias: Option<ByteString>,
-    ) {
-        let coagulated = prefix.coagulate(&[name], Some(b"\\"));
-
-        self.add_import(kind, coagulated, alias);
-    }
-
-    pub fn add_import(&mut self, kind: &UseKind, name: ByteString, alias: Option<ByteString>) {
-        // We first need to check if the alias has been provided, and if not, create a new
-        // symbol using the last part of the name.
-        let alias = match alias {
-            Some(alias) => alias,
-            None => {
-                let bytestring = name.clone();
-                let parts = bytestring.split(|c| *c == b'\\').collect::<Vec<_>>();
-                let last = parts.last().unwrap();
-
-                ByteString::new(last.to_vec())
-            }
-        };
-
-        // Then we can insert the import into the hashmap.
-        self.imports.get_mut(kind).unwrap().insert(alias, name);
     }
 
     pub fn strip_leading_namespace_qualifier(&mut self, symbol: &ByteString) -> ByteString {
