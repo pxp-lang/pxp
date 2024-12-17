@@ -1,9 +1,10 @@
 [package]
 name = "pxp-node-finder"
-version = "0.1.0"
-edition = "2021"
-license-file.workspace = true
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
 rust-version.workspace = true
+license-file.workspace = true
 
 [dependencies]
 pxp-ast = { version = "0.1.0", path = "../ast" }

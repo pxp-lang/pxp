@@ -1,9 +1,10 @@
 [package]
 name = "snappers"
-description = "Simple snapshot testing for Rust."
-version = "0.1.0"
-edition = "2021"
-license = "MIT"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
 
 [dependencies]
 pretty_assertions = "1.4.0"

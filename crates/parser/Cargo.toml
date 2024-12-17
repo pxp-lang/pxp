@@ -1,7 +1,10 @@
 [package]
 name = "pxp-parser"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
 
 [dependencies]
 pxp-span = { path = "../span" }

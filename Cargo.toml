@@ -3,8 +3,11 @@ members = ["crates/*", "internal"]
 resolver = "2"
 
 [workspace.package]
+version = "0.1.0"
+authors = ["Ryan Chandler <ryan@pxplang.org>"]
 license-file = "LICENSE"
 rust-version = "1.76"
+edition = "2021"
 
 [profile.release]
 debug = true
