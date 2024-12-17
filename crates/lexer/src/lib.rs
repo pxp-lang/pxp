@@ -1518,7 +1518,7 @@ impl<'a> Lexer<'a> {
 
         let mut span = self.source.span();
 
-        // FIXME: This is a bit hacky, but it works for now.
+        // NOTE: This is a bit hacky, but it works for now.
         //        We're doing this so that the closing double quote isn't included in the span.
         if kind == TokenKind::LiteralDoubleQuotedString {
             span.end -= 1;
@@ -1889,9 +1889,6 @@ impl<'a> Lexer<'a> {
     fn var_offset(&mut self) -> Token<'a> {
         let kind = match self.source.read(2) {
             [b'$', ident_start!()] => self.tokenize_variable(),
-            // FIXME: all integer literals are allowed, but only decimal integers with no underscores
-            // are actually treated as numbers. Others are treated as strings.
-            // Float literals are not allowed, but that could be handled in the parser.
             [b'0'..=b'9', ..] => self.tokenize_number(),
             [b'[', ..] => {
                 self.source.next();
@@ -1910,10 +1907,14 @@ impl<'a> Lexer<'a> {
                 self.consume_identifier();
                 TokenKind::Identifier
             }
-            // FIXME: Produce "Invalid" token type and push diagnostics for unexpected character.
-            &[_b, ..] => todo!(),
-            // FIXME: Push diagnostics for unexpected end of file.
-            [] => todo!(),
+            &[b, ..] => {
+                self.diagnostic(LexerDiagnostic::UnexpectedCharacter(b), Severity::Error, Span::flat(self.source.offset()));
+                TokenKind::Invalid
+            },
+            [] => {
+                self.diagnostic(LexerDiagnostic::UnexpectedEndOfFile, Severity::Error, Span::flat(self.source.offset()));
+                TokenKind::Invalid
+            }
         };
 
         let span = self.source.span();
