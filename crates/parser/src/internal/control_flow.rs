@@ -47,7 +47,7 @@ impl<'a> Parser<'a> {
                 let body = self.parse_expression();
 
                 default = Some(Box::new(DefaultMatchArm {
-                    id: self.state.id(),
+                    id: self.id(),
                     span: Span::combine(start, body.span),
                     keyword: start,
                     double_arrow: arrow,
@@ -75,7 +75,7 @@ impl<'a> Parser<'a> {
                 let body = self.parse_expression();
 
                 arms.push(MatchArm {
-                    id: self.state.id(),
+                    id: self.id(),
                     span: Span::combine(conditions.span(), body.span),
                     conditions,
                     arrow,
@@ -93,9 +93,9 @@ impl<'a> Parser<'a> {
         let right_brace = self.skip_right_brace();
 
         Expression::new(
-            self.state.id(),
+            self.id(),
             ExpressionKind::Match(MatchExpression {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(keyword, right_brace),
                 keyword,
                 left_parenthesis,
@@ -146,7 +146,7 @@ impl<'a> Parser<'a> {
                     }
 
                     cases.push(Case {
-                        id: self.state.id(),
+                        id: self.id(),
                         span: Span::combine(condition.span, body.span()),
                         condition: Some(condition),
                         body,
@@ -167,7 +167,7 @@ impl<'a> Parser<'a> {
                     }
 
                     cases.push(Case {
-                        id: self.state.id(),
+                        id: self.id(),
                         span: body.span(),
                         condition: None,
                         body,
@@ -194,7 +194,7 @@ impl<'a> Parser<'a> {
         }
 
         StatementKind::Switch(SwitchStatement {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(switch, cases.span()),
             switch,
             left_parenthesis,
@@ -217,7 +217,7 @@ impl<'a> Parser<'a> {
         };
 
         StatementKind::If(IfStatement {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(r#if, body.span()),
             r#if,
             left_parenthesis,
@@ -241,7 +241,7 @@ impl<'a> Parser<'a> {
             let statement = self.parse_statement();
 
             elseifs.push(IfStatementElseIf {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(start, statement.span),
                 elseif: start,
                 left_parenthesis,
@@ -257,7 +257,7 @@ impl<'a> Parser<'a> {
             let statement = self.parse_statement();
 
             Some(IfStatementElse {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(start, statement.span),
                 r#else: start,
                 statement: Box::new(statement),
@@ -267,7 +267,7 @@ impl<'a> Parser<'a> {
         };
 
         IfStatementBody::Statement(IfStatementBodyStatement {
-            id: self.state.id(),
+            id: self.id(),
             span: if let Some(r#else) = &r#else {
                 Span::combine(statement.span, r#else.span)
             } else {
@@ -306,7 +306,7 @@ impl<'a> Parser<'a> {
             let span = Span::combine(start, statements.span());
 
             elseifs.push(IfStatementElseIfBlock {
-                id: self.state.id(),
+                id: self.id(),
                 span,
                 elseif: start,
                 left_parenthesis,
@@ -324,7 +324,7 @@ impl<'a> Parser<'a> {
             let statements = self.parse_multiple_statements_until(TokenKind::EndIf);
 
             Some(Box::new(IfStatementElseBlock {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(start, statements.span()),
                 r#else: start,
                 colon,
@@ -338,7 +338,7 @@ impl<'a> Parser<'a> {
         let ending = self.skip_ending();
 
         IfStatementBody::Block(IfStatementBodyBlock {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(colon, ending.span()),
             colon,
             statements,

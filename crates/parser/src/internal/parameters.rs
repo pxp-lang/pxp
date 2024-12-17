@@ -9,7 +9,7 @@ use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
     pub fn parse_function_parameter_list(&mut self) -> FunctionParameterList {
-        let comments = self.state.comments();
+        let comments = self.comments();
         let left_parenthesis = self.skip_left_parenthesis();
         let parameters = self.comma_separated(
             |parser| {
@@ -39,14 +39,14 @@ impl<'a> Parser<'a> {
                 }
 
                 FunctionParameter {
-                    id: parser.state.id(),
+                    id: parser.id(),
                     // FIXME: This isn't taking other fields into account.
                     span: if ty.is_some() {
                         Span::combine(ty.span(), var.span)
                     } else {
                         var.span
                     },
-                    comments: parser.state.comments(),
+                    comments: parser.comments(),
                     name: var,
                     attributes: parser.state.get_attributes(),
                     data_type: ty,
@@ -61,7 +61,7 @@ impl<'a> Parser<'a> {
         let right_parenthesis = self.skip_right_parenthesis();
 
         FunctionParameterList {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(left_parenthesis, right_parenthesis),
             comments,
             left_parenthesis,
@@ -71,7 +71,7 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_constructor_parameter_list(&mut self) -> ConstructorParameterList {
-        let comments = self.state.comments();
+        let comments = self.comments();
 
         let left_parenthesis = self.skip_left_parenthesis();
         let parameters = self.comma_separated::<ConstructorParameter>(
@@ -138,13 +138,13 @@ impl<'a> Parser<'a> {
                 }
 
                 ConstructorParameter {
-                    id: parser.state.id(),
+                    id: parser.id(),
                     span: if ty.is_some() {
                         Span::combine(ty.span(), var.span)
                     } else {
                         var.span
                     },
-                    comments: parser.state.comments(),
+                    comments: parser.comments(),
                     name: var,
                     attributes: parser.state.get_attributes(),
                     data_type: ty,
@@ -160,7 +160,7 @@ impl<'a> Parser<'a> {
         let right_parenthesis = self.skip_right_parenthesis();
 
         ConstructorParameterList {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(left_parenthesis, right_parenthesis),
             comments,
             left_parenthesis,
@@ -170,7 +170,7 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_argument_list(&mut self) -> ArgumentList {
-        let comments = self.state.comments();
+        let comments = self.comments();
         let start = self.skip_left_parenthesis();
 
         let mut arguments = Vec::new();
@@ -201,7 +201,7 @@ impl<'a> Parser<'a> {
         let end = self.skip_right_parenthesis();
 
         ArgumentList {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(start, end),
             comments,
             left_parenthesis: start,
@@ -215,7 +215,7 @@ impl<'a> Parser<'a> {
         required: bool,
         only_positional: bool,
     ) -> Option<SingleArgument> {
-        let comments = self.state.comments();
+        let comments = self.comments();
 
         if self.current_kind() != TokenKind::LeftParen {
             return None;
@@ -264,7 +264,7 @@ impl<'a> Parser<'a> {
         let end = self.skip_right_parenthesis();
 
         Some(SingleArgument {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(start, end),
             comments,
             left_parenthesis: start,
@@ -289,9 +289,9 @@ impl<'a> Parser<'a> {
             return (
                 true,
                 Argument::Named(NamedArgument {
-                    id: self.state.id(),
+                    id: self.id(),
                     span: Span::combine(name.span, value.span),
-                    comments: self.state.comments(),
+                    comments: self.comments(),
                     name,
                     colon,
                     ellipsis,
@@ -311,9 +311,9 @@ impl<'a> Parser<'a> {
         (
             false,
             Argument::Positional(PositionalArgument {
-                id: self.state.id(),
+                id: self.id(),
                 span: value.span,
-                comments: self.state.comments(),
+                comments: self.comments(),
                 ellipsis,
                 value,
             }),

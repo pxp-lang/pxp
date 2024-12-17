@@ -29,12 +29,12 @@ impl<'a> Parser<'a> {
                     span,
                 );
 
-                return Literal::missing(self.state.id(), span);
+                return Literal::missing(self.id(), span);
             }
         };
 
         Literal {
-            id: self.state.id(),
+            id: self.id(),
             span,
             kind,
             token,

@@ -26,6 +26,9 @@ pub struct ParseResult {
 pub struct Parser<'a> {
     lexer: Lexer<'a>,
     state: State,
+
+    id: u32,
+    comments: Vec<Comment>,
 }
 
 impl<'a> Parser<'a> {
@@ -47,10 +50,19 @@ impl<'a> Parser<'a> {
         let mut this = Self {
             lexer,
             state: State::new(),
+
+            id: 0,
+            comments: vec![],
         };
 
         this.collect_comments();
         this
+    }
+
+    #[inline(always)]
+    pub fn id(&mut self) -> u32 {
+        self.id += 1;
+        self.id
     }
 
     /// Return the current span and move on to the next token.
@@ -118,100 +130,6 @@ impl<'a> Parser<'a> {
 
         while self.current_kind() == TokenKind::PhpDocHorizontalWhitespace {
             self.next();
-        }
-    }
-
-    fn collect_comments(&mut self) {
-        loop {
-            if self.is_eof() {
-                break;
-            }
-
-            if !matches!(
-                self.current_kind(),
-                TokenKind::SingleLineComment
-                    | TokenKind::MultiLineComment
-                    | TokenKind::HashMarkComment
-                    | TokenKind::DocBlockComment
-                    | TokenKind::OpenPhpDoc,
-            ) {
-                break;
-            }
-
-            let id = self.state.id();
-            let comment_id = self.state.id();
-
-            let (comment, move_forward) = match self.current_kind() {
-                TokenKind::SingleLineComment => (
-                    Comment {
-                        id,
-                        span: self.current_span(),
-                        kind: CommentKind::SingleLine(SingleLineComment {
-                            id: comment_id,
-                            span: self.current_span(),
-                            content: self.current_symbol_as_bytestring(),
-                        }),
-                    },
-                    true,
-                ),
-                TokenKind::MultiLineComment => (
-                    Comment {
-                        id,
-                        span: self.current_span(),
-                        kind: CommentKind::MultiLine(MultiLineComment {
-                            id: comment_id,
-                            span: self.current_span(),
-                            content: self.current_symbol_as_bytestring(),
-                        }),
-                    },
-                    true,
-                ),
-                TokenKind::HashMarkComment => (
-                    Comment {
-                        id,
-                        span: self.current_span(),
-                        kind: CommentKind::HashMark(HashMarkComment {
-                            id: comment_id,
-                            span: self.current_span(),
-                            content: self.current_symbol_as_bytestring(),
-                        }),
-                    },
-                    true,
-                ),
-                #[cfg(not(feature = "docblocks"))]
-                TokenKind::DocBlockComment => (
-                    Comment {
-                        id,
-                        span: self.current_span(),
-                        kind: CommentKind::DocBlock(DocBlockComment {
-                            id: comment_id,
-                            span: self.current_span(),
-                            content: self.current_symbol_as_bytestring(),
-                        }),
-                    },
-                    true,
-                ),
-                #[cfg(feature = "docblocks")]
-                TokenKind::OpenPhpDoc => {
-                    let docblock = self.parse_docblock();
-
-                    (
-                        Comment {
-                            id,
-                            span: docblock.span,
-                            kind: CommentKind::DocBlock(docblock),
-                        },
-                        false,
-                    )
-                }
-                _ => unreachable!(),
-            };
-
-            self.state.comments.push(comment);
-
-            if move_forward {
-                self.next();
-            }
         }
     }
 

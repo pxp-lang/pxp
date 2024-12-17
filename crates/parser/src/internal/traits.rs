@@ -94,11 +94,11 @@ impl<'a> Parser<'a> {
                                         Span::combine(method.span, visibility.span())
                                     };
                                     adaptations.push(TraitUsageAdaptation {
-                                        id: self.state.id(),
+                                        id: self.id(),
                                         span,
                                         kind: TraitUsageAdaptationKind::Visibility(
                                             TraitUsageAdaptationVisibility {
-                                                id: self.state.id(),
+                                                id: self.id(),
                                                 span,
                                                 r#trait,
                                                 method,
@@ -115,11 +115,11 @@ impl<'a> Parser<'a> {
                                     };
 
                                     adaptations.push(TraitUsageAdaptation {
-                                        id: self.state.id(),
+                                        id: self.id(),
                                         span,
                                         kind: TraitUsageAdaptationKind::Alias(
                                             TraitUsageAdaptationAlias {
-                                                id: self.state.id(),
+                                                id: self.id(),
                                                 span,
                                                 r#trait,
                                                 method,
@@ -139,11 +139,11 @@ impl<'a> Parser<'a> {
                                 };
 
                                 adaptations.push(TraitUsageAdaptation {
-                                    id: self.state.id(),
+                                    id: self.id(),
                                     span,
                                     kind: TraitUsageAdaptationKind::Alias(
                                         TraitUsageAdaptationAlias {
-                                            id: self.state.id(),
+                                            id: self.id(),
                                             span,
                                             r#trait,
                                             method,
@@ -193,11 +193,11 @@ impl<'a> Parser<'a> {
                         };
 
                         adaptations.push(TraitUsageAdaptation {
-                            id: self.state.id(),
+                            id: self.id(),
                             span,
                             kind: TraitUsageAdaptationKind::Precedence(
                                 TraitUsageAdaptationPrecedence {
-                                    id: self.state.id(),
+                                    id: self.id(),
                                     span,
                                     r#trait,
                                     method,
@@ -218,7 +218,7 @@ impl<'a> Parser<'a> {
         }
 
         TraitUsage {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(span, adaptations.span()),
             r#use: span,
             traits,
@@ -242,7 +242,7 @@ impl<'a> Parser<'a> {
         let right_brace = self.skip_right_brace();
 
         let body = TraitBody {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(left_brace, right_brace),
             left_brace,
             members,
@@ -250,7 +250,7 @@ impl<'a> Parser<'a> {
         };
 
         StatementKind::Trait(TraitStatement {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(span, body.span),
             r#trait: span,
             name,

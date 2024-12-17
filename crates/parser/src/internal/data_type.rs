@@ -34,7 +34,7 @@ impl<'a> Parser<'a> {
         // FIXME: We need to create spans for types, but we don't have access to the previous token anymore.
         let span = Span::missing();
 
-        DataType::new(self.state.id(), kind, span)
+        DataType::new(self.id(), kind, span)
     }
 
     pub fn parse_optional_data_type(&mut self) -> Option<DataType> {
@@ -69,7 +69,7 @@ impl<'a> Parser<'a> {
         // FIXME: We need to create spans for types, but we don't have access to the previous token anymore.
         let span = Span::missing();
 
-        Some(DataType::new(self.state.id(), kind, span))
+        Some(DataType::new(self.id(), kind, span))
     }
 
     // Special type parsing logic for DocBlock comments, heavily based on the phpstan/phpdoc-parser package.
@@ -406,7 +406,7 @@ impl<'a> Parser<'a> {
             TokenKind::Enum | TokenKind::From => {
                 self.next();
 
-                let id = self.state.id();
+                let id = self.id();
 
                 Some(Type::Named(self.maybe_resolve_identifier(
                     id,
@@ -431,7 +431,7 @@ impl<'a> Parser<'a> {
                     b"array" => Some(Type::Array),
                     b"callable" => Some(Type::Callable),
                     _ => {
-                        let id = parser.state.id();
+                        let id = parser.id();
 
                         Some(Type::Named(parser.maybe_resolve_identifier(
                             id,
@@ -447,14 +447,14 @@ impl<'a> Parser<'a> {
                 let span = self.next();
 
                 Some(Type::Named(Name::resolved(
-                    self.state.id(),
+                    self.id(),
                     resolved,
                     symbol,
                     span,
                 )))
             }
             TokenKind::QualifiedIdentifier => {
-                let id = self.state.id();
+                let id = self.id();
                 let name = self.maybe_resolve_identifier(id, &self.current(), UseKind::Normal);
                 self.next();
 

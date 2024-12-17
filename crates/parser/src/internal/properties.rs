@@ -62,10 +62,10 @@ impl<'a> Parser<'a> {
                 let span = Span::combine(variable.span, value.span);
 
                 entries.push(PropertyEntry {
-                    id: self.state.id(),
+                    id: self.id(),
                     span,
                     kind: PropertyEntryKind::Initialized(InitializedPropertyEntry {
-                        id: self.state.id(),
+                        id: self.id(),
                         span,
                         variable,
                         equals,
@@ -74,10 +74,10 @@ impl<'a> Parser<'a> {
                 });
             } else {
                 entries.push(PropertyEntry {
-                    id: self.state.id(),
+                    id: self.id(),
                     span: variable.span,
                     kind: PropertyEntryKind::Uninitialized(UninitializedPropertyEntry {
-                        id: self.state.id(),
+                        id: self.id(),
                         span: variable.span,
                         variable,
                     }),
@@ -94,7 +94,7 @@ impl<'a> Parser<'a> {
         let end = self.skip_semicolon();
 
         Property {
-            id: self.state.id(),
+            id: self.id(),
             span: if ty.is_some() {
                 Span::combine(ty.span(), end)
             } else {
@@ -139,10 +139,10 @@ impl<'a> Parser<'a> {
                 let span = Span::combine(variable.span, value.span);
 
                 entries.push(PropertyEntry {
-                    id: self.state.id(),
+                    id: self.id(),
                     span,
                     kind: PropertyEntryKind::Initialized(InitializedPropertyEntry {
-                        id: self.state.id(),
+                        id: self.id(),
                         span,
                         variable,
                         equals: span,
@@ -151,10 +151,10 @@ impl<'a> Parser<'a> {
                 });
             } else {
                 entries.push(PropertyEntry {
-                    id: self.state.id(),
+                    id: self.id(),
                     span: variable.span,
                     kind: PropertyEntryKind::Uninitialized(UninitializedPropertyEntry {
-                        id: self.state.id(),
+                        id: self.id(),
                         span: variable.span,
                         variable,
                     }),
@@ -171,7 +171,7 @@ impl<'a> Parser<'a> {
         let end = self.skip_semicolon();
 
         VariableProperty {
-            id: self.state.id(),
+            id: self.id(),
             span: if ty.is_some() {
                 Span::combine(ty.span(), end)
             } else {

@@ -5,7 +5,7 @@ use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
     pub fn parse_constant(&mut self) -> ConstantStatement {
-        let comments = self.state.comments();
+        let comments = self.comments();
         let start = self.skip(TokenKind::Const);
 
         let mut entries = vec![];
@@ -16,7 +16,7 @@ impl<'a> Parser<'a> {
             let value = self.parse_expression();
 
             entries.push(ConstantEntry {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(name.span, value.span),
                 name,
                 equals: span,
@@ -34,7 +34,7 @@ impl<'a> Parser<'a> {
         let span = Span::combine(start, end);
 
         ConstantStatement {
-            id: self.state.id(),
+            id: self.id(),
             span,
             comments,
             r#const: start,
@@ -48,7 +48,7 @@ impl<'a> Parser<'a> {
         modifiers: ConstantModifierGroup,
     ) -> ClassishConstant {
         let attributes = self.state.get_attributes();
-        let comments = self.state.comments();
+        let comments = self.comments();
         let start = self.skip(TokenKind::Const);
 
         let data_type = if self.peek_kind() == TokenKind::Identifier {
@@ -65,7 +65,7 @@ impl<'a> Parser<'a> {
             let value = self.parse_expression();
 
             entries.push(ClassishConstantEntry {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(name.span, value.span),
                 name,
                 equals: span,
@@ -82,7 +82,7 @@ impl<'a> Parser<'a> {
         let end = self.skip_semicolon();
 
         ClassishConstant {
-            id: self.state.id(),
+            id: self.id(),
             span: if !modifiers.is_empty() {
                 Span::combine(modifiers.span, end)
             } else {

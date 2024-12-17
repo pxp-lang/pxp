@@ -23,7 +23,7 @@ impl<'a> Parser<'a> {
             });
 
             Some(InterfaceExtends {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(span, parents.span()),
                 extends: span,
                 parents,
@@ -46,7 +46,7 @@ impl<'a> Parser<'a> {
         let right_brace = self.skip_right_brace();
 
         let body = InterfaceBody {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(left_brace, right_brace),
             left_brace,
             members,
@@ -54,7 +54,7 @@ impl<'a> Parser<'a> {
         };
 
         StatementKind::Interface(InterfaceStatement {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(span, body.span),
             interface: span,
             name,

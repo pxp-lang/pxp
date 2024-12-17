@@ -12,7 +12,7 @@ impl<'a> Parser<'a> {
             self.braced(|parser| parser.parse_multiple_statements_until(TokenKind::RightBrace));
 
         StatementKind::Block(BlockStatement {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(left_brace, right_brace),
             left_brace,
             statements,

@@ -20,15 +20,11 @@ pub enum Scope {
 
 #[derive(Debug)]
 pub struct State {
-    // Unique identifier for each node.
-    id: u32,
-
     // Scope Tracking
     pub stack: VecDeque<Scope>,
     pub imports: HashMap<UseKind, HashMap<ByteString, ByteString>>,
     pub namespace_type: Option<NamespaceType>,
     pub attributes: Vec<AttributeGroup>,
-    pub(crate) comments: Vec<Comment>,
     docblock: bool,
 
     // Diagnostics
@@ -47,10 +43,7 @@ impl State {
             namespace_type: None,
             attributes: vec![],
             imports,
-            comments: vec![],
             docblock: false,
-
-            id: 0,
 
             diagnostics: vec![],
         }
@@ -68,23 +61,6 @@ impl State {
     #[cfg(feature = "docblocks")]
     pub fn exit_docblock(&mut self) {
         self.docblock = false;
-    }
-
-    pub fn comments(&mut self) -> CommentGroup {
-        let mut comments = vec![];
-
-        std::mem::swap(&mut self.comments, &mut comments);
-
-        CommentGroup {
-            id: self.id(),
-            comments: comments.clone(),
-        }
-    }
-
-    #[inline(always)]
-    pub fn id(&mut self) -> u32 {
-        self.id += 1;
-        self.id
     }
 
     pub fn attribute(&mut self, attr: AttributeGroup) {

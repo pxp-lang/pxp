@@ -26,7 +26,7 @@ impl<'a> Parser<'a> {
             let span = Span::new(start.start, end.end);
 
             members.push(Attribute {
-                id: self.state.id(),
+                id: self.id(),
                 span,
                 name,
                 arguments,
@@ -48,7 +48,7 @@ impl<'a> Parser<'a> {
         let end = self.skip_right_bracket();
         let span = Span::new(start.start, end.end);
 
-        let id = self.state.id();
+        let id = self.id();
         self.state.attribute(AttributeGroup { id, span, members });
 
         // recursive, looking for multiple attribute brackets after each other.

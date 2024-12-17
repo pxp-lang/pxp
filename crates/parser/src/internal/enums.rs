@@ -101,7 +101,7 @@ impl<'a> Parser<'a> {
             let right_brace = self.skip_right_brace();
 
             let body = BackedEnumBody {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(left_brace, right_brace),
                 left_brace,
                 members,
@@ -109,7 +109,7 @@ impl<'a> Parser<'a> {
             };
 
             StatementKind::BackedEnum(BackedEnumStatement {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(span, body.span),
                 r#enum: span,
                 name,
@@ -134,7 +134,7 @@ impl<'a> Parser<'a> {
             let right_brace = self.skip_right_brace();
 
             let body = UnitEnumBody {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(left_brace, right_brace),
                 left_brace,
                 members,
@@ -142,7 +142,7 @@ impl<'a> Parser<'a> {
             };
 
             StatementKind::UnitEnum(UnitEnumStatement {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(span, body.span),
                 r#enum: span,
                 name,
@@ -182,7 +182,7 @@ impl<'a> Parser<'a> {
             let end = self.skip_semicolon();
 
             return Some(UnitEnumMember::Case(UnitEnumCase {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(start, end),
                 start,
                 end,
@@ -221,7 +221,7 @@ impl<'a> Parser<'a> {
             let semicolon = self.skip_semicolon();
 
             return Some(BackedEnumMember::Case(BackedEnumCase {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(case, semicolon),
                 attributes,
                 case,

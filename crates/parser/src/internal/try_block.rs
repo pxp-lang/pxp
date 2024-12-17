@@ -47,7 +47,7 @@ impl<'a> Parser<'a> {
             let catch_end = self.current_span();
 
             catches.push(CatchBlock {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(catch_start, catch_body.span()),
                 start: catch_start,
                 end: catch_end,
@@ -69,7 +69,7 @@ impl<'a> Parser<'a> {
             let finally_end = self.current_span();
 
             finally = Some(FinallyBlock {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(finally_start, finally_body.span()),
                 start: finally_start,
                 end: finally_end,
@@ -94,7 +94,7 @@ impl<'a> Parser<'a> {
         };
 
         StatementKind::Try(TryStatement {
-            id: self.state.id(),
+            id: self.id(),
             span,
             start,
             end: last_right_brace,
@@ -127,10 +127,10 @@ impl<'a> Parser<'a> {
             let span = types.span();
 
             return CatchType {
-                id: self.state.id(),
+                id: self.id(),
                 span,
                 kind: CatchTypeKind::Union(CatchTypeKindUnion {
-                    id: self.state.id(),
+                    id: self.id(),
                     span,
                     identifiers: types,
                 }),
@@ -138,10 +138,10 @@ impl<'a> Parser<'a> {
         }
 
         CatchType {
-            id: self.state.id(),
+            id: self.id(),
             span: id.span(),
             kind: CatchTypeKind::Identifier(CatchTypeKindIdentifier {
-                id: self.state.id(),
+                id: self.id(),
                 span: id.span(),
                 identifier: id,
             }),

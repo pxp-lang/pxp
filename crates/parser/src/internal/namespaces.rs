@@ -75,7 +75,7 @@ impl<'a> Parser<'a> {
         });
 
         StatementKind::Namespace(NamespaceStatement::Unbraced(UnbracedNamespace {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(start, statements.span()),
             start,
             end,
@@ -103,7 +103,7 @@ impl<'a> Parser<'a> {
                 let end = self.skip_right_brace();
 
                 BracedNamespaceBody {
-                    id: self.state.id(),
+                    id: self.id(),
                     span: Span::combine(start, end),
                     start,
                     end,
@@ -113,7 +113,7 @@ impl<'a> Parser<'a> {
         );
 
         StatementKind::Namespace(NamespaceStatement::Braced(BracedNamespace {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(span, body.span),
             namespace: span,
             name,

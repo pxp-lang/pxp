@@ -83,10 +83,10 @@ impl<'a> Parser<'a> {
                 };
 
                 uses.push(Use {
-                    id: self.state.id(),
+                    id: self.id(),
                     span,
                     name: Name::resolved(
-                        self.state.id(),
+                        self.id(),
                         prefix_symbol
                             .clone()
                             .coagulate(&[name.symbol.clone()], Some(b"\\")),
@@ -114,7 +114,7 @@ impl<'a> Parser<'a> {
             let semicolon = self.skip_semicolon();
 
             StatementKind::GroupUse(GroupUseStatement {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(prefix.span, semicolon),
                 prefix,
                 kind,
@@ -139,7 +139,7 @@ impl<'a> Parser<'a> {
                 };
 
                 uses.push(Use {
-                    id: self.state.id(),
+                    id: self.id(),
                     span,
                     name: name.clone(),
                     kind,
@@ -161,7 +161,7 @@ impl<'a> Parser<'a> {
             let span = Span::combine(r#use, uses.span());
 
             StatementKind::Use(UseStatement {
-                id: self.state.id(),
+                id: self.id(),
                 span,
                 uses,
                 kind,

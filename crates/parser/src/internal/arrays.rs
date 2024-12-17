@@ -72,7 +72,7 @@ impl<'a> Parser<'a> {
                     std::mem::swap(&mut key, &mut value);
 
                     items.push(ListEntry::KeyValue(ListEntryKeyValue {
-                        id: self.state.id(),
+                        id: self.id(),
                         span: Span::combine(key.span, value.span),
                         key,
                         double_arrow,
@@ -90,7 +90,7 @@ impl<'a> Parser<'a> {
                     }
 
                     items.push(ListEntry::Value(ListEntryValue {
-                        id: self.state.id(),
+                        id: self.id(),
                         span: value.span,
                         value,
                     }));
@@ -114,7 +114,7 @@ impl<'a> Parser<'a> {
         let span = Span::combine(list, end);
 
         let kind = ExpressionKind::List(ListExpression {
-            id: self.state.id(),
+            id: self.id(),
             span,
             list,
             start,
@@ -122,7 +122,7 @@ impl<'a> Parser<'a> {
             end,
         });
 
-        Expression::new(self.state.id(), kind, span, CommentGroup::default())
+        Expression::new(self.id(), kind, span, CommentGroup::default())
     }
 
     pub fn parse_short_array_expression(&mut self) -> Expression {
@@ -142,14 +142,14 @@ impl<'a> Parser<'a> {
         let span = Span::combine(start, end);
 
         let kind = ExpressionKind::ShortArray(ShortArrayExpression {
-            id: self.state.id(),
+            id: self.id(),
             span,
             start,
             items,
             end,
         });
 
-        Expression::new(self.state.id(), kind, span, CommentGroup::default())
+        Expression::new(self.id(), kind, span, CommentGroup::default())
     }
 
     pub fn parse_array_expression(&mut self) -> Expression {
@@ -160,7 +160,7 @@ impl<'a> Parser<'a> {
         let span = Span::combine(array, end);
 
         let kind = ExpressionKind::Array(ArrayExpression {
-            id: self.state.id(),
+            id: self.id(),
             span,
             array,
             start,
@@ -168,7 +168,7 @@ impl<'a> Parser<'a> {
             end,
         });
 
-        Expression::new(self.state.id(), kind, span, CommentGroup::default())
+        Expression::new(self.id(), kind, span, CommentGroup::default())
     }
 
     fn parse_array_pair(&mut self) -> ArrayItem {
@@ -198,7 +198,7 @@ impl<'a> Parser<'a> {
 
         if let Some(ellipsis) = ellipsis {
             return ArrayItem::SpreadValue(ArrayItemSpreadValue {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(ellipsis, value.span),
                 ellipsis,
                 value,
@@ -207,7 +207,7 @@ impl<'a> Parser<'a> {
 
         if let Some(ampersand) = ampersand {
             return ArrayItem::ReferencedValue(ArrayItemReferencedValue {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(ampersand, value.span),
                 ampersand,
                 value,
@@ -239,7 +239,7 @@ impl<'a> Parser<'a> {
 
             return match ampersand {
                 Some(ampersand) => ArrayItem::ReferencedKeyValue(ArrayItemReferencedKeyValue {
-                    id: self.state.id(),
+                    id: self.id(),
                     span: Span::combine(key.span, value.span),
                     key,
                     double_arrow,
@@ -247,7 +247,7 @@ impl<'a> Parser<'a> {
                     ampersand,
                 }),
                 None => ArrayItem::KeyValue(ArrayItemKeyValue {
-                    id: self.state.id(),
+                    id: self.id(),
                     span: Span::combine(key.span, value.span),
                     key,
                     double_arrow,
@@ -257,7 +257,7 @@ impl<'a> Parser<'a> {
         }
 
         ArrayItem::Value(ArrayItemValue {
-            id: self.state.id(),
+            id: self.id(),
             span: value.span,
             value,
         })

@@ -32,9 +32,9 @@ impl<'a> Parser<'a> {
         let end_span = self.current_span();
 
         Expression::new(
-            self.state.id(),
+            self.id(),
             ExpressionKind::InterpolatedString(InterpolatedStringExpression {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(start_span, end_span),
                 parts,
             }),
@@ -61,9 +61,9 @@ impl<'a> Parser<'a> {
         let end_span = self.current_span();
 
         Expression::new(
-            self.state.id(),
+            self.id(),
             ExpressionKind::ShellExec(ShellExecExpression {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(start_span, end_span),
                 parts,
             }),
@@ -90,9 +90,9 @@ impl<'a> Parser<'a> {
         let end = self.next();
 
         Expression::new(
-            self.state.id(),
+            self.id(),
             ExpressionKind::Heredoc(HeredocExpression {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(span, end),
                 label: label.clone(),
                 parts,
@@ -131,9 +131,9 @@ impl<'a> Parser<'a> {
         };
 
         Expression::new(
-            self.state.id(),
+            self.id(),
             ExpressionKind::Nowdoc(NowdocExpression {
-                id: self.state.id(),
+                id: self.id(),
                 span,
                 label,
                 value: string_part,
@@ -150,7 +150,7 @@ impl<'a> Parser<'a> {
 
                 let part = if !span.is_empty() {
                     Some(StringPart::Literal(LiteralStringPart {
-                        id: self.state.id(),
+                        id: self.id(),
                         span,
                         value: self.current_symbol_as_bytestring(),
                     }))
@@ -167,14 +167,14 @@ impl<'a> Parser<'a> {
                 let span = Span::combine(start_span, variable.span());
 
                 let expression = Expression::new(
-                    self.state.id(),
+                    self.id(),
                     ExpressionKind::Variable(variable),
                     span,
                     CommentGroup::default(),
                 );
 
                 Some(StringPart::Expression(ExpressionStringPart {
-                    id: self.state.id(),
+                    id: self.id(),
                     span: expression.span,
                     expression: Box::new(expression),
                 }))
@@ -185,7 +185,7 @@ impl<'a> Parser<'a> {
                 let e = self.parse_expression();
                 self.skip_right_brace();
                 Some(StringPart::Expression(ExpressionStringPart {
-                    id: self.state.id(),
+                    id: self.id(),
                     span: e.span,
                     expression: Box::new(e),
                 }))
@@ -195,7 +195,7 @@ impl<'a> Parser<'a> {
                 let variable_span = self.current_span();
                 let variable = ExpressionKind::Variable(self.parse_dynamic_variable());
                 let variable = Expression::new(
-                    self.state.id(),
+                    self.id(),
                     variable,
                     variable_span,
                     CommentGroup::default(),
@@ -212,7 +212,7 @@ impl<'a> Parser<'a> {
                                 self.next();
 
                                 ExpressionKind::Literal(Literal::new(
-                                    self.state.id(),
+                                    self.id(),
                                     LiteralKind::Integer,
                                     self.current().to_owned(),
                                     self.current_span(),
@@ -228,14 +228,14 @@ impl<'a> Parser<'a> {
                                     self.next();
 
                                     let kind = ExpressionKind::Literal(Literal::new(
-                                        self.state.id(),
+                                        self.id(),
                                         LiteralKind::Integer,
                                         literal,
                                         span,
                                     ));
 
                                     let expression = Expression::new(
-                                        self.state.id(),
+                                        self.id(),
                                         kind,
                                         span,
                                         CommentGroup::default(),
@@ -243,10 +243,10 @@ impl<'a> Parser<'a> {
 
                                     ExpressionKind::ArithmeticOperation(
                                         ArithmeticOperationExpression {
-                                            id: self.state.id(),
+                                            id: self.id(),
                                             span: Span::combine(span, expression.span),
                                             kind: ArithmeticOperationKind::Negative {
-                                                id: self.state.id(),
+                                                id: self.id(),
                                                 minus: span,
                                                 right: Box::new(expression),
                                             },
@@ -271,7 +271,7 @@ impl<'a> Parser<'a> {
                             }
                             TokenKind::Identifier => self.next_but_first(|parser| {
                                 ExpressionKind::Literal(Literal::new(
-                                    parser.state.id(),
+                                    parser.id(),
                                     LiteralKind::String,
                                     parser.current().to_owned(),
                                     parser.current_span(),
@@ -305,12 +305,12 @@ impl<'a> Parser<'a> {
                         let span = index.span();
 
                         let index =
-                            Expression::new(self.state.id(), index, span, CommentGroup::default());
+                            Expression::new(self.id(), index, span, CommentGroup::default());
 
                         let right_bracket = self.skip_right_bracket();
 
                         ExpressionKind::ArrayIndex(ArrayIndexExpression {
-                            id: self.state.id(),
+                            id: self.id(),
                             span: Span::combine(variable.span, right_bracket),
                             array: Box::new(variable),
                             left_bracket,
@@ -328,14 +328,14 @@ impl<'a> Parser<'a> {
                         let kind =
                             ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier));
                         let identifier_expression = Expression::new(
-                            self.state.id(),
+                            self.id(),
                             kind,
                             id_span,
                             CommentGroup::default(),
                         );
 
                         ExpressionKind::PropertyFetch(PropertyFetchExpression {
-                            id: self.state.id(),
+                            id: self.id(),
                             span: Span::combine(variable.span, identifier_expression.span),
                             target: Box::new(variable),
                             arrow: span,
@@ -349,12 +349,12 @@ impl<'a> Parser<'a> {
                         let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(ident));
 
                         ExpressionKind::NullsafePropertyFetch(NullsafePropertyFetchExpression {
-                            id: self.state.id(),
+                            id: self.id(),
                             span: Span::combine(variable.span, ident_span),
                             target: Box::new(variable),
                             question_arrow: span,
                             property: Box::new(Expression::new(
-                                self.state.id(),
+                                self.id(),
                                 kind,
                                 ident_span,
                                 CommentGroup::default(),
@@ -368,10 +368,10 @@ impl<'a> Parser<'a> {
                 let span = Span::combine(variable_span, e.span());
 
                 Some(StringPart::Expression(ExpressionStringPart {
-                    id: self.state.id(),
+                    id: self.id(),
                     span,
                     expression: Box::new(Expression::new(
-                        self.state.id(),
+                        self.id(),
                         e,
                         span,
                         CommentGroup::default(),

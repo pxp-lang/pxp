@@ -36,7 +36,7 @@ impl<'a> Parser<'a> {
                 std::mem::swap(&mut value, &mut key);
 
                 ForeachStatementIterator::KeyAndValue(ForeachStatementIteratorKeyAndValue {
-                    id: parser.state.id(),
+                    id: parser.id(),
                     span: Span::combine(expression.span, value.span),
                     expression,
                     r#as,
@@ -47,7 +47,7 @@ impl<'a> Parser<'a> {
                 })
             } else {
                 ForeachStatementIterator::Value(ForeachStatementIteratorValue {
-                    id: parser.state.id(),
+                    id: parser.id(),
                     span: Span::combine(expression.span, value.span),
                     expression,
                     r#as,
@@ -64,7 +64,7 @@ impl<'a> Parser<'a> {
             let ending = self.skip_ending();
 
             ForeachStatementBody::Block(ForeachStatementBodyBlock {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(colon, ending.span()),
                 colon,
                 statements,
@@ -75,14 +75,14 @@ impl<'a> Parser<'a> {
             let statement = self.parse_statement();
 
             ForeachStatementBody::Statement(ForeachStatementBodyStatement {
-                id: self.state.id(),
+                id: self.id(),
                 span: statement.span,
                 statement: Box::new(statement),
             })
         };
 
         StatementKind::Foreach(ForeachStatement {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(foreach, body.span()),
             foreach,
             left_parenthesis,
@@ -117,7 +117,7 @@ impl<'a> Parser<'a> {
             );
 
             ForStatementIterator {
-                id: parser.state.id(),
+                id: parser.id(),
                 span: Span::combine(initializations.span(), r#loop.span()),
                 initializations,
                 initializations_semicolon,
@@ -134,7 +134,7 @@ impl<'a> Parser<'a> {
             let ending = self.skip_ending();
 
             ForStatementBody::Block(ForStatementBodyBlock {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(colon, ending.span()),
                 colon,
                 statements,
@@ -145,14 +145,14 @@ impl<'a> Parser<'a> {
             let x = self.parse_statement();
 
             ForStatementBody::Statement(ForStatementBodyStatement {
-                id: self.state.id(),
+                id: self.id(),
                 span: x.span,
                 statement: Box::new(x),
             })
         };
 
         StatementKind::For(ForStatement {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(r#for, body.span()),
             r#for,
             left_parenthesis,
@@ -175,7 +175,7 @@ impl<'a> Parser<'a> {
             });
 
         StatementKind::DoWhile(DoWhileStatement {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(r#do, right_parenthesis),
             r#do,
             body,
@@ -200,7 +200,7 @@ impl<'a> Parser<'a> {
             let ending = self.skip_ending();
 
             WhileStatementBody::Block(WhileStatementBodyBlock {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(colon, ending.span()),
                 colon,
                 statements,
@@ -211,14 +211,14 @@ impl<'a> Parser<'a> {
             let x = self.parse_statement();
 
             WhileStatementBody::Statement(WhileStatementBodyStatement {
-                id: self.state.id(),
+                id: self.id(),
                 span: x.span,
                 statement: Box::new(x),
             })
         };
 
         StatementKind::While(WhileStatement {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(r#while, body.span()),
             r#while,
             left_parenthesis,
@@ -234,7 +234,7 @@ impl<'a> Parser<'a> {
         let ending = self.skip_ending();
 
         StatementKind::Continue(ContinueStatement {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(r#continue, ending.span()),
             r#continue,
             level,
@@ -248,7 +248,7 @@ impl<'a> Parser<'a> {
         let ending = self.skip_ending();
 
         StatementKind::Break(BreakStatement {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(r#break, ending.span()),
             r#break,
             level,
@@ -273,8 +273,8 @@ impl<'a> Parser<'a> {
             self.next();
 
             return Level::Literal(LiteralLevel {
-                id: self.state.id(),
-                literal: Literal::new(self.state.id(), LiteralKind::Integer, token, span),
+                id: self.id(),
+                literal: Literal::new(self.id(), LiteralKind::Integer, token, span),
             });
         }
 
@@ -282,7 +282,7 @@ impl<'a> Parser<'a> {
             self.parenthesized(|parser| Box::new(parser.parse_loop_level()));
 
         Level::Parenthesized(ParenthesizedLevel {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(left_parenthesis, right_parenthesis),
             left_parenthesis,
             level,

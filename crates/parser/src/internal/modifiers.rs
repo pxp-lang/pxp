@@ -28,7 +28,7 @@ impl<'a> Parser<'a> {
             .collect::<Vec<ClassModifier>>();
 
         let group = ClassModifierGroup {
-            id: self.state.id(),
+            id: self.id(),
             span: modifiers.span(),
             modifiers,
         };
@@ -72,7 +72,7 @@ impl<'a> Parser<'a> {
             .collect::<Vec<MethodModifier>>();
 
         let group = MethodModifierGroup {
-            id: self.state.id(),
+            id: self.id(),
             span: modifiers.span(),
             modifiers,
         };
@@ -115,7 +115,7 @@ impl<'a> Parser<'a> {
             .collect::<Vec<PropertyModifier>>();
 
         PropertyModifierGroup {
-            id: self.state.id(),
+            id: self.id(),
             span: modifiers.span(),
             modifiers,
         }
@@ -146,7 +146,7 @@ impl<'a> Parser<'a> {
             .collect::<Vec<PromotedPropertyModifier>>();
 
         PromotedPropertyModifierGroup {
-            id: self.state.id(),
+            id: self.id(),
             span: modifiers.span(),
             modifiers,
         }
@@ -173,7 +173,7 @@ impl<'a> Parser<'a> {
             .collect::<Vec<ConstantModifier>>();
 
         let group = ConstantModifierGroup {
-            id: self.state.id(),
+            id: self.id(),
             span: modifiers.span(),
             modifiers,
         };

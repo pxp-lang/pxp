@@ -13,7 +13,7 @@ impl<'a> Parser<'a> {
             TokenKind::Identifier | TokenKind::Enum | TokenKind::From => {
                 self.next_but_first(|parser| {
                     SimpleIdentifier::new(
-                        parser.state.id(),
+                        parser.id(),
                         parser.current_symbol_as_bytestring(),
                         parser.current_span(),
                     )
@@ -28,7 +28,7 @@ impl<'a> Parser<'a> {
                     );
 
                     SimpleIdentifier::new(
-                        parser.state.id(),
+                        parser.id(),
                         parser.current_symbol_as_bytestring(),
                         parser.current_span(),
                     )
@@ -42,7 +42,7 @@ impl<'a> Parser<'a> {
                 );
 
                 SimpleIdentifier::new(
-                    parser.state.id(),
+                    parser.id(),
                     parser.current_symbol_as_bytestring(),
                     parser.current_span(),
                 )
@@ -57,7 +57,7 @@ impl<'a> Parser<'a> {
                     self.current_span(),
                 );
 
-                SimpleIdentifier::new(self.state.id(), ByteString::empty(), self.current_span())
+                SimpleIdentifier::new(self.id(), ByteString::empty(), self.current_span())
             }
         }
     }
@@ -68,7 +68,7 @@ impl<'a> Parser<'a> {
             TokenKind::Identifier | TokenKind::Enum | TokenKind::From => {
                 self.next_but_first(|parser| {
                     SimpleIdentifier::new(
-                        parser.state.id(),
+                        parser.id(),
                         parser.current_symbol_as_bytestring(),
                         parser.current_span(),
                     )
@@ -83,7 +83,7 @@ impl<'a> Parser<'a> {
                     );
 
                     SimpleIdentifier::new(
-                        parser.state.id(),
+                        parser.id(),
                         parser.current_symbol_as_bytestring(),
                         parser.current_span(),
                     )
@@ -97,7 +97,7 @@ impl<'a> Parser<'a> {
                 );
 
                 SimpleIdentifier::new(
-                    parser.state.id(),
+                    parser.id(),
                     parser.current_symbol_as_bytestring(),
                     parser.current_span(),
                 )
@@ -112,7 +112,7 @@ impl<'a> Parser<'a> {
                     self.current_span(),
                 );
 
-                SimpleIdentifier::new(self.state.id(), ByteString::empty(), self.current_span())
+                SimpleIdentifier::new(self.id(), ByteString::empty(), self.current_span())
             }
         }
     }
@@ -122,7 +122,7 @@ impl<'a> Parser<'a> {
         if self.current_kind() == TokenKind::Identifier {
             self.next_but_first(|parser| {
                 SimpleIdentifier::new(
-                    parser.state.id(),
+                    parser.id(),
                     parser.current_symbol_as_bytestring(),
                     parser.current_span(),
                 )
@@ -140,7 +140,7 @@ impl<'a> Parser<'a> {
 
             // Because identifiers cannot contain spaces, we can assume that the next identifier starts
             // one byte after the previous token ends.
-            SimpleIdentifier::new(self.state.id(), ByteString::empty(), Span::missing())
+            SimpleIdentifier::new(self.id(), ByteString::empty(), Span::missing())
         }
     }
 
@@ -150,7 +150,7 @@ impl<'a> Parser<'a> {
             TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
                 self.next_but_first(|parser| {
                     SimpleIdentifier::new(
-                        parser.state.id(),
+                        parser.id(),
                         parser.current_symbol_as_bytestring(),
                         parser.current_span(),
                     )
@@ -166,7 +166,7 @@ impl<'a> Parser<'a> {
                     parser.current_span(),
                 );
 
-                SimpleIdentifier::new(parser.state.id(), ByteString::empty(), Span::missing())
+                SimpleIdentifier::new(parser.id(), ByteString::empty(), Span::missing())
             }),
         }
     }
@@ -177,7 +177,7 @@ impl<'a> Parser<'a> {
             TokenKind::Identifier | TokenKind::QualifiedIdentifier => {
                 self.next_but_first(|parser| {
                     Some(SimpleIdentifier::new(
-                        parser.state.id(),
+                        parser.id(),
                         parser.current_symbol_as_bytestring(),
                         parser.current_span(),
                     ))
@@ -185,7 +185,7 @@ impl<'a> Parser<'a> {
             }
             t if self.is_reserved_identifier(t) => self.next_but_first(|parser| {
                 Some(SimpleIdentifier::new(
-                    parser.state.id(),
+                    parser.id(),
                     parser.current_symbol_as_bytestring(),
                     parser.current_span(),
                 ))
@@ -201,7 +201,7 @@ impl<'a> Parser<'a> {
             | TokenKind::QualifiedIdentifier
             | TokenKind::FullyQualifiedIdentifier => self.next_but_first(|parser| {
                 SimpleIdentifier::new(
-                    parser.state.id(),
+                    parser.id(),
                     parser.current_symbol_as_bytestring(),
                     parser.current_span(),
                 )
@@ -216,7 +216,7 @@ impl<'a> Parser<'a> {
                     self.current_span(),
                 );
 
-                SimpleIdentifier::new(self.state.id(), ByteString::empty(), self.current_span())
+                SimpleIdentifier::new(self.id(), ByteString::empty(), self.current_span())
             }
         }
     }
@@ -230,7 +230,7 @@ impl<'a> Parser<'a> {
             | TokenKind::Enum
             | TokenKind::From => self.next_but_first(|parser| {
                 SimpleIdentifier::new(
-                    parser.state.id(),
+                    parser.id(),
                     parser.current_symbol_as_bytestring(),
                     parser.current_span(),
                 )
@@ -244,7 +244,7 @@ impl<'a> Parser<'a> {
                     );
 
                     SimpleIdentifier::new(
-                        parser.state.id(),
+                        parser.id(),
                         parser.current_symbol_as_bytestring(),
                         parser.current_span(),
                     )
@@ -258,7 +258,7 @@ impl<'a> Parser<'a> {
                 );
 
                 SimpleIdentifier::new(
-                    parser.state.id(),
+                    parser.id(),
                     parser.current_symbol_as_bytestring(),
                     parser.current_span(),
                 )
@@ -273,7 +273,7 @@ impl<'a> Parser<'a> {
                     self.current_span(),
                 );
 
-                SimpleIdentifier::new(self.state.id(), ByteString::empty(), self.current_span())
+                SimpleIdentifier::new(self.id(), ByteString::empty(), self.current_span())
             }
         }
     }
@@ -282,7 +282,7 @@ impl<'a> Parser<'a> {
         if self.is_reserved_identifier(self.current_kind()) {
             self.next_but_first(|parser| {
                 SimpleIdentifier::new(
-                    parser.state.id(),
+                    parser.id(),
                     parser.current_symbol_as_bytestring(),
                     parser.current_span(),
                 )

@@ -46,10 +46,10 @@ impl<'a> Parser<'a> {
         self.state.exit_docblock();
 
         DocBlockComment {
-            id: self.state.id(),
+            id: self.id(),
             span,
             doc: DocBlock {
-                id: self.state.id(),
+                id: self.id(),
                 span,
                 nodes,
             },
@@ -64,7 +64,7 @@ impl<'a> Parser<'a> {
         };
 
         DocBlockTagNode {
-            id: self.state.id(),
+            id: self.id(),
             span: tag.span(),
             tag,
         }
@@ -97,7 +97,7 @@ impl<'a> Parser<'a> {
         };
 
         DocBlockTag::Param(DocBlockParamTag {
-            id: self.state.id(),
+            id: self.id(),
             span,
             tag,
             ampersand: None,
@@ -135,7 +135,7 @@ impl<'a> Parser<'a> {
         };
 
         DocBlockTag::Var(DocBlockVarTag {
-            id: self.state.id(),
+            id: self.id(),
             span,
             tag,
             data_type,
@@ -159,7 +159,7 @@ impl<'a> Parser<'a> {
         };
 
         DocBlockTag::Generic(DocBlockGenericTag {
-            id: self.state.id(),
+            id: self.id(),
             span,
             tag: tag.clone(),
             text,
@@ -172,7 +172,7 @@ impl<'a> Parser<'a> {
         content.as_ref()?;
 
         Some(DocBlockTextNode {
-            id: self.state.id(),
+            id: self.id(),
             span: span.unwrap(),
             content: content.unwrap(),
         })

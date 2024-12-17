@@ -27,7 +27,7 @@ impl<'a> Parser<'a> {
                 let stripped = ByteString::from(&symbol[1..]);
 
                 SimpleVariable {
-                    id: self.state.id(),
+                    id: self.id(),
                     symbol,
                     stripped,
                     span,
@@ -43,7 +43,7 @@ impl<'a> Parser<'a> {
                 );
 
                 SimpleVariable {
-                    id: self.state.id(),
+                    id: self.id(),
                     symbol: ByteString::empty(),
                     stripped: ByteString::empty(),
                     span,
@@ -59,7 +59,7 @@ impl<'a> Parser<'a> {
                     self.current_span(),
                 );
 
-                SimpleVariable::missing(self.state.id(), self.current_span())
+                SimpleVariable::missing(self.id(), self.current_span())
             }
         }
     }
@@ -72,7 +72,7 @@ impl<'a> Parser<'a> {
                 let stripped = ByteString::from(&symbol[1..]);
 
                 Variable::SimpleVariable(SimpleVariable {
-                    id: self.state.id(),
+                    id: self.id(),
                     symbol,
                     stripped,
                     span,
@@ -84,7 +84,7 @@ impl<'a> Parser<'a> {
                 let end = self.skip_right_brace();
 
                 Variable::BracedVariableVariable(BracedVariableVariable {
-                    id: self.state.id(),
+                    id: self.id(),
                     span: Span::combine(start, end),
                     start,
                     variable: Box::new(expr),
@@ -100,7 +100,7 @@ impl<'a> Parser<'a> {
                 let end = self.skip_right_brace();
 
                 Variable::BracedVariableVariable(BracedVariableVariable {
-                    id: self.state.id(),
+                    id: self.id(),
                     span: Span::combine(start, end),
                     start,
                     variable: Box::new(expr),
@@ -115,7 +115,7 @@ impl<'a> Parser<'a> {
                         let variable = self.parse_dynamic_variable();
 
                         Variable::VariableVariable(VariableVariable {
-                            id: self.state.id(),
+                            id: self.id(),
                             span,
                             variable: Box::new(variable),
                         })
@@ -132,7 +132,7 @@ impl<'a> Parser<'a> {
                         );
 
                         Variable::SimpleVariable(SimpleVariable::missing(
-                            self.state.id(),
+                            self.id(),
                             self.current_span(),
                         ))
                     }
@@ -149,7 +149,7 @@ impl<'a> Parser<'a> {
                 );
 
                 Variable::SimpleVariable(SimpleVariable::missing(
-                    self.state.id(),
+                    self.id(),
                     self.current_span(),
                 ))
             }

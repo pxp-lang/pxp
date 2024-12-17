@@ -26,7 +26,7 @@ impl<'a> Parser<'a> {
             let parent = self.parse_full_name(UseKind::Normal);
 
             Some(ClassExtends {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(span, parent.span),
                 extends: span,
                 parent,
@@ -43,7 +43,7 @@ impl<'a> Parser<'a> {
             });
 
             Some(ClassImplements {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(span, interfaces.span()),
                 implements: span,
                 interfaces,
@@ -72,7 +72,7 @@ impl<'a> Parser<'a> {
         let right_brace = self.skip_right_brace();
 
         let body = ClassBody {
-            id: self.state.id(),
+            id: self.id(),
             span: Span::combine(left_brace, right_brace),
             left_brace,
             members,
@@ -86,7 +86,7 @@ impl<'a> Parser<'a> {
         };
 
         StatementKind::Class(ClassStatement {
-            id: self.state.id(),
+            id: self.id(),
             span,
             class,
             name,
@@ -121,7 +121,7 @@ impl<'a> Parser<'a> {
             let parent = self.parse_full_name(UseKind::Normal);
 
             Some(ClassExtends {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(extends, parent.span),
                 extends,
                 parent,
@@ -137,7 +137,7 @@ impl<'a> Parser<'a> {
             });
 
             Some(ClassImplements {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(implements, interfaces.span()),
                 implements,
                 interfaces,
@@ -158,7 +158,7 @@ impl<'a> Parser<'a> {
         let span = Span::combine(left_brace, right_brace);
 
         let body = AnonymousClassBody {
-            id: self.state.id(),
+            id: self.id(),
             span,
             left_brace,
             members,
@@ -168,9 +168,9 @@ impl<'a> Parser<'a> {
         let end_span = body.right_brace;
 
         let anonymous_class = Expression::new(
-            self.state.id(),
+            self.id(),
             ExpressionKind::AnonymousClass(AnonymousClassExpression {
-                id: self.state.id(),
+                id: self.id(),
                 span: Span::combine(class, body.span),
                 class,
                 extends,
@@ -185,9 +185,9 @@ impl<'a> Parser<'a> {
         let span = Span::combine(new, arguments.span());
 
         Expression::new(
-            self.state.id(),
+            self.id(),
             ExpressionKind::New(NewExpression {
-                id: self.state.id(),
+                id: self.id(),
                 span,
                 target: Box::new(anonymous_class),
                 new,
@@ -225,7 +225,7 @@ impl<'a> Parser<'a> {
             let span = self.next();
 
             return ClassishMember::Missing(MissingClassishMember {
-                id: self.state.id(),
+                id: self.id(),
                 span,
             });
         }
