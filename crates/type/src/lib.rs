@@ -69,7 +69,7 @@ impl<N: Debug + Display> Type<N> {
             Type::Nullable(inner) => inner.is_object_like(),
             Type::Union(inner) => inner.iter().any(|t| t.is_object_like()),
             Type::Intersection(inner) => inner.iter().any(|t| t.is_object_like()),
-            // FIXME: Add static/self/parent here.
+            Type::SelfReference | Type::ParentReference | Type::StaticReference => true,
             _ => false,
         }
     }
