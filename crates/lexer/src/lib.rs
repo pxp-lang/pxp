@@ -115,10 +115,6 @@ impl<'a> Lexer<'a> {
         self.peek_again.unwrap()
     }
 
-    pub fn set_peek(&mut self, token: Token<'a>) {
-        self.peek = Some(token);
-    }
-
     pub fn next(&mut self) {
         if self.peek.is_some() {
             self.current = self.peek.take().unwrap();
