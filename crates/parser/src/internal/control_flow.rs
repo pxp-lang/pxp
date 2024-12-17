@@ -323,13 +323,13 @@ impl<'a> Parser<'a> {
             let colon = self.skip(TokenKind::Colon);
             let statements = self.parse_multiple_statements_until(TokenKind::EndIf);
 
-            Some(IfStatementElseBlock {
+            Some(Box::new(IfStatementElseBlock {
                 id: self.state.id(),
                 span: Span::combine(start, statements.span()),
                 r#else: start,
                 colon,
                 statements,
-            })
+            }))
         } else {
             None
         };

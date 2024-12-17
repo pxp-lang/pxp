@@ -176,7 +176,7 @@ impl<'a> Parser<'a> {
                 extends,
                 implements,
                 attributes,
-                body,
+                body: Box::new(body),
             }),
             Span::new(class_span.start, end_span.end),
             CommentGroup::default(),

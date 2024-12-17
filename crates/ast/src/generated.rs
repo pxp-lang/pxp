@@ -2164,7 +2164,7 @@ pub struct AnonymousClassExpression {
     pub class: Span,
     pub extends: Option<ClassExtends>,
     pub implements: Option<ClassImplements>,
-    pub body: AnonymousClassBody,
+    pub body: Box<AnonymousClassBody>,
 }
 
 impl HasId for AnonymousClassExpression {
@@ -2421,7 +2421,7 @@ pub struct IfStatementBodyBlock {
     pub colon: Span,
     pub statements: Vec<Statement>,
     pub elseifs: Vec<IfStatementElseIfBlock>,
-    pub r#else: Option<IfStatementElseBlock>,
+    pub r#else: Option<Box<IfStatementElseBlock>>,
     pub endif: Span,
     pub ending: Ending,
 }
@@ -10319,7 +10319,7 @@ impl<'a> Node<'a> {
                 if let Some(child) = &node.implements {
                     children.push(child.into());
                 }
-                let x = &node.body;
+                let x = node.body.as_ref();
                 children.push(x.into());
             }
             NodeKind::ClassExtends(node) => {
@@ -10422,6 +10422,7 @@ impl<'a> Node<'a> {
                     children.push(x.into());
                 }
                 if let Some(child) = &node.r#else {
+                    let child = child.as_ref();
                     children.push(child.into());
                 }
             }

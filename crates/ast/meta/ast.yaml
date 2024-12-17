@@ -740,7 +740,7 @@ AnonymousClassExpression:
   class: Span
   extends: Option<ClassExtends>
   implements: Option<ClassImplements>
-  body: AnonymousClassBody
+  body: Box<AnonymousClassBody>
 
 ClassExtends:
   children: [parent]
@@ -831,7 +831,7 @@ IfStatementBodyBlock:
   colon: Span
   statements: Vec<Statement>
   elseifs: Vec<IfStatementElseIfBlock>
-  r#else: Option<IfStatementElseBlock>
+  r#else: Option<Box<IfStatementElseBlock>>
   endif: Span
   ending: Ending
 

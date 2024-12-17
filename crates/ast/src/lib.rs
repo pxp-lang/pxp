@@ -93,12 +93,6 @@ impl From<Token<'_>> for CastKind {
     }
 }
 
-impl From<&TokenKind> for CastKind {
-    fn from(kind: &TokenKind) -> Self {
-        kind.into()
-    }
-}
-
 impl<'a> From<Token<'a>> for SpecialNameKind {
     fn from(token: Token<'a>) -> Self {
         match token.kind {

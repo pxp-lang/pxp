@@ -1967,10 +1967,8 @@ impl<'a> Parser<'a> {
                 | TokenKind::ArrayCast,
                 _,
             ) => {
-                let current = self.current();
-
-                let span = current.span;
-                let kind = current.into();
+                let span = self.current_span();
+                let kind = self.current().into();
 
                 self.next();
 
