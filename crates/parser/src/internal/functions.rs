@@ -187,7 +187,7 @@ impl<'a> Parser<'a> {
         let comments = self.state.comments();
 
         let function = self.skip(TokenKind::Function);
-        
+
         let ampersand = if self.current_kind() == TokenKind::Ampersand {
             Some(self.next())
         } else {

@@ -17,12 +17,12 @@ impl<'a> Parser<'a> {
         self.state.enter_docblock();
 
         let start = self.next();
-        
+
         self.skip_horizontal_whitespace();
 
         let mut nodes = Vec::new();
 
-        while ! self.is_eof() && self.current_kind() != TokenKind::ClosePhpDoc {
+        while !self.is_eof() && self.current_kind() != TokenKind::ClosePhpDoc {
             match self.current_kind() {
                 TokenKind::PhpDocEol => {
                     self.next();
@@ -183,7 +183,10 @@ impl<'a> Parser<'a> {
         let start_span = self.current_span();
 
         loop {
-            if matches!(self.current_kind(), TokenKind::PhpDocEol | TokenKind::ClosePhpDoc) {
+            if matches!(
+                self.current_kind(),
+                TokenKind::PhpDocEol | TokenKind::ClosePhpDoc
+            ) {
                 break;
             }
 

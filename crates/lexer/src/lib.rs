@@ -1154,7 +1154,7 @@ impl<'a> Lexer<'a> {
                             );
 
                             self.next();
-                        },
+                        }
                         None => self.diagnostic(
                             LexerDiagnostic::UnexpectedEndOfFile,
                             Severity::Error,
@@ -1168,8 +1168,16 @@ impl<'a> Lexer<'a> {
 
                 match self.source.current() {
                     Some(b'\n') => self.source.next(),
-                    Some(c) => self.diagnostic(LexerDiagnostic::UnexpectedCharacter(*c), Severity::Error, Span::flat(self.source.offset())),
-                    None => self.diagnostic(LexerDiagnostic::UnexpectedEndOfFile, Severity::Error, self.source.span()),
+                    Some(c) => self.diagnostic(
+                        LexerDiagnostic::UnexpectedCharacter(*c),
+                        Severity::Error,
+                        Span::flat(self.source.offset()),
+                    ),
+                    None => self.diagnostic(
+                        LexerDiagnostic::UnexpectedEndOfFile,
+                        Severity::Error,
+                        self.source.span(),
+                    ),
                 }
 
                 self.replace(StackFrame::DocString {
@@ -1497,10 +1505,14 @@ impl<'a> Lexer<'a> {
                 }
             }
             [b, ..] => {
-                self.diagnostic(LexerDiagnostic::UnexpectedCharacter(*b), Severity::Error, self.source.span());
+                self.diagnostic(
+                    LexerDiagnostic::UnexpectedCharacter(*b),
+                    Severity::Error,
+                    self.source.span(),
+                );
 
                 TokenKind::Invalid
-            },
+            }
             [] => unreachable!(),
         };
 
@@ -1521,15 +1533,23 @@ impl<'a> Lexer<'a> {
                 self.source.skip(2);
 
                 self.enter(StackFrame::LookingForVarname);
-                
-                return Token::new(TokenKind::DollarLeftBrace, self.source.span(), self.source.span_range(self.source.span()))
-            },
+
+                return Token::new(
+                    TokenKind::DollarLeftBrace,
+                    self.source.span(),
+                    self.source.span_range(self.source.span()),
+                );
+            }
             [b'{', b'$', ..] => {
                 self.source.next();
 
                 self.enter(StackFrame::Scripting);
 
-                return Token::new(TokenKind::LeftBrace, self.source.span(), self.source.span_range(self.source.span()))
+                return Token::new(
+                    TokenKind::LeftBrace,
+                    self.source.span(),
+                    self.source.span_range(self.source.span()),
+                );
             }
             [b'$', ident_start!(), ..] => {
                 let mut var = self.source.read_and_skip(1).to_vec();
@@ -1543,15 +1563,23 @@ impl<'a> Lexer<'a> {
                     _ => {}
                 }
 
-                return Token::new(TokenKind::Variable, self.source.span(), self.source.span_range(self.source.span()))
-            },
+                return Token::new(
+                    TokenKind::Variable,
+                    self.source.span(),
+                    self.source.span_range(self.source.span()),
+                );
+            }
             [b'"', ..] => {
                 self.source.next();
 
                 self.replace(StackFrame::Scripting);
 
-                return Token::new(TokenKind::DoubleQuote, self.source.span(), self.source.span_range(self.source.span()))
-            },
+                return Token::new(
+                    TokenKind::DoubleQuote,
+                    self.source.span(),
+                    self.source.span_range(self.source.span()),
+                );
+            }
             _ => {}
         };
 
@@ -1563,25 +1591,25 @@ impl<'a> Lexer<'a> {
                 // If we spot any of these, we want to break to make sure they get picked up in the next iteration.
                 &[b'"', ..] | [b'$', b'{', ..] | [b'{', b'$', ..] | [b'$', ident_start!(), ..] => {
                     break;
-                },
+                }
                 &[_, ..] => {
                     self.source.next();
                 }
                 [] => {
-                    self.diagnostic(LexerDiagnostic::UnexpectedEndOfFile, Severity::Error, Span::flat(self.source.offset()));
+                    self.diagnostic(
+                        LexerDiagnostic::UnexpectedEndOfFile,
+                        Severity::Error,
+                        Span::flat(self.source.offset()),
+                    );
 
                     break;
                 }
             }
-        };
+        }
 
         let span = self.source.span();
 
-        Token::new(
-            TokenKind::StringPart,
-            span,
-            self.source.span_range(span),
-        )
+        Token::new(TokenKind::StringPart, span, self.source.span_range(span))
     }
 
     fn shell_exec(&mut self) -> Token<'a> {
@@ -1590,15 +1618,23 @@ impl<'a> Lexer<'a> {
                 self.source.skip(2);
 
                 self.enter(StackFrame::LookingForVarname);
-                
-                return Token::new(TokenKind::DollarLeftBrace, self.source.span(), self.source.span_range(self.source.span()))
-            },
+
+                return Token::new(
+                    TokenKind::DollarLeftBrace,
+                    self.source.span(),
+                    self.source.span_range(self.source.span()),
+                );
+            }
             [b'{', b'$', ..] => {
                 self.source.next();
 
                 self.enter(StackFrame::Scripting);
 
-                return Token::new(TokenKind::LeftBrace, self.source.span(), self.source.span_range(self.source.span()))
+                return Token::new(
+                    TokenKind::LeftBrace,
+                    self.source.span(),
+                    self.source.span_range(self.source.span()),
+                );
             }
             [b'$', ident_start!(), ..] => {
                 let mut var = self.source.read_and_skip(1).to_vec();
@@ -1612,15 +1648,23 @@ impl<'a> Lexer<'a> {
                     _ => {}
                 }
 
-                return Token::new(TokenKind::Variable, self.source.span(), self.source.span_range(self.source.span()))
-            },
+                return Token::new(
+                    TokenKind::Variable,
+                    self.source.span(),
+                    self.source.span_range(self.source.span()),
+                );
+            }
             [b'`', ..] => {
                 self.source.next();
 
                 self.replace(StackFrame::Scripting);
 
-                return Token::new(TokenKind::Backtick, self.source.span(), self.source.span_range(self.source.span()))
-            },
+                return Token::new(
+                    TokenKind::Backtick,
+                    self.source.span(),
+                    self.source.span_range(self.source.span()),
+                );
+            }
             _ => {}
         };
 
@@ -1632,25 +1676,25 @@ impl<'a> Lexer<'a> {
                 // If we spot any of these, we want to break to make sure they get picked up in the next iteration.
                 &[b'`', ..] | [b'$', b'{', ..] | [b'{', b'$', ..] | [b'$', ident_start!(), ..] => {
                     break;
-                },
+                }
                 &[_, ..] => {
                     self.source.next();
                 }
                 [] => {
-                    self.diagnostic(LexerDiagnostic::UnexpectedEndOfFile, Severity::Error, Span::flat(self.source.offset()));
+                    self.diagnostic(
+                        LexerDiagnostic::UnexpectedEndOfFile,
+                        Severity::Error,
+                        Span::flat(self.source.offset()),
+                    );
 
                     break;
                 }
             }
-        };
+        }
 
         let span = self.source.span();
 
-        Token::new(
-            TokenKind::StringPart,
-            span,
-            self.source.span_range(span),
-        )
+        Token::new(TokenKind::StringPart, span, self.source.span_range(span))
     }
 
     fn heredoc(&mut self, label: ByteString, is_expecting_label: bool) -> Token<'a> {
@@ -1891,7 +1935,11 @@ impl<'a> Lexer<'a> {
                     self.source.next();
                 }
                 [] => {
-                    self.diagnostic(LexerDiagnostic::UnexpectedEndOfFile, Severity::Error, Span::flat(self.source.offset()));
+                    self.diagnostic(
+                        LexerDiagnostic::UnexpectedEndOfFile,
+                        Severity::Error,
+                        Span::flat(self.source.offset()),
+                    );
 
                     break;
                 }
@@ -1920,9 +1968,13 @@ impl<'a> Lexer<'a> {
                     self.source.next();
                 }
                 [] => {
-                    self.diagnostic(LexerDiagnostic::UnexpectedEndOfFile, Severity::Error, Span::flat(self.source.offset()));
+                    self.diagnostic(
+                        LexerDiagnostic::UnexpectedEndOfFile,
+                        Severity::Error,
+                        Span::flat(self.source.offset()),
+                    );
 
-                    break true
+                    break true;
                 }
             }
         };

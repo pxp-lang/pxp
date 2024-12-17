@@ -3,7 +3,6 @@ use pxp_ast::*;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 
-
 impl<'a> Parser<'a> {
     pub fn gather_attributes(&mut self) -> bool {
         if self.current_kind() != TokenKind::Attribute {

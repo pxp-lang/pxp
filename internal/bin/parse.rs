@@ -78,7 +78,11 @@ fn main() {
         if !result.diagnostics.is_empty() {
             result.diagnostics.iter().for_each(|error| {
                 println!("{:?}", error);
-                println!("   line: {}, column: {}", error.span.start_line(&contents) + 1, error.span.start_column(&contents) + 1);
+                println!(
+                    "   line: {}, column: {}",
+                    error.span.start_line(&contents) + 1,
+                    error.span.start_column(&contents) + 1
+                );
             });
         }
     }

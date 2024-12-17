@@ -967,7 +967,11 @@ snap!(
 // Yield
 snap!(snapper, yield_empty, process("fixtures/yield/empty.php"));
 snap!(snapper, yield_value, process("fixtures/yield/value.php"));
-snap!(snapper, yield_key_value, process("fixtures/yield/key-value.php"));
+snap!(
+    snapper,
+    yield_key_value,
+    process("fixtures/yield/key-value.php")
+);
 snap!(snapper, yield_from, process("fixtures/yield/from.php"));
 
 pub fn snapper() -> Snapper {

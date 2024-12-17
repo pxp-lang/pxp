@@ -50,7 +50,7 @@ fn main() {
     } else {
         let contents = std::fs::read(path).unwrap();
         let mut lexer = Lexer::new(&contents[..]);
-        
+
         loop {
             let token = lexer.current();
 

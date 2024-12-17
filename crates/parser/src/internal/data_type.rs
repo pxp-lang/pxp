@@ -415,31 +415,29 @@ impl<'a> Parser<'a> {
                 )))
             }
             TokenKind::Identifier => {
-                self.next_but_first(|parser| {
-                    match parser.current_symbol().as_ref() {
-                        b"void" => Some(Type::Void),
-                        b"never" => Some(Type::Never),
-                        b"float" => Some(Type::Float),
-                        b"bool" => Some(Type::Boolean),
-                        b"int" => Some(Type::Integer),
-                        b"string" => Some(Type::String),
-                        b"object" => Some(Type::Object),
-                        b"mixed" => Some(Type::Mixed),
-                        b"iterable" => Some(Type::Iterable),
-                        b"null" => Some(Type::Null),
-                        b"true" => Some(Type::True),
-                        b"false" => Some(Type::False),
-                        b"array" => Some(Type::Array),
-                        b"callable" => Some(Type::Callable),
-                        _ => {
-                            let id = parser.state.id();
+                self.next_but_first(|parser| match parser.current_symbol().as_ref() {
+                    b"void" => Some(Type::Void),
+                    b"never" => Some(Type::Never),
+                    b"float" => Some(Type::Float),
+                    b"bool" => Some(Type::Boolean),
+                    b"int" => Some(Type::Integer),
+                    b"string" => Some(Type::String),
+                    b"object" => Some(Type::Object),
+                    b"mixed" => Some(Type::Mixed),
+                    b"iterable" => Some(Type::Iterable),
+                    b"null" => Some(Type::Null),
+                    b"true" => Some(Type::True),
+                    b"false" => Some(Type::False),
+                    b"array" => Some(Type::Array),
+                    b"callable" => Some(Type::Callable),
+                    _ => {
+                        let id = parser.state.id();
 
-                            Some(Type::Named(parser.maybe_resolve_identifier(
-                                id,
-                                &parser.current(),
-                                UseKind::Normal,
-                            )))
-                        }
+                        Some(Type::Named(parser.maybe_resolve_identifier(
+                            id,
+                            &parser.current(),
+                            UseKind::Normal,
+                        )))
                     }
                 })
             }
