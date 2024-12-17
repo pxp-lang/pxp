@@ -194,12 +194,8 @@ impl<'a> Parser<'a> {
                 // "$expr", "$expr[0]", "$expr[name]", "$expr->a"
                 let variable_span = self.current_span();
                 let variable = ExpressionKind::Variable(self.parse_dynamic_variable());
-                let variable = Expression::new(
-                    self.id(),
-                    variable,
-                    variable_span,
-                    CommentGroup::default(),
-                );
+                let variable =
+                    Expression::new(self.id(), variable, variable_span, CommentGroup::default());
 
                 let e = match self.current_kind() {
                     TokenKind::LeftBracket => {
@@ -327,12 +323,8 @@ impl<'a> Parser<'a> {
                         let id_span = identifier.span;
                         let kind =
                             ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier));
-                        let identifier_expression = Expression::new(
-                            self.id(),
-                            kind,
-                            id_span,
-                            CommentGroup::default(),
-                        );
+                        let identifier_expression =
+                            Expression::new(self.id(), kind, id_span, CommentGroup::default());
 
                         ExpressionKind::PropertyFetch(PropertyFetchExpression {
                             id: self.id(),

@@ -1703,12 +1703,7 @@ impl<'a> Parser<'a> {
 
                         Expression::new(
                             self.id(),
-                            ExpressionKind::Name(Name::resolved(
-                                self.id(),
-                                resolved,
-                                symbol,
-                                span,
-                            )),
+                            ExpressionKind::Name(Name::resolved(self.id(), resolved, symbol, span)),
                             span,
                             CommentGroup::default(),
                         )

@@ -1817,11 +1817,19 @@ impl<'a> Lexer<'a> {
                 TokenKind::Identifier
             }
             &[b, ..] => {
-                self.diagnostic(LexerDiagnostic::UnexpectedCharacter(b), Severity::Error, Span::flat(self.source.offset()));
+                self.diagnostic(
+                    LexerDiagnostic::UnexpectedCharacter(b),
+                    Severity::Error,
+                    Span::flat(self.source.offset()),
+                );
                 TokenKind::Invalid
-            },
+            }
             [] => {
-                self.diagnostic(LexerDiagnostic::UnexpectedEndOfFile, Severity::Error, Span::flat(self.source.offset()));
+                self.diagnostic(
+                    LexerDiagnostic::UnexpectedEndOfFile,
+                    Severity::Error,
+                    Span::flat(self.source.offset()),
+                );
                 TokenKind::Invalid
             }
         };

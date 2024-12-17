@@ -148,10 +148,7 @@ impl<'a> Parser<'a> {
                     self.current_span(),
                 );
 
-                Variable::SimpleVariable(SimpleVariable::missing(
-                    self.id(),
-                    self.current_span(),
-                ))
+                Variable::SimpleVariable(SimpleVariable::missing(self.id(), self.current_span()))
             }
         }
     }

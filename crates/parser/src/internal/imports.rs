@@ -5,7 +5,12 @@ use pxp_token::{Token, TokenKind};
 use crate::Parser;
 
 impl<'a> Parser<'a> {
-    pub(crate) fn add_import(&mut self, kind: &UseKind, name: ByteString, alias: Option<ByteString>) {
+    pub(crate) fn add_import(
+        &mut self,
+        kind: &UseKind,
+        name: ByteString,
+        alias: Option<ByteString>,
+    ) {
         // We first need to check if the alias has been provided, and if not, create a new
         // symbol using the last part of the name.
         let alias = match alias {
@@ -23,7 +28,6 @@ impl<'a> Parser<'a> {
         self.imports.get_mut(kind).unwrap().insert(alias, name);
     }
 
-
     pub(crate) fn add_prefixed_import(
         &mut self,
         kind: &UseKind,
@@ -36,7 +40,12 @@ impl<'a> Parser<'a> {
         self.add_import(kind, coagulated, alias);
     }
 
-    pub(crate) fn maybe_resolve_identifier(&self, id: NodeId, token: &Token, kind: UseKind) -> Name {
+    pub(crate) fn maybe_resolve_identifier(
+        &self,
+        id: NodeId,
+        token: &Token,
+        kind: UseKind,
+    ) -> Name {
         let part = match &token.kind {
             TokenKind::Identifier | TokenKind::Enum | TokenKind::From => {
                 token.symbol.to_bytestring()
