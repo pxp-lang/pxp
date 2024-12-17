@@ -909,8 +909,6 @@ impl<'a> Lexer<'a> {
                 self.source.next();
 
                 let mut kind = TokenKind::MultiLineComment;
-                #[allow(unused)]
-                let mut with_symbol = true;
 
                 loop {
                     match self.source.read(2) {
@@ -919,7 +917,6 @@ impl<'a> Lexer<'a> {
                             self.source.skip(2);
 
                             kind = TokenKind::OpenPhpDoc;
-                            with_symbol = false;
 
                             self.enter(StackFrame::DocBlock);
 
