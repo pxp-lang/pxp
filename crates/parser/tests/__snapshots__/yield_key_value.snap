@@ -1,0 +1,135 @@
+[
+    Statement {
+        id: 3,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                id: 2,
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            id: 1,
+            comments: [],
+        },
+    },
+    Statement {
+        id: 12,
+        kind: Expression(
+            ExpressionStatement {
+                id: 11,
+                span: Span {
+                    start: 7,
+                    end: 24,
+                },
+                expression: Expression {
+                    id: 9,
+                    kind: Yield(
+                        YieldExpression {
+                            id: 10,
+                            span: Span {
+                                start: 7,
+                                end: 23,
+                            },
+                            yield: Span {
+                                start: 7,
+                                end: 12,
+                            },
+                            key: Some(
+                                Expression {
+                                    id: 5,
+                                    kind: Literal(
+                                        Literal {
+                                            id: 6,
+                                            span: Span {
+                                                start: 13,
+                                                end: 18,
+                                            },
+                                            kind: String,
+                                            token: OwnedToken {
+                                                kind: LiteralSingleQuotedString,
+                                                span: Span {
+                                                    start: 13,
+                                                    end: 18,
+                                                },
+                                                symbol: "'foo'",
+                                            },
+                                        },
+                                    ),
+                                    span: Span {
+                                        start: 13,
+                                        end: 18,
+                                    },
+                                    comments: CommentGroup {
+                                        id: 0,
+                                        comments: [],
+                                    },
+                                },
+                            ),
+                            value: Some(
+                                Expression {
+                                    id: 7,
+                                    kind: Literal(
+                                        Literal {
+                                            id: 8,
+                                            span: Span {
+                                                start: 22,
+                                                end: 23,
+                                            },
+                                            kind: Integer,
+                                            token: OwnedToken {
+                                                kind: LiteralInteger,
+                                                span: Span {
+                                                    start: 22,
+                                                    end: 23,
+                                                },
+                                                symbol: "1",
+                                            },
+                                        },
+                                    ),
+                                    span: Span {
+                                        start: 22,
+                                        end: 23,
+                                    },
+                                    comments: CommentGroup {
+                                        id: 0,
+                                        comments: [],
+                                    },
+                                },
+                            ),
+                        },
+                    ),
+                    span: Span {
+                        start: 7,
+                        end: 23,
+                    },
+                    comments: CommentGroup {
+                        id: 0,
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: 23,
+                        end: 24,
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: 7,
+            end: 24,
+        },
+        comments: CommentGroup {
+            id: 4,
+            comments: [],
+        },
+    },
+]
+---

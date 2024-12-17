@@ -3,6 +3,7 @@ use std::{env::args, path::Path, process::exit};
 use discoverer::discover;
 use pxp_lexer::Lexer;
 use pxp_parser::Parser;
+use pxp_span::Spanned;
 
 fn main() {
     let args = args().skip(1).collect::<Vec<_>>();
@@ -19,6 +20,7 @@ fn main() {
         // let mut errors = Vec::new();
         let files = discover(&["php"], &[path.to_str().unwrap()]).unwrap();
         let print_filenames = args.contains(&"--print-filenames".to_string());
+        let stop_on_diagnostics = args.contains(&"--stop-on-diagnostics".to_string());
         let mut count = 0;
 
         for file in files.iter() {
@@ -38,11 +40,15 @@ fn main() {
             let contents = std::fs::read(file).unwrap();
             let ast = Parser::parse(Lexer::new(&contents));
 
-            // if !ast.diagnostics.is_empty() {
-            //     ast.diagnostics.iter().for_each(|error| {
-            //         println!("{:?}", error);
-            //     });
-            // }
+            if !ast.diagnostics.is_empty() {
+                ast.diagnostics.iter().for_each(|error| {
+                    println!("{:?}", error);
+                });
+
+                if stop_on_diagnostics {
+                    break;
+                }
+            }
 
             count += 1;
         }
@@ -70,9 +76,10 @@ fn main() {
         }
 
         if !result.diagnostics.is_empty() {
-            for diagnostic in result.diagnostics.iter() {
-                print!("{:?}", diagnostic);
-            }
+            result.diagnostics.iter().for_each(|error| {
+                println!("{:?}", error);
+                println!("   line: {}, column: {}", error.span.start_line(&contents) + 1, error.span.start_column(&contents) + 1);
+            });
         }
     }
 }

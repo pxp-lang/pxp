@@ -1360,7 +1360,7 @@ impl<'a> Parser<'a> {
                     let mut key = None;
                     let mut value = Box::new(self.parse_expression());
 
-                    if self.current_kind() == TokenKind::DoubleArrow && !from.is_empty() {
+                    if self.current_kind() == TokenKind::DoubleArrow && from.is_empty() {
                         self.next();
                         key = Some(value.clone());
                         value = Box::new(self.parse_expression());

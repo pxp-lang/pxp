@@ -1,0 +1,75 @@
+[
+    Statement {
+        id: 3,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                id: 2,
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            id: 1,
+            comments: [],
+        },
+    },
+    Statement {
+        id: 8,
+        kind: Expression(
+            ExpressionStatement {
+                id: 7,
+                span: Span {
+                    start: 7,
+                    end: 13,
+                },
+                expression: Expression {
+                    id: 5,
+                    kind: Yield(
+                        YieldExpression {
+                            id: 6,
+                            span: Span {
+                                start: 7,
+                                end: 12,
+                            },
+                            yield: Span {
+                                start: 7,
+                                end: 12,
+                            },
+                            key: None,
+                            value: None,
+                        },
+                    ),
+                    span: Span {
+                        start: 7,
+                        end: 12,
+                    },
+                    comments: CommentGroup {
+                        id: 0,
+                        comments: [],
+                    },
+                },
+                ending: Semicolon(
+                    Span {
+                        start: 12,
+                        end: 13,
+                    },
+                ),
+            },
+        ),
+        span: Span {
+            start: 7,
+            end: 13,
+        },
+        comments: CommentGroup {
+            id: 4,
+            comments: [],
+        },
+    },
+]
+---
