@@ -152,8 +152,6 @@ impl<'a> Parser<'a> {
                     TokenKind::Equals if op.kind == TokenKind::Ampersand => {
                         self.next();
 
-                        // FIXME: You should only be allowed to assign a referencable variable,
-                        //        here, not any old expression.
                         let right = Box::new(self.for_precedence(rpred));
                         let right_span = right.span;
                         let span = Span::combine(left.span, right_span);
