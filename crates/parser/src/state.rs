@@ -2,8 +2,7 @@ use std::collections::{HashMap, VecDeque};
 
 use pxp_ast::*;
 use pxp_bytestring::ByteString;
-use pxp_diagnostics::{Diagnostic, Severity};
-use pxp_span::Span;
+use pxp_diagnostics::Diagnostic;
 
 use crate::ParserDiagnostic;
 
@@ -61,10 +60,12 @@ impl State {
         self.docblock
     }
 
+    #[cfg(feature = "docblocks")]
     pub fn enter_docblock(&mut self) {
         self.docblock = true;
     }
 
+    #[cfg(feature = "docblocks")]
     pub fn exit_docblock(&mut self) {
         self.docblock = false;
     }
@@ -163,10 +164,6 @@ impl State {
 
     pub fn previous_scope(&self) -> Option<&Scope> {
         self.stack.get(self.stack.len() - 2)
-    }
-
-    pub fn diagnostic(&mut self, kind: ParserDiagnostic, severity: Severity, span: Span) {
-        self.diagnostics.push(Diagnostic::new(kind, severity, span));
     }
 
     pub fn enter(&mut self, scope: Scope) {

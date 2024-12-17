@@ -87,10 +87,6 @@ impl<'a> Parser<'a> {
         self.current_symbol().to_bytestring()
     }
 
-    fn peek(&mut self) -> Token {
-        self.lexer.peek()
-    }
-
     fn peek_kind(&mut self) -> TokenKind {
         self.lexer.peek().kind
     }
@@ -107,63 +103,6 @@ impl<'a> Parser<'a> {
         self.next();
 
         result
-    }
-
-    fn collect_until<T>(&mut self, kind: TokenKind, mut cb: impl FnMut(&mut Self) -> T) -> Vec<T> {
-        let mut items = Vec::new();
-
-        while self.current_kind() != kind {
-            items.push(cb(self));
-        }
-
-        items
-    }
-
-    fn expect_any(&mut self, kinds: &[TokenKind]) -> Span {
-        for kind in kinds {
-            if self.current_kind() == *kind {
-                let span = self.current_span();
-
-                self.next();
-
-                return span;
-            }
-        }
-
-        self.expected_any_of_tokens(kinds);
-
-        Span::missing()
-    }
-
-    fn expect(&mut self, kind: TokenKind) -> Span {
-        let span = self.current_span();
-
-        if self.is_eof() && kind != TokenKind::Eof {
-            self.unexpected_end_of_file();
-
-            Span::missing()
-        } else if self.current_kind() != kind {
-            self.expected_token(kind);
-
-            Span::missing()
-        } else {
-            self.next();
-
-            span
-        }
-    }
-
-    fn try_consume(&mut self, kind: TokenKind) -> Option<Span> {
-        match self.current_kind() {
-            k if k == kind => {
-                let span = self.current_span();
-
-                self.next();
-
-                Some(span)
-            }
-            _ => None,
-        }
     }
 
     fn diagnostic(&mut self, diagnostic: ParserDiagnostic, severity: Severity, span: Span) {
