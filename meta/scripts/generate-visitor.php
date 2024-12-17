@@ -343,7 +343,7 @@ RUST;
 
     public function getVisitorFilename(): string
     {
-        return 'visitor_mut.rs';
+        return 'mutable.rs';
     }
 
     public function getWalkMethodSuffix(): string
@@ -407,7 +407,7 @@ RUST;
     }
 
     public function getVisitorFilename(): string {
-        return 'visitor.rs';
+        return 'immutable.rs';
     }
 
     public function getWalkMethodSuffix(): string {

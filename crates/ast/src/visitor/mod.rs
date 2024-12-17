@@ -1,12 +1,12 @@
 mod node;
 #[allow(unused)]
-mod visitor;
-mod visitor_mut;
+mod immutable;
+mod mutable;
 mod walk;
 mod walk_mut;
 
 pub use node::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch};
-pub use visitor::Visitor;
-pub use visitor_mut::VisitorMut;
+pub use immutable::Visitor;
+pub use mutable::VisitorMut;
 pub use walk::*;
 pub use walk_mut::*;

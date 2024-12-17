@@ -959,7 +959,10 @@ pub fn walk_backed_enum_statement<V: Visitor + ?Sized>(
 }
 
 pub fn walk_backed_enum_type<V: Visitor + ?Sized>(visitor: &mut V, node: &BackedEnumType) {
-    if node == &BackedEnumType::Invalid {}
+    match node {
+        BackedEnumType::Invalid => {}
+        _ => {}
+    }
 }
 
 pub fn walk_return_type<V: Visitor + ?Sized>(visitor: &mut V, node: &ReturnType) {
