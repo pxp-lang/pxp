@@ -1589,69 +1589,71 @@ impl<'a> Lexer<'a> {
     }
 
     fn shell_exec(&mut self) -> Token<'a> {
-        let mut buffer_span = None;
+        match self.source.read(2) {
+            [b'$', b'{', ..] => {
+                self.source.skip(2);
 
-        let kind = loop {
-            match self.source.read(2) {
-                [b'$', b'{'] => {
-                    buffer_span = Some(self.source.span());
-                    self.source.start_token();
-                    self.source.skip(2);
-                    self.enter(StackFrame::LookingForVarname);
-                    break TokenKind::DollarLeftBrace;
-                }
-                [b'{', b'$'] => {
-                    buffer_span = Some(self.source.span());
-                    self.source.start_token();
-                    // Intentionally only consume the left brace.
-                    self.source.next();
-                    self.enter(StackFrame::Scripting);
-                    break TokenKind::LeftBrace;
-                }
-                [b'`', ..] => {
-                    self.source.next();
-                    self.replace(StackFrame::Scripting);
-                    break TokenKind::Backtick;
-                }
-                [b'$', ident_start!()] => {
-                    let mut var = self.source.read_and_skip(1).to_vec();
-                    var.extend(self.consume_identifier());
+                self.enter(StackFrame::LookingForVarname);
+                
+                return Token::new(TokenKind::DollarLeftBrace, self.source.span(), self.source.span_range(self.source.span()))
+            },
+            [b'{', b'$', ..] => {
+                self.source.next();
 
-                    match self.source.read(4) {
-                        [b'[', ..] => self.enter(StackFrame::VarOffset),
-                        [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
-                            self.enter(StackFrame::LookingForProperty)
-                        }
-                        _ => {}
+                self.enter(StackFrame::Scripting);
+
+                return Token::new(TokenKind::LeftBrace, self.source.span(), self.source.span_range(self.source.span()))
+            }
+            [b'$', ident_start!(), ..] => {
+                let mut var = self.source.read_and_skip(1).to_vec();
+                var.extend(self.consume_identifier());
+
+                match self.source.read(4) {
+                    [b'[', ..] => self.enter(StackFrame::VarOffset),
+                    [b'-', b'>', ident_start!(), ..] | [b'?', b'-', b'>', ident_start!()] => {
+                        self.enter(StackFrame::LookingForProperty)
                     }
-
-                    break TokenKind::Variable;
+                    _ => {}
                 }
+
+                return Token::new(TokenKind::Variable, self.source.span(), self.source.span_range(self.source.span()))
+            },
+            [b'`', ..] => {
+                self.source.next();
+
+                self.replace(StackFrame::Scripting);
+
+                return Token::new(TokenKind::Backtick, self.source.span(), self.source.span_range(self.source.span()))
+            },
+            _ => {}
+        };
+
+        loop {
+            match self.source.read(2) {
+                &[b'\\', b'`' | b'\\' | b'$', ..] => {
+                    self.source.skip(2);
+                }
+                // If we spot any of these, we want to break to make sure they get picked up in the next iteration.
+                &[b'`', ..] | [b'$', b'{', ..] | [b'{', b'$', ..] | [b'$', ident_start!(), ..] => {
+                    break;
+                },
                 &[_, ..] => {
                     self.source.next();
                 }
-                // FIXME: Push diagnostics for unexpected end of file.
-                [] => todo!(),
-            }
-        };
+                [] => {
+                    self.diagnostic(LexerDiagnostic::UnexpectedEndOfFile, Severity::Error, Span::flat(self.source.offset()));
 
-        let buffer_span = match buffer_span {
-            Some(span) => span,
-            None => self.source.span(),
+                    break;
+                }
+            }
         };
 
         let span = self.source.span();
 
-        if buffer_span.is_empty() {
-            return Token::new(kind, span, self.source.span_range(span));
-        }
-
-        self.set_peek(Token::new(kind, span, self.source.span_range(span)));
-
         Token::new(
             TokenKind::StringPart,
-            buffer_span,
-            self.source.span_range(buffer_span),
+            span,
+            self.source.span_range(span),
         )
     }
 
@@ -1908,6 +1910,9 @@ impl<'a> Lexer<'a> {
 
         let constant = loop {
             match self.source.read(3) {
+                [b'\\', b'"' | b'\\' | b'$', ..] => {
+                    self.source.skip(2);
+                }
                 [b'"', ..] => {
                     self.source.next();
                     break true;
