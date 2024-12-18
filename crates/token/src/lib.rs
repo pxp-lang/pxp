@@ -214,6 +214,8 @@ pub enum TokenKind {
     PhpDocHorizontalWhitespace,
     PhpDocTag,
     PhpDocOther,
+    PhpDocIs,
+    PhpDocNot,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -275,6 +277,8 @@ impl<'a> Token<'a> {
 impl Display for TokenKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = match self {
+            Self::PhpDocIs => "is",
+            Self::PhpDocNot => "not",
             Self::PhpDocTag => "@<tag>",
             Self::PhpDocOther => "<other>",
             Self::CompilerHaltOffsetConstant => "__COMPILER_HALT_OFFSET__",

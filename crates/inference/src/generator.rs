@@ -472,6 +472,13 @@ fn bytestring_type(ty: &Type<Name>) -> Type<ByteString> {
             Box::new(bytestring_type(key)),
             Box::new(bytestring_type(value)),
         ),
+        Type::ConditionalForParameter { parameter, negated, target, then, otherwise } => Type::ConditionalForParameter {
+            parameter: parameter.clone(),
+            negated: *negated,
+            target: Box::new(bytestring_type(target)),
+            then: Box::new(bytestring_type(then)),
+            otherwise: Box::new(bytestring_type(otherwise)),
+        },
         Type::This => Type::This,
         Type::Missing => Type::Missing,
     }

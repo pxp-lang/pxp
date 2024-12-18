@@ -31,6 +31,13 @@ pub enum Type<N: Debug + Display> {
     ParentReference,
     ArrayKey,
     TypedArray(Box<Type<N>>, Box<Type<N>>),
+    ConditionalForParameter {
+        parameter: ByteString,
+        negated: bool,
+        target: Box<Type<N>>,
+        then: Box<Type<N>>,
+        otherwise: Box<Type<N>>,
+    },
     This,
     Missing,
 }
@@ -168,6 +175,9 @@ impl<N: Debug + Display> Display for Type<N> {
             Type::ArrayKey => write!(f, "array-key"),
             Type::TypedArray(key, value) => write!(f, "array<{}, {}>", key, value),
             Type::This => write!(f, "$this"),
+            Type::ConditionalForParameter { parameter, negated, target, then, otherwise } => {
+                write!(f, "{} is {}{} ? {} : {}", parameter, if *negated { "not " } else { "" }, target, then, otherwise)
+            }
             Type::Missing => write!(f, "<missing>"),
         }
     }

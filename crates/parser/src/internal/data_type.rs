@@ -381,10 +381,50 @@ impl<'a> Parser<'a> {
         r#type
     }
 
+    fn parse_docblock_conditional_for_parameter(&mut self) -> Type<Name> {
+        let parameter = self.current_symbol_as_bytestring();
+
+        self.next();
+        self.skip_doc_eol();
+
+        let is = self.skip(TokenKind::PhpDocIs);
+
+        self.skip_doc_eol();
+
+        let negated = if self.current_kind() == TokenKind::PhpDocNot {
+            self.next();
+            self.skip_doc_eol();
+
+            true
+        } else {
+            false
+        };
+
+        let target_type = self.parse_docblock_type();
+
+        self.skip_doc_eol();
+
+        let question = self.skip(TokenKind::Question);
+
+        self.skip_doc_eol();
+
+        let if_type = self.parse_docblock_type();
+
+        self.skip_doc_eol();
+
+        self.skip(TokenKind::Colon);
+
+        self.skip_doc_eol();
+
+        let else_type = self.parse_docblock_subparse();
+
+        Type::ConditionalForParameter { parameter, negated, target: Box::new(target_type), then: Box::new(if_type), otherwise: Box::new(else_type) }
+    }
+
     fn parse_docblock_subparse(&mut self) -> Type<Name> {
         match self.current_kind() {
             TokenKind::Question => self.parse_docblock_nullable(),
-            TokenKind::Variable => todo!(),
+            TokenKind::Variable => self.parse_docblock_conditional_for_parameter(),
             _ => {
                 let r#type = self.parse_docblock_atomic();
 

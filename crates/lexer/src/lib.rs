@@ -376,6 +376,20 @@ impl<'a> Lexer<'a> {
 
                 Token::new(kind, span, self.source.span_range(span))
             }
+            [b'n', b'o', b't', ..] => {
+                self.source.skip(3);
+
+                let span = self.source.span();
+
+                Token::new(TokenKind::PhpDocNot, span, self.source.span_range(span))
+            },
+            [b'i', b's', ..] => {
+                self.source.skip(2);
+
+                let span = self.source.span();
+
+                Token::new(TokenKind::PhpDocIs, span, self.source.span_range(span))
+            },
             [ident_start!(), ..] => {
                 self.source.next();
                 let mut qualified = false;

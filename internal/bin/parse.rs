@@ -21,6 +21,7 @@ fn main() {
         let files = discover(&["php"], &[path.to_str().unwrap()]).unwrap();
         let print_filenames = args.contains(&"--print-filenames".to_string());
         let stop_on_diagnostics = args.contains(&"--stop-on-diagnostics".to_string());
+        let no_output = args.contains(&"--no-output".to_string());
         let mut count = 0;
 
         for file in files.iter() {
@@ -40,7 +41,7 @@ fn main() {
             let contents = std::fs::read(file).unwrap();
             let ast = Parser::parse(Lexer::new(&contents));
 
-            if !ast.diagnostics.is_empty() {
+            if !ast.diagnostics.is_empty() && !no_output {
                 let mut has_error = false;
 
                 ast.diagnostics.iter().for_each(|error| {
