@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Severity {
     Hint,
     Information,
@@ -11,6 +11,22 @@ pub enum Severity {
 impl Severity {
     pub fn with_ascii(&self) -> AsciiSeverity {
         AsciiSeverity::new(self)
+    }
+
+    pub fn is_error(&self) -> bool {
+        self == &Severity::Error
+    }
+
+    pub fn is_warning(&self) -> bool {
+        self == &Severity::Warning
+    }
+
+    pub fn is_information(&self) -> bool {
+        self == &Severity::Information
+    }
+
+    pub fn is_hint(&self) -> bool {
+        self == &Severity::Hint
     }
 }
 

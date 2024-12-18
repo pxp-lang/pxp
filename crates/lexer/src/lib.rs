@@ -302,7 +302,14 @@ impl<'a> Lexer<'a> {
             return self.docblock_eol();
         }
 
-        match &self.source.read(2) {
+        match &self.source.read(3) {
+            [b'.', b'.', b'.', ..] => {
+                self.source.skip(3);
+
+                let span = self.source.span();
+
+                Token::new(TokenKind::Ellipsis, span, self.source.span_range(span))
+            },
             [b'@', ident_start!(), ..] => {
                 self.source.skip(2);
 
@@ -369,15 +376,13 @@ impl<'a> Lexer<'a> {
 
                 Token::new(kind, span, self.source.span_range(span))
             }
-            [b @ ident_start!(), ..] => {
+            [ident_start!(), ..] => {
                 self.source.next();
                 let mut qualified = false;
                 let mut last_was_slash = false;
 
-                let mut buffer = vec![*b];
                 while let Some(next @ ident!() | next @ b'\\') = self.source.current() {
                     if matches!(next, ident!()) {
-                        buffer.push(*next);
                         self.source.next();
                         last_was_slash = false;
                         continue;
@@ -386,7 +391,7 @@ impl<'a> Lexer<'a> {
                     if *next == b'\\' && !last_was_slash {
                         qualified = true;
                         last_was_slash = true;
-                        buffer.push(*next);
+
                         self.source.next();
                         continue;
                     }
@@ -394,14 +399,21 @@ impl<'a> Lexer<'a> {
                     break;
                 }
 
+                // Inside of a DocBlock, we can support non-standard identifiers such as `array-key`, `non-empty-string`, etc.
+                let (span, symbol) = match self.source.span_range(self.source.span()).as_ref() {
+                    b"array" if self.source.read(4) == b"-key" => {
+                        self.source.skip(4);
+
+                        (self.source.span(), self.source.span_range(self.source.span()))
+                    },
+                    _ => (self.source.span(), self.source.span_range(self.source.span())),
+                };
+
                 let kind = if qualified {
                     TokenKind::QualifiedIdentifier
                 } else {
-                    identifier_to_keyword(&buffer).unwrap_or(TokenKind::Identifier)
+                    identifier_to_keyword(&symbol).unwrap_or(TokenKind::Identifier)
                 };
-
-                let span = self.source.span();
-                let symbol = self.source.span_range(span);
 
                 Token::new(kind, span, symbol)
             }
@@ -488,13 +500,6 @@ impl<'a> Lexer<'a> {
                 let span = self.source.span();
 
                 Token::new(TokenKind::GreaterThan, span, self.source.span_range(span))
-            }
-            [b'.', b'.', b'.', ..] => {
-                self.source.skip(3);
-
-                let span = self.source.span();
-
-                Token::new(TokenKind::Ellipsis, span, self.source.span_range(span))
             }
             [b'=', b'>', ..] => {
                 self.source.skip(2);

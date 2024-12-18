@@ -41,14 +41,25 @@ fn main() {
             let ast = Parser::parse(Lexer::new(&contents));
 
             if !ast.diagnostics.is_empty() {
+                let mut has_error = false;
+
                 ast.diagnostics.iter().for_each(|error| {
+                    has_error = error.severity.is_hint();
+
                     println!("{:?}", error);
+                    println!(
+                        "   line: {}, column: {}",
+                        error.span.start_line(&contents) + 1,
+                        error.span.start_column(&contents) + 1
+                    );
                 });
 
-                if stop_on_diagnostics {
+                if stop_on_diagnostics && has_error {
                     break;
                 }
             }
+
+            drop(ast);
 
             count += 1;
         }

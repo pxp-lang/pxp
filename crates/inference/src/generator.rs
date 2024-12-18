@@ -1,7 +1,7 @@
 use pxp_ast::{visitor::Visitor, *};
 use pxp_bytestring::ByteString;
 use pxp_index::Index;
-use pxp_type::Type;
+use pxp_type::{CallableParameter, Type};
 use visitor::{
     walk_assignment_operation_expression, walk_backed_enum_statement, walk_class_statement,
     walk_concrete_method, walk_expression, walk_function_statement, walk_method_call_expression,
@@ -429,7 +429,7 @@ impl Visitor for TypeMapGenerator<'_> {
 fn bytestring_type(ty: &Type<Name>) -> Type<ByteString> {
     match ty {
         Type::Named(inner) => Type::Named(inner.symbol().clone()),
-        Type::NamedWithGenerics(inner, templates) => Type::NamedWithGenerics(
+        Type::Generic(inner, templates) => Type::Generic(
             Box::new(bytestring_type(inner)),
             templates.iter().map(bytestring_type).collect(),
         ),
@@ -448,11 +448,26 @@ fn bytestring_type(ty: &Type<Name>) -> Type<ByteString> {
         Type::Array => Type::Array,
         Type::Object => Type::Object,
         Type::Mixed => Type::Mixed,
+        Type::CallableSignature(callable, parameters, return_type) => Type::CallableSignature(
+            Box::new(bytestring_type(callable)),
+            parameters
+                .iter()
+                .map(|p| CallableParameter {
+                    r#type: bytestring_type(&p.r#type),
+                    ellipsis: p.ellipsis,
+                    ampersand: p.ampersand,
+                    equal: p.equal,
+                    name: p.name.clone(),
+                })
+                .collect(),
+            Box::new(bytestring_type(return_type)),
+        ),
         Type::Callable => Type::Callable,
         Type::Iterable => Type::Iterable,
         Type::StaticReference => Type::StaticReference,
         Type::SelfReference => Type::SelfReference,
         Type::ParentReference => Type::ParentReference,
+        Type::ArrayKey => Type::ArrayKey,
         Type::TypedArray(key, value) => Type::TypedArray(
             Box::new(bytestring_type(key)),
             Box::new(bytestring_type(value)),

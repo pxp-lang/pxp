@@ -7,5 +7,5 @@ rust-version.workspace = true
 license-file.workspace = true
 
 [dependencies]
+pxp-bytestring = { version = "0.1.0", path = "../bytestring" }
 pxp-span = { path = "../span" }
-serde = { version = "1.0.193", features = ["derive"] }

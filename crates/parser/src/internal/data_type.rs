@@ -4,7 +4,7 @@ use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
-use pxp_type::Type;
+use pxp_type::{CallableParameter, Type};
 
 impl<'a> Parser<'a> {
     pub fn parse_data_type(&mut self) -> DataType {
@@ -232,7 +232,7 @@ impl<'a> Parser<'a> {
 
                     r#type
                 } else if current.kind == TokenKind::LeftParen {
-                    todo!("parse docblock callable type");
+                    self.parse_docblock_callable(r#type)
                 } else if current.kind == TokenKind::LeftBracket {
                     self.parse_docblock_array_or_offset_access(r#type)
                 } else {
@@ -278,7 +278,89 @@ impl<'a> Parser<'a> {
             );
         }
 
-        Type::NamedWithGenerics(Box::new(lhs), generic_types)
+        Type::Generic(Box::new(lhs), generic_types)
+    }
+
+    fn parse_docblock_callable(&mut self, lhs: Type<Name>) -> Type<Name> {
+        self.skip(TokenKind::LeftParen);
+        self.skip_doc_eol();
+
+        let mut parameters = vec![];
+
+        while self.current_kind() != TokenKind::RightParen {
+            parameters.push(self.parse_docblock_callable_parameter());
+
+            self.skip_doc_eol();
+
+            if self.current_kind() == TokenKind::Comma {
+                self.next();
+            }
+
+            self.skip_doc_eol();
+        }
+
+        self.skip(TokenKind::RightParen);
+
+        let return_type = if self.current_kind() == TokenKind::Colon {
+            self.next();
+            self.skip_doc_eol();
+
+            self.parse_docblock_type()
+        } else {
+            Type::Void
+        };
+
+        Type::CallableSignature(Box::new(lhs), parameters, Box::new(return_type))
+    }
+
+    fn parse_docblock_callable_parameter(&mut self) -> CallableParameter<Name> {
+        let r#type = self.parse_docblock_type();
+
+        self.skip_doc_eol();
+
+        let ampersand = if self.current_kind() == TokenKind::Ampersand {
+            Some(self.next())
+        } else {
+            None
+        };
+
+        self.skip_doc_eol();
+
+        let ellipsis = if self.current_kind() == TokenKind::Ellipsis {
+            Some(self.next())
+        } else {
+            None
+        };
+
+        self.skip_doc_eol();
+
+        let name = if self.current_kind() == TokenKind::Variable {
+            let name = self.current_symbol_as_bytestring();
+
+            self.next();
+
+            Some(name)
+        } else {
+            None
+        };
+
+        self.skip_doc_eol();
+
+        let equal = if self.current_kind() == TokenKind::Equals {
+            Some(self.next())
+        } else {
+            None
+        };
+
+        self.skip_doc_eol();
+
+        CallableParameter {
+            r#type,
+            ellipsis,
+            ampersand,
+            equal,
+            name,
+        }
     }
 
     fn parse_docblock_array_or_offset_access(&mut self, lhs: Type<Name>) -> Type<Name> {
@@ -430,6 +512,7 @@ impl<'a> Parser<'a> {
                     b"false" => Some(Type::False),
                     b"array" => Some(Type::Array),
                     b"callable" => Some(Type::Callable),
+                    b"array-key" if parser.is_in_docblock() => Some(Type::ArrayKey),
                     _ => {
                         let id = parser.id();
 

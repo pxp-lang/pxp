@@ -1,12 +1,12 @@
 use std::fmt::{Debug, Display};
 
-use serde::{Deserialize, Serialize};
+use pxp_bytestring::ByteString;
+use pxp_span::Span;
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, Hash, Default)]
-
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Default)]
 pub enum Type<N: Debug + Display> {
     Named(N),
-    NamedWithGenerics(Box<Type<N>>, Vec<Type<N>>),
+    Generic(Box<Type<N>>, Vec<Type<N>>),
     Nullable(Box<Type<N>>),
     Union(Vec<Type<N>>),
     Intersection(Vec<Type<N>>),
@@ -24,13 +24,46 @@ pub enum Type<N: Debug + Display> {
     #[default]
     Mixed,
     Callable,
+    CallableSignature(Box<Type<N>>, Vec<CallableParameter<N>>, Box<Type<N>>),
     Iterable,
     StaticReference,
     SelfReference,
     ParentReference,
+    ArrayKey,
     TypedArray(Box<Type<N>>, Box<Type<N>>),
     This,
     Missing,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct CallableParameter<N: Debug + Display> {
+    pub r#type: Type<N>,
+    pub ellipsis: Option<Span>,
+    pub ampersand: Option<Span>,
+    pub equal: Option<Span>,
+    pub name: Option<ByteString>,
+}
+
+impl<N: Debug + Display> Display for CallableParameter<N> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.r#type)?;
+
+        if self.ellipsis.is_some() {
+            write!(f, " ...")?;
+        } else if self.ampersand.is_some() {
+            write!(f, " &")?;
+        }
+
+        if let Some(name) = &self.name {
+            write!(f, " {}", name)?;
+        }
+
+        if self.equal.is_some() {
+            write!(f, "=")?;
+        }
+
+        Ok(())
+    }
 }
 
 impl<N: Debug + Display> Type<N> {
@@ -83,7 +116,7 @@ impl<N: Debug + Display> Display for Type<N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
             Type::Named(inner) => write!(f, "{}", inner),
-            Type::NamedWithGenerics(inner, templates) => {
+            Type::Generic(inner, templates) => {
                 write!(
                     f,
                     "{}<{}>",
@@ -126,11 +159,13 @@ impl<N: Debug + Display> Display for Type<N> {
             Type::Array => write!(f, "array"),
             Type::Object => write!(f, "object"),
             Type::Mixed => write!(f, "mixed"),
+            Type::CallableSignature(callable, parameters, return_type) => write!(f, "{}({}): {}", callable, parameters.iter().map(|p| p.to_string()).collect::<Vec<_>>().join(", "), return_type),
             Type::Callable => write!(f, "callable"),
             Type::Iterable => write!(f, "iterable"),
             Type::StaticReference => write!(f, "static"),
             Type::SelfReference => write!(f, "self"),
             Type::ParentReference => write!(f, "parent"),
+            Type::ArrayKey => write!(f, "array-key"),
             Type::TypedArray(key, value) => write!(f, "array<{}, {}>", key, value),
             Type::This => write!(f, "$this"),
             Type::Missing => write!(f, "<missing>"),
