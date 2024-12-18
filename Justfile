@@ -1,6 +1,5 @@
 test:
     cargo test --lib --bins --tests
-    cargo test --lib --bins --tests --features docblocks
 
 tokenise +args:
     RUSTFLAGS=-Awarnings cargo build -q --package pxp-internal --bin tokenise

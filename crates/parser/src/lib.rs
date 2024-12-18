@@ -2,11 +2,11 @@ mod diagnostics;
 mod expressions;
 mod internal;
 mod macros;
-mod state;
 
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 
 pub use diagnostics::ParserDiagnostic;
+use internal::namespaces::{NamespaceType, Scope};
 use pxp_ast::{
     AttributeGroup, Comment, CommentKind, DocBlockComment, HashMarkComment, MultiLineComment, Name, NodeId, SingleLineComment, Statement, UseKind
 };
@@ -15,7 +15,6 @@ use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::Lexer;
 use pxp_span::Span;
 use pxp_token::{Token, TokenKind};
-use state::State;
 
 #[derive(Debug)]
 pub struct ParseResult {
@@ -26,11 +25,12 @@ pub struct ParseResult {
 #[derive(Debug)]
 pub struct Parser<'a> {
     lexer: Lexer<'a>,
-    state: State,
 
     id: u32,
     comments: Vec<Comment>,
     attributes: Vec<AttributeGroup>,
+    stack: VecDeque<Scope>,
+    namespace_type: Option<NamespaceType>,
     imports: HashMap<UseKind, HashMap<ByteString, ByteString>>,
     in_docblock: bool,
     
@@ -60,11 +60,12 @@ impl<'a> Parser<'a> {
 
         let mut this = Self {
             lexer,
-            state: State::new(),
 
             id: 0,
             attributes: vec![],
             comments: vec![],
+            stack: VecDeque::with_capacity(8),
+            namespace_type: None,
             imports,
             in_docblock: false,
             

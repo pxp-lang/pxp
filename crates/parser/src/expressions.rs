@@ -1699,7 +1699,7 @@ impl<'a> Parser<'a> {
 
                         self.next();
 
-                        let resolved = self.state.strip_leading_namespace_qualifier(&symbol);
+                        let resolved = self.strip_leading_namespace_qualifier(&symbol);
 
                         Expression::new(
                             self.id(),

@@ -443,7 +443,7 @@ impl<'a> Parser<'a> {
             }
             TokenKind::FullyQualifiedIdentifier => {
                 let symbol = self.current_symbol_as_bytestring();
-                let resolved = self.state.strip_leading_namespace_qualifier(&symbol);
+                let resolved = self.strip_leading_namespace_qualifier(&symbol);
                 let span = self.next();
 
                 Some(Type::Named(Name::resolved(

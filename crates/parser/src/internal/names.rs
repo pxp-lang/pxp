@@ -12,9 +12,7 @@ impl<'a> Parser<'a> {
             TokenKind::FullyQualifiedIdentifier => self.next_but_first(|parser| {
                 Name::resolved(
                     parser.id(),
-                    parser
-                        .state
-                        .strip_leading_namespace_qualifier(&parser.current_symbol_as_bytestring()),
+                    parser.strip_leading_namespace_qualifier(&parser.current_symbol_as_bytestring()),
                     parser.current_symbol_as_bytestring(),
                     parser.current_span(),
                 )
@@ -44,7 +42,7 @@ impl<'a> Parser<'a> {
     pub fn parse_type_name_maybe_soft_reserved(&mut self) -> Name {
         if self.is_soft_reserved_identifier(self.current_kind()) {
             let symbol = self.current_symbol_as_bytestring();
-            let resolved = self.state.join_with_namespace(&symbol);
+            let resolved = self.join_with_namespace(&symbol);
             let span = self.current_span();
 
             self.next();
@@ -72,7 +70,7 @@ impl<'a> Parser<'a> {
             TokenKind::Identifier | TokenKind::Enum | TokenKind::From => {
                 self.next_but_first(|parser| {
                     let symbol = parser.current_symbol_as_bytestring();
-                    let resolved = parser.state.join_with_namespace(&symbol);
+                    let resolved = parser.join_with_namespace(&symbol);
 
                     Name::resolved(parser.id(), resolved, symbol, parser.current_span())
                 })
@@ -86,7 +84,7 @@ impl<'a> Parser<'a> {
 
                 self.next_but_first(|parser| {
                     let symbol = parser.current_symbol_as_bytestring();
-                    let resolved = parser.state.join_with_namespace(&symbol);
+                    let resolved = parser.join_with_namespace(&symbol);
 
                     Name::resolved(parser.id(), resolved, symbol, parser.current_span())
                 })
@@ -100,7 +98,7 @@ impl<'a> Parser<'a> {
 
                 self.next_but_first(|parser| {
                     let symbol = parser.current_symbol_as_bytestring();
-                    let resolved = parser.state.join_with_namespace(&symbol);
+                    let resolved = parser.join_with_namespace(&symbol);
 
                     Name::resolved(parser.id(), resolved, symbol, parser.current_span())
                 })
@@ -145,7 +143,7 @@ impl<'a> Parser<'a> {
         match self.current_kind() {
             TokenKind::FullyQualifiedIdentifier => self.next_but_first(|parser| {
                 let symbol = parser.current_symbol_as_bytestring();
-                let resolved = parser.state.strip_leading_namespace_qualifier(&symbol);
+                let resolved = parser.strip_leading_namespace_qualifier(&symbol);
 
                 Name::resolved(parser.id(), resolved, symbol, parser.current_span())
             }),
@@ -210,7 +208,7 @@ impl<'a> Parser<'a> {
             | TokenKind::Self_
             | TokenKind::Parent => self.next_but_first(|parser| {
                 let symbol = parser.current_symbol_as_bytestring();
-                let resolved = parser.state.join_with_namespace(&symbol);
+                let resolved = parser.join_with_namespace(&symbol);
 
                 Name::resolved(parser.id(), resolved, symbol, parser.current_span())
             }),
@@ -223,7 +221,7 @@ impl<'a> Parser<'a> {
 
                 self.next_but_first(|parser| {
                     let symbol = parser.current_symbol_as_bytestring();
-                    let resolved = parser.state.join_with_namespace(&symbol);
+                    let resolved = parser.join_with_namespace(&symbol);
 
                     Name::resolved(parser.id(), resolved, symbol, parser.current_span())
                 })

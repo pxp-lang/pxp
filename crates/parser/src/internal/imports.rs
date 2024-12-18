@@ -86,7 +86,7 @@ impl<'a> Parser<'a> {
         } else if kind == UseKind::Normal || token.kind == TokenKind::QualifiedIdentifier {
             Name::resolved(
                 id,
-                self.state
+                self
                     .join_with_namespace(&token.symbol.to_bytestring()),
                 token.symbol.to_bytestring(),
                 token.span,
@@ -95,7 +95,7 @@ impl<'a> Parser<'a> {
         // only be referencing something else inside of the global namespace.
         } else if (kind == UseKind::Function || kind == UseKind::Const)
             && token.kind == TokenKind::Identifier
-            && self.state.namespace().is_none()
+            && self.namespace().is_none()
         {
             Name::resolved(
                 id,
