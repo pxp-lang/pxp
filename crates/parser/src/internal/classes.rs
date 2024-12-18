@@ -1,6 +1,6 @@
 use crate::internal::functions::Method;
 use crate::Parser;
-use crate::ParserDiagnostic;
+use crate::internal::diagnostics::ParserDiagnostic;
 use pxp_ast::Expression;
 use pxp_ast::StatementKind;
 use pxp_ast::UseKind;

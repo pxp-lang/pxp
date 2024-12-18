@@ -1,5 +1,5 @@
 use crate::Parser;
-use crate::ParserDiagnostic;
+use crate::internal::diagnostics::ParserDiagnostic;
 use pxp_ast::ArrayItemKeyValue;
 use pxp_ast::ArrayItemReferencedKeyValue;
 use pxp_ast::ArrayItemReferencedValue;

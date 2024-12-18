@@ -1,12 +1,10 @@
-mod diagnostics;
 mod expressions;
 mod internal;
 mod macros;
 
 use std::collections::{HashMap, VecDeque};
 
-pub use diagnostics::ParserDiagnostic;
-use internal::namespaces::{NamespaceType, Scope};
+use internal::{diagnostics::ParserDiagnostic, namespaces::{NamespaceType, Scope}};
 use pxp_ast::{
     AttributeGroup, Comment, CommentKind, DocBlockComment, HashMarkComment, MultiLineComment, Name, NodeId, SingleLineComment, Statement, UseKind
 };

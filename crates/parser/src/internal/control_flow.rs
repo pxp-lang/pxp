@@ -1,5 +1,5 @@
 use crate::Parser;
-use crate::ParserDiagnostic;
+use crate::internal::diagnostics::ParserDiagnostic;
 use pxp_ast::Case;
 use pxp_ast::DefaultMatchArm;
 use pxp_ast::Expression;

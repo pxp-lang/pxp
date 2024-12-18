@@ -1,7 +1,7 @@
 use crate::internal::precedences::Associativity;
 use crate::internal::precedences::Precedence;
 use crate::Parser;
-use crate::ParserDiagnostic;
+use crate::internal::diagnostics::ParserDiagnostic;
 use pxp_ast::Expression;
 use pxp_ast::*;
 use pxp_ast::{
