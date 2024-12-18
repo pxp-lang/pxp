@@ -28,7 +28,7 @@ impl<'a> Indexer<'a> {
         }
     }
 
-    pub fn index(&mut self, ast: &Vec<Statement>) {
+    pub fn index(&mut self, ast: &[Statement]) {
         self.visit(ast);
     }
 

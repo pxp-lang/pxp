@@ -47,9 +47,9 @@ impl Index {
         self.classes.contains_key(name)
     }
 
-    pub(crate) fn add_constant(&mut self, constant: Constant) {
-        self.constants.insert(constant.name.clone(), constant);
-    }
+    // pub(crate) fn add_constant(&mut self, constant: Constant) {
+    //     self.constants.insert(constant.name.clone(), constant);
+    // }
 
     pub fn get_class(&self, name: &ByteString) -> Option<ReflectionClass> {
         self.classes.get(name).map(|class| ReflectionClass {
