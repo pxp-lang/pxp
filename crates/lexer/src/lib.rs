@@ -912,7 +912,6 @@ impl<'a> Lexer<'a> {
 
                 loop {
                     match self.source.read(2) {
-                        #[cfg(feature = "docblocks")]
                         [b'*', b'*', ..] => {
                             self.source.skip(2);
 
@@ -925,11 +924,6 @@ impl<'a> Lexer<'a> {
                         [b'*', b'/', ..] => {
                             self.source.skip(2);
                             break;
-                        }
-                        #[cfg(not(feature = "docblocks"))]
-                        [b'*', b'*', ..] if kind != TokenKind::DocBlockComment => {
-                            self.source.skip(2);
-                            kind = TokenKind::DocBlockComment;
                         }
                         &[..] => {
                             self.source.next();
