@@ -32,6 +32,8 @@ pub struct Parser<'a> {
     id: u32,
     comments: Vec<Comment>,
     imports: HashMap<UseKind, HashMap<ByteString, ByteString>>,
+
+    diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
 }
 
 impl<'a> Parser<'a> {
@@ -45,7 +47,7 @@ impl<'a> Parser<'a> {
 
         ParseResult {
             ast,
-            diagnostics: parser.state.diagnostics.clone(),
+            diagnostics: parser.diagnostics.clone(),
         }
     }
 
@@ -62,6 +64,8 @@ impl<'a> Parser<'a> {
             id: 0,
             comments: vec![],
             imports,
+
+            diagnostics: vec![],
         };
 
         this.collect_comments();
@@ -124,12 +128,6 @@ impl<'a> Parser<'a> {
         self.next();
 
         result
-    }
-
-    fn diagnostic(&mut self, diagnostic: ParserDiagnostic, severity: Severity, span: Span) {
-        self.state
-            .diagnostics
-            .push(Diagnostic::new(diagnostic, severity, span));
     }
 
     fn skip_doc_eol(&mut self) {

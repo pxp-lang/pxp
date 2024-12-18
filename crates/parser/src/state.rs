@@ -25,9 +25,6 @@ pub struct State {
     pub namespace_type: Option<NamespaceType>,
     pub attributes: Vec<AttributeGroup>,
     docblock: bool,
-
-    // Diagnostics
-    pub diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
 }
 
 impl State {
@@ -37,8 +34,6 @@ impl State {
             namespace_type: None,
             attributes: vec![],
             docblock: false,
-
-            diagnostics: vec![],
         }
     }
 
