@@ -29,3 +29,4 @@ pub(crate) mod uses;
 pub(crate) mod utils;
 pub(crate) mod variables;
 pub(crate) mod diagnostics;
+pub(crate) mod expressions;
