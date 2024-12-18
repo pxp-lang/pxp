@@ -212,7 +212,7 @@ impl<'a> Parser<'a> {
                 break;
             }
 
-            text.extend_with_bytes(&self.current_symbol());
+            text.extend_with_bytes(self.current_symbol());
 
             self.next();
         }

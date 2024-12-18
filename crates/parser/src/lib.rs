@@ -5,10 +5,10 @@ use std::collections::{HashMap, VecDeque};
 
 use internal::{diagnostics::ParserDiagnostic, namespaces::{NamespaceType, Scope}};
 use pxp_ast::{
-    AttributeGroup, Comment, CommentKind, DocBlockComment, HashMarkComment, MultiLineComment, Name, NodeId, SingleLineComment, Statement, UseKind
+    AttributeGroup, Comment, Statement, UseKind
 };
 use pxp_bytestring::{ByteStr, ByteString};
-use pxp_diagnostics::{Diagnostic, Severity};
+use pxp_diagnostics::Diagnostic;
 use pxp_lexer::Lexer;
 use pxp_span::Span;
 use pxp_token::{Token, TokenKind};
