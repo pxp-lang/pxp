@@ -32,7 +32,8 @@ pub struct Parser<'a> {
     comments: Vec<Comment>,
     attributes: Vec<AttributeGroup>,
     imports: HashMap<UseKind, HashMap<ByteString, ByteString>>,
-
+    in_docblock: bool,
+    
     diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
 }
 
@@ -65,7 +66,8 @@ impl<'a> Parser<'a> {
             attributes: vec![],
             comments: vec![],
             imports,
-
+            in_docblock: false,
+            
             diagnostics: vec![],
         };
 
@@ -129,15 +131,5 @@ impl<'a> Parser<'a> {
         self.next();
 
         result
-    }
-
-    fn skip_doc_eol(&mut self) {
-        if self.current_kind() == TokenKind::PhpDocEol {
-            self.next();
-        }
-
-        while self.current_kind() == TokenKind::PhpDocHorizontalWhitespace {
-            self.next();
-        }
     }
 }

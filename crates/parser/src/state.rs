@@ -23,7 +23,6 @@ pub struct State {
     // Scope Tracking
     pub stack: VecDeque<Scope>,
     pub namespace_type: Option<NamespaceType>,
-    docblock: bool,
 }
 
 impl State {
@@ -31,22 +30,7 @@ impl State {
         Self {
             stack: VecDeque::with_capacity(32),
             namespace_type: None,
-            docblock: false,
         }
-    }
-
-    pub const fn is_in_docblock(&self) -> bool {
-        self.docblock
-    }
-
-    #[cfg(feature = "docblocks")]
-    pub fn enter_docblock(&mut self) {
-        self.docblock = true;
-    }
-
-    #[cfg(feature = "docblocks")]
-    pub fn exit_docblock(&mut self) {
-        self.docblock = false;
     }
 
     /// Return the namespace type used in the current state

@@ -75,20 +75,6 @@ impl<'a> Parser<'a> {
                     },
                     true,
                 ),
-                #[cfg(not(feature = "docblocks"))]
-                TokenKind::DocBlockComment => (
-                    Comment {
-                        id,
-                        span: self.current_span(),
-                        kind: CommentKind::DocBlock(DocBlockComment {
-                            id: comment_id,
-                            span: self.current_span(),
-                            content: self.current_symbol_as_bytestring(),
-                        }),
-                    },
-                    true,
-                ),
-                #[cfg(feature = "docblocks")]
                 TokenKind::OpenPhpDoc => {
                     let docblock = self.parse_docblock();
 

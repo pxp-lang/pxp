@@ -5647,7 +5647,6 @@ impl Spanned for HashMarkComment {
     }
 }
 
-#[cfg(feature = "docblocks")]
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DocBlockComment {
     pub id: NodeId,
@@ -5655,36 +5654,12 @@ pub struct DocBlockComment {
     pub doc: DocBlock,
 }
 
-#[cfg(feature = "docblocks")]
 impl HasId for DocBlockComment {
     fn id(&self) -> NodeId {
         self.id
     }
 }
 
-#[cfg(feature = "docblocks")]
-impl Spanned for DocBlockComment {
-    fn span(&self) -> Span {
-        self.span
-    }
-}
-
-#[cfg(not(feature = "docblocks"))]
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub struct DocBlockComment {
-    pub id: NodeId,
-    pub span: Span,
-    pub content: ByteString,
-}
-
-#[cfg(not(feature = "docblocks"))]
-impl HasId for DocBlockComment {
-    fn id(&self) -> NodeId {
-        self.id
-    }
-}
-
-#[cfg(not(feature = "docblocks"))]
 impl Spanned for DocBlockComment {
     fn span(&self) -> Span {
         self.span
@@ -6319,9 +6294,6 @@ pub enum NodeKind<'a> {
     SingleLineComment(&'a SingleLineComment),
     MultiLineComment(&'a MultiLineComment),
     HashMarkComment(&'a HashMarkComment),
-    #[cfg(feature = "docblocks")]
-    DocBlockComment(&'a DocBlockComment),
-    #[cfg(not(feature = "docblocks"))]
     DocBlockComment(&'a DocBlockComment),
     DocBlock(&'a DocBlock),
     DocBlockNode(&'a DocBlockNode),
@@ -9052,7 +9024,6 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::HashMarkComment(_))
     }
 
-    #[cfg(feature = "docblocks")]
     pub fn as_doc_block_comment(self) -> Option<&'a DocBlockComment> {
         match &self.kind {
             NodeKind::DocBlockComment(node) => Some(node),
@@ -9060,20 +9031,6 @@ impl<'a> Node<'a> {
         }
     }
 
-    #[cfg(feature = "docblocks")]
-    pub fn is_doc_block_comment(&self) -> bool {
-        matches!(&self.kind, NodeKind::DocBlockComment(_))
-    }
-
-    #[cfg(not(feature = "docblocks"))]
-    pub fn as_doc_block_comment(self) -> Option<&'a DocBlockComment> {
-        match &self.kind {
-            NodeKind::DocBlockComment(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    #[cfg(not(feature = "docblocks"))]
     pub fn is_doc_block_comment(&self) -> bool {
         matches!(&self.kind, NodeKind::DocBlockComment(_))
     }
@@ -9528,9 +9485,6 @@ impl<'a> Node<'a> {
             NodeKind::SingleLineComment(_) => "SingleLineComment",
             NodeKind::MultiLineComment(_) => "MultiLineComment",
             NodeKind::HashMarkComment(_) => "HashMarkComment",
-            #[cfg(feature = "docblocks")]
-            NodeKind::DocBlockComment(_) => "DocBlockComment",
-            #[cfg(not(feature = "docblocks"))]
             NodeKind::DocBlockComment(_) => "DocBlockComment",
             NodeKind::DocBlock(_) => "DocBlock",
             NodeKind::DocBlockNode(_) => "DocBlockNode",
@@ -11580,7 +11534,6 @@ impl<'a> Node<'a> {
                 }
                 _ => {}
             },
-            #[cfg(feature = "docblocks")]
             NodeKind::DocBlockComment(node) => {
                 let x = &node.doc;
                 children.push(x.into());
@@ -11891,9 +11844,6 @@ impl<'a> Node<'a> {
             NodeKind::SingleLineComment(node) => NonNull::from(node).cast(),
             NodeKind::MultiLineComment(node) => NonNull::from(node).cast(),
             NodeKind::HashMarkComment(node) => NonNull::from(node).cast(),
-            #[cfg(feature = "docblocks")]
-            NodeKind::DocBlockComment(node) => NonNull::from(node).cast(),
-            #[cfg(not(feature = "docblocks"))]
             NodeKind::DocBlockComment(node) => NonNull::from(node).cast(),
             NodeKind::DocBlock(node) => NonNull::from(node).cast(),
             NodeKind::DocBlockNode(node) => NonNull::from(node).cast(),
@@ -13627,14 +13577,6 @@ impl<'a> From<&'a HashMarkComment> for Node<'a> {
     }
 }
 
-#[cfg(feature = "docblocks")]
-impl<'a> From<&'a DocBlockComment> for Node<'a> {
-    fn from(node: &'a DocBlockComment) -> Self {
-        Node::new(node.id(), NodeKind::DocBlockComment(node), node.span())
-    }
-}
-
-#[cfg(not(feature = "docblocks"))]
 impl<'a> From<&'a DocBlockComment> for Node<'a> {
     fn from(node: &'a DocBlockComment) -> Self {
         Node::new(node.id(), NodeKind::DocBlockComment(node), node.span())

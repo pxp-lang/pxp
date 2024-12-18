@@ -9,12 +9,34 @@ use pxp_token::TokenKind;
 use crate::Parser;
 
 impl<'a> Parser<'a> {
-    pub fn parse_docblock(&mut self) -> DocBlockComment {
+    pub(crate) const fn is_in_docblock(&self) -> bool {
+        self.in_docblock
+    }
+
+    fn enter_docblock(&mut self) {
+        self.in_docblock = true;
+    }
+
+    fn exit_docblock(&mut self) {
+        self.in_docblock = false;
+    }
+
+    pub(crate) fn skip_doc_eol(&mut self) {
+        if self.current_kind() == TokenKind::PhpDocEol {
+            self.next();
+        }
+
+        while self.current_kind() == TokenKind::PhpDocHorizontalWhitespace {
+            self.next();
+        }
+    }
+
+    pub(crate) fn parse_docblock(&mut self) -> DocBlockComment {
         if self.current_kind() != TokenKind::OpenPhpDoc {
             unreachable!();
         }
 
-        self.state.enter_docblock();
+        self.enter_docblock();
 
         let start = self.next();
 
@@ -43,7 +65,7 @@ impl<'a> Parser<'a> {
         let close_phpdoc = self.skip(TokenKind::ClosePhpDoc);
         let span = start.join(close_phpdoc);
 
-        self.state.exit_docblock();
+        self.exit_docblock();
 
         DocBlockComment {
             id: self.id(),

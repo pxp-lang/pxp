@@ -12,7 +12,3 @@ pxp-span = { path = "../span" }
 pxp-bytestring = { path = "../bytestring" }
 pxp-diagnostics = { version = "0.1.0", path = "../diagnostics" }
 
-[features]
-default = []
-docblocks = []
-

@@ -8,7 +8,7 @@ use pxp_type::Type;
 
 impl<'a> Parser<'a> {
     pub fn parse_data_type(&mut self) -> DataType {
-        let kind = if self.state.is_in_docblock() {
+        let kind = if self.is_in_docblock() {
             self.parse_docblock_type()
         } else if self.current_kind() == TokenKind::Question {
             self.parse_nullable_type()
@@ -38,7 +38,7 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_optional_data_type(&mut self) -> Option<DataType> {
-        let kind = if self.state.is_in_docblock() {
+        let kind = if self.is_in_docblock() {
             self.parse_docblock_type()
         } else if self.current_kind() == TokenKind::Question {
             self.parse_nullable_type()

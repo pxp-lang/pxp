@@ -11,7 +11,3 @@ pxp-token = { path = "../token" }
 pxp-span = { path = "../span" }
 pxp-type = { path = "../type" }
 pxp-bytestring = { path = "../bytestring" }
-
-[features]
-default = []
-docblocks = []
