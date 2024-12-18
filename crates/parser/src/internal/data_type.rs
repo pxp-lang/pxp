@@ -387,7 +387,7 @@ impl<'a> Parser<'a> {
         self.next();
         self.skip_doc_eol();
 
-        let is = self.skip(TokenKind::PhpDocIs);
+        self.skip(TokenKind::PhpDocIs);
 
         self.skip_doc_eol();
 
@@ -404,7 +404,7 @@ impl<'a> Parser<'a> {
 
         self.skip_doc_eol();
 
-        let question = self.skip(TokenKind::Question);
+        self.skip(TokenKind::Question);
 
         self.skip_doc_eol();
 
