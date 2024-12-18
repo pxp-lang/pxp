@@ -47,7 +47,7 @@ impl<'a> Parser<'a> {
         &mut self,
         modifiers: ConstantModifierGroup,
     ) -> ClassishConstant {
-        let attributes = self.state.get_attributes();
+        let attributes = self.get_attributes();
         let comments = self.comments();
         let start = self.skip(TokenKind::Const);
 

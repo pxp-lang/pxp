@@ -17,7 +17,7 @@ impl<'a> Parser<'a> {
     pub fn parse_anonymous_function(&mut self) -> Expression {
         let comments = self.comments();
         let start_span = self.current_span();
-        let attributes = self.state.get_attributes();
+        let attributes = self.get_attributes();
         let r#static = if self.current_kind() == TokenKind::Static {
             Some(self.next())
         } else {
@@ -142,7 +142,7 @@ impl<'a> Parser<'a> {
             None
         };
 
-        let attributes = self.state.get_attributes();
+        let attributes = self.get_attributes();
         let parameters = self.parse_function_parameter_list();
         let return_type = if self.current_kind() == TokenKind::Colon {
             let colon = self.skip_colon();
@@ -198,7 +198,7 @@ impl<'a> Parser<'a> {
 
         // get attributes before processing parameters, otherwise
         // parameters will steal attributes of this function.
-        let attributes = self.state.get_attributes();
+        let attributes = self.get_attributes();
 
         let parameters = self.parse_function_parameter_list();
         let return_type = if self.current_kind() == TokenKind::Colon {
@@ -245,7 +245,7 @@ impl<'a> Parser<'a> {
 
     pub fn parse_method(&mut self, modifiers: MethodModifierGroup) -> Method {
         let comments = self.comments();
-        let attributes = self.state.get_attributes();
+        let attributes = self.get_attributes();
         let function = self.skip(TokenKind::Function);
 
         let ampersand = if self.current_kind() == TokenKind::Ampersand {

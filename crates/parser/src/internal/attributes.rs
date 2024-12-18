@@ -4,7 +4,19 @@ use pxp_span::Span;
 use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
-    pub fn gather_attributes(&mut self) -> bool {
+    pub(crate) fn get_attributes(&mut self) -> Vec<AttributeGroup> {
+        let mut attributes = vec![];
+
+        std::mem::swap(&mut self.attributes, &mut attributes);
+
+        attributes
+    }
+
+    pub(crate) fn attribute(&mut self, attr: AttributeGroup) {
+        self.attributes.push(attr);
+    }
+
+    pub(crate) fn gather_attributes(&mut self) -> bool {
         if self.current_kind() != TokenKind::Attribute {
             return false;
         }
@@ -49,9 +61,8 @@ impl<'a> Parser<'a> {
         let span = Span::new(start.start, end.end);
 
         let id = self.id();
-        self.state.attribute(AttributeGroup { id, span, members });
-
-        // recursive, looking for multiple attribute brackets after each other.
+        
+        self.attribute(AttributeGroup { id, span, members });
         self.gather_attributes()
     }
 }

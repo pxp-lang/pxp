@@ -14,7 +14,7 @@ use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
     pub fn parse_class(&mut self) -> StatementKind {
-        let attributes = self.state.get_attributes();
+        let attributes = self.get_attributes();
 
         let modifiers = self.collect_modifiers();
         let modifiers = self.parse_class_group(modifiers);
@@ -106,7 +106,7 @@ impl<'a> Parser<'a> {
 
         self.gather_attributes();
 
-        let attributes = self.state.get_attributes();
+        let attributes = self.get_attributes();
         let class = self.skip(TokenKind::Class);
         let class_span = class;
 

@@ -85,7 +85,7 @@ impl<'a> Parser<'a> {
             }
         }
 
-        let attributes = self.state.get_attributes();
+        let attributes = self.get_attributes();
         if let Some((colon, backed_type)) = backed_type {
             let left_brace = self.skip_left_brace();
             let members = {
@@ -157,7 +157,7 @@ impl<'a> Parser<'a> {
         let _has_attributes = self.gather_attributes();
 
         if self.current_kind() == TokenKind::Case {
-            let attributes = self.state.get_attributes();
+            let attributes = self.get_attributes();
 
             let start = self.next();
 
@@ -198,7 +198,7 @@ impl<'a> Parser<'a> {
         let _has_attributes = self.gather_attributes();
 
         if self.current_kind() == TokenKind::Case {
-            let attributes = self.state.get_attributes();
+            let attributes = self.get_attributes();
 
             let case = self.next();
             let name = self.parse_identifier_maybe_reserved();

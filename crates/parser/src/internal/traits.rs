@@ -229,7 +229,7 @@ impl<'a> Parser<'a> {
     pub fn parse_trait(&mut self) -> StatementKind {
         let span = self.skip(TokenKind::Trait);
         let name = self.parse_type_name();
-        let attributes = self.state.get_attributes();
+        let attributes = self.get_attributes();
 
         let left_brace = self.skip_left_brace();
         let members = {

@@ -102,7 +102,7 @@ impl<'a> Parser<'a> {
             },
             r#type: ty,
             modifiers,
-            attributes: self.state.get_attributes(),
+            attributes: self.get_attributes(),
             entries,
             end,
         }
@@ -178,7 +178,7 @@ impl<'a> Parser<'a> {
                 entries.span()
             },
             r#type: ty,
-            attributes: self.state.get_attributes(),
+            attributes: self.get_attributes(),
             entries,
             end,
         }

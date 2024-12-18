@@ -23,7 +23,6 @@ pub struct State {
     // Scope Tracking
     pub stack: VecDeque<Scope>,
     pub namespace_type: Option<NamespaceType>,
-    pub attributes: Vec<AttributeGroup>,
     docblock: bool,
 }
 
@@ -32,7 +31,6 @@ impl State {
         Self {
             stack: VecDeque::with_capacity(32),
             namespace_type: None,
-            attributes: vec![],
             docblock: false,
         }
     }
@@ -49,18 +47,6 @@ impl State {
     #[cfg(feature = "docblocks")]
     pub fn exit_docblock(&mut self) {
         self.docblock = false;
-    }
-
-    pub fn attribute(&mut self, attr: AttributeGroup) {
-        self.attributes.push(attr);
-    }
-
-    pub fn get_attributes(&mut self) -> Vec<AttributeGroup> {
-        let mut attributes = vec![];
-
-        std::mem::swap(&mut self.attributes, &mut attributes);
-
-        attributes
     }
 
     /// Return the namespace type used in the current state

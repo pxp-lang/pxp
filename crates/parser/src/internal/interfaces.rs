@@ -32,7 +32,7 @@ impl<'a> Parser<'a> {
             None
         };
 
-        let attributes = self.state.get_attributes();
+        let attributes = self.get_attributes();
 
         let left_brace = self.skip_left_brace();
         let members = {

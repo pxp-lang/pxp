@@ -8,8 +8,7 @@ use std::collections::HashMap;
 
 pub use diagnostics::ParserDiagnostic;
 use pxp_ast::{
-    Comment, CommentKind, DocBlockComment, HashMarkComment, MultiLineComment, Name, NodeId,
-    SingleLineComment, Statement, UseKind,
+    AttributeGroup, Comment, CommentKind, DocBlockComment, HashMarkComment, MultiLineComment, Name, NodeId, SingleLineComment, Statement, UseKind
 };
 use pxp_bytestring::{ByteStr, ByteString};
 use pxp_diagnostics::{Diagnostic, Severity};
@@ -31,6 +30,7 @@ pub struct Parser<'a> {
 
     id: u32,
     comments: Vec<Comment>,
+    attributes: Vec<AttributeGroup>,
     imports: HashMap<UseKind, HashMap<ByteString, ByteString>>,
 
     diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
@@ -62,6 +62,7 @@ impl<'a> Parser<'a> {
             state: State::new(),
 
             id: 0,
+            attributes: vec![],
             comments: vec![],
             imports,
 
