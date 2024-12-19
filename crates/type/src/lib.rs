@@ -38,6 +38,14 @@ pub enum Type<N: Debug + Display> {
         then: Box<Type<N>>,
         otherwise: Box<Type<N>>,
     },
+    Conditional {
+        subject: Box<Type<N>>,
+        negated: bool,
+        target: Box<Type<N>>,
+        then: Box<Type<N>>,
+        otherwise: Box<Type<N>>,
+    },
+    ValueOf,
     This,
     Missing,
 }
@@ -122,6 +130,7 @@ impl<N: Debug + Display> Type<N> {
 impl<N: Debug + Display> Display for Type<N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
+            Type::ValueOf => write!(f, "value-of"),
             Type::Named(inner) => write!(f, "{}", inner),
             Type::Generic(inner, templates) => {
                 write!(
@@ -202,6 +211,7 @@ impl<N: Debug + Display> Display for Type<N> {
                     otherwise
                 )
             }
+            Type::Conditional { .. } => todo!(),
             Type::Missing => write!(f, "<missing>"),
         }
     }

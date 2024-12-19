@@ -423,6 +423,14 @@ impl<'a> Lexer<'a> {
                             self.source.span_range(self.source.span()),
                         )
                     }
+                    b"value" if &self.source.read(3) == b"-of" => {
+                        self.source.skip(3);
+
+                        (
+                            self.source.span(),
+                            self.source.span_range(self.source.span()),
+                        )
+                    }
                     _ => (
                         self.source.span(),
                         self.source.span_range(self.source.span()),

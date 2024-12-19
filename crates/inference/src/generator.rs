@@ -487,7 +487,9 @@ fn bytestring_type(ty: &Type<Name>) -> Type<ByteString> {
             then: Box::new(bytestring_type(then)),
             otherwise: Box::new(bytestring_type(otherwise)),
         },
+        Type::Conditional { .. } => todo!(),
         Type::This => Type::This,
+        Type::ValueOf => Type::ValueOf,
         Type::Missing => Type::Missing,
     }
 }

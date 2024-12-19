@@ -381,6 +381,44 @@ impl<'a> Parser<'a> {
         r#type
     }
 
+    fn parse_docblock_conditional(&mut self, lhs: Type<Name>) -> Type<Name> {
+        self.skip(TokenKind::PhpDocIs);
+        self.skip_doc_eol();
+
+        let negated = if self.current_kind() == TokenKind::PhpDocNot {
+            self.next();
+            true
+        } else {
+            false
+        };
+
+        let target_type = self.parse_docblock_type();
+
+        self.skip_doc_eol();
+
+        self.skip(TokenKind::Question);
+
+        self.skip_doc_eol();
+
+        let if_type = self.parse_docblock_type();
+
+        self.skip_doc_eol();
+
+        self.skip(TokenKind::Colon);
+
+        self.skip_doc_eol();
+
+        let else_type = self.parse_docblock_subparse();
+
+        Type::Conditional {
+            subject: Box::new(lhs),
+            negated,
+            target: Box::new(target_type),
+            then: Box::new(if_type),
+            otherwise: Box::new(else_type),
+        }
+    }
+
     fn parse_docblock_conditional_for_parameter(&mut self) -> Type<Name> {
         let parameter = self.current_symbol_as_bytestring();
 
@@ -438,13 +476,11 @@ impl<'a> Parser<'a> {
                     return Type::Missing;
                 }
 
-                if self.current_kind() == TokenKind::Identifier && self.current_symbol() == b"is" {
-                    todo!("parse docblock conditional type");
-                }
-
                 self.skip_doc_eol();
 
-                if self.current_kind() == TokenKind::Pipe {
+                if self.current_kind() == TokenKind::PhpDocIs {
+                    self.parse_docblock_conditional(r#type)
+                } else if self.current_kind() == TokenKind::Pipe {
                     self.parse_docblock_subparse_union(r#type)
                 } else if self.current_kind() == TokenKind::Ampersand {
                     self.parse_docblock_subparse_intersection(r#type)
@@ -559,6 +595,7 @@ impl<'a> Parser<'a> {
                     b"array" => Some(Type::Array),
                     b"callable" => Some(Type::Callable),
                     b"array-key" if parser.is_in_docblock() => Some(Type::ArrayKey),
+                    b"value-of" if parser.is_in_docblock() => Some(Type::ValueOf),
                     _ => {
                         let id = parser.id();
 
