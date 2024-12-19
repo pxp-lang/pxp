@@ -299,7 +299,12 @@ foreach ($ast as $node => $structure) {
 
             if (! in_array($subStructure, ['Span'])) {
                 $output .= "{$node}::{$sub}(inner) => {\n";
-                $output .= "    children.push(inner.into());\n";
+                if (str_starts_with($subStructure, 'Box<')) {
+                    $output .= "let x = inner.as_ref();\n";
+                    $output .= "children.push(x.into());\n";
+                } else {
+                    $output .= "    children.push(inner.into());\n";
+                }
                 $output .= "}\n";
             }
         }

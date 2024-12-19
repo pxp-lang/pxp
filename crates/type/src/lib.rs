@@ -166,7 +166,17 @@ impl<N: Debug + Display> Display for Type<N> {
             Type::Array => write!(f, "array"),
             Type::Object => write!(f, "object"),
             Type::Mixed => write!(f, "mixed"),
-            Type::CallableSignature(callable, parameters, return_type) => write!(f, "{}({}): {}", callable, parameters.iter().map(|p| p.to_string()).collect::<Vec<_>>().join(", "), return_type),
+            Type::CallableSignature(callable, parameters, return_type) => write!(
+                f,
+                "{}({}): {}",
+                callable,
+                parameters
+                    .iter()
+                    .map(|p| p.to_string())
+                    .collect::<Vec<_>>()
+                    .join(", "),
+                return_type
+            ),
             Type::Callable => write!(f, "callable"),
             Type::Iterable => write!(f, "iterable"),
             Type::StaticReference => write!(f, "static"),
@@ -175,8 +185,22 @@ impl<N: Debug + Display> Display for Type<N> {
             Type::ArrayKey => write!(f, "array-key"),
             Type::TypedArray(key, value) => write!(f, "array<{}, {}>", key, value),
             Type::This => write!(f, "$this"),
-            Type::ConditionalForParameter { parameter, negated, target, then, otherwise } => {
-                write!(f, "{} is {}{} ? {} : {}", parameter, if *negated { "not " } else { "" }, target, then, otherwise)
+            Type::ConditionalForParameter {
+                parameter,
+                negated,
+                target,
+                then,
+                otherwise,
+            } => {
+                write!(
+                    f,
+                    "{} is {}{} ? {} : {}",
+                    parameter,
+                    if *negated { "not " } else { "" },
+                    target,
+                    then,
+                    otherwise
+                )
             }
             Type::Missing => write!(f, "<missing>"),
         }

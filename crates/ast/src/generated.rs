@@ -139,71 +139,71 @@ impl Spanned for Expression {
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum ExpressionKind {
     Missing(MissingExpression),
-    Eval(EvalExpression),
-    Empty(EmptyExpression),
-    Die(DieExpression),
-    Exit(ExitExpression),
-    Isset(IssetExpression),
-    Unset(UnsetExpression),
-    Print(PrintExpression),
-    Literal(Literal),
-    ArithmeticOperation(ArithmeticOperationExpression),
-    AssignmentOperation(AssignmentOperationExpression),
-    BitwiseOperation(BitwiseOperationExpression),
-    ComparisonOperation(ComparisonOperationExpression),
-    LogicalOperation(LogicalOperationExpression),
-    Concat(ConcatExpression),
-    Instanceof(InstanceofExpression),
-    Reference(ReferenceExpression),
-    Parenthesized(ParenthesizedExpression),
-    ErrorSuppress(ErrorSuppressExpression),
-    Identifier(Identifier),
-    Variable(Variable),
-    Include(IncludeExpression),
-    IncludeOnce(IncludeOnceExpression),
-    Require(RequireExpression),
-    RequireOnce(RequireOnceExpression),
-    FunctionCall(FunctionCallExpression),
-    FunctionClosureCreation(FunctionClosureCreationExpression),
-    MethodCall(MethodCallExpression),
-    MethodClosureCreation(MethodClosureCreationExpression),
-    NullsafeMethodCall(NullsafeMethodCallExpression),
-    StaticMethodCall(StaticMethodCallExpression),
-    StaticVariableMethodCall(StaticVariableMethodCallExpression),
-    StaticMethodClosureCreation(StaticMethodClosureCreationExpression),
-    StaticVariableMethodClosureCreation(StaticVariableMethodClosureCreationExpression),
-    PropertyFetch(PropertyFetchExpression),
-    NullsafePropertyFetch(NullsafePropertyFetchExpression),
-    StaticPropertyFetch(StaticPropertyFetchExpression),
-    ConstantFetch(ConstantFetchExpression),
-    Static(StaticExpression),
-    Self_(SelfExpression),
-    Parent(ParentExpression),
-    ShortArray(ShortArrayExpression),
-    Array(ArrayExpression),
-    List(ListExpression),
-    Closure(ClosureExpression),
-    ArrowFunction(ArrowFunctionExpression),
-    New(NewExpression),
-    InterpolatedString(InterpolatedStringExpression),
-    Heredoc(HeredocExpression),
-    Nowdoc(NowdocExpression),
-    ShellExec(ShellExecExpression),
-    AnonymousClass(AnonymousClassExpression),
-    Bool(BoolExpression),
-    ArrayIndex(ArrayIndexExpression),
+    Eval(Box<EvalExpression>),
+    Empty(Box<EmptyExpression>),
+    Die(Box<DieExpression>),
+    Exit(Box<ExitExpression>),
+    Isset(Box<IssetExpression>),
+    Unset(Box<UnsetExpression>),
+    Print(Box<PrintExpression>),
+    Literal(Box<Literal>),
+    ArithmeticOperation(Box<ArithmeticOperationExpression>),
+    AssignmentOperation(Box<AssignmentOperationExpression>),
+    BitwiseOperation(Box<BitwiseOperationExpression>),
+    ComparisonOperation(Box<ComparisonOperationExpression>),
+    LogicalOperation(Box<LogicalOperationExpression>),
+    Concat(Box<ConcatExpression>),
+    Instanceof(Box<InstanceofExpression>),
+    Reference(Box<ReferenceExpression>),
+    Parenthesized(Box<ParenthesizedExpression>),
+    ErrorSuppress(Box<ErrorSuppressExpression>),
+    Identifier(Box<Identifier>),
+    Variable(Box<Variable>),
+    Include(Box<IncludeExpression>),
+    IncludeOnce(Box<IncludeOnceExpression>),
+    Require(Box<RequireExpression>),
+    RequireOnce(Box<RequireOnceExpression>),
+    FunctionCall(Box<FunctionCallExpression>),
+    FunctionClosureCreation(Box<FunctionClosureCreationExpression>),
+    MethodCall(Box<MethodCallExpression>),
+    MethodClosureCreation(Box<MethodClosureCreationExpression>),
+    NullsafeMethodCall(Box<NullsafeMethodCallExpression>),
+    StaticMethodCall(Box<StaticMethodCallExpression>),
+    StaticVariableMethodCall(Box<StaticVariableMethodCallExpression>),
+    StaticMethodClosureCreation(Box<StaticMethodClosureCreationExpression>),
+    StaticVariableMethodClosureCreation(Box<StaticVariableMethodClosureCreationExpression>),
+    PropertyFetch(Box<PropertyFetchExpression>),
+    NullsafePropertyFetch(Box<NullsafePropertyFetchExpression>),
+    StaticPropertyFetch(Box<StaticPropertyFetchExpression>),
+    ConstantFetch(Box<ConstantFetchExpression>),
+    Static(Box<StaticExpression>),
+    Self_(Box<SelfExpression>),
+    Parent(Box<ParentExpression>),
+    ShortArray(Box<ShortArrayExpression>),
+    Array(Box<ArrayExpression>),
+    List(Box<ListExpression>),
+    Closure(Box<ClosureExpression>),
+    ArrowFunction(Box<ArrowFunctionExpression>),
+    New(Box<NewExpression>),
+    InterpolatedString(Box<InterpolatedStringExpression>),
+    Heredoc(Box<HeredocExpression>),
+    Nowdoc(Box<NowdocExpression>),
+    ShellExec(Box<ShellExecExpression>),
+    AnonymousClass(Box<AnonymousClassExpression>),
+    Bool(Box<BoolExpression>),
+    ArrayIndex(Box<ArrayIndexExpression>),
     Null(Span),
-    MagicConstant(MagicConstantExpression),
-    ShortTernary(ShortTernaryExpression),
-    Ternary(TernaryExpression),
-    Coalesce(CoalesceExpression),
-    Clone(CloneExpression),
-    Match(MatchExpression),
-    Throw(ThrowExpression),
-    Yield(YieldExpression),
-    YieldFrom(YieldFromExpression),
-    Cast(CastExpression),
-    Name(Name),
+    MagicConstant(Box<MagicConstantExpression>),
+    ShortTernary(Box<ShortTernaryExpression>),
+    Ternary(Box<TernaryExpression>),
+    Coalesce(Box<CoalesceExpression>),
+    Clone(Box<CloneExpression>),
+    Match(Box<MatchExpression>),
+    Throw(Box<ThrowExpression>),
+    Yield(Box<YieldExpression>),
+    YieldFrom(Box<YieldFromExpression>),
+    Cast(Box<CastExpression>),
+    Name(Box<Name>),
     Noop(Span),
 }
 
@@ -9630,196 +9630,260 @@ impl<'a> Node<'a> {
                     children.push(inner.into());
                 }
                 ExpressionKind::Eval(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Empty(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Die(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Exit(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Isset(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Unset(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Print(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Literal(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::ArithmeticOperation(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::AssignmentOperation(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::BitwiseOperation(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::ComparisonOperation(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::LogicalOperation(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Concat(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Instanceof(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Reference(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Parenthesized(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::ErrorSuppress(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Identifier(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Variable(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Include(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::IncludeOnce(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Require(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::RequireOnce(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::FunctionCall(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::FunctionClosureCreation(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::MethodCall(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::MethodClosureCreation(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::NullsafeMethodCall(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::StaticMethodCall(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::StaticVariableMethodCall(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::StaticMethodClosureCreation(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::StaticVariableMethodClosureCreation(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::PropertyFetch(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::NullsafePropertyFetch(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::StaticPropertyFetch(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::ConstantFetch(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Static(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Self_(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Parent(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::ShortArray(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Array(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::List(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Closure(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::ArrowFunction(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::New(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::InterpolatedString(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Heredoc(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Nowdoc(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::ShellExec(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::AnonymousClass(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Bool(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::ArrayIndex(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::MagicConstant(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::ShortTernary(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Ternary(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Coalesce(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Clone(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Match(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Throw(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Yield(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::YieldFrom(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Cast(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 ExpressionKind::Name(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 _ => {}
             },

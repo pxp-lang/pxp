@@ -1,6 +1,6 @@
+use crate::internal::diagnostics::ParserDiagnostic;
 use crate::internal::functions::Method;
 use crate::Parser;
-use crate::internal::diagnostics::ParserDiagnostic;
 use pxp_ast::Expression;
 use pxp_ast::StatementKind;
 use pxp_ast::UseKind;
@@ -169,7 +169,7 @@ impl<'a> Parser<'a> {
 
         let anonymous_class = Expression::new(
             self.id(),
-            ExpressionKind::AnonymousClass(AnonymousClassExpression {
+            ExpressionKind::AnonymousClass(Box::new(AnonymousClassExpression {
                 id: self.id(),
                 span: Span::combine(class, body.span),
                 class,
@@ -177,7 +177,7 @@ impl<'a> Parser<'a> {
                 implements,
                 attributes,
                 body: Box::new(body),
-            }),
+            })),
             Span::new(class_span.start, end_span.end),
             CommentGroup::default(),
         );
@@ -186,13 +186,13 @@ impl<'a> Parser<'a> {
 
         Expression::new(
             self.id(),
-            ExpressionKind::New(NewExpression {
+            ExpressionKind::New(Box::new(NewExpression {
                 id: self.id(),
                 span,
                 target: Box::new(anonymous_class),
                 new,
                 arguments,
-            }),
+            })),
             span,
             CommentGroup::default(),
         )

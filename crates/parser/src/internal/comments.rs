@@ -1,6 +1,5 @@
 use pxp_ast::{
-    Comment, CommentGroup, CommentKind, HashMarkComment, MultiLineComment,
-    SingleLineComment,
+    Comment, CommentGroup, CommentKind, HashMarkComment, MultiLineComment, SingleLineComment,
 };
 use pxp_token::TokenKind;
 

@@ -1,5 +1,5 @@
-use crate::Parser;
 use crate::internal::diagnostics::ParserDiagnostic;
+use crate::Parser;
 use pxp_ast::GroupUseStatement;
 use pxp_ast::StatementKind;
 use pxp_ast::Use;

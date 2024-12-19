@@ -1,5 +1,5 @@
-use crate::Parser;
 use crate::internal::diagnostics::ParserDiagnostic;
+use crate::Parser;
 use pxp_ast::*;
 
 use pxp_diagnostics::Severity;

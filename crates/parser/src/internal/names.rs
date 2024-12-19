@@ -12,7 +12,8 @@ impl<'a> Parser<'a> {
             TokenKind::FullyQualifiedIdentifier => self.next_but_first(|parser| {
                 Name::resolved(
                     parser.id(),
-                    parser.strip_leading_namespace_qualifier(&parser.current_symbol_as_bytestring()),
+                    parser
+                        .strip_leading_namespace_qualifier(&parser.current_symbol_as_bytestring()),
                     parser.current_symbol_as_bytestring(),
                     parser.current_span(),
                 )

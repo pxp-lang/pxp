@@ -106,7 +106,7 @@ impl<'a> Parser<'a> {
 
         Expression::new(
             self.id(),
-            ExpressionKind::Closure(ClosureExpression {
+            ExpressionKind::Closure(Box::new(ClosureExpression {
                 id: self.id(),
                 span: Span::combine(function, body.span),
                 comments,
@@ -118,7 +118,7 @@ impl<'a> Parser<'a> {
                 uses,
                 return_type,
                 body,
-            }),
+            })),
             Span::new(start_span.start, end_span.end),
             CommentGroup::default(),
         )
@@ -165,7 +165,7 @@ impl<'a> Parser<'a> {
 
         Expression::new(
             self.id(),
-            ExpressionKind::ArrowFunction(ArrowFunctionExpression {
+            ExpressionKind::ArrowFunction(Box::new(ArrowFunctionExpression {
                 id: self.id(),
                 span: Span::combine(r#fn, end_span),
                 comments,
@@ -177,7 +177,7 @@ impl<'a> Parser<'a> {
                 return_type,
                 double_arrow,
                 body,
-            }),
+            })),
             Span::new(start_span.start, end_span.end),
             CommentGroup::default(),
         )

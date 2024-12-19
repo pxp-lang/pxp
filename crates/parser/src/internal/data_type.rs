@@ -1,5 +1,5 @@
-use crate::Parser;
 use crate::internal::diagnostics::ParserDiagnostic;
+use crate::Parser;
 use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
@@ -418,7 +418,13 @@ impl<'a> Parser<'a> {
 
         let else_type = self.parse_docblock_subparse();
 
-        Type::ConditionalForParameter { parameter, negated, target: Box::new(target_type), then: Box::new(if_type), otherwise: Box::new(else_type) }
+        Type::ConditionalForParameter {
+            parameter,
+            negated,
+            target: Box::new(target_type),
+            then: Box::new(if_type),
+            otherwise: Box::new(else_type),
+        }
     }
 
     fn parse_docblock_subparse(&mut self) -> Type<Name> {

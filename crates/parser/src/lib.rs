@@ -3,10 +3,11 @@ mod macros;
 
 use std::collections::{HashMap, VecDeque};
 
-use internal::{diagnostics::ParserDiagnostic, namespaces::{NamespaceType, Scope}};
-use pxp_ast::{
-    AttributeGroup, Comment, Statement, UseKind
+use internal::{
+    diagnostics::ParserDiagnostic,
+    namespaces::{NamespaceType, Scope},
 };
+use pxp_ast::{AttributeGroup, Comment, Statement, UseKind};
 use pxp_bytestring::{ByteStr, ByteString};
 use pxp_diagnostics::Diagnostic;
 use pxp_lexer::Lexer;
@@ -30,7 +31,7 @@ pub struct Parser<'a> {
     namespace_type: Option<NamespaceType>,
     imports: HashMap<UseKind, HashMap<ByteString, ByteString>>,
     in_docblock: bool,
-    
+
     diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
 }
 
@@ -65,7 +66,7 @@ impl<'a> Parser<'a> {
             namespace_type: None,
             imports,
             in_docblock: false,
-            
+
             diagnostics: vec![],
         };
 

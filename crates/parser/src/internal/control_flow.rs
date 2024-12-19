@@ -1,5 +1,5 @@
-use crate::Parser;
 use crate::internal::diagnostics::ParserDiagnostic;
+use crate::Parser;
 use pxp_ast::Case;
 use pxp_ast::DefaultMatchArm;
 use pxp_ast::Expression;
@@ -94,7 +94,7 @@ impl<'a> Parser<'a> {
 
         Expression::new(
             self.id(),
-            ExpressionKind::Match(MatchExpression {
+            ExpressionKind::Match(Box::new(MatchExpression {
                 id: self.id(),
                 span: Span::combine(keyword, right_brace),
                 keyword,
@@ -105,7 +105,7 @@ impl<'a> Parser<'a> {
                 default,
                 arms,
                 right_brace,
-            }),
+            })),
             Span::combine(keyword, right_brace),
             CommentGroup::default(),
         )

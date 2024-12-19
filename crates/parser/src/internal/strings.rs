@@ -1,5 +1,5 @@
-use crate::Parser;
 use crate::internal::diagnostics::ParserDiagnostic;
+use crate::Parser;
 use pxp_ast::Expression;
 use pxp_ast::ExpressionStringPart;
 use pxp_ast::LiteralStringPart;
@@ -33,11 +33,11 @@ impl<'a> Parser<'a> {
 
         Expression::new(
             self.id(),
-            ExpressionKind::InterpolatedString(InterpolatedStringExpression {
+            ExpressionKind::InterpolatedString(Box::new(InterpolatedStringExpression {
                 id: self.id(),
                 span: Span::combine(start_span, end_span),
                 parts,
-            }),
+            })),
             Span::combine(start_span, end_span),
             CommentGroup::default(),
         )
@@ -62,11 +62,11 @@ impl<'a> Parser<'a> {
 
         Expression::new(
             self.id(),
-            ExpressionKind::ShellExec(ShellExecExpression {
+            ExpressionKind::ShellExec(Box::new(ShellExecExpression {
                 id: self.id(),
                 span: Span::combine(start_span, end_span),
                 parts,
-            }),
+            })),
             Span::combine(start_span, end_span),
             CommentGroup::default(),
         )
@@ -91,12 +91,12 @@ impl<'a> Parser<'a> {
 
         Expression::new(
             self.id(),
-            ExpressionKind::Heredoc(HeredocExpression {
+            ExpressionKind::Heredoc(Box::new(HeredocExpression {
                 id: self.id(),
                 span: Span::combine(span, end),
                 label: label.clone(),
                 parts,
-            }),
+            })),
             Span::combine(span, end),
             CommentGroup::default(),
         )
@@ -132,12 +132,12 @@ impl<'a> Parser<'a> {
 
         Expression::new(
             self.id(),
-            ExpressionKind::Nowdoc(NowdocExpression {
+            ExpressionKind::Nowdoc(Box::new(NowdocExpression {
                 id: self.id(),
                 span,
                 label,
                 value: string_part,
-            }),
+            })),
             span,
             CommentGroup::default(),
         )
@@ -168,7 +168,7 @@ impl<'a> Parser<'a> {
 
                 let expression = Expression::new(
                     self.id(),
-                    ExpressionKind::Variable(variable),
+                    ExpressionKind::Variable(Box::new(variable)),
                     span,
                     CommentGroup::default(),
                 );
@@ -193,7 +193,7 @@ impl<'a> Parser<'a> {
             TokenKind::Variable => {
                 // "$expr", "$expr[0]", "$expr[name]", "$expr->a"
                 let variable_span = self.current_span();
-                let variable = ExpressionKind::Variable(self.parse_dynamic_variable());
+                let variable = ExpressionKind::Variable(Box::new(self.parse_dynamic_variable()));
                 let variable =
                     Expression::new(self.id(), variable, variable_span, CommentGroup::default());
 
@@ -207,12 +207,12 @@ impl<'a> Parser<'a> {
                             TokenKind::LiteralInteger => {
                                 self.next();
 
-                                ExpressionKind::Literal(Literal::new(
+                                ExpressionKind::Literal(Box::new(Literal::new(
                                     self.id(),
                                     LiteralKind::Integer,
                                     self.current().to_owned(),
                                     self.current_span(),
-                                ))
+                                )))
                             }
                             TokenKind::Minus => {
                                 self.next();
@@ -223,12 +223,12 @@ impl<'a> Parser<'a> {
 
                                     self.next();
 
-                                    let kind = ExpressionKind::Literal(Literal::new(
+                                    let kind = ExpressionKind::Literal(Box::new(Literal::new(
                                         self.id(),
                                         LiteralKind::Integer,
                                         literal,
                                         span,
-                                    ));
+                                    )));
 
                                     let expression = Expression::new(
                                         self.id(),
@@ -237,7 +237,7 @@ impl<'a> Parser<'a> {
                                         CommentGroup::default(),
                                     );
 
-                                    ExpressionKind::ArithmeticOperation(
+                                    ExpressionKind::ArithmeticOperation(Box::new(
                                         ArithmeticOperationExpression {
                                             id: self.id(),
                                             span: Span::combine(span, expression.span),
@@ -247,7 +247,7 @@ impl<'a> Parser<'a> {
                                                 right: Box::new(expression),
                                             },
                                         },
-                                    )
+                                    ))
                                 } else {
                                     let span = self.current_span();
 
@@ -266,16 +266,16 @@ impl<'a> Parser<'a> {
                                 }
                             }
                             TokenKind::Identifier => self.next_but_first(|parser| {
-                                ExpressionKind::Literal(Literal::new(
+                                ExpressionKind::Literal(Box::new(Literal::new(
                                     parser.id(),
                                     LiteralKind::String,
                                     parser.current().to_owned(),
                                     parser.current_span(),
-                                ))
+                                )))
                             }),
-                            TokenKind::Variable => ExpressionKind::Variable(
+                            TokenKind::Variable => ExpressionKind::Variable(Box::new(
                                 Variable::SimpleVariable(self.parse_simple_variable()),
-                            ),
+                            )),
                             _ => {
                                 let span = self.current_span();
 
@@ -305,14 +305,14 @@ impl<'a> Parser<'a> {
 
                         let right_bracket = self.skip_right_bracket();
 
-                        ExpressionKind::ArrayIndex(ArrayIndexExpression {
+                        ExpressionKind::ArrayIndex(Box::new(ArrayIndexExpression {
                             id: self.id(),
                             span: Span::combine(variable.span, right_bracket),
                             array: Box::new(variable),
                             left_bracket,
                             index: Some(Box::new(index)),
                             right_bracket,
-                        })
+                        }))
                     }
                     TokenKind::Arrow => {
                         let span = self.current_span();
@@ -321,37 +321,42 @@ impl<'a> Parser<'a> {
 
                         let identifier = self.parse_identifier_maybe_reserved();
                         let id_span = identifier.span;
-                        let kind =
-                            ExpressionKind::Identifier(Identifier::SimpleIdentifier(identifier));
+                        let kind = ExpressionKind::Identifier(Box::new(
+                            Identifier::SimpleIdentifier(identifier),
+                        ));
                         let identifier_expression =
                             Expression::new(self.id(), kind, id_span, CommentGroup::default());
 
-                        ExpressionKind::PropertyFetch(PropertyFetchExpression {
+                        ExpressionKind::PropertyFetch(Box::new(PropertyFetchExpression {
                             id: self.id(),
                             span: Span::combine(variable.span, identifier_expression.span),
                             target: Box::new(variable),
                             arrow: span,
                             property: Box::new(identifier_expression),
-                        })
+                        }))
                     }
                     TokenKind::QuestionArrow => {
                         let span = self.next();
                         let ident = self.parse_identifier_maybe_reserved();
                         let ident_span = ident.span;
-                        let kind = ExpressionKind::Identifier(Identifier::SimpleIdentifier(ident));
+                        let kind = ExpressionKind::Identifier(Box::new(
+                            Identifier::SimpleIdentifier(ident),
+                        ));
 
-                        ExpressionKind::NullsafePropertyFetch(NullsafePropertyFetchExpression {
-                            id: self.id(),
-                            span: Span::combine(variable.span, ident_span),
-                            target: Box::new(variable),
-                            question_arrow: span,
-                            property: Box::new(Expression::new(
-                                self.id(),
-                                kind,
-                                ident_span,
-                                CommentGroup::default(),
-                            )),
-                        })
+                        ExpressionKind::NullsafePropertyFetch(Box::new(
+                            NullsafePropertyFetchExpression {
+                                id: self.id(),
+                                span: Span::combine(variable.span, ident_span),
+                                target: Box::new(variable),
+                                question_arrow: span,
+                                property: Box::new(Expression::new(
+                                    self.id(),
+                                    kind,
+                                    ident_span,
+                                    CommentGroup::default(),
+                                )),
+                            },
+                        ))
                     }
                     // FIXME: This is hacky and bad for performance & memory, but works for now.
                     _ => variable.kind.clone(),

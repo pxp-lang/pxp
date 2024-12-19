@@ -1,5 +1,5 @@
-use crate::Parser;
 use crate::internal::diagnostics::ParserDiagnostic;
+use crate::Parser;
 use pxp_ast::ArrayItemKeyValue;
 use pxp_ast::ArrayItemReferencedKeyValue;
 use pxp_ast::ArrayItemReferencedValue;
@@ -113,14 +113,14 @@ impl<'a> Parser<'a> {
         let end = self.skip_right_parenthesis();
         let span = Span::combine(list, end);
 
-        let kind = ExpressionKind::List(ListExpression {
+        let kind = ExpressionKind::List(Box::new(ListExpression {
             id: self.id(),
             span,
             list,
             start,
             items,
             end,
-        });
+        }));
 
         Expression::new(self.id(), kind, span, CommentGroup::default())
     }
@@ -141,13 +141,13 @@ impl<'a> Parser<'a> {
         let end = self.skip(TokenKind::RightBracket);
         let span = Span::combine(start, end);
 
-        let kind = ExpressionKind::ShortArray(ShortArrayExpression {
+        let kind = ExpressionKind::ShortArray(Box::new(ShortArrayExpression {
             id: self.id(),
             span,
             start,
             items,
             end,
-        });
+        }));
 
         Expression::new(self.id(), kind, span, CommentGroup::default())
     }
@@ -159,14 +159,14 @@ impl<'a> Parser<'a> {
         let end = self.skip_right_parenthesis();
         let span = Span::combine(array, end);
 
-        let kind = ExpressionKind::Array(ArrayExpression {
+        let kind = ExpressionKind::Array(Box::new(ArrayExpression {
             id: self.id(),
             span,
             array,
             start,
             items,
             end,
-        });
+        }));
 
         Expression::new(self.id(), kind, span, CommentGroup::default())
     }

@@ -86,8 +86,7 @@ impl<'a> Parser<'a> {
         } else if kind == UseKind::Normal || token.kind == TokenKind::QualifiedIdentifier {
             Name::resolved(
                 id,
-                self
-                    .join_with_namespace(&token.symbol.to_bytestring()),
+                self.join_with_namespace(&token.symbol.to_bytestring()),
                 token.symbol.to_bytestring(),
                 token.span,
             )

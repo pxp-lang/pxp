@@ -95,18 +95,12 @@ impl Visitor for TypeMapGenerator<'_> {
 
         // We can only track the types for simple variables in the current scope.
         // Dynamic variable tracking is far more complex.
-        if !matches!(
-            target.kind,
-            ExpressionKind::Variable(Variable::SimpleVariable(_))
-        ) {
-            return;
-        }
-
         let variable = match &target.kind {
-            ExpressionKind::Variable(Variable::SimpleVariable(SimpleVariable {
-                symbol, ..
-            })) => symbol,
-            _ => unreachable!(),
+            ExpressionKind::Variable(inner) => match inner.as_ref() {
+                Variable::SimpleVariable(SimpleVariable { symbol, .. }) => symbol,
+                _ => return,
+            },
+            _ => return,
         };
 
         let value = node.kind.right();
@@ -296,17 +290,21 @@ impl Visitor for TypeMapGenerator<'_> {
     fn visit_method_call_expression(&mut self, node: &MethodCallExpression) {
         let method = node.method.as_ref();
 
-        if !matches!(
-            method.kind,
-            ExpressionKind::Identifier(Identifier::SimpleIdentifier(_))
-        ) {
-            return;
-        }
+        match &method.kind {
+            ExpressionKind::Identifier(inner) => match inner.as_ref() {
+                Identifier::SimpleIdentifier(_) => {}
+                _ => return,
+            },
+            _ => return,
+        };
 
         walk_method_call_expression(self, node);
 
         let method = match &method.kind {
-            ExpressionKind::Identifier(Identifier::SimpleIdentifier(method)) => method,
+            ExpressionKind::Identifier(inner) => match inner.as_ref() {
+                Identifier::SimpleIdentifier(method) => method,
+                _ => unreachable!(),
+            },
             _ => unreachable!(),
         };
 
@@ -392,15 +390,19 @@ impl Visitor for TypeMapGenerator<'_> {
 
         let property = node.property.as_ref();
 
-        if !matches!(
-            property.kind,
-            ExpressionKind::Identifier(Identifier::SimpleIdentifier(_))
-        ) {
-            return;
-        }
+        match &property.kind {
+            ExpressionKind::Identifier(inner) => match inner.as_ref() {
+                Identifier::SimpleIdentifier(_) => {}
+                _ => return,
+            },
+            _ => return,
+        };
 
         let property = match &property.kind {
-            ExpressionKind::Identifier(Identifier::SimpleIdentifier(property)) => property,
+            ExpressionKind::Identifier(inner) => match inner.as_ref() {
+                Identifier::SimpleIdentifier(property) => property,
+                _ => unreachable!(),
+            },
             _ => unreachable!(),
         };
 
@@ -472,7 +474,13 @@ fn bytestring_type(ty: &Type<Name>) -> Type<ByteString> {
             Box::new(bytestring_type(key)),
             Box::new(bytestring_type(value)),
         ),
-        Type::ConditionalForParameter { parameter, negated, target, then, otherwise } => Type::ConditionalForParameter {
+        Type::ConditionalForParameter {
+            parameter,
+            negated,
+            target,
+            then,
+            otherwise,
+        } => Type::ConditionalForParameter {
             parameter: parameter.clone(),
             negated: *negated,
             target: Box::new(bytestring_type(target)),

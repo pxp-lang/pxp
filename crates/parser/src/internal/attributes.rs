@@ -61,7 +61,7 @@ impl<'a> Parser<'a> {
         let span = Span::new(start.start, end.end);
 
         let id = self.id();
-        
+
         self.attribute(AttributeGroup { id, span, members });
         self.gather_attributes()
     }

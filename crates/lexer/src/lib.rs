@@ -309,7 +309,7 @@ impl<'a> Lexer<'a> {
                 let span = self.source.span();
 
                 Token::new(TokenKind::Ellipsis, span, self.source.span_range(span))
-            },
+            }
             [b'@', ident_start!(), ..] => {
                 self.source.skip(2);
 
@@ -382,14 +382,14 @@ impl<'a> Lexer<'a> {
                 let span = self.source.span();
 
                 Token::new(TokenKind::PhpDocNot, span, self.source.span_range(span))
-            },
+            }
             [b'i', b's', ..] => {
                 self.source.skip(2);
 
                 let span = self.source.span();
 
                 Token::new(TokenKind::PhpDocIs, span, self.source.span_range(span))
-            },
+            }
             [ident_start!(), ..] => {
                 self.source.next();
                 let mut qualified = false;
@@ -418,9 +418,15 @@ impl<'a> Lexer<'a> {
                     b"array" if self.source.read(4) == b"-key" => {
                         self.source.skip(4);
 
-                        (self.source.span(), self.source.span_range(self.source.span()))
-                    },
-                    _ => (self.source.span(), self.source.span_range(self.source.span())),
+                        (
+                            self.source.span(),
+                            self.source.span_range(self.source.span()),
+                        )
+                    }
+                    _ => (
+                        self.source.span(),
+                        self.source.span_range(self.source.span()),
+                    ),
                 };
 
                 let kind = if qualified {
