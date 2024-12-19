@@ -229,7 +229,7 @@ impl<'a> Parser<'a> {
             right_brace,
         };
 
-        StatementKind::Function(FunctionStatement {
+        StatementKind::Function(Box::new(FunctionStatement {
             id: self.id(),
             span: Span::combine(function, body.span),
             comments,
@@ -240,7 +240,7 @@ impl<'a> Parser<'a> {
             return_type,
             body,
             ampersand,
-        })
+        }))
     }
 
     pub fn parse_method(&mut self, modifiers: MethodModifierGroup) -> Method {

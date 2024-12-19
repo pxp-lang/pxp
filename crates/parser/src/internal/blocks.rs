@@ -11,13 +11,13 @@ impl<'a> Parser<'a> {
         let (left_brace, statements, right_brace) =
             self.braced(|parser| parser.parse_multiple_statements_until(TokenKind::RightBrace));
 
-        StatementKind::Block(BlockStatement {
+        StatementKind::Block(Box::new(BlockStatement {
             id: self.id(),
             span: Span::combine(left_brace, right_brace),
             left_brace,
             statements,
             right_brace,
-        })
+        }))
     }
 
     pub fn parse_multiple_statements_until(&mut self, until: TokenKind) -> Vec<Statement> {

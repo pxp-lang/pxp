@@ -85,7 +85,7 @@ impl<'a> Parser<'a> {
             Span::combine(class, body.span)
         };
 
-        StatementKind::Class(ClassStatement {
+        StatementKind::Class(Box::new(ClassStatement {
             id: self.id(),
             span,
             class,
@@ -95,7 +95,7 @@ impl<'a> Parser<'a> {
             implements,
             attributes,
             body,
-        })
+        }))
     }
 
     pub fn parse_anonymous_class(&mut self, span: Option<Span>) -> Expression {

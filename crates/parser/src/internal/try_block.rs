@@ -93,7 +93,7 @@ impl<'a> Parser<'a> {
             Span::combine(start, last_right_brace)
         };
 
-        StatementKind::Try(TryStatement {
+        StatementKind::Try(Box::new(TryStatement {
             id: self.id(),
             span,
             start,
@@ -101,7 +101,7 @@ impl<'a> Parser<'a> {
             body,
             catches,
             finally,
-        })
+        }))
     }
 
     #[inline(always)]

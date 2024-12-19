@@ -18,7 +18,7 @@ impl<'a> Parser<'a> {
                 let kind = match self.current_kind() {
                     TokenKind::Namespace => self.parse_namespace(),
                     TokenKind::Use => self.parse_use_statement(),
-                    TokenKind::Const => StatementKind::Constant(self.parse_constant()),
+                    TokenKind::Const => StatementKind::Constant(Box::new(self.parse_constant())),
                     TokenKind::HaltCompiler => {
                         let start = self.next();
 
@@ -30,11 +30,11 @@ impl<'a> Parser<'a> {
                             (start, None)
                         };
 
-                        StatementKind::HaltCompiler(HaltCompilerStatement {
+                        StatementKind::HaltCompiler(Box::new(HaltCompilerStatement {
                             id: self.id(),
                             span,
                             content,
-                        })
+                        }))
                     }
                     _ => unreachable!(),
                 };
@@ -85,12 +85,12 @@ impl<'a> Parser<'a> {
                             let ending_span = ending.span();
 
                             let span = Span::combine(start, ending_span);
-                            let kind = StatementKind::Expression(ExpressionStatement {
+                            let kind = StatementKind::Expression(Box::new(ExpressionStatement {
                                 id: self.id(),
                                 span,
                                 expression,
                                 ending,
-                            });
+                            }));
 
                             return Statement::new(self.id(), kind, span, comments);
                         }
@@ -106,12 +106,12 @@ impl<'a> Parser<'a> {
                     let ending = self.skip_ending();
                     let ending_span = ending.span();
 
-                    StatementKind::Expression(ExpressionStatement {
+                    StatementKind::Expression(Box::new(ExpressionStatement {
                         id: self.id(),
                         span: Span::combine(start, ending_span),
                         expression,
                         ending,
-                    })
+                    }))
                 }
             }
         } else {
@@ -119,34 +119,34 @@ impl<'a> Parser<'a> {
                 TokenKind::OpenTag(OpenTagKind::Echo) => {
                     let span = self.next();
 
-                    StatementKind::EchoOpeningTag(EchoOpeningTagStatement {
+                    StatementKind::EchoOpeningTag(Box::new(EchoOpeningTagStatement {
                         id: self.id(),
                         span,
-                    })
+                    }))
                 }
                 TokenKind::OpenTag(OpenTagKind::Full) => {
                     let span = self.next();
 
-                    StatementKind::FullOpeningTag(FullOpeningTagStatement {
+                    StatementKind::FullOpeningTag(Box::new(FullOpeningTagStatement {
                         id: self.id(),
                         span,
-                    })
+                    }))
                 }
                 TokenKind::OpenTag(OpenTagKind::Short) => {
                     let span = self.next();
 
-                    StatementKind::ShortOpeningTag(ShortOpeningTagStatement {
+                    StatementKind::ShortOpeningTag(Box::new(ShortOpeningTagStatement {
                         id: self.id(),
                         span,
-                    })
+                    }))
                 }
                 TokenKind::CloseTag => {
                     let span = self.next();
 
-                    StatementKind::ClosingTag(ClosingTagStatement {
+                    StatementKind::ClosingTag(Box::new(ClosingTagStatement {
                         id: self.id(),
                         span,
-                    })
+                    }))
                 }
                 TokenKind::Abstract => self.parse_class(),
                 TokenKind::Readonly if peek_kind != TokenKind::LeftParen => self.parse_class(),
@@ -176,12 +176,12 @@ impl<'a> Parser<'a> {
 
                             let span = Span::combine(start, ending_span);
 
-                            let kind = StatementKind::Expression(ExpressionStatement {
+                            let kind = StatementKind::Expression(Box::new(ExpressionStatement {
                                 id: self.id(),
                                 span,
                                 expression,
                                 ending,
-                            });
+                            }));
 
                             return Statement::new(self.id(), kind, span, comments);
                         }
@@ -294,13 +294,13 @@ impl<'a> Parser<'a> {
 
                     let span = Span::combine(declare, body.span());
 
-                    StatementKind::Declare(DeclareStatement {
+                    StatementKind::Declare(Box::new(DeclareStatement {
                         id: self.id(),
                         span,
                         declare,
                         entries,
                         body,
-                    })
+                    }))
                 }
                 TokenKind::Global => {
                     let global = self.next();
@@ -320,13 +320,13 @@ impl<'a> Parser<'a> {
                     let semicolon = self.skip_semicolon();
                     let span = Span::combine(global, semicolon);
 
-                    StatementKind::Global(GlobalStatement {
+                    StatementKind::Global(Box::new(GlobalStatement {
                         id: self.id(),
                         span,
                         global,
                         variables,
                         semicolon,
-                    })
+                    }))
                 }
                 TokenKind::Static if matches!(peek_kind, TokenKind::Variable) => {
                     let start = self.next();
@@ -366,22 +366,22 @@ impl<'a> Parser<'a> {
                     let semicolon = self.skip_semicolon();
                     let span = Span::combine(start, semicolon);
 
-                    StatementKind::Static(StaticStatement {
+                    StatementKind::Static(Box::new(StaticStatement {
                         id: self.id(),
                         span,
                         vars,
                         semicolon,
-                    })
+                    }))
                 }
                 TokenKind::InlineHtml => {
                     let html = self.current().to_owned();
                     self.next();
 
-                    StatementKind::InlineHtml(InlineHtmlStatement {
+                    StatementKind::InlineHtml(Box::new(InlineHtmlStatement {
                         id: self.id(),
                         span: html.span,
                         html,
-                    })
+                    }))
                 }
                 TokenKind::Do => self.parse_do_while_statement(),
                 TokenKind::While => self.parse_while_statement(),
@@ -419,13 +419,13 @@ impl<'a> Parser<'a> {
                     let ending = self.skip_ending();
                     let end = ending.span();
 
-                    StatementKind::Echo(EchoStatement {
+                    StatementKind::Echo(Box::new(EchoStatement {
                         id: self.id(),
                         span: Span::combine(echo, end),
                         echo,
                         values,
                         ending,
-                    })
+                    }))
                 }
                 TokenKind::Return => {
                     let r#return = self.next();
@@ -442,24 +442,24 @@ impl<'a> Parser<'a> {
                     let ending = self.skip_ending();
                     let end = ending.span();
 
-                    StatementKind::Return(ReturnStatement {
+                    StatementKind::Return(Box::new(ReturnStatement {
                         id: self.id(),
                         span: Span::combine(r#return, end),
                         r#return,
                         value,
                         ending,
-                    })
+                    }))
                 }
                 _ => {
                     let expression = self.parse_expression();
                     let ending = self.skip_ending();
 
-                    StatementKind::Expression(ExpressionStatement {
+                    StatementKind::Expression(Box::new(ExpressionStatement {
                         id: self.id(),
                         span: Span::combine(expression.span, ending.span()),
                         expression,
                         ending,
-                    })
+                    }))
                 }
             }
         };

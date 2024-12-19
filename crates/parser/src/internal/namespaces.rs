@@ -73,14 +73,14 @@ impl<'a> Parser<'a> {
             statements
         });
 
-        StatementKind::Namespace(NamespaceStatement::Unbraced(UnbracedNamespace {
+        StatementKind::Namespace(Box::new(NamespaceStatement::Unbraced(UnbracedNamespace {
             id: self.id(),
             span: Span::combine(start, statements.span()),
             start,
             end,
             name,
             statements,
-        }))
+        })))
     }
 
     fn parse_braced_namespace(
@@ -111,13 +111,13 @@ impl<'a> Parser<'a> {
             }
         );
 
-        StatementKind::Namespace(NamespaceStatement::Braced(BracedNamespace {
+        StatementKind::Namespace(Box::new(NamespaceStatement::Braced(BracedNamespace {
             id: self.id(),
             span: Span::combine(span, body.span),
             namespace: span,
             name,
             body,
-        }))
+        })))
     }
 
     fn namespace_type(&self) -> Option<&NamespaceType> {

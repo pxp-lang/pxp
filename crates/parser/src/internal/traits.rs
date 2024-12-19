@@ -249,13 +249,13 @@ impl<'a> Parser<'a> {
             right_brace,
         };
 
-        StatementKind::Trait(TraitStatement {
+        StatementKind::Trait(Box::new(TraitStatement {
             id: self.id(),
             span: Span::combine(span, body.span),
             r#trait: span,
             name,
             attributes,
             body,
-        })
+        }))
     }
 }

@@ -193,7 +193,7 @@ impl<'a> Parser<'a> {
             self.skip_right_brace();
         }
 
-        StatementKind::Switch(SwitchStatement {
+        StatementKind::Switch(Box::new(SwitchStatement {
             id: self.id(),
             span: Span::combine(switch, cases.span()),
             switch,
@@ -201,7 +201,7 @@ impl<'a> Parser<'a> {
             condition,
             right_parenthesis,
             cases,
-        })
+        }))
     }
 
     pub fn parse_if_statement(&mut self) -> StatementKind {
@@ -216,7 +216,7 @@ impl<'a> Parser<'a> {
             self.parse_if_statement_statement_body()
         };
 
-        StatementKind::If(IfStatement {
+        StatementKind::If(Box::new(IfStatement {
             id: self.id(),
             span: Span::combine(r#if, body.span()),
             r#if,
@@ -224,7 +224,7 @@ impl<'a> Parser<'a> {
             condition,
             right_parenthesis,
             body,
-        })
+        }))
     }
 
     fn parse_if_statement_statement_body(&mut self) -> IfStatementBody {

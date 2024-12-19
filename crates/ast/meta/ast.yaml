@@ -22,41 +22,41 @@ Statement:
 StatementKind:
   as: Enum
   children: [self]
-  FullOpeningTag: FullOpeningTagStatement
-  ShortOpeningTag: ShortOpeningTagStatement
-  EchoOpeningTag: EchoOpeningTagStatement
-  ClosingTag: ClosingTagStatement
-  InlineHtml: InlineHtmlStatement
-  Label: LabelStatement
-  Goto: GotoStatement
-  HaltCompiler: HaltCompilerStatement
-  Static: StaticStatement
-  DoWhile: DoWhileStatement
-  While: WhileStatement
-  For: ForStatement
-  Foreach: ForeachStatement
-  Break: BreakStatement
-  Continue: ContinueStatement
-  Constant: ConstantStatement
-  Function: FunctionStatement
-  Class: ClassStatement
-  Trait: TraitStatement
-  Interface: InterfaceStatement
-  If: IfStatement
-  Switch: SwitchStatement
-  Echo: EchoStatement
-  Expression: ExpressionStatement
-  Return: ReturnStatement
-  Namespace: NamespaceStatement
-  Use: UseStatement
-  GroupUse: GroupUseStatement
-  Comment: CommentStatement
-  Try: TryStatement
-  UnitEnum: UnitEnumStatement
-  BackedEnum: BackedEnumStatement
-  Block: BlockStatement
-  Global: GlobalStatement
-  Declare: DeclareStatement
+  FullOpeningTag: Box<FullOpeningTagStatement>
+  ShortOpeningTag: Box<ShortOpeningTagStatement>
+  EchoOpeningTag: Box<EchoOpeningTagStatement>
+  ClosingTag: Box<ClosingTagStatement>
+  InlineHtml: Box<InlineHtmlStatement>
+  Label: Box<LabelStatement>
+  Goto: Box<GotoStatement>
+  HaltCompiler: Box<HaltCompilerStatement>
+  Static: Box<StaticStatement>
+  DoWhile: Box<DoWhileStatement>
+  While: Box<WhileStatement>
+  For: Box<ForStatement>
+  Foreach: Box<ForeachStatement>
+  Break: Box<BreakStatement>
+  Continue: Box<ContinueStatement>
+  Constant: Box<ConstantStatement>
+  Function: Box<FunctionStatement>
+  Class: Box<ClassStatement>
+  Trait: Box<TraitStatement>
+  Interface: Box<InterfaceStatement>
+  If: Box<IfStatement>
+  Switch: Box<SwitchStatement>
+  Echo: Box<EchoStatement>
+  Expression: Box<ExpressionStatement>
+  Return: Box<ReturnStatement>
+  Namespace: Box<NamespaceStatement>
+  Use: Box<UseStatement>
+  GroupUse: Box<GroupUseStatement>
+  Comment: Box<CommentStatement>
+  Try: Box<TryStatement>
+  UnitEnum: Box<UnitEnumStatement>
+  BackedEnum: Box<BackedEnumStatement>
+  Block: Box<BlockStatement>
+  Global: Box<GlobalStatement>
+  Declare: Box<DeclareStatement>
   Noop: Span
 
 Expression:

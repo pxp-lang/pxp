@@ -10,13 +10,13 @@ impl<'a> Parser<'a> {
         let label = self.parse_label_identifier();
         let colon = self.skip_colon();
 
-        StatementKind::Label(LabelStatement {
+        StatementKind::Label(Box::new(LabelStatement {
             id: self.id(),
             span: Span::combine(label.span, colon),
             comments,
             label,
             colon,
-        })
+        }))
     }
 
     pub fn parse_goto_statement(&mut self) -> StatementKind {
@@ -25,13 +25,13 @@ impl<'a> Parser<'a> {
         let label = self.parse_label_identifier();
         let semicolon = self.skip_semicolon();
 
-        StatementKind::Goto(GotoStatement {
+        StatementKind::Goto(Box::new(GotoStatement {
             id: self.id(),
             span: Span::combine(keyword, semicolon),
             comments,
             keyword,
             label,
             semicolon,
-        })
+        }))
     }
 }

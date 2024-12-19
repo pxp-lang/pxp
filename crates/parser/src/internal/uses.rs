@@ -108,13 +108,13 @@ impl<'a> Parser<'a> {
             self.skip_right_brace();
             let semicolon = self.skip_semicolon();
 
-            StatementKind::GroupUse(GroupUseStatement {
+            StatementKind::GroupUse(Box::new(GroupUseStatement {
                 id: self.id(),
                 span: Span::combine(prefix.span, semicolon),
                 prefix,
                 kind,
                 uses,
-            })
+            }))
         } else {
             let mut uses = Vec::new();
             while !self.is_eof() {
@@ -154,12 +154,12 @@ impl<'a> Parser<'a> {
 
             let span = Span::combine(r#use, uses.span());
 
-            StatementKind::Use(UseStatement {
+            StatementKind::Use(Box::new(UseStatement {
                 id: self.id(),
                 span,
                 uses,
                 kind,
-            })
+            }))
         }
     }
 }

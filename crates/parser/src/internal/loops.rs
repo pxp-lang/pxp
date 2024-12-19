@@ -81,7 +81,7 @@ impl<'a> Parser<'a> {
             })
         };
 
-        StatementKind::Foreach(ForeachStatement {
+        StatementKind::Foreach(Box::new(ForeachStatement {
             id: self.id(),
             span: Span::combine(foreach, body.span()),
             foreach,
@@ -89,7 +89,7 @@ impl<'a> Parser<'a> {
             iterator,
             right_parenthesis,
             body,
-        })
+        }))
     }
 
     pub fn parse_for_statement(&mut self) -> StatementKind {
@@ -151,7 +151,7 @@ impl<'a> Parser<'a> {
             })
         };
 
-        StatementKind::For(ForStatement {
+        StatementKind::For(Box::new(ForStatement {
             id: self.id(),
             span: Span::combine(r#for, body.span()),
             r#for,
@@ -159,7 +159,7 @@ impl<'a> Parser<'a> {
             iterator,
             right_parenthesis,
             body,
-        })
+        }))
     }
 
     pub fn parse_do_while_statement(&mut self) -> StatementKind {
@@ -174,7 +174,7 @@ impl<'a> Parser<'a> {
                 parser.parenthesized(|parser| parser.parse_expression())
             });
 
-        StatementKind::DoWhile(DoWhileStatement {
+        StatementKind::DoWhile(Box::new(DoWhileStatement {
             id: self.id(),
             span: Span::combine(r#do, right_parenthesis),
             r#do,
@@ -184,7 +184,7 @@ impl<'a> Parser<'a> {
             condition,
             right_parenthesis,
             semicolon,
-        })
+        }))
     }
 
     pub fn parse_while_statement(&mut self) -> StatementKind {
@@ -217,7 +217,7 @@ impl<'a> Parser<'a> {
             })
         };
 
-        StatementKind::While(WhileStatement {
+        StatementKind::While(Box::new(WhileStatement {
             id: self.id(),
             span: Span::combine(r#while, body.span()),
             r#while,
@@ -225,7 +225,7 @@ impl<'a> Parser<'a> {
             condition,
             right_parenthesis,
             body,
-        })
+        }))
     }
 
     pub fn parse_continue_statement(&mut self) -> StatementKind {
@@ -233,13 +233,13 @@ impl<'a> Parser<'a> {
         let level = self.maybe_parse_loop_level();
         let ending = self.skip_ending();
 
-        StatementKind::Continue(ContinueStatement {
+        StatementKind::Continue(Box::new(ContinueStatement {
             id: self.id(),
             span: Span::combine(r#continue, ending.span()),
             r#continue,
             level,
             ending,
-        })
+        }))
     }
 
     pub fn parse_break_statement(&mut self) -> StatementKind {
@@ -247,13 +247,13 @@ impl<'a> Parser<'a> {
         let level = self.maybe_parse_loop_level();
         let ending = self.skip_ending();
 
-        StatementKind::Break(BreakStatement {
+        StatementKind::Break(Box::new(BreakStatement {
             id: self.id(),
             span: Span::combine(r#break, ending.span()),
             r#break,
             level,
             ending,
-        })
+        }))
     }
 
     fn maybe_parse_loop_level(&mut self) -> Option<Level> {

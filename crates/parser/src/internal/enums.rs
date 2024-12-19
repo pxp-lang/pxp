@@ -108,7 +108,7 @@ impl<'a> Parser<'a> {
                 right_brace,
             };
 
-            StatementKind::BackedEnum(BackedEnumStatement {
+            StatementKind::BackedEnum(Box::new(BackedEnumStatement {
                 id: self.id(),
                 span: Span::combine(span, body.span),
                 r#enum: span,
@@ -118,7 +118,7 @@ impl<'a> Parser<'a> {
                 attributes,
                 implements,
                 body,
-            })
+            }))
         } else {
             let left_brace = self.skip_left_brace();
             let members = {
@@ -141,7 +141,7 @@ impl<'a> Parser<'a> {
                 right_brace,
             };
 
-            StatementKind::UnitEnum(UnitEnumStatement {
+            StatementKind::UnitEnum(Box::new(UnitEnumStatement {
                 id: self.id(),
                 span: Span::combine(span, body.span),
                 r#enum: span,
@@ -149,7 +149,7 @@ impl<'a> Parser<'a> {
                 attributes,
                 implements,
                 body,
-            })
+            }))
         }
     }
 

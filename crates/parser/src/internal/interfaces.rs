@@ -53,7 +53,7 @@ impl<'a> Parser<'a> {
             right_brace,
         };
 
-        StatementKind::Interface(InterfaceStatement {
+        StatementKind::Interface(Box::new(InterfaceStatement {
             id: self.id(),
             span: Span::combine(span, body.span),
             interface: span,
@@ -61,6 +61,6 @@ impl<'a> Parser<'a> {
             attributes,
             extends,
             body,
-        })
+        }))
     }
 }

@@ -35,41 +35,41 @@ impl Spanned for Statement {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum StatementKind {
-    FullOpeningTag(FullOpeningTagStatement),
-    ShortOpeningTag(ShortOpeningTagStatement),
-    EchoOpeningTag(EchoOpeningTagStatement),
-    ClosingTag(ClosingTagStatement),
-    InlineHtml(InlineHtmlStatement),
-    Label(LabelStatement),
-    Goto(GotoStatement),
-    HaltCompiler(HaltCompilerStatement),
-    Static(StaticStatement),
-    DoWhile(DoWhileStatement),
-    While(WhileStatement),
-    For(ForStatement),
-    Foreach(ForeachStatement),
-    Break(BreakStatement),
-    Continue(ContinueStatement),
-    Constant(ConstantStatement),
-    Function(FunctionStatement),
-    Class(ClassStatement),
-    Trait(TraitStatement),
-    Interface(InterfaceStatement),
-    If(IfStatement),
-    Switch(SwitchStatement),
-    Echo(EchoStatement),
-    Expression(ExpressionStatement),
-    Return(ReturnStatement),
-    Namespace(NamespaceStatement),
-    Use(UseStatement),
-    GroupUse(GroupUseStatement),
-    Comment(CommentStatement),
-    Try(TryStatement),
-    UnitEnum(UnitEnumStatement),
-    BackedEnum(BackedEnumStatement),
-    Block(BlockStatement),
-    Global(GlobalStatement),
-    Declare(DeclareStatement),
+    FullOpeningTag(Box<FullOpeningTagStatement>),
+    ShortOpeningTag(Box<ShortOpeningTagStatement>),
+    EchoOpeningTag(Box<EchoOpeningTagStatement>),
+    ClosingTag(Box<ClosingTagStatement>),
+    InlineHtml(Box<InlineHtmlStatement>),
+    Label(Box<LabelStatement>),
+    Goto(Box<GotoStatement>),
+    HaltCompiler(Box<HaltCompilerStatement>),
+    Static(Box<StaticStatement>),
+    DoWhile(Box<DoWhileStatement>),
+    While(Box<WhileStatement>),
+    For(Box<ForStatement>),
+    Foreach(Box<ForeachStatement>),
+    Break(Box<BreakStatement>),
+    Continue(Box<ContinueStatement>),
+    Constant(Box<ConstantStatement>),
+    Function(Box<FunctionStatement>),
+    Class(Box<ClassStatement>),
+    Trait(Box<TraitStatement>),
+    Interface(Box<InterfaceStatement>),
+    If(Box<IfStatement>),
+    Switch(Box<SwitchStatement>),
+    Echo(Box<EchoStatement>),
+    Expression(Box<ExpressionStatement>),
+    Return(Box<ReturnStatement>),
+    Namespace(Box<NamespaceStatement>),
+    Use(Box<UseStatement>),
+    GroupUse(Box<GroupUseStatement>),
+    Comment(Box<CommentStatement>),
+    Try(Box<TryStatement>),
+    UnitEnum(Box<UnitEnumStatement>),
+    BackedEnum(Box<BackedEnumStatement>),
+    Block(Box<BlockStatement>),
+    Global(Box<GlobalStatement>),
+    Declare(Box<DeclareStatement>),
     Noop(Span),
 }
 
@@ -9515,109 +9515,144 @@ impl<'a> Node<'a> {
             }
             NodeKind::StatementKind(node) => match node {
                 StatementKind::FullOpeningTag(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::ShortOpeningTag(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::EchoOpeningTag(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::ClosingTag(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::InlineHtml(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Label(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Goto(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::HaltCompiler(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Static(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::DoWhile(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::While(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::For(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Foreach(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Break(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Continue(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Constant(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Function(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Class(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Trait(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Interface(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::If(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Switch(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Echo(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Expression(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Return(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Namespace(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Use(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::GroupUse(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Comment(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Try(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::UnitEnum(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::BackedEnum(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Block(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Global(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 StatementKind::Declare(inner) => {
-                    children.push(inner.into());
+                    let x = inner.as_ref();
+                    children.push(x.into());
                 }
                 _ => {}
             },
