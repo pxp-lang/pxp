@@ -821,9 +821,45 @@ pub trait VisitorMut {
         walk_property_mut(self, node);
     }
 
-    fn visit_variable_property(&mut self, node: &mut VariableProperty) {
-        walk_variable_property_mut(self, node);
+    fn visit_simple_property(&mut self, node: &mut SimpleProperty) {
+        walk_simple_property_mut(self, node);
     }
+
+    fn visit_hooked_property(&mut self, node: &mut HookedProperty) {
+        walk_hooked_property_mut(self, node);
+    }
+
+    fn visit_property_hook_list(&mut self, node: &mut PropertyHookList) {
+        walk_property_hook_list_mut(self, node);
+    }
+
+    fn visit_property_hook(&mut self, node: &mut PropertyHook) {
+        walk_property_hook_mut(self, node);
+    }
+
+    fn visit_property_hook_body(&mut self, node: &mut PropertyHookBody) {
+        walk_property_hook_body_mut(self, node);
+    }
+
+    fn visit_concrete_property_hook_body(&mut self, node: &mut ConcretePropertyHookBody) {
+        walk_concrete_property_hook_body_mut(self, node);
+    }
+
+    fn visit_concrete_property_hook_body_block(
+        &mut self,
+        node: &mut ConcretePropertyHookBodyBlock,
+    ) {
+        walk_concrete_property_hook_body_block_mut(self, node);
+    }
+
+    fn visit_concrete_property_hook_body_expression(
+        &mut self,
+        node: &mut ConcretePropertyHookBodyExpression,
+    ) {
+        walk_concrete_property_hook_body_expression_mut(self, node);
+    }
+
+    fn visit_property_hook_kind(&mut self, node: &mut PropertyHookKind) {}
 
     fn visit_property_entry(&mut self, node: &mut PropertyEntry) {
         walk_property_entry_mut(self, node);

@@ -2224,7 +2224,6 @@ pub enum ClassishMember {
     Constant(ClassishConstant),
     TraitUsage(TraitUsage),
     Property(Property),
-    VariableProperty(VariableProperty),
     AbstractMethod(AbstractMethod),
     AbstractConstructor(AbstractConstructor),
     ConcreteMethod(ConcreteMethod),
@@ -2238,7 +2237,6 @@ impl HasId for ClassishMember {
             ClassishMember::Constant(inner) => inner.id(),
             ClassishMember::TraitUsage(inner) => inner.id(),
             ClassishMember::Property(inner) => inner.id(),
-            ClassishMember::VariableProperty(inner) => inner.id(),
             ClassishMember::AbstractMethod(inner) => inner.id(),
             ClassishMember::AbstractConstructor(inner) => inner.id(),
             ClassishMember::ConcreteMethod(inner) => inner.id(),
@@ -4871,47 +4869,212 @@ impl Spanned for ResolvedName {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Property {
+pub enum Property {
+    Simple(SimpleProperty),
+    Hooked(HookedProperty),
+}
+
+impl HasId for Property {
+    fn id(&self) -> NodeId {
+        match self {
+            Property::Simple(inner) => inner.id(),
+            Property::Hooked(inner) => inner.id(),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct SimpleProperty {
     pub id: NodeId,
     pub span: Span,
     pub attributes: Vec<AttributeGroup>,
     pub modifiers: PropertyModifierGroup,
+    pub var: Option<Span>,
     pub r#type: Option<DataType>,
     pub entries: Vec<PropertyEntry>,
-    pub end: Span,
+    pub semicolon: Span,
 }
 
-impl HasId for Property {
+impl HasId for SimpleProperty {
     fn id(&self) -> NodeId {
         self.id
     }
 }
 
-impl Spanned for Property {
+impl Spanned for SimpleProperty {
     fn span(&self) -> Span {
         self.span
     }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct VariableProperty {
+pub struct HookedProperty {
     pub id: NodeId,
     pub span: Span,
     pub attributes: Vec<AttributeGroup>,
+    pub var: Option<Span>,
     pub r#type: Option<DataType>,
-    pub entries: Vec<PropertyEntry>,
-    pub end: Span,
+    pub entry: PropertyEntry,
+    pub hooks: PropertyHookList,
 }
 
-impl HasId for VariableProperty {
+impl HasId for HookedProperty {
     fn id(&self) -> NodeId {
         self.id
     }
 }
 
-impl Spanned for VariableProperty {
+impl Spanned for HookedProperty {
     fn span(&self) -> Span {
         self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct PropertyHookList {
+    pub id: NodeId,
+    pub span: Span,
+    pub left_brace: Span,
+    pub hooks: Vec<PropertyHook>,
+    pub right_brace: Span,
+}
+
+impl HasId for PropertyHookList {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for PropertyHookList {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct PropertyHook {
+    pub id: NodeId,
+    pub span: Span,
+    pub kind: PropertyHookKind,
+    pub parameters: Option<FunctionParameterList>,
+    pub body: PropertyHookBody,
+}
+
+impl HasId for PropertyHook {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for PropertyHook {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum PropertyHookBody {
+    Abstract(Span),
+    Concrete(ConcretePropertyHookBody),
+}
+
+impl HasId for PropertyHookBody {
+    fn id(&self) -> NodeId {
+        match self {
+            PropertyHookBody::Abstract(_) => 0,
+            PropertyHookBody::Concrete(inner) => inner.id(),
+        }
+    }
+}
+
+impl Spanned for PropertyHookBody {
+    fn span(&self) -> Span {
+        match self {
+            PropertyHookBody::Abstract(span) => *span,
+            _ => Span::default(),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum ConcretePropertyHookBody {
+    Block(ConcretePropertyHookBodyBlock),
+    Expression(ConcretePropertyHookBodyExpression),
+}
+
+impl HasId for ConcretePropertyHookBody {
+    fn id(&self) -> NodeId {
+        match self {
+            ConcretePropertyHookBody::Block(inner) => inner.id(),
+            ConcretePropertyHookBody::Expression(inner) => inner.id(),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ConcretePropertyHookBodyBlock {
+    pub id: NodeId,
+    pub span: Span,
+    pub left_brace: Span,
+    pub body: Vec<Statement>,
+    pub right_brace: Span,
+}
+
+impl HasId for ConcretePropertyHookBodyBlock {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for ConcretePropertyHookBodyBlock {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ConcretePropertyHookBodyExpression {
+    pub id: NodeId,
+    pub span: Span,
+    pub arrow: Span,
+    pub expression: Expression,
+    pub semicolon: Span,
+}
+
+impl HasId for ConcretePropertyHookBodyExpression {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for ConcretePropertyHookBodyExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum PropertyHookKind {
+    Get(Span),
+    Set(Span),
+}
+
+impl HasId for PropertyHookKind {
+    fn id(&self) -> NodeId {
+        match self {
+            PropertyHookKind::Get(_) => 0,
+            PropertyHookKind::Set(_) => 0,
+        }
+    }
+}
+
+impl Spanned for PropertyHookKind {
+    fn span(&self) -> Span {
+        match self {
+            PropertyHookKind::Get(span) => *span,
+            PropertyHookKind::Set(span) => *span,
+            _ => Span::default(),
+        }
     }
 }
 
@@ -6257,7 +6420,15 @@ pub enum NodeKind<'a> {
     UnresolvedName(&'a UnresolvedName),
     ResolvedName(&'a ResolvedName),
     Property(&'a Property),
-    VariableProperty(&'a VariableProperty),
+    SimpleProperty(&'a SimpleProperty),
+    HookedProperty(&'a HookedProperty),
+    PropertyHookList(&'a PropertyHookList),
+    PropertyHook(&'a PropertyHook),
+    PropertyHookBody(&'a PropertyHookBody),
+    ConcretePropertyHookBody(&'a ConcretePropertyHookBody),
+    ConcretePropertyHookBodyBlock(&'a ConcretePropertyHookBodyBlock),
+    ConcretePropertyHookBodyExpression(&'a ConcretePropertyHookBodyExpression),
+    PropertyHookKind(&'a PropertyHookKind),
     PropertyEntry(&'a PropertyEntry),
     PropertyEntryKind(&'a PropertyEntryKind),
     UninitializedPropertyEntry(&'a UninitializedPropertyEntry),
@@ -8613,15 +8784,105 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::Property(_))
     }
 
-    pub fn as_variable_property(self) -> Option<&'a VariableProperty> {
+    pub fn as_simple_property(self) -> Option<&'a SimpleProperty> {
         match &self.kind {
-            NodeKind::VariableProperty(node) => Some(node),
+            NodeKind::SimpleProperty(node) => Some(node),
             _ => None,
         }
     }
 
-    pub fn is_variable_property(&self) -> bool {
-        matches!(&self.kind, NodeKind::VariableProperty(_))
+    pub fn is_simple_property(&self) -> bool {
+        matches!(&self.kind, NodeKind::SimpleProperty(_))
+    }
+
+    pub fn as_hooked_property(self) -> Option<&'a HookedProperty> {
+        match &self.kind {
+            NodeKind::HookedProperty(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_hooked_property(&self) -> bool {
+        matches!(&self.kind, NodeKind::HookedProperty(_))
+    }
+
+    pub fn as_property_hook_list(self) -> Option<&'a PropertyHookList> {
+        match &self.kind {
+            NodeKind::PropertyHookList(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_property_hook_list(&self) -> bool {
+        matches!(&self.kind, NodeKind::PropertyHookList(_))
+    }
+
+    pub fn as_property_hook(self) -> Option<&'a PropertyHook> {
+        match &self.kind {
+            NodeKind::PropertyHook(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_property_hook(&self) -> bool {
+        matches!(&self.kind, NodeKind::PropertyHook(_))
+    }
+
+    pub fn as_property_hook_body(self) -> Option<&'a PropertyHookBody> {
+        match &self.kind {
+            NodeKind::PropertyHookBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_property_hook_body(&self) -> bool {
+        matches!(&self.kind, NodeKind::PropertyHookBody(_))
+    }
+
+    pub fn as_concrete_property_hook_body(self) -> Option<&'a ConcretePropertyHookBody> {
+        match &self.kind {
+            NodeKind::ConcretePropertyHookBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_concrete_property_hook_body(&self) -> bool {
+        matches!(&self.kind, NodeKind::ConcretePropertyHookBody(_))
+    }
+
+    pub fn as_concrete_property_hook_body_block(self) -> Option<&'a ConcretePropertyHookBodyBlock> {
+        match &self.kind {
+            NodeKind::ConcretePropertyHookBodyBlock(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_concrete_property_hook_body_block(&self) -> bool {
+        matches!(&self.kind, NodeKind::ConcretePropertyHookBodyBlock(_))
+    }
+
+    pub fn as_concrete_property_hook_body_expression(
+        self,
+    ) -> Option<&'a ConcretePropertyHookBodyExpression> {
+        match &self.kind {
+            NodeKind::ConcretePropertyHookBodyExpression(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_concrete_property_hook_body_expression(&self) -> bool {
+        matches!(&self.kind, NodeKind::ConcretePropertyHookBodyExpression(_))
+    }
+
+    pub fn as_property_hook_kind(self) -> Option<&'a PropertyHookKind> {
+        match &self.kind {
+            NodeKind::PropertyHookKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_property_hook_kind(&self) -> bool {
+        matches!(&self.kind, NodeKind::PropertyHookKind(_))
     }
 
     pub fn as_property_entry(self) -> Option<&'a PropertyEntry> {
@@ -9448,7 +9709,15 @@ impl<'a> Node<'a> {
             NodeKind::UnresolvedName(_) => "UnresolvedName",
             NodeKind::ResolvedName(_) => "ResolvedName",
             NodeKind::Property(_) => "Property",
-            NodeKind::VariableProperty(_) => "VariableProperty",
+            NodeKind::SimpleProperty(_) => "SimpleProperty",
+            NodeKind::HookedProperty(_) => "HookedProperty",
+            NodeKind::PropertyHookList(_) => "PropertyHookList",
+            NodeKind::PropertyHook(_) => "PropertyHook",
+            NodeKind::PropertyHookBody(_) => "PropertyHookBody",
+            NodeKind::ConcretePropertyHookBody(_) => "ConcretePropertyHookBody",
+            NodeKind::ConcretePropertyHookBodyBlock(_) => "ConcretePropertyHookBodyBlock",
+            NodeKind::ConcretePropertyHookBodyExpression(_) => "ConcretePropertyHookBodyExpression",
+            NodeKind::PropertyHookKind(_) => "PropertyHookKind",
             NodeKind::PropertyEntry(_) => "PropertyEntry",
             NodeKind::PropertyEntryKind(_) => "PropertyEntryKind",
             NodeKind::UninitializedPropertyEntry(_) => "UninitializedPropertyEntry",
@@ -10392,9 +10661,6 @@ impl<'a> Node<'a> {
                     children.push(inner.into());
                 }
                 ClassishMember::Property(inner) => {
-                    children.push(inner.into());
-                }
-                ClassishMember::VariableProperty(inner) => {
                     children.push(inner.into());
                 }
                 ClassishMember::AbstractMethod(inner) => {
@@ -11421,7 +11687,16 @@ impl<'a> Node<'a> {
                 }
                 _ => {}
             },
-            NodeKind::Property(node) => {
+            NodeKind::Property(node) => match node {
+                Property::Simple(inner) => {
+                    children.push(inner.into());
+                }
+                Property::Hooked(inner) => {
+                    children.push(inner.into());
+                }
+                _ => {}
+            },
+            NodeKind::SimpleProperty(node) => {
                 for x in &node.attributes {
                     children.push(x.into());
                 }
@@ -11432,16 +11707,55 @@ impl<'a> Node<'a> {
                     children.push(x.into());
                 }
             }
-            NodeKind::VariableProperty(node) => {
+            NodeKind::HookedProperty(node) => {
                 for x in &node.attributes {
                     children.push(x.into());
                 }
                 if let Some(child) = &node.r#type {
                     children.push(child.into());
                 }
-                for x in &node.entries {
+                let x = &node.entry;
+                children.push(x.into());
+                let x = &node.hooks;
+                children.push(x.into());
+            }
+            NodeKind::PropertyHookList(node) => {
+                for x in &node.hooks {
                     children.push(x.into());
                 }
+            }
+            NodeKind::PropertyHook(node) => {
+                let x = &node.kind;
+                children.push(x.into());
+                if let Some(child) = &node.parameters {
+                    children.push(child.into());
+                }
+                let x = &node.body;
+                children.push(x.into());
+            }
+            NodeKind::PropertyHookBody(node) => match node {
+                PropertyHookBody::Concrete(inner) => {
+                    children.push(inner.into());
+                }
+                _ => {}
+            },
+            NodeKind::ConcretePropertyHookBody(node) => match node {
+                ConcretePropertyHookBody::Block(inner) => {
+                    children.push(inner.into());
+                }
+                ConcretePropertyHookBody::Expression(inner) => {
+                    children.push(inner.into());
+                }
+                _ => {}
+            },
+            NodeKind::ConcretePropertyHookBodyBlock(node) => {
+                for x in &node.body {
+                    children.push(x.into());
+                }
+            }
+            NodeKind::ConcretePropertyHookBodyExpression(node) => {
+                let x = &node.expression;
+                children.push(x.into());
             }
             NodeKind::PropertyEntry(node) => {
                 let x = &node.kind;
@@ -11906,7 +12220,15 @@ impl<'a> Node<'a> {
             NodeKind::UnresolvedName(node) => NonNull::from(node).cast(),
             NodeKind::ResolvedName(node) => NonNull::from(node).cast(),
             NodeKind::Property(node) => NonNull::from(node).cast(),
-            NodeKind::VariableProperty(node) => NonNull::from(node).cast(),
+            NodeKind::SimpleProperty(node) => NonNull::from(node).cast(),
+            NodeKind::HookedProperty(node) => NonNull::from(node).cast(),
+            NodeKind::PropertyHookList(node) => NonNull::from(node).cast(),
+            NodeKind::PropertyHook(node) => NonNull::from(node).cast(),
+            NodeKind::PropertyHookBody(node) => NonNull::from(node).cast(),
+            NodeKind::ConcretePropertyHookBody(node) => NonNull::from(node).cast(),
+            NodeKind::ConcretePropertyHookBodyBlock(node) => NonNull::from(node).cast(),
+            NodeKind::ConcretePropertyHookBodyExpression(node) => NonNull::from(node).cast(),
+            NodeKind::PropertyHookKind(node) => NonNull::from(node).cast(),
             NodeKind::PropertyEntry(node) => NonNull::from(node).cast(),
             NodeKind::PropertyEntryKind(node) => NonNull::from(node).cast(),
             NodeKind::UninitializedPropertyEntry(node) => NonNull::from(node).cast(),
@@ -13418,9 +13740,69 @@ impl<'a> From<&'a Property> for Node<'a> {
     }
 }
 
-impl<'a> From<&'a VariableProperty> for Node<'a> {
-    fn from(node: &'a VariableProperty) -> Self {
-        Node::new(node.id(), NodeKind::VariableProperty(node), node.span())
+impl<'a> From<&'a SimpleProperty> for Node<'a> {
+    fn from(node: &'a SimpleProperty) -> Self {
+        Node::new(node.id(), NodeKind::SimpleProperty(node), node.span())
+    }
+}
+
+impl<'a> From<&'a HookedProperty> for Node<'a> {
+    fn from(node: &'a HookedProperty) -> Self {
+        Node::new(node.id(), NodeKind::HookedProperty(node), node.span())
+    }
+}
+
+impl<'a> From<&'a PropertyHookList> for Node<'a> {
+    fn from(node: &'a PropertyHookList) -> Self {
+        Node::new(node.id(), NodeKind::PropertyHookList(node), node.span())
+    }
+}
+
+impl<'a> From<&'a PropertyHook> for Node<'a> {
+    fn from(node: &'a PropertyHook) -> Self {
+        Node::new(node.id(), NodeKind::PropertyHook(node), node.span())
+    }
+}
+
+impl<'a> From<&'a PropertyHookBody> for Node<'a> {
+    fn from(node: &'a PropertyHookBody) -> Self {
+        Node::new(node.id(), NodeKind::PropertyHookBody(node), node.span())
+    }
+}
+
+impl<'a> From<&'a ConcretePropertyHookBody> for Node<'a> {
+    fn from(node: &'a ConcretePropertyHookBody) -> Self {
+        Node::new(
+            node.id(),
+            NodeKind::ConcretePropertyHookBody(node),
+            node.span(),
+        )
+    }
+}
+
+impl<'a> From<&'a ConcretePropertyHookBodyBlock> for Node<'a> {
+    fn from(node: &'a ConcretePropertyHookBodyBlock) -> Self {
+        Node::new(
+            node.id(),
+            NodeKind::ConcretePropertyHookBodyBlock(node),
+            node.span(),
+        )
+    }
+}
+
+impl<'a> From<&'a ConcretePropertyHookBodyExpression> for Node<'a> {
+    fn from(node: &'a ConcretePropertyHookBodyExpression) -> Self {
+        Node::new(
+            node.id(),
+            NodeKind::ConcretePropertyHookBodyExpression(node),
+            node.span(),
+        )
+    }
+}
+
+impl<'a> From<&'a PropertyHookKind> for Node<'a> {
+    fn from(node: &'a PropertyHookKind) -> Self {
+        Node::new(node.id(), NodeKind::PropertyHookKind(node), node.span())
     }
 }
 

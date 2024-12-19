@@ -134,7 +134,6 @@ impl Spanned for ClassishMember {
             ClassishMember::Constant(inner) => inner.span(),
             ClassishMember::TraitUsage(inner) => inner.span(),
             ClassishMember::Property(inner) => inner.span(),
-            ClassishMember::VariableProperty(inner) => inner.span(),
             ClassishMember::AbstractMethod(inner) => inner.span(),
             ClassishMember::AbstractConstructor(inner) => inner.span(),
             ClassishMember::ConcreteMethod(inner) => inner.span(),
@@ -435,6 +434,24 @@ impl Spanned for CatchTypeKind {
         match self {
             CatchTypeKind::Identifier(inner) => inner.span(),
             CatchTypeKind::Union(inner) => inner.span(),
+        }
+    }
+}
+
+impl Spanned for Property {
+    fn span(&self) -> Span {
+        match self {
+            Property::Simple(inner) => inner.span(),
+            Property::Hooked(inner) => inner.span(),
+        }
+    }
+}
+
+impl Spanned for ConcretePropertyHookBody {
+    fn span(&self) -> Span {
+        match self {
+            ConcretePropertyHookBody::Block(inner) => inner.span(),
+            ConcretePropertyHookBody::Expression(inner) => inner.span(),
         }
     }
 }

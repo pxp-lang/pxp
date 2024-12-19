@@ -760,7 +760,6 @@ ClassishMember:
   Constant: ClassishConstant
   TraitUsage: TraitUsage
   Property: Property
-  VariableProperty: VariableProperty
   AbstractMethod: AbstractMethod
   AbstractConstructor: AbstractConstructor
   ConcreteMethod: ConcreteMethod
@@ -1739,21 +1738,74 @@ ResolvedName:
   original: ByteString
 
 Property:
+  children: [self]
+  as: Enum
+  Simple: SimpleProperty
+  Hooked: HookedProperty
+
+SimpleProperty:
   children: [attributes, r#type?, entries]
   span: Span
   attributes: Vec<AttributeGroup>
   modifiers: PropertyModifierGroup
+  var: Option<Span>
   r#type: Option<DataType>
   entries: Vec<PropertyEntry>
-  end: Span
+  semicolon: Span
 
-VariableProperty: 
-  children: [attributes, r#type?, entries]
+HookedProperty:
+  children: [attributes, r#type?, entry, hooks]
   span: Span
   attributes: Vec<AttributeGroup>
+  var: Option<Span>
   r#type: Option<DataType>
-  entries: Vec<PropertyEntry>
-  end: Span
+  entry: PropertyEntry
+  hooks: PropertyHookList
+
+PropertyHookList:
+  children: [hooks]
+  span: Span
+  left_brace: Span
+  hooks: Vec<PropertyHook>
+  right_brace: Span
+
+PropertyHook:
+  children: [kind, parameters?, body]
+  span: Span
+  kind: PropertyHookKind
+  parameters: Option<FunctionParameterList>
+  body: PropertyHookBody
+
+PropertyHookBody:
+  children: [self]
+  as: Enum
+  Abstract: Span
+  Concrete: ConcretePropertyHookBody
+
+ConcretePropertyHookBody:
+  children: [self]
+  as: Enum
+  Block: ConcretePropertyHookBodyBlock
+  Expression: ConcretePropertyHookBodyExpression
+
+ConcretePropertyHookBodyBlock:
+  children: [body]
+  span: Span
+  left_brace: Span
+  body: Vec<Statement>
+  right_brace: Span
+
+ConcretePropertyHookBodyExpression:
+  children: [expression]
+  span: Span
+  arrow: Span
+  expression: Expression
+  semicolon: Span
+
+PropertyHookKind:
+  as: Enum
+  Get: Span
+  Set: Span
 
 PropertyEntry:
   children: [kind]

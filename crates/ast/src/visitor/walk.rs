@@ -731,7 +731,6 @@ pub fn walk_classish_member<V: Visitor + ?Sized>(visitor: &mut V, node: &Classis
         ClassishMember::Constant(inner) => visitor.visit_classish_constant(inner),
         ClassishMember::TraitUsage(inner) => visitor.visit_trait_usage(inner),
         ClassishMember::Property(inner) => visitor.visit_property(inner),
-        ClassishMember::VariableProperty(inner) => visitor.visit_variable_property(inner),
         ClassishMember::AbstractMethod(inner) => visitor.visit_abstract_method(inner),
         ClassishMember::AbstractConstructor(inner) => visitor.visit_abstract_constructor(inner),
         ClassishMember::ConcreteMethod(inner) => visitor.visit_concrete_method(inner),
@@ -1880,6 +1879,14 @@ pub fn walk_special_name<V: Visitor + ?Sized>(visitor: &mut V, node: &SpecialNam
 }
 
 pub fn walk_property<V: Visitor + ?Sized>(visitor: &mut V, node: &Property) {
+    match node {
+        Property::Simple(inner) => visitor.visit_simple_property(inner),
+        Property::Hooked(inner) => visitor.visit_hooked_property(inner),
+        _ => {}
+    }
+}
+
+pub fn walk_simple_property<V: Visitor + ?Sized>(visitor: &mut V, node: &SimpleProperty) {
     for item in &node.attributes {
         visitor.visit_attribute_group(item);
     }
@@ -1892,16 +1899,67 @@ pub fn walk_property<V: Visitor + ?Sized>(visitor: &mut V, node: &Property) {
     }
 }
 
-pub fn walk_variable_property<V: Visitor + ?Sized>(visitor: &mut V, node: &VariableProperty) {
+pub fn walk_hooked_property<V: Visitor + ?Sized>(visitor: &mut V, node: &HookedProperty) {
     for item in &node.attributes {
         visitor.visit_attribute_group(item);
     }
     if let Some(item) = &node.r#type {
         visitor.visit_data_type(item);
     }
-    for item in &node.entries {
-        visitor.visit_property_entry(item);
+    visitor.visit_property_entry(&node.entry);
+    visitor.visit_property_hook_list(&node.hooks);
+}
+
+pub fn walk_property_hook_list<V: Visitor + ?Sized>(visitor: &mut V, node: &PropertyHookList) {
+    for item in &node.hooks {
+        visitor.visit_property_hook(item);
     }
+}
+
+pub fn walk_property_hook<V: Visitor + ?Sized>(visitor: &mut V, node: &PropertyHook) {
+    visitor.visit_property_hook_kind(&node.kind);
+    if let Some(item) = &node.parameters {
+        visitor.visit_function_parameter_list(item);
+    }
+    visitor.visit_property_hook_body(&node.body);
+}
+
+pub fn walk_property_hook_body<V: Visitor + ?Sized>(visitor: &mut V, node: &PropertyHookBody) {
+    match node {
+        PropertyHookBody::Concrete(inner) => visitor.visit_concrete_property_hook_body(inner),
+        _ => {}
+    }
+}
+
+pub fn walk_concrete_property_hook_body<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &ConcretePropertyHookBody,
+) {
+    match node {
+        ConcretePropertyHookBody::Block(inner) => {
+            visitor.visit_concrete_property_hook_body_block(inner)
+        }
+        ConcretePropertyHookBody::Expression(inner) => {
+            visitor.visit_concrete_property_hook_body_expression(inner)
+        }
+        _ => {}
+    }
+}
+
+pub fn walk_concrete_property_hook_body_block<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &ConcretePropertyHookBodyBlock,
+) {
+    for item in &node.body {
+        visitor.visit_statement(item);
+    }
+}
+
+pub fn walk_concrete_property_hook_body_expression<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &ConcretePropertyHookBodyExpression,
+) {
+    visitor.visit_expression(&node.expression);
 }
 
 pub fn walk_property_entry<V: Visitor + ?Sized>(visitor: &mut V, node: &PropertyEntry) {

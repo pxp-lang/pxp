@@ -842,7 +842,6 @@ pub fn walk_classish_member_mut<V: VisitorMut + ?Sized>(
         ClassishMember::Constant(inner) => visitor.visit_classish_constant(inner),
         ClassishMember::TraitUsage(inner) => visitor.visit_trait_usage(inner),
         ClassishMember::Property(inner) => visitor.visit_property(inner),
-        ClassishMember::VariableProperty(inner) => visitor.visit_variable_property(inner),
         ClassishMember::AbstractMethod(inner) => visitor.visit_abstract_method(inner),
         ClassishMember::AbstractConstructor(inner) => visitor.visit_abstract_constructor(inner),
         ClassishMember::ConcreteMethod(inner) => visitor.visit_concrete_method(inner),
@@ -2105,6 +2104,17 @@ pub fn walk_special_name_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut
 }
 
 pub fn walk_property_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Property) {
+    match node {
+        Property::Simple(inner) => visitor.visit_simple_property(inner),
+        Property::Hooked(inner) => visitor.visit_hooked_property(inner),
+        _ => {}
+    }
+}
+
+pub fn walk_simple_property_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut SimpleProperty,
+) {
     for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
@@ -2117,9 +2127,9 @@ pub fn walk_property_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Pro
     }
 }
 
-pub fn walk_variable_property_mut<V: VisitorMut + ?Sized>(
+pub fn walk_hooked_property_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
-    node: &mut VariableProperty,
+    node: &mut HookedProperty,
 ) {
     for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
@@ -2127,9 +2137,66 @@ pub fn walk_variable_property_mut<V: VisitorMut + ?Sized>(
     if let Some(item) = &mut node.r#type {
         visitor.visit_data_type(item);
     }
-    for item in &mut node.entries {
-        visitor.visit_property_entry(item);
+    visitor.visit_property_entry(&mut node.entry);
+    visitor.visit_property_hook_list(&mut node.hooks);
+}
+
+pub fn walk_property_hook_list_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut PropertyHookList,
+) {
+    for item in &mut node.hooks {
+        visitor.visit_property_hook(item);
     }
+}
+
+pub fn walk_property_hook_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut PropertyHook) {
+    visitor.visit_property_hook_kind(&mut node.kind);
+    if let Some(item) = &mut node.parameters {
+        visitor.visit_function_parameter_list(item);
+    }
+    visitor.visit_property_hook_body(&mut node.body);
+}
+
+pub fn walk_property_hook_body_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut PropertyHookBody,
+) {
+    match node {
+        PropertyHookBody::Concrete(inner) => visitor.visit_concrete_property_hook_body(inner),
+        _ => {}
+    }
+}
+
+pub fn walk_concrete_property_hook_body_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ConcretePropertyHookBody,
+) {
+    match node {
+        ConcretePropertyHookBody::Block(inner) => {
+            visitor.visit_concrete_property_hook_body_block(inner)
+        }
+        ConcretePropertyHookBody::Expression(inner) => {
+            visitor.visit_concrete_property_hook_body_expression(inner)
+        }
+        _ => {}
+    }
+}
+
+pub fn walk_concrete_property_hook_body_block_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ConcretePropertyHookBodyBlock,
+) {
+    for item in &mut node.body {
+        visitor.visit_statement(item);
+    }
+}
+
+pub fn walk_concrete_property_hook_body_expression_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ConcretePropertyHookBodyExpression,
+) {
+    visitor.visit_expression(&mut node.expression);
 }
 
 pub fn walk_property_entry_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut PropertyEntry) {
