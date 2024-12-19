@@ -490,6 +490,7 @@ fn bytestring_type(ty: &Type<Name>) -> Type<ByteString> {
         Type::Conditional { .. } => todo!(),
         Type::This => Type::This,
         Type::ValueOf => Type::ValueOf,
+        Type::ClassString => Type::ClassString,
         Type::Missing => Type::Missing,
     }
 }

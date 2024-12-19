@@ -260,8 +260,14 @@ impl<'a> Parser<'a> {
 
             is_first = false;
 
-            // FIXME: Parse variance keywords and wildcards here too.
-            generic_types.push(self.parse_docblock_type());
+            // FIXME: Parse variance keywords.
+            if self.current_kind() == TokenKind::Asterisk {
+                self.next();
+
+                generic_types.push(Type::Mixed);
+            } else {
+                generic_types.push(self.parse_docblock_type());
+            }
 
             self.skip_doc_eol();
         }
@@ -596,6 +602,7 @@ impl<'a> Parser<'a> {
                     b"callable" => Some(Type::Callable),
                     b"array-key" if parser.is_in_docblock() => Some(Type::ArrayKey),
                     b"value-of" if parser.is_in_docblock() => Some(Type::ValueOf),
+                    b"class-string" if parser.is_in_docblock() => Some(Type::ClassString),
                     _ => {
                         let id = parser.id();
 

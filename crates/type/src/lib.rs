@@ -18,6 +18,7 @@ pub enum Type<N: Debug + Display> {
     Float,
     Boolean,
     Integer,
+    ClassString,
     String,
     Array,
     Object,
@@ -130,6 +131,7 @@ impl<N: Debug + Display> Type<N> {
 impl<N: Debug + Display> Display for Type<N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
+            Type::ClassString => write!(f, "class-string"),
             Type::ValueOf => write!(f, "value-of"),
             Type::Named(inner) => write!(f, "{}", inner),
             Type::Generic(inner, templates) => {
