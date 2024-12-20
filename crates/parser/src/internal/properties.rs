@@ -8,81 +8,44 @@ use pxp_span::Spanned;
 use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {
-    pub fn parse_property(&mut self, modifiers: PropertyModifierGroup) -> Property {
+    pub(crate) fn parse_property(&mut self, modifiers: PropertyModifierGroup) -> Property {
         let ty = self.parse_optional_data_type();
 
-        let mut entries = vec![];
-        let mut type_checked = false;
-        loop {
-            let variable = self.parse_simple_variable();
+        if modifiers.has_readonly() && modifiers.has_static() {
+            self.diagnostic(
+                ParserDiagnostic::StaticPropertyCannotBeReadonly,
+                Severity::Error,
+                self.current_span(),
+            );
+        }
 
-            if !type_checked {
-                type_checked = true;
-                if modifiers.has_readonly() && modifiers.has_static() {
+        match &ty {
+            Some(ty) => {
+                if ty.includes_callable() || ty.is_bottom() {
                     self.diagnostic(
-                        ParserDiagnostic::StaticPropertyCannotBeReadonly,
+                        ParserDiagnostic::ForbiddenTypeUsedInProperty,
                         Severity::Error,
-                        self.current_span(),
+                        ty.get_span(),
                     );
                 }
-
-                match &ty {
-                    Some(ty) => {
-                        if ty.includes_callable() || ty.is_bottom() {
-                            self.diagnostic(
-                                ParserDiagnostic::ForbiddenTypeUsedInProperty,
-                                Severity::Error,
-                                ty.get_span(),
-                            );
-                        }
-                    }
-                    None => {
-                        if let Some(modifier) = modifiers.get_readonly() {
-                            self.diagnostic(
-                                ParserDiagnostic::ReadonlyPropertyMustHaveType,
-                                Severity::Error,
-                                modifier.span(),
-                            );
-                        }
-                    }
-                }
             }
-
-            if self.current_kind() == TokenKind::Equals {
+            None => {
                 if let Some(modifier) = modifiers.get_readonly() {
                     self.diagnostic(
-                        ParserDiagnostic::ReadonlyPropertyCannotHaveDefaultValue,
+                        ParserDiagnostic::ReadonlyPropertyMustHaveType,
                         Severity::Error,
                         modifier.span(),
                     );
                 }
-
-                let equals = self.next();
-                let value = self.parse_expression();
-                let span = Span::combine(variable.span, value.span);
-
-                entries.push(PropertyEntry {
-                    id: self.id(),
-                    span,
-                    kind: PropertyEntryKind::Initialized(InitializedPropertyEntry {
-                        id: self.id(),
-                        span,
-                        variable,
-                        equals,
-                        value,
-                    }),
-                });
-            } else {
-                entries.push(PropertyEntry {
-                    id: self.id(),
-                    span: variable.span,
-                    kind: PropertyEntryKind::Uninitialized(UninitializedPropertyEntry {
-                        id: self.id(),
-                        span: variable.span,
-                        variable,
-                    }),
-                });
             }
+        }
+
+        let mut entries = vec![
+            self.parse_property_entry(&modifiers),
+        ];
+
+        while !self.is_eof() && self.current_kind() != TokenKind::SemiColon {
+            entries.push(self.parse_property_entry(&modifiers));
 
             if self.current_kind() == TokenKind::Comma {
                 self.next();
@@ -109,7 +72,51 @@ impl<'a> Parser<'a> {
         })
     }
 
-    pub fn parse_var_property(&mut self) -> Property {
+    fn parse_property_entry(&mut self, modifiers: &PropertyModifierGroup) -> PropertyEntry {
+        let variable = self.parse_simple_variable();
+        
+        if self.current_kind() == TokenKind::Equals {
+            if let Some(modifier) = modifiers.get_readonly() {
+                self.diagnostic(
+                    ParserDiagnostic::ReadonlyPropertyCannotHaveDefaultValue,
+                    Severity::Error,
+                    modifier.span(),
+                );
+            }
+
+            let equals = self.next();
+            let value = self.parse_expression();
+            let span = Span::combine(variable.span, value.span);
+
+            PropertyEntry {
+                id: self.id(),
+                span,
+                kind: PropertyEntryKind::Initialized(InitializedPropertyEntry {
+                    id: self.id(),
+                    span,
+                    variable,
+                    equals,
+                    value,
+                }),
+            }
+        } else {
+            PropertyEntry {
+                id: self.id(),
+                span: variable.span,
+                kind: PropertyEntryKind::Uninitialized(UninitializedPropertyEntry {
+                    id: self.id(),
+                    span: variable.span,
+                    variable,
+                }),
+            }
+        }
+    }
+
+    pub(crate) fn parse_hooked_property(&mut self) -> Property {
+        todo!()
+    }
+
+    pub(crate) fn parse_var_property(&mut self) -> Property {
         let var = self.skip(TokenKind::Var);
         let ty = self.parse_optional_data_type();
 
