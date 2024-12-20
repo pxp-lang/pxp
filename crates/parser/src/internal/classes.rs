@@ -206,7 +206,7 @@ impl<'a> Parser<'a> {
         }
 
         if self.current_kind() == TokenKind::Var {
-            return ClassishMember::VariableProperty(self.parse_var_property());
+            return ClassishMember::Property(self.parse_var_property());
         }
 
         let modifiers = self.collect_modifiers();

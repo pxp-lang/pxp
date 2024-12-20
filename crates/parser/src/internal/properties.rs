@@ -93,24 +93,24 @@ impl<'a> Parser<'a> {
 
         let end = self.skip_semicolon();
 
-        Property {
+        Property::Simple(SimpleProperty {
             id: self.id(),
             span: if ty.is_some() {
                 Span::combine(ty.span(), end)
             } else {
                 entries.span()
             },
+            var: None,
             r#type: ty,
             modifiers,
             attributes: self.get_attributes(),
             entries,
-            end,
-        }
+            semicolon: end,
+        })
     }
 
-    pub fn parse_var_property(&mut self) -> VariableProperty {
-        self.skip(TokenKind::Var);
-
+    pub fn parse_var_property(&mut self) -> Property {
+        let var = self.skip(TokenKind::Var);
         let ty = self.parse_optional_data_type();
 
         let mut entries: Vec<PropertyEntry> = vec![];
@@ -169,18 +169,25 @@ impl<'a> Parser<'a> {
         }
 
         let end = self.skip_semicolon();
+        let modifiers = PropertyModifierGroup {
+            id: self.id(),
+            span: var,
+            modifiers: vec![PropertyModifier::Public(var)]
+        };
 
-        VariableProperty {
+        Property::Simple(SimpleProperty {
             id: self.id(),
             span: if ty.is_some() {
                 Span::combine(ty.span(), end)
             } else {
                 entries.span()
             },
+            modifiers,
+            var: Some(var),
             r#type: ty,
             attributes: self.get_attributes(),
             entries,
-            end,
-        }
+            semicolon: end,
+        })
     }
 }
