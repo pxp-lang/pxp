@@ -1,0 +1,177 @@
+[
+    Statement {
+        id: 3,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                id: 2,
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            id: 1,
+            comments: [],
+        },
+    },
+    Statement {
+        id: 17,
+        kind: Class(
+            ClassStatement {
+                id: 16,
+                span: Span {
+                    start: 7,
+                    end: 60,
+                },
+                attributes: [],
+                modifiers: ClassModifierGroup {
+                    id: 5,
+                    span: Span {
+                        start: 0,
+                        end: 0,
+                    },
+                    modifiers: [],
+                },
+                class: Span {
+                    start: 7,
+                    end: 12,
+                },
+                name: Name {
+                    id: 6,
+                    kind: Resolved(
+                        ResolvedName {
+                            id: 6,
+                            span: Span {
+                                start: 13,
+                                end: 14,
+                            },
+                            resolved: "A",
+                            original: "A",
+                        },
+                    ),
+                    span: Span {
+                        start: 13,
+                        end: 14,
+                    },
+                },
+                extends: None,
+                implements: None,
+                body: ClassBody {
+                    id: 15,
+                    span: Span {
+                        start: 15,
+                        end: 60,
+                    },
+                    left_brace: Span {
+                        start: 15,
+                        end: 16,
+                    },
+                    members: [
+                        Property(
+                            Hooked(
+                                HookedProperty {
+                                    id: 14,
+                                    span: Span {
+                                        start: 21,
+                                        end: 58,
+                                    },
+                                    attributes: [],
+                                    type: Some(
+                                        DataType {
+                                            id: 8,
+                                            kind: String,
+                                            span: Span {
+                                                start: 0,
+                                                end: 0,
+                                            },
+                                        },
+                                    ),
+                                    entry: PropertyEntry {
+                                        id: 10,
+                                        span: Span {
+                                            start: 35,
+                                            end: 37,
+                                        },
+                                        kind: Uninitialized(
+                                            UninitializedPropertyEntry {
+                                                id: 11,
+                                                span: Span {
+                                                    start: 35,
+                                                    end: 37,
+                                                },
+                                                variable: SimpleVariable {
+                                                    id: 9,
+                                                    symbol: "$a",
+                                                    stripped: "a",
+                                                    span: Span {
+                                                        start: 35,
+                                                        end: 37,
+                                                    },
+                                                },
+                                            },
+                                        ),
+                                    },
+                                    hooks: PropertyHookList {
+                                        id: 13,
+                                        span: Span {
+                                            start: 38,
+                                            end: 58,
+                                        },
+                                        left_brace: Span {
+                                            start: 38,
+                                            end: 39,
+                                        },
+                                        hooks: [
+                                            PropertyHook {
+                                                id: 12,
+                                                span: Span {
+                                                    start: 48,
+                                                    end: 52,
+                                                },
+                                                kind: Set(
+                                                    Span {
+                                                        start: 48,
+                                                        end: 51,
+                                                    },
+                                                ),
+                                                parameters: None,
+                                                body: Abstract(
+                                                    Span {
+                                                        start: 51,
+                                                        end: 52,
+                                                    },
+                                                ),
+                                            },
+                                        ],
+                                        right_brace: Span {
+                                            start: 57,
+                                            end: 58,
+                                        },
+                                    },
+                                },
+                            ),
+                        ),
+                    ],
+                    right_brace: Span {
+                        start: 59,
+                        end: 60,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: 7,
+            end: 60,
+        },
+        comments: CommentGroup {
+            id: 4,
+            comments: [],
+        },
+    },
+]
+---

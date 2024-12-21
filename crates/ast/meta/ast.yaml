@@ -1757,7 +1757,6 @@ HookedProperty:
   children: [attributes, r#type?, entry, hooks]
   span: Span
   attributes: Vec<AttributeGroup>
-  var: Option<Span>
   r#type: Option<DataType>
   entry: PropertyEntry
   hooks: PropertyHookList
@@ -1781,6 +1780,7 @@ PropertyHookBody:
   as: Enum
   Abstract: Span
   Concrete: ConcretePropertyHookBody
+  Invalid: Span
 
 ConcretePropertyHookBody:
   children: [self]
@@ -1806,6 +1806,7 @@ PropertyHookKind:
   as: Enum
   Get: Span
   Set: Span
+  Invalid: Span
 
 PropertyEntry:
   children: [kind]

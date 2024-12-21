@@ -39,6 +39,8 @@ pub enum ParserDiagnostic {
     InvalidMethodModifier,
     InvalidPropertyModifier,
     InvalidConstantModifier,
+    InvalidPropertyHook,
+    ExpectedPropertyHook,
     CannotUseFinalWithAbstract,
     CannotUseFinalWithPrivateOnConstant,
     DuplicateModifier,
@@ -68,6 +70,8 @@ pub enum ParserDiagnostic {
 impl Display for ParserDiagnostic {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            ParserDiagnostic::InvalidPropertyHook => write!(f, "invalid property hook, expecting `get` or `set`"),
+            ParserDiagnostic::ExpectedPropertyHook => write!(f, "expected a property hook"),
             ParserDiagnostic::UnexpectedToken { token } => {
                 write!(f, "unexpected token {}", token.kind)
             }

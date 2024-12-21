@@ -1,0 +1,399 @@
+[
+    Statement {
+        id: 3,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                id: 2,
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            id: 1,
+            comments: [],
+        },
+    },
+    Statement {
+        id: 38,
+        kind: Class(
+            ClassStatement {
+                id: 37,
+                span: Span {
+                    start: 7,
+                    end: 117,
+                },
+                attributes: [],
+                modifiers: ClassModifierGroup {
+                    id: 5,
+                    span: Span {
+                        start: 0,
+                        end: 0,
+                    },
+                    modifiers: [],
+                },
+                class: Span {
+                    start: 7,
+                    end: 12,
+                },
+                name: Name {
+                    id: 6,
+                    kind: Resolved(
+                        ResolvedName {
+                            id: 6,
+                            span: Span {
+                                start: 13,
+                                end: 14,
+                            },
+                            resolved: "A",
+                            original: "A",
+                        },
+                    ),
+                    span: Span {
+                        start: 13,
+                        end: 14,
+                    },
+                },
+                extends: None,
+                implements: None,
+                body: ClassBody {
+                    id: 36,
+                    span: Span {
+                        start: 15,
+                        end: 117,
+                    },
+                    left_brace: Span {
+                        start: 15,
+                        end: 16,
+                    },
+                    members: [
+                        Property(
+                            Hooked(
+                                HookedProperty {
+                                    id: 35,
+                                    span: Span {
+                                        start: 21,
+                                        end: 115,
+                                    },
+                                    attributes: [],
+                                    type: Some(
+                                        DataType {
+                                            id: 8,
+                                            kind: String,
+                                            span: Span {
+                                                start: 0,
+                                                end: 0,
+                                            },
+                                        },
+                                    ),
+                                    entry: PropertyEntry {
+                                        id: 10,
+                                        span: Span {
+                                            start: 35,
+                                            end: 37,
+                                        },
+                                        kind: Uninitialized(
+                                            UninitializedPropertyEntry {
+                                                id: 11,
+                                                span: Span {
+                                                    start: 35,
+                                                    end: 37,
+                                                },
+                                                variable: SimpleVariable {
+                                                    id: 9,
+                                                    symbol: "$a",
+                                                    stripped: "a",
+                                                    span: Span {
+                                                        start: 35,
+                                                        end: 37,
+                                                    },
+                                                },
+                                            },
+                                        ),
+                                    },
+                                    hooks: PropertyHookList {
+                                        id: 34,
+                                        span: Span {
+                                            start: 38,
+                                            end: 115,
+                                        },
+                                        left_brace: Span {
+                                            start: 38,
+                                            end: 39,
+                                        },
+                                        hooks: [
+                                            PropertyHook {
+                                                id: 33,
+                                                span: Span {
+                                                    start: 48,
+                                                    end: 0,
+                                                },
+                                                kind: Set(
+                                                    Span {
+                                                        start: 48,
+                                                        end: 51,
+                                                    },
+                                                ),
+                                                parameters: Some(
+                                                    FunctionParameterList {
+                                                        id: 17,
+                                                        span: Span {
+                                                            start: 51,
+                                                            end: 66,
+                                                        },
+                                                        comments: CommentGroup {
+                                                            id: 12,
+                                                            comments: [],
+                                                        },
+                                                        left_parenthesis: Span {
+                                                            start: 51,
+                                                            end: 52,
+                                                        },
+                                                        parameters: CommaSeparated {
+                                                            inner: [
+                                                                FunctionParameter {
+                                                                    id: 15,
+                                                                    span: Span {
+                                                                        start: 0,
+                                                                        end: 65,
+                                                                    },
+                                                                    comments: CommentGroup {
+                                                                        id: 16,
+                                                                        comments: [],
+                                                                    },
+                                                                    name: SimpleVariable {
+                                                                        id: 14,
+                                                                        symbol: "$value",
+                                                                        stripped: "value",
+                                                                        span: Span {
+                                                                            start: 59,
+                                                                            end: 65,
+                                                                        },
+                                                                    },
+                                                                    attributes: [],
+                                                                    data_type: Some(
+                                                                        DataType {
+                                                                            id: 13,
+                                                                            kind: String,
+                                                                            span: Span {
+                                                                                start: 0,
+                                                                                end: 0,
+                                                                            },
+                                                                        },
+                                                                    ),
+                                                                    ellipsis: None,
+                                                                    default: None,
+                                                                    ampersand: None,
+                                                                },
+                                                            ],
+                                                            commas: [],
+                                                        },
+                                                        right_parenthesis: Span {
+                                                            start: 65,
+                                                            end: 66,
+                                                        },
+                                                    },
+                                                ),
+                                                body: Concrete(
+                                                    Block(
+                                                        ConcretePropertyHookBodyBlock {
+                                                            id: 32,
+                                                            span: Span {
+                                                                start: 67,
+                                                                end: 109,
+                                                            },
+                                                            left_brace: Span {
+                                                                start: 67,
+                                                                end: 68,
+                                                            },
+                                                            body: [
+                                                                Statement {
+                                                                    id: 31,
+                                                                    kind: Expression(
+                                                                        ExpressionStatement {
+                                                                            id: 30,
+                                                                            span: Span {
+                                                                                start: 92,
+                                                                                end: 99,
+                                                                            },
+                                                                            expression: Expression {
+                                                                                id: 29,
+                                                                                kind: AssignmentOperation(
+                                                                                    AssignmentOperationExpression {
+                                                                                        id: 27,
+                                                                                        span: Span {
+                                                                                            start: 86,
+                                                                                            end: 98,
+                                                                                        },
+                                                                                        kind: Assign {
+                                                                                            id: 28,
+                                                                                            left: Expression {
+                                                                                                id: 24,
+                                                                                                kind: PropertyFetch(
+                                                                                                    PropertyFetchExpression {
+                                                                                                        id: 23,
+                                                                                                        span: Span {
+                                                                                                            start: 81,
+                                                                                                            end: 89,
+                                                                                                        },
+                                                                                                        target: Expression {
+                                                                                                            id: 19,
+                                                                                                            kind: Variable(
+                                                                                                                SimpleVariable(
+                                                                                                                    SimpleVariable {
+                                                                                                                        id: 20,
+                                                                                                                        symbol: "$this",
+                                                                                                                        stripped: "this",
+                                                                                                                        span: Span {
+                                                                                                                            start: 81,
+                                                                                                                            end: 86,
+                                                                                                                        },
+                                                                                                                    },
+                                                                                                                ),
+                                                                                                            ),
+                                                                                                            span: Span {
+                                                                                                                start: 81,
+                                                                                                                end: 86,
+                                                                                                            },
+                                                                                                            comments: CommentGroup {
+                                                                                                                id: 0,
+                                                                                                                comments: [],
+                                                                                                            },
+                                                                                                        },
+                                                                                                        arrow: Span {
+                                                                                                            start: 86,
+                                                                                                            end: 88,
+                                                                                                        },
+                                                                                                        property: Expression {
+                                                                                                            id: 22,
+                                                                                                            kind: Identifier(
+                                                                                                                SimpleIdentifier(
+                                                                                                                    SimpleIdentifier {
+                                                                                                                        id: 21,
+                                                                                                                        symbol: "a",
+                                                                                                                        span: Span {
+                                                                                                                            start: 88,
+                                                                                                                            end: 89,
+                                                                                                                        },
+                                                                                                                    },
+                                                                                                                ),
+                                                                                                            ),
+                                                                                                            span: Span {
+                                                                                                                start: 88,
+                                                                                                                end: 89,
+                                                                                                            },
+                                                                                                            comments: CommentGroup {
+                                                                                                                id: 0,
+                                                                                                                comments: [],
+                                                                                                            },
+                                                                                                        },
+                                                                                                    },
+                                                                                                ),
+                                                                                                span: Span {
+                                                                                                    start: 86,
+                                                                                                    end: 89,
+                                                                                                },
+                                                                                                comments: CommentGroup {
+                                                                                                    id: 0,
+                                                                                                    comments: [],
+                                                                                                },
+                                                                                            },
+                                                                                            equals: Span {
+                                                                                                start: 90,
+                                                                                                end: 91,
+                                                                                            },
+                                                                                            right: Expression {
+                                                                                                id: 25,
+                                                                                                kind: Variable(
+                                                                                                    SimpleVariable(
+                                                                                                        SimpleVariable {
+                                                                                                            id: 26,
+                                                                                                            symbol: "$value",
+                                                                                                            stripped: "value",
+                                                                                                            span: Span {
+                                                                                                                start: 92,
+                                                                                                                end: 98,
+                                                                                                            },
+                                                                                                        },
+                                                                                                    ),
+                                                                                                ),
+                                                                                                span: Span {
+                                                                                                    start: 92,
+                                                                                                    end: 98,
+                                                                                                },
+                                                                                                comments: CommentGroup {
+                                                                                                    id: 0,
+                                                                                                    comments: [],
+                                                                                                },
+                                                                                            },
+                                                                                        },
+                                                                                    },
+                                                                                ),
+                                                                                span: Span {
+                                                                                    start: 92,
+                                                                                    end: 98,
+                                                                                },
+                                                                                comments: CommentGroup {
+                                                                                    id: 0,
+                                                                                    comments: [],
+                                                                                },
+                                                                            },
+                                                                            ending: Semicolon(
+                                                                                Span {
+                                                                                    start: 98,
+                                                                                    end: 99,
+                                                                                },
+                                                                            ),
+                                                                        },
+                                                                    ),
+                                                                    span: Span {
+                                                                        start: 92,
+                                                                        end: 99,
+                                                                    },
+                                                                    comments: CommentGroup {
+                                                                        id: 18,
+                                                                        comments: [],
+                                                                    },
+                                                                },
+                                                            ],
+                                                            right_brace: Span {
+                                                                start: 108,
+                                                                end: 109,
+                                                            },
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                        right_brace: Span {
+                                            start: 114,
+                                            end: 115,
+                                        },
+                                    },
+                                },
+                            ),
+                        ),
+                    ],
+                    right_brace: Span {
+                        start: 116,
+                        end: 117,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: 7,
+            end: 117,
+        },
+        comments: CommentGroup {
+            id: 4,
+            comments: [],
+        },
+    },
+]
+---

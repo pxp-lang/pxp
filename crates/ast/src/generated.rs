@@ -4912,7 +4912,6 @@ pub struct HookedProperty {
     pub id: NodeId,
     pub span: Span,
     pub attributes: Vec<AttributeGroup>,
-    pub var: Option<Span>,
     pub r#type: Option<DataType>,
     pub entry: PropertyEntry,
     pub hooks: PropertyHookList,
@@ -4976,6 +4975,7 @@ impl Spanned for PropertyHook {
 pub enum PropertyHookBody {
     Abstract(Span),
     Concrete(ConcretePropertyHookBody),
+    Invalid(Span),
 }
 
 impl HasId for PropertyHookBody {
@@ -4983,6 +4983,7 @@ impl HasId for PropertyHookBody {
         match self {
             PropertyHookBody::Abstract(_) => 0,
             PropertyHookBody::Concrete(inner) => inner.id(),
+            PropertyHookBody::Invalid(_) => 0,
         }
     }
 }
@@ -4991,6 +4992,7 @@ impl Spanned for PropertyHookBody {
     fn span(&self) -> Span {
         match self {
             PropertyHookBody::Abstract(span) => *span,
+            PropertyHookBody::Invalid(span) => *span,
             _ => Span::default(),
         }
     }
@@ -5057,6 +5059,7 @@ impl Spanned for ConcretePropertyHookBodyExpression {
 pub enum PropertyHookKind {
     Get(Span),
     Set(Span),
+    Invalid(Span),
 }
 
 impl HasId for PropertyHookKind {
@@ -5064,6 +5067,7 @@ impl HasId for PropertyHookKind {
         match self {
             PropertyHookKind::Get(_) => 0,
             PropertyHookKind::Set(_) => 0,
+            PropertyHookKind::Invalid(_) => 0,
         }
     }
 }
@@ -5073,6 +5077,7 @@ impl Spanned for PropertyHookKind {
         match self {
             PropertyHookKind::Get(span) => *span,
             PropertyHookKind::Set(span) => *span,
+            PropertyHookKind::Invalid(span) => *span,
             _ => Span::default(),
         }
     }

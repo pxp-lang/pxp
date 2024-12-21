@@ -40,9 +40,13 @@ impl<'a> Parser<'a> {
             }
         }
 
-        let mut entries = vec![
-            self.parse_property_entry(&modifiers),
-        ];
+        let entry = self.parse_property_entry(&modifiers);
+
+        if self.current_kind() == TokenKind::LeftBrace {
+            return self.parse_hooked_property(modifiers, ty, entry);
+        }
+
+        let mut entries = vec![entry];
 
         while !self.is_eof() && self.current_kind() != TokenKind::SemiColon {
             entries.push(self.parse_property_entry(&modifiers));
@@ -112,8 +116,118 @@ impl<'a> Parser<'a> {
         }
     }
 
-    pub(crate) fn parse_hooked_property(&mut self) -> Property {
-        todo!()
+    fn parse_hooked_property(&mut self, modifiers: PropertyModifierGroup, r#type: Option<DataType>, entry: PropertyEntry) -> Property {
+        let left_brace = self.skip_left_brace();
+        let mut hooks = vec![];
+
+        while !self.is_eof() && self.current_kind() != TokenKind::RightBrace {
+            hooks.push(self.parse_property_hook());
+        }
+
+        if hooks.is_empty() {
+            self.diagnostic(ParserDiagnostic::ExpectedPropertyHook, Severity::Error, left_brace);
+        }
+
+        let right_brace = self.skip_right_brace();
+        let span = left_brace.join(right_brace);
+        let hooks = PropertyHookList {
+            id: self.id(),
+            span,
+            left_brace,
+            hooks,
+            right_brace,
+        };
+
+        Property::Hooked(HookedProperty {
+            id: self.id(),
+            span: Span::combine(modifiers.span(), hooks.span),
+            attributes: self.get_attributes(),
+            r#type,
+            entry,
+            hooks,
+        })
+    }
+
+    fn parse_property_hook(&mut self) -> PropertyHook {
+        let kind = match self.current_kind() {
+            TokenKind::Identifier if self.current_symbol() == b"get" => {
+                PropertyHookKind::Get(self.next())
+            },
+            TokenKind::Identifier if self.current_symbol() == b"set" => {
+                PropertyHookKind::Set(self.next())
+            },
+            TokenKind::Identifier => {
+                self.diagnostic(ParserDiagnostic::InvalidPropertyHook, Severity::Error, self.current_span());
+
+                PropertyHookKind::Invalid(self.next())
+            },
+            _ => {
+                self.diagnostic(ParserDiagnostic::InvalidPropertyHook, Severity::Error, self.current_span());
+
+                PropertyHookKind::Invalid(self.current_span())
+            }
+        };
+
+        let parameters = if self.current_kind() == TokenKind::LeftParen {
+            Some(self.parse_function_parameter_list())
+        } else {
+            None
+        };
+
+        let body = self.parse_property_hook_body();
+
+        PropertyHook {
+            id: self.id(),
+            span: kind.span().join(body.span()),
+            kind,
+            parameters,
+            body,
+        }
+    }
+
+    fn parse_property_hook_body(&mut self) -> PropertyHookBody {
+        match self.current_kind() {
+            TokenKind::SemiColon => PropertyHookBody::Abstract(self.next()),
+            TokenKind::DoubleArrow => {
+                let double_arrow = self.next();
+                let expression = self.parse_expression();
+
+                PropertyHookBody::Concrete(ConcretePropertyHookBody::Expression(ConcretePropertyHookBodyExpression {
+                    id: self.id(),
+                    span: double_arrow.join(expression.span),
+                    arrow: double_arrow,
+                    expression,
+                    semicolon: self.skip_semicolon(),
+                }))
+            },
+            TokenKind::LeftBrace => {
+                let left_brace = self.next();
+                let mut statements = vec![];
+
+                while !self.is_eof() && self.current_kind() != TokenKind::RightBrace {
+                    statements.push(self.parse_statement());
+                }
+
+                let right_brace = self.skip_right_brace();
+
+                PropertyHookBody::Concrete(ConcretePropertyHookBody::Block(ConcretePropertyHookBodyBlock {
+                    id: self.id(),
+                    span: left_brace.join(right_brace),
+                    left_brace,
+                    right_brace,
+                    body: statements,
+                }))
+            },
+            _ => {
+                self.diagnostic(
+                    ParserDiagnostic::ExpectedToken { expected: vec![TokenKind::LeftBrace, TokenKind::DoubleArrow], found: self.current().to_owned() },
+                    Severity::Error,
+                    self.current_span(),
+                );
+
+                PropertyHookBody::Invalid(self.current_span())
+            }
+        }
     }
 
     pub(crate) fn parse_var_property(&mut self) -> Property {

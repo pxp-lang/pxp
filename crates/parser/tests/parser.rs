@@ -974,6 +974,14 @@ snap!(
 );
 snap!(snapper, yield_from, process("fixtures/yield/from.php"));
 
+// Property Hooks
+snap!(snapper, property_hooks_empty, process("fixtures/property-hooks/empty.php"));
+snap!(snapper, property_hooks_abstract_get, process("fixtures/property-hooks/abstract-get.php"));
+snap!(snapper, property_hooks_abstract_set, process("fixtures/property-hooks/abstract-set.php"));
+snap!(snapper, property_hooks_expression_body, process("fixtures/property-hooks/expression-body.php"));
+snap!(snapper, property_hooks_block_body, process("fixtures/property-hooks/block-body.php"));
+snap!(snapper, property_hooks_parameter_list, process("fixtures/property-hooks/parameter-list.php"));
+
 pub fn snapper() -> Snapper {
     Snapper::new(format!("{}/{}", env!("CARGO_MANIFEST_DIR"), "tests/__snapshots__").into())
 }
