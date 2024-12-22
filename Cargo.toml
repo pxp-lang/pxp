@@ -1,3 +1,12 @@
+[package]
+name = "pxp"
+description = "An early-stage project to develop high-performance tools for PHP developers."
+version.workspace = true
+authors.workspace = true
+license-file.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
 [workspace]
 members = ["crates/*", "internal"]
 resolver = "2"
