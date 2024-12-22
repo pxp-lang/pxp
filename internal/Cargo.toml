@@ -20,14 +20,6 @@ num_cpus = "1.16.0"
 pxp-span = { version = "0.1.0", path = "../crates/span" }
 
 [[bin]]
-name = "tokenise"
-path = "bin/tokenise.rs"
-
-[[bin]]
-name = "parse"
-path = "bin/parse.rs"
-
-[[bin]]
 name = "visit"
 path = "bin/visit.rs"
 
