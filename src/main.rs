@@ -13,7 +13,8 @@ struct Args {
 #[derive(Parser, Debug)]
 enum Command {
     #[clap(alias = "tokenize")]
-    Tokenise(cmd::Tokenise)
+    Tokenise(cmd::Tokenise),
+    Parse(cmd::Parse),
 }
 
 fn main() -> anyhow::Result<()> {
@@ -21,5 +22,6 @@ fn main() -> anyhow::Result<()> {
 
     match parsed.cmd {
         Command::Tokenise(args) => cmd::tokenise(args),
+        Command::Parse(args) => cmd::parse(args),
     }
 }

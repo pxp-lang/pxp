@@ -25,4 +25,6 @@ debug = true
 anyhow = "1.0.95"
 clap = { version = "4.5.23", features = ["derive", "wrap_help"] }
 pxp-lexer = { version = "0.1.0", path = "crates/lexer" }
+pxp-parser = { version = "0.1.0", path = "crates/parser" }
+pxp-span = { version = "0.1.0", path = "crates/span" }
 pxp-token = { version = "0.1.0", path = "crates/token" }
