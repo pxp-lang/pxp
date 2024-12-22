@@ -12,6 +12,7 @@ struct Args {
 
 #[derive(Parser, Debug)]
 enum Command {
+    #[clap(alias = "tokenize")]
     Tokenise(cmd::Tokenise)
 }
 
