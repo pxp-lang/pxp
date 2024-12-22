@@ -180,7 +180,7 @@
                                                     data_type: Some(
                                                         DataType {
                                                             id: 8,
-                                                            kind: NamedWithGenerics(
+                                                            kind: Generic(
                                                                 Named(
                                                                     Name {
                                                                         id: 4,
@@ -222,7 +222,7 @@
                                                                             },
                                                                         },
                                                                     ),
-                                                                    NamedWithGenerics(
+                                                                    Generic(
                                                                         Named(
                                                                             Name {
                                                                                 id: 6,
