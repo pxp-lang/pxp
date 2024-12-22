@@ -51,7 +51,12 @@ fn parse_file(path: &Path, dump: bool, print_diagnostics: bool) -> anyhow::Resul
 
     if print_diagnostics && !ast.diagnostics.is_empty() {
         for diagnostic in &ast.diagnostics {
-            println!("{} on line {}, column {}", diagnostic, diagnostic.span.start_line(&contents), diagnostic.span.start_column(&contents));
+            println!(
+                "{} on line {}, column {}",
+                diagnostic,
+                diagnostic.span.start_line(&contents),
+                diagnostic.span.start_column(&contents)
+            );
         }
     }
 

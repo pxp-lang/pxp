@@ -1,5 +1,5 @@
-mod tokenise;
 mod parse;
+mod tokenise;
 
-pub use tokenise::{Tokenise, tokenise};
-pub use parse::{Parse, parse};
+pub use parse::{parse, Parse};
+pub use tokenise::{tokenise, Tokenise};
