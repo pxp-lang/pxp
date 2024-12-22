@@ -1,5 +1,5 @@
 test:
-    cargo test --lib --bins --tests
+    cargo test --workspace --lib --bins --tests
 
 generate-ast:
     php ./meta/scripts/generate-ast.php

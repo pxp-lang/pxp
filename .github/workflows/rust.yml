@@ -19,4 +19,4 @@ jobs:
     - name: Build
       run: cargo build --verbose
     - name: Run tests
-      run: cargo test --lib --bins --tests --verbose
+      run: cargo test --workspace --lib --bins --tests --verbose
