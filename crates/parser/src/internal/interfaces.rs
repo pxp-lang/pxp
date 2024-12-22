@@ -2,9 +2,12 @@ use crate::Parser;
 use pxp_ast::StatementKind;
 use pxp_ast::UseKind;
 use pxp_ast::*;
+use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_span::Spanned;
 use pxp_token::TokenKind;
+
+use super::diagnostics::ParserDiagnostic;
 
 impl<'a> Parser<'a> {
     pub fn parse_interface(&mut self) -> StatementKind {
@@ -37,8 +40,24 @@ impl<'a> Parser<'a> {
         let left_brace = self.skip_left_brace();
         let members = {
             let mut members = Vec::new();
+
             while self.current_kind() != TokenKind::RightBrace {
-                members.push(self.parse_classish_member(true));
+                let member = self.parse_classish_member(true);
+
+                match member {
+                    ClassishMember::TraitUsage(TraitUsage { span, .. }) => {
+                        self.diagnostic(ParserDiagnostic::InterfaceCannotUseTraits, Severity::Error, span);
+                    },
+                    ClassishMember::ConcreteConstructor(ConcreteConstructor { span, .. }) | ClassishMember::ConcreteMethod(ConcreteMethod { span, .. }) => {
+                        self.diagnostic(ParserDiagnostic::InterfaceCannotContainConcreteMethods, Severity::Error, span);
+                    },
+                    ClassishMember::Property(ref property) if !property.is_public() => {
+                        self.diagnostic(ParserDiagnostic::InterfaceMembersMustBePublic, Severity::Error, property.span());
+                    },
+                    _ => {},
+                };
+
+                members.push(member);
             }
 
             members

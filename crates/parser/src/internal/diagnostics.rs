@@ -66,11 +66,23 @@ pub enum ParserDiagnostic {
     MixedImportTypes,
     InvalidDocBodyIndentationLevel(usize),
     InvalidDocIndentation,
+    InterfaceCannotUseTraits,
+    InterfaceCannotContainConcreteMethods,
+    InterfaceMembersMustBePublic,
 }
 
 impl Display for ParserDiagnostic {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            ParserDiagnostic::InterfaceCannotUseTraits => {
+                write!(f, "interfaces cannot use traits")
+            }
+            ParserDiagnostic::InterfaceCannotContainConcreteMethods => {
+                write!(f, "interfaces cannot contain concrete methods")
+            }
+            ParserDiagnostic::InterfaceMembersMustBePublic => {
+                write!(f, "interface members must be public")
+            }
             ParserDiagnostic::MultipleSetVisibilityModifiers => {
                 write!(f, "cannot have multiple write / set visibility modifiers")
             }

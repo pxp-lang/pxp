@@ -4847,6 +4847,7 @@ pub struct HookedProperty {
     pub id: NodeId,
     pub span: Span,
     pub attributes: Vec<AttributeGroup>,
+    pub modifiers: PropertyModifierGroup,
     pub r#type: Option<DataType>,
     pub entry: PropertyEntry,
     pub hooks: PropertyHookList,
@@ -11557,11 +11558,12 @@ impl<'a> Node<'a> {
                 let x = &node.body;
                 children.push(x.into());
             }
-            NodeKind::PropertyHookBody(node) => {
-                if let PropertyHookBody::Concrete(inner) = node {
+            NodeKind::PropertyHookBody(node) => match node {
+                PropertyHookBody::Concrete(inner) => {
                     children.push(inner.into());
                 }
-            }
+                _ => {}
+            },
             NodeKind::ConcretePropertyHookBody(node) => match node {
                 ConcretePropertyHookBody::Block(inner) => {
                     children.push(inner.into());

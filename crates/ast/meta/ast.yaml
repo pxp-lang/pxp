@@ -1770,6 +1770,7 @@ HookedProperty:
   children: [attributes, r#type?, entry, hooks]
   span: Span
   attributes: Vec<AttributeGroup>
+  modifiers: PropertyModifierGroup
   r#type: Option<DataType>
   entry: PropertyEntry
   hooks: PropertyHookList

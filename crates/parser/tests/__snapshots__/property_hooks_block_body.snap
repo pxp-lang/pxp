@@ -81,6 +81,21 @@
                                         end: 105,
                                     },
                                     attributes: [],
+                                    modifiers: PropertyModifierGroup {
+                                        id: 7,
+                                        span: Span {
+                                            start: 21,
+                                            end: 27,
+                                        },
+                                        modifiers: [
+                                            Public(
+                                                Span {
+                                                    start: 21,
+                                                    end: 27,
+                                                },
+                                            ),
+                                        ],
+                                    },
                                     type: Some(
                                         DataType {
                                             id: 8,

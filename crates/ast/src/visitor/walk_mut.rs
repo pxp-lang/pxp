@@ -2134,6 +2134,7 @@ pub fn walk_hooked_property_mut<V: VisitorMut + ?Sized>(
     for item in &mut node.attributes {
         visitor.visit_attribute_group(item);
     }
+    visitor.visit_property_modifier_group(&mut node.modifiers);
     if let Some(item) = &mut node.r#type {
         visitor.visit_data_type(item);
     }

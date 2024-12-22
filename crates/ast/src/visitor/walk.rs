@@ -1903,6 +1903,7 @@ pub fn walk_hooked_property<V: Visitor + ?Sized>(visitor: &mut V, node: &HookedP
     for item in &node.attributes {
         visitor.visit_attribute_group(item);
     }
+    visitor.visit_property_modifier_group(&node.modifiers);
     if let Some(item) = &node.r#type {
         visitor.visit_data_type(item);
     }

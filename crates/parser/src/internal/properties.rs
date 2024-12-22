@@ -151,6 +151,7 @@ impl<'a> Parser<'a> {
             id: self.id(),
             span: Span::combine(modifiers.span(), hooks.span),
             attributes: self.get_attributes(),
+            modifiers,
             r#type,
             entry,
             hooks,
