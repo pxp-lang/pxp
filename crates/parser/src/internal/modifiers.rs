@@ -241,7 +241,10 @@ impl<'a> Parser<'a> {
                         *span,
                     );
                 }
-            } else if matches!(current_kind, TokenKind::PublicSet | TokenKind::ProtectedSet | TokenKind::PrivateSet) {
+            } else if matches!(
+                current_kind,
+                TokenKind::PublicSet | TokenKind::ProtectedSet | TokenKind::PrivateSet
+            ) {
                 if let Some((span, _)) = collected.iter().find(|(_, kind)| {
                     matches!(
                         kind,

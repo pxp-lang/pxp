@@ -1421,13 +1421,16 @@ impl<'a> Lexer<'a> {
                     TokenKind::QualifiedIdentifier
                 } else {
                     match self.source.span_range(self.source.span()).as_ref() {
-                        b"private" | b"protected" | b"public" if &self.source.read(5) == b"(set)" => {
+                        b"private" | b"protected" | b"public"
+                            if &self.source.read(5) == b"(set)" =>
+                        {
                             self.source.skip(5);
                         }
                         _ => {}
                     };
 
-                    let kind = identifier_to_keyword(self.source.span_range(self.source.span())).unwrap_or(TokenKind::Identifier);
+                    let kind = identifier_to_keyword(self.source.span_range(self.source.span()))
+                        .unwrap_or(TokenKind::Identifier);
 
                     if kind == TokenKind::HaltCompiler {
                         match self.source.read(3) {

@@ -71,8 +71,12 @@ pub enum ParserDiagnostic {
 impl Display for ParserDiagnostic {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ParserDiagnostic::MultipleSetVisibilityModifiers => write!(f, "cannot have multiple write / set visibility modifiers"),
-            ParserDiagnostic::InvalidPropertyHook => write!(f, "invalid property hook, expecting `get` or `set`"),
+            ParserDiagnostic::MultipleSetVisibilityModifiers => {
+                write!(f, "cannot have multiple write / set visibility modifiers")
+            }
+            ParserDiagnostic::InvalidPropertyHook => {
+                write!(f, "invalid property hook, expecting `get` or `set`")
+            }
             ParserDiagnostic::ExpectedPropertyHook => write!(f, "expected a property hook"),
             ParserDiagnostic::UnexpectedToken { token } => {
                 write!(f, "unexpected token {}", token.kind)

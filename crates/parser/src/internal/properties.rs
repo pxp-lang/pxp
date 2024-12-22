@@ -78,7 +78,7 @@ impl<'a> Parser<'a> {
 
     fn parse_property_entry(&mut self, modifiers: &PropertyModifierGroup) -> PropertyEntry {
         let variable = self.parse_simple_variable();
-        
+
         if self.current_kind() == TokenKind::Equals {
             if let Some(modifier) = modifiers.get_readonly() {
                 self.diagnostic(
@@ -116,7 +116,12 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_hooked_property(&mut self, modifiers: PropertyModifierGroup, r#type: Option<DataType>, entry: PropertyEntry) -> Property {
+    fn parse_hooked_property(
+        &mut self,
+        modifiers: PropertyModifierGroup,
+        r#type: Option<DataType>,
+        entry: PropertyEntry,
+    ) -> Property {
         let left_brace = self.skip_left_brace();
         let mut hooks = vec![];
 
@@ -125,7 +130,11 @@ impl<'a> Parser<'a> {
         }
 
         if hooks.is_empty() {
-            self.diagnostic(ParserDiagnostic::ExpectedPropertyHook, Severity::Error, left_brace);
+            self.diagnostic(
+                ParserDiagnostic::ExpectedPropertyHook,
+                Severity::Error,
+                left_brace,
+            );
         }
 
         let right_brace = self.skip_right_brace();
@@ -152,17 +161,25 @@ impl<'a> Parser<'a> {
         let kind = match self.current_kind() {
             TokenKind::Identifier if self.current_symbol() == b"get" => {
                 PropertyHookKind::Get(self.next())
-            },
+            }
             TokenKind::Identifier if self.current_symbol() == b"set" => {
                 PropertyHookKind::Set(self.next())
-            },
+            }
             TokenKind::Identifier => {
-                self.diagnostic(ParserDiagnostic::InvalidPropertyHook, Severity::Error, self.current_span());
+                self.diagnostic(
+                    ParserDiagnostic::InvalidPropertyHook,
+                    Severity::Error,
+                    self.current_span(),
+                );
 
                 PropertyHookKind::Invalid(self.next())
-            },
+            }
             _ => {
-                self.diagnostic(ParserDiagnostic::InvalidPropertyHook, Severity::Error, self.current_span());
+                self.diagnostic(
+                    ParserDiagnostic::InvalidPropertyHook,
+                    Severity::Error,
+                    self.current_span(),
+                );
 
                 PropertyHookKind::Invalid(self.current_span())
             }
@@ -192,14 +209,16 @@ impl<'a> Parser<'a> {
                 let double_arrow = self.next();
                 let expression = self.parse_expression();
 
-                PropertyHookBody::Concrete(ConcretePropertyHookBody::Expression(ConcretePropertyHookBodyExpression {
-                    id: self.id(),
-                    span: double_arrow.join(expression.span),
-                    arrow: double_arrow,
-                    expression,
-                    semicolon: self.skip_semicolon(),
-                }))
-            },
+                PropertyHookBody::Concrete(ConcretePropertyHookBody::Expression(
+                    ConcretePropertyHookBodyExpression {
+                        id: self.id(),
+                        span: double_arrow.join(expression.span),
+                        arrow: double_arrow,
+                        expression,
+                        semicolon: self.skip_semicolon(),
+                    },
+                ))
+            }
             TokenKind::LeftBrace => {
                 let left_brace = self.next();
                 let mut statements = vec![];
@@ -210,17 +229,22 @@ impl<'a> Parser<'a> {
 
                 let right_brace = self.skip_right_brace();
 
-                PropertyHookBody::Concrete(ConcretePropertyHookBody::Block(ConcretePropertyHookBodyBlock {
-                    id: self.id(),
-                    span: left_brace.join(right_brace),
-                    left_brace,
-                    right_brace,
-                    body: statements,
-                }))
-            },
+                PropertyHookBody::Concrete(ConcretePropertyHookBody::Block(
+                    ConcretePropertyHookBodyBlock {
+                        id: self.id(),
+                        span: left_brace.join(right_brace),
+                        left_brace,
+                        right_brace,
+                        body: statements,
+                    },
+                ))
+            }
             _ => {
                 self.diagnostic(
-                    ParserDiagnostic::ExpectedToken { expected: vec![TokenKind::LeftBrace, TokenKind::DoubleArrow], found: self.current().to_owned() },
+                    ParserDiagnostic::ExpectedToken {
+                        expected: vec![TokenKind::LeftBrace, TokenKind::DoubleArrow],
+                        found: self.current().to_owned(),
+                    },
                     Severity::Error,
                     self.current_span(),
                 );
@@ -293,7 +317,7 @@ impl<'a> Parser<'a> {
         let modifiers = PropertyModifierGroup {
             id: self.id(),
             span: var,
-            modifiers: vec![PropertyModifier::Public(var)]
+            modifiers: vec![PropertyModifier::Public(var)],
         };
 
         Property::Simple(SimpleProperty {
