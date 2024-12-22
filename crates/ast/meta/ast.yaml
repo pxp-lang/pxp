@@ -1382,15 +1382,20 @@ ContinueStatement:
 
 VisibilityModifier:
   as: Enum
+  node: false
   Public: Span
   Protected: Span
   Private: Span
 
 PromotedPropertyModifier:
   as: Enum
+  node: false
   Public: Span
   Protected: Span
   Private: Span
+  PublicSet: Span
+  ProtectedSet: Span
+  PrivateSet: Span
   Readonly: Span
 
 PromotedPropertyModifierGroup:
@@ -1400,9 +1405,13 @@ PromotedPropertyModifierGroup:
 
 PropertyModifier:
   as: Enum
+  node: false
   Public: Span
   Protected: Span
   Private: Span
+  PublicSet: Span
+  ProtectedSet: Span
+  PrivateSet: Span
   Static: Span
   Readonly: Span
 
@@ -1413,6 +1422,7 @@ PropertyModifierGroup:
 
 MethodModifier:
   as: Enum
+  node: false
   Public: Span
   Protected: Span
   Private: Span
@@ -1427,6 +1437,7 @@ MethodModifierGroup:
 
 ClassModifier:
   as: Enum
+  node: false
   Abstract: Span
   Final: Span
   Readonly: Span
@@ -1438,6 +1449,7 @@ ClassModifierGroup:
 
 ConstantModifier:
   as: Enum
+  node: false
   Public: Span
   Protected: Span
   Private: Span
@@ -1722,6 +1734,7 @@ SpecialName:
 
 SpecialNameKind:
   as: Enum
+  node: false
   derive: Copy
   Self_: Span
   Parent: Span
@@ -1769,7 +1782,7 @@ PropertyHookList:
   right_brace: Span
 
 PropertyHook:
-  children: [kind, parameters?, body]
+  children: [parameters?, body]
   span: Span
   kind: PropertyHookKind
   parameters: Option<FunctionParameterList>
@@ -1804,6 +1817,7 @@ ConcretePropertyHookBodyExpression:
 
 PropertyHookKind:
   as: Enum
+  node: false
   Get: Span
   Set: Span
   Invalid: Span
@@ -1864,7 +1878,7 @@ TraitUsageAdaptationKind:
   Precedence: TraitUsageAdaptationPrecedence
 
 TraitUsageAdaptationAlias:
-  children: [r#trait?, method, alias, visibility?]
+  children: [r#trait?, method, alias]
   span: Span
   r#trait: Option<Name>
   method: SimpleIdentifier
@@ -1872,7 +1886,7 @@ TraitUsageAdaptationAlias:
   visibility: Option<VisibilityModifier>
 
 TraitUsageAdaptationVisibility:
-  children: [r#trait?, method, visibility]
+  children: [r#trait?, method]
   span: Span
   r#trait: Option<Name>
   method: SimpleIdentifier

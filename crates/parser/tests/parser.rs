@@ -982,6 +982,10 @@ snap!(snapper, property_hooks_expression_body, process("fixtures/property-hooks/
 snap!(snapper, property_hooks_block_body, process("fixtures/property-hooks/block-body.php"));
 snap!(snapper, property_hooks_parameter_list, process("fixtures/property-hooks/parameter-list.php"));
 
+// Asymmetric Visibility
+snap!(snapper, asymmetric_visibility, process("fixtures/asymmetric-visibility/visibility.php"));
+snap!(snapper, asymmetric_visibility_promoted_property, process("fixtures/asymmetric-visibility/promoted-property.php"));
+
 pub fn snapper() -> Snapper {
     Snapper::new(format!("{}/{}", env!("CARGO_MANIFEST_DIR"), "tests/__snapshots__").into())
 }

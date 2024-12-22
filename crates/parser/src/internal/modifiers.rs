@@ -102,6 +102,9 @@ impl<'a> Parser<'a> {
                 TokenKind::Public => Some(PropertyModifier::Public(*span)),
                 TokenKind::Protected => Some(PropertyModifier::Protected(*span)),
                 TokenKind::Private => Some(PropertyModifier::Private(*span)),
+                TokenKind::PrivateSet => Some(PropertyModifier::PrivateSet(*span)),
+                TokenKind::ProtectedSet => Some(PropertyModifier::ProtectedSet(*span)),
+                TokenKind::PublicSet => Some(PropertyModifier::PublicSet(*span)),
                 _ => {
                     self.diagnostic(
                         ParserDiagnostic::InvalidPropertyModifier,
@@ -133,6 +136,9 @@ impl<'a> Parser<'a> {
                 TokenKind::Private => Some(PromotedPropertyModifier::Private(*span)),
                 TokenKind::Protected => Some(PromotedPropertyModifier::Protected(*span)),
                 TokenKind::Public => Some(PromotedPropertyModifier::Public(*span)),
+                TokenKind::PrivateSet => Some(PromotedPropertyModifier::PrivateSet(*span)),
+                TokenKind::ProtectedSet => Some(PromotedPropertyModifier::ProtectedSet(*span)),
+                TokenKind::PublicSet => Some(PromotedPropertyModifier::PublicSet(*span)),
                 _ => {
                     self.diagnostic(
                         ParserDiagnostic::InvalidPropertyModifier,
@@ -204,6 +210,9 @@ impl<'a> Parser<'a> {
             TokenKind::Abstract,
             TokenKind::Static,
             TokenKind::Readonly,
+            TokenKind::PublicSet,
+            TokenKind::ProtectedSet,
+            TokenKind::PrivateSet,
         ];
 
         let mut current = self.current();
@@ -228,6 +237,19 @@ impl<'a> Parser<'a> {
                 }) {
                     self.diagnostic(
                         ParserDiagnostic::MultipleVisibilityModifiers,
+                        Severity::Error,
+                        *span,
+                    );
+                }
+            } else if matches!(current_kind, TokenKind::PublicSet | TokenKind::ProtectedSet | TokenKind::PrivateSet) {
+                if let Some((span, _)) = collected.iter().find(|(_, kind)| {
+                    matches!(
+                        kind,
+                        TokenKind::PublicSet | TokenKind::ProtectedSet | TokenKind::PrivateSet
+                    ) && kind != &current_kind
+                }) {
+                    self.diagnostic(
+                        ParserDiagnostic::MultipleSetVisibilityModifiers,
                         Severity::Error,
                         *span,
                     );

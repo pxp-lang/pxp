@@ -3910,16 +3910,6 @@ pub enum VisibilityModifier {
     Private(Span),
 }
 
-impl HasId for VisibilityModifier {
-    fn id(&self) -> NodeId {
-        match self {
-            VisibilityModifier::Public(_) => 0,
-            VisibilityModifier::Protected(_) => 0,
-            VisibilityModifier::Private(_) => 0,
-        }
-    }
-}
-
 impl Spanned for VisibilityModifier {
     fn span(&self) -> Span {
         match self {
@@ -3936,18 +3926,10 @@ pub enum PromotedPropertyModifier {
     Public(Span),
     Protected(Span),
     Private(Span),
+    PublicSet(Span),
+    ProtectedSet(Span),
+    PrivateSet(Span),
     Readonly(Span),
-}
-
-impl HasId for PromotedPropertyModifier {
-    fn id(&self) -> NodeId {
-        match self {
-            PromotedPropertyModifier::Public(_) => 0,
-            PromotedPropertyModifier::Protected(_) => 0,
-            PromotedPropertyModifier::Private(_) => 0,
-            PromotedPropertyModifier::Readonly(_) => 0,
-        }
-    }
 }
 
 impl Spanned for PromotedPropertyModifier {
@@ -3956,6 +3938,9 @@ impl Spanned for PromotedPropertyModifier {
             PromotedPropertyModifier::Public(span) => *span,
             PromotedPropertyModifier::Protected(span) => *span,
             PromotedPropertyModifier::Private(span) => *span,
+            PromotedPropertyModifier::PublicSet(span) => *span,
+            PromotedPropertyModifier::ProtectedSet(span) => *span,
+            PromotedPropertyModifier::PrivateSet(span) => *span,
             PromotedPropertyModifier::Readonly(span) => *span,
             _ => Span::default(),
         }
@@ -3986,20 +3971,11 @@ pub enum PropertyModifier {
     Public(Span),
     Protected(Span),
     Private(Span),
+    PublicSet(Span),
+    ProtectedSet(Span),
+    PrivateSet(Span),
     Static(Span),
     Readonly(Span),
-}
-
-impl HasId for PropertyModifier {
-    fn id(&self) -> NodeId {
-        match self {
-            PropertyModifier::Public(_) => 0,
-            PropertyModifier::Protected(_) => 0,
-            PropertyModifier::Private(_) => 0,
-            PropertyModifier::Static(_) => 0,
-            PropertyModifier::Readonly(_) => 0,
-        }
-    }
 }
 
 impl Spanned for PropertyModifier {
@@ -4008,6 +3984,9 @@ impl Spanned for PropertyModifier {
             PropertyModifier::Public(span) => *span,
             PropertyModifier::Protected(span) => *span,
             PropertyModifier::Private(span) => *span,
+            PropertyModifier::PublicSet(span) => *span,
+            PropertyModifier::ProtectedSet(span) => *span,
+            PropertyModifier::PrivateSet(span) => *span,
             PropertyModifier::Static(span) => *span,
             PropertyModifier::Readonly(span) => *span,
             _ => Span::default(),
@@ -4042,19 +4021,6 @@ pub enum MethodModifier {
     Static(Span),
     Abstract(Span),
     Final(Span),
-}
-
-impl HasId for MethodModifier {
-    fn id(&self) -> NodeId {
-        match self {
-            MethodModifier::Public(_) => 0,
-            MethodModifier::Protected(_) => 0,
-            MethodModifier::Private(_) => 0,
-            MethodModifier::Static(_) => 0,
-            MethodModifier::Abstract(_) => 0,
-            MethodModifier::Final(_) => 0,
-        }
-    }
 }
 
 impl Spanned for MethodModifier {
@@ -4097,16 +4063,6 @@ pub enum ClassModifier {
     Readonly(Span),
 }
 
-impl HasId for ClassModifier {
-    fn id(&self) -> NodeId {
-        match self {
-            ClassModifier::Abstract(_) => 0,
-            ClassModifier::Final(_) => 0,
-            ClassModifier::Readonly(_) => 0,
-        }
-    }
-}
-
 impl Spanned for ClassModifier {
     fn span(&self) -> Span {
         match self {
@@ -4143,17 +4099,6 @@ pub enum ConstantModifier {
     Protected(Span),
     Private(Span),
     Final(Span),
-}
-
-impl HasId for ConstantModifier {
-    fn id(&self) -> NodeId {
-        match self {
-            ConstantModifier::Public(_) => 0,
-            ConstantModifier::Protected(_) => 0,
-            ConstantModifier::Private(_) => 0,
-            ConstantModifier::Final(_) => 0,
-        }
-    }
 }
 
 impl Spanned for ConstantModifier {
@@ -4807,16 +4752,6 @@ pub enum SpecialNameKind {
     Static(Span),
 }
 
-impl HasId for SpecialNameKind {
-    fn id(&self) -> NodeId {
-        match self {
-            SpecialNameKind::Self_(_) => 0,
-            SpecialNameKind::Parent(_) => 0,
-            SpecialNameKind::Static(_) => 0,
-        }
-    }
-}
-
 impl Spanned for SpecialNameKind {
     fn span(&self) -> Span {
         match self {
@@ -5060,16 +4995,6 @@ pub enum PropertyHookKind {
     Get(Span),
     Set(Span),
     Invalid(Span),
-}
-
-impl HasId for PropertyHookKind {
-    fn id(&self) -> NodeId {
-        match self {
-            PropertyHookKind::Get(_) => 0,
-            PropertyHookKind::Set(_) => 0,
-            PropertyHookKind::Invalid(_) => 0,
-        }
-    }
 }
 
 impl Spanned for PropertyHookKind {
@@ -6393,16 +6318,10 @@ pub enum NodeKind<'a> {
     ParenthesizedLevel(&'a ParenthesizedLevel),
     BreakStatement(&'a BreakStatement),
     ContinueStatement(&'a ContinueStatement),
-    VisibilityModifier(&'a VisibilityModifier),
-    PromotedPropertyModifier(&'a PromotedPropertyModifier),
     PromotedPropertyModifierGroup(&'a PromotedPropertyModifierGroup),
-    PropertyModifier(&'a PropertyModifier),
     PropertyModifierGroup(&'a PropertyModifierGroup),
-    MethodModifier(&'a MethodModifier),
     MethodModifierGroup(&'a MethodModifierGroup),
-    ClassModifier(&'a ClassModifier),
     ClassModifierGroup(&'a ClassModifierGroup),
-    ConstantModifier(&'a ConstantModifier),
     ConstantModifierGroup(&'a ConstantModifierGroup),
     UnbracedNamespace(&'a UnbracedNamespace),
     BracedNamespace(&'a BracedNamespace),
@@ -6421,7 +6340,6 @@ pub enum NodeKind<'a> {
     Name(&'a Name),
     NameKind(&'a NameKind),
     SpecialName(&'a SpecialName),
-    SpecialNameKind(&'a SpecialNameKind),
     UnresolvedName(&'a UnresolvedName),
     ResolvedName(&'a ResolvedName),
     Property(&'a Property),
@@ -6433,7 +6351,6 @@ pub enum NodeKind<'a> {
     ConcretePropertyHookBody(&'a ConcretePropertyHookBody),
     ConcretePropertyHookBodyBlock(&'a ConcretePropertyHookBodyBlock),
     ConcretePropertyHookBodyExpression(&'a ConcretePropertyHookBodyExpression),
-    PropertyHookKind(&'a PropertyHookKind),
     PropertyEntry(&'a PropertyEntry),
     PropertyEntryKind(&'a PropertyEntryKind),
     UninitializedPropertyEntry(&'a UninitializedPropertyEntry),
@@ -8437,28 +8354,6 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::ContinueStatement(_))
     }
 
-    pub fn as_visibility_modifier(self) -> Option<&'a VisibilityModifier> {
-        match &self.kind {
-            NodeKind::VisibilityModifier(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_visibility_modifier(&self) -> bool {
-        matches!(&self.kind, NodeKind::VisibilityModifier(_))
-    }
-
-    pub fn as_promoted_property_modifier(self) -> Option<&'a PromotedPropertyModifier> {
-        match &self.kind {
-            NodeKind::PromotedPropertyModifier(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_promoted_property_modifier(&self) -> bool {
-        matches!(&self.kind, NodeKind::PromotedPropertyModifier(_))
-    }
-
     pub fn as_promoted_property_modifier_group(self) -> Option<&'a PromotedPropertyModifierGroup> {
         match &self.kind {
             NodeKind::PromotedPropertyModifierGroup(node) => Some(node),
@@ -8468,17 +8363,6 @@ impl<'a> Node<'a> {
 
     pub fn is_promoted_property_modifier_group(&self) -> bool {
         matches!(&self.kind, NodeKind::PromotedPropertyModifierGroup(_))
-    }
-
-    pub fn as_property_modifier(self) -> Option<&'a PropertyModifier> {
-        match &self.kind {
-            NodeKind::PropertyModifier(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_property_modifier(&self) -> bool {
-        matches!(&self.kind, NodeKind::PropertyModifier(_))
     }
 
     pub fn as_property_modifier_group(self) -> Option<&'a PropertyModifierGroup> {
@@ -8492,17 +8376,6 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::PropertyModifierGroup(_))
     }
 
-    pub fn as_method_modifier(self) -> Option<&'a MethodModifier> {
-        match &self.kind {
-            NodeKind::MethodModifier(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_method_modifier(&self) -> bool {
-        matches!(&self.kind, NodeKind::MethodModifier(_))
-    }
-
     pub fn as_method_modifier_group(self) -> Option<&'a MethodModifierGroup> {
         match &self.kind {
             NodeKind::MethodModifierGroup(node) => Some(node),
@@ -8514,17 +8387,6 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::MethodModifierGroup(_))
     }
 
-    pub fn as_class_modifier(self) -> Option<&'a ClassModifier> {
-        match &self.kind {
-            NodeKind::ClassModifier(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_class_modifier(&self) -> bool {
-        matches!(&self.kind, NodeKind::ClassModifier(_))
-    }
-
     pub fn as_class_modifier_group(self) -> Option<&'a ClassModifierGroup> {
         match &self.kind {
             NodeKind::ClassModifierGroup(node) => Some(node),
@@ -8534,17 +8396,6 @@ impl<'a> Node<'a> {
 
     pub fn is_class_modifier_group(&self) -> bool {
         matches!(&self.kind, NodeKind::ClassModifierGroup(_))
-    }
-
-    pub fn as_constant_modifier(self) -> Option<&'a ConstantModifier> {
-        match &self.kind {
-            NodeKind::ConstantModifier(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_constant_modifier(&self) -> bool {
-        matches!(&self.kind, NodeKind::ConstantModifier(_))
     }
 
     pub fn as_constant_modifier_group(self) -> Option<&'a ConstantModifierGroup> {
@@ -8745,17 +8596,6 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::SpecialName(_))
     }
 
-    pub fn as_special_name_kind(self) -> Option<&'a SpecialNameKind> {
-        match &self.kind {
-            NodeKind::SpecialNameKind(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_special_name_kind(&self) -> bool {
-        matches!(&self.kind, NodeKind::SpecialNameKind(_))
-    }
-
     pub fn as_unresolved_name(self) -> Option<&'a UnresolvedName> {
         match &self.kind {
             NodeKind::UnresolvedName(node) => Some(node),
@@ -8877,17 +8717,6 @@ impl<'a> Node<'a> {
 
     pub fn is_concrete_property_hook_body_expression(&self) -> bool {
         matches!(&self.kind, NodeKind::ConcretePropertyHookBodyExpression(_))
-    }
-
-    pub fn as_property_hook_kind(self) -> Option<&'a PropertyHookKind> {
-        match &self.kind {
-            NodeKind::PropertyHookKind(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_property_hook_kind(&self) -> bool {
-        matches!(&self.kind, NodeKind::PropertyHookKind(_))
     }
 
     pub fn as_property_entry(self) -> Option<&'a PropertyEntry> {
@@ -9682,16 +9511,10 @@ impl<'a> Node<'a> {
             NodeKind::ParenthesizedLevel(_) => "ParenthesizedLevel",
             NodeKind::BreakStatement(_) => "BreakStatement",
             NodeKind::ContinueStatement(_) => "ContinueStatement",
-            NodeKind::VisibilityModifier(_) => "VisibilityModifier",
-            NodeKind::PromotedPropertyModifier(_) => "PromotedPropertyModifier",
             NodeKind::PromotedPropertyModifierGroup(_) => "PromotedPropertyModifierGroup",
-            NodeKind::PropertyModifier(_) => "PropertyModifier",
             NodeKind::PropertyModifierGroup(_) => "PropertyModifierGroup",
-            NodeKind::MethodModifier(_) => "MethodModifier",
             NodeKind::MethodModifierGroup(_) => "MethodModifierGroup",
-            NodeKind::ClassModifier(_) => "ClassModifier",
             NodeKind::ClassModifierGroup(_) => "ClassModifierGroup",
-            NodeKind::ConstantModifier(_) => "ConstantModifier",
             NodeKind::ConstantModifierGroup(_) => "ConstantModifierGroup",
             NodeKind::UnbracedNamespace(_) => "UnbracedNamespace",
             NodeKind::BracedNamespace(_) => "BracedNamespace",
@@ -9710,7 +9533,6 @@ impl<'a> Node<'a> {
             NodeKind::Name(_) => "Name",
             NodeKind::NameKind(_) => "NameKind",
             NodeKind::SpecialName(_) => "SpecialName",
-            NodeKind::SpecialNameKind(_) => "SpecialNameKind",
             NodeKind::UnresolvedName(_) => "UnresolvedName",
             NodeKind::ResolvedName(_) => "ResolvedName",
             NodeKind::Property(_) => "Property",
@@ -9722,7 +9544,6 @@ impl<'a> Node<'a> {
             NodeKind::ConcretePropertyHookBody(_) => "ConcretePropertyHookBody",
             NodeKind::ConcretePropertyHookBodyBlock(_) => "ConcretePropertyHookBodyBlock",
             NodeKind::ConcretePropertyHookBodyExpression(_) => "ConcretePropertyHookBodyExpression",
-            NodeKind::PropertyHookKind(_) => "PropertyHookKind",
             NodeKind::PropertyEntry(_) => "PropertyEntry",
             NodeKind::PropertyEntryKind(_) => "PropertyEntryKind",
             NodeKind::UninitializedPropertyEntry(_) => "UninitializedPropertyEntry",
@@ -11730,8 +11551,6 @@ impl<'a> Node<'a> {
                 }
             }
             NodeKind::PropertyHook(node) => {
-                let x = &node.kind;
-                children.push(x.into());
                 if let Some(child) = &node.parameters {
                     children.push(child.into());
                 }
@@ -11810,17 +11629,12 @@ impl<'a> Node<'a> {
                 children.push(x.into());
                 let x = &node.alias;
                 children.push(x.into());
-                if let Some(child) = &node.visibility {
-                    children.push(child.into());
-                }
             }
             NodeKind::TraitUsageAdaptationVisibility(node) => {
                 if let Some(child) = &node.r#trait {
                     children.push(child.into());
                 }
                 let x = &node.method;
-                children.push(x.into());
-                let x = &node.visibility;
                 children.push(x.into());
             }
             NodeKind::TraitUsageAdaptationPrecedence(node) => {
@@ -12193,16 +12007,10 @@ impl<'a> Node<'a> {
             NodeKind::ParenthesizedLevel(node) => NonNull::from(node).cast(),
             NodeKind::BreakStatement(node) => NonNull::from(node).cast(),
             NodeKind::ContinueStatement(node) => NonNull::from(node).cast(),
-            NodeKind::VisibilityModifier(node) => NonNull::from(node).cast(),
-            NodeKind::PromotedPropertyModifier(node) => NonNull::from(node).cast(),
             NodeKind::PromotedPropertyModifierGroup(node) => NonNull::from(node).cast(),
-            NodeKind::PropertyModifier(node) => NonNull::from(node).cast(),
             NodeKind::PropertyModifierGroup(node) => NonNull::from(node).cast(),
-            NodeKind::MethodModifier(node) => NonNull::from(node).cast(),
             NodeKind::MethodModifierGroup(node) => NonNull::from(node).cast(),
-            NodeKind::ClassModifier(node) => NonNull::from(node).cast(),
             NodeKind::ClassModifierGroup(node) => NonNull::from(node).cast(),
-            NodeKind::ConstantModifier(node) => NonNull::from(node).cast(),
             NodeKind::ConstantModifierGroup(node) => NonNull::from(node).cast(),
             NodeKind::UnbracedNamespace(node) => NonNull::from(node).cast(),
             NodeKind::BracedNamespace(node) => NonNull::from(node).cast(),
@@ -12221,7 +12029,6 @@ impl<'a> Node<'a> {
             NodeKind::Name(node) => NonNull::from(node).cast(),
             NodeKind::NameKind(node) => NonNull::from(node).cast(),
             NodeKind::SpecialName(node) => NonNull::from(node).cast(),
-            NodeKind::SpecialNameKind(node) => NonNull::from(node).cast(),
             NodeKind::UnresolvedName(node) => NonNull::from(node).cast(),
             NodeKind::ResolvedName(node) => NonNull::from(node).cast(),
             NodeKind::Property(node) => NonNull::from(node).cast(),
@@ -12233,7 +12040,6 @@ impl<'a> Node<'a> {
             NodeKind::ConcretePropertyHookBody(node) => NonNull::from(node).cast(),
             NodeKind::ConcretePropertyHookBodyBlock(node) => NonNull::from(node).cast(),
             NodeKind::ConcretePropertyHookBodyExpression(node) => NonNull::from(node).cast(),
-            NodeKind::PropertyHookKind(node) => NonNull::from(node).cast(),
             NodeKind::PropertyEntry(node) => NonNull::from(node).cast(),
             NodeKind::PropertyEntryKind(node) => NonNull::from(node).cast(),
             NodeKind::UninitializedPropertyEntry(node) => NonNull::from(node).cast(),
@@ -13505,22 +13311,6 @@ impl<'a> From<&'a ContinueStatement> for Node<'a> {
     }
 }
 
-impl<'a> From<&'a VisibilityModifier> for Node<'a> {
-    fn from(node: &'a VisibilityModifier) -> Self {
-        Node::new(node.id(), NodeKind::VisibilityModifier(node), node.span())
-    }
-}
-
-impl<'a> From<&'a PromotedPropertyModifier> for Node<'a> {
-    fn from(node: &'a PromotedPropertyModifier) -> Self {
-        Node::new(
-            node.id(),
-            NodeKind::PromotedPropertyModifier(node),
-            node.span(),
-        )
-    }
-}
-
 impl<'a> From<&'a PromotedPropertyModifierGroup> for Node<'a> {
     fn from(node: &'a PromotedPropertyModifierGroup) -> Self {
         Node::new(
@@ -13528,12 +13318,6 @@ impl<'a> From<&'a PromotedPropertyModifierGroup> for Node<'a> {
             NodeKind::PromotedPropertyModifierGroup(node),
             node.span(),
         )
-    }
-}
-
-impl<'a> From<&'a PropertyModifier> for Node<'a> {
-    fn from(node: &'a PropertyModifier) -> Self {
-        Node::new(node.id(), NodeKind::PropertyModifier(node), node.span())
     }
 }
 
@@ -13547,33 +13331,15 @@ impl<'a> From<&'a PropertyModifierGroup> for Node<'a> {
     }
 }
 
-impl<'a> From<&'a MethodModifier> for Node<'a> {
-    fn from(node: &'a MethodModifier) -> Self {
-        Node::new(node.id(), NodeKind::MethodModifier(node), node.span())
-    }
-}
-
 impl<'a> From<&'a MethodModifierGroup> for Node<'a> {
     fn from(node: &'a MethodModifierGroup) -> Self {
         Node::new(node.id(), NodeKind::MethodModifierGroup(node), node.span())
     }
 }
 
-impl<'a> From<&'a ClassModifier> for Node<'a> {
-    fn from(node: &'a ClassModifier) -> Self {
-        Node::new(node.id(), NodeKind::ClassModifier(node), node.span())
-    }
-}
-
 impl<'a> From<&'a ClassModifierGroup> for Node<'a> {
     fn from(node: &'a ClassModifierGroup) -> Self {
         Node::new(node.id(), NodeKind::ClassModifierGroup(node), node.span())
-    }
-}
-
-impl<'a> From<&'a ConstantModifier> for Node<'a> {
-    fn from(node: &'a ConstantModifier) -> Self {
-        Node::new(node.id(), NodeKind::ConstantModifier(node), node.span())
     }
 }
 
@@ -13721,12 +13487,6 @@ impl<'a> From<&'a SpecialName> for Node<'a> {
     }
 }
 
-impl<'a> From<&'a SpecialNameKind> for Node<'a> {
-    fn from(node: &'a SpecialNameKind) -> Self {
-        Node::new(node.id(), NodeKind::SpecialNameKind(node), node.span())
-    }
-}
-
 impl<'a> From<&'a UnresolvedName> for Node<'a> {
     fn from(node: &'a UnresolvedName) -> Self {
         Node::new(node.id(), NodeKind::UnresolvedName(node), node.span())
@@ -13802,12 +13562,6 @@ impl<'a> From<&'a ConcretePropertyHookBodyExpression> for Node<'a> {
             NodeKind::ConcretePropertyHookBodyExpression(node),
             node.span(),
         )
-    }
-}
-
-impl<'a> From<&'a PropertyHookKind> for Node<'a> {
-    fn from(node: &'a PropertyHookKind) -> Self {
-        Node::new(node.id(), NodeKind::PropertyHookKind(node), node.span())
     }
 }
 
