@@ -22,4 +22,7 @@ edition = "2021"
 debug = true
 
 [dependencies]
+anyhow = "1.0.95"
 clap = { version = "4.5.23", features = ["derive", "wrap_help"] }
+pxp-lexer = { version = "0.1.0", path = "crates/lexer" }
+pxp-token = { version = "0.1.0", path = "crates/token" }
