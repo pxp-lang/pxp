@@ -11557,11 +11557,8 @@ impl<'a> Node<'a> {
                 let x = &node.body;
                 children.push(x.into());
             }
-            NodeKind::PropertyHookBody(node) => match node {
-                PropertyHookBody::Concrete(inner) => {
-                    children.push(inner.into());
-                }
-                _ => {}
+            NodeKind::PropertyHookBody(node) => if let PropertyHookBody::Concrete(inner) = node {
+                children.push(inner.into());
             },
             NodeKind::ConcretePropertyHookBody(node) => match node {
                 ConcretePropertyHookBody::Block(inner) => {

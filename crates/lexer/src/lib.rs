@@ -448,7 +448,7 @@ impl<'a> Lexer<'a> {
                 let kind = if qualified {
                     TokenKind::QualifiedIdentifier
                 } else {
-                    identifier_to_keyword(&symbol).unwrap_or(TokenKind::Identifier)
+                    identifier_to_keyword(symbol).unwrap_or(TokenKind::Identifier)
                 };
 
                 Token::new(kind, span, symbol)
