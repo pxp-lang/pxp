@@ -1400,10 +1400,8 @@ impl<'a> Lexer<'a> {
                 let mut qualified = false;
                 let mut last_was_slash = false;
 
-                let mut buffer = vec![*b];
                 while let Some(next @ ident!() | next @ b'\\') = self.source.current() {
                     if matches!(next, ident!()) {
-                        buffer.push(*next);
                         self.source.next();
                         last_was_slash = false;
                         continue;
@@ -1412,7 +1410,6 @@ impl<'a> Lexer<'a> {
                     if *next == b'\\' && !last_was_slash {
                         qualified = true;
                         last_was_slash = true;
-                        buffer.push(*next);
                         self.source.next();
                         continue;
                     }
@@ -1423,7 +1420,14 @@ impl<'a> Lexer<'a> {
                 if qualified {
                     TokenKind::QualifiedIdentifier
                 } else {
-                    let kind = identifier_to_keyword(&buffer).unwrap_or(TokenKind::Identifier);
+                    match self.source.span_range(self.source.span()).as_ref() {
+                        b"private" | b"protected" | b"public" if &self.source.read(5) == b"(set)" => {
+                            self.source.skip(5);
+                        }
+                        _ => {}
+                    };
+
+                    let kind = identifier_to_keyword(self.source.span_range(self.source.span())).unwrap_or(TokenKind::Identifier);
 
                     if kind == TokenKind::HaltCompiler {
                         match self.source.read(3) {
@@ -2056,7 +2060,7 @@ impl<'a> Lexer<'a> {
     }
 }
 
-const KEYWORDS: [(&[u8], TokenKind); 85] = [
+const KEYWORDS: [(&[u8], TokenKind); 88] = [
     (b"eval", TokenKind::Eval),
     (b"die", TokenKind::Die),
     (b"empty", TokenKind::Empty),
@@ -2145,6 +2149,9 @@ const KEYWORDS: [(&[u8], TokenKind); 85] = [
     (b"list", TokenKind::List),
     (b"self", TokenKind::Self_),
     (b"parent", TokenKind::Parent),
+    (b"private(set)", TokenKind::PrivateSet),
+    (b"protected(set)", TokenKind::ProtectedSet),
+    (b"public(set)", TokenKind::PublicSet),
 ];
 
 #[inline(always)]
@@ -2176,7 +2183,7 @@ mod tests {
     fn it_can_tokenize_keywords() {
         use TokenKind::*;
 
-        let tokens = Lexer::new("<?php die self parent from print readonly global abstract as break case catch class clone const continue declare default do echo else elseif empty enddeclare endfor endforeach endif endswitch endwhile enum extends false final finally fn for foreach function goto if implements include include_once instanceof insteadof eval exit unset isset list interface match namespace new null private protected public require require_once return static switch throw trait true try use var yield while and or xor").collect().iter().map(|t| t.kind).collect::<Vec<_>>();
+        let tokens = Lexer::new("<?php die self parent from print readonly global abstract as break case catch class clone const continue declare default do echo else elseif empty enddeclare endfor endforeach endif endswitch endwhile enum extends false final finally fn for foreach function goto if implements include include_once instanceof insteadof eval exit unset isset list interface match namespace new null private protected public private(set) protected(set) public(set) require require_once return static switch throw trait true try use var yield while and or xor").collect().iter().map(|t| t.kind).collect::<Vec<_>>();
 
         assert_eq!(
             &tokens,
@@ -2240,6 +2247,9 @@ mod tests {
                 Private,
                 Protected,
                 Public,
+                PrivateSet,
+                ProtectedSet,
+                PublicSet,
                 Require,
                 RequireOnce,
                 Return,
