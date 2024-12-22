@@ -84,6 +84,27 @@ impl<'a> Parser<'a> {
         self.skip(TokenKind::Colon)
     }
 
+    pub fn expect(&mut self, kind: TokenKind) -> Span {
+        if self.current_kind() != kind {
+            self.diagnostic(
+                ParserDiagnostic::ExpectedToken {
+                    expected: vec![kind],
+                    found: self.current().to_owned(),
+                },
+                Severity::Error,
+                self.current_span(),
+            );
+
+            return Span::missing();
+        }
+
+        let span = self.current_span();
+
+        self.next();
+
+        span
+    }
+
     pub fn skip(&mut self, kind: TokenKind) -> Span {
         while self.current_kind() != kind {
             if self.is_eof() {

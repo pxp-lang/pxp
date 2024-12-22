@@ -394,6 +394,32 @@ pub trait Visitor {
         walk_classish_member(self, node);
     }
 
+    fn visit_method(&mut self, node: &Method) {
+        walk_method(self, node);
+    }
+
+    fn visit_method_body(&mut self, node: &MethodBody) {
+        walk_method_body(self, node);
+    }
+
+    fn visit_method_body_kind(&mut self, node: &MethodBodyKind) {
+        walk_method_body_kind(self, node);
+    }
+
+    fn visit_abstract_method_body(&mut self, node: &AbstractMethodBody) {}
+
+    fn visit_concrete_method_body(&mut self, node: &ConcreteMethodBody) {
+        walk_concrete_method_body(self, node);
+    }
+
+    fn visit_method_parameter_list(&mut self, node: &MethodParameterList) {
+        walk_method_parameter_list(self, node);
+    }
+
+    fn visit_method_parameter(&mut self, node: &MethodParameter) {
+        walk_method_parameter(self, node);
+    }
+
     fn visit_missing_classish_member(&mut self, node: &MissingClassishMember) {}
 
     fn visit_constant_entry(&mut self, node: &ConstantEntry) {
@@ -548,34 +574,6 @@ pub trait Visitor {
 
     fn visit_arrow_function_expression(&mut self, node: &ArrowFunctionExpression) {
         walk_arrow_function_expression(self, node);
-    }
-
-    fn visit_constructor_parameter(&mut self, node: &ConstructorParameter) {
-        walk_constructor_parameter(self, node);
-    }
-
-    fn visit_constructor_parameter_list(&mut self, node: &ConstructorParameterList) {
-        walk_constructor_parameter_list(self, node);
-    }
-
-    fn visit_abstract_constructor(&mut self, node: &AbstractConstructor) {
-        walk_abstract_constructor(self, node);
-    }
-
-    fn visit_concrete_constructor(&mut self, node: &ConcreteConstructor) {
-        walk_concrete_constructor(self, node);
-    }
-
-    fn visit_abstract_method(&mut self, node: &AbstractMethod) {
-        walk_abstract_method(self, node);
-    }
-
-    fn visit_concrete_method(&mut self, node: &ConcreteMethod) {
-        walk_concrete_method(self, node);
-    }
-
-    fn visit_method_body(&mut self, node: &MethodBody) {
-        walk_method_body(self, node);
     }
 
     fn visit_label_statement(&mut self, node: &LabelStatement) {
