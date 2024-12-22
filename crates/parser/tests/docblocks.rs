@@ -1,5 +1,3 @@
-#![cfg(feature = "docblocks")]
-
 use snappers::snap;
 
 mod parser;

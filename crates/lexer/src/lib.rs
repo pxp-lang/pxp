@@ -1395,7 +1395,7 @@ impl<'a> Lexer<'a> {
                 self.source.next();
                 TokenKind::BitwiseNot
             }
-            [b @ ident_start!(), ..] => {
+            [ident_start!(), ..] => {
                 self.source.next();
                 let mut qualified = false;
                 let mut last_was_slash = false;
