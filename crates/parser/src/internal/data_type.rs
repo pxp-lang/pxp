@@ -256,6 +256,8 @@ impl<'a> Parser<'a> {
             self.skip_doc_eol();
 
             if self.current_kind() == TokenKind::Ellipsis {
+                self.next();
+
                 sealed = false;
 
                 self.skip_doc_eol();
@@ -293,11 +295,38 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_docblock_array_shape_unsealed_type(&mut self) -> ShapeUnsealedType<Name> {
-        todo!()
+        self.expect(TokenKind::LessThan);
+        self.skip_doc_eol();
+
+        let mut value_type = self.parse_docblock_type();
+        self.skip_doc_eol();
+
+        let mut key_type = None;
+        if self.current_kind() == TokenKind::Comma {
+            self.next();
+            self.skip_doc_eol();
+
+            key_type = Some(value_type);
+            value_type = self.parse_docblock_type();
+
+            self.skip_doc_eol();
+        }
+
+        self.expect(TokenKind::GreaterThan);
+
+        ShapeUnsealedType { key_type, value_type }
     }
 
     fn parse_docblock_list_shape_unsealed_type(&mut self) -> ShapeUnsealedType<Name> {
-        todo!()
+        self.expect(TokenKind::LessThan);
+        self.skip_doc_eol();
+
+        let value_type = self.parse_docblock_type();
+
+        self.skip_doc_eol();
+        self.expect(TokenKind::GreaterThan);
+
+        ShapeUnsealedType { key_type: None, value_type }
     }
 
     fn parse_docblock_array_shape_item(&mut self) -> ShapeItem<Name> {

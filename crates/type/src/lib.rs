@@ -73,7 +73,7 @@ pub enum ShapeItemKey {
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ShapeUnsealedType<N: Debug + Display> {
     pub key_type: Option<Type<N>>,
-    pub value_type: Option<Type<N>>,
+    pub value_type: Type<N>,
 }
 
 impl Display for ShapeItemKey {
