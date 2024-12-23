@@ -20,10 +20,10 @@
         },
     },
     Statement {
-        id: 23,
+        id: 22,
         kind: Class(
             ClassStatement {
-                id: 22,
+                id: 21,
                 span: Span {
                     start: 7,
                     end: 58,
@@ -62,7 +62,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
-                    id: 21,
+                    id: 20,
                     span: Span {
                         start: 15,
                         end: 58,
@@ -72,12 +72,12 @@
                         end: 16,
                     },
                     members: [
-                        ConcreteMethod(
-                            ConcreteMethod {
-                                id: 20,
+                        Method(
+                            Method {
+                                id: 19,
                                 span: Span {
-                                    start: 21,
-                                    end: 56,
+                                    start: 0,
+                                    end: 0,
                                 },
                                 comments: CommentGroup {
                                     id: 8,
@@ -105,15 +105,11 @@
                                         end: 31,
                                     },
                                 },
-                                parameters: FunctionParameterList {
-                                    id: 17,
+                                parameters: MethodParameterList {
+                                    id: 16,
                                     span: Span {
                                         start: 31,
                                         end: 39,
-                                    },
-                                    comments: CommentGroup {
-                                        id: 10,
-                                        comments: [],
                                     },
                                     left_parenthesis: Span {
                                         start: 31,
@@ -121,16 +117,13 @@
                                     },
                                     parameters: CommaSeparated {
                                         inner: [
-                                            FunctionParameter {
+                                            MethodParameter {
                                                 id: 12,
                                                 span: Span {
                                                     start: 32,
                                                     end: 34,
                                                 },
-                                                comments: CommentGroup {
-                                                    id: 13,
-                                                    comments: [],
-                                                },
+                                                modifiers: None,
                                                 name: SimpleVariable {
                                                     id: 11,
                                                     symbol: "$a",
@@ -146,16 +139,13 @@
                                                 default: None,
                                                 ampersand: None,
                                             },
-                                            FunctionParameter {
+                                            MethodParameter {
                                                 id: 15,
                                                 span: Span {
                                                     start: 36,
                                                     end: 38,
                                                 },
-                                                comments: CommentGroup {
-                                                    id: 16,
-                                                    comments: [],
-                                                },
+                                                modifiers: None,
                                                 name: SimpleVariable {
                                                     id: 14,
                                                     symbol: "$b",
@@ -186,24 +176,29 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
-                                    id: 19,
+                                    id: 18,
                                     span: Span {
-                                        start: 40,
-                                        end: 56,
+                                        start: 0,
+                                        end: 0,
                                     },
-                                    comments: CommentGroup {
-                                        id: 18,
-                                        comments: [],
-                                    },
-                                    left_brace: Span {
-                                        start: 40,
-                                        end: 41,
-                                    },
-                                    statements: [],
-                                    right_brace: Span {
-                                        start: 55,
-                                        end: 56,
-                                    },
+                                    kind: Concrete(
+                                        ConcreteMethodBody {
+                                            id: 17,
+                                            span: Span {
+                                                start: 40,
+                                                end: 56,
+                                            },
+                                            left_brace: Span {
+                                                start: 40,
+                                                end: 41,
+                                            },
+                                            statements: [],
+                                            right_brace: Span {
+                                                start: 55,
+                                                end: 56,
+                                            },
+                                        },
+                                    ),
                                 },
                             },
                         ),

@@ -20,10 +20,10 @@
         },
     },
     Statement {
-        id: 20,
+        id: 22,
         kind: Interface(
             InterfaceStatement {
-                id: 19,
+                id: 21,
                 span: Span {
                     start: 7,
                     end: 67,
@@ -53,7 +53,7 @@
                 },
                 extends: None,
                 body: InterfaceBody {
-                    id: 18,
+                    id: 20,
                     span: Span {
                         start: 21,
                         end: 67,
@@ -63,12 +63,12 @@
                         end: 22,
                     },
                     members: [
-                        AbstractMethod(
-                            AbstractMethod {
-                                id: 11,
+                        Method(
+                            Method {
+                                id: 12,
                                 span: Span {
-                                    start: 27,
-                                    end: 40,
+                                    start: 0,
+                                    end: 0,
                                 },
                                 comments: CommentGroup {
                                     id: 7,
@@ -96,15 +96,11 @@
                                         end: 37,
                                     },
                                 },
-                                parameters: FunctionParameterList {
-                                    id: 10,
+                                parameters: MethodParameterList {
+                                    id: 9,
                                     span: Span {
                                         start: 37,
                                         end: 39,
-                                    },
-                                    comments: CommentGroup {
-                                        id: 9,
-                                        comments: [],
                                     },
                                     left_parenthesis: Span {
                                         start: 37,
@@ -120,26 +116,42 @@
                                     },
                                 },
                                 return_type: None,
-                                semicolon: Span {
-                                    start: 39,
-                                    end: 40,
+                                body: MethodBody {
+                                    id: 11,
+                                    span: Span {
+                                        start: 0,
+                                        end: 0,
+                                    },
+                                    kind: Abstract(
+                                        AbstractMethodBody {
+                                            id: 10,
+                                            span: Span {
+                                                start: 39,
+                                                end: 40,
+                                            },
+                                            semicolon: Span {
+                                                start: 39,
+                                                end: 40,
+                                            },
+                                        },
+                                    ),
                                 },
                             },
                         ),
-                        AbstractMethod(
-                            AbstractMethod {
-                                id: 17,
+                        Method(
+                            Method {
+                                id: 19,
                                 span: Span {
-                                    start: 52,
-                                    end: 65,
+                                    start: 45,
+                                    end: 0,
                                 },
                                 comments: CommentGroup {
-                                    id: 13,
+                                    id: 14,
                                     comments: [],
                                 },
                                 attributes: [],
                                 modifiers: MethodModifierGroup {
-                                    id: 12,
+                                    id: 13,
                                     span: Span {
                                         start: 45,
                                         end: 51,
@@ -159,22 +171,18 @@
                                 },
                                 ampersand: None,
                                 name: SimpleIdentifier {
-                                    id: 14,
+                                    id: 15,
                                     symbol: "b",
                                     span: Span {
                                         start: 61,
                                         end: 62,
                                     },
                                 },
-                                parameters: FunctionParameterList {
+                                parameters: MethodParameterList {
                                     id: 16,
                                     span: Span {
                                         start: 62,
                                         end: 64,
-                                    },
-                                    comments: CommentGroup {
-                                        id: 15,
-                                        comments: [],
                                     },
                                     left_parenthesis: Span {
                                         start: 62,
@@ -190,9 +198,25 @@
                                     },
                                 },
                                 return_type: None,
-                                semicolon: Span {
-                                    start: 64,
-                                    end: 65,
+                                body: MethodBody {
+                                    id: 18,
+                                    span: Span {
+                                        start: 0,
+                                        end: 0,
+                                    },
+                                    kind: Abstract(
+                                        AbstractMethodBody {
+                                            id: 17,
+                                            span: Span {
+                                                start: 64,
+                                                end: 65,
+                                            },
+                                            semicolon: Span {
+                                                start: 64,
+                                                end: 65,
+                                            },
+                                        },
+                                    ),
                                 },
                             },
                         ),

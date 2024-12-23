@@ -20,10 +20,10 @@
         },
     },
     Statement {
-        id: 26,
+        id: 25,
         kind: Class(
             ClassStatement {
-                id: 25,
+                id: 24,
                 span: Span {
                     start: 7,
                     end: 63,
@@ -62,7 +62,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
-                    id: 24,
+                    id: 23,
                     span: Span {
                         start: 15,
                         end: 63,
@@ -72,12 +72,12 @@
                         end: 16,
                     },
                     members: [
-                        ConcreteMethod(
-                            ConcreteMethod {
-                                id: 23,
+                        Method(
+                            Method {
+                                id: 22,
                                 span: Span {
-                                    start: 21,
-                                    end: 61,
+                                    start: 0,
+                                    end: 0,
                                 },
                                 comments: CommentGroup {
                                     id: 8,
@@ -105,15 +105,11 @@
                                         end: 31,
                                     },
                                 },
-                                parameters: FunctionParameterList {
-                                    id: 11,
+                                parameters: MethodParameterList {
+                                    id: 10,
                                     span: Span {
                                         start: 31,
                                         end: 33,
-                                    },
-                                    comments: CommentGroup {
-                                        id: 10,
-                                        comments: [],
                                     },
                                     left_parenthesis: Span {
                                         start: 31,
@@ -130,133 +126,138 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
-                                    id: 22,
+                                    id: 21,
                                     span: Span {
-                                        start: 34,
-                                        end: 61,
+                                        start: 0,
+                                        end: 0,
                                     },
-                                    comments: CommentGroup {
-                                        id: 12,
-                                        comments: [],
-                                    },
-                                    left_brace: Span {
-                                        start: 34,
-                                        end: 35,
-                                    },
-                                    statements: [
-                                        Statement {
-                                            id: 21,
-                                            kind: Expression(
-                                                ExpressionStatement {
-                                                    id: 20,
-                                                    span: Span {
-                                                        start: 44,
-                                                        end: 55,
-                                                    },
-                                                    expression: Expression {
-                                                        id: 18,
-                                                        kind: New(
-                                                            NewExpression {
-                                                                id: 19,
-                                                                span: Span {
-                                                                    start: 44,
-                                                                    end: 54,
-                                                                },
-                                                                new: Span {
-                                                                    start: 44,
-                                                                    end: 47,
-                                                                },
-                                                                target: Expression {
-                                                                    id: 14,
-                                                                    kind: Name(
-                                                                        Name {
-                                                                            id: 15,
-                                                                            kind: Special(
-                                                                                SpecialName {
-                                                                                    id: 15,
+                                    kind: Concrete(
+                                        ConcreteMethodBody {
+                                            id: 20,
+                                            span: Span {
+                                                start: 34,
+                                                end: 61,
+                                            },
+                                            left_brace: Span {
+                                                start: 34,
+                                                end: 35,
+                                            },
+                                            statements: [
+                                                Statement {
+                                                    id: 19,
+                                                    kind: Expression(
+                                                        ExpressionStatement {
+                                                            id: 18,
+                                                            span: Span {
+                                                                start: 44,
+                                                                end: 55,
+                                                            },
+                                                            expression: Expression {
+                                                                id: 16,
+                                                                kind: New(
+                                                                    NewExpression {
+                                                                        id: 17,
+                                                                        span: Span {
+                                                                            start: 44,
+                                                                            end: 54,
+                                                                        },
+                                                                        new: Span {
+                                                                            start: 44,
+                                                                            end: 47,
+                                                                        },
+                                                                        target: Expression {
+                                                                            id: 12,
+                                                                            kind: Name(
+                                                                                Name {
+                                                                                    id: 13,
+                                                                                    kind: Special(
+                                                                                        SpecialName {
+                                                                                            id: 13,
+                                                                                            span: Span {
+                                                                                                start: 48,
+                                                                                                end: 52,
+                                                                                            },
+                                                                                            kind: Self_(
+                                                                                                Span {
+                                                                                                    start: 48,
+                                                                                                    end: 52,
+                                                                                                },
+                                                                                            ),
+                                                                                            symbol: "self",
+                                                                                        },
+                                                                                    ),
                                                                                     span: Span {
                                                                                         start: 48,
                                                                                         end: 52,
                                                                                     },
-                                                                                    kind: Self_(
-                                                                                        Span {
-                                                                                            start: 48,
-                                                                                            end: 52,
-                                                                                        },
-                                                                                    ),
-                                                                                    symbol: "self",
                                                                                 },
                                                                             ),
                                                                             span: Span {
                                                                                 start: 48,
                                                                                 end: 52,
                                                                             },
+                                                                            comments: CommentGroup {
+                                                                                id: 0,
+                                                                                comments: [],
+                                                                            },
                                                                         },
-                                                                    ),
-                                                                    span: Span {
-                                                                        start: 48,
-                                                                        end: 52,
-                                                                    },
-                                                                    comments: CommentGroup {
-                                                                        id: 0,
-                                                                        comments: [],
-                                                                    },
-                                                                },
-                                                                arguments: Some(
-                                                                    ArgumentList {
-                                                                        id: 17,
-                                                                        span: Span {
-                                                                            start: 52,
-                                                                            end: 54,
-                                                                        },
-                                                                        comments: CommentGroup {
-                                                                            id: 16,
-                                                                            comments: [],
-                                                                        },
-                                                                        left_parenthesis: Span {
-                                                                            start: 52,
-                                                                            end: 53,
-                                                                        },
-                                                                        arguments: [],
-                                                                        right_parenthesis: Span {
-                                                                            start: 53,
-                                                                            end: 54,
-                                                                        },
+                                                                        arguments: Some(
+                                                                            ArgumentList {
+                                                                                id: 15,
+                                                                                span: Span {
+                                                                                    start: 52,
+                                                                                    end: 54,
+                                                                                },
+                                                                                comments: CommentGroup {
+                                                                                    id: 14,
+                                                                                    comments: [],
+                                                                                },
+                                                                                left_parenthesis: Span {
+                                                                                    start: 52,
+                                                                                    end: 53,
+                                                                                },
+                                                                                arguments: [],
+                                                                                right_parenthesis: Span {
+                                                                                    start: 53,
+                                                                                    end: 54,
+                                                                                },
+                                                                            },
+                                                                        ),
                                                                     },
                                                                 ),
+                                                                span: Span {
+                                                                    start: 44,
+                                                                    end: 54,
+                                                                },
+                                                                comments: CommentGroup {
+                                                                    id: 0,
+                                                                    comments: [],
+                                                                },
                                                             },
-                                                        ),
-                                                        span: Span {
-                                                            start: 44,
-                                                            end: 54,
-                                                        },
-                                                        comments: CommentGroup {
-                                                            id: 0,
-                                                            comments: [],
-                                                        },
-                                                    },
-                                                    ending: Semicolon(
-                                                        Span {
-                                                            start: 54,
-                                                            end: 55,
+                                                            ending: Semicolon(
+                                                                Span {
+                                                                    start: 54,
+                                                                    end: 55,
+                                                                },
+                                                            ),
                                                         },
                                                     ),
+                                                    span: Span {
+                                                        start: 44,
+                                                        end: 55,
+                                                    },
+                                                    comments: CommentGroup {
+                                                        id: 11,
+                                                        comments: [],
+                                                    },
                                                 },
-                                            ),
-                                            span: Span {
-                                                start: 44,
-                                                end: 55,
-                                            },
-                                            comments: CommentGroup {
-                                                id: 13,
-                                                comments: [],
+                                            ],
+                                            right_brace: Span {
+                                                start: 60,
+                                                end: 61,
                                             },
                                         },
-                                    ],
-                                    right_brace: Span {
-                                        start: 60,
-                                        end: 61,
-                                    },
+                                    ),
                                 },
                             },
                         ),
