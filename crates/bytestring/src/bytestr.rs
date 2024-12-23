@@ -29,6 +29,16 @@ impl ByteStr {
         ByteStr::new(&self.0[start..end])
     }
 
+    pub fn after_first(&self, needle: u8) -> &ByteStr {
+        let start = self
+            .0
+            .iter()
+            .position(|&b| b == needle)
+            .map_or(self.0.len(), |i| i + 1);
+
+        ByteStr::new(&self.0[start..])
+    }
+
     pub fn before_first(&self, needle: u8) -> &ByteStr {
         let end = self
             .0

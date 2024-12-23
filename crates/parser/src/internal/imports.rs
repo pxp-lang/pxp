@@ -41,18 +41,16 @@ impl<'a> Parser<'a> {
         kind: UseKind,
     ) -> Name {
         let part = match &token.kind {
-            TokenKind::Identifier | TokenKind::Enum | TokenKind::From => {
-                token.symbol.to_bytestring()
-            }
-            TokenKind::QualifiedIdentifier => token.symbol.before_first(b'\\').to_bytestring(),
-            _ if self.is_soft_reserved_identifier(token.kind) => token.symbol.to_bytestring(),
+            TokenKind::Identifier | TokenKind::Enum | TokenKind::From => token.symbol,
+            TokenKind::QualifiedIdentifier => token.symbol.before_first(b'\\'),
+            _ if self.is_soft_reserved_identifier(token.kind) => token.symbol,
             _ => unreachable!("{:?}", token.kind),
         };
 
         let map = self.imports.get(&kind).unwrap();
 
         // We found an import that matches the first part of the identifier, so we can resolve it.
-        if let Some(imported) = map.get(&part) {
+        if let Some(imported) = map.get(&part.to_bytestring()) {
             match &token.kind {
                 TokenKind::Identifier | TokenKind::From | TokenKind::Enum => Name::resolved(
                     id,
@@ -63,12 +61,10 @@ impl<'a> Parser<'a> {
                 TokenKind::QualifiedIdentifier => {
                     // Qualified identifiers might be aliased, so we need to take the full un-aliased import and
                     // concatenate that with everything after the first part of the qualified identifier.
-                    let bytestring = token.symbol.to_bytestring();
-                    let parts = bytestring.splitn(2, |c| *c == b'\\').collect::<Vec<_>>();
-                    let rest = parts[1].to_vec().into();
-                    let coagulated = imported.coagulate(&[rest], Some(b"\\"));
+                    let rest = token.symbol.after_first(b'\\');
+                    let coagulated = imported.as_bytestr().coagulate(&[rest], b'\\');
 
-                    Name::resolved(id, coagulated, bytestring, token.span)
+                    Name::resolved(id, coagulated, token.symbol.to_bytestring(), token.span)
                 }
                 _ => unreachable!(),
             }
