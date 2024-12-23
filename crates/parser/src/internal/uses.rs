@@ -73,8 +73,6 @@ impl<'a> Parser<'a> {
                     alias = Some(self.parse_type_identifier());
                 }
 
-                let symbol = name.symbol.clone();
-                let alias_symbol = alias.as_ref().map(|a| a.symbol.clone());
                 let import_kind = use_kind.unwrap_or(kind);
                 let span = if alias.is_some() {
                     Span::combine(start_span, alias.span())
@@ -82,22 +80,20 @@ impl<'a> Parser<'a> {
                     start_span
                 };
 
+                self.add_prefixed_import(&import_kind, prefix_symbol.as_bytestr(), name.symbol.as_bytestr(), alias.as_ref().map(|a| a.symbol.as_bytestr()));
+
                 uses.push(Use {
                     id: self.id(),
                     span,
                     name: Name::resolved(
                         self.id(),
-                        prefix_symbol
-                            .clone()
-                            .coagulate(&[name.symbol.clone()], Some(b"\\")),
+                        prefix_symbol.coagulate(&[name.symbol.clone()], Some(b"\\")),
                         name.symbol,
                         name.span,
                     ),
                     kind: use_kind.unwrap_or(kind),
                     alias,
                 });
-
-                self.add_prefixed_import(&import_kind, prefix_symbol.clone(), symbol, alias_symbol);
 
                 if self.current_kind() == TokenKind::Comma {
                     self.next();
@@ -117,21 +113,24 @@ impl<'a> Parser<'a> {
             }))
         } else {
             let mut uses = Vec::new();
+
             while !self.is_eof() {
                 let start_span = self.current_span();
                 let name = self.parse_use_name();
-                let mut alias = None;
-                if self.current_kind() == TokenKind::As {
+                let alias = if self.current_kind() == TokenKind::As {
                     self.next();
-                    alias = Some(self.parse_type_identifier());
-                }
+                    Some(self.parse_type_identifier())
+                } else {
+                    None
+                };
 
-                let alias_symbol = alias.as_ref().map(|a| a.symbol.clone());
                 let span = if alias.is_some() {
                     Span::combine(start_span, alias.span())
                 } else {
                     start_span
                 };
+
+                self.add_import(&kind, name.symbol().as_bytestr(), alias.as_ref().map(|a| a.symbol.as_bytestr()));
 
                 uses.push(Use {
                     id: self.id(),
@@ -140,8 +139,6 @@ impl<'a> Parser<'a> {
                     kind,
                     alias,
                 });
-
-                self.add_import(&kind, name.symbol().clone(), alias_symbol);
 
                 if self.current_kind() == TokenKind::Comma {
                     self.next();

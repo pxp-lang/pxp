@@ -1,5 +1,5 @@
 use pxp_ast::{Name, NodeId, UseKind};
-use pxp_bytestring::ByteString;
+use pxp_bytestring::ByteStr;
 use pxp_token::{Token, TokenKind};
 
 use crate::Parser;
@@ -8,36 +8,30 @@ impl<'a> Parser<'a> {
     pub(crate) fn add_import(
         &mut self,
         kind: &UseKind,
-        name: ByteString,
-        alias: Option<ByteString>,
+        name: &ByteStr,
+        alias: Option<&ByteStr>,
     ) {
         // We first need to check if the alias has been provided, and if not, create a new
         // symbol using the last part of the name.
         let alias = match alias {
             Some(alias) => alias,
-            None => {
-                let bytestring = name.clone();
-                let parts = bytestring.split(|c| *c == b'\\').collect::<Vec<_>>();
-                let last = parts.last().unwrap();
-
-                ByteString::new(last.to_vec())
-            }
+            None => name.after_last(b'\\'),
         };
 
         // Then we can insert the import into the hashmap.
-        self.imports.get_mut(kind).unwrap().insert(alias, name);
+        self.imports.get_mut(kind).unwrap().insert(alias.to_bytestring(), name.to_bytestring());
     }
 
     pub(crate) fn add_prefixed_import(
         &mut self,
         kind: &UseKind,
-        prefix: ByteString,
-        name: ByteString,
-        alias: Option<ByteString>,
+        prefix: &ByteStr,
+        name: &ByteStr,
+        alias: Option<&ByteStr>,
     ) {
-        let coagulated = prefix.coagulate(&[name], Some(b"\\"));
+        let coagulated = prefix.coagulate(&[name], b'\\');
 
-        self.add_import(kind, coagulated, alias);
+        self.add_import(kind, coagulated.as_bytestr(), alias);
     }
 
     pub(crate) fn maybe_resolve_identifier(
@@ -47,18 +41,16 @@ impl<'a> Parser<'a> {
         kind: UseKind,
     ) -> Name {
         let part = match &token.kind {
-            TokenKind::Identifier | TokenKind::Enum | TokenKind::From => {
-                token.symbol.to_bytestring()
-            }
-            TokenKind::QualifiedIdentifier => token.symbol.before_first(b'\\').to_bytestring(),
-            _ if self.is_soft_reserved_identifier(token.kind) => token.symbol.to_bytestring(),
+            TokenKind::Identifier | TokenKind::Enum | TokenKind::From => token.symbol,
+            TokenKind::QualifiedIdentifier => token.symbol.before_first(b'\\'),
+            _ if self.is_soft_reserved_identifier(token.kind) => token.symbol,
             _ => unreachable!("{:?}", token.kind),
         };
 
         let map = self.imports.get(&kind).unwrap();
 
         // We found an import that matches the first part of the identifier, so we can resolve it.
-        if let Some(imported) = map.get(&part) {
+        if let Some(imported) = map.get(&part.to_bytestring()) {
             match &token.kind {
                 TokenKind::Identifier | TokenKind::From | TokenKind::Enum => Name::resolved(
                     id,
@@ -69,12 +61,10 @@ impl<'a> Parser<'a> {
                 TokenKind::QualifiedIdentifier => {
                     // Qualified identifiers might be aliased, so we need to take the full un-aliased import and
                     // concatenate that with everything after the first part of the qualified identifier.
-                    let bytestring = token.symbol.to_bytestring();
-                    let parts = bytestring.splitn(2, |c| *c == b'\\').collect::<Vec<_>>();
-                    let rest = parts[1].to_vec().into();
-                    let coagulated = imported.coagulate(&[rest], Some(b"\\"));
+                    let rest = token.symbol.after_first(b'\\');
+                    let coagulated = imported.as_bytestr().coagulate(&[rest], b'\\');
 
-                    Name::resolved(id, coagulated, bytestring, token.span)
+                    Name::resolved(id, coagulated, token.symbol.to_bytestring(), token.span)
                 }
                 _ => unreachable!(),
             }

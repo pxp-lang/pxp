@@ -183,7 +183,7 @@ impl<'a> Parser<'a> {
         DocBlockTag::Generic(DocBlockGenericTag {
             id: self.id(),
             span,
-            tag: tag.clone(),
+            tag,
             text,
         })
     }
