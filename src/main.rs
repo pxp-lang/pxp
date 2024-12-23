@@ -2,6 +2,7 @@ use clap::Parser;
 
 mod cmd;
 mod utils;
+mod config;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
