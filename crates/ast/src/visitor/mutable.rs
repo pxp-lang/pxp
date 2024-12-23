@@ -412,6 +412,8 @@ pub trait VisitorMut {
         walk_method_body_kind_mut(self, node);
     }
 
+    fn visit_missing_method_body(&mut self, node: &mut MissingMethodBody) {}
+
     fn visit_abstract_method_body(&mut self, node: &mut AbstractMethodBody) {}
 
     fn visit_concrete_method_body(&mut self, node: &mut ConcreteMethodBody) {

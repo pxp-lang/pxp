@@ -77,7 +77,7 @@
                                 id: 13,
                                 span: Span {
                                     start: 0,
-                                    end: 0,
+                                    end: 38,
                                 },
                                 comments: CommentGroup {
                                     id: 8,
@@ -128,8 +128,8 @@
                                 body: MethodBody {
                                     id: 12,
                                     span: Span {
-                                        start: 0,
-                                        end: 0,
+                                        start: 36,
+                                        end: 38,
                                     },
                                     kind: Concrete(
                                         ConcreteMethodBody {
@@ -157,7 +157,7 @@
                                 id: 20,
                                 span: Span {
                                     start: 43,
-                                    end: 0,
+                                    end: 65,
                                 },
                                 comments: CommentGroup {
                                     id: 15,
@@ -215,8 +215,8 @@
                                 body: MethodBody {
                                     id: 19,
                                     span: Span {
-                                        start: 0,
-                                        end: 0,
+                                        start: 63,
+                                        end: 65,
                                     },
                                     kind: Concrete(
                                         ConcreteMethodBody {
@@ -244,7 +244,7 @@
                                 id: 27,
                                 span: Span {
                                     start: 70,
-                                    end: 0,
+                                    end: 95,
                                 },
                                 comments: CommentGroup {
                                     id: 22,
@@ -302,8 +302,8 @@
                                 body: MethodBody {
                                     id: 26,
                                     span: Span {
-                                        start: 0,
-                                        end: 0,
+                                        start: 93,
+                                        end: 95,
                                     },
                                     kind: Concrete(
                                         ConcreteMethodBody {
@@ -331,7 +331,7 @@
                                 id: 34,
                                 span: Span {
                                     start: 100,
-                                    end: 0,
+                                    end: 123,
                                 },
                                 comments: CommentGroup {
                                     id: 29,
@@ -389,8 +389,8 @@
                                 body: MethodBody {
                                     id: 33,
                                     span: Span {
-                                        start: 0,
-                                        end: 0,
+                                        start: 121,
+                                        end: 123,
                                     },
                                     kind: Concrete(
                                         ConcreteMethodBody {
@@ -418,7 +418,7 @@
                                 id: 41,
                                 span: Span {
                                     start: 128,
-                                    end: 0,
+                                    end: 150,
                                 },
                                 comments: CommentGroup {
                                     id: 36,
@@ -476,8 +476,8 @@
                                 body: MethodBody {
                                     id: 40,
                                     span: Span {
-                                        start: 0,
-                                        end: 0,
+                                        start: 148,
+                                        end: 150,
                                     },
                                     kind: Concrete(
                                         ConcreteMethodBody {

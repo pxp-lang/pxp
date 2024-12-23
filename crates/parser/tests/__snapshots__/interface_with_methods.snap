@@ -68,7 +68,7 @@
                                 id: 12,
                                 span: Span {
                                     start: 0,
-                                    end: 0,
+                                    end: 40,
                                 },
                                 comments: CommentGroup {
                                     id: 7,
@@ -119,8 +119,8 @@
                                 body: MethodBody {
                                     id: 11,
                                     span: Span {
-                                        start: 0,
-                                        end: 0,
+                                        start: 39,
+                                        end: 40,
                                     },
                                     kind: Abstract(
                                         AbstractMethodBody {
@@ -143,7 +143,7 @@
                                 id: 19,
                                 span: Span {
                                     start: 45,
-                                    end: 0,
+                                    end: 65,
                                 },
                                 comments: CommentGroup {
                                     id: 14,
@@ -201,8 +201,8 @@
                                 body: MethodBody {
                                     id: 18,
                                     span: Span {
-                                        start: 0,
-                                        end: 0,
+                                        start: 64,
+                                        end: 65,
                                     },
                                     kind: Abstract(
                                         AbstractMethodBody {

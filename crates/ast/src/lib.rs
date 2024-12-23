@@ -507,3 +507,13 @@ impl Method {
         matches!(self.body.kind, MethodBodyKind::Concrete(_))
     }
 }
+
+impl Spanned for MethodBodyKind {
+    fn span(&self) -> Span {
+        match self {
+            MethodBodyKind::Concrete(inner) => inner.span(),
+            MethodBodyKind::Abstract(inner) => inner.span(),
+            MethodBodyKind::Missing(inner) => inner.span(),
+        }
+    }
+}

@@ -269,7 +269,7 @@ impl<'a> Parser<'a> {
                     self.current_span(),
                 );
 
-                MethodBodyKind::Missing(self.current_span())
+                MethodBodyKind::Missing(MissingMethodBody { span: self.current_span(), id: self.id() })
             }
         };
 

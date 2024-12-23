@@ -77,7 +77,7 @@
                                 id: 23,
                                 span: Span {
                                     start: 0,
-                                    end: 0,
+                                    end: 64,
                                 },
                                 comments: CommentGroup {
                                     id: 8,
@@ -238,8 +238,8 @@
                                 body: MethodBody {
                                     id: 22,
                                     span: Span {
-                                        start: 0,
-                                        end: 0,
+                                        start: 48,
+                                        end: 64,
                                     },
                                     kind: Concrete(
                                         ConcreteMethodBody {

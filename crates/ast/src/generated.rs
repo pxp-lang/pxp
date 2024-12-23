@@ -2290,7 +2290,7 @@ impl Spanned for MethodBody {
 pub enum MethodBodyKind {
     Abstract(AbstractMethodBody),
     Concrete(ConcreteMethodBody),
-    Missing(Span),
+    Missing(MissingMethodBody),
 }
 
 impl HasId for MethodBodyKind {
@@ -2298,17 +2298,26 @@ impl HasId for MethodBodyKind {
         match self {
             MethodBodyKind::Abstract(inner) => inner.id(),
             MethodBodyKind::Concrete(inner) => inner.id(),
-            MethodBodyKind::Missing(_) => 0,
+            MethodBodyKind::Missing(inner) => inner.id(),
         }
     }
 }
 
-impl Spanned for MethodBodyKind {
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct MissingMethodBody {
+    pub id: NodeId,
+    pub span: Span,
+}
+
+impl HasId for MissingMethodBody {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for MissingMethodBody {
     fn span(&self) -> Span {
-        match self {
-            MethodBodyKind::Missing(span) => *span,
-            _ => Span::default(),
-        }
+        self.span
     }
 }
 
@@ -6221,6 +6230,7 @@ pub enum NodeKind<'a> {
     Method(&'a Method),
     MethodBody(&'a MethodBody),
     MethodBodyKind(&'a MethodBodyKind),
+    MissingMethodBody(&'a MissingMethodBody),
     AbstractMethodBody(&'a AbstractMethodBody),
     ConcreteMethodBody(&'a ConcreteMethodBody),
     MethodParameterList(&'a MethodParameterList),
@@ -7513,6 +7523,17 @@ impl<'a> Node<'a> {
 
     pub fn is_method_body_kind(&self) -> bool {
         matches!(&self.kind, NodeKind::MethodBodyKind(_))
+    }
+
+    pub fn as_missing_method_body(self) -> Option<&'a MissingMethodBody> {
+        match &self.kind {
+            NodeKind::MissingMethodBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_missing_method_body(&self) -> bool {
+        matches!(&self.kind, NodeKind::MissingMethodBody(_))
     }
 
     pub fn as_abstract_method_body(self) -> Option<&'a AbstractMethodBody> {
@@ -9412,6 +9433,7 @@ impl<'a> Node<'a> {
             NodeKind::Method(_) => "Method",
             NodeKind::MethodBody(_) => "MethodBody",
             NodeKind::MethodBodyKind(_) => "MethodBodyKind",
+            NodeKind::MissingMethodBody(_) => "MissingMethodBody",
             NodeKind::AbstractMethodBody(_) => "AbstractMethodBody",
             NodeKind::ConcreteMethodBody(_) => "ConcreteMethodBody",
             NodeKind::MethodParameterList(_) => "MethodParameterList",
@@ -10497,6 +10519,9 @@ impl<'a> Node<'a> {
                     children.push(inner.into());
                 }
                 MethodBodyKind::Concrete(inner) => {
+                    children.push(inner.into());
+                }
+                MethodBodyKind::Missing(inner) => {
                     children.push(inner.into());
                 }
                 _ => {}
@@ -11882,6 +11907,7 @@ impl<'a> Node<'a> {
             NodeKind::Method(node) => NonNull::from(node).cast(),
             NodeKind::MethodBody(node) => NonNull::from(node).cast(),
             NodeKind::MethodBodyKind(node) => NonNull::from(node).cast(),
+            NodeKind::MissingMethodBody(node) => NonNull::from(node).cast(),
             NodeKind::AbstractMethodBody(node) => NonNull::from(node).cast(),
             NodeKind::ConcreteMethodBody(node) => NonNull::from(node).cast(),
             NodeKind::MethodParameterList(node) => NonNull::from(node).cast(),
@@ -12745,6 +12771,12 @@ impl<'a> From<&'a MethodBody> for Node<'a> {
 impl<'a> From<&'a MethodBodyKind> for Node<'a> {
     fn from(node: &'a MethodBodyKind) -> Self {
         Node::new(node.id(), NodeKind::MethodBodyKind(node), node.span())
+    }
+}
+
+impl<'a> From<&'a MissingMethodBody> for Node<'a> {
+    fn from(node: &'a MissingMethodBody) -> Self {
+        Node::new(node.id(), NodeKind::MissingMethodBody(node), node.span())
     }
 }
 

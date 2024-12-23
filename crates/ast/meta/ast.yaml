@@ -786,7 +786,10 @@ MethodBodyKind:
   children: [self]
   Abstract: AbstractMethodBody
   Concrete: ConcreteMethodBody
-  Missing: Span
+  Missing: MissingMethodBody
+
+MissingMethodBody:
+  span: Span
 
 AbstractMethodBody:
   span: Span

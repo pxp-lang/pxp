@@ -758,6 +758,7 @@ pub fn walk_method_body_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &Method
     match node {
         MethodBodyKind::Abstract(inner) => visitor.visit_abstract_method_body(inner),
         MethodBodyKind::Concrete(inner) => visitor.visit_concrete_method_body(inner),
+        MethodBodyKind::Missing(inner) => visitor.visit_missing_method_body(inner),
         _ => {}
     }
 }
