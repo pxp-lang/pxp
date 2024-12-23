@@ -13,7 +13,7 @@ impl<'a> Parser<'a> {
 
         CommentGroup {
             id: self.id(),
-            comments: comments.clone(),
+            comments,
         }
     }
 
