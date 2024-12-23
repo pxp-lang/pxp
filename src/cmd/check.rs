@@ -8,7 +8,10 @@ use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::Lexer;
 use pxp_parser::{Parser, ParserDiagnostic};
 
-use crate::{config::{CheckConfig, Config}, utils::{find_php_files_in_list, severity_to_report_kind}};
+use crate::{
+    config::{CheckConfig, Config},
+    utils::{find_php_files_in_list, severity_to_report_kind},
+};
 
 #[derive(Args, Debug)]
 #[command(version, about = "Perform static analysis on a file or directory.")]
@@ -56,24 +59,33 @@ fn only_syntax(args: Check, config: CheckConfig) -> anyhow::Result<()> {
     if diagnostics.is_empty() {
         println!("{}", "No syntax errors found!".green().bold());
 
-        return Ok(())
+        return Ok(());
     }
 
     for (file, collection) in diagnostics.iter() {
-        let collection = collection.iter().filter(|d| should_show_diagnostic(&args, d.severity)).collect::<Vec<_>>();
+        let collection = collection
+            .iter()
+            .filter(|d| should_show_diagnostic(&args, d.severity))
+            .collect::<Vec<_>>();
 
         if collection.is_empty() {
             continue;
         }
 
         for diagnostic in collection.iter() {
-            Report::build(severity_to_report_kind(diagnostic.severity), (file.display().to_string(), diagnostic.span.to_range()))
-                .with_label(
-                    Label::new((file.display().to_string(), diagnostic.span.to_range()))
-                        .with_message(diagnostic.kind.to_string())
-                )
-                .finish()
-                .print((file.display().to_string(), Source::from(&std::fs::read_to_string(file)?)))?;
+            Report::build(
+                severity_to_report_kind(diagnostic.severity),
+                (file.display().to_string(), diagnostic.span.to_range()),
+            )
+            .with_label(
+                Label::new((file.display().to_string(), diagnostic.span.to_range()))
+                    .with_message(diagnostic.kind.to_string()),
+            )
+            .finish()
+            .print((
+                file.display().to_string(),
+                Source::from(&std::fs::read_to_string(file)?),
+            ))?;
         }
     }
 

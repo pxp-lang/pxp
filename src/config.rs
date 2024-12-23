@@ -12,8 +12,10 @@ impl Config {
         let cwd = current_dir()?;
         let config_path = cwd.join("pxp.config.toml");
 
-        if ! config_path.exists() {
-            return Err(anyhow::anyhow!("Could not locate `pxp.config.toml` file in current directory."));
+        if !config_path.exists() {
+            return Err(anyhow::anyhow!(
+                "Could not locate `pxp.config.toml` file in current directory."
+            ));
         }
 
         let config = std::fs::read_to_string(config_path)?;

@@ -80,7 +80,12 @@ impl<'a> Parser<'a> {
                     start_span
                 };
 
-                self.add_prefixed_import(&import_kind, prefix_symbol.as_bytestr(), name.symbol.as_bytestr(), alias.as_ref().map(|a| a.symbol.as_bytestr()));
+                self.add_prefixed_import(
+                    &import_kind,
+                    prefix_symbol.as_bytestr(),
+                    name.symbol.as_bytestr(),
+                    alias.as_ref().map(|a| a.symbol.as_bytestr()),
+                );
 
                 uses.push(Use {
                     id: self.id(),
@@ -130,7 +135,11 @@ impl<'a> Parser<'a> {
                     start_span
                 };
 
-                self.add_import(&kind, name.symbol().as_bytestr(), alias.as_ref().map(|a| a.symbol.as_bytestr()));
+                self.add_import(
+                    &kind,
+                    name.symbol().as_bytestr(),
+                    alias.as_ref().map(|a| a.symbol.as_bytestr()),
+                );
 
                 uses.push(Use {
                     id: self.id(),
