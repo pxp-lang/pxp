@@ -1,5 +1,5 @@
 use pxp_ast::{Name, NodeId, UseKind};
-use pxp_bytestring::ByteString;
+use pxp_bytestring::ByteStr;
 use pxp_token::{Token, TokenKind};
 
 use crate::Parser;
@@ -8,36 +8,30 @@ impl<'a> Parser<'a> {
     pub(crate) fn add_import(
         &mut self,
         kind: &UseKind,
-        name: ByteString,
-        alias: Option<ByteString>,
+        name: &ByteStr,
+        alias: Option<&ByteStr>,
     ) {
         // We first need to check if the alias has been provided, and if not, create a new
         // symbol using the last part of the name.
         let alias = match alias {
             Some(alias) => alias,
-            None => {
-                let bytestring = name.clone();
-                let parts = bytestring.split(|c| *c == b'\\').collect::<Vec<_>>();
-                let last = parts.last().unwrap();
-
-                ByteString::new(last.to_vec())
-            }
+            None => name.after_last(b'\\'),
         };
 
         // Then we can insert the import into the hashmap.
-        self.imports.get_mut(kind).unwrap().insert(alias, name);
+        self.imports.get_mut(kind).unwrap().insert(alias.to_bytestring(), name.to_bytestring());
     }
 
     pub(crate) fn add_prefixed_import(
         &mut self,
         kind: &UseKind,
-        prefix: ByteString,
-        name: ByteString,
-        alias: Option<ByteString>,
+        prefix: &ByteStr,
+        name: &ByteStr,
+        alias: Option<&ByteStr>,
     ) {
-        let coagulated = prefix.coagulate(&[name], Some(b"\\"));
+        let coagulated = prefix.coagulate(&[name], b'\\');
 
-        self.add_import(kind, coagulated, alias);
+        self.add_import(kind, coagulated.as_bytestr(), alias);
     }
 
     pub(crate) fn maybe_resolve_identifier(
