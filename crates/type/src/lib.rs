@@ -32,6 +32,12 @@ pub enum Type<N: Debug + Display> {
     ParentReference,
     ArrayKey,
     TypedArray(Box<Type<N>>, Box<Type<N>>),
+    Shaped {
+        base: Box<Type<N>>,
+        items: Vec<ShapeItem<N>>,
+        sealed: bool,
+        unsealed_type: Option<Box<ShapeUnsealedType<N>>>
+    },
     ConditionalForParameter {
         parameter: ByteString,
         negated: bool,
@@ -49,6 +55,34 @@ pub enum Type<N: Debug + Display> {
     ValueOf,
     This,
     Missing,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ShapeItem<N: Debug + Display> {
+    pub key_name: Option<ShapeItemKey>,
+    pub value_type: Type<N>,
+    pub optional: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum ShapeItemKey {
+    Integer(ByteString),
+    String(ByteString),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct ShapeUnsealedType<N: Debug + Display> {
+    pub key_type: Option<Type<N>>,
+    pub value_type: Option<Type<N>>,
+}
+
+impl Display for ShapeItemKey {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ShapeItemKey::Integer(value) => write!(f, "{}", value),
+            ShapeItemKey::String(value) => write!(f, "{}", value),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -131,6 +165,23 @@ impl<N: Debug + Display> Type<N> {
 impl<N: Debug + Display> Display for Type<N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
+            Type::Shaped { base, items, sealed, unsealed_type } => {
+                write!(f, "{base}{{")?;
+
+                for (i, item) in items.iter().enumerate() {
+                    if i > 0 {
+                        write!(f, ", ")?;
+                    }
+
+                    if let Some(key) = &item.key_name {
+                        write!(f, "{}{}: ", key, if item.optional { "?" } else { "" })?;
+                    }
+
+                    write!(f, "{}", item.value_type)?;
+                }
+
+                write!(f, "}}")
+            },
             Type::ClassString => write!(f, "class-string"),
             Type::ValueOf => write!(f, "value-of"),
             Type::Named(inner) => write!(f, "{}", inner),

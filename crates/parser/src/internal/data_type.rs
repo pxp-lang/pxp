@@ -4,7 +4,7 @@ use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
-use pxp_type::{CallableParameter, Type};
+use pxp_type::{CallableParameter, ShapeItem, ShapeItemKey, ShapeUnsealedType, Type};
 
 impl<'a> Parser<'a> {
     pub fn parse_data_type(&mut self) -> DataType {
@@ -235,11 +235,102 @@ impl<'a> Parser<'a> {
                     self.parse_docblock_callable(r#type)
                 } else if current.kind == TokenKind::LeftBracket {
                     self.parse_docblock_array_or_offset_access(r#type)
+                } else if matches!(r#type, Type::Array) && current.kind == TokenKind::LeftBrace {
+                    self.parse_docblock_array_shape(r#type)    
                 } else {
                     r#type
                 }
             }
         }
+    }
+
+    fn parse_docblock_array_shape(&mut self, lhs: Type<Name>) -> Type<Name> {
+        self.expect(TokenKind::LeftBrace);
+        self.skip_doc_eol();
+
+        let mut items = Vec::new();
+        let mut sealed = true;
+        let mut unsealed_type = None;
+
+        while !self.is_eof() && self.current_kind() != TokenKind::RightBrace {
+            self.skip_doc_eol();
+
+            if self.current_kind() == TokenKind::Ellipsis {
+                sealed = false;
+
+                self.skip_doc_eol();
+
+                if self.current_kind() == TokenKind::LessThan {
+                    if lhs == Type::Array {
+                        unsealed_type = Some(Box::new(self.parse_docblock_array_shape_unsealed_type()));
+                    } else {
+                        unsealed_type = Some(Box::new(self.parse_docblock_list_shape_unsealed_type()));
+                    }
+                }
+
+                self.skip_doc_eol();
+                
+                if self.current_kind() == TokenKind::Comma {
+                    self.next();
+                }
+
+                break;
+            }
+
+            items.push(self.parse_docblock_array_shape_item());
+
+            self.skip_doc_eol();
+
+            if self.current_kind() == TokenKind::Comma {
+                self.next();
+            }
+        }
+
+        self.skip_doc_eol();
+        self.expect(TokenKind::RightBrace);
+
+        Type::Shaped { base: Box::new(lhs), items, sealed, unsealed_type }
+    }
+
+    fn parse_docblock_array_shape_unsealed_type(&mut self) -> ShapeUnsealedType<Name> {
+        todo!()
+    }
+
+    fn parse_docblock_list_shape_unsealed_type(&mut self) -> ShapeUnsealedType<Name> {
+        todo!()
+    }
+
+    fn parse_docblock_array_shape_item(&mut self) -> ShapeItem<Name> {
+        let (key_name, optional) = self.parse_docblock_array_shape_key();
+        self.skip_doc_eol();
+        let value_type = self.parse_docblock_type();
+
+        ShapeItem { key_name, value_type, optional }
+    }
+
+    fn parse_docblock_array_shape_key(&mut self) -> (Option<ShapeItemKey>, bool) {
+        if ! matches!(self.peek_kind(), TokenKind::Colon | TokenKind::Question) {
+            return (None, false);
+        }
+
+        let key = match self.current_kind() {
+            TokenKind::LiteralInteger => self.next_but_first(|parser| Some(ShapeItemKey::Integer(parser.current_symbol_as_bytestring()))),
+            TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString => self.next_but_first(|parser| {
+                Some(ShapeItemKey::String(parser.current_symbol_as_bytestring()))
+            }),
+            _ => self.next_but_first(|parser| Some(ShapeItemKey::String(parser.current_symbol_as_bytestring()))),
+        };
+
+        let optional = if self.current_kind() == TokenKind::Question {
+            self.next();
+            true
+        } else {
+            false
+        };
+
+        self.expect(TokenKind::Colon);
+
+        (key, optional)
     }
 
     fn parse_docblock_generic(&mut self, lhs: Type<Name>) -> Type<Name> {
