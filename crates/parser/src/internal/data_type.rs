@@ -464,6 +464,14 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_docblock_callable_parameter(&mut self) -> CallableParameter<Name> {
+        // This isn't where we should be checking for variadics, but some projects
+        // incorrectly place them before the type, so it's best to support it.
+        let ellipsis = if self.current_kind() == TokenKind::Ellipsis {
+            Some(self.next())
+        } else {
+            None
+        };
+
         let r#type = self.parse_docblock_type();
 
         self.skip_doc_eol();
@@ -476,7 +484,9 @@ impl<'a> Parser<'a> {
 
         self.skip_doc_eol();
 
-        let ellipsis = if self.current_kind() == TokenKind::Ellipsis {
+        let ellipsis = if ellipsis.is_some() {
+            ellipsis
+        } else if self.current_kind() == TokenKind::Ellipsis {
             Some(self.next())
         } else {
             None
