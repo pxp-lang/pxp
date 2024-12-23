@@ -1,5 +1,4 @@
 use crate::internal::diagnostics::ParserDiagnostic;
-use crate::internal::functions::Method;
 use crate::Parser;
 use pxp_ast::Expression;
 use pxp_ast::StatementKind;
@@ -239,32 +238,15 @@ impl<'a> Parser<'a> {
             let modifiers = self.parse_method_group(modifiers);
             let method = self.parse_method(modifiers);
 
-            return match method {
-                Method::Abstract(method) => {
-                    if !has_abstract && method.modifiers.has_abstract() {
-                        self.diagnostic(
-                            ParserDiagnostic::AbstractMethodInNonAbstractClass,
-                            Severity::Error,
-                            method.modifiers.get_abstract().unwrap().span(),
-                        );
-                    }
+            if method.is_abstract() && !has_abstract {
+                self.diagnostic(
+                    ParserDiagnostic::AbstractMethodInNonAbstractClass,
+                    Severity::Error,
+                    method.span(),
+                );
+            }
 
-                    ClassishMember::AbstractMethod(method)
-                }
-                Method::Concrete(method) => ClassishMember::ConcreteMethod(method),
-                Method::AbstractConstructor(ctor) => {
-                    if !has_abstract {
-                        self.diagnostic(
-                            ParserDiagnostic::AbstractMethodInNonAbstractClass,
-                            Severity::Error,
-                            ctor.span(),
-                        );
-                    }
-
-                    ClassishMember::AbstractConstructor(ctor)
-                }
-                Method::ConcreteConstructor(ctor) => ClassishMember::ConcreteConstructor(ctor),
-            };
+            return ClassishMember::Method(method);
         }
 
         // e.g: public static

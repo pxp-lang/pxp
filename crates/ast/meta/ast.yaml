@@ -760,11 +760,65 @@ ClassishMember:
   Constant: ClassishConstant
   TraitUsage: TraitUsage
   Property: Property
-  AbstractMethod: AbstractMethod
-  AbstractConstructor: AbstractConstructor
-  ConcreteMethod: ConcreteMethod
-  ConcreteConstructor: ConcreteConstructor
+  Method: Method
   Missing: MissingClassishMember
+
+Method:
+  children: [attributes, name, parameters, return_type?, body]
+  span: Span
+  comments: CommentGroup
+  attributes: Vec<AttributeGroup>
+  modifiers: MethodModifierGroup
+  function: Span
+  ampersand: Option<Span>
+  name: SimpleIdentifier
+  parameters: MethodParameterList
+  return_type: Option<ReturnType>
+  body: MethodBody
+
+MethodBody:
+  children: [kind]
+  span: Span
+  kind: MethodBodyKind
+
+MethodBodyKind:
+  as: Enum
+  children: [self]
+  Abstract: AbstractMethodBody
+  Concrete: ConcreteMethodBody
+  Missing: MissingMethodBody
+
+MissingMethodBody:
+  span: Span
+
+AbstractMethodBody:
+  span: Span
+  semicolon: Span
+
+ConcreteMethodBody:
+  children: [statements]
+  span: Span
+  left_brace: Span
+  statements: Vec<Statement>
+  right_brace: Span
+
+MethodParameterList:
+  children: [parameters]
+  span: Span
+  left_parenthesis: Span
+  parameters: CommaSeparated<MethodParameter>
+  right_parenthesis: Span
+
+MethodParameter:
+  children: [name, data_type?, default?]
+  span: Span
+  modifiers: Option<PromotedPropertyModifierGroup>
+  name: SimpleVariable
+  attributes: Vec<AttributeGroup>
+  data_type: Option<DataType>
+  ellipsis: Option<Span>
+  default: Option<Expression>
+  ampersand: Option<Span>
 
 MissingClassishMember:
   span: Span
@@ -1081,84 +1135,6 @@ ArrowFunctionExpression:
   return_type: Option<ReturnType>
   double_arrow: Span
   body: Box<Expression>
-
-ConstructorParameter:
-  children: [name, data_type?, default?]
-  span: Span
-  attributes: Vec<AttributeGroup>
-  comments: CommentGroup
-  ampersand: Option<Span>
-  name: SimpleVariable
-  data_type: Option<DataType>
-  ellipsis: Option<Span>
-  default: Option<Expression>
-  modifiers: PromotedPropertyModifierGroup
-
-ConstructorParameterList:
-  children: [parameters]
-  span: Span
-  comments: CommentGroup
-  left_parenthesis: Span
-  parameters: CommaSeparated<ConstructorParameter>
-  right_parenthesis: Span
-
-AbstractConstructor:
-  children: [attributes, name, parameters]
-  span: Span
-  comments: CommentGroup
-  attributes: Vec<AttributeGroup>
-  modifiers: MethodModifierGroup
-  function: Span
-  ampersand: Option<Span>
-  name: SimpleIdentifier
-  parameters: ConstructorParameterList
-  semicolon: Span
-
-ConcreteConstructor:
-  children: [attributes, name, parameters, body]
-  span: Span
-  comments: CommentGroup
-  attributes: Vec<AttributeGroup>
-  modifiers: MethodModifierGroup
-  function: Span
-  ampersand: Option<Span>
-  name: SimpleIdentifier
-  parameters: ConstructorParameterList
-  body: MethodBody
-
-AbstractMethod:
-  children: [attributes, name, parameters, return_type?]
-  span: Span
-  comments: CommentGroup
-  attributes: Vec<AttributeGroup>
-  modifiers: MethodModifierGroup
-  function: Span
-  ampersand: Option<Span>
-  name: SimpleIdentifier
-  parameters: FunctionParameterList
-  return_type: Option<ReturnType>
-  semicolon: Span
-
-ConcreteMethod:
-  children: [attributes, name, parameters, return_type?, body]
-  span: Span
-  comments: CommentGroup
-  attributes: Vec<AttributeGroup>
-  modifiers: MethodModifierGroup
-  function: Span
-  ampersand: Option<Span>
-  name: SimpleIdentifier
-  parameters: FunctionParameterList
-  return_type: Option<ReturnType>
-  body: MethodBody
-
-MethodBody:
-  children: [statements]
-  span: Span
-  comments: CommentGroup
-  left_brace: Span
-  statements: Vec<Statement>
-  right_brace: Span
 
 LabelStatement:
   children: [label]

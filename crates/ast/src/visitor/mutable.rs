@@ -400,6 +400,34 @@ pub trait VisitorMut {
         walk_classish_member_mut(self, node);
     }
 
+    fn visit_method(&mut self, node: &mut Method) {
+        walk_method_mut(self, node);
+    }
+
+    fn visit_method_body(&mut self, node: &mut MethodBody) {
+        walk_method_body_mut(self, node);
+    }
+
+    fn visit_method_body_kind(&mut self, node: &mut MethodBodyKind) {
+        walk_method_body_kind_mut(self, node);
+    }
+
+    fn visit_missing_method_body(&mut self, node: &mut MissingMethodBody) {}
+
+    fn visit_abstract_method_body(&mut self, node: &mut AbstractMethodBody) {}
+
+    fn visit_concrete_method_body(&mut self, node: &mut ConcreteMethodBody) {
+        walk_concrete_method_body_mut(self, node);
+    }
+
+    fn visit_method_parameter_list(&mut self, node: &mut MethodParameterList) {
+        walk_method_parameter_list_mut(self, node);
+    }
+
+    fn visit_method_parameter(&mut self, node: &mut MethodParameter) {
+        walk_method_parameter_mut(self, node);
+    }
+
     fn visit_missing_classish_member(&mut self, node: &mut MissingClassishMember) {}
 
     fn visit_constant_entry(&mut self, node: &mut ConstantEntry) {
@@ -554,34 +582,6 @@ pub trait VisitorMut {
 
     fn visit_arrow_function_expression(&mut self, node: &mut ArrowFunctionExpression) {
         walk_arrow_function_expression_mut(self, node);
-    }
-
-    fn visit_constructor_parameter(&mut self, node: &mut ConstructorParameter) {
-        walk_constructor_parameter_mut(self, node);
-    }
-
-    fn visit_constructor_parameter_list(&mut self, node: &mut ConstructorParameterList) {
-        walk_constructor_parameter_list_mut(self, node);
-    }
-
-    fn visit_abstract_constructor(&mut self, node: &mut AbstractConstructor) {
-        walk_abstract_constructor_mut(self, node);
-    }
-
-    fn visit_concrete_constructor(&mut self, node: &mut ConcreteConstructor) {
-        walk_concrete_constructor_mut(self, node);
-    }
-
-    fn visit_abstract_method(&mut self, node: &mut AbstractMethod) {
-        walk_abstract_method_mut(self, node);
-    }
-
-    fn visit_concrete_method(&mut self, node: &mut ConcreteMethod) {
-        walk_concrete_method_mut(self, node);
-    }
-
-    fn visit_method_body(&mut self, node: &mut MethodBody) {
-        walk_method_body_mut(self, node);
     }
 
     fn visit_label_statement(&mut self, node: &mut LabelStatement) {

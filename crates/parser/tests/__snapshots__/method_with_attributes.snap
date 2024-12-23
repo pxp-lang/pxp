@@ -20,10 +20,10 @@
         },
     },
     Statement {
-        id: 31,
+        id: 30,
         kind: Class(
             ClassStatement {
-                id: 30,
+                id: 29,
                 span: Span {
                     start: 7,
                     end: 75,
@@ -62,7 +62,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
-                    id: 29,
+                    id: 28,
                     span: Span {
                         start: 15,
                         end: 75,
@@ -72,11 +72,11 @@
                         end: 16,
                     },
                     members: [
-                        ConcreteMethod(
-                            ConcreteMethod {
-                                id: 28,
+                        Method(
+                            Method {
+                                id: 27,
                                 span: Span {
-                                    start: 58,
+                                    start: 51,
                                     end: 73,
                                 },
                                 comments: CommentGroup {
@@ -274,15 +274,11 @@
                                         end: 68,
                                     },
                                 },
-                                parameters: FunctionParameterList {
-                                    id: 25,
+                                parameters: MethodParameterList {
+                                    id: 24,
                                     span: Span {
                                         start: 68,
                                         end: 70,
-                                    },
-                                    comments: CommentGroup {
-                                        id: 24,
-                                        comments: [],
                                     },
                                     left_parenthesis: Span {
                                         start: 68,
@@ -299,24 +295,29 @@
                                 },
                                 return_type: None,
                                 body: MethodBody {
-                                    id: 27,
+                                    id: 26,
                                     span: Span {
                                         start: 71,
                                         end: 73,
                                     },
-                                    comments: CommentGroup {
-                                        id: 26,
-                                        comments: [],
-                                    },
-                                    left_brace: Span {
-                                        start: 71,
-                                        end: 72,
-                                    },
-                                    statements: [],
-                                    right_brace: Span {
-                                        start: 72,
-                                        end: 73,
-                                    },
+                                    kind: Concrete(
+                                        ConcreteMethodBody {
+                                            id: 25,
+                                            span: Span {
+                                                start: 71,
+                                                end: 73,
+                                            },
+                                            left_brace: Span {
+                                                start: 71,
+                                                end: 72,
+                                            },
+                                            statements: [],
+                                            right_brace: Span {
+                                                start: 72,
+                                                end: 73,
+                                            },
+                                        },
+                                    ),
                                 },
                             },
                         ),

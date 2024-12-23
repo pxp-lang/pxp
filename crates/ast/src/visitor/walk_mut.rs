@@ -842,12 +842,75 @@ pub fn walk_classish_member_mut<V: VisitorMut + ?Sized>(
         ClassishMember::Constant(inner) => visitor.visit_classish_constant(inner),
         ClassishMember::TraitUsage(inner) => visitor.visit_trait_usage(inner),
         ClassishMember::Property(inner) => visitor.visit_property(inner),
-        ClassishMember::AbstractMethod(inner) => visitor.visit_abstract_method(inner),
-        ClassishMember::AbstractConstructor(inner) => visitor.visit_abstract_constructor(inner),
-        ClassishMember::ConcreteMethod(inner) => visitor.visit_concrete_method(inner),
-        ClassishMember::ConcreteConstructor(inner) => visitor.visit_concrete_constructor(inner),
+        ClassishMember::Method(inner) => visitor.visit_method(inner),
         ClassishMember::Missing(inner) => visitor.visit_missing_classish_member(inner),
         _ => {}
+    }
+}
+
+pub fn walk_method_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut Method) {
+    for item in &mut node.attributes {
+        visitor.visit_attribute_group(item);
+    }
+    visitor.visit_method_modifier_group(&mut node.modifiers);
+    visitor.visit_simple_identifier(&mut node.name);
+    visitor.visit_method_parameter_list(&mut node.parameters);
+    if let Some(item) = &mut node.return_type {
+        visitor.visit_return_type(item);
+    }
+    visitor.visit_method_body(&mut node.body);
+}
+
+pub fn walk_method_body_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut MethodBody) {
+    visitor.visit_method_body_kind(&mut node.kind);
+}
+
+pub fn walk_method_body_kind_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut MethodBodyKind,
+) {
+    match node {
+        MethodBodyKind::Abstract(inner) => visitor.visit_abstract_method_body(inner),
+        MethodBodyKind::Concrete(inner) => visitor.visit_concrete_method_body(inner),
+        MethodBodyKind::Missing(inner) => visitor.visit_missing_method_body(inner),
+        _ => {}
+    }
+}
+
+pub fn walk_concrete_method_body_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut ConcreteMethodBody,
+) {
+    for item in &mut node.statements {
+        visitor.visit_statement(item);
+    }
+}
+
+pub fn walk_method_parameter_list_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut MethodParameterList,
+) {
+    for item in &mut node.parameters.inner {
+        visitor.visit_method_parameter(item);
+    }
+}
+
+pub fn walk_method_parameter_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut MethodParameter,
+) {
+    if let Some(item) = &mut node.modifiers {
+        visitor.visit_promoted_property_modifier_group(item);
+    }
+    visitor.visit_simple_variable(&mut node.name);
+    for item in &mut node.attributes {
+        visitor.visit_attribute_group(item);
+    }
+    if let Some(item) = &mut node.data_type {
+        visitor.visit_data_type(item);
+    }
+    if let Some(item) = &mut node.default {
+        visitor.visit_expression(item);
     }
 }
 
@@ -1212,94 +1275,6 @@ pub fn walk_arrow_function_expression_mut<V: VisitorMut + ?Sized>(
         visitor.visit_return_type(item);
     }
     visitor.visit_expression(&mut node.body);
-}
-
-pub fn walk_constructor_parameter_mut<V: VisitorMut + ?Sized>(
-    visitor: &mut V,
-    node: &mut ConstructorParameter,
-) {
-    for item in &mut node.attributes {
-        visitor.visit_attribute_group(item);
-    }
-    visitor.visit_simple_variable(&mut node.name);
-    if let Some(item) = &mut node.data_type {
-        visitor.visit_data_type(item);
-    }
-    if let Some(item) = &mut node.default {
-        visitor.visit_expression(item);
-    }
-    visitor.visit_promoted_property_modifier_group(&mut node.modifiers);
-}
-
-pub fn walk_constructor_parameter_list_mut<V: VisitorMut + ?Sized>(
-    visitor: &mut V,
-    node: &mut ConstructorParameterList,
-) {
-    for item in &mut node.parameters.inner {
-        visitor.visit_constructor_parameter(item);
-    }
-}
-
-pub fn walk_abstract_constructor_mut<V: VisitorMut + ?Sized>(
-    visitor: &mut V,
-    node: &mut AbstractConstructor,
-) {
-    for item in &mut node.attributes {
-        visitor.visit_attribute_group(item);
-    }
-    visitor.visit_method_modifier_group(&mut node.modifiers);
-    visitor.visit_simple_identifier(&mut node.name);
-    visitor.visit_constructor_parameter_list(&mut node.parameters);
-}
-
-pub fn walk_concrete_constructor_mut<V: VisitorMut + ?Sized>(
-    visitor: &mut V,
-    node: &mut ConcreteConstructor,
-) {
-    for item in &mut node.attributes {
-        visitor.visit_attribute_group(item);
-    }
-    visitor.visit_method_modifier_group(&mut node.modifiers);
-    visitor.visit_simple_identifier(&mut node.name);
-    visitor.visit_constructor_parameter_list(&mut node.parameters);
-    visitor.visit_method_body(&mut node.body);
-}
-
-pub fn walk_abstract_method_mut<V: VisitorMut + ?Sized>(
-    visitor: &mut V,
-    node: &mut AbstractMethod,
-) {
-    for item in &mut node.attributes {
-        visitor.visit_attribute_group(item);
-    }
-    visitor.visit_method_modifier_group(&mut node.modifiers);
-    visitor.visit_simple_identifier(&mut node.name);
-    visitor.visit_function_parameter_list(&mut node.parameters);
-    if let Some(item) = &mut node.return_type {
-        visitor.visit_return_type(item);
-    }
-}
-
-pub fn walk_concrete_method_mut<V: VisitorMut + ?Sized>(
-    visitor: &mut V,
-    node: &mut ConcreteMethod,
-) {
-    for item in &mut node.attributes {
-        visitor.visit_attribute_group(item);
-    }
-    visitor.visit_method_modifier_group(&mut node.modifiers);
-    visitor.visit_simple_identifier(&mut node.name);
-    visitor.visit_function_parameter_list(&mut node.parameters);
-    if let Some(item) = &mut node.return_type {
-        visitor.visit_return_type(item);
-    }
-    visitor.visit_method_body(&mut node.body);
-}
-
-pub fn walk_method_body_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut MethodBody) {
-    for item in &mut node.statements {
-        visitor.visit_statement(item);
-    }
 }
 
 pub fn walk_label_statement_mut<V: VisitorMut + ?Sized>(

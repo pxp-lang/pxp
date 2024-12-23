@@ -20,10 +20,10 @@
         },
     },
     Statement {
-        id: 32,
+        id: 28,
         kind: Class(
             ClassStatement {
-                id: 31,
+                id: 27,
                 span: Span {
                     start: 7,
                     end: 177,
@@ -62,7 +62,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
-                    id: 30,
+                    id: 26,
                     span: Span {
                         start: 15,
                         end: 177,
@@ -72,11 +72,11 @@
                         end: 16,
                     },
                     members: [
-                        ConcreteConstructor(
-                            ConcreteConstructor {
-                                id: 29,
+                        Method(
+                            Method {
+                                id: 25,
                                 span: Span {
-                                    start: 28,
+                                    start: 21,
                                     end: 175,
                                 },
                                 comments: CommentGroup {
@@ -112,15 +112,11 @@
                                         end: 48,
                                     },
                                 },
-                                parameters: ConstructorParameterList {
-                                    id: 26,
+                                parameters: MethodParameterList {
+                                    id: 22,
                                     span: Span {
                                         start: 48,
                                         end: 172,
-                                    },
-                                    comments: CommentGroup {
-                                        id: 10,
-                                        comments: [],
                                     },
                                     left_parenthesis: Span {
                                         start: 48,
@@ -128,20 +124,37 @@
                                     },
                                     parameters: CommaSeparated {
                                         inner: [
-                                            ConstructorParameter {
-                                                id: 14,
+                                            MethodParameter {
+                                                id: 13,
                                                 span: Span {
-                                                    start: 0,
+                                                    start: 58,
                                                     end: 87,
                                                 },
-                                                attributes: [],
-                                                comments: CommentGroup {
-                                                    id: 15,
-                                                    comments: [],
-                                                },
-                                                ampersand: None,
+                                                modifiers: Some(
+                                                    PromotedPropertyModifierGroup {
+                                                        id: 10,
+                                                        span: Span {
+                                                            start: 58,
+                                                            end: 77,
+                                                        },
+                                                        modifiers: [
+                                                            Public(
+                                                                Span {
+                                                                    start: 58,
+                                                                    end: 64,
+                                                                },
+                                                            ),
+                                                            PrivateSet(
+                                                                Span {
+                                                                    start: 65,
+                                                                    end: 77,
+                                                                },
+                                                            ),
+                                                        ],
+                                                    },
+                                                ),
                                                 name: SimpleVariable {
-                                                    id: 13,
+                                                    id: 12,
                                                     symbol: "$a",
                                                     stripped: "a",
                                                     span: Span {
@@ -149,9 +162,10 @@
                                                         end: 87,
                                                     },
                                                 },
+                                                attributes: [],
                                                 data_type: Some(
                                                     DataType {
-                                                        id: 12,
+                                                        id: 11,
                                                         kind: String,
                                                         span: Span {
                                                             start: 0,
@@ -161,42 +175,39 @@
                                                 ),
                                                 ellipsis: None,
                                                 default: None,
-                                                modifiers: PromotedPropertyModifierGroup {
-                                                    id: 11,
-                                                    span: Span {
-                                                        start: 58,
-                                                        end: 77,
-                                                    },
-                                                    modifiers: [
-                                                        Public(
-                                                            Span {
-                                                                start: 58,
-                                                                end: 64,
-                                                            },
-                                                        ),
-                                                        PrivateSet(
-                                                            Span {
-                                                                start: 65,
-                                                                end: 77,
-                                                            },
-                                                        ),
-                                                    ],
-                                                },
+                                                ampersand: None,
                                             },
-                                            ConstructorParameter {
-                                                id: 19,
+                                            MethodParameter {
+                                                id: 17,
                                                 span: Span {
-                                                    start: 0,
+                                                    start: 97,
                                                     end: 128,
                                                 },
-                                                attributes: [],
-                                                comments: CommentGroup {
-                                                    id: 20,
-                                                    comments: [],
-                                                },
-                                                ampersand: None,
+                                                modifiers: Some(
+                                                    PromotedPropertyModifierGroup {
+                                                        id: 14,
+                                                        span: Span {
+                                                            start: 97,
+                                                            end: 118,
+                                                        },
+                                                        modifiers: [
+                                                            Public(
+                                                                Span {
+                                                                    start: 97,
+                                                                    end: 103,
+                                                                },
+                                                            ),
+                                                            ProtectedSet(
+                                                                Span {
+                                                                    start: 104,
+                                                                    end: 118,
+                                                                },
+                                                            ),
+                                                        ],
+                                                    },
+                                                ),
                                                 name: SimpleVariable {
-                                                    id: 18,
+                                                    id: 16,
                                                     symbol: "$b",
                                                     stripped: "b",
                                                     span: Span {
@@ -204,9 +215,10 @@
                                                         end: 128,
                                                     },
                                                 },
+                                                attributes: [],
                                                 data_type: Some(
                                                     DataType {
-                                                        id: 17,
+                                                        id: 15,
                                                         kind: String,
                                                         span: Span {
                                                             start: 0,
@@ -216,42 +228,39 @@
                                                 ),
                                                 ellipsis: None,
                                                 default: None,
-                                                modifiers: PromotedPropertyModifierGroup {
-                                                    id: 16,
-                                                    span: Span {
-                                                        start: 97,
-                                                        end: 118,
-                                                    },
-                                                    modifiers: [
-                                                        Public(
-                                                            Span {
-                                                                start: 97,
-                                                                end: 103,
-                                                            },
-                                                        ),
-                                                        ProtectedSet(
-                                                            Span {
-                                                                start: 104,
-                                                                end: 118,
-                                                            },
-                                                        ),
-                                                    ],
-                                                },
+                                                ampersand: None,
                                             },
-                                            ConstructorParameter {
-                                                id: 24,
+                                            MethodParameter {
+                                                id: 21,
                                                 span: Span {
-                                                    start: 0,
+                                                    start: 138,
                                                     end: 166,
                                                 },
-                                                attributes: [],
-                                                comments: CommentGroup {
-                                                    id: 25,
-                                                    comments: [],
-                                                },
-                                                ampersand: None,
+                                                modifiers: Some(
+                                                    PromotedPropertyModifierGroup {
+                                                        id: 18,
+                                                        span: Span {
+                                                            start: 138,
+                                                            end: 156,
+                                                        },
+                                                        modifiers: [
+                                                            Public(
+                                                                Span {
+                                                                    start: 138,
+                                                                    end: 144,
+                                                                },
+                                                            ),
+                                                            PublicSet(
+                                                                Span {
+                                                                    start: 145,
+                                                                    end: 156,
+                                                                },
+                                                            ),
+                                                        ],
+                                                    },
+                                                ),
                                                 name: SimpleVariable {
-                                                    id: 23,
+                                                    id: 20,
                                                     symbol: "$c",
                                                     stripped: "c",
                                                     span: Span {
@@ -259,9 +268,10 @@
                                                         end: 166,
                                                     },
                                                 },
+                                                attributes: [],
                                                 data_type: Some(
                                                     DataType {
-                                                        id: 22,
+                                                        id: 19,
                                                         kind: String,
                                                         span: Span {
                                                             start: 0,
@@ -271,27 +281,7 @@
                                                 ),
                                                 ellipsis: None,
                                                 default: None,
-                                                modifiers: PromotedPropertyModifierGroup {
-                                                    id: 21,
-                                                    span: Span {
-                                                        start: 138,
-                                                        end: 156,
-                                                    },
-                                                    modifiers: [
-                                                        Public(
-                                                            Span {
-                                                                start: 138,
-                                                                end: 144,
-                                                            },
-                                                        ),
-                                                        PublicSet(
-                                                            Span {
-                                                                start: 145,
-                                                                end: 156,
-                                                            },
-                                                        ),
-                                                    ],
-                                                },
+                                                ampersand: None,
                                             },
                                         ],
                                         commas: [
@@ -310,25 +300,31 @@
                                         end: 172,
                                     },
                                 },
+                                return_type: None,
                                 body: MethodBody {
-                                    id: 28,
+                                    id: 24,
                                     span: Span {
                                         start: 173,
                                         end: 175,
                                     },
-                                    comments: CommentGroup {
-                                        id: 27,
-                                        comments: [],
-                                    },
-                                    left_brace: Span {
-                                        start: 173,
-                                        end: 174,
-                                    },
-                                    statements: [],
-                                    right_brace: Span {
-                                        start: 174,
-                                        end: 175,
-                                    },
+                                    kind: Concrete(
+                                        ConcreteMethodBody {
+                                            id: 23,
+                                            span: Span {
+                                                start: 173,
+                                                end: 175,
+                                            },
+                                            left_brace: Span {
+                                                start: 173,
+                                                end: 174,
+                                            },
+                                            statements: [],
+                                            right_brace: Span {
+                                                start: 174,
+                                                end: 175,
+                                            },
+                                        },
+                                    ),
                                 },
                             },
                         ),

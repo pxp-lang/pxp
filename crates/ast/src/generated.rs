@@ -2224,10 +2224,7 @@ pub enum ClassishMember {
     Constant(ClassishConstant),
     TraitUsage(TraitUsage),
     Property(Property),
-    AbstractMethod(AbstractMethod),
-    AbstractConstructor(AbstractConstructor),
-    ConcreteMethod(ConcreteMethod),
-    ConcreteConstructor(ConcreteConstructor),
+    Method(Method),
     Missing(MissingClassishMember),
 }
 
@@ -2237,12 +2234,176 @@ impl HasId for ClassishMember {
             ClassishMember::Constant(inner) => inner.id(),
             ClassishMember::TraitUsage(inner) => inner.id(),
             ClassishMember::Property(inner) => inner.id(),
-            ClassishMember::AbstractMethod(inner) => inner.id(),
-            ClassishMember::AbstractConstructor(inner) => inner.id(),
-            ClassishMember::ConcreteMethod(inner) => inner.id(),
-            ClassishMember::ConcreteConstructor(inner) => inner.id(),
+            ClassishMember::Method(inner) => inner.id(),
             ClassishMember::Missing(inner) => inner.id(),
         }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct Method {
+    pub id: NodeId,
+    pub span: Span,
+    pub comments: CommentGroup,
+    pub attributes: Vec<AttributeGroup>,
+    pub modifiers: MethodModifierGroup,
+    pub function: Span,
+    pub ampersand: Option<Span>,
+    pub name: SimpleIdentifier,
+    pub parameters: MethodParameterList,
+    pub return_type: Option<ReturnType>,
+    pub body: MethodBody,
+}
+
+impl HasId for Method {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for Method {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct MethodBody {
+    pub id: NodeId,
+    pub span: Span,
+    pub kind: MethodBodyKind,
+}
+
+impl HasId for MethodBody {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for MethodBody {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum MethodBodyKind {
+    Abstract(AbstractMethodBody),
+    Concrete(ConcreteMethodBody),
+    Missing(MissingMethodBody),
+}
+
+impl HasId for MethodBodyKind {
+    fn id(&self) -> NodeId {
+        match self {
+            MethodBodyKind::Abstract(inner) => inner.id(),
+            MethodBodyKind::Concrete(inner) => inner.id(),
+            MethodBodyKind::Missing(inner) => inner.id(),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct MissingMethodBody {
+    pub id: NodeId,
+    pub span: Span,
+}
+
+impl HasId for MissingMethodBody {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for MissingMethodBody {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct AbstractMethodBody {
+    pub id: NodeId,
+    pub span: Span,
+    pub semicolon: Span,
+}
+
+impl HasId for AbstractMethodBody {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for AbstractMethodBody {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ConcreteMethodBody {
+    pub id: NodeId,
+    pub span: Span,
+    pub left_brace: Span,
+    pub statements: Vec<Statement>,
+    pub right_brace: Span,
+}
+
+impl HasId for ConcreteMethodBody {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for ConcreteMethodBody {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct MethodParameterList {
+    pub id: NodeId,
+    pub span: Span,
+    pub left_parenthesis: Span,
+    pub parameters: CommaSeparated<MethodParameter>,
+    pub right_parenthesis: Span,
+}
+
+impl HasId for MethodParameterList {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for MethodParameterList {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct MethodParameter {
+    pub id: NodeId,
+    pub span: Span,
+    pub modifiers: Option<PromotedPropertyModifierGroup>,
+    pub name: SimpleVariable,
+    pub attributes: Vec<AttributeGroup>,
+    pub data_type: Option<DataType>,
+    pub ellipsis: Option<Span>,
+    pub default: Option<Expression>,
+    pub ampersand: Option<Span>,
+}
+
+impl HasId for MethodParameter {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for MethodParameter {
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -3098,182 +3259,6 @@ impl HasId for ArrowFunctionExpression {
 }
 
 impl Spanned for ArrowFunctionExpression {
-    fn span(&self) -> Span {
-        self.span
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub struct ConstructorParameter {
-    pub id: NodeId,
-    pub span: Span,
-    pub attributes: Vec<AttributeGroup>,
-    pub comments: CommentGroup,
-    pub ampersand: Option<Span>,
-    pub name: SimpleVariable,
-    pub data_type: Option<DataType>,
-    pub ellipsis: Option<Span>,
-    pub default: Option<Expression>,
-    pub modifiers: PromotedPropertyModifierGroup,
-}
-
-impl HasId for ConstructorParameter {
-    fn id(&self) -> NodeId {
-        self.id
-    }
-}
-
-impl Spanned for ConstructorParameter {
-    fn span(&self) -> Span {
-        self.span
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub struct ConstructorParameterList {
-    pub id: NodeId,
-    pub span: Span,
-    pub comments: CommentGroup,
-    pub left_parenthesis: Span,
-    pub parameters: CommaSeparated<ConstructorParameter>,
-    pub right_parenthesis: Span,
-}
-
-impl HasId for ConstructorParameterList {
-    fn id(&self) -> NodeId {
-        self.id
-    }
-}
-
-impl Spanned for ConstructorParameterList {
-    fn span(&self) -> Span {
-        self.span
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub struct AbstractConstructor {
-    pub id: NodeId,
-    pub span: Span,
-    pub comments: CommentGroup,
-    pub attributes: Vec<AttributeGroup>,
-    pub modifiers: MethodModifierGroup,
-    pub function: Span,
-    pub ampersand: Option<Span>,
-    pub name: SimpleIdentifier,
-    pub parameters: ConstructorParameterList,
-    pub semicolon: Span,
-}
-
-impl HasId for AbstractConstructor {
-    fn id(&self) -> NodeId {
-        self.id
-    }
-}
-
-impl Spanned for AbstractConstructor {
-    fn span(&self) -> Span {
-        self.span
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub struct ConcreteConstructor {
-    pub id: NodeId,
-    pub span: Span,
-    pub comments: CommentGroup,
-    pub attributes: Vec<AttributeGroup>,
-    pub modifiers: MethodModifierGroup,
-    pub function: Span,
-    pub ampersand: Option<Span>,
-    pub name: SimpleIdentifier,
-    pub parameters: ConstructorParameterList,
-    pub body: MethodBody,
-}
-
-impl HasId for ConcreteConstructor {
-    fn id(&self) -> NodeId {
-        self.id
-    }
-}
-
-impl Spanned for ConcreteConstructor {
-    fn span(&self) -> Span {
-        self.span
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub struct AbstractMethod {
-    pub id: NodeId,
-    pub span: Span,
-    pub comments: CommentGroup,
-    pub attributes: Vec<AttributeGroup>,
-    pub modifiers: MethodModifierGroup,
-    pub function: Span,
-    pub ampersand: Option<Span>,
-    pub name: SimpleIdentifier,
-    pub parameters: FunctionParameterList,
-    pub return_type: Option<ReturnType>,
-    pub semicolon: Span,
-}
-
-impl HasId for AbstractMethod {
-    fn id(&self) -> NodeId {
-        self.id
-    }
-}
-
-impl Spanned for AbstractMethod {
-    fn span(&self) -> Span {
-        self.span
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub struct ConcreteMethod {
-    pub id: NodeId,
-    pub span: Span,
-    pub comments: CommentGroup,
-    pub attributes: Vec<AttributeGroup>,
-    pub modifiers: MethodModifierGroup,
-    pub function: Span,
-    pub ampersand: Option<Span>,
-    pub name: SimpleIdentifier,
-    pub parameters: FunctionParameterList,
-    pub return_type: Option<ReturnType>,
-    pub body: MethodBody,
-}
-
-impl HasId for ConcreteMethod {
-    fn id(&self) -> NodeId {
-        self.id
-    }
-}
-
-impl Spanned for ConcreteMethod {
-    fn span(&self) -> Span {
-        self.span
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub struct MethodBody {
-    pub id: NodeId,
-    pub span: Span,
-    pub comments: CommentGroup,
-    pub left_brace: Span,
-    pub statements: Vec<Statement>,
-    pub right_brace: Span,
-}
-
-impl HasId for MethodBody {
-    fn id(&self) -> NodeId {
-        self.id
-    }
-}
-
-impl Spanned for MethodBody {
     fn span(&self) -> Span {
         self.span
     }
@@ -6242,6 +6227,14 @@ pub enum NodeKind<'a> {
     ClassExtends(&'a ClassExtends),
     ClassImplements(&'a ClassImplements),
     ClassishMember(&'a ClassishMember),
+    Method(&'a Method),
+    MethodBody(&'a MethodBody),
+    MethodBodyKind(&'a MethodBodyKind),
+    MissingMethodBody(&'a MissingMethodBody),
+    AbstractMethodBody(&'a AbstractMethodBody),
+    ConcreteMethodBody(&'a ConcreteMethodBody),
+    MethodParameterList(&'a MethodParameterList),
+    MethodParameter(&'a MethodParameter),
     MissingClassishMember(&'a MissingClassishMember),
     ConstantEntry(&'a ConstantEntry),
     ClassishConstantEntry(&'a ClassishConstantEntry),
@@ -6281,13 +6274,6 @@ pub enum NodeKind<'a> {
     ClosureUse(&'a ClosureUse),
     ClosureExpression(&'a ClosureExpression),
     ArrowFunctionExpression(&'a ArrowFunctionExpression),
-    ConstructorParameter(&'a ConstructorParameter),
-    ConstructorParameterList(&'a ConstructorParameterList),
-    AbstractConstructor(&'a AbstractConstructor),
-    ConcreteConstructor(&'a ConcreteConstructor),
-    AbstractMethod(&'a AbstractMethod),
-    ConcreteMethod(&'a ConcreteMethod),
-    MethodBody(&'a MethodBody),
     LabelStatement(&'a LabelStatement),
     GotoStatement(&'a GotoStatement),
     Identifier(&'a Identifier),
@@ -7506,6 +7492,94 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::ClassishMember(_))
     }
 
+    pub fn as_method(self) -> Option<&'a Method> {
+        match &self.kind {
+            NodeKind::Method(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_method(&self) -> bool {
+        matches!(&self.kind, NodeKind::Method(_))
+    }
+
+    pub fn as_method_body(self) -> Option<&'a MethodBody> {
+        match &self.kind {
+            NodeKind::MethodBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_method_body(&self) -> bool {
+        matches!(&self.kind, NodeKind::MethodBody(_))
+    }
+
+    pub fn as_method_body_kind(self) -> Option<&'a MethodBodyKind> {
+        match &self.kind {
+            NodeKind::MethodBodyKind(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_method_body_kind(&self) -> bool {
+        matches!(&self.kind, NodeKind::MethodBodyKind(_))
+    }
+
+    pub fn as_missing_method_body(self) -> Option<&'a MissingMethodBody> {
+        match &self.kind {
+            NodeKind::MissingMethodBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_missing_method_body(&self) -> bool {
+        matches!(&self.kind, NodeKind::MissingMethodBody(_))
+    }
+
+    pub fn as_abstract_method_body(self) -> Option<&'a AbstractMethodBody> {
+        match &self.kind {
+            NodeKind::AbstractMethodBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_abstract_method_body(&self) -> bool {
+        matches!(&self.kind, NodeKind::AbstractMethodBody(_))
+    }
+
+    pub fn as_concrete_method_body(self) -> Option<&'a ConcreteMethodBody> {
+        match &self.kind {
+            NodeKind::ConcreteMethodBody(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_concrete_method_body(&self) -> bool {
+        matches!(&self.kind, NodeKind::ConcreteMethodBody(_))
+    }
+
+    pub fn as_method_parameter_list(self) -> Option<&'a MethodParameterList> {
+        match &self.kind {
+            NodeKind::MethodParameterList(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_method_parameter_list(&self) -> bool {
+        matches!(&self.kind, NodeKind::MethodParameterList(_))
+    }
+
+    pub fn as_method_parameter(self) -> Option<&'a MethodParameter> {
+        match &self.kind {
+            NodeKind::MethodParameter(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_method_parameter(&self) -> bool {
+        matches!(&self.kind, NodeKind::MethodParameter(_))
+    }
+
     pub fn as_missing_classish_member(self) -> Option<&'a MissingClassishMember> {
         match &self.kind {
             NodeKind::MissingClassishMember(node) => Some(node),
@@ -7933,83 +8007,6 @@ impl<'a> Node<'a> {
 
     pub fn is_arrow_function_expression(&self) -> bool {
         matches!(&self.kind, NodeKind::ArrowFunctionExpression(_))
-    }
-
-    pub fn as_constructor_parameter(self) -> Option<&'a ConstructorParameter> {
-        match &self.kind {
-            NodeKind::ConstructorParameter(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_constructor_parameter(&self) -> bool {
-        matches!(&self.kind, NodeKind::ConstructorParameter(_))
-    }
-
-    pub fn as_constructor_parameter_list(self) -> Option<&'a ConstructorParameterList> {
-        match &self.kind {
-            NodeKind::ConstructorParameterList(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_constructor_parameter_list(&self) -> bool {
-        matches!(&self.kind, NodeKind::ConstructorParameterList(_))
-    }
-
-    pub fn as_abstract_constructor(self) -> Option<&'a AbstractConstructor> {
-        match &self.kind {
-            NodeKind::AbstractConstructor(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_abstract_constructor(&self) -> bool {
-        matches!(&self.kind, NodeKind::AbstractConstructor(_))
-    }
-
-    pub fn as_concrete_constructor(self) -> Option<&'a ConcreteConstructor> {
-        match &self.kind {
-            NodeKind::ConcreteConstructor(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_concrete_constructor(&self) -> bool {
-        matches!(&self.kind, NodeKind::ConcreteConstructor(_))
-    }
-
-    pub fn as_abstract_method(self) -> Option<&'a AbstractMethod> {
-        match &self.kind {
-            NodeKind::AbstractMethod(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_abstract_method(&self) -> bool {
-        matches!(&self.kind, NodeKind::AbstractMethod(_))
-    }
-
-    pub fn as_concrete_method(self) -> Option<&'a ConcreteMethod> {
-        match &self.kind {
-            NodeKind::ConcreteMethod(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_concrete_method(&self) -> bool {
-        matches!(&self.kind, NodeKind::ConcreteMethod(_))
-    }
-
-    pub fn as_method_body(self) -> Option<&'a MethodBody> {
-        match &self.kind {
-            NodeKind::MethodBody(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_method_body(&self) -> bool {
-        matches!(&self.kind, NodeKind::MethodBody(_))
     }
 
     pub fn as_label_statement(self) -> Option<&'a LabelStatement> {
@@ -9433,6 +9430,14 @@ impl<'a> Node<'a> {
             NodeKind::ClassExtends(_) => "ClassExtends",
             NodeKind::ClassImplements(_) => "ClassImplements",
             NodeKind::ClassishMember(_) => "ClassishMember",
+            NodeKind::Method(_) => "Method",
+            NodeKind::MethodBody(_) => "MethodBody",
+            NodeKind::MethodBodyKind(_) => "MethodBodyKind",
+            NodeKind::MissingMethodBody(_) => "MissingMethodBody",
+            NodeKind::AbstractMethodBody(_) => "AbstractMethodBody",
+            NodeKind::ConcreteMethodBody(_) => "ConcreteMethodBody",
+            NodeKind::MethodParameterList(_) => "MethodParameterList",
+            NodeKind::MethodParameter(_) => "MethodParameter",
             NodeKind::MissingClassishMember(_) => "MissingClassishMember",
             NodeKind::ConstantEntry(_) => "ConstantEntry",
             NodeKind::ClassishConstantEntry(_) => "ClassishConstantEntry",
@@ -9472,13 +9477,6 @@ impl<'a> Node<'a> {
             NodeKind::ClosureUse(_) => "ClosureUse",
             NodeKind::ClosureExpression(_) => "ClosureExpression",
             NodeKind::ArrowFunctionExpression(_) => "ArrowFunctionExpression",
-            NodeKind::ConstructorParameter(_) => "ConstructorParameter",
-            NodeKind::ConstructorParameterList(_) => "ConstructorParameterList",
-            NodeKind::AbstractConstructor(_) => "AbstractConstructor",
-            NodeKind::ConcreteConstructor(_) => "ConcreteConstructor",
-            NodeKind::AbstractMethod(_) => "AbstractMethod",
-            NodeKind::ConcreteMethod(_) => "ConcreteMethod",
-            NodeKind::MethodBody(_) => "MethodBody",
             NodeKind::LabelStatement(_) => "LabelStatement",
             NodeKind::GotoStatement(_) => "GotoStatement",
             NodeKind::Identifier(_) => "Identifier",
@@ -10490,16 +10488,7 @@ impl<'a> Node<'a> {
                 ClassishMember::Property(inner) => {
                     children.push(inner.into());
                 }
-                ClassishMember::AbstractMethod(inner) => {
-                    children.push(inner.into());
-                }
-                ClassishMember::AbstractConstructor(inner) => {
-                    children.push(inner.into());
-                }
-                ClassishMember::ConcreteMethod(inner) => {
-                    children.push(inner.into());
-                }
-                ClassishMember::ConcreteConstructor(inner) => {
+                ClassishMember::Method(inner) => {
                     children.push(inner.into());
                 }
                 ClassishMember::Missing(inner) => {
@@ -10507,6 +10496,56 @@ impl<'a> Node<'a> {
                 }
                 _ => {}
             },
+            NodeKind::Method(node) => {
+                for x in &node.attributes {
+                    children.push(x.into());
+                }
+                let x = &node.name;
+                children.push(x.into());
+                let x = &node.parameters;
+                children.push(x.into());
+                if let Some(child) = &node.return_type {
+                    children.push(child.into());
+                }
+                let x = &node.body;
+                children.push(x.into());
+            }
+            NodeKind::MethodBody(node) => {
+                let x = &node.kind;
+                children.push(x.into());
+            }
+            NodeKind::MethodBodyKind(node) => match node {
+                MethodBodyKind::Abstract(inner) => {
+                    children.push(inner.into());
+                }
+                MethodBodyKind::Concrete(inner) => {
+                    children.push(inner.into());
+                }
+                MethodBodyKind::Missing(inner) => {
+                    children.push(inner.into());
+                }
+                _ => {}
+            },
+            NodeKind::ConcreteMethodBody(node) => {
+                for x in &node.statements {
+                    children.push(x.into());
+                }
+            }
+            NodeKind::MethodParameterList(node) => {
+                for x in &node.parameters.inner {
+                    children.push(x.into());
+                }
+            }
+            NodeKind::MethodParameter(node) => {
+                let x = &node.name;
+                children.push(x.into());
+                if let Some(child) = &node.data_type {
+                    children.push(child.into());
+                }
+                if let Some(child) = &node.default {
+                    children.push(child.into());
+                }
+            }
             NodeKind::ConstantEntry(node) => {
                 let x = &node.name;
                 children.push(x.into());
@@ -10778,72 +10817,6 @@ impl<'a> Node<'a> {
                 }
                 let x = node.body.as_ref();
                 children.push(x.into());
-            }
-            NodeKind::ConstructorParameter(node) => {
-                let x = &node.name;
-                children.push(x.into());
-                if let Some(child) = &node.data_type {
-                    children.push(child.into());
-                }
-                if let Some(child) = &node.default {
-                    children.push(child.into());
-                }
-            }
-            NodeKind::ConstructorParameterList(node) => {
-                for x in &node.parameters.inner {
-                    children.push(x.into());
-                }
-            }
-            NodeKind::AbstractConstructor(node) => {
-                for x in &node.attributes {
-                    children.push(x.into());
-                }
-                let x = &node.name;
-                children.push(x.into());
-                let x = &node.parameters;
-                children.push(x.into());
-            }
-            NodeKind::ConcreteConstructor(node) => {
-                for x in &node.attributes {
-                    children.push(x.into());
-                }
-                let x = &node.name;
-                children.push(x.into());
-                let x = &node.parameters;
-                children.push(x.into());
-                let x = &node.body;
-                children.push(x.into());
-            }
-            NodeKind::AbstractMethod(node) => {
-                for x in &node.attributes {
-                    children.push(x.into());
-                }
-                let x = &node.name;
-                children.push(x.into());
-                let x = &node.parameters;
-                children.push(x.into());
-                if let Some(child) = &node.return_type {
-                    children.push(child.into());
-                }
-            }
-            NodeKind::ConcreteMethod(node) => {
-                for x in &node.attributes {
-                    children.push(x.into());
-                }
-                let x = &node.name;
-                children.push(x.into());
-                let x = &node.parameters;
-                children.push(x.into());
-                if let Some(child) = &node.return_type {
-                    children.push(child.into());
-                }
-                let x = &node.body;
-                children.push(x.into());
-            }
-            NodeKind::MethodBody(node) => {
-                for x in &node.statements {
-                    children.push(x.into());
-                }
             }
             NodeKind::LabelStatement(node) => {
                 let x = &node.label;
@@ -11931,6 +11904,14 @@ impl<'a> Node<'a> {
             NodeKind::ClassExtends(node) => NonNull::from(node).cast(),
             NodeKind::ClassImplements(node) => NonNull::from(node).cast(),
             NodeKind::ClassishMember(node) => NonNull::from(node).cast(),
+            NodeKind::Method(node) => NonNull::from(node).cast(),
+            NodeKind::MethodBody(node) => NonNull::from(node).cast(),
+            NodeKind::MethodBodyKind(node) => NonNull::from(node).cast(),
+            NodeKind::MissingMethodBody(node) => NonNull::from(node).cast(),
+            NodeKind::AbstractMethodBody(node) => NonNull::from(node).cast(),
+            NodeKind::ConcreteMethodBody(node) => NonNull::from(node).cast(),
+            NodeKind::MethodParameterList(node) => NonNull::from(node).cast(),
+            NodeKind::MethodParameter(node) => NonNull::from(node).cast(),
             NodeKind::MissingClassishMember(node) => NonNull::from(node).cast(),
             NodeKind::ConstantEntry(node) => NonNull::from(node).cast(),
             NodeKind::ClassishConstantEntry(node) => NonNull::from(node).cast(),
@@ -11970,13 +11951,6 @@ impl<'a> Node<'a> {
             NodeKind::ClosureUse(node) => NonNull::from(node).cast(),
             NodeKind::ClosureExpression(node) => NonNull::from(node).cast(),
             NodeKind::ArrowFunctionExpression(node) => NonNull::from(node).cast(),
-            NodeKind::ConstructorParameter(node) => NonNull::from(node).cast(),
-            NodeKind::ConstructorParameterList(node) => NonNull::from(node).cast(),
-            NodeKind::AbstractConstructor(node) => NonNull::from(node).cast(),
-            NodeKind::ConcreteConstructor(node) => NonNull::from(node).cast(),
-            NodeKind::AbstractMethod(node) => NonNull::from(node).cast(),
-            NodeKind::ConcreteMethod(node) => NonNull::from(node).cast(),
-            NodeKind::MethodBody(node) => NonNull::from(node).cast(),
             NodeKind::LabelStatement(node) => NonNull::from(node).cast(),
             NodeKind::GotoStatement(node) => NonNull::from(node).cast(),
             NodeKind::Identifier(node) => NonNull::from(node).cast(),
@@ -12782,6 +12756,54 @@ impl<'a> From<&'a ClassishMember> for Node<'a> {
     }
 }
 
+impl<'a> From<&'a Method> for Node<'a> {
+    fn from(node: &'a Method) -> Self {
+        Node::new(node.id(), NodeKind::Method(node), node.span())
+    }
+}
+
+impl<'a> From<&'a MethodBody> for Node<'a> {
+    fn from(node: &'a MethodBody) -> Self {
+        Node::new(node.id(), NodeKind::MethodBody(node), node.span())
+    }
+}
+
+impl<'a> From<&'a MethodBodyKind> for Node<'a> {
+    fn from(node: &'a MethodBodyKind) -> Self {
+        Node::new(node.id(), NodeKind::MethodBodyKind(node), node.span())
+    }
+}
+
+impl<'a> From<&'a MissingMethodBody> for Node<'a> {
+    fn from(node: &'a MissingMethodBody) -> Self {
+        Node::new(node.id(), NodeKind::MissingMethodBody(node), node.span())
+    }
+}
+
+impl<'a> From<&'a AbstractMethodBody> for Node<'a> {
+    fn from(node: &'a AbstractMethodBody) -> Self {
+        Node::new(node.id(), NodeKind::AbstractMethodBody(node), node.span())
+    }
+}
+
+impl<'a> From<&'a ConcreteMethodBody> for Node<'a> {
+    fn from(node: &'a ConcreteMethodBody) -> Self {
+        Node::new(node.id(), NodeKind::ConcreteMethodBody(node), node.span())
+    }
+}
+
+impl<'a> From<&'a MethodParameterList> for Node<'a> {
+    fn from(node: &'a MethodParameterList) -> Self {
+        Node::new(node.id(), NodeKind::MethodParameterList(node), node.span())
+    }
+}
+
+impl<'a> From<&'a MethodParameter> for Node<'a> {
+    fn from(node: &'a MethodParameter) -> Self {
+        Node::new(node.id(), NodeKind::MethodParameter(node), node.span())
+    }
+}
+
 impl<'a> From<&'a MissingClassishMember> for Node<'a> {
     fn from(node: &'a MissingClassishMember) -> Self {
         Node::new(
@@ -13041,52 +13063,6 @@ impl<'a> From<&'a ArrowFunctionExpression> for Node<'a> {
             NodeKind::ArrowFunctionExpression(node),
             node.span(),
         )
-    }
-}
-
-impl<'a> From<&'a ConstructorParameter> for Node<'a> {
-    fn from(node: &'a ConstructorParameter) -> Self {
-        Node::new(node.id(), NodeKind::ConstructorParameter(node), node.span())
-    }
-}
-
-impl<'a> From<&'a ConstructorParameterList> for Node<'a> {
-    fn from(node: &'a ConstructorParameterList) -> Self {
-        Node::new(
-            node.id(),
-            NodeKind::ConstructorParameterList(node),
-            node.span(),
-        )
-    }
-}
-
-impl<'a> From<&'a AbstractConstructor> for Node<'a> {
-    fn from(node: &'a AbstractConstructor) -> Self {
-        Node::new(node.id(), NodeKind::AbstractConstructor(node), node.span())
-    }
-}
-
-impl<'a> From<&'a ConcreteConstructor> for Node<'a> {
-    fn from(node: &'a ConcreteConstructor) -> Self {
-        Node::new(node.id(), NodeKind::ConcreteConstructor(node), node.span())
-    }
-}
-
-impl<'a> From<&'a AbstractMethod> for Node<'a> {
-    fn from(node: &'a AbstractMethod) -> Self {
-        Node::new(node.id(), NodeKind::AbstractMethod(node), node.span())
-    }
-}
-
-impl<'a> From<&'a ConcreteMethod> for Node<'a> {
-    fn from(node: &'a ConcreteMethod) -> Self {
-        Node::new(node.id(), NodeKind::ConcreteMethod(node), node.span())
-    }
-}
-
-impl<'a> From<&'a MethodBody> for Node<'a> {
-    fn from(node: &'a MethodBody) -> Self {
-        Node::new(node.id(), NodeKind::MethodBody(node), node.span())
     }
 }
 

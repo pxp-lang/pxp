@@ -134,10 +134,7 @@ impl Spanned for ClassishMember {
             ClassishMember::Constant(inner) => inner.span(),
             ClassishMember::TraitUsage(inner) => inner.span(),
             ClassishMember::Property(inner) => inner.span(),
-            ClassishMember::AbstractMethod(inner) => inner.span(),
-            ClassishMember::AbstractConstructor(inner) => inner.span(),
-            ClassishMember::ConcreteMethod(inner) => inner.span(),
-            ClassishMember::ConcreteConstructor(inner) => inner.span(),
+            ClassishMember::Method(inner) => inner.span(),
             ClassishMember::Missing(inner) => inner.span(),
         }
     }
@@ -497,6 +494,26 @@ impl Spanned for DocBlockTag {
             DocBlockTag::Uses(inner) => inner.span,
             DocBlockTag::Deprecated(inner) => inner.span,
             DocBlockTag::Generic(inner) => inner.span,
+        }
+    }
+}
+
+impl Method {
+    pub fn is_abstract(&self) -> bool {
+        self.modifiers.has_abstract() || matches!(self.body.kind, MethodBodyKind::Abstract(_))
+    }
+
+    pub fn is_concrete(&self) -> bool {
+        matches!(self.body.kind, MethodBodyKind::Concrete(_))
+    }
+}
+
+impl Spanned for MethodBodyKind {
+    fn span(&self) -> Span {
+        match self {
+            MethodBodyKind::Concrete(inner) => inner.span(),
+            MethodBodyKind::Abstract(inner) => inner.span(),
+            MethodBodyKind::Missing(inner) => inner.span(),
         }
     }
 }

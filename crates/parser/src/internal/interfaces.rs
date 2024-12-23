@@ -46,15 +46,27 @@ impl<'a> Parser<'a> {
 
                 match member {
                     ClassishMember::TraitUsage(TraitUsage { span, .. }) => {
-                        self.diagnostic(ParserDiagnostic::InterfaceCannotUseTraits, Severity::Error, span);
-                    },
-                    ClassishMember::ConcreteConstructor(ConcreteConstructor { span, .. }) | ClassishMember::ConcreteMethod(ConcreteMethod { span, .. }) => {
-                        self.diagnostic(ParserDiagnostic::InterfaceCannotContainConcreteMethods, Severity::Error, span);
-                    },
+                        self.diagnostic(
+                            ParserDiagnostic::InterfaceCannotUseTraits,
+                            Severity::Error,
+                            span,
+                        );
+                    }
+                    ClassishMember::Method(ref method) if method.is_concrete() => {
+                        self.diagnostic(
+                            ParserDiagnostic::InterfaceCannotContainConcreteMethods,
+                            Severity::Error,
+                            span,
+                        );
+                    }
                     ClassishMember::Property(ref property) if !property.is_public() => {
-                        self.diagnostic(ParserDiagnostic::InterfaceMembersMustBePublic, Severity::Error, property.span());
-                    },
-                    _ => {},
+                        self.diagnostic(
+                            ParserDiagnostic::InterfaceMembersMustBePublic,
+                            Severity::Error,
+                            property.span(),
+                        );
+                    }
+                    _ => {}
                 };
 
                 members.push(member);
