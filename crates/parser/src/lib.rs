@@ -46,7 +46,7 @@ impl<'a> Parser<'a> {
 
         ParseResult {
             ast,
-            diagnostics: parser.diagnostics.clone(),
+            diagnostics: parser.diagnostics,
         }
     }
 
