@@ -76,6 +76,18 @@ pub struct ShapeUnsealedType<N: Debug + Display> {
     pub value_type: Type<N>,
 }
 
+impl<N: Debug + Display> Display for ShapeUnsealedType<N> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "<")?;
+
+        if let Some(key_type) = &self.key_type {
+            write!(f, "{}, ", key_type)?;
+        }
+
+        write!(f, "{}>", self.value_type)
+    }
+}
+
 impl Display for ShapeItemKey {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -183,6 +195,14 @@ impl<N: Debug + Display> Display for Type<N> {
                     }
 
                     write!(f, "{}", item.value_type)?;
+                }
+
+                if ! sealed {
+                    write!(f, ", ...")?;
+
+                    if let Some(unsealed_type) = unsealed_type {
+                        write!(f, "{}", unsealed_type)?;
+                    }
                 }
 
                 write!(f, "}}")
