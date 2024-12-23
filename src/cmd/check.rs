@@ -4,7 +4,7 @@ use ariadne::{Label, Report, Source};
 use clap::Parser as Args;
 use colored::Colorize;
 use indicatif::ProgressBar;
-use pxp_diagnostics::Diagnostic;
+use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::Lexer;
 use pxp_parser::{Parser, ParserDiagnostic};
 
@@ -15,19 +15,25 @@ use crate::{config::{CheckConfig, Config}, utils::{find_php_files_in_list, sever
 pub struct Check {
     #[arg(short = 's', long, help = "Only perform high-level syntax checks.")]
     only_syntax: bool,
+
+    #[arg(short = 'e', long, help = "Only show errors.")]
+    only_errors: bool,
+
+    #[arg(short = 'w', long, help = "Only show warnings.")]
+    only_warnings: bool,
 }
 
 pub fn check(args: Check) -> anyhow::Result<()> {
     let config = Config::load()?;
 
     if args.only_syntax {
-        return only_syntax(config.check);
+        return only_syntax(args, config.check);
     }
 
     Ok(())
 }
 
-fn only_syntax(config: CheckConfig) -> anyhow::Result<()> {
+fn only_syntax(args: Check, config: CheckConfig) -> anyhow::Result<()> {
     let files = find_php_files_in_list(&config.paths)?;
     let pb = ProgressBar::new(files.len() as u64);
     let mut diagnostics: HashMap<&Path, Vec<Diagnostic<ParserDiagnostic>>> = HashMap::new();
@@ -54,7 +60,11 @@ fn only_syntax(config: CheckConfig) -> anyhow::Result<()> {
     }
 
     for (file, collection) in diagnostics.iter() {
-        println!("{}:", format!("{}", file.display()).yellow());
+        let collection = collection.iter().filter(|d| should_show_diagnostic(&args, d.severity)).collect::<Vec<_>>();
+
+        if collection.is_empty() {
+            continue;
+        }
 
         for diagnostic in collection.iter() {
             Report::build(severity_to_report_kind(diagnostic.severity), (file.display().to_string(), diagnostic.span.to_range()))
@@ -68,4 +78,16 @@ fn only_syntax(config: CheckConfig) -> anyhow::Result<()> {
     }
 
     Ok(())
+}
+
+fn should_show_diagnostic(args: &Check, severity: Severity) -> bool {
+    if args.only_errors && severity != Severity::Error {
+        return false;
+    }
+
+    if args.only_warnings && severity != Severity::Warning {
+        return false;
+    }
+
+    true
 }
