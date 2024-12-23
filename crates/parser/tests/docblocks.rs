@@ -148,11 +148,43 @@ snap!(
     docblock_array_shape,
     process("fixtures/docblocks/array-shape.php")
 );
-snap!(snapper, docblock_array_shape_keyless, process("fixtures/docblocks/array-shape-keyless.php"));
-snap!(snapper, docblock_array_shape_int_keyed, process("fixtures/docblocks/array-shape-int-keyed.php"));
-snap!(snapper, docblock_array_shape_ident_keyed, process("fixtures/docblocks/array-shape-ident-keyed.php"));
-snap!(snapper, docblock_array_shape_string_keyed, process("fixtures/docblocks/array-shape-string-keyed.php"));
-snap!(snapper, docblock_array_shape_mixed_keyed, process("fixtures/docblocks/array-shape-mixed-keyed.php"));
-snap!(snapper, docblock_array_shape_unsealed, process("fixtures/docblocks/array-shape-unsealed.php"));
-snap!(snapper, docblock_array_shape_unsealed_list, process("fixtures/docblocks/array-shape-unsealed-list.php"));
-snap!(snapper, docblock_array_shape_variadic, process("fixtures/docblocks/array-shape-variadic.php"));
+snap!(
+    snapper,
+    docblock_array_shape_keyless,
+    process("fixtures/docblocks/array-shape-keyless.php")
+);
+snap!(
+    snapper,
+    docblock_array_shape_int_keyed,
+    process("fixtures/docblocks/array-shape-int-keyed.php")
+);
+snap!(
+    snapper,
+    docblock_array_shape_ident_keyed,
+    process("fixtures/docblocks/array-shape-ident-keyed.php")
+);
+snap!(
+    snapper,
+    docblock_array_shape_string_keyed,
+    process("fixtures/docblocks/array-shape-string-keyed.php")
+);
+snap!(
+    snapper,
+    docblock_array_shape_mixed_keyed,
+    process("fixtures/docblocks/array-shape-mixed-keyed.php")
+);
+snap!(
+    snapper,
+    docblock_array_shape_unsealed,
+    process("fixtures/docblocks/array-shape-unsealed.php")
+);
+snap!(
+    snapper,
+    docblock_array_shape_unsealed_list,
+    process("fixtures/docblocks/array-shape-unsealed-list.php")
+);
+snap!(
+    snapper,
+    docblock_array_shape_variadic,
+    process("fixtures/docblocks/array-shape-variadic.php")
+);

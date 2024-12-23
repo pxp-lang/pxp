@@ -5,12 +5,7 @@ use pxp_token::{Token, TokenKind};
 use crate::Parser;
 
 impl<'a> Parser<'a> {
-    pub(crate) fn add_import(
-        &mut self,
-        kind: &UseKind,
-        name: &ByteStr,
-        alias: Option<&ByteStr>,
-    ) {
+    pub(crate) fn add_import(&mut self, kind: &UseKind, name: &ByteStr, alias: Option<&ByteStr>) {
         // We first need to check if the alias has been provided, and if not, create a new
         // symbol using the last part of the name.
         let alias = match alias {
@@ -19,7 +14,10 @@ impl<'a> Parser<'a> {
         };
 
         // Then we can insert the import into the hashmap.
-        self.imports.get_mut(kind).unwrap().insert(alias.to_bytestring(), name.to_bytestring());
+        self.imports
+            .get_mut(kind)
+            .unwrap()
+            .insert(alias.to_bytestring(), name.to_bytestring());
     }
 
     pub(crate) fn add_prefixed_import(

@@ -36,7 +36,7 @@ pub enum Type<N: Debug + Display> {
         base: Box<Type<N>>,
         items: Vec<ShapeItem<N>>,
         sealed: bool,
-        unsealed_type: Option<Box<ShapeUnsealedType<N>>>
+        unsealed_type: Option<Box<ShapeUnsealedType<N>>>,
     },
     ConditionalForParameter {
         parameter: ByteString,
@@ -165,7 +165,12 @@ impl<N: Debug + Display> Type<N> {
 impl<N: Debug + Display> Display for Type<N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
-            Type::Shaped { base, items, sealed, unsealed_type } => {
+            Type::Shaped {
+                base,
+                items,
+                sealed,
+                unsealed_type,
+            } => {
                 write!(f, "{base}{{")?;
 
                 for (i, item) in items.iter().enumerate() {
@@ -181,7 +186,7 @@ impl<N: Debug + Display> Display for Type<N> {
                 }
 
                 write!(f, "}}")
-            },
+            }
             Type::ClassString => write!(f, "class-string"),
             Type::ValueOf => write!(f, "value-of"),
             Type::Named(inner) => write!(f, "{}", inner),

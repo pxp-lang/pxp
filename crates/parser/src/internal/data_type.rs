@@ -235,8 +235,10 @@ impl<'a> Parser<'a> {
                     self.parse_docblock_callable(r#type)
                 } else if current.kind == TokenKind::LeftBracket {
                     self.parse_docblock_array_or_offset_access(r#type)
-                } else if matches!(r#type, Type::Array | Type::Object) && current.kind == TokenKind::LeftBrace {
-                    self.parse_docblock_array_shape(r#type)    
+                } else if matches!(r#type, Type::Array | Type::Object)
+                    && current.kind == TokenKind::LeftBrace
+                {
+                    self.parse_docblock_array_shape(r#type)
                 } else {
                     r#type
                 }
@@ -264,14 +266,16 @@ impl<'a> Parser<'a> {
 
                 if self.current_kind() == TokenKind::LessThan {
                     if lhs == Type::Array {
-                        unsealed_type = Some(Box::new(self.parse_docblock_array_shape_unsealed_type()));
+                        unsealed_type =
+                            Some(Box::new(self.parse_docblock_array_shape_unsealed_type()));
                     } else {
-                        unsealed_type = Some(Box::new(self.parse_docblock_list_shape_unsealed_type()));
+                        unsealed_type =
+                            Some(Box::new(self.parse_docblock_list_shape_unsealed_type()));
                     }
                 }
 
                 self.skip_doc_eol();
-                
+
                 if self.current_kind() == TokenKind::Comma {
                     self.next();
                 }
@@ -291,7 +295,12 @@ impl<'a> Parser<'a> {
         self.skip_doc_eol();
         self.expect(TokenKind::RightBrace);
 
-        Type::Shaped { base: Box::new(lhs), items, sealed, unsealed_type }
+        Type::Shaped {
+            base: Box::new(lhs),
+            items,
+            sealed,
+            unsealed_type,
+        }
     }
 
     fn parse_docblock_array_shape_unsealed_type(&mut self) -> ShapeUnsealedType<Name> {
@@ -314,7 +323,10 @@ impl<'a> Parser<'a> {
 
         self.expect(TokenKind::GreaterThan);
 
-        ShapeUnsealedType { key_type, value_type }
+        ShapeUnsealedType {
+            key_type,
+            value_type,
+        }
     }
 
     fn parse_docblock_list_shape_unsealed_type(&mut self) -> ShapeUnsealedType<Name> {
@@ -326,7 +338,10 @@ impl<'a> Parser<'a> {
         self.skip_doc_eol();
         self.expect(TokenKind::GreaterThan);
 
-        ShapeUnsealedType { key_type: None, value_type }
+        ShapeUnsealedType {
+            key_type: None,
+            value_type,
+        }
     }
 
     fn parse_docblock_array_shape_item(&mut self) -> ShapeItem<Name> {
@@ -334,20 +349,29 @@ impl<'a> Parser<'a> {
         self.skip_doc_eol();
         let value_type = self.parse_docblock_type();
 
-        ShapeItem { key_name, value_type, optional }
+        ShapeItem {
+            key_name,
+            value_type,
+            optional,
+        }
     }
 
     fn parse_docblock_array_shape_key(&mut self) -> (Option<ShapeItemKey>, bool) {
-        if ! matches!(self.peek_kind(), TokenKind::Colon | TokenKind::Question) {
+        if !matches!(self.peek_kind(), TokenKind::Colon | TokenKind::Question) {
             return (None, false);
         }
 
         let key = match self.current_kind() {
-            TokenKind::LiteralInteger => self.next_but_first(|parser| Some(ShapeItemKey::Integer(parser.current_symbol_as_bytestring()))),
-            TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString => self.next_but_first(|parser| {
+            TokenKind::LiteralInteger => self.next_but_first(|parser| {
+                Some(ShapeItemKey::Integer(parser.current_symbol_as_bytestring()))
+            }),
+            TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString => self
+                .next_but_first(|parser| {
+                    Some(ShapeItemKey::String(parser.current_symbol_as_bytestring()))
+                }),
+            _ => self.next_but_first(|parser| {
                 Some(ShapeItemKey::String(parser.current_symbol_as_bytestring()))
             }),
-            _ => self.next_but_first(|parser| Some(ShapeItemKey::String(parser.current_symbol_as_bytestring()))),
         };
 
         let optional = if self.current_kind() == TokenKind::Question {
