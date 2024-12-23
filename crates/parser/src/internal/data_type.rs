@@ -235,7 +235,7 @@ impl<'a> Parser<'a> {
                     self.parse_docblock_callable(r#type)
                 } else if current.kind == TokenKind::LeftBracket {
                     self.parse_docblock_array_or_offset_access(r#type)
-                } else if matches!(r#type, Type::Array) && current.kind == TokenKind::LeftBrace {
+                } else if matches!(r#type, Type::Array | Type::Object) && current.kind == TokenKind::LeftBrace {
                     self.parse_docblock_array_shape(r#type)    
                 } else {
                     r#type
