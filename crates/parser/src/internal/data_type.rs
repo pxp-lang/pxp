@@ -427,7 +427,8 @@ impl<'a> Parser<'a> {
                 None
             };
 
-            // FIXME: Parse variance keywords.
+            self.skip_doc_eol();
+
             if self.current_kind() == TokenKind::Asterisk {
                 self.next();
 
