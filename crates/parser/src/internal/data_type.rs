@@ -854,6 +854,7 @@ impl<'a> Parser<'a> {
                     b"class-string" if parser.is_in_docblock() => Some(Type::ClassString),
                     b"numeric-string" if parser.is_in_docblock() => Some(Type::NumericString),
                     b"non-empty-string" if parser.is_in_docblock() => Some(Type::NonEmptyString),
+                    b"non-empty-mixed" if parser.is_in_docblock() => Some(Type::NonEmptyMixed),
                     _ => {
                         let id = parser.id();
 
