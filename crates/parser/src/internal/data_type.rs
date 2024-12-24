@@ -692,6 +692,11 @@ impl<'a> Parser<'a> {
 
                 Some(Type::Array)
             }
+            TokenKind::List if self.is_in_docblock() => {
+                self.next();
+
+                Some(Type::List)
+            },
             TokenKind::Callable => {
                 self.next();
 
