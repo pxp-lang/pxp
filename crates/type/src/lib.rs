@@ -57,22 +57,24 @@ pub enum Type<N: Debug + Display> {
     ValueOf,
     This,
     Missing,
-    ConstExpr(Box<ConstExpr>),
+    ConstExpr(Box<ConstExpr<N>>),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum ConstExpr {
+pub enum ConstExpr<N: Debug + Display> {
     Integer(ByteString),
     Float(ByteString),
     String(ByteString),
+    ConstFetch(Type<N>, ByteString),
 }
 
-impl Display for ConstExpr {
+impl<N: Debug + Display> Display for ConstExpr<N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Integer(value) => write!(f, "{}", value),
             Self::Float(value) => write!(f, "{}", value),
             Self::String(value) => write!(f, "{}", value),
+            Self::ConstFetch(target, names) => write!(f, "{}::{}", target, names),
         }
     }
 }

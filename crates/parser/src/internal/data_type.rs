@@ -1,6 +1,7 @@
 use crate::internal::diagnostics::ParserDiagnostic;
 use crate::Parser;
 use pxp_ast::*;
+use pxp_bytestring::ByteString;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
@@ -172,8 +173,9 @@ impl<'a> Parser<'a> {
         Type::Missing
     }
 
-    fn current_is_docblock_const_expr(&self) -> bool {
+    fn current_is_docblock_const_expr(&mut self) -> bool {
         matches!(self.current_kind(), TokenKind::LiteralInteger | TokenKind::LiteralFloat | TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString)
+            || (matches!(self.current_kind(), TokenKind::Identifier | TokenKind::QualifiedIdentifier | TokenKind::FullyQualifiedIdentifier) && self.peek_kind() == TokenKind::DoubleColon)
     }
 
     fn parse_docblock_const_expr(&mut self) -> Type<Name> {
@@ -181,8 +183,51 @@ impl<'a> Parser<'a> {
             TokenKind::LiteralInteger => self.next_but_first(|parser| Type::ConstExpr(Box::new(ConstExpr::Integer(parser.current_symbol_as_bytestring())))),
             TokenKind::LiteralFloat => self.next_but_first(|parser| Type::ConstExpr(Box::new(ConstExpr::Float(parser.current_symbol_as_bytestring())))),
             TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString => self.next_but_first(|parser| Type::ConstExpr(Box::new(ConstExpr::String(parser.current_symbol_as_bytestring())))),
+            TokenKind::Identifier | TokenKind::QualifiedIdentifier | TokenKind::FullyQualifiedIdentifier if self.peek_kind() == TokenKind::DoubleColon => self.parse_docblock_const_fetch_expr(),
             _ => unreachable!()
         }
+    }
+
+    fn parse_docblock_const_fetch_expr(&mut self) -> Type<Name> {
+        let target = self.parse_full_name(UseKind::Normal);
+
+        self.expect(TokenKind::DoubleColon);
+
+        let mut class_constant_name = ByteString::empty();
+        let mut last_type = None;
+
+        loop {
+            if self.is_eof() {
+                self.diagnostic(ParserDiagnostic::UnexpectedEndOfFile, Severity::Warning, self.current_span());
+
+                break;
+            }
+
+            if last_type != Some(TokenKind::Identifier) && self.current_kind() == TokenKind::Identifier {
+                class_constant_name.extend(&self.current_symbol_as_bytestring());
+                self.next();
+                last_type = Some(TokenKind::Identifier);
+
+                continue;
+            }
+
+            if last_type != Some(TokenKind::Asterisk) && self.current_kind() == TokenKind::Asterisk {
+                class_constant_name.push(b'*');
+                self.next();
+                last_type = Some(TokenKind::Asterisk);
+                continue;
+            }
+
+            if last_type == None {
+                self.diagnostic(ParserDiagnostic::ExpectedTokenExFound { expected: vec![TokenKind::Identifier, TokenKind::Asterisk] }, Severity::Warning, self.current_span());
+
+                break;
+            }
+
+            break;
+        }
+
+        Type::ConstExpr(Box::new(ConstExpr::ConstFetch(Type::Named(target), class_constant_name)))
     }
 
     fn parse_docblock_atomic(&mut self) -> Type<Name> {

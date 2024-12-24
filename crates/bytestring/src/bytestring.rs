@@ -26,6 +26,10 @@ impl ByteString {
         self.0.extend_from_slice(&other.0);
     }
 
+    pub fn push(&mut self, byte: u8) {
+        self.0.push(byte);
+    }
+
     pub fn as_bytes(&self) -> &[u8] {
         &self.0
     }
