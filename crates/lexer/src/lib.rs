@@ -302,7 +302,7 @@ impl<'a> Lexer<'a> {
             return self.docblock_eol();
         }
 
-        match &self.source.read(3) {
+        match &self.source.read(5) {
             [b'.', b'.', b'.', ..] => {
                 self.source.skip(3);
 
@@ -376,6 +376,13 @@ impl<'a> Lexer<'a> {
 
                 Token::new(kind, span, self.source.span_range(span))
             }
+            [b'e', b'm', b'p', b't', b'y', ..] => {
+                self.source.skip(5);
+
+                let span = self.source.span();
+
+                Token::new(TokenKind::PhpDocEmpty, span, self.source.span_range(span))
+            },
             [b'n', b'o', b't', ..] => {
                 self.source.skip(3);
 

@@ -777,6 +777,11 @@ impl<'a> Parser<'a> {
 
     fn parse_optional_simple_data_type(&mut self) -> Option<Type<Name>> {
         match self.current_kind() {
+            TokenKind::PhpDocEmpty if self.is_in_docblock() => {
+                self.next();
+
+                Some(Type::Empty)
+            }
             TokenKind::Array => {
                 self.next();
 
