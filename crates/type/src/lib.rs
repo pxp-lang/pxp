@@ -57,6 +57,24 @@ pub enum Type<N: Debug + Display> {
     ValueOf,
     This,
     Missing,
+    ConstExpr(Box<ConstExpr>),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum ConstExpr {
+    Integer(ByteString),
+    Float(ByteString),
+    String(ByteString),
+}
+
+impl Display for ConstExpr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Integer(value) => write!(f, "{}", value),
+            Self::Float(value) => write!(f, "{}", value),
+            Self::String(value) => write!(f, "{}", value),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -214,6 +232,7 @@ impl<N: Debug + Display> Type<N> {
 impl<N: Debug + Display> Display for Type<N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
+            Type::ConstExpr(inner) => write!(f, "{}", inner),
             Type::List => write!(f, "list"),
             Type::NumericString => write!(f, "numeric-string"),
             Type::Shaped {

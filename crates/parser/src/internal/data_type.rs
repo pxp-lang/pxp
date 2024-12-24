@@ -5,8 +5,7 @@ use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
 use pxp_type::{
-    CallableParameter, GenericTypeArgument, GenericTypeArgumentVariance, ShapeItem, ShapeItemKey,
-    ShapeUnsealedType, Type,
+    CallableParameter, ConstExpr, GenericTypeArgument, GenericTypeArgumentVariance, ShapeItem, ShapeItemKey, ShapeUnsealedType, Type
 };
 
 impl<'a> Parser<'a> {
@@ -173,6 +172,19 @@ impl<'a> Parser<'a> {
         Type::Missing
     }
 
+    fn current_is_docblock_const_expr(&self) -> bool {
+        matches!(self.current_kind(), TokenKind::LiteralInteger | TokenKind::LiteralFloat | TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString)
+    }
+
+    fn parse_docblock_const_expr(&mut self) -> Type<Name> {
+        match self.current_kind() {
+            TokenKind::LiteralInteger => self.next_but_first(|parser| Type::ConstExpr(Box::new(ConstExpr::Integer(parser.current_symbol_as_bytestring())))),
+            TokenKind::LiteralFloat => self.next_but_first(|parser| Type::ConstExpr(Box::new(ConstExpr::Float(parser.current_symbol_as_bytestring())))),
+            TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString => self.next_but_first(|parser| Type::ConstExpr(Box::new(ConstExpr::String(parser.current_symbol_as_bytestring())))),
+            _ => unreachable!()
+        }
+    }
+
     fn parse_docblock_atomic(&mut self) -> Type<Name> {
         match self.current_kind() {
             TokenKind::LeftParen => {
@@ -214,6 +226,7 @@ impl<'a> Parser<'a> {
                     Type::This
                 }
             }
+            _ if self.current_is_docblock_const_expr() => self.parse_docblock_const_expr(),
             _ => {
                 let r#type = self
                     .parse_optional_simple_data_type()
