@@ -236,7 +236,7 @@ impl<N: Debug + Display> Display for Type<N> {
                     write!(f, "{}", item.value_type)?;
                 }
 
-                if ! sealed {
+                if !sealed {
                     write!(f, ", ...")?;
 
                     if let Some(unsealed_type) = unsealed_type {

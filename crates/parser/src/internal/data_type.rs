@@ -4,7 +4,10 @@ use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
 use pxp_token::TokenKind;
-use pxp_type::{CallableParameter, GenericTypeArgument, GenericTypeArgumentVariance, ShapeItem, ShapeItemKey, ShapeUnsealedType, Type};
+use pxp_type::{
+    CallableParameter, GenericTypeArgument, GenericTypeArgumentVariance, ShapeItem, ShapeItemKey,
+    ShapeUnsealedType, Type,
+};
 
 impl<'a> Parser<'a> {
     pub fn parse_data_type(&mut self) -> DataType {
@@ -404,7 +407,11 @@ impl<'a> Parser<'a> {
 
             is_first = false;
 
-            let variance = if self.current_kind() == TokenKind::Identifier && matches!(self.current_symbol().as_ref(), b"covariant" | b"contravariant") {
+            let variance = if self.current_kind() == TokenKind::Identifier
+                && matches!(
+                    self.current_symbol().as_ref(),
+                    b"covariant" | b"contravariant"
+                ) {
                 match self.current_symbol().as_ref() {
                     b"covariant" => {
                         self.next();
@@ -426,7 +433,7 @@ impl<'a> Parser<'a> {
 
                 generic_types.push(GenericTypeArgument {
                     r#type: Type::Mixed,
-                    variance: Some(GenericTypeArgumentVariance::Bivariant)
+                    variance: Some(GenericTypeArgumentVariance::Bivariant),
                 });
             } else {
                 generic_types.push(GenericTypeArgument {
@@ -718,7 +725,7 @@ impl<'a> Parser<'a> {
                 self.next();
 
                 Some(Type::List)
-            },
+            }
             TokenKind::Callable => {
                 self.next();
 
