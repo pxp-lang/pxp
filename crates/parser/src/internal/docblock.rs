@@ -80,8 +80,8 @@ impl<'a> Parser<'a> {
 
     fn parse_docblock_tag(&mut self) -> DocBlockTagNode {
         let tag = match self.current_symbol().as_ref() {
-            b"@param" => self.param_tag(),
-            b"@var" => self.var_tag(),
+            b"@param" | b"@phpstan-param" | b"@psalm-param" | b"@phan-param" => self.param_tag(),
+            b"@var" | b"@phpstan-var" | b"@psalm-var" | b"@phan-var" => self.var_tag(),
             _ => self.generic_tag(),
         };
 
