@@ -21,6 +21,7 @@ pub enum Type<N: Debug + Display> {
     ClassString,
     String,
     NumericString,
+    NonEmptyString,
     List,
     Array,
     Object,
@@ -234,6 +235,7 @@ impl<N: Debug + Display> Type<N> {
 impl<N: Debug + Display> Display for Type<N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
+            Type::NonEmptyString => write!(f, "non-empty-string"),
             Type::ConstExpr(inner) => write!(f, "{}", inner),
             Type::List => write!(f, "list"),
             Type::NumericString => write!(f, "numeric-string"),

@@ -415,6 +415,14 @@ impl<'a> Lexer<'a> {
 
                 // Inside of a DocBlock, we can support non-standard identifiers such as `array-key`, `non-empty-string`, etc.
                 let (span, symbol) = match self.source.span_range(self.source.span()).as_ref() {
+                    b"non" if self.source.read(13) == b"-empty-string" => {
+                        self.source.skip(13);
+
+                        (
+                            self.source.span(),
+                            self.source.span_range(self.source.span()),
+                        )
+                    },
                     b"class" if self.source.read(7) == b"-string" => {
                         self.source.skip(7);
 
