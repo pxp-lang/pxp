@@ -439,6 +439,14 @@ impl<'a> Lexer<'a> {
                             self.source.span_range(self.source.span()),
                         )
                     }
+                    b"numeric" if self.source.read(7) == b"-string" => {
+                        self.source.skip(7);
+
+                        (
+                            self.source.span(),
+                            self.source.span_range(self.source.span()),
+                        )
+                    }
                     _ => (
                         self.source.span(),
                         self.source.span_range(self.source.span()),

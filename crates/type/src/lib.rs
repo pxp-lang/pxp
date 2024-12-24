@@ -20,6 +20,7 @@ pub enum Type<N: Debug + Display> {
     Integer,
     ClassString,
     String,
+    NumericString,
     Array,
     Object,
     #[default]
@@ -177,6 +178,7 @@ impl<N: Debug + Display> Type<N> {
 impl<N: Debug + Display> Display for Type<N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
+            Type::NumericString => write!(f, "numeric-string"),
             Type::Shaped {
                 base,
                 items,

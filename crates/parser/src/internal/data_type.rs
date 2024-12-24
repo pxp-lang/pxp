@@ -757,6 +757,7 @@ impl<'a> Parser<'a> {
                     b"array-key" if parser.is_in_docblock() => Some(Type::ArrayKey),
                     b"value-of" if parser.is_in_docblock() => Some(Type::ValueOf),
                     b"class-string" if parser.is_in_docblock() => Some(Type::ClassString),
+                    b"numeric-string" if parser.is_in_docblock() => Some(Type::NumericString),
                     _ => {
                         let id = parser.id();
 
