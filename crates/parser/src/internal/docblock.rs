@@ -1,7 +1,5 @@
 use pxp_ast::{
-    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockParamClosureThisTag,
-    DocBlockParamTag, DocBlockTag, DocBlockTagNode, DocBlockTextNode, DocBlockVarTag,
-    SimpleVariable,
+    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockParamClosureThisTag, DocBlockParamTag, DocBlockReturnTag, DocBlockTag, DocBlockTagNode, DocBlockTextNode, DocBlockVarTag, SimpleVariable
 };
 use pxp_bytestring::ByteString;
 use pxp_diagnostics::Severity;
@@ -28,7 +26,7 @@ impl<'a> Parser<'a> {
             self.next();
         }
 
-        while self.current_kind() == TokenKind::PhpDocHorizontalWhitespace {
+        while !self.is_eof() && self.current_kind() == TokenKind::PhpDocHorizontalWhitespace {
             self.next();
         }
     }
@@ -85,6 +83,7 @@ impl<'a> Parser<'a> {
             b"@param-closure-this" | b"@phpstan-param-closure-this" => self.param_closure_this_tag(),
             b"@param" | b"@phpstan-param" | b"@psalm-param" | b"@phan-param" => self.param_tag(),
             b"@var" | b"@phpstan-var" | b"@psalm-var" | b"@phan-var" => self.var_tag(),
+            b"@return" | b"@phpstan-return" | b"@psalm-return" | b"@phan-return" | b"@phan-real-return" => self.return_tag(),
             _ => self.generic_tag(),
         };
 
@@ -217,6 +216,33 @@ impl<'a> Parser<'a> {
         })
     }
 
+    fn return_tag(&mut self) -> DocBlockTag {
+        let tag = self.current().to_owned();
+
+        self.next();
+        self.skip_horizontal_whitespace();
+
+        let data_type = self.parse_optional_data_type();
+
+        self.skip_horizontal_whitespace();
+
+        let (text, text_span) = self.read_text_until_eol_or_close();
+
+        DocBlockTag::Return(DocBlockReturnTag {
+            id: self.id(),
+            span: if let Some(text_span) = text_span {
+                tag.span.join(text_span)
+            } else if data_type.is_some() {
+                tag.span.join(data_type.span())
+            } else {
+                tag.span
+            },
+            tag,
+            data_type,
+            text,
+        })
+    }
+
     fn generic_tag(&mut self) -> DocBlockTag {
         let tag = self.current().to_owned();
 
@@ -256,6 +282,10 @@ impl<'a> Parser<'a> {
         let start_span = self.current_span();
 
         loop {
+            if self.is_eof() {
+                break;
+            }
+
             if matches!(
                 self.current_kind(),
                 TokenKind::PhpDocEol | TokenKind::ClosePhpDoc
@@ -279,7 +309,7 @@ impl<'a> Parser<'a> {
     }
 
     fn skip_horizontal_whitespace(&mut self) {
-        while let TokenKind::PhpDocHorizontalWhitespace = self.current_kind() {
+        while !self.is_eof() && self.current_kind() == TokenKind::PhpDocHorizontalWhitespace {
             self.next();
         }
     }

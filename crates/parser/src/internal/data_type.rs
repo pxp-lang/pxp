@@ -657,7 +657,7 @@ impl<'a> Parser<'a> {
     fn parse_docblock_subparse(&mut self) -> Type<Name> {
         match self.current_kind() {
             TokenKind::Question => self.parse_docblock_nullable(),
-            TokenKind::Variable => self.parse_docblock_conditional_for_parameter(),
+            TokenKind::Variable if self.current_symbol().as_ref() != b"$this" => self.parse_docblock_conditional_for_parameter(),
             _ => {
                 let r#type = self.parse_docblock_atomic();
 
