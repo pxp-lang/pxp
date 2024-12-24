@@ -1,5 +1,7 @@
 use pxp_ast::{
-    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockParamClosureThisTag, DocBlockParamTag, DocBlockReturnTag, DocBlockTag, DocBlockTagNode, DocBlockTextNode, DocBlockVarTag, SimpleVariable
+    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockParamClosureThisTag,
+    DocBlockParamTag, DocBlockReturnTag, DocBlockTag, DocBlockTagNode, DocBlockTextNode,
+    DocBlockVarTag, SimpleVariable,
 };
 use pxp_bytestring::ByteString;
 use pxp_diagnostics::Severity;
@@ -80,10 +82,13 @@ impl<'a> Parser<'a> {
 
     fn parse_docblock_tag(&mut self) -> DocBlockTagNode {
         let tag = match self.current_symbol().as_ref() {
-            b"@param-closure-this" | b"@phpstan-param-closure-this" => self.param_closure_this_tag(),
+            b"@param-closure-this" | b"@phpstan-param-closure-this" => {
+                self.param_closure_this_tag()
+            }
             b"@param" | b"@phpstan-param" | b"@psalm-param" | b"@phan-param" => self.param_tag(),
             b"@var" | b"@phpstan-var" | b"@psalm-var" | b"@phan-var" => self.var_tag(),
-            b"@return" | b"@phpstan-return" | b"@psalm-return" | b"@phan-return" | b"@phan-real-return" => self.return_tag(),
+            b"@return" | b"@phpstan-return" | b"@psalm-return" | b"@phan-return"
+            | b"@phan-real-return" => self.return_tag(),
             _ => self.generic_tag(),
         };
 

@@ -42,7 +42,7 @@ fn only_syntax(args: Check, config: CheckConfig) -> anyhow::Result<()> {
     let pb = ProgressBar::new(files.len() as u64).with_style(style);
     let mut diagnostics: HashMap<&Path, Vec<Diagnostic<ParserDiagnostic>>> = HashMap::new();
 
-    for file in files.iter() {        
+    for file in files.iter() {
         pb.set_message(file.display().to_string());
 
         let contents = std::fs::read(&file)?;
