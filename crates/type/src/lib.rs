@@ -6,7 +6,7 @@ use pxp_span::Span;
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Default)]
 pub enum Type<N: Debug + Display> {
     Named(N),
-    Generic(Box<Type<N>>, Vec<Type<N>>),
+    Generic(Box<Type<N>>, Vec<GenericTypeArgument<N>>),
     Nullable(Box<Type<N>>),
     Union(Vec<Type<N>>),
     Intersection(Vec<Type<N>>),
@@ -57,6 +57,41 @@ pub enum Type<N: Debug + Display> {
     ValueOf,
     This,
     Missing,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct GenericTypeArgument<N: Debug + Display> {
+    pub r#type: Type<N>,
+    pub variance: Option<GenericTypeArgumentVariance>,
+}
+
+impl<N: Debug + Display> Display for GenericTypeArgument<N> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(variance) = &self.variance {
+            write!(f, "{} ", variance)?;
+        }
+
+        write!(f, "{}", self.r#type)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum GenericTypeArgumentVariance {
+    Invariant,
+    Covariant,
+    Contravariant,
+    Bivariant,
+}
+
+impl Display for GenericTypeArgumentVariance {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Invariant => write!(f, ""),
+            Self::Covariant => write!(f, "covariant"),
+            Self::Contravariant => write!(f, "contravariant"),
+            Self::Bivariant => write!(f, "bivariant"),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
