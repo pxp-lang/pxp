@@ -175,7 +175,7 @@ impl<'a> Parser<'a> {
 
     fn current_is_docblock_const_expr(&mut self) -> bool {
         matches!(self.current_kind(), TokenKind::LiteralInteger | TokenKind::LiteralFloat | TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString)
-            || (matches!(self.current_kind(), TokenKind::Identifier | TokenKind::QualifiedIdentifier | TokenKind::FullyQualifiedIdentifier) && self.peek_kind() == TokenKind::DoubleColon)
+            || (matches!(self.current_kind(), TokenKind::Identifier | TokenKind::QualifiedIdentifier | TokenKind::FullyQualifiedIdentifier | TokenKind::Self_ | TokenKind::Static | TokenKind::Parent) && self.peek_kind() == TokenKind::DoubleColon)
     }
 
     fn parse_docblock_const_expr(&mut self) -> Type<Name> {
@@ -183,13 +183,19 @@ impl<'a> Parser<'a> {
             TokenKind::LiteralInteger => self.next_but_first(|parser| Type::ConstExpr(Box::new(ConstExpr::Integer(parser.current_symbol_as_bytestring())))),
             TokenKind::LiteralFloat => self.next_but_first(|parser| Type::ConstExpr(Box::new(ConstExpr::Float(parser.current_symbol_as_bytestring())))),
             TokenKind::LiteralSingleQuotedString | TokenKind::LiteralDoubleQuotedString => self.next_but_first(|parser| Type::ConstExpr(Box::new(ConstExpr::String(parser.current_symbol_as_bytestring())))),
-            TokenKind::Identifier | TokenKind::QualifiedIdentifier | TokenKind::FullyQualifiedIdentifier if self.peek_kind() == TokenKind::DoubleColon => self.parse_docblock_const_fetch_expr(),
+            TokenKind::Identifier | TokenKind::QualifiedIdentifier | TokenKind::FullyQualifiedIdentifier | TokenKind::Self_ | TokenKind::Static | TokenKind::Parent if self.peek_kind() == TokenKind::DoubleColon => self.parse_docblock_const_fetch_expr(),
             _ => unreachable!()
         }
     }
 
     fn parse_docblock_const_fetch_expr(&mut self) -> Type<Name> {
-        let target = self.parse_full_name(UseKind::Normal);
+        let target = match self.current_kind() {
+            TokenKind::Identifier | TokenKind::QualifiedIdentifier | TokenKind::FullyQualifiedIdentifier => Type::Named(self.parse_full_name(UseKind::Normal)),
+            TokenKind::Self_ => self.next_but_first(|_| Type::SelfReference),
+            TokenKind::Static => self.next_but_first(|_| Type::StaticReference),
+            TokenKind::Parent => self.next_but_first(|_| Type::ParentReference),
+            _ => unreachable!()
+        };
 
         self.expect(TokenKind::DoubleColon);
 
@@ -227,7 +233,7 @@ impl<'a> Parser<'a> {
             break;
         }
 
-        Type::ConstExpr(Box::new(ConstExpr::ConstFetch(Type::Named(target), class_constant_name)))
+        Type::ConstExpr(Box::new(ConstExpr::ConstFetch(target, class_constant_name)))
     }
 
     fn parse_docblock_atomic(&mut self) -> Type<Name> {
