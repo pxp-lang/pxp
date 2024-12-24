@@ -313,7 +313,7 @@ impl<'a> Lexer<'a> {
             [b'@', ident_start!(), ..] => {
                 self.source.skip(2);
 
-                while let Some(ident_start!() | b'\\') = self.source.current() {
+                while let Some(ident_start!() | b'\\' | b'-') = self.source.current() {
                     self.source.next();
                 }
 

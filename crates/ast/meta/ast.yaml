@@ -2056,6 +2056,7 @@ DocBlockTagNode:
 DocBlockTag:
   children: [self]
   as: Enum
+  ParamClosureThis: DocBlockParamClosureThisTag
   Param: DocBlockParamTag
   Return: DocBlockReturnTag
   Throws: DocBlockThrowsTag
@@ -2068,6 +2069,13 @@ DocBlockTag:
   Uses: DocBlockUsesTag
   Deprecated: DocBlockDeprecatedTag
   Generic: DocBlockGenericTag
+
+DocBlockParamClosureThisTag:
+  span: Span
+  tag: OwnedToken
+  r#type: DataType
+  variable: SimpleVariable
+  text: Option<ByteString>
 
 DocBlockParamTag:
   span: Span

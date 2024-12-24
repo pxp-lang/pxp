@@ -2472,6 +2472,9 @@ pub fn walk_doc_block_tag_node_mut<V: VisitorMut + ?Sized>(
 
 pub fn walk_doc_block_tag_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mut DocBlockTag) {
     match node {
+        DocBlockTag::ParamClosureThis(inner) => {
+            visitor.visit_doc_block_param_closure_this_tag(inner)
+        }
         DocBlockTag::Param(inner) => visitor.visit_doc_block_param_tag(inner),
         DocBlockTag::Return(inner) => visitor.visit_doc_block_return_tag(inner),
         DocBlockTag::Throws(inner) => visitor.visit_doc_block_throws_tag(inner),
@@ -2486,6 +2489,14 @@ pub fn walk_doc_block_tag_mut<V: VisitorMut + ?Sized>(visitor: &mut V, node: &mu
         DocBlockTag::Generic(inner) => visitor.visit_doc_block_generic_tag(inner),
         _ => {}
     }
+}
+
+pub fn walk_doc_block_param_closure_this_tag_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut DocBlockParamClosureThisTag,
+) {
+    visitor.visit_data_type(&mut node.r#type);
+    visitor.visit_simple_variable(&mut node.variable);
 }
 
 pub fn walk_doc_block_param_tag_mut<V: VisitorMut + ?Sized>(

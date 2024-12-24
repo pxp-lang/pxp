@@ -5819,6 +5819,7 @@ impl Spanned for DocBlockTagNode {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum DocBlockTag {
+    ParamClosureThis(DocBlockParamClosureThisTag),
     Param(DocBlockParamTag),
     Return(DocBlockReturnTag),
     Throws(DocBlockThrowsTag),
@@ -5836,6 +5837,7 @@ pub enum DocBlockTag {
 impl HasId for DocBlockTag {
     fn id(&self) -> NodeId {
         match self {
+            DocBlockTag::ParamClosureThis(inner) => inner.id(),
             DocBlockTag::Param(inner) => inner.id(),
             DocBlockTag::Return(inner) => inner.id(),
             DocBlockTag::Throws(inner) => inner.id(),
@@ -5849,6 +5851,28 @@ impl HasId for DocBlockTag {
             DocBlockTag::Deprecated(inner) => inner.id(),
             DocBlockTag::Generic(inner) => inner.id(),
         }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockParamClosureThisTag {
+    pub id: NodeId,
+    pub span: Span,
+    pub tag: OwnedToken,
+    pub r#type: DataType,
+    pub variable: SimpleVariable,
+    pub text: Option<ByteString>,
+}
+
+impl HasId for DocBlockParamClosureThisTag {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockParamClosureThisTag {
+    fn span(&self) -> Span {
+        self.span
     }
 }
 
@@ -6380,6 +6404,7 @@ pub enum NodeKind<'a> {
     DocBlockTextNode(&'a DocBlockTextNode),
     DocBlockTagNode(&'a DocBlockTagNode),
     DocBlockTag(&'a DocBlockTag),
+    DocBlockParamClosureThisTag(&'a DocBlockParamClosureThisTag),
     DocBlockParamTag(&'a DocBlockParamTag),
     DocBlockReturnTag(&'a DocBlockReturnTag),
     DocBlockThrowsTag(&'a DocBlockThrowsTag),
@@ -9183,6 +9208,17 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::DocBlockTag(_))
     }
 
+    pub fn as_doc_block_param_closure_this_tag(self) -> Option<&'a DocBlockParamClosureThisTag> {
+        match &self.kind {
+            NodeKind::DocBlockParamClosureThisTag(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_param_closure_this_tag(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockParamClosureThisTag(_))
+    }
+
     pub fn as_doc_block_param_tag(self) -> Option<&'a DocBlockParamTag> {
         match &self.kind {
             NodeKind::DocBlockParamTag(node) => Some(node),
@@ -9585,6 +9621,7 @@ impl<'a> Node<'a> {
             NodeKind::DocBlockTextNode(_) => "DocBlockTextNode",
             NodeKind::DocBlockTagNode(_) => "DocBlockTagNode",
             NodeKind::DocBlockTag(_) => "DocBlockTag",
+            NodeKind::DocBlockParamClosureThisTag(_) => "DocBlockParamClosureThisTag",
             NodeKind::DocBlockParamTag(_) => "DocBlockParamTag",
             NodeKind::DocBlockReturnTag(_) => "DocBlockReturnTag",
             NodeKind::DocBlockThrowsTag(_) => "DocBlockThrowsTag",
@@ -11759,6 +11796,9 @@ impl<'a> Node<'a> {
                 _ => {}
             },
             NodeKind::DocBlockTag(node) => match node {
+                DocBlockTag::ParamClosureThis(inner) => {
+                    children.push(inner.into());
+                }
                 DocBlockTag::Param(inner) => {
                     children.push(inner.into());
                 }
@@ -12057,6 +12097,7 @@ impl<'a> Node<'a> {
             NodeKind::DocBlockTextNode(node) => NonNull::from(node).cast(),
             NodeKind::DocBlockTagNode(node) => NonNull::from(node).cast(),
             NodeKind::DocBlockTag(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockParamClosureThisTag(node) => NonNull::from(node).cast(),
             NodeKind::DocBlockParamTag(node) => NonNull::from(node).cast(),
             NodeKind::DocBlockReturnTag(node) => NonNull::from(node).cast(),
             NodeKind::DocBlockThrowsTag(node) => NonNull::from(node).cast(),
@@ -13827,6 +13868,16 @@ impl<'a> From<&'a DocBlockTagNode> for Node<'a> {
 impl<'a> From<&'a DocBlockTag> for Node<'a> {
     fn from(node: &'a DocBlockTag) -> Self {
         Node::new(node.id(), NodeKind::DocBlockTag(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockParamClosureThisTag> for Node<'a> {
+    fn from(node: &'a DocBlockParamClosureThisTag) -> Self {
+        Node::new(
+            node.id(),
+            NodeKind::DocBlockParamClosureThisTag(node),
+            node.span(),
+        )
     }
 }
 

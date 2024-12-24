@@ -1,12 +1,14 @@
 use pxp_ast::{
-    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockParamTag, DocBlockTag,
-    DocBlockTagNode, DocBlockTextNode, DocBlockVarTag,
+    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockParamClosureThisTag,
+    DocBlockParamTag, DocBlockTag, DocBlockTagNode, DocBlockTextNode, DocBlockVarTag,
+    SimpleVariable,
 };
 use pxp_bytestring::ByteString;
+use pxp_diagnostics::Severity;
 use pxp_span::{Span, Spanned};
 use pxp_token::TokenKind;
 
-use crate::Parser;
+use crate::{Parser, ParserDiagnostic};
 
 impl<'a> Parser<'a> {
     pub(crate) const fn is_in_docblock(&self) -> bool {
@@ -80,6 +82,7 @@ impl<'a> Parser<'a> {
 
     fn parse_docblock_tag(&mut self) -> DocBlockTagNode {
         let tag = match self.current_symbol().as_ref() {
+            b"@param-closure-this" | b"@phpstan-param-closure-this" => self.param_closure_this_tag(),
             b"@param" | b"@phpstan-param" | b"@psalm-param" | b"@phan-param" => self.param_tag(),
             b"@var" | b"@phpstan-var" | b"@psalm-var" | b"@phan-var" => self.var_tag(),
             _ => self.generic_tag(),
@@ -90,6 +93,54 @@ impl<'a> Parser<'a> {
             span: tag.span(),
             tag,
         }
+    }
+
+    fn param_closure_this_tag(&mut self) -> DocBlockTag {
+        let tag = self.current().to_owned();
+
+        self.next();
+        self.skip_horizontal_whitespace();
+
+        let r#type = self.parse_data_type();
+
+        self.skip_horizontal_whitespace();
+
+        let variable = match self.current_kind() {
+            TokenKind::Variable => self.parse_simple_variable(),
+            _ => {
+                self.diagnostic(
+                    ParserDiagnostic::ExpectedToken {
+                        expected: vec![TokenKind::Variable],
+                        found: self.current().to_owned(),
+                    },
+                    Severity::Warning,
+                    self.current_span(),
+                );
+
+                SimpleVariable::missing(self.id(), self.current_span())
+            }
+        };
+
+        self.skip_horizontal_whitespace();
+
+        let (text, text_span) = self.read_text_until_eol_or_close();
+
+        let span = if let Some(text_span) = text_span {
+            tag.span.join(text_span)
+        } else if !variable.is_missing() {
+            tag.span.join(variable.span())
+        } else {
+            tag.span.join(r#type.span())
+        };
+
+        DocBlockTag::ParamClosureThis(DocBlockParamClosureThisTag {
+            id: self.id(),
+            span,
+            tag,
+            r#type,
+            variable,
+            text,
+        })
     }
 
     fn param_tag(&mut self) -> DocBlockTag {

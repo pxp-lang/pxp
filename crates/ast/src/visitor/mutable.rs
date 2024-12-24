@@ -1025,6 +1025,10 @@ pub trait VisitorMut {
         walk_doc_block_tag_mut(self, node);
     }
 
+    fn visit_doc_block_param_closure_this_tag(&mut self, node: &mut DocBlockParamClosureThisTag) {
+        walk_doc_block_param_closure_this_tag_mut(self, node);
+    }
+
     fn visit_doc_block_param_tag(&mut self, node: &mut DocBlockParamTag) {
         walk_doc_block_param_tag_mut(self, node);
     }

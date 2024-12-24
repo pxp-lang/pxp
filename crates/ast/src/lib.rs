@@ -482,6 +482,7 @@ impl Spanned for DocBlockNode {
 impl Spanned for DocBlockTag {
     fn span(&self) -> Span {
         match self {
+            DocBlockTag::ParamClosureThis(inner) => inner.span,
             DocBlockTag::Param(inner) => inner.span,
             DocBlockTag::Return(inner) => inner.span,
             DocBlockTag::Throws(inner) => inner.span,
