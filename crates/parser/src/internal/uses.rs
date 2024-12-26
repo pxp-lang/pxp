@@ -36,7 +36,7 @@ impl<'a> Parser<'a> {
             self.next();
 
             let mut uses = Vec::new();
-            while self.current_kind() != TokenKind::RightBrace {
+            while !self.is_eof() && self.current_kind() != TokenKind::RightBrace {
                 let start_span = self.current_span();
                 let use_kind = match self.current_kind() {
                     TokenKind::Function => {

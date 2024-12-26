@@ -14,8 +14,8 @@ impl<'a> Parser<'a> {
 
         let mut traits = Vec::new();
 
-        while self.current_kind() != TokenKind::SemiColon
-            && self.current_kind() != TokenKind::LeftBrace
+        while !self.is_eof() && (self.current_kind() != TokenKind::SemiColon
+            && self.current_kind() != TokenKind::LeftBrace)
         {
             let t = self.parse_full_name(UseKind::Normal);
             traits.push(t);
@@ -41,7 +41,7 @@ impl<'a> Parser<'a> {
         if self.current_kind() == TokenKind::LeftBrace {
             self.skip_left_brace();
 
-            while self.current_kind() != TokenKind::RightBrace {
+            while !self.is_eof() && self.current_kind() != TokenKind::RightBrace {
                 let (r#trait, method): (Option<Name>, SimpleIdentifier) = match self.peek_kind() {
                     TokenKind::DoubleColon => {
                         let r#trait = self.parse_full_name_including_self();
@@ -169,7 +169,7 @@ impl<'a> Parser<'a> {
 
                             self.next();
 
-                            while self.current_kind() != TokenKind::SemiColon {
+                            while !self.is_eof() && (self.current_kind() != TokenKind::SemiColon) {
                                 insteadof.push(self.parse_full_type_name_identifier());
 
                                 if self.current_kind() == TokenKind::Comma {
@@ -234,7 +234,7 @@ impl<'a> Parser<'a> {
         let left_brace = self.skip_left_brace();
         let members = {
             let mut members = Vec::new();
-            while self.current_kind() != TokenKind::RightBrace && !self.is_eof() {
+            while !self.is_eof() && self.current_kind() != TokenKind::RightBrace && !self.is_eof() {
                 members.push(self.parse_classish_member(true));
             }
             members

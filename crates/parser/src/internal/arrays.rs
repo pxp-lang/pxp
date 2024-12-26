@@ -25,7 +25,7 @@ impl<'a> Parser<'a> {
             let mut items = Vec::new();
             let mut has_at_least_one_key = false;
 
-            while self.current_kind() != TokenKind::RightParen {
+            while !self.is_eof() && self.current_kind() != TokenKind::RightParen {
                 if self.current_kind() == TokenKind::Comma {
                     let span = self.next();
 

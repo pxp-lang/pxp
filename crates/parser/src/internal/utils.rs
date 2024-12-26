@@ -221,7 +221,7 @@ impl<'a> Parser<'a> {
         let mut inner: Vec<T> = vec![];
         let mut commas: Vec<Span> = vec![];
 
-        while self.current_kind() != until {
+        while !self.is_eof() && self.current_kind() != until {
             inner.push(func(self));
 
             if self.current_kind() != TokenKind::Comma {

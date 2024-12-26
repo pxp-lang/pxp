@@ -26,7 +26,7 @@ impl<'a> Parser<'a> {
 
         let mut default: Option<Box<DefaultMatchArm>> = None;
         let mut arms = Vec::new();
-        while self.current_kind() != TokenKind::RightBrace {
+        while !self.is_eof() && self.current_kind() != TokenKind::RightBrace {
             if self.current_kind() == TokenKind::Default {
                 if default.is_some() {
                     self.diagnostic(
@@ -56,7 +56,7 @@ impl<'a> Parser<'a> {
             } else {
                 let mut conditions = Vec::new();
 
-                while self.current_kind() != TokenKind::DoubleArrow {
+                while !self.is_eof() && self.current_kind() != TokenKind::DoubleArrow {
                     conditions.push(self.parse_expression());
 
                     if self.current_kind() == TokenKind::Comma {
@@ -126,7 +126,7 @@ impl<'a> Parser<'a> {
         };
 
         let mut cases = Vec::new();
-        while self.current_kind() != end_token {
+        while !self.is_eof() && self.current_kind() != end_token {
             match self.current_kind() {
                 TokenKind::Case => {
                     self.next();
@@ -137,10 +137,10 @@ impl<'a> Parser<'a> {
 
                     let mut body = Block::new();
 
-                    while self.current_kind() != TokenKind::Case
+                    while !self.is_eof() && (self.current_kind() != TokenKind::Case
                         && self.current_kind() != TokenKind::Default
                         && self.current_kind() != TokenKind::RightBrace
-                        && self.current_kind() != end_token
+                        && self.current_kind() != end_token)
                     {
                         body.push(self.parse_statement());
                     }
@@ -159,9 +159,9 @@ impl<'a> Parser<'a> {
 
                     let mut body = Block::new();
 
-                    while self.current_kind() != TokenKind::Case
+                    while !self.is_eof() && (self.current_kind() != TokenKind::Case
                         && self.current_kind() != TokenKind::Default
-                        && self.current_kind() != end_token
+                        && self.current_kind() != end_token)
                     {
                         body.push(self.parse_statement());
                     }

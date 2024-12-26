@@ -23,7 +23,7 @@ impl<'a> Parser<'a> {
     pub fn parse_multiple_statements_until(&mut self, until: TokenKind) -> Vec<Statement> {
         let mut statements = Vec::new();
 
-        while self.current_kind() != until {
+        while !self.is_eof() && self.current_kind() != until {
             if let TokenKind::OpenTag(OpenTagKind::Full) = self.current_kind() {
                 self.next();
 

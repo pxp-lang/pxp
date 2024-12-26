@@ -21,7 +21,7 @@ impl<'a> Parser<'a> {
         let start_span = self.current_span();
         let mut parts = Vec::new();
 
-        while self.current_kind() != TokenKind::DoubleQuote {
+        while !self.is_eof() && self.current_kind() != TokenKind::DoubleQuote {
             if let Some(part) = self.maybe_parse_string_part() {
                 parts.push(part);
             }
@@ -50,7 +50,7 @@ impl<'a> Parser<'a> {
 
         let mut parts = Vec::new();
 
-        while self.current_kind() != TokenKind::Backtick {
+        while !self.is_eof() && self.current_kind() != TokenKind::Backtick {
             if let Some(part) = self.maybe_parse_string_part() {
                 parts.push(part);
             }

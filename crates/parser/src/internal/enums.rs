@@ -74,7 +74,7 @@ impl<'a> Parser<'a> {
         if self.current_kind() == TokenKind::Implements {
             self.next();
 
-            while self.current_kind() != TokenKind::LeftBrace {
+            while !self.is_eof() && self.current_kind() != TokenKind::LeftBrace {
                 implements.push(self.parse_full_name(UseKind::Normal));
 
                 if self.current_kind() == TokenKind::Comma {
@@ -90,7 +90,7 @@ impl<'a> Parser<'a> {
             let left_brace = self.skip_left_brace();
             let members = {
                 let mut members = Vec::new();
-                while self.current_kind() != TokenKind::RightBrace {
+                while !self.is_eof() && self.current_kind() != TokenKind::RightBrace {
                     if let Some(member) = self.parse_backed_member() {
                         members.push(member);
                     }
@@ -123,7 +123,7 @@ impl<'a> Parser<'a> {
             let left_brace = self.skip_left_brace();
             let members = {
                 let mut members = Vec::new();
-                while self.current_kind() != TokenKind::RightBrace {
+                while !self.is_eof() && self.current_kind() != TokenKind::RightBrace {
                     if let Some(member) = self.parse_unit_member() {
                         members.push(member);
                     }

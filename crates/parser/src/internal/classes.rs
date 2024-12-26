@@ -57,7 +57,7 @@ impl<'a> Parser<'a> {
         let members = {
             let mut members = Vec::new();
 
-            while self.current_kind() != TokenKind::RightBrace {
+            while !self.is_eof() && self.current_kind() != TokenKind::RightBrace {
                 if self.is_eof() {
                     break;
                 }
@@ -148,7 +148,7 @@ impl<'a> Parser<'a> {
         let left_brace = self.skip_left_brace();
         let members = {
             let mut members = Vec::new();
-            while self.current_kind() != TokenKind::RightBrace {
+            while !self.is_eof() && self.current_kind() != TokenKind::RightBrace {
                 members.push(self.parse_classish_member(false));
             }
             members

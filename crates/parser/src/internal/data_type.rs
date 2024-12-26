@@ -531,7 +531,7 @@ impl<'a> Parser<'a> {
 
         let mut parameters = vec![];
 
-        while self.current_kind() != TokenKind::RightParen {
+        while !self.is_eof() && self.current_kind() != TokenKind::RightParen {
             parameters.push(self.parse_docblock_callable_parameter());
 
             self.skip_doc_eol();
