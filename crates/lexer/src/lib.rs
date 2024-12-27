@@ -376,27 +376,6 @@ impl<'a> Lexer<'a> {
 
                 Token::new(kind, span, self.source.span_range(span))
             }
-            [b'e', b'm', b'p', b't', b'y', ..] => {
-                self.source.skip(5);
-
-                let span = self.source.span();
-
-                Token::new(TokenKind::PhpDocEmpty, span, self.source.span_range(span))
-            },
-            [b'n', b'o', b't', ..] => {
-                self.source.skip(3);
-
-                let span = self.source.span();
-
-                Token::new(TokenKind::PhpDocNot, span, self.source.span_range(span))
-            }
-            [b'i', b's', ..] => {
-                self.source.skip(2);
-
-                let span = self.source.span();
-
-                Token::new(TokenKind::PhpDocIs, span, self.source.span_range(span))
-            }
             [ident_start!(), ..] => {
                 self.source.next();
                 let mut qualified = false;
@@ -476,10 +455,12 @@ impl<'a> Lexer<'a> {
                     ),
                 };
 
-                let kind = if qualified {
-                    TokenKind::QualifiedIdentifier
-                } else {
-                    identifier_to_keyword(symbol).unwrap_or(TokenKind::Identifier)
+                let kind = match true {
+                    _ if symbol.as_ref() == b"is" => TokenKind::PhpDocIs,
+                    _ if symbol.as_ref() == b"not" => TokenKind::PhpDocNot,
+                    _ if symbol.as_ref() == b"empty" => TokenKind::PhpDocEmpty,
+                    _ if qualified => TokenKind::QualifiedIdentifier,
+                    _ => identifier_to_keyword(symbol).unwrap_or(TokenKind::Identifier),
                 };
 
                 Token::new(kind, span, symbol)

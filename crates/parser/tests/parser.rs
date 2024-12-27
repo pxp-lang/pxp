@@ -1031,7 +1031,7 @@ pub fn process(string_or_file: &str) -> String {
         string_or_file.as_bytes().to_vec()
     };
 
-    let result = Parser::parse(Lexer::new(&input));
+    let result = Parser::parse(Lexer::new(&input), None);
     let mut output = format!("{:#?}\n---\n", result.ast);
 
     if !result.diagnostics.is_empty() {

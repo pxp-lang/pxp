@@ -11,7 +11,7 @@ fn main() {
     println!("Locating node at offset: {}", offset_marker);
 
     let input = input.replace('§', "");
-    let result = Parser::parse(Lexer::new(&input));
+    let result = Parser::parse(Lexer::new(&input), None);
 
     // dbg!(&result.ast);
 

@@ -46,7 +46,7 @@ fn only_syntax(args: Check, config: CheckConfig) -> anyhow::Result<()> {
         pb.set_message(file.display().to_string());
 
         let contents = std::fs::read(&file)?;
-        let result = Parser::parse(Lexer::new(&contents));
+        let result = Parser::parse(Lexer::new(&contents), Some(file.display().to_string()));
 
         if result.diagnostics.is_empty() {
             pb.inc(1);
@@ -59,7 +59,7 @@ fn only_syntax(args: Check, config: CheckConfig) -> anyhow::Result<()> {
         pb.inc(1);
     }
 
-    pb.finish_and_clear();
+    // pb.finish_and_clear();
 
     if diagnostics.is_empty() {
         println!("{}", "No syntax errors found!".green().bold());

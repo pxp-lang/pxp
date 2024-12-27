@@ -37,7 +37,7 @@ fn main() {
             }
 
             let contents = std::fs::read(file).unwrap();
-            let ast = Parser::parse(Lexer::new(&contents));
+            let ast = Parser::parse(Lexer::new(&contents), None);
 
             if !ast.diagnostics.is_empty() && stop_on_errors {
                 ast.diagnostics.iter().for_each(|error| {

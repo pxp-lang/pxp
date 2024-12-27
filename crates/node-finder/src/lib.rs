@@ -83,7 +83,7 @@ mod tests {
     fn parse_with_offset_indicator(input: &'static str) -> (ParseResult, ByteOffset) {
         let offset = input.find('§').unwrap();
         let input = input.replace('§', "");
-        let result = Parser::parse(Lexer::new(&input));
+        let result = Parser::parse(Lexer::new(&input), None);
 
         (result, offset)
     }
