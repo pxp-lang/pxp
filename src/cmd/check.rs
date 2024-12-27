@@ -59,7 +59,7 @@ fn only_syntax(args: Check, config: CheckConfig) -> anyhow::Result<()> {
         pb.inc(1);
     }
 
-    // pb.finish_and_clear();
+    pb.finish_and_clear();
 
     if diagnostics.is_empty() {
         println!("{}", "No syntax errors found!".green().bold());
