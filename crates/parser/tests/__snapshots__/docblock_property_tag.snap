@@ -1,0 +1,164 @@
+[
+    Statement {
+        id: 11,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                id: 10,
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            id: 1,
+            comments: [],
+        },
+    },
+    Statement {
+        id: 17,
+        kind: Class(
+            ClassStatement {
+                id: 16,
+                span: Span {
+                    start: 41,
+                    end: 51,
+                },
+                attributes: [],
+                modifiers: ClassModifierGroup {
+                    id: 13,
+                    span: Span {
+                        start: 0,
+                        end: 0,
+                    },
+                    modifiers: [],
+                },
+                class: Span {
+                    start: 41,
+                    end: 46,
+                },
+                name: Name {
+                    id: 14,
+                    kind: Resolved(
+                        ResolvedName {
+                            id: 14,
+                            span: Span {
+                                start: 47,
+                                end: 48,
+                            },
+                            resolved: "A",
+                            original: "A",
+                        },
+                    ),
+                    span: Span {
+                        start: 47,
+                        end: 48,
+                    },
+                },
+                extends: None,
+                implements: None,
+                body: ClassBody {
+                    id: 15,
+                    span: Span {
+                        start: 49,
+                        end: 51,
+                    },
+                    left_brace: Span {
+                        start: 49,
+                        end: 50,
+                    },
+                    members: [],
+                    right_brace: Span {
+                        start: 50,
+                        end: 51,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: 41,
+            end: 51,
+        },
+        comments: CommentGroup {
+            id: 12,
+            comments: [
+                Comment {
+                    id: 2,
+                    span: Span {
+                        start: 7,
+                        end: 40,
+                    },
+                    kind: DocBlock(
+                        DocBlockComment {
+                            id: 8,
+                            span: Span {
+                                start: 7,
+                                end: 40,
+                            },
+                            doc: DocBlock {
+                                id: 9,
+                                span: Span {
+                                    start: 7,
+                                    end: 40,
+                                },
+                                nodes: [
+                                    Tag(
+                                        DocBlockTagNode {
+                                            id: 7,
+                                            span: Span {
+                                                start: 14,
+                                                end: 36,
+                                            },
+                                            tag: Property(
+                                                DocBlockPropertyTag {
+                                                    id: 6,
+                                                    span: Span {
+                                                        start: 14,
+                                                        end: 36,
+                                                    },
+                                                    tag: OwnedToken {
+                                                        kind: PhpDocTag,
+                                                        span: Span {
+                                                            start: 14,
+                                                            end: 23,
+                                                        },
+                                                        symbol: "@property",
+                                                    },
+                                                    data_type: Some(
+                                                        DataType {
+                                                            id: 4,
+                                                            kind: String,
+                                                            span: Span {
+                                                                start: 0,
+                                                                end: 0,
+                                                            },
+                                                        },
+                                                    ),
+                                                    variable: SimpleVariable {
+                                                        id: 5,
+                                                        symbol: "$name",
+                                                        stripped: "name",
+                                                        span: Span {
+                                                            start: 31,
+                                                            end: 36,
+                                                        },
+                                                    },
+                                                    text: None,
+                                                },
+                                            ),
+                                        },
+                                    ),
+                                ],
+                            },
+                        },
+                    ),
+                },
+            ],
+        },
+    },
+]
+---

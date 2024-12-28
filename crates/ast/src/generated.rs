@@ -5970,7 +5970,7 @@ pub struct DocBlockPropertyTag {
     pub span: Span,
     pub tag: OwnedToken,
     pub data_type: Option<DataType>,
-    pub variable: Option<SimpleVariable>,
+    pub variable: SimpleVariable,
     pub text: Option<ByteString>,
 }
 

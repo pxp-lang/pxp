@@ -188,3 +188,6 @@ snap!(
     docblock_array_shape_variadic,
     process("fixtures/docblocks/array-shape-variadic.php")
 );
+snap!(snapper, docblock_property_tag, process("fixtures/docblocks/property-tag.php"));
+snap!(snapper, docblock_property_read_tag, process("fixtures/docblocks/property-read-tag.php"));
+snap!(snapper, docblock_property_write_tag, process("fixtures/docblocks/property-write-tag.php"));

@@ -2272,9 +2272,7 @@ pub fn walk_doc_block_property_tag<V: Visitor + ?Sized>(
     if let Some(item) = &node.data_type {
         visitor.visit_data_type(item);
     }
-    if let Some(item) = &node.variable {
-        visitor.visit_simple_variable(item);
-    }
+    visitor.visit_simple_variable(&node.variable);
 }
 
 pub fn walk_doc_block_method_tag<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockMethodTag) {

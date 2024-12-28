@@ -2548,9 +2548,7 @@ pub fn walk_doc_block_property_tag_mut<V: VisitorMut + ?Sized>(
     if let Some(item) = &mut node.data_type {
         visitor.visit_data_type(item);
     }
-    if let Some(item) = &mut node.variable {
-        visitor.visit_simple_variable(item);
-    }
+    visitor.visit_simple_variable(&mut node.variable);
 }
 
 pub fn walk_doc_block_method_tag_mut<V: VisitorMut + ?Sized>(

@@ -2109,7 +2109,7 @@ DocBlockPropertyTag:
   span: Span
   tag: OwnedToken
   data_type: Option<DataType>
-  variable: Option<SimpleVariable>
+  variable: SimpleVariable
   text: Option<ByteString>
 
 DocBlockMethodTag:
