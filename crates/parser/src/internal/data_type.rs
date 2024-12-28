@@ -354,7 +354,9 @@ impl<'a> Parser<'a> {
 
             self.skip_doc_eol();
 
-            if self.current_kind() == TokenKind::Comma {
+            if self.current_kind() != TokenKind::Comma {
+                break;
+            } else {
                 self.next();
                 self.skip_doc_eol();
             }

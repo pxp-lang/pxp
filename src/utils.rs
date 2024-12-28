@@ -1,7 +1,41 @@
 use std::path::{Path, PathBuf};
 
 use ariadne::ReportKind;
+use indicatif::{ProgressDrawTarget, ProgressStyle};
 use pxp_diagnostics::Severity;
+
+pub(crate) struct ProgressBar {
+    show: bool,
+    bar: indicatif::ProgressBar,
+}
+
+impl ProgressBar {
+    pub(crate) fn new(show: bool, n: u64) -> Self {
+        let bar = indicatif::ProgressBar::new(n)
+                .with_style(ProgressStyle::with_template("{wide_bar:.green} {pos:>7}/{len:7}\n{msg}").unwrap());
+
+        if !show {
+            bar.set_draw_target(ProgressDrawTarget::hidden());
+        }
+
+        Self {
+            show,
+            bar,
+        }
+    }
+
+    pub(crate) fn inc(&self, n: u64) {
+        self.bar.inc(n);
+    }
+
+    pub(crate) fn set_message(&self, message: String) {
+        self.bar.set_message(message);
+    }
+
+    pub(crate) fn finish_and_clear(&self) {
+        self.bar.finish_and_clear();
+    }
+}
 
 pub(crate) fn find_php_files_in_list(paths: &[PathBuf]) -> anyhow::Result<Vec<PathBuf>> {
     let mut files = vec![];

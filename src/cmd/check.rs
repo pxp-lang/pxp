@@ -3,14 +3,13 @@ use std::{collections::HashMap, path::Path};
 use ariadne::{Label, Report, Source};
 use clap::Parser as Args;
 use colored::Colorize;
-use indicatif::{ProgressBar, ProgressStyle};
 use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::Lexer;
 use pxp_parser::{Parser, ParserDiagnostic};
 
 use crate::{
     config::{CheckConfig, Config},
-    utils::{find_php_files_in_list, severity_to_report_kind},
+    utils::{find_php_files_in_list, severity_to_report_kind, ProgressBar},
 };
 
 #[derive(Args, Debug)]
@@ -24,6 +23,9 @@ pub struct Check {
 
     #[arg(short = 'w', long, help = "Only show warnings.")]
     only_warnings: bool,
+
+    #[arg(short = 'p', long, help = "Do not show progress bar.")]
+    no_progress: bool,
 }
 
 pub fn check(args: Check) -> anyhow::Result<()> {
@@ -38,28 +40,29 @@ pub fn check(args: Check) -> anyhow::Result<()> {
 
 fn only_syntax(args: Check, config: CheckConfig) -> anyhow::Result<()> {
     let files = find_php_files_in_list(&config.paths)?;
-    let style = ProgressStyle::with_template("{wide_bar:.green} {pos:>7}/{len:7}\n{msg}")?;
-    let pb = ProgressBar::new(files.len() as u64).with_style(style);
+    let bar = ProgressBar::new(!args.no_progress, files.len() as u64);
     let mut diagnostics: HashMap<&Path, Vec<Diagnostic<ParserDiagnostic>>> = HashMap::new();
 
     for file in files.iter() {
-        pb.set_message(file.display().to_string());
+        println!("{}", file.display().to_string());
+
+        bar.set_message(file.display().to_string());
 
         let contents = std::fs::read(&file)?;
         let result = Parser::parse(Lexer::new(&contents), Some(file.display().to_string()));
 
         if result.diagnostics.is_empty() {
-            pb.inc(1);
+            bar.inc(1);
 
             continue;
         }
 
         diagnostics.insert(file, result.diagnostics);
 
-        pb.inc(1);
+        bar.inc(1);
     }
 
-    pb.finish_and_clear();
+    bar.finish_and_clear();
 
     if diagnostics.is_empty() {
         println!("{}", "No syntax errors found!".green().bold());
