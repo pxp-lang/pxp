@@ -44,7 +44,7 @@ fn only_syntax(args: Check, config: CheckConfig) -> anyhow::Result<()> {
     let mut diagnostics: HashMap<&Path, Vec<Diagnostic<ParserDiagnostic>>> = HashMap::new();
 
     for file in files.iter() {
-        println!("{}", file.display().to_string());
+        // println!("{}", file.display().to_string());
 
         bar.set_message(file.display().to_string());
 
