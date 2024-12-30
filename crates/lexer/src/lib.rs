@@ -408,7 +408,7 @@ impl<'a> Lexer<'a> {
                             self.source.span(),
                             self.source.span_range(self.source.span()),
                         )
-                    },
+                    }
                     b"non" if self.source.read(12) == b"-empty-mixed" => {
                         self.source.skip(12);
 
@@ -416,7 +416,7 @@ impl<'a> Lexer<'a> {
                             self.source.span(),
                             self.source.span_range(self.source.span()),
                         )
-                    },
+                    }
                     b"class" if self.source.read(7) == b"-string" => {
                         self.source.skip(7);
 

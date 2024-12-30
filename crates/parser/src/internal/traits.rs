@@ -14,8 +14,9 @@ impl<'a> Parser<'a> {
 
         let mut traits = Vec::new();
 
-        while !self.is_eof() && (self.current_kind() != TokenKind::SemiColon
-            && self.current_kind() != TokenKind::LeftBrace)
+        while !self.is_eof()
+            && (self.current_kind() != TokenKind::SemiColon
+                && self.current_kind() != TokenKind::LeftBrace)
         {
             let t = self.parse_full_name(UseKind::Normal);
             traits.push(t);

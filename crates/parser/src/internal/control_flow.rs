@@ -137,10 +137,11 @@ impl<'a> Parser<'a> {
 
                     let mut body = Block::new();
 
-                    while !self.is_eof() && (self.current_kind() != TokenKind::Case
-                        && self.current_kind() != TokenKind::Default
-                        && self.current_kind() != TokenKind::RightBrace
-                        && self.current_kind() != end_token)
+                    while !self.is_eof()
+                        && (self.current_kind() != TokenKind::Case
+                            && self.current_kind() != TokenKind::Default
+                            && self.current_kind() != TokenKind::RightBrace
+                            && self.current_kind() != end_token)
                     {
                         body.push(self.parse_statement());
                     }
@@ -159,9 +160,10 @@ impl<'a> Parser<'a> {
 
                     let mut body = Block::new();
 
-                    while !self.is_eof() && (self.current_kind() != TokenKind::Case
-                        && self.current_kind() != TokenKind::Default
-                        && self.current_kind() != end_token)
+                    while !self.is_eof()
+                        && (self.current_kind() != TokenKind::Case
+                            && self.current_kind() != TokenKind::Default
+                            && self.current_kind() != end_token)
                     {
                         body.push(self.parse_statement());
                     }

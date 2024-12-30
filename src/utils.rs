@@ -11,17 +11,15 @@ pub(crate) struct ProgressBar {
 
 impl ProgressBar {
     pub(crate) fn new(show: bool, n: u64) -> Self {
-        let bar = indicatif::ProgressBar::new(n)
-                .with_style(ProgressStyle::with_template("{wide_bar:.green} {pos:>7}/{len:7}\n{msg}").unwrap());
+        let bar = indicatif::ProgressBar::new(n).with_style(
+            ProgressStyle::with_template("{wide_bar:.green} {pos:>7}/{len:7}\n{msg}").unwrap(),
+        );
 
         if !show {
             bar.set_draw_target(ProgressDrawTarget::hidden());
         }
 
-        Self {
-            show,
-            bar,
-        }
+        Self { show, bar }
     }
 
     pub(crate) fn inc(&self, n: u64) {

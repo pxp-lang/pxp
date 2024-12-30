@@ -58,7 +58,7 @@ impl<'a> Parser<'a> {
         let statements = scoped!(self, Scope::Namespace(name.symbol.clone()), {
             let mut statements = Block::new();
 
-            while !self.is_eof() && self.current_kind() != TokenKind::Namespace{
+            while !self.is_eof() && self.current_kind() != TokenKind::Namespace {
                 // NOTE: If we encounter a right-brace here, it's possible that we're in a nested namespace.
                 // We should check to see if the previous scope is a BracedNamespace and break out of this scope.
                 if self.current_kind() == TokenKind::RightBrace {
@@ -95,7 +95,10 @@ impl<'a> Parser<'a> {
                 let start = self.skip_left_brace();
 
                 let mut statements = Block::new();
-                while !self.is_eof() && self.current_kind() != TokenKind::RightBrace && !self.is_eof() {
+                while !self.is_eof()
+                    && self.current_kind() != TokenKind::RightBrace
+                    && !self.is_eof()
+                {
                     statements.push(self.parse_top_level_statement());
                 }
 

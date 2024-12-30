@@ -1,5 +1,7 @@
 use pxp_ast::{
-    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockParamClosureThisTag, DocBlockParamTag, DocBlockPropertyTag, DocBlockReturnTag, DocBlockTag, DocBlockTagNode, DocBlockTextNode, DocBlockVarTag, SimpleVariable
+    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockParamClosureThisTag,
+    DocBlockParamTag, DocBlockPropertyTag, DocBlockReturnTag, DocBlockTag, DocBlockTagNode,
+    DocBlockTextNode, DocBlockVarTag, SimpleVariable,
 };
 use pxp_bytestring::ByteString;
 use pxp_diagnostics::Severity;
@@ -82,19 +84,20 @@ impl<'a> Parser<'a> {
             }
             b"@param" | b"@phpstan-param" | b"@psalm-param" | b"@phan-param" => self.param_tag(),
             b"@var" | b"@phpstan-var" | b"@psalm-var" | b"@phan-var" => self.var_tag(),
-            b"@return" | b"@phpstan-return" | b"@psalm-return" | b"@phan-return" | b"@phan-real-return" => self.return_tag(),
-            b"@property" |
-				b"@property-read" |
-				b"@property-write" |
-				b"@phpstan-property" |
-				b"@phpstan-property-read" |
-				b"@phpstan-property-write" |
-				b"@psalm-property" |
-				b"@psalm-property-read" |
-				b"@psalm-property-write" |
-				b"@phan-property" |
-				b"@phan-property-read" |
-				b"@phan-property-write" => self.property_tag(),
+            b"@return" | b"@phpstan-return" | b"@psalm-return" | b"@phan-return"
+            | b"@phan-real-return" => self.return_tag(),
+            b"@property"
+            | b"@property-read"
+            | b"@property-write"
+            | b"@phpstan-property"
+            | b"@phpstan-property-read"
+            | b"@phpstan-property-write"
+            | b"@psalm-property"
+            | b"@psalm-property-read"
+            | b"@psalm-property-write"
+            | b"@phan-property"
+            | b"@phan-property-read"
+            | b"@phan-property-write" => self.property_tag(),
             _ => self.generic_tag(),
         };
 
@@ -296,10 +299,12 @@ impl<'a> Parser<'a> {
         let start_span = self.current_span();
 
         loop {
-            if self.is_eof() || matches!(
-                self.current_kind(),
-                TokenKind::PhpDocEol | TokenKind::ClosePhpDoc
-            ) {
+            if self.is_eof()
+                || matches!(
+                    self.current_kind(),
+                    TokenKind::PhpDocEol | TokenKind::ClosePhpDoc
+                )
+            {
                 break;
             }
 
