@@ -2118,9 +2118,7 @@ DocBlockMethodTag:
   r#static: Option<Span>
   return_type: Option<DataType>
   name: SimpleIdentifier
-  left_parenthesis: Span
   parameters: FunctionParameterList
-  right_parenthesis: Span
   text: Option<ByteString>
 
 DocBlockTemplateTag:

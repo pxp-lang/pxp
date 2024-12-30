@@ -5994,9 +5994,7 @@ pub struct DocBlockMethodTag {
     pub r#static: Option<Span>,
     pub return_type: Option<DataType>,
     pub name: SimpleIdentifier,
-    pub left_parenthesis: Span,
     pub parameters: FunctionParameterList,
-    pub right_parenthesis: Span,
     pub text: Option<ByteString>,
 }
 
