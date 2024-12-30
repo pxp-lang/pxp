@@ -203,3 +203,13 @@ snap!(
     docblock_property_write_tag,
     process("fixtures/docblocks/property-write-tag.php")
 );
+snap!(
+    snapper,
+    docblock_method_tag_static_return_type_parameters,
+    process("fixtures/docblocks/method-tag-static-return-type-parameters.php")
+);
+snap!(
+    snapper,
+    docblock_method_tag_templates,
+    process("fixtures/docblocks/method-tag-templates.php")
+);

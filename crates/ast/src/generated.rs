@@ -5994,6 +5994,7 @@ pub struct DocBlockMethodTag {
     pub r#static: Option<Span>,
     pub return_type: Option<DataType>,
     pub name: SimpleIdentifier,
+    pub templates: Vec<DocBlockTemplateTagValue>,
     pub parameters: FunctionParameterList,
     pub text: Option<ByteString>,
 }
@@ -6011,13 +6012,34 @@ impl Spanned for DocBlockMethodTag {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DocBlockTemplateTagValue {
+    pub id: NodeId,
+    pub span: Span,
+    pub template: SimpleIdentifier,
+    pub bound: Option<DataType>,
+    pub default: Option<DataType>,
+    pub lower_bound: Option<DataType>,
+    pub description: Option<DocBlockTextNode>,
+}
+
+impl HasId for DocBlockTemplateTagValue {
+    fn id(&self) -> NodeId {
+        self.id
+    }
+}
+
+impl Spanned for DocBlockTemplateTagValue {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DocBlockTemplateTag {
     pub id: NodeId,
     pub span: Span,
     pub tag: OwnedToken,
-    pub placeholder: SimpleIdentifier,
-    pub constraint: Option<DataType>,
-    pub text: Option<ByteString>,
+    pub value: DocBlockTemplateTagValue,
 }
 
 impl HasId for DocBlockTemplateTag {
@@ -6409,6 +6431,7 @@ pub enum NodeKind<'a> {
     DocBlockVarTag(&'a DocBlockVarTag),
     DocBlockPropertyTag(&'a DocBlockPropertyTag),
     DocBlockMethodTag(&'a DocBlockMethodTag),
+    DocBlockTemplateTagValue(&'a DocBlockTemplateTagValue),
     DocBlockTemplateTag(&'a DocBlockTemplateTag),
     DocBlockExtendsTag(&'a DocBlockExtendsTag),
     DocBlockImplementsTag(&'a DocBlockImplementsTag),
@@ -9283,6 +9306,17 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::DocBlockMethodTag(_))
     }
 
+    pub fn as_doc_block_template_tag_value(self) -> Option<&'a DocBlockTemplateTagValue> {
+        match &self.kind {
+            NodeKind::DocBlockTemplateTagValue(node) => Some(node),
+            _ => None,
+        }
+    }
+
+    pub fn is_doc_block_template_tag_value(&self) -> bool {
+        matches!(&self.kind, NodeKind::DocBlockTemplateTagValue(_))
+    }
+
     pub fn as_doc_block_template_tag(self) -> Option<&'a DocBlockTemplateTag> {
         match &self.kind {
             NodeKind::DocBlockTemplateTag(node) => Some(node),
@@ -9626,6 +9660,7 @@ impl<'a> Node<'a> {
             NodeKind::DocBlockVarTag(_) => "DocBlockVarTag",
             NodeKind::DocBlockPropertyTag(_) => "DocBlockPropertyTag",
             NodeKind::DocBlockMethodTag(_) => "DocBlockMethodTag",
+            NodeKind::DocBlockTemplateTagValue(_) => "DocBlockTemplateTagValue",
             NodeKind::DocBlockTemplateTag(_) => "DocBlockTemplateTag",
             NodeKind::DocBlockExtendsTag(_) => "DocBlockExtendsTag",
             NodeKind::DocBlockImplementsTag(_) => "DocBlockImplementsTag",
@@ -12102,6 +12137,7 @@ impl<'a> Node<'a> {
             NodeKind::DocBlockVarTag(node) => NonNull::from(node).cast(),
             NodeKind::DocBlockPropertyTag(node) => NonNull::from(node).cast(),
             NodeKind::DocBlockMethodTag(node) => NonNull::from(node).cast(),
+            NodeKind::DocBlockTemplateTagValue(node) => NonNull::from(node).cast(),
             NodeKind::DocBlockTemplateTag(node) => NonNull::from(node).cast(),
             NodeKind::DocBlockExtendsTag(node) => NonNull::from(node).cast(),
             NodeKind::DocBlockImplementsTag(node) => NonNull::from(node).cast(),
@@ -13912,6 +13948,16 @@ impl<'a> From<&'a DocBlockPropertyTag> for Node<'a> {
 impl<'a> From<&'a DocBlockMethodTag> for Node<'a> {
     fn from(node: &'a DocBlockMethodTag) -> Self {
         Node::new(node.id(), NodeKind::DocBlockMethodTag(node), node.span())
+    }
+}
+
+impl<'a> From<&'a DocBlockTemplateTagValue> for Node<'a> {
+    fn from(node: &'a DocBlockTemplateTagValue) -> Self {
+        Node::new(
+            node.id(),
+            NodeKind::DocBlockTemplateTagValue(node),
+            node.span(),
+        )
     }
 }
 

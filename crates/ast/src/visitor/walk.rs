@@ -2280,17 +2280,36 @@ pub fn walk_doc_block_method_tag<V: Visitor + ?Sized>(visitor: &mut V, node: &Do
         visitor.visit_data_type(item);
     }
     visitor.visit_simple_identifier(&node.name);
+    for item in &node.templates {
+        visitor.visit_doc_block_template_tag_value(item);
+    }
     visitor.visit_function_parameter_list(&node.parameters);
+}
+
+pub fn walk_doc_block_template_tag_value<V: Visitor + ?Sized>(
+    visitor: &mut V,
+    node: &DocBlockTemplateTagValue,
+) {
+    visitor.visit_simple_identifier(&node.template);
+    if let Some(item) = &node.bound {
+        visitor.visit_data_type(item);
+    }
+    if let Some(item) = &node.default {
+        visitor.visit_data_type(item);
+    }
+    if let Some(item) = &node.lower_bound {
+        visitor.visit_data_type(item);
+    }
+    if let Some(item) = &node.description {
+        visitor.visit_doc_block_text_node(item);
+    }
 }
 
 pub fn walk_doc_block_template_tag<V: Visitor + ?Sized>(
     visitor: &mut V,
     node: &DocBlockTemplateTag,
 ) {
-    visitor.visit_simple_identifier(&node.placeholder);
-    if let Some(item) = &node.constraint {
-        visitor.visit_data_type(item);
-    }
+    visitor.visit_doc_block_template_tag_value(&node.value);
 }
 
 pub fn walk_doc_block_extends_tag<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockExtendsTag) {

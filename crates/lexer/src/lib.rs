@@ -456,6 +456,8 @@ impl<'a> Lexer<'a> {
                 };
 
                 let kind = match true {
+                    _ if symbol.as_ref() == b"super" => TokenKind::PhpDocSuper,
+                    _ if symbol.as_ref() == b"of" => TokenKind::PhpDocOf,
                     _ if symbol.as_ref() == b"is" => TokenKind::PhpDocIs,
                     _ if symbol.as_ref() == b"not" => TokenKind::PhpDocNot,
                     _ if symbol.as_ref() == b"empty" => TokenKind::PhpDocEmpty,

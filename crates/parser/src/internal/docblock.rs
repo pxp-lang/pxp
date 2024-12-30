@@ -1,7 +1,8 @@
 use pxp_ast::{
-    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockNode, DocBlockParamClosureThisTag,
-    DocBlockParamTag, DocBlockPropertyTag, DocBlockReturnTag, DocBlockTag, DocBlockTagNode,
-    DocBlockTextNode, DocBlockVarTag, SimpleVariable,
+    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockMethodTag, DocBlockNode,
+    DocBlockParamClosureThisTag, DocBlockParamTag, DocBlockPropertyTag, DocBlockReturnTag,
+    DocBlockTag, DocBlockTagNode, DocBlockTemplateTag, DocBlockTemplateTagValue, DocBlockTextNode,
+    DocBlockVarTag, SimpleIdentifier, SimpleVariable,
 };
 use pxp_bytestring::ByteString;
 use pxp_diagnostics::Severity;
@@ -98,6 +99,9 @@ impl<'a> Parser<'a> {
             | b"@phan-property"
             | b"@phan-property-read"
             | b"@phan-property-write" => self.property_tag(),
+            b"@method" | b"@phpstan-method" | b"@psalm-method" | b"@phan-method" => {
+                self.method_tag()
+            }
             _ => self.generic_tag(),
         };
 
@@ -105,6 +109,119 @@ impl<'a> Parser<'a> {
             id: self.id(),
             span: tag.span(),
             tag,
+        }
+    }
+
+    fn method_tag(&mut self) -> DocBlockTag {
+        let tag = self.current().to_owned();
+
+        self.next();
+
+        let r#static = if self.current_kind() == TokenKind::Static {
+            Some(self.next())
+        } else {
+            None
+        };
+
+        let (return_type, name) = if self.current_kind() == TokenKind::Identifier
+            && self.peek_kind() == TokenKind::LeftParen
+        {
+            (None, self.parse_identifier_maybe_reserved())
+        } else {
+            (
+                Some(self.parse_data_type()),
+                self.parse_identifier_maybe_reserved(),
+            )
+        };
+
+        let mut templates = Vec::new();
+
+        if self.current_kind() == TokenKind::LessThan {
+            self.next();
+
+            loop {
+                templates.push(self.template_tag_value(false));
+
+                if self.current_kind() != TokenKind::Comma {
+                    break;
+                } else {
+                    self.next();
+                    self.skip_doc_eol();
+                }
+            }
+
+            self.expect(TokenKind::GreaterThan);
+        }
+
+        let parameters = self.parse_function_parameter_list();
+        let (text, text_span) = self.read_text_until_eol_or_close();
+        let span = if let Some(text_span) = text_span {
+            tag.span.join(text_span)
+        } else {
+            tag.span.join(parameters.span)
+        };
+
+        DocBlockTag::Method(DocBlockMethodTag {
+            id: self.id(),
+            span,
+            tag,
+            r#static,
+            return_type,
+            templates,
+            name,
+            parameters,
+            text,
+        })
+    }
+
+    pub(crate) fn template_tag_value(
+        &mut self,
+        parse_description: bool,
+    ) -> DocBlockTemplateTagValue {
+        let template = self.parse_type_identifier();
+        let (mut bound, mut lower_bound) = (None, None);
+
+        if self.current_kind() == TokenKind::PhpDocOf || self.current_kind() == TokenKind::As {
+            self.next();
+            bound = Some(self.parse_data_type());
+        }
+
+        if self.current_kind() == TokenKind::PhpDocSuper {
+            self.next();
+            lower_bound = Some(self.parse_data_type());
+        }
+
+        let default = if self.current_kind() == TokenKind::Equals {
+            self.next();
+            Some(self.parse_data_type())
+        } else {
+            None
+        };
+
+        let description = if parse_description {
+            self.parse_docblock_text()
+        } else {
+            None
+        };
+
+        DocBlockTemplateTagValue {
+            id: self.id(),
+            span: if let Some(description) = &description {
+                template.span.join(description.span)
+            } else if let Some(default) = &default {
+                template.span.join(default.span())
+            } else if let Some(lower_bound) = &lower_bound {
+                template.span.join(lower_bound.span())
+            } else if let Some(upper_bound) = &bound {
+                template.span.join(upper_bound.span())
+            } else {
+                template.span
+            },
+            template,
+            bound,
+            default,
+            lower_bound,
+            description,
         }
     }
 

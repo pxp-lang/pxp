@@ -2118,15 +2118,22 @@ DocBlockMethodTag:
   r#static: Option<Span>
   return_type: Option<DataType>
   name: SimpleIdentifier
+  templates: Vec<DocBlockTemplateTagValue>
   parameters: FunctionParameterList
   text: Option<ByteString>
+
+DocBlockTemplateTagValue:
+  span: Span
+  template: SimpleIdentifier
+  bound: Option<DataType>
+  default: Option<DataType>
+  lower_bound: Option<DataType>
+  description: Option<DocBlockTextNode>
 
 DocBlockTemplateTag:
   span: Span
   tag: OwnedToken
-  placeholder: SimpleIdentifier
-  constraint: Option<DataType>
-  text: Option<ByteString>
+  value: DocBlockTemplateTagValue
 
 DocBlockExtendsTag:
   span: Span

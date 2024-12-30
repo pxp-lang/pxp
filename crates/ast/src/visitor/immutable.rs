@@ -1038,6 +1038,10 @@ pub trait Visitor {
         walk_doc_block_method_tag(self, node);
     }
 
+    fn visit_doc_block_template_tag_value(&mut self, node: &DocBlockTemplateTagValue) {
+        walk_doc_block_template_tag_value(self, node);
+    }
+
     fn visit_doc_block_template_tag(&mut self, node: &DocBlockTemplateTag) {
         walk_doc_block_template_tag(self, node);
     }

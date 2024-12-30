@@ -220,6 +220,8 @@ pub enum TokenKind {
     PhpDocIs,
     PhpDocNot,
     PhpDocEmpty,
+    PhpDocOf,
+    PhpDocSuper,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -281,6 +283,8 @@ impl<'a> Token<'a> {
 impl Display for TokenKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let s = match self {
+            Self::PhpDocSuper => "super",
+            Self::PhpDocOf => "of",
             Self::PhpDocEmpty => "empty",
             Self::PrivateSet => "private(set)",
             Self::ProtectedSet => "protected(set)",

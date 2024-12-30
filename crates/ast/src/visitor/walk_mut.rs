@@ -2559,17 +2559,36 @@ pub fn walk_doc_block_method_tag_mut<V: VisitorMut + ?Sized>(
         visitor.visit_data_type(item);
     }
     visitor.visit_simple_identifier(&mut node.name);
+    for item in &mut node.templates {
+        visitor.visit_doc_block_template_tag_value(item);
+    }
     visitor.visit_function_parameter_list(&mut node.parameters);
+}
+
+pub fn walk_doc_block_template_tag_value_mut<V: VisitorMut + ?Sized>(
+    visitor: &mut V,
+    node: &mut DocBlockTemplateTagValue,
+) {
+    visitor.visit_simple_identifier(&mut node.template);
+    if let Some(item) = &mut node.bound {
+        visitor.visit_data_type(item);
+    }
+    if let Some(item) = &mut node.default {
+        visitor.visit_data_type(item);
+    }
+    if let Some(item) = &mut node.lower_bound {
+        visitor.visit_data_type(item);
+    }
+    if let Some(item) = &mut node.description {
+        visitor.visit_doc_block_text_node(item);
+    }
 }
 
 pub fn walk_doc_block_template_tag_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
     node: &mut DocBlockTemplateTag,
 ) {
-    visitor.visit_simple_identifier(&mut node.placeholder);
-    if let Some(item) = &mut node.constraint {
-        visitor.visit_data_type(item);
-    }
+    visitor.visit_doc_block_template_tag_value(&mut node.value);
 }
 
 pub fn walk_doc_block_extends_tag_mut<V: VisitorMut + ?Sized>(
