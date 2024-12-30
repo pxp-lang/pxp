@@ -1,0 +1,191 @@
+[
+    Statement {
+        id: 13,
+        kind: FullOpeningTag(
+            FullOpeningTagStatement {
+                id: 12,
+                span: Span {
+                    start: 0,
+                    end: 5,
+                },
+            },
+        ),
+        span: Span {
+            start: 0,
+            end: 5,
+        },
+        comments: CommentGroup {
+            id: 1,
+            comments: [],
+        },
+    },
+    Statement {
+        id: 19,
+        kind: Class(
+            ClassStatement {
+                id: 18,
+                span: Span {
+                    start: 64,
+                    end: 74,
+                },
+                attributes: [],
+                modifiers: ClassModifierGroup {
+                    id: 15,
+                    span: Span {
+                        start: 0,
+                        end: 0,
+                    },
+                    modifiers: [],
+                },
+                class: Span {
+                    start: 64,
+                    end: 69,
+                },
+                name: Name {
+                    id: 16,
+                    kind: Resolved(
+                        ResolvedName {
+                            id: 16,
+                            span: Span {
+                                start: 70,
+                                end: 71,
+                            },
+                            resolved: "A",
+                            original: "A",
+                        },
+                    ),
+                    span: Span {
+                        start: 70,
+                        end: 71,
+                    },
+                },
+                extends: None,
+                implements: None,
+                body: ClassBody {
+                    id: 17,
+                    span: Span {
+                        start: 72,
+                        end: 74,
+                    },
+                    left_brace: Span {
+                        start: 72,
+                        end: 73,
+                    },
+                    members: [],
+                    right_brace: Span {
+                        start: 73,
+                        end: 74,
+                    },
+                },
+            },
+        ),
+        span: Span {
+            start: 64,
+            end: 74,
+        },
+        comments: CommentGroup {
+            id: 14,
+            comments: [
+                Comment {
+                    id: 2,
+                    span: Span {
+                        start: 7,
+                        end: 63,
+                    },
+                    kind: DocBlock(
+                        DocBlockComment {
+                            id: 10,
+                            span: Span {
+                                start: 7,
+                                end: 63,
+                            },
+                            doc: DocBlock {
+                                id: 11,
+                                span: Span {
+                                    start: 7,
+                                    end: 63,
+                                },
+                                nodes: [
+                                    Tag(
+                                        DocBlockTagNode {
+                                            id: 9,
+                                            span: Span {
+                                                start: 11,
+                                                end: 0,
+                                            },
+                                            tag: Template(
+                                                DocBlockTemplateTag {
+                                                    id: 8,
+                                                    span: Span {
+                                                        start: 11,
+                                                        end: 0,
+                                                    },
+                                                    tag: OwnedToken {
+                                                        kind: PhpDocTag,
+                                                        span: Span {
+                                                            start: 11,
+                                                            end: 20,
+                                                        },
+                                                        symbol: "@template",
+                                                    },
+                                                    value: DocBlockTemplateTagValue {
+                                                        id: 7,
+                                                        span: Span {
+                                                            start: 21,
+                                                            end: 0,
+                                                        },
+                                                        template: SimpleIdentifier {
+                                                            id: 4,
+                                                            symbol: "T",
+                                                            span: Span {
+                                                                start: 21,
+                                                                end: 22,
+                                                            },
+                                                        },
+                                                        bound: None,
+                                                        default: Some(
+                                                            DataType {
+                                                                id: 6,
+                                                                kind: Named(
+                                                                    Name {
+                                                                        id: 5,
+                                                                        kind: Resolved(
+                                                                            ResolvedName {
+                                                                                id: 5,
+                                                                                span: Span {
+                                                                                    start: 25,
+                                                                                    end: 60,
+                                                                                },
+                                                                                resolved: "Illuminate\Database\Eloquent\Model",
+                                                                                original: "\Illuminate\Database\Eloquent\Model",
+                                                                            },
+                                                                        ),
+                                                                        span: Span {
+                                                                            start: 25,
+                                                                            end: 60,
+                                                                        },
+                                                                    },
+                                                                ),
+                                                                span: Span {
+                                                                    start: 0,
+                                                                    end: 0,
+                                                                },
+                                                            },
+                                                        ),
+                                                        lower_bound: None,
+                                                        description: None,
+                                                    },
+                                                },
+                                            ),
+                                        },
+                                    ),
+                                ],
+                            },
+                        },
+                    ),
+                },
+            ],
+        },
+    },
+]
+---

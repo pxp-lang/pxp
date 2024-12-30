@@ -101,7 +101,17 @@ impl<'a> Parser<'a> {
             | b"@phan-property-write" => self.property_tag(),
             b"@method" | b"@phpstan-method" | b"@psalm-method" | b"@phan-method" => {
                 self.method_tag()
-            }
+            },
+            b"@template" |
+				b"@phpstan-template" |
+				b"@psalm-template" |
+				b"@phan-template" |
+				b"@template-covariant" |
+				b"@phpstan-template-covariant" |
+				b"@psalm-template-covariant" |
+				b"@template-contravariant" |
+				b"@phpstan-template-contravariant" |
+				b"@psalm-template-contravariant" => self.template_tag(),
             _ => self.generic_tag(),
         };
 
@@ -110,6 +120,25 @@ impl<'a> Parser<'a> {
             span: tag.span(),
             tag,
         }
+    }
+
+    fn template_tag(&mut self) -> DocBlockTag {
+        let tag = self.current().to_owned();
+
+        self.next();
+
+        let value = self.template_tag_value(true);
+
+        self.read_text_until_eol_or_close();
+
+        let span = tag.span.join(value.span);
+
+        DocBlockTag::Template(DocBlockTemplateTag {
+            id: self.id(),
+            span,
+            tag,
+            value,
+        })
     }
 
     fn method_tag(&mut self) -> DocBlockTag {
