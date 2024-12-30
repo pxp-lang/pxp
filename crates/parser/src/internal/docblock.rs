@@ -39,9 +39,6 @@ impl<'a> Parser<'a> {
         self.enter_docblock();
 
         let start = self.next();
-
-        self.skip_horizontal_whitespace();
-
         let mut nodes = Vec::new();
 
         while !self.is_eof() && self.current_kind() != TokenKind::ClosePhpDoc {
@@ -112,16 +109,9 @@ impl<'a> Parser<'a> {
         let tag = self.current().to_owned();
 
         self.next();
-        self.skip_horizontal_whitespace();
 
         let data_type = self.parse_optional_data_type();
-
-        self.skip_horizontal_whitespace();
-
         let variable = self.parse_simple_variable();
-        
-        self.skip_horizontal_whitespace();
-
         let (text, text_span) = self.read_text_until_eol_or_close();
 
         let span = if let Some(text_span) = text_span {
@@ -146,11 +136,8 @@ impl<'a> Parser<'a> {
         let tag = self.current().to_owned();
 
         self.next();
-        self.skip_horizontal_whitespace();
 
         let r#type = self.parse_data_type();
-
-        self.skip_horizontal_whitespace();
 
         let variable = match self.current_kind() {
             TokenKind::Variable => self.parse_simple_variable(),
@@ -167,8 +154,6 @@ impl<'a> Parser<'a> {
                 SimpleVariable::missing(self.id(), self.current_span())
             }
         };
-
-        self.skip_horizontal_whitespace();
 
         let (text, text_span) = self.read_text_until_eol_or_close();
 
@@ -194,16 +179,9 @@ impl<'a> Parser<'a> {
         let tag = self.current().to_owned();
 
         self.next();
-        self.skip_horizontal_whitespace();
 
         let data_type = self.parse_optional_data_type();
-
-        self.skip_horizontal_whitespace();
-
         let variable = self.parse_optional_simple_variable();
-
-        self.skip_horizontal_whitespace();
-
         let (text, text_span) = self.read_text_until_eol_or_close();
 
         let span = if let Some(text_span) = text_span {
@@ -232,16 +210,9 @@ impl<'a> Parser<'a> {
         let tag = self.current().to_owned();
 
         self.next();
-        self.skip_horizontal_whitespace();
 
         let data_type = self.parse_optional_data_type();
-
-        self.skip_horizontal_whitespace();
-
         let variable = self.parse_optional_simple_variable();
-
-        self.skip_horizontal_whitespace();
-
         let (text, text_span) = self.read_text_until_eol_or_close();
 
         let span = if let Some(text_span) = text_span {
@@ -268,12 +239,8 @@ impl<'a> Parser<'a> {
         let tag = self.current().to_owned();
 
         self.next();
-        self.skip_horizontal_whitespace();
 
         let data_type = self.parse_optional_data_type();
-
-        self.skip_horizontal_whitespace();
-
         let (text, text_span) = self.read_text_until_eol_or_close();
 
         DocBlockTag::Return(DocBlockReturnTag {
@@ -295,7 +262,6 @@ impl<'a> Parser<'a> {
         let tag = self.current().to_owned();
 
         self.next();
-        self.skip_horizontal_whitespace();
 
         let (text, text_span) = self.read_text_until_eol_or_close();
 
@@ -339,7 +305,7 @@ impl<'a> Parser<'a> {
 
             text.extend_with_bytes(self.current_symbol());
 
-            self.next();
+            self.next_without_skipping_whitespace();
         }
 
         if text.is_empty() {
@@ -350,11 +316,5 @@ impl<'a> Parser<'a> {
         let span = Span::combine(start_span, end_span);
 
         (Some(text), Some(span))
-    }
-
-    fn skip_horizontal_whitespace(&mut self) {
-        while !self.is_eof() && self.current_kind() == TokenKind::PhpDocHorizontalWhitespace {
-            self.next();
-        }
     }
 }

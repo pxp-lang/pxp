@@ -87,8 +87,24 @@ impl<'a> Parser<'a> {
 
         self.lexer.next();
         self.collect_comments();
+        self.skip_horizontal_whitespace();
 
         span
+    }
+
+    fn next_without_skipping_whitespace(&mut self) -> Span {
+        let span = self.current_span();
+
+        self.lexer.next();
+        self.collect_comments();
+
+        span
+    }
+
+    fn skip_horizontal_whitespace(&mut self) {
+        while !self.is_eof() && self.current_kind() == TokenKind::PhpDocHorizontalWhitespace {
+            self.next();
+        }
     }
 
     fn is_eof(&self) -> bool {
