@@ -24,6 +24,10 @@ impl Span {
         }
     }
 
+    pub fn view<'a>(&self, source: &'a [u8]) -> View<'a> {
+        View::new(*self, source)
+    }
+
     pub fn to_range(&self) -> Range<ByteOffset> {
         self.start..self.end
     }
@@ -94,6 +98,8 @@ impl<T: Spanned> Spanned for Vec<T> {
     fn span(&self) -> Span {
         if self.is_empty() {
             Span::default()
+        } else if self.len() == 1 {
+            self.first().unwrap().span()
         } else {
             Span::new(
                 self.first().unwrap().span().start,
@@ -134,6 +140,86 @@ impl<T: Spanned> Spanned for &mut T {
     fn span(&self) -> Span {
         (**self).span()
     }
+}
+
+#[derive(Debug, Default, PartialEq, Eq, Clone, Copy)]
+pub struct View<'a> {
+    span: Span,
+    source: &'a [u8],
+}
+
+impl<'a> View<'a> {
+    fn new(span: Span, source: &'a [u8]) -> Self {
+        Self { span, source }
+    }
+
+    pub fn to_bytes(&self) -> &'a [u8] {
+        &self.source[self.span.start..self.span.end]
+    }
+
+    pub fn with_previous_line(self) -> Self {
+        Self::new(
+            line_to_span(self.source, self.span.start_line(self.source).saturating_sub(1)).join(self.span),
+            self.source,
+        )
+    }
+
+    pub fn with_next_line(self) -> Self {
+        Self::new(
+            self.span.join(line_to_span(self.source, self.span.end_line(self.source).saturating_add(1))),
+            self.source,
+        )
+    }
+
+    pub fn with_n_previous_lines(self, n: usize) -> Self {
+        Self::new(
+            line_to_span(self.source, self.span.start_line(self.source).saturating_sub(n)).join(self.span),
+            self.source,
+        )
+    }
+
+    pub fn with_n_next_lines(self, n: usize) -> Self {
+        Self::new(
+            self.span.join(line_to_span(self.source, self.span.end_line(self.source).saturating_add(n))),
+            self.source,
+        )
+    }
+
+    pub fn to_span(&self) -> Span {
+        self.span
+    }
+}
+
+impl<'a> Spanned for View<'a> {
+    fn span(&self) -> Span {
+        self.to_span()
+    }
+}
+
+fn line_to_span(source: &[u8], line: usize) -> Span {
+    let start = line_to_byte_offset(source, line);
+    let end = line_to_byte_offset(source, line + 1);
+
+    Span::new(start, end)
+}
+
+fn line_to_byte_offset(source: &[u8], line: usize) -> ByteOffset {
+    let mut offset = 0;
+    let mut current_line = 0;
+
+    for (i, c) in source.iter().enumerate() {
+        if current_line == line {
+            return offset;
+        }
+
+        if c == &b'\n' {
+            current_line += 1;
+        }
+
+        offset = i;
+    }
+
+    offset
 }
 
 fn byte_offset_to_line_and_column(source: &[u8], offset: ByteOffset) -> (usize, usize) {
@@ -309,5 +395,24 @@ mod tests {
         let span = Span::new(0, 5);
 
         assert_eq!(span.to_range(), 0..5);
+    }
+
+    #[test]
+    fn test_view() {
+        let source = b"hello\nworld\n";
+        let span = Span::new(0, 5);
+
+        assert_eq!(span.view(source).to_bytes(), b"hello");
+        assert_eq!(span.view(source).with_next_line().to_bytes(), b"hello\nworld");
+
+        let span = Span::new(6, 11);
+
+        assert_eq!(span.view(source).to_bytes(), b"world");
+        assert_eq!(span.view(source).with_previous_line().to_bytes(), b"hello\nworld");
+
+        let source = b"hello\nworld\nfoo\nbar\nbaz\n";
+        let span = Span::new(6, 11);
+
+        assert_eq!(span.view(source).with_n_previous_lines(2).to_bytes(), b"hello\nworld");
     }
 }
