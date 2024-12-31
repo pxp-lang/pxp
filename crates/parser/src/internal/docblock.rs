@@ -1,8 +1,9 @@
 use pxp_ast::{
-    DocBlock, DocBlockComment, DocBlockGenericTag, DocBlockMethodTag, DocBlockNode,
-    DocBlockParamClosureThisTag, DocBlockParamTag, DocBlockPropertyTag, DocBlockReturnTag,
-    DocBlockTag, DocBlockTagNode, DocBlockTemplateTag, DocBlockTemplateTagValue, DocBlockTextNode,
-    DocBlockVarTag, SimpleIdentifier, SimpleVariable,
+    DocBlock, DocBlockComment, DocBlockExtendsTag, DocBlockGenericTag, DocBlockImplementsTag,
+    DocBlockMethodTag, DocBlockNode, DocBlockParamClosureThisTag, DocBlockParamTag,
+    DocBlockPropertyTag, DocBlockReturnTag, DocBlockTag, DocBlockTagNode, DocBlockTemplateTag,
+    DocBlockTemplateTagValue, DocBlockTextNode, DocBlockUsesTag, DocBlockVarTag, SimpleIdentifier,
+    SimpleVariable,
 };
 use pxp_bytestring::ByteString;
 use pxp_diagnostics::Severity;
@@ -112,6 +113,12 @@ impl<'a> Parser<'a> {
             | b"@template-contravariant"
             | b"@phpstan-template-contravariant"
             | b"@psalm-template-contravariant" => self.template_tag(),
+            b"@extends" | b"@phpstan-extends" | b"@phan-extends" | b"@phan-inherits"
+            | b"@template-extends" => self.extends_tag(),
+            b"@implements" | b"@phpstan-implements" | b"@template-implements" => {
+                self.implements_tag()
+            }
+            b"@use" | b"@phpstan-use" | b"@template-use" => self.use_tag(),
             _ => self.generic_tag(),
         };
 
@@ -120,6 +127,69 @@ impl<'a> Parser<'a> {
             span: tag.span(),
             tag,
         }
+    }
+
+    fn use_tag(&mut self) -> DocBlockTag {
+        let tag = self.current().to_owned();
+
+        self.next();
+
+        let data_type = self.parse_data_type();
+        let (text, text_span) = self.read_text_until_eol_or_close();
+
+        DocBlockTag::Uses(DocBlockUsesTag {
+            id: self.id(),
+            span: if let Some(text_span) = text_span {
+                tag.span.join(text_span)
+            } else {
+                tag.span.join(data_type.span)
+            },
+            tag,
+            data_type,
+            text,
+        })
+    }
+
+    fn implements_tag(&mut self) -> DocBlockTag {
+        let tag = self.current().to_owned();
+
+        self.next();
+
+        let data_type = self.parse_data_type();
+        let (text, text_span) = self.read_text_until_eol_or_close();
+
+        DocBlockTag::Implements(DocBlockImplementsTag {
+            id: self.id(),
+            span: if let Some(text_span) = text_span {
+                tag.span.join(text_span)
+            } else {
+                tag.span.join(data_type.span())
+            },
+            tag,
+            data_type,
+            text,
+        })
+    }
+
+    fn extends_tag(&mut self) -> DocBlockTag {
+        let tag = self.current().to_owned();
+
+        self.next();
+
+        let data_type = self.parse_data_type();
+        let (text, text_span) = self.read_text_until_eol_or_close();
+
+        DocBlockTag::Extends(DocBlockExtendsTag {
+            id: self.id(),
+            span: if let Some(text_span) = text_span {
+                tag.span.join(text_span)
+            } else {
+                tag.span.join(data_type.span())
+            },
+            tag,
+            data_type,
+            text,
+        })
     }
 
     fn template_tag(&mut self) -> DocBlockTag {

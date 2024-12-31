@@ -2138,19 +2138,19 @@ DocBlockTemplateTag:
 DocBlockExtendsTag:
   span: Span
   tag: OwnedToken
-  data_type: Option<DataType>
+  data_type: DataType
   text: Option<ByteString>
 
 DocBlockImplementsTag:
   span: Span
   tag: OwnedToken
-  data_type: Option<DataType>
+  data_type: DataType
   text: Option<ByteString>
 
 DocBlockUsesTag:
   span: Span
   tag: OwnedToken
-  data_type: Option<DataType>
+  data_type: DataType
   text: Option<ByteString>
 
 DocBlockDeprecatedTag:

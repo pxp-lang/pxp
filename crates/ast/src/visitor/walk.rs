@@ -2313,22 +2313,16 @@ pub fn walk_doc_block_template_tag<V: Visitor + ?Sized>(
 }
 
 pub fn walk_doc_block_extends_tag<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockExtendsTag) {
-    if let Some(item) = &node.data_type {
-        visitor.visit_data_type(item);
-    }
+    visitor.visit_data_type(&node.data_type);
 }
 
 pub fn walk_doc_block_implements_tag<V: Visitor + ?Sized>(
     visitor: &mut V,
     node: &DocBlockImplementsTag,
 ) {
-    if let Some(item) = &node.data_type {
-        visitor.visit_data_type(item);
-    }
+    visitor.visit_data_type(&node.data_type);
 }
 
 pub fn walk_doc_block_uses_tag<V: Visitor + ?Sized>(visitor: &mut V, node: &DocBlockUsesTag) {
-    if let Some(item) = &node.data_type {
-        visitor.visit_data_type(item);
-    }
+    visitor.visit_data_type(&node.data_type);
 }

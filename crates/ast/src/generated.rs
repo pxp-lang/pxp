@@ -6059,7 +6059,7 @@ pub struct DocBlockExtendsTag {
     pub id: NodeId,
     pub span: Span,
     pub tag: OwnedToken,
-    pub data_type: Option<DataType>,
+    pub data_type: DataType,
     pub text: Option<ByteString>,
 }
 
@@ -6080,7 +6080,7 @@ pub struct DocBlockImplementsTag {
     pub id: NodeId,
     pub span: Span,
     pub tag: OwnedToken,
-    pub data_type: Option<DataType>,
+    pub data_type: DataType,
     pub text: Option<ByteString>,
 }
 
@@ -6101,7 +6101,7 @@ pub struct DocBlockUsesTag {
     pub id: NodeId,
     pub span: Span,
     pub tag: OwnedToken,
-    pub data_type: Option<DataType>,
+    pub data_type: DataType,
     pub text: Option<ByteString>,
 }
 

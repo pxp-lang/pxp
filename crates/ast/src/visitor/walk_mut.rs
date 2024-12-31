@@ -2595,25 +2595,19 @@ pub fn walk_doc_block_extends_tag_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
     node: &mut DocBlockExtendsTag,
 ) {
-    if let Some(item) = &mut node.data_type {
-        visitor.visit_data_type(item);
-    }
+    visitor.visit_data_type(&mut node.data_type);
 }
 
 pub fn walk_doc_block_implements_tag_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
     node: &mut DocBlockImplementsTag,
 ) {
-    if let Some(item) = &mut node.data_type {
-        visitor.visit_data_type(item);
-    }
+    visitor.visit_data_type(&mut node.data_type);
 }
 
 pub fn walk_doc_block_uses_tag_mut<V: VisitorMut + ?Sized>(
     visitor: &mut V,
     node: &mut DocBlockUsesTag,
 ) {
-    if let Some(item) = &mut node.data_type {
-        visitor.visit_data_type(item);
-    }
+    visitor.visit_data_type(&mut node.data_type);
 }
