@@ -414,5 +414,8 @@ mod tests {
         let span = Span::new(6, 11);
 
         assert_eq!(span.view(source).with_n_previous_lines(2).to_bytes(), b"hello\nworld");
+        assert_eq!(span.view(source).to_span(), span);
+        assert_eq!(span.view(source).with_n_next_lines(2).to_bytes(), b"world\nfoo\nbar");
+        assert_eq!(span.view(source).with_n_next_lines(2).to_span(), Span::new(6, 19));
     }
 }
