@@ -30,7 +30,7 @@ pub struct Lexer<'a> {
     diagnostics: Vec<Diagnostic<LexerDiagnostic>>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum StackFrame {
     Initial,
     Scripting,
@@ -707,13 +707,16 @@ impl<'a> Lexer<'a> {
 
                 Token::new(TokenKind::PhpDocHorizontalWhitespace, span, symbol)
             }
-            _ => {
+            // NOTE: We don't want backticks to be interpreted as shell exec strings inside of DocBlocks.
+            [b'`', ..] => {
                 self.source.next();
 
                 let span = self.source.span();
-                let symbol = self.source.span_range(span);
 
-                Token::new(TokenKind::PhpDocOther, span, symbol)
+                Token::new(TokenKind::PhpDocOther, span, self.source.span_range(span))
+            }
+            _ => {
+                self.scripting()
             }
         }
     }
@@ -1182,7 +1185,9 @@ impl<'a> Lexer<'a> {
             }
             [b'}', ..] => {
                 self.source.next();
-                self.exit();
+                if self.frame() != &StackFrame::DocBlock {
+                    self.exit();
+                }
                 TokenKind::RightBrace
             }
             [b'(', ..] => {
@@ -1862,7 +1867,9 @@ impl<'a> Lexer<'a> {
             }
             [b']', ..] => {
                 self.source.next();
-                self.exit();
+                if self.frame() != &StackFrame::DocBlock {
+                    self.exit();
+                }
                 TokenKind::RightBracket
             }
             &[ident_start!(), ..] => {
