@@ -305,6 +305,10 @@ impl<'a> Parser<'a> {
             return true;
         }
 
+        if self.is_in_docblock() && matches!(kind, TokenKind::PhpDocIs | TokenKind::PhpDocOf | TokenKind::PhpDocSuper | TokenKind::PhpDocNot) {
+            return true;
+        }
+
         self.is_reserved_identifier(kind)
     }
 
@@ -321,6 +325,10 @@ impl<'a> Parser<'a> {
 
     pub fn is_reserved_identifier(&self, kind: TokenKind) -> bool {
         if self.is_soft_reserved_identifier(kind) {
+            return true;
+        }
+
+        if self.is_in_docblock() && matches!(kind, TokenKind::PhpDocIs | TokenKind::PhpDocOf | TokenKind::PhpDocSuper | TokenKind::PhpDocNot) {
             return true;
         }
 

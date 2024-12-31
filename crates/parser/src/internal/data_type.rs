@@ -175,6 +175,7 @@ impl<'a> Parser<'a> {
     }
 
     fn current_is_docblock_const_expr(&mut self) -> bool {
+        (self.current_kind() == TokenKind::Minus && self.peek_kind() == TokenKind::LiteralInteger) ||
         matches!(
             self.current_kind(),
             TokenKind::LiteralInteger
@@ -194,6 +195,15 @@ impl<'a> Parser<'a> {
 
     fn parse_docblock_const_expr(&mut self) -> Type<Name> {
         match self.current_kind() {
+            TokenKind::Minus if self.peek_kind() == TokenKind::LiteralInteger => {
+                self.next();
+
+                self.next_but_first(|parser| {
+                    Type::ConstExpr(Box::new(ConstExpr::NegativeInteger(
+                        parser.current_symbol_as_bytestring(),
+                    )))
+                })
+            },
             TokenKind::LiteralInteger => self.next_but_first(|parser| {
                 Type::ConstExpr(Box::new(ConstExpr::Integer(
                     parser.current_symbol_as_bytestring(),
@@ -931,6 +941,11 @@ impl<'a> Parser<'a> {
                     b"numeric-string" if parser.is_in_docblock() => Some(Type::NumericString),
                     b"non-empty-string" if parser.is_in_docblock() => Some(Type::NonEmptyString),
                     b"non-empty-mixed" if parser.is_in_docblock() => Some(Type::NonEmptyMixed),
+                    b"non-negative-int" if parser.is_in_docblock() => Some(Type::NonNegativeInteger),
+                    b"positive-int" if parser.is_in_docblock() => Some(Type::NonNegativeInteger),
+                    b"non-empty-array" if parser.is_in_docblock() => Some(Type::NonEmptyArray),
+                    b"non-empty-list" if parser.is_in_docblock() => Some(Type::NonEmptyList),
+                    b"callable-string" if parser.is_in_docblock() => Some(Type::CallableString),
                     _ => {
                         let id = parser.id();
 

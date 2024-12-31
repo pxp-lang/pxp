@@ -18,18 +18,22 @@ pub enum Type<N: Debug + Display> {
     Float,
     Boolean,
     Integer,
+    NonNegativeInteger,
     ClassString,
     String,
     NumericString,
     NonEmptyString,
     Empty,
     List,
+    NonEmptyList,
     Array,
+    NonEmptyArray,
     Object,
     #[default]
     Mixed,
     NonEmptyMixed,
     Callable,
+    CallableString,
     CallableSignature(Box<Type<N>>, Vec<CallableParameter<N>>, Box<Type<N>>),
     Iterable,
     StaticReference,
@@ -65,6 +69,7 @@ pub enum Type<N: Debug + Display> {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ConstExpr<N: Debug + Display> {
+    NegativeInteger(ByteString),
     Integer(ByteString),
     Float(ByteString),
     String(ByteString),
@@ -74,6 +79,7 @@ pub enum ConstExpr<N: Debug + Display> {
 impl<N: Debug + Display> Display for ConstExpr<N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            Self::NegativeInteger(value) => write!(f, "-{}", value),
             Self::Integer(value) => write!(f, "{}", value),
             Self::Float(value) => write!(f, "{}", value),
             Self::String(value) => write!(f, "{}", value),
@@ -237,6 +243,10 @@ impl<N: Debug + Display> Type<N> {
 impl<N: Debug + Display> Display for Type<N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
+            Type::CallableString => write!(f, "callable-string"),
+            Type::NonEmptyList => write!(f, "non-empty-list"),
+            Type::NonEmptyArray => write!(f, "non-empty-array"),
+            Type::NonNegativeInteger => write!(f, "non-negative-int"),
             Type::Empty => write!(f, "empty"),
             Type::NonEmptyMixed => write!(f, "non-empty-mixed"),
             Type::NonEmptyString => write!(f, "non-empty-string"),

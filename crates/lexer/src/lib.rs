@@ -303,6 +303,15 @@ impl<'a> Lexer<'a> {
         }
 
         match &self.source.read(5) {
+            // NOTE: Some packages I've tested the parser on have random PhpDocOpen tokens inside
+            // of other DocBlock comments, so we need to handle this case.
+            [b'/', b'*', b'*', ..] => {
+                self.source.skip(3);
+
+                let span = self.source.span();
+
+                Token::new(TokenKind::PhpDocOther, span, self.source.span_range(span))
+            },
             [b'.', b'.', b'.', ..] => {
                 self.source.skip(3);
 
@@ -380,11 +389,21 @@ impl<'a> Lexer<'a> {
                 self.source.next();
                 let mut qualified = false;
                 let mut last_was_slash = false;
+                let mut last_was_hyphen = false;
 
-                while let Some(next @ ident!() | next @ b'\\') = self.source.current() {
+                while let Some(next @ ident!() | next @ b'\\' | next @ b'-') = self.source.current() {
                     if matches!(next, ident!()) {
                         self.source.next();
                         last_was_slash = false;
+                        last_was_hyphen = false;
+                        continue;
+                    }
+
+                    if *next == b'-' && !last_was_hyphen {
+                        last_was_hyphen = true;
+                        last_was_slash = false;
+
+                        self.source.next();
                         continue;
                     }
 
@@ -399,62 +418,8 @@ impl<'a> Lexer<'a> {
                     break;
                 }
 
-                // Inside of a DocBlock, we can support non-standard identifiers such as `array-key`, `non-empty-string`, etc.
-                let (span, symbol) = match self.source.span_range(self.source.span()).as_ref() {
-                    b"non" if self.source.read(13) == b"-empty-string" => {
-                        self.source.skip(13);
-
-                        (
-                            self.source.span(),
-                            self.source.span_range(self.source.span()),
-                        )
-                    }
-                    b"non" if self.source.read(12) == b"-empty-mixed" => {
-                        self.source.skip(12);
-
-                        (
-                            self.source.span(),
-                            self.source.span_range(self.source.span()),
-                        )
-                    }
-                    b"class" if self.source.read(7) == b"-string" => {
-                        self.source.skip(7);
-
-                        (
-                            self.source.span(),
-                            self.source.span_range(self.source.span()),
-                        )
-                    }
-                    b"array" if self.source.read(4) == b"-key" => {
-                        self.source.skip(4);
-
-                        (
-                            self.source.span(),
-                            self.source.span_range(self.source.span()),
-                        )
-                    }
-                    b"value" if &self.source.read(3) == b"-of" => {
-                        self.source.skip(3);
-
-                        (
-                            self.source.span(),
-                            self.source.span_range(self.source.span()),
-                        )
-                    }
-                    b"numeric" if self.source.read(7) == b"-string" => {
-                        self.source.skip(7);
-
-                        (
-                            self.source.span(),
-                            self.source.span_range(self.source.span()),
-                        )
-                    }
-                    _ => (
-                        self.source.span(),
-                        self.source.span_range(self.source.span()),
-                    ),
-                };
-
+                let span = self.source.span();
+                let symbol = self.source.span_range(span);
                 let kind = match true {
                     _ if symbol.as_ref() == b"super" => TokenKind::PhpDocSuper,
                     _ if symbol.as_ref() == b"of" => TokenKind::PhpDocOf,
@@ -715,6 +680,20 @@ impl<'a> Lexer<'a> {
 
                 Token::new(TokenKind::PhpDocOther, span, self.source.span_range(span))
             }
+            [b'/', ..] => {
+                self.source.next();
+
+                let span = self.source.span();
+
+                Token::new(TokenKind::Slash, span, self.source.span_range(span))
+            },
+            [b'#', ..] => {
+                self.source.next();
+
+                let span = self.source.span();
+
+                Token::new(TokenKind::PhpDocOther, span, self.source.span_range(span))
+            },
             _ => {
                 self.scripting()
             }
