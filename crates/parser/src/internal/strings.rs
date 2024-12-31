@@ -358,7 +358,6 @@ impl<'a> Parser<'a> {
                             },
                         ))
                     }
-                    // FIXME: This is hacky and bad for performance & memory, but works for now.
                     _ => variable.kind.clone(),
                 };
 

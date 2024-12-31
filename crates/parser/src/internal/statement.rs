@@ -402,10 +402,7 @@ impl<'a> Parser<'a> {
                     let echo = self.next();
 
                     let mut values = Vec::new();
-                    // FIXME: We should check for a semi-colon here and produce a better error,
-                    //        currently the error says that the semi-colon is unexpected (which it is)
-                    //        but a more appropriate error would be that the expression is missing and
-                    //        that the semi-colon is fine where it is (or at least not the real problem).
+
                     loop {
                         values.push(self.parse_expression());
 

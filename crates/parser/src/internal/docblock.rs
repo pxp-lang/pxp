@@ -216,11 +216,7 @@ impl<'a> Parser<'a> {
 
         self.next();
 
-        let r#static = if self.current_kind() == TokenKind::Static {
-            Some(self.next())
-        } else {
-            None
-        };
+        let r#static = self.optional(TokenKind::Static);
 
         let (return_type, name) = if self.is_identifier_maybe_reserved(self.current_kind())
             && self.peek_kind() == TokenKind::LeftParen
@@ -398,7 +394,9 @@ impl<'a> Parser<'a> {
         let tag = self.current().to_owned();
 
         self.next();
-
+        
+        let ampersand = self.optional(TokenKind::Ampersand);
+        let ellipsis = self.optional(TokenKind::Ellipsis);
         let data_type = self.parse_optional_data_type();
         let variable = self.parse_optional_simple_variable();
         let (text, text_span) = self.read_text_until_eol_or_close();
@@ -417,8 +415,8 @@ impl<'a> Parser<'a> {
             id: self.id(),
             span,
             tag,
-            ampersand: None,
-            ellipsis: None,
+            ampersand,
+            ellipsis,
             data_type,
             variable,
             text,

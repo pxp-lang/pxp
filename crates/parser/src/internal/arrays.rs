@@ -172,11 +172,7 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_array_pair(&mut self) -> ArrayItem {
-        let ellipsis = if self.current_kind() == TokenKind::Ellipsis {
-            Some(self.next())
-        } else {
-            None
-        };
+        let ellipsis = self.optional(TokenKind::Ellipsis);
 
         let mut ampersand = if self.current_kind() == TokenKind::Ampersand {
             if ellipsis.is_some() {
@@ -227,11 +223,7 @@ impl<'a> Parser<'a> {
                 );
             }
 
-            ampersand = if self.current_kind() == TokenKind::Ampersand {
-                Some(self.next())
-            } else {
-                None
-            };
+            ampersand = self.optional(TokenKind::Ampersand);
 
             let mut key = self.parse_expression();
 

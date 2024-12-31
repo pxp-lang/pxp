@@ -84,6 +84,14 @@ impl<'a> Parser<'a> {
         self.skip(TokenKind::Colon)
     }
 
+    pub fn optional(&mut self, kind: TokenKind) -> Option<Span> {
+        if self.current_kind() == kind {
+            Some(self.next())
+        } else {
+            None
+        }
+    }
+
     pub fn expect(&mut self, kind: TokenKind) -> Span {
         if self.current_kind() != kind {
             self.diagnostic(
