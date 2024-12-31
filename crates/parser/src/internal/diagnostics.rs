@@ -1,4 +1,4 @@
-use pxp_diagnostics::{Diagnostic, Severity};
+use pxp_diagnostics::{Diagnostic, DiagnosticKind, Severity};
 use pxp_span::Span;
 
 use crate::Parser;
@@ -64,11 +64,145 @@ pub enum ParserDiagnostic {
         expected: Vec<TokenKind>,
     },
     MixedImportTypes,
-    InvalidDocBodyIndentationLevel(usize),
-    InvalidDocIndentation,
     InterfaceCannotUseTraits,
     InterfaceCannotContainConcreteMethods,
     InterfaceMembersMustBePublic,
+}
+
+impl DiagnosticKind for ParserDiagnostic {
+    fn code(&self) -> &str {
+        match self {
+            ParserDiagnostic::UnexpectedToken { .. } => "P001",
+            ParserDiagnostic::ExpectedToken { .. } => "P002",
+            ParserDiagnostic::ExpectedTokenExFound { .. } => "P003",
+            ParserDiagnostic::InvalidSpreadOperator => "P004",
+            ParserDiagnostic::InvalidTargetForAttributes => "P005",
+            ParserDiagnostic::CannotMixKeyedAndUnkeyedListEntries => "P006",
+            ParserDiagnostic::AbstractMethodInNonAbstractClass => "P007",
+            ParserDiagnostic::CannotHaveMultipleDefaultArmsInMatch => "P008",
+            ParserDiagnostic::MissingType => "P009",
+            ParserDiagnostic::StandaloneTypeUsedInNullableType => "P010",
+            ParserDiagnostic::StandaloneTypeUsedInUnionType => "P011",
+            ParserDiagnostic::StandaloneTypeUsedInIntersectionType => "P012",
+            ParserDiagnostic::NestedDisjunctiveNormalFormType => "P013",
+            ParserDiagnostic::InvalidBackedEnumType => "P014",
+            ParserDiagnostic::UnitEnumsCannotHaveCaseValues => "P015",
+            ParserDiagnostic::BackedEnumCaseMustHaveValue => "P016",
+            ParserDiagnostic::CannotUseReservedKeywordAsTypeName => "P017",
+            ParserDiagnostic::CannotUseReservedKeywordAsLabel => "P018",
+            ParserDiagnostic::CannotUseReservedKeywordAsConstantName => "P019",
+            ParserDiagnostic::InvalidClassModifier => "P020",
+            ParserDiagnostic::InvalidMethodModifier => "P021",
+            ParserDiagnostic::InvalidPropertyModifier => "P022",
+            ParserDiagnostic::InvalidConstantModifier => "P023",
+            ParserDiagnostic::InvalidPropertyHook => "P024",
+            ParserDiagnostic::ExpectedPropertyHook => "P025",
+            ParserDiagnostic::CannotUseFinalWithAbstract => "P026",
+            ParserDiagnostic::CannotUseFinalWithPrivateOnConstant => "P027",
+            ParserDiagnostic::DuplicateModifier => "P028",
+            ParserDiagnostic::MultipleVisibilityModifiers => "P029",
+            ParserDiagnostic::MultipleSetVisibilityModifiers => "P030",
+            ParserDiagnostic::CannotMixBracketedAndUnbracketedNamespaceDeclarations => "P031",
+            ParserDiagnostic::NestedNamespace => "P032",
+            ParserDiagnostic::PromotedPropertyCannotBeVariadic => "P033",
+            ParserDiagnostic::ForbiddenTypeUsedInProperty => "P034",
+            ParserDiagnostic::ReadonlyPropertyMustHaveType => "P035",
+            ParserDiagnostic::CannotUsePositionalArgumentAfterNamedArgument => "P036",
+            ParserDiagnostic::PositionalArgumentsOnly => "P037",
+            ParserDiagnostic::OnlyAllowedOneArgument => "P038",
+            ParserDiagnostic::ArgumentRequired => "P039",
+            ParserDiagnostic::StaticPropertyCannotBeReadonly => "P040",
+            ParserDiagnostic::ReadonlyPropertyCannotHaveDefaultValue => "P041",
+            ParserDiagnostic::TryMustHaveCatchOrFinally => "P042",
+            ParserDiagnostic::DynamicVariableNotAllowed => "P043",
+            ParserDiagnostic::UnexpectedEndOfFile => "P044",
+            ParserDiagnostic::UnexpectedEndOfFileExpected { .. } => "P045",
+            ParserDiagnostic::MixedImportTypes => "P046",
+            ParserDiagnostic::InterfaceCannotUseTraits => "P049",
+            ParserDiagnostic::InterfaceCannotContainConcreteMethods => "P050",
+            ParserDiagnostic::InterfaceMembersMustBePublic => "P051",
+        }
+    }
+
+    fn identifier(&self) -> &str {
+        match self {
+            ParserDiagnostic::UnexpectedToken { .. } => "parser.unexpected-token",
+            ParserDiagnostic::ExpectedToken { .. } => "parser.expected-token",
+            ParserDiagnostic::ExpectedTokenExFound { .. } => "parser.expected-token",
+            ParserDiagnostic::InvalidSpreadOperator => "parser.invalid-spread-operator",
+            ParserDiagnostic::InvalidTargetForAttributes => "parser.invalid-target-for-attributes",
+            ParserDiagnostic::CannotMixKeyedAndUnkeyedListEntries => {
+                "parser.cannot-mix-keyed-and-unkeyed-list-entries"
+            }
+            ParserDiagnostic::AbstractMethodInNonAbstractClass => {
+                "parser.abstract-method-in-non-abstract-class"
+            }
+            ParserDiagnostic::CannotHaveMultipleDefaultArmsInMatch => {
+                "parser.cannot-have-multiple-default-arms-in-match"
+            }
+            ParserDiagnostic::MissingType => "parser.missing-type",
+            ParserDiagnostic::StandaloneTypeUsedInNullableType => {
+                "parser.standalone-type-used-in-nullable-type"
+            }
+            ParserDiagnostic::StandaloneTypeUsedInUnionType => {
+                "parser.standalone-type-used-in-union-type"
+            }
+            ParserDiagnostic::StandaloneTypeUsedInIntersectionType => {
+                "parser.standalone-type-used-in-intersection-type"
+            }
+            ParserDiagnostic::NestedDisjunctiveNormalFormType => {
+                "parser.nested-disjunctive-normal-form-type"
+            }
+            ParserDiagnostic::InvalidBackedEnumType => "parser.invalid-backed-enum-type",
+            ParserDiagnostic::UnitEnumsCannotHaveCaseValues => "parser.unit-enums-cannot-have-case-values",
+            ParserDiagnostic::BackedEnumCaseMustHaveValue => "parser.backed-enum-case-must-have-value",
+            ParserDiagnostic::CannotUseReservedKeywordAsTypeName => {
+                "parser.cannot-use-reserved-keyword-as-type-name"
+            }
+            ParserDiagnostic::CannotUseReservedKeywordAsLabel => {
+                "parser.cannot-use-reserved-keyword-as-label"
+            }
+            ParserDiagnostic::CannotUseReservedKeywordAsConstantName => {
+                "parser.cannot-use-reserved-keyword-as-constant-name"
+            }
+            ParserDiagnostic::InvalidClassModifier => "parser.invalid-class-modifier",
+            ParserDiagnostic::InvalidMethodModifier => "parser.invalid-method-modifier",
+            ParserDiagnostic::InvalidPropertyModifier => "parser.invalid-property-modifier",
+            ParserDiagnostic::InvalidConstantModifier => "parser.invalid-constant-modifier",
+            ParserDiagnostic::InvalidPropertyHook => "parser.invalid-property-hook",
+            ParserDiagnostic::ExpectedPropertyHook => "parser.expected-property-hook",
+            ParserDiagnostic::CannotUseFinalWithAbstract => "parser.cannot-use-final-with-abstract",
+            ParserDiagnostic::CannotUseFinalWithPrivateOnConstant => {
+                "parser.cannot-use-final-with-private-on-constant"
+            }
+            ParserDiagnostic::DuplicateModifier => "parser.duplicate-modifier",
+            ParserDiagnostic::MultipleVisibilityModifiers => "parser.multiple-visibility-modifiers",
+            ParserDiagnostic::MultipleSetVisibilityModifiers => "parser.multiple-set-visibility-modifiers",
+            ParserDiagnostic::CannotMixBracketedAndUnbracketedNamespaceDeclarations => {
+                "parser.cannot-mix-bracketed-and-unbracketed-namespace-declarations"
+            }
+            ParserDiagnostic::NestedNamespace => "parser.nested-namespace",
+            ParserDiagnostic::PromotedPropertyCannotBeVariadic => "parser.promoted-property-cannot-be-variadic",
+            ParserDiagnostic::ForbiddenTypeUsedInProperty => "parser.forbidden-type-used-in-property",
+            ParserDiagnostic::ReadonlyPropertyMustHaveType => "parser.readonly-property-must-have-type",
+            ParserDiagnostic::CannotUsePositionalArgumentAfterNamedArgument => {
+                "parser.cannot-use-positional-argument-after-named-argument"
+            }
+            ParserDiagnostic::PositionalArgumentsOnly => "parser.positional-arguments-only",
+            ParserDiagnostic::OnlyAllowedOneArgument => "parser.only-allowed-one-argument",
+            ParserDiagnostic::ArgumentRequired => "parser.argument-required",
+            ParserDiagnostic::StaticPropertyCannotBeReadonly => "parser.static-property-cannot-be-readonly",
+            ParserDiagnostic::ReadonlyPropertyCannotHaveDefaultValue => "parser.readonly-property-cannot-have-default-value",
+            ParserDiagnostic::TryMustHaveCatchOrFinally => "parser.try-must-have-catch-or-finally",
+            ParserDiagnostic::DynamicVariableNotAllowed => "parser.dynamic-variable-not-allowed",
+            ParserDiagnostic::UnexpectedEndOfFile => "parser.unexpected-end-of-file",
+            ParserDiagnostic::UnexpectedEndOfFileExpected { .. } => "parser.unexpected-end-of-file-expected",
+            ParserDiagnostic::MixedImportTypes => "parser.mixed-import-types",
+            ParserDiagnostic::InterfaceCannotUseTraits => "parser.interface-cannot-use-traits",
+            ParserDiagnostic::InterfaceCannotContainConcreteMethods => "parser.interface-cannot-contain-concrete-methods",
+            ParserDiagnostic::InterfaceMembersMustBePublic => "parser.interface-members-must-be-public",
+        }
+    }
 }
 
 impl Display for ParserDiagnostic {
@@ -243,14 +377,6 @@ impl Display for ParserDiagnostic {
                 }
             }
             ParserDiagnostic::MixedImportTypes => write!(f, "cannot mix import types"),
-            ParserDiagnostic::InvalidDocBodyIndentationLevel(level) => write!(
-                f,
-                "heredoc / nowdoc body indentation level [{}] is invalid",
-                level
-            ),
-            ParserDiagnostic::InvalidDocIndentation => {
-                write!(f, "heredoc / nowdoc body indentation is invalid")
-            }
         }
     }
 }
