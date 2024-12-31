@@ -165,11 +165,11 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_docblock_missing_type(&mut self) -> Type<Name> {
-        // self.diagnostic(
-        //     ParserDiagnostic::MissingType,
-        //     Severity::Warning,
-        //     self.current_span(),
-        // );
+        self.diagnostic(
+            ParserDiagnostic::MissingType,
+            Severity::Warning,
+            self.current_span(),
+        );
 
         Type::Missing
     }
