@@ -101,17 +101,17 @@ impl<'a> Parser<'a> {
             | b"@phan-property-write" => self.property_tag(),
             b"@method" | b"@phpstan-method" | b"@psalm-method" | b"@phan-method" => {
                 self.method_tag()
-            },
-            b"@template" |
-				b"@phpstan-template" |
-				b"@psalm-template" |
-				b"@phan-template" |
-				b"@template-covariant" |
-				b"@phpstan-template-covariant" |
-				b"@psalm-template-covariant" |
-				b"@template-contravariant" |
-				b"@phpstan-template-contravariant" |
-				b"@psalm-template-contravariant" => self.template_tag(),
+            }
+            b"@template"
+            | b"@phpstan-template"
+            | b"@psalm-template"
+            | b"@phan-template"
+            | b"@template-covariant"
+            | b"@phpstan-template-covariant"
+            | b"@psalm-template-covariant"
+            | b"@template-contravariant"
+            | b"@phpstan-template-contravariant"
+            | b"@psalm-template-contravariant" => self.template_tag(),
             _ => self.generic_tag(),
         };
 

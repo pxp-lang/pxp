@@ -213,7 +213,23 @@ snap!(
     docblock_method_tag_templates,
     process("fixtures/docblocks/method-tag-templates.php")
 );
-snap!(snapper, docblock_template_tag, process("fixtures/docblocks/template-tag.php"));
-snap!(snapper, docblock_template_tag_bound, process("fixtures/docblocks/template-tag-bound.php"));
-snap!(snapper, docblock_template_tag_default, process("fixtures/docblocks/template-tag-default.php"));
-snap!(snapper, docblock_template_tag_lower_bound, process("fixtures/docblocks/template-tag-lower-bound.php"));
+snap!(
+    snapper,
+    docblock_template_tag,
+    process("fixtures/docblocks/template-tag.php")
+);
+snap!(
+    snapper,
+    docblock_template_tag_bound,
+    process("fixtures/docblocks/template-tag-bound.php")
+);
+snap!(
+    snapper,
+    docblock_template_tag_default,
+    process("fixtures/docblocks/template-tag-default.php")
+);
+snap!(
+    snapper,
+    docblock_template_tag_lower_bound,
+    process("fixtures/docblocks/template-tag-lower-bound.php")
+);

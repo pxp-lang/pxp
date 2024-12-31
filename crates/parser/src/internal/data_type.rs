@@ -351,7 +351,8 @@ impl<'a> Parser<'a> {
                     }
 
                     r#type
-                } else if current.kind == TokenKind::LeftParen && self.type_can_be_callable(&r#type) {
+                } else if current.kind == TokenKind::LeftParen && self.type_can_be_callable(&r#type)
+                {
                     self.parse_docblock_callable(r#type)
                 } else if current.kind == TokenKind::LeftBracket {
                     self.parse_docblock_array_or_offset_access(r#type)
@@ -371,7 +372,7 @@ impl<'a> Parser<'a> {
             Type::Callable => true,
             Type::Named(name) if name.symbol() == b"Closure" => true,
             _ => false,
-        }
+        };
     }
 
     fn parse_docblock_array_shape(&mut self, lhs: Type<Name>) -> Type<Name> {
