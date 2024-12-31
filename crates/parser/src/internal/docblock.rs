@@ -152,7 +152,7 @@ impl<'a> Parser<'a> {
             None
         };
 
-        let (return_type, name) = if self.current_kind() == TokenKind::Identifier
+        let (return_type, name) = if self.is_identifier_maybe_reserved(self.current_kind())
             && self.peek_kind() == TokenKind::LeftParen
         {
             (None, self.parse_identifier_maybe_reserved())

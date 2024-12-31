@@ -165,11 +165,11 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_docblock_missing_type(&mut self) -> Type<Name> {
-        self.diagnostic(
-            ParserDiagnostic::MissingType,
-            Severity::Warning,
-            self.current_span(),
-        );
+        // self.diagnostic(
+        //     ParserDiagnostic::MissingType,
+        //     Severity::Warning,
+        //     self.current_span(),
+        // );
 
         Type::Missing
     }
@@ -369,7 +369,7 @@ impl<'a> Parser<'a> {
     fn type_can_be_callable(&self, ty: &Type<Name>) -> bool {
         return match ty {
             Type::Callable => true,
-            Type::Named(name) if name.symbol() == b"\\Closure" => true,
+            Type::Named(name) if name.symbol() == b"Closure" => true,
             _ => false,
         }
     }
