@@ -311,7 +311,7 @@ impl<'a> Lexer<'a> {
                 let span = self.source.span();
 
                 Token::new(TokenKind::PhpDocOther, span, self.source.span_range(span))
-            },
+            }
             [b'.', b'.', b'.', ..] => {
                 self.source.skip(3);
 
@@ -391,7 +391,8 @@ impl<'a> Lexer<'a> {
                 let mut last_was_slash = false;
                 let mut last_was_hyphen = false;
 
-                while let Some(next @ ident!() | next @ b'\\' | next @ b'-') = self.source.current() {
+                while let Some(next @ ident!() | next @ b'\\' | next @ b'-') = self.source.current()
+                {
                     if matches!(next, ident!()) {
                         self.source.next();
                         last_was_slash = false;
@@ -686,17 +687,15 @@ impl<'a> Lexer<'a> {
                 let span = self.source.span();
 
                 Token::new(TokenKind::Slash, span, self.source.span_range(span))
-            },
+            }
             [b'#', ..] => {
                 self.source.next();
 
                 let span = self.source.span();
 
                 Token::new(TokenKind::PhpDocOther, span, self.source.span_range(span))
-            },
-            _ => {
-                self.scripting()
             }
+            _ => self.scripting(),
         }
     }
 

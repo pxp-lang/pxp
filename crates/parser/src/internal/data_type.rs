@@ -175,22 +175,23 @@ impl<'a> Parser<'a> {
     }
 
     fn current_is_docblock_const_expr(&mut self) -> bool {
-        (self.current_kind() == TokenKind::Minus && self.peek_kind() == TokenKind::LiteralInteger) ||
-        matches!(
-            self.current_kind(),
-            TokenKind::LiteralInteger
-                | TokenKind::LiteralFloat
-                | TokenKind::LiteralSingleQuotedString
-                | TokenKind::LiteralDoubleQuotedString
-        ) || (matches!(
-            self.current_kind(),
-            TokenKind::Identifier
-                | TokenKind::QualifiedIdentifier
-                | TokenKind::FullyQualifiedIdentifier
-                | TokenKind::Self_
-                | TokenKind::Static
-                | TokenKind::Parent
-        ) && self.peek_kind() == TokenKind::DoubleColon)
+        (self.current_kind() == TokenKind::Minus && self.peek_kind() == TokenKind::LiteralInteger)
+            || matches!(
+                self.current_kind(),
+                TokenKind::LiteralInteger
+                    | TokenKind::LiteralFloat
+                    | TokenKind::LiteralSingleQuotedString
+                    | TokenKind::LiteralDoubleQuotedString
+            )
+            || (matches!(
+                self.current_kind(),
+                TokenKind::Identifier
+                    | TokenKind::QualifiedIdentifier
+                    | TokenKind::FullyQualifiedIdentifier
+                    | TokenKind::Self_
+                    | TokenKind::Static
+                    | TokenKind::Parent
+            ) && self.peek_kind() == TokenKind::DoubleColon)
     }
 
     fn parse_docblock_const_expr(&mut self) -> Type<Name> {
@@ -203,7 +204,7 @@ impl<'a> Parser<'a> {
                         parser.current_symbol_as_bytestring(),
                     )))
                 })
-            },
+            }
             TokenKind::LiteralInteger => self.next_but_first(|parser| {
                 Type::ConstExpr(Box::new(ConstExpr::Integer(
                     parser.current_symbol_as_bytestring(),
@@ -941,7 +942,9 @@ impl<'a> Parser<'a> {
                     b"numeric-string" if parser.is_in_docblock() => Some(Type::NumericString),
                     b"non-empty-string" if parser.is_in_docblock() => Some(Type::NonEmptyString),
                     b"non-empty-mixed" if parser.is_in_docblock() => Some(Type::NonEmptyMixed),
-                    b"non-negative-int" if parser.is_in_docblock() => Some(Type::NonNegativeInteger),
+                    b"non-negative-int" if parser.is_in_docblock() => {
+                        Some(Type::NonNegativeInteger)
+                    }
                     b"positive-int" if parser.is_in_docblock() => Some(Type::NonNegativeInteger),
                     b"non-empty-array" if parser.is_in_docblock() => Some(Type::NonEmptyArray),
                     b"non-empty-list" if parser.is_in_docblock() => Some(Type::NonEmptyList),

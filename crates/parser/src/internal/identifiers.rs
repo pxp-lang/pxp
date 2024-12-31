@@ -305,7 +305,15 @@ impl<'a> Parser<'a> {
             return true;
         }
 
-        if self.is_in_docblock() && matches!(kind, TokenKind::PhpDocIs | TokenKind::PhpDocOf | TokenKind::PhpDocSuper | TokenKind::PhpDocNot) {
+        if self.is_in_docblock()
+            && matches!(
+                kind,
+                TokenKind::PhpDocIs
+                    | TokenKind::PhpDocOf
+                    | TokenKind::PhpDocSuper
+                    | TokenKind::PhpDocNot
+            )
+        {
             return true;
         }
 
@@ -328,7 +336,15 @@ impl<'a> Parser<'a> {
             return true;
         }
 
-        if self.is_in_docblock() && matches!(kind, TokenKind::PhpDocIs | TokenKind::PhpDocOf | TokenKind::PhpDocSuper | TokenKind::PhpDocNot) {
+        if self.is_in_docblock()
+            && matches!(
+                kind,
+                TokenKind::PhpDocIs
+                    | TokenKind::PhpDocOf
+                    | TokenKind::PhpDocSuper
+                    | TokenKind::PhpDocNot
+            )
+        {
             return true;
         }
 
