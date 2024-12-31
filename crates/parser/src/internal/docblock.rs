@@ -394,7 +394,7 @@ impl<'a> Parser<'a> {
         let tag = self.current().to_owned();
 
         self.next();
-        
+
         let ampersand = self.optional(TokenKind::Ampersand);
         let ellipsis = self.optional(TokenKind::Ellipsis);
         let data_type = self.parse_optional_data_type();
