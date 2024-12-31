@@ -159,28 +159,42 @@ impl<'a> View<'a> {
 
     pub fn with_previous_line(self) -> Self {
         Self::new(
-            line_to_span(self.source, self.span.start_line(self.source).saturating_sub(1)).join(self.span),
+            line_to_span(
+                self.source,
+                self.span.start_line(self.source).saturating_sub(1),
+            )
+            .join(self.span),
             self.source,
         )
     }
 
     pub fn with_next_line(self) -> Self {
         Self::new(
-            self.span.join(line_to_span(self.source, self.span.end_line(self.source).saturating_add(1))),
+            self.span.join(line_to_span(
+                self.source,
+                self.span.end_line(self.source).saturating_add(1),
+            )),
             self.source,
         )
     }
 
     pub fn with_n_previous_lines(self, n: usize) -> Self {
         Self::new(
-            line_to_span(self.source, self.span.start_line(self.source).saturating_sub(n)).join(self.span),
+            line_to_span(
+                self.source,
+                self.span.start_line(self.source).saturating_sub(n),
+            )
+            .join(self.span),
             self.source,
         )
     }
 
     pub fn with_n_next_lines(self, n: usize) -> Self {
         Self::new(
-            self.span.join(line_to_span(self.source, self.span.end_line(self.source).saturating_add(n))),
+            self.span.join(line_to_span(
+                self.source,
+                self.span.end_line(self.source).saturating_add(n),
+            )),
             self.source,
         )
     }
@@ -403,19 +417,34 @@ mod tests {
         let span = Span::new(0, 5);
 
         assert_eq!(span.view(source).to_bytes(), b"hello");
-        assert_eq!(span.view(source).with_next_line().to_bytes(), b"hello\nworld");
+        assert_eq!(
+            span.view(source).with_next_line().to_bytes(),
+            b"hello\nworld"
+        );
 
         let span = Span::new(6, 11);
 
         assert_eq!(span.view(source).to_bytes(), b"world");
-        assert_eq!(span.view(source).with_previous_line().to_bytes(), b"hello\nworld");
+        assert_eq!(
+            span.view(source).with_previous_line().to_bytes(),
+            b"hello\nworld"
+        );
 
         let source = b"hello\nworld\nfoo\nbar\nbaz\n";
         let span = Span::new(6, 11);
 
-        assert_eq!(span.view(source).with_n_previous_lines(2).to_bytes(), b"hello\nworld");
+        assert_eq!(
+            span.view(source).with_n_previous_lines(2).to_bytes(),
+            b"hello\nworld"
+        );
         assert_eq!(span.view(source).to_span(), span);
-        assert_eq!(span.view(source).with_n_next_lines(2).to_bytes(), b"world\nfoo\nbar");
-        assert_eq!(span.view(source).with_n_next_lines(2).to_span(), Span::new(6, 19));
+        assert_eq!(
+            span.view(source).with_n_next_lines(2).to_bytes(),
+            b"world\nfoo\nbar"
+        );
+        assert_eq!(
+            span.view(source).with_n_next_lines(2).to_span(),
+            Span::new(6, 19)
+        );
     }
 }
