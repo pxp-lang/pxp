@@ -1,16 +1,16 @@
 use std::{collections::HashMap, path::Path};
 
-use ariadne::{Label, Report, Source};
 use clap::Parser as Args;
 use colored::Colorize;
 use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::Lexer;
 use pxp_parser::{Parser, ParserDiagnostic};
 use pxp_diagnostics::DiagnosticKind;
+use pxp_span::Spanned;
 
 use crate::{
     config::{CheckConfig, Config},
-    utils::{find_php_files_in_list, severity_to_report_kind, ProgressBar},
+    utils::{find_php_files_in_list, ProgressBar},
 };
 
 #[derive(Args, Debug)]
@@ -78,25 +78,25 @@ fn only_syntax(args: Check, config: CheckConfig) -> anyhow::Result<()> {
             .collect::<Vec<_>>();
 
         let filename = file.display().to_string();
-        let contents = std::fs::read_to_string(file)?;
-        let source = Source::from(&contents);
+        let contents = std::fs::read(file)?;
 
         if collection.is_empty() {
             continue;
         }
 
+        println!("{}", filename.bold());
+
         for diagnostic in collection.iter() {
-            Report::build(
-                severity_to_report_kind(diagnostic.severity),
-                (&filename, diagnostic.span.view(contents.as_bytes()).with_previous_line().with_next_line().to_span().to_range()),
-            )
-            .with_code(diagnostic.kind.code())
-            .with_label(
-                Label::new((&filename, diagnostic.span.view(contents.as_bytes()).with_previous_line().with_next_line().to_span().to_range()))
-                    .with_message(diagnostic.kind.message())
-            )
-            .finish()
-            .print((&filename, source.clone()))?;
+            let line = diagnostic.span.start_line(&contents);
+            let column = diagnostic.span.start_column(&contents);
+
+            println!(
+                "[{}]: {} on line {}, column {}",
+                diagnostic.kind.code().underline(),
+                diagnostic.kind.message(),
+                line,
+                column
+            );
         }
     }
 
