@@ -6,6 +6,7 @@ use colored::Colorize;
 use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::Lexer;
 use pxp_parser::{Parser, ParserDiagnostic};
+use pxp_diagnostics::DiagnosticKind;
 
 use crate::{
     config::{CheckConfig, Config},
@@ -76,6 +77,10 @@ fn only_syntax(args: Check, config: CheckConfig) -> anyhow::Result<()> {
             .filter(|d| should_show_diagnostic(&args, d.severity))
             .collect::<Vec<_>>();
 
+        let filename = file.display().to_string();
+        let contents = std::fs::read_to_string(file)?;
+        let source = Source::from(&contents);
+
         if collection.is_empty() {
             continue;
         }
@@ -83,17 +88,15 @@ fn only_syntax(args: Check, config: CheckConfig) -> anyhow::Result<()> {
         for diagnostic in collection.iter() {
             Report::build(
                 severity_to_report_kind(diagnostic.severity),
-                (file.display().to_string(), diagnostic.span.to_range()),
+                (&filename, diagnostic.span.view(contents.as_bytes()).with_previous_line().with_next_line().to_span().to_range()),
             )
+            .with_code(diagnostic.kind.code())
             .with_label(
-                Label::new((file.display().to_string(), diagnostic.span.to_range()))
-                    .with_message(diagnostic.kind.to_string()),
+                Label::new((&filename, diagnostic.span.view(contents.as_bytes()).with_previous_line().with_next_line().to_span().to_range()))
+                    .with_message(diagnostic.kind.message())
             )
             .finish()
-            .print((
-                file.display().to_string(),
-                Source::from(&std::fs::read_to_string(file)?),
-            ))?;
+            .print((&filename, source.clone()))?;
         }
     }
 

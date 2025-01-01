@@ -5,7 +5,6 @@ use indicatif::{ProgressDrawTarget, ProgressStyle};
 use pxp_diagnostics::Severity;
 
 pub(crate) struct ProgressBar {
-    show: bool,
     bar: indicatif::ProgressBar,
 }
 
@@ -19,7 +18,7 @@ impl ProgressBar {
             bar.set_draw_target(ProgressDrawTarget::hidden());
         }
 
-        Self { show, bar }
+        Self { bar }
     }
 
     pub(crate) fn inc(&self, n: u64) {

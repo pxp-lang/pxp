@@ -4,6 +4,7 @@ use clap::Parser as Args;
 use pxp_lexer::Lexer;
 use pxp_parser::Parser;
 use pxp_span::Spanned;
+use pxp_diagnostics::DiagnosticKind;
 
 use crate::utils::find_php_files_in;
 
@@ -53,7 +54,7 @@ fn parse_file(path: &Path, dump: bool, print_diagnostics: bool) -> anyhow::Resul
         for diagnostic in &ast.diagnostics {
             println!(
                 "{} on line {}, column {}",
-                diagnostic,
+                diagnostic.kind.message(),
                 diagnostic.span.start_line(&contents),
                 diagnostic.span.start_column(&contents)
             );

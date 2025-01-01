@@ -70,8 +70,8 @@ pub enum ParserDiagnostic {
 }
 
 impl DiagnosticKind for ParserDiagnostic {
-    fn code(&self) -> &str {
-        match self {
+    fn code(&self) -> String {
+        String::from(match self {
             ParserDiagnostic::UnexpectedToken { .. } => "P001",
             ParserDiagnostic::ExpectedToken { .. } => "P002",
             ParserDiagnostic::ExpectedTokenExFound { .. } => "P003",
@@ -121,11 +121,11 @@ impl DiagnosticKind for ParserDiagnostic {
             ParserDiagnostic::InterfaceCannotUseTraits => "P049",
             ParserDiagnostic::InterfaceCannotContainConcreteMethods => "P050",
             ParserDiagnostic::InterfaceMembersMustBePublic => "P051",
-        }
+        })
     }
 
-    fn identifier(&self) -> &str {
-        match self {
+    fn identifier(&self) -> String {
+        String::from(match self {
             ParserDiagnostic::UnexpectedToken { .. } => "parser.unexpected-token",
             ParserDiagnostic::ExpectedToken { .. } => "parser.expected-token",
             ParserDiagnostic::ExpectedTokenExFound { .. } => "parser.expected-token",
@@ -223,6 +223,169 @@ impl DiagnosticKind for ParserDiagnostic {
             ParserDiagnostic::InterfaceMembersMustBePublic => {
                 "parser.interface-members-must-be-public"
             }
+        })
+    }
+
+    fn message(&self) -> String {
+        match self {
+            ParserDiagnostic::InterfaceCannotUseTraits => {
+                "interfaces cannot use traits".to_string()
+            }
+            ParserDiagnostic::InterfaceCannotContainConcreteMethods => {
+                "interfaces cannot contain concrete methods".to_string()
+            }
+            ParserDiagnostic::InterfaceMembersMustBePublic => {
+                "interface members must be public".to_string()
+            }
+            ParserDiagnostic::MultipleSetVisibilityModifiers => {
+                "cannot have multiple write / set visibility modifiers".to_string()
+            }
+            ParserDiagnostic::InvalidPropertyHook => {
+                "invalid property hook, expecting `get` or `set`".to_string()
+            }
+            ParserDiagnostic::ExpectedPropertyHook => "expected a property hook".to_string(),
+            ParserDiagnostic::UnexpectedToken { token } => {
+                format!("unexpected token {}", token.kind)
+            }
+            ParserDiagnostic::ExpectedToken { expected, found } => {
+                if expected.len() == 1 {
+                    format!(
+                        "unexpected token {}, expected {}",
+                        found.kind,
+                        expected.first().unwrap()
+                    )
+                } else {
+                    format!(
+                        "unexpected token {}, expected one of {}",
+                        found.kind,
+                        expected
+                            .iter()
+                            .map(|kind| format!("{}", kind))
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    )
+                }
+            }
+            ParserDiagnostic::ExpectedTokenExFound { expected } => {
+                if expected.len() == 1 {
+                    format!("expected {}", expected.first().unwrap())
+                } else {
+                    format!(
+                        "expected one of {}",
+                        expected
+                            .iter()
+                            .map(|kind| format!("{}", kind))
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    )
+                }
+            }
+            ParserDiagnostic::InvalidSpreadOperator => "cannot use spread operator here".to_string(),
+            ParserDiagnostic::InvalidTargetForAttributes => {
+                "invalid target for attributes".to_string()
+            }
+            ParserDiagnostic::CannotMixKeyedAndUnkeyedListEntries => {
+                "cannot mix keyed and unkeyed list entries".to_string()
+            }
+            ParserDiagnostic::AbstractMethodInNonAbstractClass => {
+                "cannot declare abstract method in non-abstract class".to_string()
+            }
+            ParserDiagnostic::CannotHaveMultipleDefaultArmsInMatch => {
+                "cannot have multiple default arms in match".to_string()
+            }
+            ParserDiagnostic::MissingType => "missing type".to_string(),
+            ParserDiagnostic::StandaloneTypeUsedInNullableType => {
+                "cannot use standalone type in nullable type".to_string()
+            }
+            ParserDiagnostic::StandaloneTypeUsedInUnionType => {
+                "cannot use standalone type in union type".to_string()
+            }
+            ParserDiagnostic::StandaloneTypeUsedInIntersectionType => {
+                "cannot use standalone type in intersection type".to_string()
+            }
+            ParserDiagnostic::NestedDisjunctiveNormalFormType => {
+                "DNF types cannot be nested".to_string()
+            }
+            ParserDiagnostic::InvalidBackedEnumType => {
+                "invalid backed enum type, must be `string` or `int`".to_string()
+            }
+            ParserDiagnostic::UnitEnumsCannotHaveCaseValues => {
+                "unit enums cannot have case values".to_string()
+            }
+            ParserDiagnostic::BackedEnumCaseMustHaveValue => {
+                "backed enum case must have value".to_string()
+            }
+            ParserDiagnostic::CannotUseReservedKeywordAsTypeName => {
+                "cannot use reserved keyword as type name".to_string()
+            }
+            ParserDiagnostic::CannotUseReservedKeywordAsLabel => {
+                "cannot use reserved keyword as label".to_string()
+            }
+            ParserDiagnostic::CannotUseReservedKeywordAsConstantName => {
+                "cannot use reserved keyword as constant name".to_string()
+            }
+            ParserDiagnostic::InvalidClassModifier => "invalid class modifier".to_string(),
+            ParserDiagnostic::InvalidMethodModifier => "invalid method modifier".to_string(),
+            ParserDiagnostic::InvalidPropertyModifier => "invalid property modifier".to_string(),
+            ParserDiagnostic::InvalidConstantModifier => "invalid constant modifier".to_string(),
+            ParserDiagnostic::CannotUseFinalWithAbstract => {
+                "cannot use final and abstract together".to_string()
+            }
+            ParserDiagnostic::CannotUseFinalWithPrivateOnConstant => "private constant cannot be final as it is not visible to other classes".to_string(),
+            ParserDiagnostic::DuplicateModifier => "duplicate modifier".to_string(),
+            ParserDiagnostic::MultipleVisibilityModifiers => {
+                "cannot have multiple visibility modifiers".to_string()
+            }
+            ParserDiagnostic::CannotMixBracketedAndUnbracketedNamespaceDeclarations => "cannot mix bracketed and unbracketed namespace declarations".to_string(),
+            ParserDiagnostic::NestedNamespace => "cannot nest namespaces".to_string(),
+            ParserDiagnostic::PromotedPropertyCannotBeVariadic => {
+                "promoted property cannot be variadic".to_string()
+            }
+            ParserDiagnostic::ForbiddenTypeUsedInProperty => {
+                "forbidden type used in property".to_string()
+            }
+            ParserDiagnostic::ReadonlyPropertyMustHaveType => {
+                "readonly property must have type".to_string()
+            }
+            ParserDiagnostic::CannotUsePositionalArgumentAfterNamedArgument => {
+                "cannot use positional argument after named argument".to_string()
+            }
+            ParserDiagnostic::PositionalArgumentsOnly => {
+                "only positional arguments are allowed".to_string()
+            }
+            ParserDiagnostic::OnlyAllowedOneArgument => "only one argument is allowed".to_string(),
+            ParserDiagnostic::ArgumentRequired => "argument required".to_string(),
+            ParserDiagnostic::StaticPropertyCannotBeReadonly => {
+                "static property cannot be readonly".to_string()
+            }
+            ParserDiagnostic::ReadonlyPropertyCannotHaveDefaultValue => {
+                "readonly property cannot have default value".to_string()
+            }
+            ParserDiagnostic::TryMustHaveCatchOrFinally => {
+                "try must have catch or finally".to_string()
+            }
+            ParserDiagnostic::DynamicVariableNotAllowed => {
+                "dynamic variable not allowed".to_string()
+            }
+            ParserDiagnostic::UnexpectedEndOfFile => "unexpected end of file".to_string(),
+            ParserDiagnostic::UnexpectedEndOfFileExpected { expected } => {
+                if expected.len() == 1 {
+                    format!(
+                        "unexpected end of file, expected {}",
+                        expected.first().unwrap()
+                    )
+                } else {
+                    format!(
+                        "unexpected end of file, expected one of {}",
+                        expected
+                            .iter()
+                            .map(|kind| format!("{}", kind))
+                            .collect::<Vec<_>>()
+                            .join(", ")
+                    )
+                }
+            }
+            ParserDiagnostic::MixedImportTypes => "cannot mix import types".to_string(),
         }
     }
 }
