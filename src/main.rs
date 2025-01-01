@@ -17,6 +17,7 @@ enum Command {
     Tokenise(cmd::Tokenise),
     Parse(cmd::Parse),
     Check(cmd::Check),
+    Init(cmd::Init),
 }
 
 fn main() -> anyhow::Result<()> {
@@ -26,5 +27,6 @@ fn main() -> anyhow::Result<()> {
         Command::Tokenise(args) => cmd::tokenise(args),
         Command::Parse(args) => cmd::parse(args),
         Command::Check(args) => cmd::check(args),
+        Command::Init(args) => cmd::init(args),
     }
 }
