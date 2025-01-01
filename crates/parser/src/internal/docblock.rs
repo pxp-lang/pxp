@@ -1,9 +1,5 @@
 use pxp_ast::{
-    DocBlock, DocBlockComment, DocBlockExtendsTag, DocBlockGenericTag, DocBlockImplementsTag,
-    DocBlockMethodTag, DocBlockNode, DocBlockParamClosureThisTag, DocBlockParamTag,
-    DocBlockPropertyTag, DocBlockReturnTag, DocBlockTag, DocBlockTagNode, DocBlockTemplateTag,
-    DocBlockTemplateTagValue, DocBlockTextNode, DocBlockUsesTag, DocBlockVarTag, SimpleIdentifier,
-    SimpleVariable,
+    DocBlock, DocBlockComment, DocBlockDeprecatedTag, DocBlockExtendsTag, DocBlockGenericTag, DocBlockImplementsTag, DocBlockMethodTag, DocBlockNode, DocBlockParamClosureThisTag, DocBlockParamTag, DocBlockPropertyTag, DocBlockReturnTag, DocBlockTag, DocBlockTagNode, DocBlockTemplateTag, DocBlockTemplateTagValue, DocBlockTextNode, DocBlockUsesTag, DocBlockVarTag, SimpleIdentifier, SimpleVariable
 };
 use pxp_bytestring::ByteString;
 use pxp_diagnostics::Severity;
@@ -119,6 +115,7 @@ impl<'a> Parser<'a> {
                 self.implements_tag()
             }
             b"@use" | b"@phpstan-use" | b"@template-use" => self.use_tag(),
+            b"@deprecated" => self.deprecated_tag(),
             _ => self.generic_tag(),
         };
 
@@ -127,6 +124,27 @@ impl<'a> Parser<'a> {
             span: tag.span(),
             tag,
         }
+    }
+
+    fn deprecated_tag(&mut self) -> DocBlockTag {
+        let tag = self.current().to_owned();
+
+        self.next();
+
+        let (text, text_span) = self.read_text_until_eol_or_close();
+
+        let span = if let Some(text_span) = text_span {
+            tag.span.join(text_span)
+        } else {
+            tag.span
+        };
+
+        DocBlockTag::Deprecated(DocBlockDeprecatedTag {
+            id: self.id(),
+            span,
+            tag,
+            text,
+        })
     }
 
     fn use_tag(&mut self) -> DocBlockTag {
