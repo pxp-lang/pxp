@@ -8,7 +8,7 @@ rust-version.workspace = true
 edition.workspace = true
 
 [workspace]
-members = ["crates/*", "internal"]
+members = ["crates/*"]
 resolver = "2"
 
 [workspace.package]
