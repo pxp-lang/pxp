@@ -44,7 +44,7 @@ pub fn parse(args: Parse) -> anyhow::Result<()> {
 
 fn parse_file(path: &Path, dump: bool, print_diagnostics: bool) -> anyhow::Result<()> {
     let contents = std::fs::read(path)?;
-    let ast = Parser::parse(Lexer::new(&contents), Some(path.display().to_string()));
+    let ast = Parser::parse(Lexer::new(&contents));
 
     if dump {
         println!("{:#?}", ast);

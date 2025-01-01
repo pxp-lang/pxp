@@ -282,7 +282,7 @@ impl<'a> Parser<'a> {
                 continue;
             }
 
-            if last_type == None {
+            if last_type.is_none() {
                 self.diagnostic(
                     ParserDiagnostic::ExpectedTokenExFound {
                         expected: vec![TokenKind::Identifier, TokenKind::Asterisk],

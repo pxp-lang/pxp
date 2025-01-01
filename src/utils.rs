@@ -1,8 +1,6 @@
 use std::path::{Path, PathBuf};
 
-use ariadne::ReportKind;
 use indicatif::{ProgressDrawTarget, ProgressStyle};
-use pxp_diagnostics::Severity;
 
 pub(crate) struct ProgressBar {
     bar: indicatif::ProgressBar,
@@ -63,13 +61,4 @@ pub(crate) fn find_php_files_in(path: &Path) -> anyhow::Result<Vec<PathBuf>> {
     }
 
     Ok(files)
-}
-
-pub(crate) fn severity_to_report_kind(severity: Severity) -> ReportKind<'static> {
-    match severity {
-        Severity::Hint => ReportKind::Advice,
-        Severity::Information => ReportKind::Advice,
-        Severity::Warning => ReportKind::Warning,
-        Severity::Error => ReportKind::Error,
-    }
 }

@@ -32,12 +32,11 @@ pub struct Parser<'a> {
     in_docblock: bool,
 
     diagnostics: Vec<Diagnostic<ParserDiagnostic>>,
-    filename: Option<String>,
 }
 
 impl<'a> Parser<'a> {
-    pub fn parse(lexer: Lexer<'a>, filename: Option<String>) -> ParseResult {
-        let mut parser = Parser::new(lexer, filename);
+    pub fn parse(lexer: Lexer<'a>) -> ParseResult {
+        let mut parser = Parser::new(lexer);
         let mut ast = Vec::new();
 
         while !parser.is_eof() {
@@ -50,7 +49,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn new(lexer: Lexer<'a>, filename: Option<String>) -> Self {
+    fn new(lexer: Lexer<'a>) -> Self {
         let mut imports = HashMap::new();
         imports.insert(UseKind::Normal, HashMap::new());
         imports.insert(UseKind::Function, HashMap::new());
@@ -68,7 +67,6 @@ impl<'a> Parser<'a> {
             in_docblock: false,
 
             diagnostics: vec![],
-            filename,
         };
 
         this.collect_comments();

@@ -49,8 +49,8 @@ fn only_syntax(args: Check, config: CheckConfig) -> anyhow::Result<()> {
 
         bar.set_message(file.display().to_string());
 
-        let contents = std::fs::read(&file)?;
-        let result = Parser::parse(Lexer::new(&contents), Some(file.display().to_string()));
+        let contents = std::fs::read(file)?;
+        let result = Parser::parse(Lexer::new(&contents));
 
         if result.diagnostics.is_empty() {
             bar.inc(1);
