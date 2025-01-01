@@ -1,10 +1,10 @@
 use std::path::{Path, PathBuf};
 
 use clap::Parser as Args;
+use pxp_diagnostics::DiagnosticKind;
 use pxp_lexer::Lexer;
 use pxp_parser::Parser;
 use pxp_span::Spanned;
-use pxp_diagnostics::DiagnosticKind;
 
 use crate::utils::find_php_files_in;
 

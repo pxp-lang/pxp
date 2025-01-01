@@ -2,10 +2,10 @@ use std::{collections::HashMap, path::Path};
 
 use clap::Parser as Args;
 use colored::Colorize;
+use pxp_diagnostics::DiagnosticKind;
 use pxp_diagnostics::{Diagnostic, Severity};
 use pxp_lexer::Lexer;
 use pxp_parser::{Parser, ParserDiagnostic};
-use pxp_diagnostics::DiagnosticKind;
 use pxp_span::Spanned;
 
 use crate::{

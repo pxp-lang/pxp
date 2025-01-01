@@ -1,5 +1,9 @@
 use pxp_ast::{
-    DocBlock, DocBlockComment, DocBlockDeprecatedTag, DocBlockExtendsTag, DocBlockGenericTag, DocBlockImplementsTag, DocBlockMethodTag, DocBlockNode, DocBlockParamClosureThisTag, DocBlockParamTag, DocBlockPropertyTag, DocBlockReturnTag, DocBlockTag, DocBlockTagNode, DocBlockTemplateTag, DocBlockTemplateTagValue, DocBlockTextNode, DocBlockUsesTag, DocBlockVarTag, SimpleVariable
+    DocBlock, DocBlockComment, DocBlockDeprecatedTag, DocBlockExtendsTag, DocBlockGenericTag,
+    DocBlockImplementsTag, DocBlockMethodTag, DocBlockNode, DocBlockParamClosureThisTag,
+    DocBlockParamTag, DocBlockPropertyTag, DocBlockReturnTag, DocBlockTag, DocBlockTagNode,
+    DocBlockTemplateTag, DocBlockTemplateTagValue, DocBlockTextNode, DocBlockUsesTag,
+    DocBlockVarTag, SimpleVariable,
 };
 use pxp_bytestring::ByteString;
 use pxp_diagnostics::Severity;

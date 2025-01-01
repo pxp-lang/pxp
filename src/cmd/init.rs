@@ -16,15 +16,27 @@ pub fn init(args: Init) -> anyhow::Result<()> {
     let cwd = std::env::current_dir()?;
 
     if cwd.join("pxp.config.toml").exists() && !args.force {
-        anyhow::bail!("Configuration file already exists. Use --force to overwrite existing configuration.");
+        anyhow::bail!(
+            "Configuration file already exists. Use --force to overwrite existing configuration."
+        );
     }
 
     let paths = find_interesting_directories_in(&cwd)?;
-    let stub = STUB.replace(r#""<paths>""#, &paths.iter().map(|p| format!(r#""{}""#, p.display())).collect::<Vec<_>>().join(",\n"));
+    let stub = STUB.replace(
+        r#""<paths>""#,
+        &paths
+            .iter()
+            .map(|p| format!(r#""{}""#, p.display()))
+            .collect::<Vec<_>>()
+            .join(",\n"),
+    );
 
     std::fs::write(cwd.join("pxp.config.toml"), stub)?;
 
-    println!("{}", "Configuration file created.".green().bold().underline());
+    println!(
+        "{}",
+        "Configuration file created.".green().bold().underline()
+    );
 
     Ok(())
 }

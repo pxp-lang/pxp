@@ -280,7 +280,9 @@ impl DiagnosticKind for ParserDiagnostic {
                     )
                 }
             }
-            ParserDiagnostic::InvalidSpreadOperator => "cannot use spread operator here".to_string(),
+            ParserDiagnostic::InvalidSpreadOperator => {
+                "cannot use spread operator here".to_string()
+            }
             ParserDiagnostic::InvalidTargetForAttributes => {
                 "invalid target for attributes".to_string()
             }
@@ -331,12 +333,16 @@ impl DiagnosticKind for ParserDiagnostic {
             ParserDiagnostic::CannotUseFinalWithAbstract => {
                 "cannot use final and abstract together".to_string()
             }
-            ParserDiagnostic::CannotUseFinalWithPrivateOnConstant => "private constant cannot be final as it is not visible to other classes".to_string(),
+            ParserDiagnostic::CannotUseFinalWithPrivateOnConstant => {
+                "private constant cannot be final as it is not visible to other classes".to_string()
+            }
             ParserDiagnostic::DuplicateModifier => "duplicate modifier".to_string(),
             ParserDiagnostic::MultipleVisibilityModifiers => {
                 "cannot have multiple visibility modifiers".to_string()
             }
-            ParserDiagnostic::CannotMixBracketedAndUnbracketedNamespaceDeclarations => "cannot mix bracketed and unbracketed namespace declarations".to_string(),
+            ParserDiagnostic::CannotMixBracketedAndUnbracketedNamespaceDeclarations => {
+                "cannot mix bracketed and unbracketed namespace declarations".to_string()
+            }
             ParserDiagnostic::NestedNamespace => "cannot nest namespaces".to_string(),
             ParserDiagnostic::PromotedPropertyCannotBeVariadic => {
                 "promoted property cannot be variadic".to_string()
