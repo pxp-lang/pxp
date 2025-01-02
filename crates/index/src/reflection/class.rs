@@ -1,4 +1,6 @@
-use crate::entities::ClassEntity;
+use pxp_bytestring::ByteStr;
+
+use crate::entities::{ClassEntity, ClassEntityKind};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ReflectionClass<'a> {
@@ -8,5 +10,29 @@ pub struct ReflectionClass<'a> {
 impl<'a> ReflectionClass<'a> {
     pub fn new(entity: &'a ClassEntity) -> Self {
         Self { entity }
+    }
+
+    pub fn name(&self) -> &ByteStr {
+        self.entity.name.resolved.as_ref()
+    }
+
+    pub fn short_name(&self) -> &ByteStr {
+        self.entity.name.original.as_ref()
+    }
+
+    pub fn is_class(&self) -> bool {
+        self.entity.kind == ClassEntityKind::Class
+    }
+    
+    pub fn is_interface(&self) -> bool {
+        self.entity.kind == ClassEntityKind::Interface
+    }
+
+    pub fn is_enum(&self) -> bool {
+        self.entity.kind == ClassEntityKind::Enum
+    }
+
+    pub fn is_trait(&self) -> bool {
+        self.entity.kind == ClassEntityKind::Trait
     }
 }

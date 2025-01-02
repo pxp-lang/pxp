@@ -4,7 +4,7 @@ mod class;
 
 pub use function::FunctionEntity;
 pub use parameters::{Parameters, Parameter};
-pub use class::ClassEntity;
+pub use class::{ClassEntity, ClassEntityKind};
 use pxp_bytestring::ByteString;
 
 #[derive(Debug, Clone)]
