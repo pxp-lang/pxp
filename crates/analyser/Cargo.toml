@@ -1,0 +1,10 @@
+[package]
+name = "pxp-analyser"
+description = "A collection of static analysis rules."
+version.workspace = true
+authors.workspace = true
+license-file.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
