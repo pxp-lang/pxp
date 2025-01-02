@@ -31,7 +31,8 @@ impl Parameters {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Parameter {
     pub(crate) name: SimpleVariable,
-    pub(crate) r#type: Type<Name>,
+    pub(crate) r#type: Option<Type<Name>>,
     pub(crate) optional: bool,
+    pub(crate) variadic: bool,
     pub(crate) location: Location,
 }

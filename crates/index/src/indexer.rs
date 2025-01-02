@@ -19,8 +19,9 @@ impl<'a> IndexingVisitor<'a> {
         for parameter in node.parameters.iter() {
             parameters.push(Parameter {
                 name: parameter.name.clone(),
-                r#type: parameter.data_type.as_ref().map(|data_type| data_type.get_type().clone()).unwrap_or_else(|| Type::Mixed),
-                optional: parameter.ellipsis.is_some(),
+                r#type: parameter.data_type.as_ref().map(|data_type| data_type.get_type().clone()),
+                optional: parameter.default.is_some(),
+                variadic: parameter.ellipsis.is_some(),
                 location: Location::new(self.file_id, parameter.span),
             })
         }

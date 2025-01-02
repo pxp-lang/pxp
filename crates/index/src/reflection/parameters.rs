@@ -1,3 +1,5 @@
+use pxp_bytestring::ByteStr;
+
 use crate::Parameter;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -11,8 +13,16 @@ impl<'a, O: CanReflectParameters> ReflectionParameter<'a, O> {
         Self { entity, owner }
     }
 
+    pub fn get_name(&self) -> &ByteStr {
+        self.entity.name.stripped.as_ref()
+    }
+
+    pub fn has_type(&self) -> bool {
+        self.entity.r#type.is_some()
+    }
+
     pub fn is_optional(&self) -> bool {
-        todo!()
+        self.entity.optional
     }
 
     pub fn is_variadic(&self) -> bool {
