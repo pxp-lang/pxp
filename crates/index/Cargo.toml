@@ -1,0 +1,10 @@
+[package]
+name = "pxp-index"
+description = "Index information about a PHP project."
+version.workspace = true
+authors.workspace = true
+license-file.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
