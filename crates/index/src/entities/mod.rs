@@ -1,12 +1,12 @@
 mod class;
 mod function;
-mod parameters;
 mod method;
+mod parameters;
 
 pub use class::{ClassEntity, ClassEntityKind};
 pub use function::FunctionEntity;
-pub use parameters::{Parameter, Parameters};
 pub use method::MethodEntity;
+pub use parameters::{Parameter, Parameters};
 use pxp_bytestring::ByteString;
 
 #[derive(Debug, Clone)]

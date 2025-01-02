@@ -39,6 +39,10 @@ impl<'a> ReflectionClass<'a> {
     }
 
     pub fn get_methods(&self) -> Vec<ReflectionMethod> {
-        self.entity.methods.iter().map(|m| ReflectionMethod::new(m, self)).collect()
+        self.entity
+            .methods
+            .iter()
+            .map(|m| ReflectionMethod::new(m, self))
+            .collect()
     }
 }

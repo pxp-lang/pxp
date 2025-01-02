@@ -4,10 +4,14 @@ use pxp_type::Type;
 
 use crate::entities::MethodEntity;
 
-use super::{function::{IsFunctionLike, ReflectionFunctionLike}, parameters::{CanReflectParameters, ReflectsParameters}, ReflectionClass, ReflectionParameter};
+use super::{
+    function::{IsFunctionLike, ReflectionFunctionLike},
+    parameters::{CanReflectParameters, ReflectsParameters},
+    ReflectionClass, ReflectionParameter,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct ReflectionMethod<'a, > {
+pub struct ReflectionMethod<'a> {
     pub(crate) entity: &'a MethodEntity,
     pub(crate) owner: &'a ReflectionClass<'a>,
 }
@@ -54,7 +58,11 @@ impl CanReflectParameters for ReflectionMethod<'_> {}
 
 impl<'a> ReflectsParameters<'a, ReflectionMethod<'a>> for ReflectionMethod<'a> {
     fn get_parameters(&self) -> Vec<super::ReflectionParameter<'a, ReflectionMethod<'a>>> {
-        self.entity.parameters.iter().map(|p| ReflectionParameter::new(p, *self)).collect()
+        self.entity
+            .parameters
+            .iter()
+            .map(|p| ReflectionParameter::new(p, *self))
+            .collect()
     }
 }
 

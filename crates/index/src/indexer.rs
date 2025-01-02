@@ -1,5 +1,6 @@
 use pxp_ast::{
-    visitor::Visitor, ClassStatement, ClassishMember, FunctionParameterList, FunctionStatement, Method, MethodParameterList, Name, ReturnType
+    visitor::Visitor, ClassStatement, ClassishMember, FunctionParameterList, FunctionStatement,
+    Method, MethodParameterList, Name, ReturnType,
 };
 use pxp_type::Type;
 
@@ -78,7 +79,7 @@ impl<'a> IndexingVisitor<'a> {
         for member in nodes.iter() {
             match member {
                 ClassishMember::Method(method) => methods.push(self.transform_method(method)),
-                _ => {},
+                _ => {}
             }
         }
 

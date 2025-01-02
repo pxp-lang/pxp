@@ -1,4 +1,7 @@
-use clap::{builder::{styling::AnsiColor, Styles}, Parser};
+use clap::{
+    builder::{styling::AnsiColor, Styles},
+    Parser,
+};
 
 mod cmd;
 mod config;
