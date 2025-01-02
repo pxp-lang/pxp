@@ -4,7 +4,7 @@ use pxp_type::Type;
 
 use crate::FunctionEntity;
 
-use super::parameters::{CanReflectParameters, ReflectsParameters, ReflectionParameter};
+use super::parameters::{CanReflectParameters, ReflectionParameter, ReflectsParameters};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ReflectionFunction<'a> {
@@ -33,7 +33,11 @@ impl CanReflectParameters for ReflectionFunction<'_> {}
 
 impl<'a> ReflectsParameters<'a, ReflectionFunction<'a>> for ReflectionFunction<'a> {
     fn get_parameters(&self) -> Vec<ReflectionParameter<'a, ReflectionFunction<'a>>> {
-        self.entity.parameters.iter().map(|p| ReflectionParameter::new(p, *self)).collect()
+        self.entity
+            .parameters
+            .iter()
+            .map(|p| ReflectionParameter::new(p, *self))
+            .collect()
     }
 }
 
@@ -51,9 +55,9 @@ impl<'a> ReflectionFunctionLike<'a> for ReflectionFunction<'a> {
 
 pub(crate) trait IsFunctionLike {}
 
-pub trait ReflectionFunctionLike<'a> : IsFunctionLike {
+pub trait ReflectionFunctionLike<'a>: IsFunctionLike {
     fn get_return_type(&self) -> Option<Type<Name>>;
-    
+
     fn has_return_type(&self) -> bool {
         self.get_return_type().is_some()
     }

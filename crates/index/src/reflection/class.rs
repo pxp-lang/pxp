@@ -23,7 +23,7 @@ impl<'a> ReflectionClass<'a> {
     pub fn is_class(&self) -> bool {
         self.entity.kind == ClassEntityKind::Class
     }
-    
+
     pub fn is_interface(&self) -> bool {
         self.entity.kind == ClassEntityKind::Interface
     }

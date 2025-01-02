@@ -70,7 +70,7 @@ pub(crate) fn pxp_home_dir() -> anyhow::Result<PathBuf> {
 
     let pxp = home.join(".pxp");
 
-    if ! pxp.exists() {
+    if !pxp.exists() {
         std::fs::create_dir(&pxp)?;
     }
 

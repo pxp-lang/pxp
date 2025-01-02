@@ -10,9 +10,7 @@ pub struct Parameters {
 
 impl Parameters {
     pub fn new(parameters: Vec<Parameter>) -> Self {
-        Self {
-            parameters
-        }
+        Self { parameters }
     }
 
     pub fn len(&self) -> usize {

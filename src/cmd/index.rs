@@ -8,7 +8,10 @@ use rustyline::{error::ReadlineError, CompletionType, Config, DefaultEditor, Edi
 use crate::utils::{find_php_files_in, pxp_home_dir, ProgressBar};
 
 #[derive(Debug, Parser)]
-#[command(version, about = "Indexes a directory and provides a REPL for searching through the index.")]
+#[command(
+    version,
+    about = "Indexes a directory and provides a REPL for searching through the index."
+)]
 pub struct Index {
     #[clap(help = "The path to a file or directory.")]
     path: PathBuf,
@@ -18,7 +21,7 @@ pub struct Index {
 }
 
 pub fn index(args: Index) -> anyhow::Result<()> {
-    if ! args.path.exists() {
+    if !args.path.exists() {
         anyhow::bail!("The path `{}` does not exist.", args.path.display());
     }
 
@@ -38,7 +41,7 @@ fn repl(index: &Indexer) -> anyhow::Result<()> {
         .build();
 
     let mut rl = DefaultEditor::with_config(config)?;
-    
+
     let history = pxp_home_dir()?.join(".index_history");
     if !history.exists() {
         std::fs::write(&history, "")?;
@@ -65,7 +68,10 @@ fn handle(command: &str, index: &Indexer) -> anyhow::Result<()> {
     let parts = command.split_whitespace().collect::<Vec<_>>();
 
     match &parts[..] {
-        ["count", "functions"] => println!("There are {} functions in the index.", index.number_of_functions().to_string().bold().underline()),
+        ["count", "functions"] => println!(
+            "There are {} functions in the index.",
+            index.number_of_functions().to_string().bold().underline()
+        ),
         ["get", "function", name] => {
             let function = index.get_function(*name);
 
@@ -73,8 +79,11 @@ fn handle(command: &str, index: &Indexer) -> anyhow::Result<()> {
                 Some(function) => println!("{:#?}", function),
                 None => println!("Function `{}` not found.", name.bold()),
             }
-        },
-        ["count", "classes"] => println!("There are {} classes in the index.", index.number_of_classes().to_string().bold().underline()),
+        }
+        ["count", "classes"] => println!(
+            "There are {} classes in the index.",
+            index.number_of_classes().to_string().bold().underline()
+        ),
         ["get", "class", name] => {
             let class = index.get_class(*name);
 
@@ -82,7 +91,7 @@ fn handle(command: &str, index: &Indexer) -> anyhow::Result<()> {
                 Some(class) => println!("{:#?}", class),
                 None => println!("Class `{}` not found.", name.bold()),
             }
-        },
+        }
         _ => println!("Unrecognised command: `{}`", command.red().bold()),
     }
 

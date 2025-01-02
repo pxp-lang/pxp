@@ -32,15 +32,18 @@ impl<'a, O: CanReflectParameters> ReflectionParameter<'a, O> {
 
 pub(crate) trait CanReflectParameters {}
 
-pub trait ReflectsParameters<'a, O: CanReflectParameters> : CanReflectParameters {
+pub trait ReflectsParameters<'a, O: CanReflectParameters>: CanReflectParameters {
     fn get_parameters(&self) -> Vec<ReflectionParameter<'a, O>>;
-    
+
     fn get_number_of_parameters(&self) -> usize {
         self.get_parameters().len()
     }
 
     fn get_number_of_required_parameters(&self) -> usize {
-        self.get_parameters().iter().filter(|p| !p.is_optional()).count()
+        self.get_parameters()
+            .iter()
+            .filter(|p| !p.is_optional())
+            .count()
     }
 
     fn is_variadic(&self) -> bool {

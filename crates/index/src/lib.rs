@@ -3,10 +3,10 @@ use std::path::Path;
 use entities::EntityRegistry;
 use file::FileRegistry;
 
-mod file;
 mod entities;
-mod location;
+mod file;
 mod indexer;
+mod location;
 mod reflection;
 
 pub use file::{FileId, HasFileId};
@@ -16,7 +16,7 @@ use pxp_bytestring::ByteString;
 use pxp_lexer::Lexer;
 use pxp_parser::Parser;
 
-pub use entities::{FunctionEntity, Parameters, Parameter};
+pub use entities::{FunctionEntity, Parameter, Parameters};
 pub use reflection::{ReflectionClass, ReflectionFunction, ReflectionParameter};
 
 #[derive(Debug, Clone)]
@@ -37,7 +37,7 @@ impl Index {
         let file_id = self.files.get_or_insert(path);
         let contents = std::fs::read(path).unwrap();
         let parse_result = Parser::parse(Lexer::new(&contents));
-        
+
         let mut visitor = IndexingVisitor::new(file_id, self);
         visitor.visit(&parse_result.ast);
     }
@@ -51,7 +51,9 @@ impl Index {
     }
 
     pub fn get_function(&self, name: impl Into<ByteString>) -> Option<ReflectionFunction> {
-        self.entities.get_function(name).map(ReflectionFunction::new)
+        self.entities
+            .get_function(name)
+            .map(ReflectionFunction::new)
     }
 
     pub fn number_of_classes(&self) -> usize {

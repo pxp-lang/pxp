@@ -1,4 +1,7 @@
-use std::{collections::HashMap, path::{Path, PathBuf}};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct FileId(usize);
@@ -30,13 +33,15 @@ impl FileRegistry {
     }
 
     pub fn get_file_path(&self, id: FileId) -> Option<&Path> {
-        self.files.iter().find_map(|(path, &file_id)| -> Option<&Path> {
-            if file_id == id {
-                Some(path)
-            } else {
-                None
-            }
-        })
+        self.files
+            .iter()
+            .find_map(|(path, &file_id)| -> Option<&Path> {
+                if file_id == id {
+                    Some(path)
+                } else {
+                    None
+                }
+            })
     }
 
     pub fn get_file_path_unchecked(&self, id: FileId) -> &Path {
