@@ -1,20 +1,17 @@
-use pxp_ast::Name;
+use pxp_ast::{Name, ResolvedName};
 use pxp_type::Type;
 
-use crate::{location::Location, FileId, HasFileId};
+use crate::{location::Location, reflection::{ReflectionFunction, Reflector}, FileId, HasFileId};
 
 use super::parameters::Parameters;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct FunctionEntity {
-    pub(crate) name: Name,
+    pub(crate) name: ResolvedName,
     pub(crate) parameters: Parameters,
     pub(crate) return_type: Option<Type<Name>>,
+    pub(crate) returns_reference: bool,
     pub(crate) location: Location,
-}
-
-impl FunctionEntity {
-
 }
 
 impl HasFileId for FunctionEntity {

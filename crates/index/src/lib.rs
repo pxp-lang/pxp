@@ -1,12 +1,13 @@
 use std::path::Path;
 
-use entities::{EntityRegistry, FunctionEntity};
+use entities::EntityRegistry;
 use file::FileRegistry;
 
 mod file;
 mod entities;
 mod location;
 mod indexer;
+mod reflection;
 
 pub use file::{FileId, HasFileId};
 use indexer::IndexingVisitor;
@@ -14,6 +15,9 @@ use pxp_ast::visitor::Visitor;
 use pxp_bytestring::ByteString;
 use pxp_lexer::Lexer;
 use pxp_parser::Parser;
+
+pub use entities::{FunctionEntity, Parameters, Parameter};
+use reflection::ReflectionFunction;
 
 #[derive(Debug, Clone)]
 pub struct Index {
@@ -46,8 +50,8 @@ impl Index {
         self.entities.functions().len()
     }
 
-    pub fn get_function(&self, name: impl Into<ByteString>) -> Option<&FunctionEntity> {
-        self.entities.get_function_by_name(name)
+    pub fn get_function(&self, name: impl Into<ByteString>) -> Option<ReflectionFunction> {
+        self.entities.get_function(name).map(ReflectionFunction::new)
     }
 
     pub fn get_file_path(&self, from: impl HasFileId) -> Option<&std::path::Path> {

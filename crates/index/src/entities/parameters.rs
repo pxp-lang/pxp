@@ -22,6 +22,10 @@ impl Parameters {
     pub fn is_empty(&self) -> bool {
         self.parameters.is_empty()
     }
+
+    pub fn iter(&self) -> impl Iterator<Item = &Parameter> {
+        self.parameters.iter()
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]

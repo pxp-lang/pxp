@@ -25,13 +25,9 @@ impl EntityRegistry {
         &self.functions
     }
 
-    pub fn get_function(&self, index: usize) -> Option<&FunctionEntity> {
-        self.functions.get(index)
-    }
-
-    pub fn get_function_by_name(&self, name: impl Into<ByteString>) -> Option<&FunctionEntity> {
+    pub fn get_function(&self, name: impl Into<ByteString>) -> Option<&FunctionEntity> {
         let name = name.into();
 
-        self.functions.iter().find(|f| f.name.symbol() == &name)
+        self.functions.iter().find(|f| &f.name.resolved == &name)
     }
 }

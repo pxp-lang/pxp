@@ -36,9 +36,10 @@ impl<'a> IndexingVisitor<'a> {
 impl<'a> Visitor for IndexingVisitor<'a> {
     fn visit_function_statement(&mut self, node: &FunctionStatement) {
         self.index.entities.add_function(FunctionEntity {
-            name: node.name.clone(),
+            name: node.name.to_resolved().clone(),
             parameters: self.transform_function_parameter_list(&node.parameters),
             return_type: self.transform_return_type(node.return_type.as_ref()),
+            returns_reference: node.ampersand.is_some(),
             location: Location::new(self.file_id, node.span),
         });
     }
