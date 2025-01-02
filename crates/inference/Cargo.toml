@@ -1,0 +1,10 @@
+[package]
+name = "pxp-inference"
+description = "Performs type inference on PHP code."
+version.workspace = true
+authors.workspace = true
+license-file.workspace = true
+rust-version.workspace = true
+edition.workspace = true
+
+[dependencies]
