@@ -193,7 +193,7 @@ foreach ($ast as $node => $structure) {
     $output .= "}\n\n";
 }
 
-$output .= "#[derive(Debug, PartialEq, Clone)]\n";
+$output .= "#[derive(Debug, PartialEq, Clone, Copy)]\n";
 $output .= "pub enum NodeKind<'a> {\n";
 
 foreach ($ast as $node => $structure) {

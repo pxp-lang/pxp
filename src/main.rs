@@ -18,6 +18,7 @@ enum Command {
     Parse(cmd::Parse),
     Check(cmd::Check),
     Init(cmd::Init),
+    Index(cmd::Index),
 }
 
 fn main() -> anyhow::Result<()> {
@@ -28,5 +29,6 @@ fn main() -> anyhow::Result<()> {
         Command::Parse(args) => cmd::parse(args),
         Command::Check(args) => cmd::check(args),
         Command::Init(args) => cmd::init(args),
+        Command::Index(args) => cmd::index(args),
     }
 }

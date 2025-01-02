@@ -62,3 +62,17 @@ pub(crate) fn find_php_files_in(path: &Path) -> anyhow::Result<Vec<PathBuf>> {
 
     Ok(files)
 }
+
+pub(crate) fn pxp_home_dir() -> anyhow::Result<PathBuf> {
+    let Some(home) = homedir::my_home()? else {
+        anyhow::bail!("Could not find home directory.");
+    };
+
+    let pxp = home.join(".pxp");
+
+    if ! pxp.exists() {
+        std::fs::create_dir(&pxp)?;
+    }
+
+    Ok(pxp)
+}

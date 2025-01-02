@@ -8,3 +8,9 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
+pxp-ast = { version = "0.1.0", path = "../ast" }
+pxp-bytestring = { version = "0.1.0", path = "../bytestring" }
+pxp-lexer = { version = "0.1.0", path = "../lexer" }
+pxp-parser = { version = "0.1.0", path = "../parser" }
+pxp-span = { version = "0.1.0", path = "../span" }
+pxp-type = { version = "0.1.0", path = "../type" }

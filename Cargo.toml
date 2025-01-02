@@ -26,12 +26,17 @@ anyhow = "1.0.95"
 ariadne = { version = "0.5.0", features = ["auto-color"] }
 clap = { version = "4.5.23", features = ["derive", "wrap_help"] }
 colored = "2.2.0"
+homedir = "0.3.4"
 indicatif = "0.17.9"
+pxp-bytestring = { version = "0.1.0", path = "crates/bytestring" }
 pxp-diagnostics = { version = "0.1.0", path = "crates/diagnostics" }
+pxp-index = { version = "0.1.0", path = "crates/index" }
 pxp-lexer = { version = "0.1.0", path = "crates/lexer" }
 pxp-parser = { version = "0.1.0", path = "crates/parser" }
 pxp-span = { version = "0.1.0", path = "crates/span" }
 pxp-token = { version = "0.1.0", path = "crates/token" }
+pxp-type = { version = "0.1.0", path = "crates/type" }
+rustyline = "15.0.0"
 serde = { version = "1.0.216", features = ["derive"] }
 serde_derive = "1.0.216"
 toml = "0.8.19"

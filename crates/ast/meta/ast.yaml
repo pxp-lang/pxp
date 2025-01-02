@@ -1929,6 +1929,7 @@ Variable:
   BracedVariableVariable: BracedVariableVariable
 
 SimpleVariable:
+  derive: Hash
   symbol: ByteString
   stripped: ByteString
   span: Span

@@ -17,9 +17,9 @@ pub trait NodeVisitor<'a> {
     }
 
     fn visit(&mut self, node: Node<'a>, ancestors: &mut Ancestors<'a>) -> NodeVisitorEscapeHatch {
-        let mut escape = self.enter(node.clone(), ancestors);
+        let mut escape = self.enter(node, ancestors);
 
-        ancestors.push(node.clone());
+        ancestors.push(node);
 
         if escape != NodeVisitorEscapeHatch::SkipChildren {
             for child in node.children() {

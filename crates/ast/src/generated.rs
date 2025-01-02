@@ -5394,7 +5394,7 @@ impl HasId for Variable {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash)]
 pub struct SimpleVariable {
     pub id: NodeId,
     pub symbol: ByteString,
@@ -6175,7 +6175,7 @@ impl HasId for CommentGroup {
     }
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum NodeKind<'a> {
     Block(&'a Block),
     Statement(&'a Statement),
