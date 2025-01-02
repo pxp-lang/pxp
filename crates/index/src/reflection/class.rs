@@ -2,6 +2,8 @@ use pxp_bytestring::ByteStr;
 
 use crate::entities::{ClassEntity, ClassEntityKind};
 
+use super::ReflectionMethod;
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ReflectionClass<'a> {
     entity: &'a ClassEntity,
@@ -34,5 +36,9 @@ impl<'a> ReflectionClass<'a> {
 
     pub fn is_trait(&self) -> bool {
         self.entity.kind == ClassEntityKind::Trait
+    }
+
+    pub fn get_methods(&self) -> Vec<ReflectionMethod> {
+        self.entity.methods.iter().map(|m| ReflectionMethod::new(m, self)).collect()
     }
 }

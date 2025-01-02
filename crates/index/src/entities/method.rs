@@ -1,0 +1,22 @@
+use pxp_ast::{MethodModifierGroup, Name, SimpleIdentifier};
+use pxp_type::Type;
+
+use crate::{location::Location, HasFileId};
+
+use super::Parameters;
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct MethodEntity {
+    pub(crate) name: SimpleIdentifier,
+    pub(crate) parameters: Parameters,
+    pub(crate) return_type: Option<Type<Name>>,
+    pub(crate) returns_reference: bool,
+    pub(crate) modifiers: MethodModifierGroup,
+    pub(crate) location: Location,
+}
+
+impl HasFileId for MethodEntity {
+    fn file_id(&self) -> crate::FileId {
+        self.location.file_id()
+    }
+}

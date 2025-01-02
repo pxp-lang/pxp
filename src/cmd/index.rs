@@ -10,7 +10,8 @@ use crate::utils::{find_php_files_in, pxp_home_dir, ProgressBar};
 #[derive(Debug, Parser)]
 #[command(
     version,
-    about = "Indexes a directory and provides a REPL for searching through the index."
+    about = "Indexes a directory and provides a REPL for searching through the index.",
+    after_help = "This command is only intended for use during development and testing."
 )]
 pub struct Index {
     #[clap(help = "The path to a file or directory.")]

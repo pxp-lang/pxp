@@ -2,10 +2,13 @@ use pxp_ast::ResolvedName;
 
 use crate::{location::Location, HasFileId};
 
+use super::MethodEntity;
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct ClassEntity {
     pub(crate) name: ResolvedName,
     pub(crate) kind: ClassEntityKind,
+    pub(crate) methods: Vec<MethodEntity>,
     pub(crate) location: Location,
 }
 

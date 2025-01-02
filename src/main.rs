@@ -1,11 +1,17 @@
-use clap::Parser;
+use clap::{builder::{styling::AnsiColor, Styles}, Parser};
 
 mod cmd;
 mod config;
 mod utils;
 
+const STYLES: Styles = Styles::styled()
+    .header(AnsiColor::Green.on_default().bold())
+    .usage(AnsiColor::Green.on_default().bold())
+    .literal(AnsiColor::Blue.on_default().underline())
+    .placeholder(AnsiColor::Cyan.on_default());
+
 #[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
+#[command(version, about, long_about = None, styles = STYLES)]
 struct Args {
     #[clap(subcommand)]
     cmd: Command,
