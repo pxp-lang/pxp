@@ -1,7 +1,7 @@
 use pxp_ast::{Name, ResolvedName};
 use pxp_type::Type;
 
-use crate::{location::Location, reflection::{ReflectionFunction, Reflector}, FileId, HasFileId};
+use crate::{location::Location, FileId, HasFileId};
 
 use super::parameters::Parameters;
 

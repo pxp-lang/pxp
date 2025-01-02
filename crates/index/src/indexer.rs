@@ -1,7 +1,7 @@
-use pxp_ast::{visitor::Visitor, FunctionParameterList, FunctionStatement, Name, ReturnType};
+use pxp_ast::{visitor::Visitor, ClassStatement, FunctionParameterList, FunctionStatement, Name, ReturnType};
 use pxp_type::Type;
 
-use crate::{entities::{FunctionEntity, Parameter, Parameters}, location::Location, FileId, Index};
+use crate::{entities::{ClassEntity, FunctionEntity, Parameter, Parameters}, location::Location, FileId, Index};
 
 pub struct IndexingVisitor<'a> {
     file_id: FileId,
@@ -35,6 +35,13 @@ impl<'a> IndexingVisitor<'a> {
 }
 
 impl<'a> Visitor for IndexingVisitor<'a> {
+    fn visit_class_statement(&mut self, node: &ClassStatement) {
+        self.index.entities.add_class(ClassEntity {
+            name: node.name.to_resolved().clone(),
+            location: Location::new(self.file_id, node.span),
+        })
+    }
+
     fn visit_function_statement(&mut self, node: &FunctionStatement) {
         self.index.entities.add_function(FunctionEntity {
             name: node.name.to_resolved().clone(),

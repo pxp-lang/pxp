@@ -17,7 +17,7 @@ use pxp_lexer::Lexer;
 use pxp_parser::Parser;
 
 pub use entities::{FunctionEntity, Parameters, Parameter};
-use reflection::ReflectionFunction;
+pub use reflection::{ReflectionClass, ReflectionFunction, ReflectionParameter};
 
 #[derive(Debug, Clone)]
 pub struct Index {
@@ -52,6 +52,14 @@ impl Index {
 
     pub fn get_function(&self, name: impl Into<ByteString>) -> Option<ReflectionFunction> {
         self.entities.get_function(name).map(ReflectionFunction::new)
+    }
+
+    pub fn number_of_classes(&self) -> usize {
+        self.entities.classes().len()
+    }
+
+    pub fn get_class(&self, name: impl Into<ByteString>) -> Option<ReflectionClass> {
+        self.entities.get_class(name).map(ReflectionClass::new)
     }
 
     pub fn get_file_path(&self, from: impl HasFileId) -> Option<&std::path::Path> {

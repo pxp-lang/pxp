@@ -74,6 +74,15 @@ fn handle(command: &str, index: &Indexer) -> anyhow::Result<()> {
                 None => println!("Function `{}` not found.", name.bold()),
             }
         },
+        ["count", "classes"] => println!("There are {} classes in the index.", index.number_of_classes().to_string().bold().underline()),
+        ["get", "class", name] => {
+            let class = index.get_class(*name);
+
+            match class {
+                Some(class) => println!("{:#?}", class),
+                None => println!("Class `{}` not found.", name.bold()),
+            }
+        },
         _ => println!("Unrecognised command: `{}`", command.red().bold()),
     }
 
