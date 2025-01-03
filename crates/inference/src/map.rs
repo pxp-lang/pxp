@@ -24,7 +24,7 @@ impl TypeMap {
     }
 
     /// Get the type for the given node.
-    pub fn resolve(&mut self, id: NodeId) -> &Type<Name> {
+    pub fn resolve(&self, id: NodeId) -> &Type<Name> {
         self.map.get(&id).unwrap_or_else(|| &Type::Mixed)
     }
 }

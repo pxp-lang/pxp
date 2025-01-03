@@ -11,7 +11,7 @@ mod reflection;
 
 pub use file::{FileId, HasFileId};
 use indexer::IndexingVisitor;
-use pxp_ast::visitor::Visitor;
+use pxp_ast::{visitor::Visitor, Statement};
 use pxp_bytestring::ByteString;
 use pxp_lexer::Lexer;
 use pxp_parser::Parser;
@@ -38,8 +38,12 @@ impl Index {
         let contents = std::fs::read(path).unwrap();
         let parse_result = Parser::parse(Lexer::new(&contents));
 
+        self.index(file_id, &parse_result.ast);
+    }
+
+    pub fn index(&mut self, file_id: FileId, ast: &[Statement]) {
         let mut visitor = IndexingVisitor::new(file_id, self);
-        visitor.visit(&parse_result.ast);
+        visitor.visit(ast);
     }
 
     pub fn number_of_files(&self) -> usize {

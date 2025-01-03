@@ -6,6 +6,12 @@ use std::{
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct FileId(usize);
 
+impl FileId {
+    pub fn new(id: usize) -> Self {
+        Self(id)
+    }
+}
+
 pub trait HasFileId {
     fn file_id(&self) -> FileId;
 }

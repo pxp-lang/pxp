@@ -10,4 +10,9 @@ edition.workspace = true
 [dependencies]
 pxp-ast = { version = "0.1.0", path = "../ast" }
 pxp-index = { version = "0.1.0", path = "../index" }
+pxp-token = { version = "0.1.0", path = "../token" }
 pxp-type = { version = "0.1.0", path = "../type" }
+
+[dev-dependencies]
+pxp-lexer = { path = "../lexer" }
+pxp-parser = { path = "../parser" }

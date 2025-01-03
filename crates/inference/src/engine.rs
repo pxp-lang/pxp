@@ -1,5 +1,7 @@
-use pxp_ast::{visitor::{walk_expression, Visitor}, Expression, HasId, Statement};
+use pxp_ast::{visitor::{walk_expression, Visitor}, *};
 use pxp_index::Index;
+use pxp_token::TokenKind;
+use pxp_type::Type;
 
 use crate::TypeMap;
 
@@ -41,5 +43,26 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
         let inner = self.map.resolve(node.kind.id()).clone();
 
         self.map.insert(node.id, inner);
+    }
+
+    fn visit_literal(&mut self, node: &Literal) {
+        self.map.insert(node.id, match node.kind {
+            LiteralKind::Integer => Type::Integer,
+            LiteralKind::Float => Type::Float,
+            LiteralKind::String => Type::String,
+            LiteralKind::Missing => Type::Missing,
+        })
+    }
+
+    fn visit_interpolated_string_expression(&mut self, node: &InterpolatedStringExpression) {
+        self.map.insert(node.id, Type::String);
+    }
+
+    fn visit_bool_expression(&mut self, node: &BoolExpression) {
+        self.map.insert(node.id, match node.value.kind {
+            TokenKind::True => Type::True,
+            TokenKind::False => Type::False,
+            _ => Type::Boolean
+        });
     }
 }
