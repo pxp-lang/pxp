@@ -2,11 +2,11 @@ use std::fmt::{Display, Formatter};
 
 mod backed_enum_type;
 mod comments;
+mod docblock;
 mod generated;
 mod id;
 mod node;
 mod visibility;
-mod docblock;
 pub mod visitor;
 
 pub use generated::*;

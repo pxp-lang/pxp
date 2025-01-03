@@ -1,6 +1,11 @@
 use pxp_bytestring::{ByteStr, ByteString};
 
-use crate::{DocBlock, DocBlockDeprecatedTag, DocBlockExtendsTag, DocBlockGenericTag, DocBlockImplementsTag, DocBlockMethodTag, DocBlockNode, DocBlockParamTag, DocBlockPropertyTag, DocBlockReturnTag, DocBlockTag, DocBlockTagNode, DocBlockTemplateTag, DocBlockTextNode, DocBlockUsesTag, DocBlockVarTag};
+use crate::{
+    DocBlock, DocBlockDeprecatedTag, DocBlockExtendsTag, DocBlockGenericTag, DocBlockImplementsTag,
+    DocBlockMethodTag, DocBlockNode, DocBlockParamTag, DocBlockPropertyTag, DocBlockReturnTag,
+    DocBlockTag, DocBlockTagNode, DocBlockTemplateTag, DocBlockTextNode, DocBlockUsesTag,
+    DocBlockVarTag,
+};
 
 pub struct DocBlockTagCollection<'a> {
     tags: Vec<&'a DocBlockTagNode>,
@@ -12,19 +17,31 @@ impl<'a> DocBlockTagCollection<'a> {
     }
 
     pub fn get_param_tags(&self) -> Vec<&DocBlockParamTag> {
-        self.tags.iter().filter_map(|t| t.tag().as_param()).collect()
+        self.tags
+            .iter()
+            .filter_map(|t| t.tag().as_param())
+            .collect()
     }
 
     pub fn get_return_tags(&self) -> Vec<&DocBlockReturnTag> {
-        self.tags.iter().filter_map(|t| t.tag().as_return()).collect()
+        self.tags
+            .iter()
+            .filter_map(|t| t.tag().as_return())
+            .collect()
     }
 
     pub fn get_method_tags(&self) -> Vec<&DocBlockMethodTag> {
-        self.tags.iter().filter_map(|t| t.tag().as_method()).collect()
+        self.tags
+            .iter()
+            .filter_map(|t| t.tag().as_method())
+            .collect()
     }
-    
+
     pub fn get_property_tags(&self) -> Vec<&DocBlockPropertyTag> {
-        self.tags.iter().filter_map(|t| t.tag().as_property()).collect()
+        self.tags
+            .iter()
+            .filter_map(|t| t.tag().as_property())
+            .collect()
     }
 
     pub fn get_var_tags(&self) -> Vec<&DocBlockVarTag> {
@@ -32,15 +49,24 @@ impl<'a> DocBlockTagCollection<'a> {
     }
 
     pub fn get_template_tags(&self) -> Vec<&DocBlockTemplateTag> {
-        self.tags.iter().filter_map(|t| t.tag().as_template()).collect()
+        self.tags
+            .iter()
+            .filter_map(|t| t.tag().as_template())
+            .collect()
     }
 
     pub fn get_extends_tags(&self) -> Vec<&DocBlockExtendsTag> {
-        self.tags.iter().filter_map(|t| t.tag().as_extends()).collect()
+        self.tags
+            .iter()
+            .filter_map(|t| t.tag().as_extends())
+            .collect()
     }
 
     pub fn get_implements_tags(&self) -> Vec<&DocBlockImplementsTag> {
-        self.tags.iter().filter_map(|t| t.tag().as_implements()).collect()
+        self.tags
+            .iter()
+            .filter_map(|t| t.tag().as_implements())
+            .collect()
     }
 
     pub fn get_uses_tags(&self) -> Vec<&DocBlockUsesTag> {
@@ -48,11 +74,17 @@ impl<'a> DocBlockTagCollection<'a> {
     }
 
     pub fn get_deprecated_tags(&self) -> Vec<&DocBlockDeprecatedTag> {
-        self.tags.iter().filter_map(|t| t.tag().as_deprecated()).collect()
+        self.tags
+            .iter()
+            .filter_map(|t| t.tag().as_deprecated())
+            .collect()
     }
 
     pub fn get_generic_tags(&self) -> Vec<&DocBlockGenericTag> {
-        self.tags.iter().filter_map(|t| t.tag().as_generic()).collect()
+        self.tags
+            .iter()
+            .filter_map(|t| t.tag().as_generic())
+            .collect()
     }
 }
 
@@ -161,7 +193,10 @@ impl DocBlock {
     }
 
     pub fn text(&self) -> Vec<&ByteStr> {
-        self.text_nodes().into_iter().map(DocBlockTextNode::text).collect()
+        self.text_nodes()
+            .into_iter()
+            .map(DocBlockTextNode::text)
+            .collect()
     }
 }
 
