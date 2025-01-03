@@ -6,6 +6,7 @@ mod generated;
 mod id;
 mod node;
 mod visibility;
+mod docblock;
 pub mod visitor;
 
 pub use generated::*;
