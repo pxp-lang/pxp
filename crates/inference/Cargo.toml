@@ -8,3 +8,6 @@ rust-version.workspace = true
 edition.workspace = true
 
 [dependencies]
+pxp-ast = { version = "0.1.0", path = "../ast" }
+pxp-index = { version = "0.1.0", path = "../index" }
+pxp-type = { version = "0.1.0", path = "../type" }
