@@ -69,8 +69,8 @@ impl<'a> ReflectsParameters<'a, ReflectionMethod<'a>> for ReflectionMethod<'a> {
 impl IsFunctionLike for ReflectionMethod<'_> {}
 
 impl<'a> ReflectionFunctionLike<'a> for ReflectionMethod<'a> {
-    fn get_return_type(&self) -> Option<Type<Name>> {
-        self.entity.return_type.clone()
+    fn get_return_type(&self) -> Option<&Type<Name>> {
+        self.entity.return_type.as_ref()
     }
 
     fn returns_reference(&self) -> bool {

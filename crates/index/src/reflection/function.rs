@@ -44,8 +44,8 @@ impl<'a> ReflectsParameters<'a, ReflectionFunction<'a>> for ReflectionFunction<'
 impl IsFunctionLike for ReflectionFunction<'_> {}
 
 impl<'a> ReflectionFunctionLike<'a> for ReflectionFunction<'a> {
-    fn get_return_type(&self) -> Option<Type<Name>> {
-        self.entity.return_type.clone()
+    fn get_return_type(&self) -> Option<&Type<Name>> {
+        self.entity.return_type.as_ref()
     }
 
     fn returns_reference(&self) -> bool {
@@ -56,7 +56,7 @@ impl<'a> ReflectionFunctionLike<'a> for ReflectionFunction<'a> {
 pub(crate) trait IsFunctionLike {}
 
 pub trait ReflectionFunctionLike<'a>: IsFunctionLike {
-    fn get_return_type(&self) -> Option<Type<Name>>;
+    fn get_return_type(&self) -> Option<&Type<Name>>;
 
     fn has_return_type(&self) -> bool {
         self.get_return_type().is_some()

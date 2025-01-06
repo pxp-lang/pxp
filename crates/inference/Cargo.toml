@@ -9,6 +9,7 @@ edition.workspace = true
 
 [dependencies]
 pxp-ast = { version = "0.1.0", path = "../ast" }
+pxp-bytestring = { version = "0.1.0", path = "../bytestring" }
 pxp-index = { version = "0.1.0", path = "../index" }
 pxp-token = { version = "0.1.0", path = "../token" }
 pxp-type = { version = "0.1.0", path = "../type" }

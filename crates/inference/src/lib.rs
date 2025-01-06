@@ -41,6 +41,31 @@ mod tests {
         assert_eq!(infer("false"), Type::False);
     }
 
+    #[test]
+    fn it_infers_type_of_function_calls() {
+        assert_eq!(infer(r#"
+        function a(): int {}
+        a()
+        "#), Type::Integer);
+    }
+
+    #[test]
+    fn it_infers_type_of_iife() {
+        assert_eq!(infer(r#"
+        (function (): int {
+            return 42;
+        })()
+        "#), Type::Integer);
+    }
+
+    #[test]
+    fn it_infers_type_of_function_calls_on_callable_string() {
+        assert_eq!(infer(r#"
+        function a(): string {}
+        'a'()
+        "#), Type::String);
+    }
+
     /// Parse the given code, infer the types and return the type of the last expression in the code.
     fn infer(code: &str) -> Type<Name> {
         // Parse the code.

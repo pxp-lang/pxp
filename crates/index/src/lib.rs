@@ -17,7 +17,7 @@ use pxp_lexer::Lexer;
 use pxp_parser::Parser;
 
 pub use entities::{FunctionEntity, Parameter, Parameters};
-pub use reflection::{ReflectionClass, ReflectionFunction, ReflectionParameter};
+pub use reflection::{ReflectionClass, ReflectionFunction, ReflectionParameter, ReflectionFunctionLike, ReflectsParameters};
 
 #[derive(Debug, Clone)]
 pub struct Index {

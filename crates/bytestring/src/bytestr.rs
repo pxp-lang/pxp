@@ -14,6 +14,10 @@ impl ByteStr {
         ByteString::from(self)
     }
 
+    pub fn contains(&self, needle: &[u8]) -> bool {
+        self.0.windows(needle.len()).any(|window| window == needle)
+    }
+
     pub fn strip_prefix(&self, prefix: u8) -> &ByteStr {
         let mut start = 0;
         let mut end = self.0.len();

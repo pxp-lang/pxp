@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use pxp_ast::{Name, NodeId};
 use pxp_type::Type;
 
+#[derive(Debug)]
 pub struct TypeMap {
     map: HashMap<NodeId, Type<Name>>,
 }
@@ -23,7 +24,7 @@ impl TypeMap {
         self.map.insert(id, ty);
     }
 
-    /// Get the type for the given node.
+    /// Get the type for the given node. If no type is present in the map, then `Type::Mixed` is returned.
     pub fn resolve(&self, id: NodeId) -> &Type<Name> {
         self.map.get(&id).unwrap_or_else(|| &Type::Mixed)
     }
