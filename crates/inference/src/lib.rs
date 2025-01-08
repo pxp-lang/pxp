@@ -74,6 +74,11 @@ mod tests {
         "#), Type::Integer);
     }
 
+    #[test]
+    fn it_infers_type_of_assignment_expression() {
+        assert_eq!(infer(r#"$a = 100"#), Type::Integer);
+    }
+
     /// Parse the given code, infer the types and return the type of the last expression in the code.
     fn infer(code: &str) -> Type<Name> {
         // Parse the code.
