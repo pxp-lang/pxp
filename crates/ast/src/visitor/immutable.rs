@@ -202,13 +202,17 @@ pub trait Visitor {
         walk_constant_fetch_expression(self, node);
     }
 
-    fn visit_short_array_expression(&mut self, node: &ShortArrayExpression) {
-        walk_short_array_expression(self, node);
-    }
-
     fn visit_array_expression(&mut self, node: &ArrayExpression) {
         walk_array_expression(self, node);
     }
+
+    fn visit_array_kind(&mut self, node: &ArrayKind) {
+        walk_array_kind(self, node);
+    }
+
+    fn visit_array_kind_short(&mut self, node: &ArrayKindShort) {}
+
+    fn visit_array_kind_long(&mut self, node: &ArrayKindLong) {}
 
     fn visit_list_expression(&mut self, node: &ListExpression) {
         walk_list_expression(self, node);
@@ -803,7 +807,9 @@ pub trait Visitor {
         walk_special_name(self, node);
     }
 
-    fn visit_special_name_kind(&mut self, node: &SpecialNameKind) {}
+    fn visit_special_name_kind(&mut self, node: &SpecialNameKind) {
+        walk_special_name_kind(self, node);
+    }
 
     fn visit_unresolved_name(&mut self, node: &UnresolvedName) {}
 

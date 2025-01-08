@@ -30,17 +30,29 @@
                 },
                 expression: Expression {
                     id: 12,
-                    kind: ShortArray(
-                        ShortArrayExpression {
+                    kind: Array(
+                        ArrayExpression {
                             id: 11,
                             span: Span {
                                 start: 7,
                                 end: 12,
                             },
-                            start: Span {
-                                start: 7,
-                                end: 8,
-                            },
+                            kind: Short(
+                                ArrayKindShort {
+                                    span: Span {
+                                        start: 7,
+                                        end: 12,
+                                    },
+                                    left_bracket: Span {
+                                        start: 7,
+                                        end: 8,
+                                    },
+                                    right_bracket: Span {
+                                        start: 11,
+                                        end: 12,
+                                    },
+                                },
+                            ),
                             items: CommaSeparated {
                                 inner: [
                                     Value(
@@ -52,17 +64,29 @@
                                             },
                                             value: Expression {
                                                 id: 9,
-                                                kind: ShortArray(
-                                                    ShortArrayExpression {
+                                                kind: Array(
+                                                    ArrayExpression {
                                                         id: 8,
                                                         span: Span {
                                                             start: 8,
                                                             end: 11,
                                                         },
-                                                        start: Span {
-                                                            start: 8,
-                                                            end: 9,
-                                                        },
+                                                        kind: Short(
+                                                            ArrayKindShort {
+                                                                span: Span {
+                                                                    start: 8,
+                                                                    end: 11,
+                                                                },
+                                                                left_bracket: Span {
+                                                                    start: 8,
+                                                                    end: 9,
+                                                                },
+                                                                right_bracket: Span {
+                                                                    start: 10,
+                                                                    end: 11,
+                                                                },
+                                                            },
+                                                        ),
                                                         items: CommaSeparated {
                                                             inner: [
                                                                 Value(
@@ -106,10 +130,6 @@
                                                             ],
                                                             commas: [],
                                                         },
-                                                        end: Span {
-                                                            start: 10,
-                                                            end: 11,
-                                                        },
                                                     },
                                                 ),
                                                 span: Span {
@@ -125,10 +145,6 @@
                                     ),
                                 ],
                                 commas: [],
-                            },
-                            end: Span {
-                                start: 11,
-                                end: 12,
                             },
                         },
                     ),

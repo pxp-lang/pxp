@@ -1,4 +1,4 @@
-use pxp_ast::{MethodModifierGroup, Name, SimpleIdentifier};
+use pxp_ast::{MethodModifierGroup, Name, ResolvedName, SimpleIdentifier};
 use pxp_type::Type;
 
 use crate::{location::Location, HasFileId};
@@ -9,7 +9,7 @@ use super::Parameters;
 pub struct MethodEntity {
     pub(crate) name: SimpleIdentifier,
     pub(crate) parameters: Parameters,
-    pub(crate) return_type: Option<Type<Name>>,
+    pub(crate) return_type: Option<Type<ResolvedName>>,
     pub(crate) returns_reference: bool,
     pub(crate) modifiers: MethodModifierGroup,
     pub(crate) location: Location,

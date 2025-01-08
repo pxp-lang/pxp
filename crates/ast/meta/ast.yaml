@@ -109,7 +109,6 @@ ExpressionKind:
   Static: Box<StaticExpression>
   Self_: Box<SelfExpression>
   Parent: Box<ParentExpression>
-  ShortArray: Box<ShortArrayExpression>
   Array: Box<ArrayExpression>
   List: Box<ListExpression>
   Closure: Box<ClosureExpression>
@@ -416,20 +415,30 @@ ConstantFetchExpression:
   double_colon: Span
   constant: Identifier
 
-ShortArrayExpression:
-  children: [items]
-  span: Span
-  start: Span
-  items: CommaSeparated<ArrayItem>
-  end: Span
-
 ArrayExpression:
   children: [items]
   span: Span
-  array: Span
-  start: Span
+  kind: ArrayKind
   items: CommaSeparated<ArrayItem>
-  end: Span
+
+ArrayKind:
+  as: Enum
+  node: false
+  Short: ArrayKindShort
+  Long: ArrayKindLong
+
+ArrayKindShort:
+  node: false
+  span: Span
+  left_bracket: Span
+  right_bracket: Span
+
+ArrayKindLong:
+  node: false
+  span: Span
+  array: Span
+  left_parenthesis: Span
+  right_parenthesis: Span
 
 ListExpression:
   children: [items]
@@ -921,7 +930,7 @@ IfStatementElseBlock:
   statements: Vec<Statement>
 
 DataType:
-  kind: Type<Name>
+  kind: Type<ResolvedName>
   span: Span
 
 DeclareEntry:
@@ -1658,14 +1667,14 @@ Name:
   span: Span
 
 NameKind:
-  children: [self]
   as: Enum
+  node: false
   Special: SpecialName
   Unresolved: UnresolvedName
   Resolved: ResolvedName
 
 SpecialName:
-  span: Span
+  node: false
   kind: SpecialNameKind
   symbol: ByteString
 
@@ -1673,17 +1682,19 @@ SpecialNameKind:
   as: Enum
   node: false
   derive: Copy
-  Self_: Span
-  Parent: Span
-  Static: Span
+  Self_: ''
+  Parent: ''
+  Static: ''
 
 UnresolvedName:
-  span: Span
+  node: false
+  derive: Hash
   symbol: ByteString
   qualification: NameQualification
 
 ResolvedName:
-  span: Span
+  node: false
+  derive: Hash
   resolved: ByteString
   original: ByteString
 

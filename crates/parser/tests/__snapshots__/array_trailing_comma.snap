@@ -30,17 +30,29 @@
                 },
                 expression: Expression {
                     id: 15,
-                    kind: ShortArray(
-                        ShortArrayExpression {
+                    kind: Array(
+                        ArrayExpression {
                             id: 14,
                             span: Span {
                                 start: 7,
                                 end: 17,
                             },
-                            start: Span {
-                                start: 7,
-                                end: 8,
-                            },
+                            kind: Short(
+                                ArrayKindShort {
+                                    span: Span {
+                                        start: 7,
+                                        end: 17,
+                                    },
+                                    left_bracket: Span {
+                                        start: 7,
+                                        end: 8,
+                                    },
+                                    right_bracket: Span {
+                                        start: 16,
+                                        end: 17,
+                                    },
+                                },
+                            ),
                             items: CommaSeparated {
                                 inner: [
                                     Value(
@@ -172,10 +184,6 @@
                                         end: 16,
                                     },
                                 ],
-                            },
-                            end: Span {
-                                start: 16,
-                                end: 17,
                             },
                         },
                     ),

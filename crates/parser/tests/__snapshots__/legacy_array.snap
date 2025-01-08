@@ -37,21 +37,29 @@
                                 start: 7,
                                 end: 14,
                             },
-                            array: Span {
-                                start: 7,
-                                end: 12,
-                            },
-                            start: Span {
-                                start: 12,
-                                end: 13,
-                            },
+                            kind: Long(
+                                ArrayKindLong {
+                                    span: Span {
+                                        start: 7,
+                                        end: 14,
+                                    },
+                                    array: Span {
+                                        start: 7,
+                                        end: 12,
+                                    },
+                                    left_parenthesis: Span {
+                                        start: 12,
+                                        end: 13,
+                                    },
+                                    right_parenthesis: Span {
+                                        start: 13,
+                                        end: 14,
+                                    },
+                                },
+                            ),
                             items: CommaSeparated {
                                 inner: [],
                                 commas: [],
-                            },
-                            end: Span {
-                                start: 13,
-                                end: 14,
                             },
                         },
                     ),

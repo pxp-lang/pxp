@@ -42,11 +42,6 @@
                     id: 15,
                     kind: Resolved(
                         ResolvedName {
-                            id: 15,
-                            span: Span {
-                                start: 34,
-                                end: 35,
-                            },
                             resolved: "a",
                             original: "a",
                         },
@@ -157,43 +152,15 @@
                                                             kind: Intersection(
                                                                 [
                                                                     Named(
-                                                                        Name {
-                                                                            id: 4,
-                                                                            kind: Resolved(
-                                                                                ResolvedName {
-                                                                                    id: 4,
-                                                                                    span: Span {
-                                                                                        start: 18,
-                                                                                        end: 19,
-                                                                                    },
-                                                                                    resolved: "A",
-                                                                                    original: "A",
-                                                                                },
-                                                                            ),
-                                                                            span: Span {
-                                                                                start: 18,
-                                                                                end: 19,
-                                                                            },
+                                                                        ResolvedName {
+                                                                            resolved: "A",
+                                                                            original: "A",
                                                                         },
                                                                     ),
                                                                     Named(
-                                                                        Name {
-                                                                            id: 5,
-                                                                            kind: Resolved(
-                                                                                ResolvedName {
-                                                                                    id: 5,
-                                                                                    span: Span {
-                                                                                        start: 20,
-                                                                                        end: 21,
-                                                                                    },
-                                                                                    resolved: "B",
-                                                                                    original: "B",
-                                                                                },
-                                                                            ),
-                                                                            span: Span {
-                                                                                start: 20,
-                                                                                end: 21,
-                                                                            },
+                                                                        ResolvedName {
+                                                                            resolved: "B",
+                                                                            original: "B",
                                                                         },
                                                                     ),
                                                                 ],

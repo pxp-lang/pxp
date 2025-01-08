@@ -1,5 +1,6 @@
 use std::fmt::{Display, Formatter};
 
+mod array;
 mod backed_enum_type;
 mod comments;
 mod docblock;
@@ -97,9 +98,9 @@ impl From<Token<'_>> for CastKind {
 impl<'a> From<Token<'a>> for SpecialNameKind {
     fn from(token: Token<'a>) -> Self {
         match token.kind {
-            TokenKind::Self_ => Self::Self_(token.span),
-            TokenKind::Parent => Self::Parent(token.span),
-            TokenKind::Static => Self::Static(token.span),
+            TokenKind::Self_ => Self::Self_,
+            TokenKind::Parent => Self::Parent,
+            TokenKind::Static => Self::Static,
             _ => unreachable!(),
         }
     }
@@ -345,16 +346,6 @@ impl Spanned for LogicalOperationKind {
             LogicalOperationKind::LogicalXor { left, right, .. } => {
                 Span::combine(left.span, right.span)
             }
-        }
-    }
-}
-
-impl Spanned for NameKind {
-    fn span(&self) -> Span {
-        match self {
-            NameKind::Special(inner) => inner.span(),
-            NameKind::Unresolved(inner) => inner.span(),
-            NameKind::Resolved(inner) => inner.span(),
         }
     }
 }

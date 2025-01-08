@@ -42,11 +42,6 @@
                     id: 17,
                     kind: Resolved(
                         ResolvedName {
-                            id: 17,
-                            span: Span {
-                                start: 41,
-                                end: 42,
-                            },
                             resolved: "a",
                             original: "a",
                         },
@@ -182,68 +177,26 @@
                                                             id: 7,
                                                             kind: Generic(
                                                                 Named(
-                                                                    Name {
-                                                                        id: 4,
-                                                                        kind: Resolved(
-                                                                            ResolvedName {
-                                                                                id: 4,
-                                                                                span: Span {
-                                                                                    start: 18,
-                                                                                    end: 19,
-                                                                                },
-                                                                                resolved: "A",
-                                                                                original: "A",
-                                                                            },
-                                                                        ),
-                                                                        span: Span {
-                                                                            start: 18,
-                                                                            end: 19,
-                                                                        },
+                                                                    ResolvedName {
+                                                                        resolved: "A",
+                                                                        original: "A",
                                                                     },
                                                                 ),
                                                                 [
                                                                     GenericTypeArgument {
                                                                         type: Named(
-                                                                            Name {
-                                                                                id: 5,
-                                                                                kind: Resolved(
-                                                                                    ResolvedName {
-                                                                                        id: 5,
-                                                                                        span: Span {
-                                                                                            start: 20,
-                                                                                            end: 21,
-                                                                                        },
-                                                                                        resolved: "B",
-                                                                                        original: "B",
-                                                                                    },
-                                                                                ),
-                                                                                span: Span {
-                                                                                    start: 20,
-                                                                                    end: 21,
-                                                                                },
+                                                                            ResolvedName {
+                                                                                resolved: "B",
+                                                                                original: "B",
                                                                             },
                                                                         ),
                                                                         variance: None,
                                                                     },
                                                                     GenericTypeArgument {
                                                                         type: Named(
-                                                                            Name {
-                                                                                id: 6,
-                                                                                kind: Resolved(
-                                                                                    ResolvedName {
-                                                                                        id: 6,
-                                                                                        span: Span {
-                                                                                            start: 23,
-                                                                                            end: 24,
-                                                                                        },
-                                                                                        resolved: "C",
-                                                                                        original: "C",
-                                                                                    },
-                                                                                ),
-                                                                                span: Span {
-                                                                                    start: 23,
-                                                                                    end: 24,
-                                                                                },
+                                                                            ResolvedName {
+                                                                                resolved: "C",
+                                                                                original: "C",
                                                                             },
                                                                         ),
                                                                         variance: None,

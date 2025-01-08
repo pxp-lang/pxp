@@ -5,13 +5,16 @@ use pxp_ast::ArrayItemReferencedKeyValue;
 use pxp_ast::ArrayItemReferencedValue;
 use pxp_ast::ArrayItemSpreadValue;
 use pxp_ast::ArrayItemValue;
+use pxp_ast::ArrayKind;
+use pxp_ast::ArrayKindLong;
+use pxp_ast::ArrayKindShort;
 use pxp_ast::CommentGroup;
 use pxp_ast::Expression;
 use pxp_ast::ExpressionKind;
 use pxp_ast::ListEntry;
 use pxp_ast::ListEntryKeyValue;
 use pxp_ast::ListEntryValue;
-use pxp_ast::{ArrayExpression, ArrayItem, ListExpression, ShortArrayExpression};
+use pxp_ast::{ArrayExpression, ArrayItem, ListExpression};
 
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
@@ -126,7 +129,7 @@ impl<'a> Parser<'a> {
     }
 
     pub fn parse_short_array_expression(&mut self) -> Expression {
-        let start = self.skip(TokenKind::LeftBracket);
+        let left_bracket = self.skip(TokenKind::LeftBracket);
         let items = self.comma_separated(
             |parser| {
                 let current = parser.current();
@@ -138,15 +141,18 @@ impl<'a> Parser<'a> {
             },
             TokenKind::RightBracket,
         );
-        let end = self.skip(TokenKind::RightBracket);
-        let span = Span::combine(start, end);
+        let right_bracket = self.skip(TokenKind::RightBracket);
+        let span = Span::combine(left_bracket, right_bracket);
 
-        let kind = ExpressionKind::ShortArray(Box::new(ShortArrayExpression {
+        let kind = ExpressionKind::Array(Box::new(ArrayExpression {
             id: self.id(),
             span,
-            start,
+            kind: ArrayKind::Short(ArrayKindShort {
+                span: Span::combine(left_bracket, right_bracket),
+                left_bracket,
+                right_bracket,
+            }),
             items,
-            end,
         }));
 
         Expression::new(self.id(), kind, span, CommentGroup::default())
@@ -154,18 +160,21 @@ impl<'a> Parser<'a> {
 
     pub fn parse_array_expression(&mut self) -> Expression {
         let array = self.skip(TokenKind::Array);
-        let start = self.skip_left_parenthesis();
+        let left_parenthesis = self.skip_left_parenthesis();
         let items = self.comma_separated(|parser| parser.parse_array_pair(), TokenKind::RightParen);
-        let end = self.skip_right_parenthesis();
-        let span = Span::combine(array, end);
+        let right_parenthesis = self.skip_right_parenthesis();
+        let span = Span::combine(array, right_parenthesis);
 
         let kind = ExpressionKind::Array(Box::new(ArrayExpression {
             id: self.id(),
             span,
-            array,
-            start,
+            kind: ArrayKind::Long(ArrayKindLong {
+                span: Span::combine(array, right_parenthesis),
+                array,
+                left_parenthesis,
+                right_parenthesis,
+            }),
             items,
-            end,
         }));
 
         Expression::new(self.id(), kind, span, CommentGroup::default())

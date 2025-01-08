@@ -69,24 +69,32 @@
                             ),
                             right: Expression {
                                 id: 15,
-                                kind: ShortArray(
-                                    ShortArrayExpression {
+                                kind: Array(
+                                    ArrayExpression {
                                         id: 14,
                                         span: Span {
                                             start: 68,
                                             end: 70,
                                         },
-                                        start: Span {
-                                            start: 68,
-                                            end: 69,
-                                        },
+                                        kind: Short(
+                                            ArrayKindShort {
+                                                span: Span {
+                                                    start: 68,
+                                                    end: 70,
+                                                },
+                                                left_bracket: Span {
+                                                    start: 68,
+                                                    end: 69,
+                                                },
+                                                right_bracket: Span {
+                                                    start: 69,
+                                                    end: 70,
+                                                },
+                                            },
+                                        ),
                                         items: CommaSeparated {
                                             inner: [],
                                             commas: [],
-                                        },
-                                        end: Span {
-                                            start: 69,
-                                            end: 70,
                                         },
                                     },
                                 ),

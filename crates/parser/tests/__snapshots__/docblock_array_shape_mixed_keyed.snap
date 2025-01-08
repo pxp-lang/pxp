@@ -69,24 +69,32 @@
                             ),
                             right: Expression {
                                 id: 15,
-                                kind: ShortArray(
-                                    ShortArrayExpression {
+                                kind: Array(
+                                    ArrayExpression {
                                         id: 14,
                                         span: Span {
                                             start: 73,
                                             end: 75,
                                         },
-                                        start: Span {
-                                            start: 73,
-                                            end: 74,
-                                        },
+                                        kind: Short(
+                                            ArrayKindShort {
+                                                span: Span {
+                                                    start: 73,
+                                                    end: 75,
+                                                },
+                                                left_bracket: Span {
+                                                    start: 73,
+                                                    end: 74,
+                                                },
+                                                right_bracket: Span {
+                                                    start: 74,
+                                                    end: 75,
+                                                },
+                                            },
+                                        ),
                                         items: CommaSeparated {
                                             inner: [],
                                             commas: [],
-                                        },
-                                        end: Span {
-                                            start: 74,
-                                            end: 75,
                                         },
                                     },
                                 ),

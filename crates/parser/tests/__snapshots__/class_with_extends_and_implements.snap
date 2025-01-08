@@ -45,11 +45,6 @@
                     id: 6,
                     kind: Resolved(
                         ResolvedName {
-                            id: 6,
-                            span: Span {
-                                start: 13,
-                                end: 16,
-                            },
                             resolved: "Foo",
                             original: "Foo",
                         },
@@ -74,11 +69,6 @@
                             id: 7,
                             kind: Resolved(
                                 ResolvedName {
-                                    id: 7,
-                                    span: Span {
-                                        start: 25,
-                                        end: 28,
-                                    },
                                     resolved: "Bar",
                                     original: "Bar",
                                 },
@@ -107,11 +97,6 @@
                                     id: 9,
                                     kind: Resolved(
                                         ResolvedName {
-                                            id: 9,
-                                            span: Span {
-                                                start: 40,
-                                                end: 43,
-                                            },
                                             resolved: "Baz",
                                             original: "Baz",
                                         },
@@ -125,11 +110,6 @@
                                     id: 10,
                                     kind: Resolved(
                                         ResolvedName {
-                                            id: 10,
-                                            span: Span {
-                                                start: 45,
-                                                end: 48,
-                                            },
                                             resolved: "Qux",
                                             original: "Qux",
                                         },

@@ -40,11 +40,6 @@
                             id: 6,
                             kind: Resolved(
                                 ResolvedName {
-                                    id: 6,
-                                    span: Span {
-                                        start: 11,
-                                        end: 18,
-                                    },
                                     resolved: "Foo\Bar",
                                     original: "Foo\Bar",
                                 },
@@ -90,11 +85,6 @@
                             id: 12,
                             kind: Resolved(
                                 ResolvedName {
-                                    id: 12,
-                                    span: Span {
-                                        start: 33,
-                                        end: 40,
-                                    },
                                     resolved: "App\str",
                                     original: "App\str",
                                 },
@@ -140,11 +130,6 @@
                             id: 18,
                             kind: Resolved(
                                 ResolvedName {
-                                    id: 18,
-                                    span: Span {
-                                        start: 52,
-                                        end: 58,
-                                    },
                                     resolved: "App\PI",
                                     original: "App\PI",
                                 },

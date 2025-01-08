@@ -2,8 +2,9 @@ use std::fmt::{Debug, Display};
 
 use pxp_bytestring::ByteString;
 use pxp_span::Span;
+use strum::EnumIs;
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Default)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Default, EnumIs)]
 pub enum Type<N: Debug + Display> {
     Named(N),
     Generic(Box<Type<N>>, Vec<GenericTypeArgument<N>>),

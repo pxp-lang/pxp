@@ -40,11 +40,6 @@
                             id: 6,
                             kind: Resolved(
                                 ResolvedName {
-                                    id: 6,
-                                    span: Span {
-                                        start: 11,
-                                        end: 18,
-                                    },
                                     resolved: "App\Foo",
                                     original: "App\Foo",
                                 },
@@ -90,11 +85,6 @@
                             id: 12,
                             kind: Resolved(
                                 ResolvedName {
-                                    id: 12,
-                                    span: Span {
-                                        start: 24,
-                                        end: 35,
-                                    },
                                     resolved: "Foo\Bar\Baz",
                                     original: "Foo\Bar\Baz",
                                 },
@@ -154,11 +144,6 @@
                     id: 19,
                     kind: Resolved(
                         ResolvedName {
-                            id: 19,
-                            span: Span {
-                                start: 51,
-                                end: 52,
-                            },
                             resolved: "A",
                             original: "A",
                         },
@@ -247,23 +232,9 @@
                                                     DataType {
                                                         id: 25,
                                                         kind: Named(
-                                                            Name {
-                                                                id: 24,
-                                                                kind: Resolved(
-                                                                    ResolvedName {
-                                                                        id: 24,
-                                                                        span: Span {
-                                                                            start: 70,
-                                                                            end: 73,
-                                                                        },
-                                                                        resolved: "App\Foo",
-                                                                        original: "Foo",
-                                                                    },
-                                                                ),
-                                                                span: Span {
-                                                                    start: 70,
-                                                                    end: 73,
-                                                                },
+                                                            ResolvedName {
+                                                                resolved: "App\Foo",
+                                                                original: "Foo",
                                                             },
                                                         ),
                                                         span: Span {
@@ -299,43 +270,15 @@
                                                         kind: Union(
                                                             [
                                                                 Named(
-                                                                    Name {
-                                                                        id: 29,
-                                                                        kind: Resolved(
-                                                                            ResolvedName {
-                                                                                id: 29,
-                                                                                span: Span {
-                                                                                    start: 78,
-                                                                                    end: 81,
-                                                                                },
-                                                                                resolved: "App\Foo",
-                                                                                original: "Foo",
-                                                                            },
-                                                                        ),
-                                                                        span: Span {
-                                                                            start: 78,
-                                                                            end: 81,
-                                                                        },
+                                                                    ResolvedName {
+                                                                        resolved: "App\Foo",
+                                                                        original: "Foo",
                                                                     },
                                                                 ),
                                                                 Named(
-                                                                    Name {
-                                                                        id: 30,
-                                                                        kind: Resolved(
-                                                                            ResolvedName {
-                                                                                id: 30,
-                                                                                span: Span {
-                                                                                    start: 84,
-                                                                                    end: 87,
-                                                                                },
-                                                                                resolved: "Foo\Bar\Baz",
-                                                                                original: "Bar",
-                                                                            },
-                                                                        ),
-                                                                        span: Span {
-                                                                            start: 84,
-                                                                            end: 87,
-                                                                        },
+                                                                    ResolvedName {
+                                                                        resolved: "Foo\Bar\Baz",
+                                                                        original: "Bar",
                                                                     },
                                                                 ),
                                                             ],
@@ -373,43 +316,15 @@
                                                         kind: Intersection(
                                                             [
                                                                 Named(
-                                                                    Name {
-                                                                        id: 35,
-                                                                        kind: Resolved(
-                                                                            ResolvedName {
-                                                                                id: 35,
-                                                                                span: Span {
-                                                                                    start: 92,
-                                                                                    end: 95,
-                                                                                },
-                                                                                resolved: "App\Foo",
-                                                                                original: "Foo",
-                                                                            },
-                                                                        ),
-                                                                        span: Span {
-                                                                            start: 92,
-                                                                            end: 95,
-                                                                        },
+                                                                    ResolvedName {
+                                                                        resolved: "App\Foo",
+                                                                        original: "Foo",
                                                                     },
                                                                 ),
                                                                 Named(
-                                                                    Name {
-                                                                        id: 36,
-                                                                        kind: Resolved(
-                                                                            ResolvedName {
-                                                                                id: 36,
-                                                                                span: Span {
-                                                                                    start: 98,
-                                                                                    end: 101,
-                                                                                },
-                                                                                resolved: "Foo\Bar\Baz",
-                                                                                original: "Bar",
-                                                                            },
-                                                                        ),
-                                                                        span: Span {
-                                                                            start: 98,
-                                                                            end: 101,
-                                                                        },
+                                                                    ResolvedName {
+                                                                        resolved: "Foo\Bar\Baz",
+                                                                        original: "Bar",
                                                                     },
                                                                 ),
                                                             ],
@@ -446,23 +361,9 @@
                                                         id: 42,
                                                         kind: Nullable(
                                                             Named(
-                                                                Name {
-                                                                    id: 41,
-                                                                    kind: Resolved(
-                                                                        ResolvedName {
-                                                                            id: 41,
-                                                                            span: Span {
-                                                                                start: 107,
-                                                                                end: 110,
-                                                                            },
-                                                                            resolved: "App\Foo",
-                                                                            original: "Foo",
-                                                                        },
-                                                                    ),
-                                                                    span: Span {
-                                                                        start: 107,
-                                                                        end: 110,
-                                                                    },
+                                                                ResolvedName {
+                                                                    resolved: "App\Foo",
+                                                                    original: "Foo",
                                                                 },
                                                             ),
                                                         ),

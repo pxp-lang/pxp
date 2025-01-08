@@ -9,7 +9,7 @@ use super::parameters::Parameters;
 pub struct FunctionEntity {
     pub(crate) name: ResolvedName,
     pub(crate) parameters: Parameters,
-    pub(crate) return_type: Option<Type<Name>>,
+    pub(crate) return_type: Option<Type<ResolvedName>>,
     pub(crate) returns_reference: bool,
     pub(crate) location: Location,
 }

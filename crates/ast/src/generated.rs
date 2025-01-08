@@ -185,7 +185,6 @@ pub enum ExpressionKind {
     Static(Box<StaticExpression>),
     Self_(Box<SelfExpression>),
     Parent(Box<ParentExpression>),
-    ShortArray(Box<ShortArrayExpression>),
     Array(Box<ArrayExpression>),
     List(Box<ListExpression>),
     Closure(Box<ClosureExpression>),
@@ -257,7 +256,6 @@ impl HasId for ExpressionKind {
             ExpressionKind::Static(inner) => inner.id(),
             ExpressionKind::Self_(inner) => inner.id(),
             ExpressionKind::Parent(inner) => inner.id(),
-            ExpressionKind::ShortArray(inner) => inner.id(),
             ExpressionKind::Array(inner) => inner.id(),
             ExpressionKind::List(inner) => inner.id(),
             ExpressionKind::Closure(inner) => inner.id(),
@@ -1208,34 +1206,11 @@ impl Spanned for ConstantFetchExpression {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct ShortArrayExpression {
-    pub id: NodeId,
-    pub span: Span,
-    pub start: Span,
-    pub items: CommaSeparated<ArrayItem>,
-    pub end: Span,
-}
-
-impl HasId for ShortArrayExpression {
-    fn id(&self) -> NodeId {
-        self.id
-    }
-}
-
-impl Spanned for ShortArrayExpression {
-    fn span(&self) -> Span {
-        self.span
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct ArrayExpression {
     pub id: NodeId,
     pub span: Span,
-    pub array: Span,
-    pub start: Span,
+    pub kind: ArrayKind,
     pub items: CommaSeparated<ArrayItem>,
-    pub end: Span,
 }
 
 impl HasId for ArrayExpression {
@@ -1245,6 +1220,39 @@ impl HasId for ArrayExpression {
 }
 
 impl Spanned for ArrayExpression {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub enum ArrayKind {
+    Short(ArrayKindShort),
+    Long(ArrayKindLong),
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ArrayKindShort {
+    pub span: Span,
+    pub left_bracket: Span,
+    pub right_bracket: Span,
+}
+
+impl Spanned for ArrayKindShort {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct ArrayKindLong {
+    pub span: Span,
+    pub array: Span,
+    pub left_parenthesis: Span,
+    pub right_parenthesis: Span,
+}
+
+impl Spanned for ArrayKindLong {
     fn span(&self) -> Span {
         self.span
     }
@@ -2694,7 +2702,7 @@ impl Spanned for IfStatementElseBlock {
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct DataType {
     pub id: NodeId,
-    pub kind: Type<Name>,
+    pub kind: Type<ResolvedName>,
     pub span: Span,
 }
 
@@ -4639,92 +4647,29 @@ pub enum NameKind {
     Resolved(ResolvedName),
 }
 
-impl HasId for NameKind {
-    fn id(&self) -> NodeId {
-        match self {
-            NameKind::Special(inner) => inner.id(),
-            NameKind::Unresolved(inner) => inner.id(),
-            NameKind::Resolved(inner) => inner.id(),
-        }
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct SpecialName {
-    pub id: NodeId,
-    pub span: Span,
     pub kind: SpecialNameKind,
     pub symbol: ByteString,
 }
 
-impl HasId for SpecialName {
-    fn id(&self) -> NodeId {
-        self.id
-    }
-}
-
-impl Spanned for SpecialName {
-    fn span(&self) -> Span {
-        self.span
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum SpecialNameKind {
-    Self_(Span),
-    Parent(Span),
-    Static(Span),
+    Self_,
+    Parent,
+    Static,
 }
 
-impl Spanned for SpecialNameKind {
-    fn span(&self) -> Span {
-        match self {
-            SpecialNameKind::Self_(span) => *span,
-            SpecialNameKind::Parent(span) => *span,
-            SpecialNameKind::Static(span) => *span,
-            _ => Span::default(),
-        }
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash)]
 pub struct UnresolvedName {
-    pub id: NodeId,
-    pub span: Span,
     pub symbol: ByteString,
     pub qualification: NameQualification,
 }
 
-impl HasId for UnresolvedName {
-    fn id(&self) -> NodeId {
-        self.id
-    }
-}
-
-impl Spanned for UnresolvedName {
-    fn span(&self) -> Span {
-        self.span
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash)]
 pub struct ResolvedName {
-    pub id: NodeId,
-    pub span: Span,
     pub resolved: ByteString,
     pub original: ByteString,
-}
-
-impl HasId for ResolvedName {
-    fn id(&self) -> NodeId {
-        self.id
-    }
-}
-
-impl Spanned for ResolvedName {
-    fn span(&self) -> Span {
-        self.span
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -6161,7 +6106,6 @@ pub enum NodeKind<'a> {
     NullsafePropertyFetchExpression(&'a NullsafePropertyFetchExpression),
     StaticPropertyFetchExpression(&'a StaticPropertyFetchExpression),
     ConstantFetchExpression(&'a ConstantFetchExpression),
-    ShortArrayExpression(&'a ShortArrayExpression),
     ArrayExpression(&'a ArrayExpression),
     ListExpression(&'a ListExpression),
     NewExpression(&'a NewExpression),
@@ -6307,10 +6251,6 @@ pub enum NodeKind<'a> {
     LogicalOperationExpression(&'a LogicalOperationExpression),
     LogicalOperationKind(&'a LogicalOperationKind),
     Name(&'a Name),
-    NameKind(&'a NameKind),
-    SpecialName(&'a SpecialName),
-    UnresolvedName(&'a UnresolvedName),
-    ResolvedName(&'a ResolvedName),
     Property(&'a Property),
     SimpleProperty(&'a SimpleProperty),
     HookedProperty(&'a HookedProperty),
@@ -6935,17 +6875,6 @@ impl<'a> Node<'a> {
 
     pub fn is_constant_fetch_expression(&self) -> bool {
         matches!(&self.kind, NodeKind::ConstantFetchExpression(_))
-    }
-
-    pub fn as_short_array_expression(self) -> Option<&'a ShortArrayExpression> {
-        match &self.kind {
-            NodeKind::ShortArrayExpression(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_short_array_expression(&self) -> bool {
-        matches!(&self.kind, NodeKind::ShortArrayExpression(_))
     }
 
     pub fn as_array_expression(self) -> Option<&'a ArrayExpression> {
@@ -8545,50 +8474,6 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::Name(_))
     }
 
-    pub fn as_name_kind(self) -> Option<&'a NameKind> {
-        match &self.kind {
-            NodeKind::NameKind(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_name_kind(&self) -> bool {
-        matches!(&self.kind, NodeKind::NameKind(_))
-    }
-
-    pub fn as_special_name(self) -> Option<&'a SpecialName> {
-        match &self.kind {
-            NodeKind::SpecialName(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_special_name(&self) -> bool {
-        matches!(&self.kind, NodeKind::SpecialName(_))
-    }
-
-    pub fn as_unresolved_name(self) -> Option<&'a UnresolvedName> {
-        match &self.kind {
-            NodeKind::UnresolvedName(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_unresolved_name(&self) -> bool {
-        matches!(&self.kind, NodeKind::UnresolvedName(_))
-    }
-
-    pub fn as_resolved_name(self) -> Option<&'a ResolvedName> {
-        match &self.kind {
-            NodeKind::ResolvedName(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_resolved_name(&self) -> bool {
-        matches!(&self.kind, NodeKind::ResolvedName(_))
-    }
-
     pub fn as_property(self) -> Option<&'a Property> {
         match &self.kind {
             NodeKind::Property(node) => Some(node),
@@ -9376,7 +9261,6 @@ impl<'a> Node<'a> {
             NodeKind::NullsafePropertyFetchExpression(_) => "NullsafePropertyFetchExpression",
             NodeKind::StaticPropertyFetchExpression(_) => "StaticPropertyFetchExpression",
             NodeKind::ConstantFetchExpression(_) => "ConstantFetchExpression",
-            NodeKind::ShortArrayExpression(_) => "ShortArrayExpression",
             NodeKind::ArrayExpression(_) => "ArrayExpression",
             NodeKind::ListExpression(_) => "ListExpression",
             NodeKind::NewExpression(_) => "NewExpression",
@@ -9524,10 +9408,6 @@ impl<'a> Node<'a> {
             NodeKind::LogicalOperationExpression(_) => "LogicalOperationExpression",
             NodeKind::LogicalOperationKind(_) => "LogicalOperationKind",
             NodeKind::Name(_) => "Name",
-            NodeKind::NameKind(_) => "NameKind",
-            NodeKind::SpecialName(_) => "SpecialName",
-            NodeKind::UnresolvedName(_) => "UnresolvedName",
-            NodeKind::ResolvedName(_) => "ResolvedName",
             NodeKind::Property(_) => "Property",
             NodeKind::SimpleProperty(_) => "SimpleProperty",
             NodeKind::HookedProperty(_) => "HookedProperty",
@@ -9914,10 +9794,6 @@ impl<'a> Node<'a> {
                     let x = inner.as_ref();
                     children.push(x.into());
                 }
-                ExpressionKind::ShortArray(inner) => {
-                    let x = inner.as_ref();
-                    children.push(x.into());
-                }
                 ExpressionKind::Array(inner) => {
                     let x = inner.as_ref();
                     children.push(x.into());
@@ -10204,11 +10080,6 @@ impl<'a> Node<'a> {
                 children.push(x.into());
                 let x = &node.constant;
                 children.push(x.into());
-            }
-            NodeKind::ShortArrayExpression(node) => {
-                for x in &node.items.inner {
-                    children.push(x.into());
-                }
             }
             NodeKind::ArrayExpression(node) => {
                 for x in &node.items.inner {
@@ -11317,18 +11188,6 @@ impl<'a> Node<'a> {
                     children.push(x.into());
                 }
             },
-            NodeKind::NameKind(node) => match node {
-                NameKind::Special(inner) => {
-                    children.push(inner.into());
-                }
-                NameKind::Unresolved(inner) => {
-                    children.push(inner.into());
-                }
-                NameKind::Resolved(inner) => {
-                    children.push(inner.into());
-                }
-                _ => {}
-            },
             NodeKind::Property(node) => match node {
                 Property::Simple(inner) => {
                     children.push(inner.into());
@@ -11700,7 +11559,6 @@ impl<'a> Node<'a> {
             NodeKind::NullsafePropertyFetchExpression(node) => NonNull::from(node).cast(),
             NodeKind::StaticPropertyFetchExpression(node) => NonNull::from(node).cast(),
             NodeKind::ConstantFetchExpression(node) => NonNull::from(node).cast(),
-            NodeKind::ShortArrayExpression(node) => NonNull::from(node).cast(),
             NodeKind::ArrayExpression(node) => NonNull::from(node).cast(),
             NodeKind::ListExpression(node) => NonNull::from(node).cast(),
             NodeKind::NewExpression(node) => NonNull::from(node).cast(),
@@ -11846,10 +11704,6 @@ impl<'a> Node<'a> {
             NodeKind::LogicalOperationExpression(node) => NonNull::from(node).cast(),
             NodeKind::LogicalOperationKind(node) => NonNull::from(node).cast(),
             NodeKind::Name(node) => NonNull::from(node).cast(),
-            NodeKind::NameKind(node) => NonNull::from(node).cast(),
-            NodeKind::SpecialName(node) => NonNull::from(node).cast(),
-            NodeKind::UnresolvedName(node) => NonNull::from(node).cast(),
-            NodeKind::ResolvedName(node) => NonNull::from(node).cast(),
             NodeKind::Property(node) => NonNull::from(node).cast(),
             NodeKind::SimpleProperty(node) => NonNull::from(node).cast(),
             NodeKind::HookedProperty(node) => NonNull::from(node).cast(),
@@ -12281,12 +12135,6 @@ impl<'a> From<&'a ConstantFetchExpression> for Node<'a> {
             NodeKind::ConstantFetchExpression(node),
             node.span(),
         )
-    }
-}
-
-impl<'a> From<&'a ShortArrayExpression> for Node<'a> {
-    fn from(node: &'a ShortArrayExpression) -> Self {
-        Node::new(node.id(), NodeKind::ShortArrayExpression(node), node.span())
     }
 }
 
@@ -13285,30 +13133,6 @@ impl<'a> From<&'a LogicalOperationKind> for Node<'a> {
 impl<'a> From<&'a Name> for Node<'a> {
     fn from(node: &'a Name) -> Self {
         Node::new(node.id(), NodeKind::Name(node), node.span())
-    }
-}
-
-impl<'a> From<&'a NameKind> for Node<'a> {
-    fn from(node: &'a NameKind) -> Self {
-        Node::new(node.id(), NodeKind::NameKind(node), node.span())
-    }
-}
-
-impl<'a> From<&'a SpecialName> for Node<'a> {
-    fn from(node: &'a SpecialName) -> Self {
-        Node::new(node.id(), NodeKind::SpecialName(node), node.span())
-    }
-}
-
-impl<'a> From<&'a UnresolvedName> for Node<'a> {
-    fn from(node: &'a UnresolvedName) -> Self {
-        Node::new(node.id(), NodeKind::UnresolvedName(node), node.span())
-    }
-}
-
-impl<'a> From<&'a ResolvedName> for Node<'a> {
-    fn from(node: &'a ResolvedName) -> Self {
-        Node::new(node.id(), NodeKind::ResolvedName(node), node.span())
     }
 }
 

@@ -45,11 +45,6 @@
                     id: 6,
                     kind: Resolved(
                         ResolvedName {
-                            id: 6,
-                            span: Span {
-                                start: 13,
-                                end: 16,
-                            },
                             resolved: "Foo",
                             original: "Foo",
                         },
@@ -88,11 +83,6 @@
                                         id: 7,
                                         kind: Resolved(
                                             ResolvedName {
-                                                id: 7,
-                                                span: Span {
-                                                    start: 27,
-                                                    end: 30,
-                                                },
                                                 resolved: "Bar",
                                                 original: "Bar",
                                             },
@@ -106,11 +96,6 @@
                                         id: 8,
                                         kind: Resolved(
                                             ResolvedName {
-                                                id: 8,
-                                                span: Span {
-                                                    start: 32,
-                                                    end: 35,
-                                                },
                                                 resolved: "Baz",
                                                 original: "Baz",
                                             },
@@ -140,11 +125,6 @@
                                                         id: 9,
                                                         kind: Resolved(
                                                             ResolvedName {
-                                                                id: 9,
-                                                                span: Span {
-                                                                    start: 46,
-                                                                    end: 49,
-                                                                },
                                                                 resolved: "Bar",
                                                                 original: "Bar",
                                                             },

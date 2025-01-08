@@ -30,17 +30,29 @@
                 },
                 expression: Expression {
                     id: 114,
-                    kind: ShortArray(
-                        ShortArrayExpression {
+                    kind: Array(
+                        ArrayExpression {
                             id: 113,
                             span: Span {
                                 start: 7,
                                 end: 135,
                             },
-                            start: Span {
-                                start: 7,
-                                end: 8,
-                            },
+                            kind: Short(
+                                ArrayKindShort {
+                                    span: Span {
+                                        start: 7,
+                                        end: 135,
+                                    },
+                                    left_bracket: Span {
+                                        start: 7,
+                                        end: 8,
+                                    },
+                                    right_bracket: Span {
+                                        start: 134,
+                                        end: 135,
+                                    },
+                                },
+                            ),
                             items: CommaSeparated {
                                 inner: [
                                     Value(
@@ -52,17 +64,29 @@
                                             },
                                             value: Expression {
                                                 id: 21,
-                                                kind: ShortArray(
-                                                    ShortArrayExpression {
+                                                kind: Array(
+                                                    ArrayExpression {
                                                         id: 20,
                                                         span: Span {
                                                             start: 13,
                                                             end: 28,
                                                         },
-                                                        start: Span {
-                                                            start: 13,
-                                                            end: 14,
-                                                        },
+                                                        kind: Short(
+                                                            ArrayKindShort {
+                                                                span: Span {
+                                                                    start: 13,
+                                                                    end: 28,
+                                                                },
+                                                                left_bracket: Span {
+                                                                    start: 13,
+                                                                    end: 14,
+                                                                },
+                                                                right_bracket: Span {
+                                                                    start: 27,
+                                                                    end: 28,
+                                                                },
+                                                            },
+                                                        ),
                                                         items: CommaSeparated {
                                                             inner: [
                                                                 Value(
@@ -275,10 +299,6 @@
                                                                 },
                                                             ],
                                                         },
-                                                        end: Span {
-                                                            start: 27,
-                                                            end: 28,
-                                                        },
                                                     },
                                                 ),
                                                 span: Span {
@@ -301,17 +321,29 @@
                                             },
                                             value: Expression {
                                                 id: 39,
-                                                kind: ShortArray(
-                                                    ShortArrayExpression {
+                                                kind: Array(
+                                                    ArrayExpression {
                                                         id: 38,
                                                         span: Span {
                                                             start: 34,
                                                             end: 49,
                                                         },
-                                                        start: Span {
-                                                            start: 34,
-                                                            end: 35,
-                                                        },
+                                                        kind: Short(
+                                                            ArrayKindShort {
+                                                                span: Span {
+                                                                    start: 34,
+                                                                    end: 49,
+                                                                },
+                                                                left_bracket: Span {
+                                                                    start: 34,
+                                                                    end: 35,
+                                                                },
+                                                                right_bracket: Span {
+                                                                    start: 48,
+                                                                    end: 49,
+                                                                },
+                                                            },
+                                                        ),
                                                         items: CommaSeparated {
                                                             inner: [
                                                                 Value(
@@ -524,10 +556,6 @@
                                                                 },
                                                             ],
                                                         },
-                                                        end: Span {
-                                                            start: 48,
-                                                            end: 49,
-                                                        },
                                                     },
                                                 ),
                                                 span: Span {
@@ -550,17 +578,29 @@
                                             },
                                             value: Expression {
                                                 id: 57,
-                                                kind: ShortArray(
-                                                    ShortArrayExpression {
+                                                kind: Array(
+                                                    ArrayExpression {
                                                         id: 56,
                                                         span: Span {
                                                             start: 55,
                                                             end: 70,
                                                         },
-                                                        start: Span {
-                                                            start: 55,
-                                                            end: 56,
-                                                        },
+                                                        kind: Short(
+                                                            ArrayKindShort {
+                                                                span: Span {
+                                                                    start: 55,
+                                                                    end: 70,
+                                                                },
+                                                                left_bracket: Span {
+                                                                    start: 55,
+                                                                    end: 56,
+                                                                },
+                                                                right_bracket: Span {
+                                                                    start: 69,
+                                                                    end: 70,
+                                                                },
+                                                            },
+                                                        ),
                                                         items: CommaSeparated {
                                                             inner: [
                                                                 Value(
@@ -773,10 +813,6 @@
                                                                 },
                                                             ],
                                                         },
-                                                        end: Span {
-                                                            start: 69,
-                                                            end: 70,
-                                                        },
                                                     },
                                                 ),
                                                 span: Span {
@@ -799,17 +835,29 @@
                                             },
                                             value: Expression {
                                                 id: 75,
-                                                kind: ShortArray(
-                                                    ShortArrayExpression {
+                                                kind: Array(
+                                                    ArrayExpression {
                                                         id: 74,
                                                         span: Span {
                                                             start: 76,
                                                             end: 91,
                                                         },
-                                                        start: Span {
-                                                            start: 76,
-                                                            end: 77,
-                                                        },
+                                                        kind: Short(
+                                                            ArrayKindShort {
+                                                                span: Span {
+                                                                    start: 76,
+                                                                    end: 91,
+                                                                },
+                                                                left_bracket: Span {
+                                                                    start: 76,
+                                                                    end: 77,
+                                                                },
+                                                                right_bracket: Span {
+                                                                    start: 90,
+                                                                    end: 91,
+                                                                },
+                                                            },
+                                                        ),
                                                         items: CommaSeparated {
                                                             inner: [
                                                                 Value(
@@ -1022,10 +1070,6 @@
                                                                 },
                                                             ],
                                                         },
-                                                        end: Span {
-                                                            start: 90,
-                                                            end: 91,
-                                                        },
                                                     },
                                                 ),
                                                 span: Span {
@@ -1048,17 +1092,29 @@
                                             },
                                             value: Expression {
                                                 id: 93,
-                                                kind: ShortArray(
-                                                    ShortArrayExpression {
+                                                kind: Array(
+                                                    ArrayExpression {
                                                         id: 92,
                                                         span: Span {
                                                             start: 97,
                                                             end: 112,
                                                         },
-                                                        start: Span {
-                                                            start: 97,
-                                                            end: 98,
-                                                        },
+                                                        kind: Short(
+                                                            ArrayKindShort {
+                                                                span: Span {
+                                                                    start: 97,
+                                                                    end: 112,
+                                                                },
+                                                                left_bracket: Span {
+                                                                    start: 97,
+                                                                    end: 98,
+                                                                },
+                                                                right_bracket: Span {
+                                                                    start: 111,
+                                                                    end: 112,
+                                                                },
+                                                            },
+                                                        ),
                                                         items: CommaSeparated {
                                                             inner: [
                                                                 Value(
@@ -1271,10 +1327,6 @@
                                                                 },
                                                             ],
                                                         },
-                                                        end: Span {
-                                                            start: 111,
-                                                            end: 112,
-                                                        },
                                                     },
                                                 ),
                                                 span: Span {
@@ -1297,17 +1349,29 @@
                                             },
                                             value: Expression {
                                                 id: 111,
-                                                kind: ShortArray(
-                                                    ShortArrayExpression {
+                                                kind: Array(
+                                                    ArrayExpression {
                                                         id: 110,
                                                         span: Span {
                                                             start: 118,
                                                             end: 133,
                                                         },
-                                                        start: Span {
-                                                            start: 118,
-                                                            end: 119,
-                                                        },
+                                                        kind: Short(
+                                                            ArrayKindShort {
+                                                                span: Span {
+                                                                    start: 118,
+                                                                    end: 133,
+                                                                },
+                                                                left_bracket: Span {
+                                                                    start: 118,
+                                                                    end: 119,
+                                                                },
+                                                                right_bracket: Span {
+                                                                    start: 132,
+                                                                    end: 133,
+                                                                },
+                                                            },
+                                                        ),
                                                         items: CommaSeparated {
                                                             inner: [
                                                                 Value(
@@ -1520,10 +1584,6 @@
                                                                 },
                                                             ],
                                                         },
-                                                        end: Span {
-                                                            start: 132,
-                                                            end: 133,
-                                                        },
                                                     },
                                                 ),
                                                 span: Span {
@@ -1560,10 +1620,6 @@
                                         end: 113,
                                     },
                                 ],
-                            },
-                            end: Span {
-                                start: 134,
-                                end: 135,
                             },
                         },
                     ),

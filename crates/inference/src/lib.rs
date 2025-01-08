@@ -1,12 +1,12 @@
 mod engine;
 mod map;
 
-pub use map::TypeMap;
 pub use engine::TypeEngine;
+pub use map::TypeMap;
 
 #[cfg(test)]
 mod tests {
-    use pxp_ast::{HasId, Name, Statement, StatementKind};
+    use pxp_ast::{HasId, Name, ResolvedName, Statement, StatementKind};
     use pxp_index::{FileId, Index};
     use pxp_lexer::Lexer;
     use pxp_parser::Parser;
@@ -43,35 +43,55 @@ mod tests {
 
     #[test]
     fn it_infers_type_of_function_calls() {
-        assert_eq!(infer(r#"
+        assert_eq!(
+            infer(
+                r#"
         function a(): int {}
         a()
-        "#), Type::Integer);
+        "#
+            ),
+            Type::Integer
+        );
     }
 
     #[test]
     fn it_infers_type_of_iife() {
-        assert_eq!(infer(r#"
+        assert_eq!(
+            infer(
+                r#"
         (function (): int {
             return 42;
         })()
-        "#), Type::Integer);
+        "#
+            ),
+            Type::Integer
+        );
     }
 
     #[test]
     fn it_infers_type_of_function_calls_on_callable_string() {
-        assert_eq!(infer(r#"
+        assert_eq!(
+            infer(
+                r#"
         function a(): string {}
         'a'()
-        "#), Type::String);
+        "#
+            ),
+            Type::String
+        );
     }
 
     #[test]
     fn it_infers_type_of_variable() {
-        assert_eq!(infer(r#"
+        assert_eq!(
+            infer(
+                r#"
         $a = 42;
         $a
-        "#), Type::Integer);
+        "#
+            ),
+            Type::Integer
+        );
     }
 
     #[test]
@@ -79,8 +99,48 @@ mod tests {
         assert_eq!(infer(r#"$a = 100"#), Type::Integer);
     }
 
+    #[test]
+    fn it_tracks_types_through_assignments() {
+        assert_eq!(
+            infer(
+                r#"
+        $a = 42;
+        $b = $a;
+        $c = $b;
+        $c
+        "#
+            ),
+            Type::Integer
+        );
+    }
+
+    #[test]
+    fn it_infers_type_of_arrays() {
+        assert_eq!(
+            infer(r#"$a = [1, 2, 3]"#),
+            Type::TypedArray(Box::new(Type::Integer), Box::new(Type::Integer))
+        );
+    }
+
+    #[test]
+    fn it_infers_type_of_new_expression() {
+        let inferred = infer(
+            r#"
+        class A {}
+        new A()
+        "#,
+        );
+
+        assert!(inferred.is_named());
+
+        match inferred {
+            Type::Named(name) => assert_eq!(name.resolved, b"A"),
+            _ => panic!("Expected a named type."),
+        }
+    }
+
     /// Parse the given code, infer the types and return the type of the last expression in the code.
-    fn infer(code: &str) -> Type<Name> {
+    fn infer(code: &str) -> Type<ResolvedName> {
         // Parse the code.
         let result = Parser::parse(Lexer::new(format!("<?php {};", code).as_bytes()));
 
@@ -93,7 +153,11 @@ mod tests {
         let map = engine.infer(&result.ast);
 
         // Get the last expression in the code.
-        let Some(Statement { kind: StatementKind::Expression(statement), .. }) = result.ast.last() else {
+        let Some(Statement {
+            kind: StatementKind::Expression(statement),
+            ..
+        }) = result.ast.last()
+        else {
             panic!("The code must end with an expression statement.");
         };
 

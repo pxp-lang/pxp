@@ -1,4 +1,4 @@
-use pxp_ast::Name;
+use pxp_ast::{Name, ResolvedName};
 use pxp_bytestring::ByteStr;
 use pxp_type::Type;
 
@@ -44,7 +44,7 @@ impl<'a> ReflectsParameters<'a, ReflectionFunction<'a>> for ReflectionFunction<'
 impl IsFunctionLike for ReflectionFunction<'_> {}
 
 impl<'a> ReflectionFunctionLike<'a> for ReflectionFunction<'a> {
-    fn get_return_type(&self) -> Option<&Type<Name>> {
+    fn get_return_type(&self) -> Option<&Type<ResolvedName>> {
         self.entity.return_type.as_ref()
     }
 
@@ -56,7 +56,7 @@ impl<'a> ReflectionFunctionLike<'a> for ReflectionFunction<'a> {
 pub(crate) trait IsFunctionLike {}
 
 pub trait ReflectionFunctionLike<'a>: IsFunctionLike {
-    fn get_return_type(&self) -> Option<&Type<Name>>;
+    fn get_return_type(&self) -> Option<&Type<ResolvedName>>;
 
     fn has_return_type(&self) -> bool {
         self.get_return_type().is_some()

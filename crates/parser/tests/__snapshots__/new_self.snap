@@ -45,11 +45,6 @@
                     id: 6,
                     kind: Resolved(
                         ResolvedName {
-                            id: 6,
-                            span: Span {
-                                start: 13,
-                                end: 14,
-                            },
                             resolved: "A",
                             original: "A",
                         },
@@ -172,17 +167,7 @@
                                                                                     id: 13,
                                                                                     kind: Special(
                                                                                         SpecialName {
-                                                                                            id: 13,
-                                                                                            span: Span {
-                                                                                                start: 48,
-                                                                                                end: 52,
-                                                                                            },
-                                                                                            kind: Self_(
-                                                                                                Span {
-                                                                                                    start: 48,
-                                                                                                    end: 52,
-                                                                                                },
-                                                                                            ),
+                                                                                            kind: Self_,
                                                                                             symbol: "self",
                                                                                         },
                                                                                     ),

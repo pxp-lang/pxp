@@ -1,8 +1,9 @@
-use pxp_ast::{Name, NodeId, UseKind};
+use pxp_ast::{Name, NameKind, NodeId, ResolvedName, UseKind};
 use pxp_bytestring::ByteStr;
+use pxp_diagnostics::Severity;
 use pxp_token::{Token, TokenKind};
 
-use crate::Parser;
+use crate::{Parser, ParserDiagnostic};
 
 impl<'a> Parser<'a> {
     pub(crate) fn add_import(&mut self, kind: &UseKind, name: &ByteStr, alias: Option<&ByteStr>) {
@@ -30,6 +31,23 @@ impl<'a> Parser<'a> {
         let coagulated = prefix.coagulate(&[name], b'\\');
 
         self.add_import(kind, coagulated.as_bytestr(), alias);
+    }
+
+    pub(crate) fn resolve_identifier(
+        &self,
+        id: NodeId,
+        token: &Token,
+        kind: UseKind,
+    ) -> ResolvedName {
+        let name = self.maybe_resolve_identifier(id, token, kind);
+
+        match name.kind {
+            NameKind::Resolved(name) => name,
+            _ => ResolvedName {
+                resolved: name.symbol().clone(),
+                original: name.symbol().clone(),
+            },
+        }
     }
 
     pub(crate) fn maybe_resolve_identifier(

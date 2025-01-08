@@ -1,9 +1,9 @@
 [
     Statement {
-        id: 13,
+        id: 12,
         kind: FullOpeningTag(
             FullOpeningTagStatement {
-                id: 12,
+                id: 11,
                 span: Span {
                     start: 0,
                     end: 5,
@@ -20,17 +20,17 @@
         },
     },
     Statement {
-        id: 19,
+        id: 18,
         kind: Class(
             ClassStatement {
-                id: 18,
+                id: 17,
                 span: Span {
                     start: 64,
                     end: 74,
                 },
                 attributes: [],
                 modifiers: ClassModifierGroup {
-                    id: 15,
+                    id: 14,
                     span: Span {
                         start: 0,
                         end: 0,
@@ -42,14 +42,9 @@
                     end: 69,
                 },
                 name: Name {
-                    id: 16,
+                    id: 15,
                     kind: Resolved(
                         ResolvedName {
-                            id: 16,
-                            span: Span {
-                                start: 70,
-                                end: 71,
-                            },
                             resolved: "A",
                             original: "A",
                         },
@@ -62,7 +57,7 @@
                 extends: None,
                 implements: None,
                 body: ClassBody {
-                    id: 17,
+                    id: 16,
                     span: Span {
                         start: 72,
                         end: 74,
@@ -84,7 +79,7 @@
             end: 74,
         },
         comments: CommentGroup {
-            id: 14,
+            id: 13,
             comments: [
                 Comment {
                     id: 2,
@@ -94,13 +89,13 @@
                     },
                     kind: DocBlock(
                         DocBlockComment {
-                            id: 10,
+                            id: 9,
                             span: Span {
                                 start: 7,
                                 end: 63,
                             },
                             doc: DocBlock {
-                                id: 11,
+                                id: 10,
                                 span: Span {
                                     start: 7,
                                     end: 63,
@@ -108,14 +103,14 @@
                                 nodes: [
                                     Tag(
                                         DocBlockTagNode {
-                                            id: 9,
+                                            id: 8,
                                             span: Span {
                                                 start: 11,
                                                 end: 0,
                                             },
                                             tag: Template(
                                                 DocBlockTemplateTag {
-                                                    id: 8,
+                                                    id: 7,
                                                     span: Span {
                                                         start: 11,
                                                         end: 0,
@@ -129,7 +124,7 @@
                                                         symbol: "@template",
                                                     },
                                                     value: DocBlockTemplateTagValue {
-                                                        id: 7,
+                                                        id: 6,
                                                         span: Span {
                                                             start: 21,
                                                             end: 0,
@@ -145,25 +140,11 @@
                                                         bound: None,
                                                         default: Some(
                                                             DataType {
-                                                                id: 6,
+                                                                id: 5,
                                                                 kind: Named(
-                                                                    Name {
-                                                                        id: 5,
-                                                                        kind: Resolved(
-                                                                            ResolvedName {
-                                                                                id: 5,
-                                                                                span: Span {
-                                                                                    start: 25,
-                                                                                    end: 60,
-                                                                                },
-                                                                                resolved: "Illuminate\Database\Eloquent\Model",
-                                                                                original: "\Illuminate\Database\Eloquent\Model",
-                                                                            },
-                                                                        ),
-                                                                        span: Span {
-                                                                            start: 25,
-                                                                            end: 60,
-                                                                        },
+                                                                    ResolvedName {
+                                                                        resolved: "Illuminate\Database\Eloquent\Model",
+                                                                        original: "\Illuminate\Database\Eloquent\Model",
                                                                     },
                                                                 ),
                                                                 span: Span {

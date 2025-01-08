@@ -1,14 +1,14 @@
 use pxp_span::Span;
 use pxp_type::Type;
 
-use crate::{DataType, Name, NodeId};
+use crate::{DataType, Name, NodeId, ResolvedName};
 
 impl DataType {
-    pub fn new(id: NodeId, kind: Type<Name>, span: Span) -> Self {
+    pub fn new(id: NodeId, kind: Type<ResolvedName>, span: Span) -> Self {
         Self { id, kind, span }
     }
 
-    pub fn get_type(&self) -> &Type<Name> {
+    pub fn get_type(&self) -> &Type<ResolvedName> {
         &self.kind
     }
 

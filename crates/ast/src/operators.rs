@@ -1,6 +1,6 @@
 use crate::{
-    ArithmeticOperationKind, BitwiseOperationKind,
-    ComparisonOperationKind, Expression, LogicalOperationKind,
+    ArithmeticOperationKind, BitwiseOperationKind, ComparisonOperationKind, Expression,
+    LogicalOperationKind,
 };
 
 impl ComparisonOperationKind {

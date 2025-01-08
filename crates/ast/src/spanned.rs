@@ -89,7 +89,6 @@ impl Spanned for ExpressionKind {
             ExpressionKind::Static(node) => node.span(),
             ExpressionKind::Self_(node) => node.span(),
             ExpressionKind::Parent(node) => node.span(),
-            ExpressionKind::ShortArray(node) => node.span(),
             ExpressionKind::Array(node) => node.span(),
             ExpressionKind::List(node) => node.span(),
             ExpressionKind::Closure(node) => node.span(),

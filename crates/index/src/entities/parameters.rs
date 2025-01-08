@@ -1,4 +1,4 @@
-use pxp_ast::{Name, SimpleVariable};
+use pxp_ast::{Name, ResolvedName, SimpleVariable};
 use pxp_type::Type;
 
 use crate::location::Location;
@@ -29,7 +29,7 @@ impl Parameters {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Parameter {
     pub(crate) name: SimpleVariable,
-    pub(crate) r#type: Option<Type<Name>>,
+    pub(crate) r#type: Option<Type<ResolvedName>>,
     pub(crate) optional: bool,
     pub(crate) variadic: bool,
     pub(crate) location: Location,

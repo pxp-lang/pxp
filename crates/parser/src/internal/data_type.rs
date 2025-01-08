@@ -77,7 +77,7 @@ impl<'a> Parser<'a> {
     }
 
     // Special type parsing logic for DocBlock comments, heavily based on the phpstan/phpdoc-parser package.
-    fn parse_docblock_type(&mut self) -> Type<Name> {
+    fn parse_docblock_type(&mut self) -> Type<ResolvedName> {
         match self.current_kind() {
             TokenKind::Question => self.parse_docblock_nullable(),
             _ => {
@@ -96,7 +96,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_docblock_nullable(&mut self) -> Type<Name> {
+    fn parse_docblock_nullable(&mut self) -> Type<ResolvedName> {
         self.next();
 
         let inner = self.parse_docblock_atomic();
@@ -108,7 +108,7 @@ impl<'a> Parser<'a> {
         Type::Nullable(Box::new(inner))
     }
 
-    fn parse_docblock_union(&mut self, lhs: Type<Name>) -> Type<Name> {
+    fn parse_docblock_union(&mut self, lhs: Type<ResolvedName>) -> Type<ResolvedName> {
         let mut types = vec![lhs];
 
         while let TokenKind::Pipe = self.current_kind() {
@@ -121,7 +121,7 @@ impl<'a> Parser<'a> {
         Type::Union(types)
     }
 
-    fn parse_docblock_subparse_union(&mut self, lhs: Type<Name>) -> Type<Name> {
+    fn parse_docblock_subparse_union(&mut self, lhs: Type<ResolvedName>) -> Type<ResolvedName> {
         let mut types = vec![lhs];
 
         while let TokenKind::Pipe = self.current_kind() {
@@ -136,7 +136,7 @@ impl<'a> Parser<'a> {
         Type::Union(types)
     }
 
-    fn parse_docblock_intersection(&mut self, lhs: Type<Name>) -> Type<Name> {
+    fn parse_docblock_intersection(&mut self, lhs: Type<ResolvedName>) -> Type<ResolvedName> {
         let mut types = vec![lhs];
 
         while let TokenKind::Ampersand = self.current_kind() {
@@ -149,7 +149,10 @@ impl<'a> Parser<'a> {
         Type::Intersection(types)
     }
 
-    fn parse_docblock_subparse_intersection(&mut self, lhs: Type<Name>) -> Type<Name> {
+    fn parse_docblock_subparse_intersection(
+        &mut self,
+        lhs: Type<ResolvedName>,
+    ) -> Type<ResolvedName> {
         let mut types = vec![lhs];
 
         while let TokenKind::Ampersand = self.current_kind() {
@@ -164,7 +167,7 @@ impl<'a> Parser<'a> {
         Type::Intersection(types)
     }
 
-    fn parse_docblock_missing_type(&mut self) -> Type<Name> {
+    fn parse_docblock_missing_type(&mut self) -> Type<ResolvedName> {
         self.diagnostic(
             ParserDiagnostic::MissingType,
             Severity::Warning,
@@ -194,7 +197,7 @@ impl<'a> Parser<'a> {
             ) && self.peek_kind() == TokenKind::DoubleColon)
     }
 
-    fn parse_docblock_const_expr(&mut self) -> Type<Name> {
+    fn parse_docblock_const_expr(&mut self) -> Type<ResolvedName> {
         match self.current_kind() {
             TokenKind::Minus if self.peek_kind() == TokenKind::LiteralInteger => {
                 self.next();
@@ -235,12 +238,12 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_docblock_const_fetch_expr(&mut self) -> Type<Name> {
+    fn parse_docblock_const_fetch_expr(&mut self) -> Type<ResolvedName> {
         let target = match self.current_kind() {
             TokenKind::Identifier
             | TokenKind::QualifiedIdentifier
             | TokenKind::FullyQualifiedIdentifier => {
-                Type::Named(self.parse_full_name(UseKind::Normal))
+                Type::Named(self.parse_full_name(UseKind::Normal).to_resolved().clone())
             }
             TokenKind::Self_ => self.next_but_first(|_| Type::SelfReference),
             TokenKind::Static => self.next_but_first(|_| Type::StaticReference),
@@ -300,7 +303,7 @@ impl<'a> Parser<'a> {
         Type::ConstExpr(Box::new(ConstExpr::ConstFetch(target, class_constant_name)))
     }
 
-    fn parse_docblock_atomic(&mut self) -> Type<Name> {
+    fn parse_docblock_atomic(&mut self) -> Type<ResolvedName> {
         match self.current_kind() {
             TokenKind::LeftParen => {
                 self.next();
@@ -378,15 +381,15 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn type_can_be_callable(&self, ty: &Type<Name>) -> bool {
+    fn type_can_be_callable(&self, ty: &Type<ResolvedName>) -> bool {
         return match ty {
             Type::Callable => true,
-            Type::Named(name) if name.symbol() == b"Closure" => true,
+            Type::Named(name) if name.resolved == b"Closure" => true,
             _ => false,
         };
     }
 
-    fn parse_docblock_array_shape(&mut self, lhs: Type<Name>) -> Type<Name> {
+    fn parse_docblock_array_shape(&mut self, lhs: Type<ResolvedName>) -> Type<ResolvedName> {
         self.expect(TokenKind::LeftBrace);
         self.skip_doc_eol();
 
@@ -446,7 +449,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_docblock_array_shape_unsealed_type(&mut self) -> ShapeUnsealedType<Name> {
+    fn parse_docblock_array_shape_unsealed_type(&mut self) -> ShapeUnsealedType<ResolvedName> {
         self.expect(TokenKind::LessThan);
         self.skip_doc_eol();
 
@@ -472,7 +475,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_docblock_list_shape_unsealed_type(&mut self) -> ShapeUnsealedType<Name> {
+    fn parse_docblock_list_shape_unsealed_type(&mut self) -> ShapeUnsealedType<ResolvedName> {
         self.expect(TokenKind::LessThan);
         self.skip_doc_eol();
 
@@ -487,7 +490,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_docblock_array_shape_item(&mut self) -> ShapeItem<Name> {
+    fn parse_docblock_array_shape_item(&mut self) -> ShapeItem<ResolvedName> {
         let (key_name, optional) = self.parse_docblock_array_shape_key();
         self.skip_doc_eol();
         let value_type = self.parse_docblock_type();
@@ -529,7 +532,7 @@ impl<'a> Parser<'a> {
         (key, optional)
     }
 
-    fn parse_docblock_generic(&mut self, lhs: Type<Name>) -> Type<Name> {
+    fn parse_docblock_generic(&mut self, lhs: Type<ResolvedName>) -> Type<ResolvedName> {
         self.next();
         let mut generic_types = vec![];
         let mut is_first = true;
@@ -601,7 +604,7 @@ impl<'a> Parser<'a> {
         Type::Generic(Box::new(lhs), generic_types)
     }
 
-    fn parse_docblock_callable(&mut self, lhs: Type<Name>) -> Type<Name> {
+    fn parse_docblock_callable(&mut self, lhs: Type<ResolvedName>) -> Type<ResolvedName> {
         self.skip(TokenKind::LeftParen);
         self.skip_doc_eol();
 
@@ -633,7 +636,7 @@ impl<'a> Parser<'a> {
         Type::CallableSignature(Box::new(lhs), parameters, Box::new(return_type))
     }
 
-    fn parse_docblock_callable_parameter(&mut self) -> CallableParameter<Name> {
+    fn parse_docblock_callable_parameter(&mut self) -> CallableParameter<ResolvedName> {
         // This isn't where we should be checking for variadics, but some projects
         // incorrectly place them before the type, so it's best to support it.
         let ellipsis = if self.current_kind() == TokenKind::Ellipsis {
@@ -693,7 +696,10 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_docblock_array_or_offset_access(&mut self, lhs: Type<Name>) -> Type<Name> {
+    fn parse_docblock_array_or_offset_access(
+        &mut self,
+        lhs: Type<ResolvedName>,
+    ) -> Type<ResolvedName> {
         let mut r#type = lhs;
 
         while let TokenKind::LeftBracket = self.current_kind() {
@@ -711,7 +717,7 @@ impl<'a> Parser<'a> {
         r#type
     }
 
-    fn parse_docblock_conditional(&mut self, lhs: Type<Name>) -> Type<Name> {
+    fn parse_docblock_conditional(&mut self, lhs: Type<ResolvedName>) -> Type<ResolvedName> {
         self.skip(TokenKind::PhpDocIs);
         self.skip_doc_eol();
 
@@ -749,7 +755,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_docblock_conditional_for_parameter(&mut self) -> Type<Name> {
+    fn parse_docblock_conditional_for_parameter(&mut self) -> Type<ResolvedName> {
         let parameter = self.current_symbol_as_bytestring();
 
         self.next();
@@ -795,7 +801,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_docblock_subparse(&mut self) -> Type<Name> {
+    fn parse_docblock_subparse(&mut self) -> Type<ResolvedName> {
         match self.current_kind() {
             TokenKind::Question => self.parse_docblock_nullable(),
             TokenKind::Variable if self.current_symbol().as_ref() != b"$this" => {
@@ -823,7 +829,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_dnf_type(&mut self) -> Type<Name> {
+    fn parse_dnf_type(&mut self) -> Type<ResolvedName> {
         // (A|B|..)&C.. or (A&B&..)|C..
         self.next();
         let ty = self.parse_simple_data_type();
@@ -857,7 +863,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_optional_simple_data_type(&mut self) -> Option<Type<Name>> {
+    fn parse_optional_simple_data_type(&mut self) -> Option<Type<ResolvedName>> {
         match self.current_kind() {
             TokenKind::PhpDocEmpty if self.is_in_docblock() => {
                 self.next();
@@ -914,7 +920,7 @@ impl<'a> Parser<'a> {
 
                 let id = self.id();
 
-                Some(Type::Named(self.maybe_resolve_identifier(
+                Some(Type::Named(self.resolve_identifier(
                     id,
                     &self.current(),
                     UseKind::Normal,
@@ -952,7 +958,7 @@ impl<'a> Parser<'a> {
                     _ => {
                         let id = parser.id();
 
-                        Some(Type::Named(parser.maybe_resolve_identifier(
+                        Some(Type::Named(parser.resolve_identifier(
                             id,
                             &parser.current(),
                             UseKind::Normal,
@@ -965,16 +971,14 @@ impl<'a> Parser<'a> {
                 let resolved = self.strip_leading_namespace_qualifier(&symbol);
                 let span = self.next();
 
-                Some(Type::Named(Name::resolved(
-                    self.id(),
+                Some(Type::Named(ResolvedName {
                     resolved,
-                    symbol,
-                    span,
-                )))
+                    original: symbol,
+                }))
             }
             TokenKind::QualifiedIdentifier => {
                 let id = self.id();
-                let name = self.maybe_resolve_identifier(id, &self.current(), UseKind::Normal);
+                let name = self.resolve_identifier(id, &self.current(), UseKind::Normal);
                 self.next();
 
                 Some(Type::Named(name))
@@ -983,7 +987,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_simple_data_type(&mut self) -> Type<Name> {
+    fn parse_simple_data_type(&mut self) -> Type<ResolvedName> {
         match self.parse_optional_simple_data_type() {
             Some(ty) => ty,
             None => {
@@ -998,7 +1002,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn parse_nullable_type(&mut self) -> Type<Name> {
+    fn parse_nullable_type(&mut self) -> Type<ResolvedName> {
         let span = self.next();
 
         let ty = self.parse_simple_data_type();
@@ -1014,7 +1018,11 @@ impl<'a> Parser<'a> {
         Type::Nullable(Box::new(ty))
     }
 
-    fn parse_union_type(&mut self, other: Type<Name>, within_dnf: bool) -> Type<Name> {
+    fn parse_union_type(
+        &mut self,
+        other: Type<ResolvedName>,
+        within_dnf: bool,
+    ) -> Type<ResolvedName> {
         if other.standalone() {
             self.diagnostic(
                 ParserDiagnostic::StandaloneTypeUsedInUnionType,
@@ -1083,7 +1091,11 @@ impl<'a> Parser<'a> {
         Type::Union(types)
     }
 
-    fn parse_intersection_type(&mut self, other: Type<Name>, within_dnf: bool) -> Type<Name> {
+    fn parse_intersection_type(
+        &mut self,
+        other: Type<ResolvedName>,
+        within_dnf: bool,
+    ) -> Type<ResolvedName> {
         if other.standalone() {
             self.diagnostic(
                 ParserDiagnostic::StandaloneTypeUsedInIntersectionType,

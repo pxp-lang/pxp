@@ -31,7 +31,7 @@ impl Variable {
     pub fn to_simple(&self) -> &SimpleVariable {
         match self {
             Self::SimpleVariable(simple) => simple,
-            _ => unreachable!()
+            _ => unreachable!(),
         }
     }
 
@@ -40,6 +40,9 @@ impl Variable {
     }
 
     pub fn is_variable(&self) -> bool {
-        matches!(self, Self::VariableVariable(_) | Self::BracedVariableVariable(_))
+        matches!(
+            self,
+            Self::VariableVariable(_) | Self::BracedVariableVariable(_)
+        )
     }
 }

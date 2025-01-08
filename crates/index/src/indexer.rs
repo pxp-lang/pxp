@@ -1,6 +1,6 @@
 use pxp_ast::{
     visitor::Visitor, ClassStatement, ClassishMember, FunctionParameterList, FunctionStatement,
-    Method, MethodParameterList, Name, ReturnType,
+    Method, MethodParameterList, ResolvedName, ReturnType,
 };
 use pxp_type::Type;
 
@@ -58,7 +58,7 @@ impl<'a> IndexingVisitor<'a> {
         Parameters::new(parameters)
     }
 
-    fn transform_return_type(&self, node: Option<&ReturnType>) -> Option<Type<Name>> {
+    fn transform_return_type(&self, node: Option<&ReturnType>) -> Option<Type<ResolvedName>> {
         node.map(|return_type| return_type.data_type.get_type().clone())
     }
 

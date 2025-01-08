@@ -765,10 +765,13 @@ impl<'a> Parser<'a> {
 
     fn should_shift_assignment_operands(&self, expr: &Expression) -> bool {
         match &expr.kind {
-            ExpressionKind::AssignmentOperation(inner) => matches!(&inner.left.kind, ExpressionKind::ComparisonOperation(_)
-                | ExpressionKind::BitwiseOperation(_)
-                | ExpressionKind::ArithmeticOperation(_)
-                | ExpressionKind::LogicalOperation(_)),
+            ExpressionKind::AssignmentOperation(inner) => matches!(
+                &inner.left.kind,
+                ExpressionKind::ComparisonOperation(_)
+                    | ExpressionKind::BitwiseOperation(_)
+                    | ExpressionKind::ArithmeticOperation(_)
+                    | ExpressionKind::LogicalOperation(_)
+            ),
             _ => false,
         }
     }
@@ -802,7 +805,12 @@ impl<'a> Parser<'a> {
 
         // At this point, we know that the left-hand side of the expression is an assignment.
         let (id, assignment_left, kind, assignment_right) = match &expr.kind {
-            ExpressionKind::AssignmentOperation(inner) => (&inner.id, inner.left.as_ref(), &inner.kind, inner.right.as_ref()),
+            ExpressionKind::AssignmentOperation(inner) => (
+                &inner.id,
+                inner.left.as_ref(),
+                &inner.kind,
+                inner.right.as_ref(),
+            ),
             _ => unreachable!(),
         };
 
@@ -1446,7 +1454,7 @@ impl<'a> Parser<'a> {
                             self.id(),
                             ExpressionKind::Name(Box::new(Name::special(
                                 self.id(),
-                                SpecialNameKind::Self_(span),
+                                SpecialNameKind::Self_,
                                 token.symbol,
                                 span,
                             ))),
@@ -1465,7 +1473,7 @@ impl<'a> Parser<'a> {
                             self.id(),
                             ExpressionKind::Name(Box::new(Name::special(
                                 self.id(),
-                                SpecialNameKind::Static(span),
+                                SpecialNameKind::Static,
                                 token.symbol,
                                 span,
                             ))),
@@ -1484,7 +1492,7 @@ impl<'a> Parser<'a> {
                             self.id(),
                             ExpressionKind::Name(Box::new(Name::special(
                                 self.id(),
-                                SpecialNameKind::Parent(span),
+                                SpecialNameKind::Parent,
                                 token.symbol,
                                 span,
                             ))),

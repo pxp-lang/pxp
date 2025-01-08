@@ -46,11 +46,6 @@
                                     id: 5,
                                     kind: Resolved(
                                         ResolvedName {
-                                            id: 5,
-                                            span: Span {
-                                                start: 9,
-                                                end: 12,
-                                            },
                                             resolved: "Bar",
                                             original: "Bar",
                                         },
@@ -81,11 +76,6 @@
                                     id: 8,
                                     kind: Resolved(
                                         ResolvedName {
-                                            id: 8,
-                                            span: Span {
-                                                start: 16,
-                                                end: 19,
-                                            },
                                             resolved: "Baz",
                                             original: "Baz",
                                         },
@@ -107,11 +97,6 @@
                                     id: 10,
                                     kind: Resolved(
                                         ResolvedName {
-                                            id: 10,
-                                            span: Span {
-                                                start: 21,
-                                                end: 24,
-                                            },
                                             resolved: "Qux",
                                             original: "Qux",
                                         },
@@ -142,11 +127,6 @@
                     id: 14,
                     kind: Resolved(
                         ResolvedName {
-                            id: 14,
-                            span: Span {
-                                start: 32,
-                                end: 35,
-                            },
                             resolved: "Foo",
                             original: "Foo",
                         },

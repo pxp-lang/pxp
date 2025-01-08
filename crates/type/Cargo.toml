@@ -9,3 +9,4 @@ license-file.workspace = true
 [dependencies]
 pxp-bytestring = { version = "0.1.0", path = "../bytestring" }
 pxp-span = { path = "../span" }
+strum = { version = "0.26.3", features = ["derive"] }

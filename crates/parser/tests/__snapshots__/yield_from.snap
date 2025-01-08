@@ -47,17 +47,29 @@
                             },
                             value: Expression {
                                 id: 15,
-                                kind: ShortArray(
-                                    ShortArrayExpression {
+                                kind: Array(
+                                    ArrayExpression {
                                         id: 14,
                                         span: Span {
                                             start: 18,
                                             end: 27,
                                         },
-                                        start: Span {
-                                            start: 18,
-                                            end: 19,
-                                        },
+                                        kind: Short(
+                                            ArrayKindShort {
+                                                span: Span {
+                                                    start: 18,
+                                                    end: 27,
+                                                },
+                                                left_bracket: Span {
+                                                    start: 18,
+                                                    end: 19,
+                                                },
+                                                right_bracket: Span {
+                                                    start: 26,
+                                                    end: 27,
+                                                },
+                                            },
+                                        ),
                                         items: CommaSeparated {
                                             inner: [
                                                 Value(
@@ -185,10 +197,6 @@
                                                     end: 24,
                                                 },
                                             ],
-                                        },
-                                        end: Span {
-                                            start: 26,
-                                            end: 27,
                                         },
                                     },
                                 ),

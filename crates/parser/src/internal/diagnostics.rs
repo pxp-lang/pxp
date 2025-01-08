@@ -1,3 +1,4 @@
+use pxp_bytestring::ByteString;
 use pxp_diagnostics::{Diagnostic, DiagnosticKind, Severity};
 use pxp_span::Span;
 

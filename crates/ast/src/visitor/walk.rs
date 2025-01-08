@@ -130,7 +130,6 @@ pub fn walk_expression_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &Express
         ExpressionKind::Static(inner) => visitor.visit_static_expression(inner),
         ExpressionKind::Self_(inner) => visitor.visit_self_expression(inner),
         ExpressionKind::Parent(inner) => visitor.visit_parent_expression(inner),
-        ExpressionKind::ShortArray(inner) => visitor.visit_short_array_expression(inner),
         ExpressionKind::Array(inner) => visitor.visit_array_expression(inner),
         ExpressionKind::List(inner) => visitor.visit_list_expression(inner),
         ExpressionKind::Closure(inner) => visitor.visit_closure_expression(inner),
@@ -402,18 +401,18 @@ pub fn walk_constant_fetch_expression<V: Visitor + ?Sized>(
     visitor.visit_identifier(&node.constant);
 }
 
-pub fn walk_short_array_expression<V: Visitor + ?Sized>(
-    visitor: &mut V,
-    node: &ShortArrayExpression,
-) {
+pub fn walk_array_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &ArrayExpression) {
+    visitor.visit_array_kind(&node.kind);
     for item in &node.items.inner {
         visitor.visit_array_item(item);
     }
 }
 
-pub fn walk_array_expression<V: Visitor + ?Sized>(visitor: &mut V, node: &ArrayExpression) {
-    for item in &node.items.inner {
-        visitor.visit_array_item(item);
+pub fn walk_array_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &ArrayKind) {
+    match node {
+        ArrayKind::Short(inner) => visitor.visit_array_kind_short(inner),
+        ArrayKind::Long(inner) => visitor.visit_array_kind_long(inner),
+        _ => {}
     }
 }
 
@@ -1721,6 +1720,15 @@ pub fn walk_name_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &NameKind) {
 
 pub fn walk_special_name<V: Visitor + ?Sized>(visitor: &mut V, node: &SpecialName) {
     visitor.visit_special_name_kind(&node.kind);
+}
+
+pub fn walk_special_name_kind<V: Visitor + ?Sized>(visitor: &mut V, node: &SpecialNameKind) {
+    match node {
+        SpecialNameKind::Self_ => {}
+        SpecialNameKind::Parent => {}
+        SpecialNameKind::Static => {}
+        _ => {}
+    }
 }
 
 pub fn walk_property<V: Visitor + ?Sized>(visitor: &mut V, node: &Property) {

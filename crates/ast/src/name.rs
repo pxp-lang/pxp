@@ -42,10 +42,8 @@ impl Name {
         Self::new(
             id,
             NameKind::Resolved(ResolvedName {
-                id,
                 resolved: ByteString::empty(),
                 original: ByteString::empty(),
-                span,
             }),
             span,
         )
@@ -55,10 +53,8 @@ impl Name {
         Self::new(
             id,
             NameKind::Resolved(ResolvedName {
-                id,
                 resolved: symbol,
                 original,
-                span,
             }),
             span,
         )
@@ -73,26 +69,15 @@ impl Name {
         Self::new(
             id,
             NameKind::Unresolved(UnresolvedName {
-                id,
                 symbol,
                 qualification,
-                span,
             }),
             span,
         )
     }
 
     pub fn special(id: NodeId, kind: SpecialNameKind, symbol: ByteString, span: Span) -> Self {
-        Self::new(
-            id,
-            NameKind::Special(SpecialName {
-                id,
-                kind,
-                symbol,
-                span,
-            }),
-            span,
-        )
+        Self::new(id, NameKind::Special(SpecialName { kind, symbol }), span)
     }
 
     pub fn symbol(&self) -> &ByteString {
@@ -152,9 +137,9 @@ impl Name {
 impl Display for SpecialName {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self.kind {
-            SpecialNameKind::Self_(_) => write!(f, "self"),
-            SpecialNameKind::Static(_) => write!(f, "static"),
-            SpecialNameKind::Parent(_) => write!(f, "parent"),
+            SpecialNameKind::Self_ => write!(f, "self"),
+            SpecialNameKind::Static => write!(f, "static"),
+            SpecialNameKind::Parent => write!(f, "parent"),
         }
     }
 }

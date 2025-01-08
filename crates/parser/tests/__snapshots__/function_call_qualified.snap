@@ -44,11 +44,6 @@
                                         id: 5,
                                         kind: Resolved(
                                             ResolvedName {
-                                                id: 5,
-                                                span: Span {
-                                                    start: 7,
-                                                    end: 14,
-                                                },
                                                 resolved: "Bar\foo",
                                                 original: "Bar\foo",
                                             },
