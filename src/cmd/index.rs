@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use clap::Parser;
 use colored::Colorize;
 use pxp_index::Index as Indexer;
-use rustyline::{error::ReadlineError, CompletionType, Config, DefaultEditor, Editor};
+use rustyline::{error::ReadlineError, CompletionType, Config, DefaultEditor};
 
 use crate::utils::{find_php_files_in, pxp_home_dir, ProgressBar};
 
@@ -103,7 +103,7 @@ fn perform(args: &Index, index: &mut Indexer, path: &Path) -> anyhow::Result<()>
     if path.is_file() {
         index.index_file(path);
     } else {
-        let files = find_php_files_in(&path)?;
+        let files = find_php_files_in(path)?;
         let bar = ProgressBar::new(!args.no_progress, files.len() as u64);
 
         for file in files {
