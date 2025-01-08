@@ -1,5 +1,7 @@
+use std::{cell::RefCell, collections::HashMap, rc::Rc};
+
 use pxp_ast::{visitor::{walk_expression, Visitor}, *};
-use pxp_bytestring::ByteStr;
+use pxp_bytestring::{ByteStr, ByteString};
 use pxp_index::{Index, ReflectionFunctionLike};
 use pxp_token::TokenKind;
 use pxp_type::Type;
@@ -25,7 +27,8 @@ impl<'a> TypeEngine<'a> {
         
         let mut generator = TypeMapGenerator {
             map: &mut map,
-            index: self.index
+            index: self.index,
+            scopes: ScopeStack::new(),
         };
 
         generator.visit(ast);
@@ -36,6 +39,77 @@ impl<'a> TypeEngine<'a> {
 struct TypeMapGenerator<'a> {
     map: &'a mut TypeMap,
     index: &'a Index,
+    scopes: ScopeStack,
+}
+
+struct ScopeStack {
+    scopes: Vec<Scope>,
+}
+
+impl ScopeStack {
+    fn new() -> Self {
+        Self {
+            scopes: vec![Scope::new()]
+        }
+    }
+
+    fn start(&mut self) {
+        self.scopes.push(Scope::new());
+    }
+
+    fn start_enclosed(&mut self) {
+        self.scopes.push(self.current().enclose());
+    }
+
+    fn end(&mut self) {
+        self.scopes.pop();
+    }
+
+    fn current(&self) -> &Scope {
+        self.scopes.last().unwrap()
+    }
+
+    fn current_mut(&mut self) -> &mut Scope {
+        self.scopes.last_mut().unwrap()
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct Scope {
+    variables: HashMap<ByteString, Type<Name>>,
+    outer: Option<Rc<RefCell<Scope>>>,
+}
+
+impl Scope {
+    fn new() -> Self {
+        Self {
+            variables: HashMap::new(),
+            outer: None,
+        }
+    }
+
+    fn enclose(&self) -> Self {
+        Scope {
+            variables: HashMap::new(),
+            outer: Some(Rc::new(RefCell::new(self.clone())))
+        }
+    }
+
+    fn set_variable(&mut self, variable: &SimpleVariable, ty: &Type<Name>) {
+        self.variables.insert(variable.symbol.clone(), ty.clone());
+    }
+
+    fn get_variable(&self, variable: &SimpleVariable) -> Option<Type<Name>> {
+        if let Some(ty) = self.variables.get(&variable.symbol) {
+            return Some(ty.clone());
+        }
+
+        if let Some(outer) = &self.outer {
+            return outer.borrow().get_variable(variable);
+        }
+
+        None
+    }
 }
 
 impl<'a> TypeMapGenerator<'a> {
@@ -130,5 +204,31 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
         let return_type = self.determine_function_call_target_return_type(&node.target);
 
         self.map.insert(node.id, return_type);
+    }
+
+    fn visit_simple_variable(&mut self, node: &SimpleVariable) {
+        if let Some(ty) = self.scopes.current().get_variable(node) {
+            self.map.insert(node.id(), ty);
+        }
+    }
+
+    fn visit_assignment_operation_expression(&mut self, node: &AssignmentOperationExpression) {
+        // Walk the right-hand side of the assignment first to ensure the type is resolved.
+        walk_expression(self, &node.right);
+
+        // Assignment expressions are always resolved to the type of the right-hand side.
+        self.map.insert(node.id, self.map.resolve(node.right.kind.id()).clone());
+
+        // If the left-hand side is a variable, we can use that to assign the type in the current scope.
+        match &node.left.kind {
+            ExpressionKind::Variable(variable) if variable.is_simple() => {
+                let variable = variable.to_simple();
+                let resolved = self.map.resolve(node.right.kind.id());
+
+                self.scopes.current_mut().set_variable(&variable, resolved);
+                self.map.insert(variable.id, resolved.clone());
+            },
+            _ => return,
+        }
     }
 }

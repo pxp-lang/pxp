@@ -4314,7 +4314,9 @@ impl HasId for ArithmeticOperationKind {
 pub struct AssignmentOperationExpression {
     pub id: NodeId,
     pub span: Span,
+    pub left: Box<Expression>,
     pub kind: AssignmentOperationKind,
+    pub right: Box<Expression>,
 }
 
 impl HasId for AssignmentOperationExpression {
@@ -4329,111 +4331,42 @@ impl Spanned for AssignmentOperationExpression {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum AssignmentOperationKind {
-    Assign {
-        id: NodeId,
-        left: Box<Expression>,
-        equals: Span,
-        right: Box<Expression>,
-    },
-    Addition {
-        id: NodeId,
-        left: Box<Expression>,
-        plus_equals: Span,
-        right: Box<Expression>,
-    },
-    Subtraction {
-        id: NodeId,
-        left: Box<Expression>,
-        minus_equals: Span,
-        right: Box<Expression>,
-    },
-    Multiplication {
-        id: NodeId,
-        left: Box<Expression>,
-        asterisk_equals: Span,
-        right: Box<Expression>,
-    },
-    Division {
-        id: NodeId,
-        left: Box<Expression>,
-        slash_equals: Span,
-        right: Box<Expression>,
-    },
-    Modulo {
-        id: NodeId,
-        left: Box<Expression>,
-        percent_equals: Span,
-        right: Box<Expression>,
-    },
-    Exponentiation {
-        id: NodeId,
-        left: Box<Expression>,
-        pow_equals: Span,
-        right: Box<Expression>,
-    },
-    Concat {
-        id: NodeId,
-        left: Box<Expression>,
-        dot_equals: Span,
-        right: Box<Expression>,
-    },
-    BitwiseAnd {
-        id: NodeId,
-        left: Box<Expression>,
-        ampersand_equals: Span,
-        right: Box<Expression>,
-    },
-    BitwiseOr {
-        id: NodeId,
-        left: Box<Expression>,
-        pipe_equals: Span,
-        right: Box<Expression>,
-    },
-    BitwiseXor {
-        id: NodeId,
-        left: Box<Expression>,
-        caret_equals: Span,
-        right: Box<Expression>,
-    },
-    LeftShift {
-        id: NodeId,
-        left: Box<Expression>,
-        left_shift_equals: Span,
-        right: Box<Expression>,
-    },
-    RightShift {
-        id: NodeId,
-        left: Box<Expression>,
-        right_shift_equals: Span,
-        right: Box<Expression>,
-    },
-    Coalesce {
-        id: NodeId,
-        left: Box<Expression>,
-        coalesce_equals: Span,
-        right: Box<Expression>,
-    },
+    Assign(Span),
+    Addition(Span),
+    Subtraction(Span),
+    Multiplication(Span),
+    Division(Span),
+    Modulo(Span),
+    Exponentiation(Span),
+    Concat(Span),
+    BitwiseAnd(Span),
+    BitwiseOr(Span),
+    BitwiseXor(Span),
+    LeftShift(Span),
+    RightShift(Span),
+    Coalesce(Span),
 }
 
-impl HasId for AssignmentOperationKind {
-    fn id(&self) -> NodeId {
+impl Spanned for AssignmentOperationKind {
+    fn span(&self) -> Span {
         match self {
-            AssignmentOperationKind::Assign { id, .. } => *id,
-            AssignmentOperationKind::Addition { id, .. } => *id,
-            AssignmentOperationKind::Subtraction { id, .. } => *id,
-            AssignmentOperationKind::Multiplication { id, .. } => *id,
-            AssignmentOperationKind::Division { id, .. } => *id,
-            AssignmentOperationKind::Modulo { id, .. } => *id,
-            AssignmentOperationKind::Exponentiation { id, .. } => *id,
-            AssignmentOperationKind::Concat { id, .. } => *id,
-            AssignmentOperationKind::BitwiseAnd { id, .. } => *id,
-            AssignmentOperationKind::BitwiseOr { id, .. } => *id,
-            AssignmentOperationKind::BitwiseXor { id, .. } => *id,
-            AssignmentOperationKind::LeftShift { id, .. } => *id,
-            AssignmentOperationKind::RightShift { id, .. } => *id,
-            AssignmentOperationKind::Coalesce { id, .. } => *id,
+            AssignmentOperationKind::Assign(span) => *span,
+            AssignmentOperationKind::Addition(span) => *span,
+            AssignmentOperationKind::Subtraction(span) => *span,
+            AssignmentOperationKind::Multiplication(span) => *span,
+            AssignmentOperationKind::Division(span) => *span,
+            AssignmentOperationKind::Modulo(span) => *span,
+            AssignmentOperationKind::Exponentiation(span) => *span,
+            AssignmentOperationKind::Concat(span) => *span,
+            AssignmentOperationKind::BitwiseAnd(span) => *span,
+            AssignmentOperationKind::BitwiseOr(span) => *span,
+            AssignmentOperationKind::BitwiseXor(span) => *span,
+            AssignmentOperationKind::LeftShift(span) => *span,
+            AssignmentOperationKind::RightShift(span) => *span,
+            AssignmentOperationKind::Coalesce(span) => *span,
+            _ => Span::default(),
         }
     }
 }
@@ -6367,7 +6300,6 @@ pub enum NodeKind<'a> {
     ArithmeticOperationExpression(&'a ArithmeticOperationExpression),
     ArithmeticOperationKind(&'a ArithmeticOperationKind),
     AssignmentOperationExpression(&'a AssignmentOperationExpression),
-    AssignmentOperationKind(&'a AssignmentOperationKind),
     BitwiseOperationExpression(&'a BitwiseOperationExpression),
     BitwiseOperationKind(&'a BitwiseOperationKind),
     ComparisonOperationExpression(&'a ComparisonOperationExpression),
@@ -8536,17 +8468,6 @@ impl<'a> Node<'a> {
         matches!(&self.kind, NodeKind::AssignmentOperationExpression(_))
     }
 
-    pub fn as_assignment_operation_kind(self) -> Option<&'a AssignmentOperationKind> {
-        match &self.kind {
-            NodeKind::AssignmentOperationKind(node) => Some(node),
-            _ => None,
-        }
-    }
-
-    pub fn is_assignment_operation_kind(&self) -> bool {
-        matches!(&self.kind, NodeKind::AssignmentOperationKind(_))
-    }
-
     pub fn as_bitwise_operation_expression(self) -> Option<&'a BitwiseOperationExpression> {
         match &self.kind {
             NodeKind::BitwiseOperationExpression(node) => Some(node),
@@ -9596,7 +9517,6 @@ impl<'a> Node<'a> {
             NodeKind::ArithmeticOperationExpression(_) => "ArithmeticOperationExpression",
             NodeKind::ArithmeticOperationKind(_) => "ArithmeticOperationKind",
             NodeKind::AssignmentOperationExpression(_) => "AssignmentOperationExpression",
-            NodeKind::AssignmentOperationKind(_) => "AssignmentOperationKind",
             NodeKind::BitwiseOperationExpression(_) => "BitwiseOperationExpression",
             NodeKind::BitwiseOperationKind(_) => "BitwiseOperationKind",
             NodeKind::ComparisonOperationExpression(_) => "ComparisonOperationExpression",
@@ -11164,165 +11084,11 @@ impl<'a> Node<'a> {
                 }
             },
             NodeKind::AssignmentOperationExpression(node) => {
-                let x = &node.kind;
+                let x = node.left.as_ref();
+                children.push(x.into());
+                let x = node.right.as_ref();
                 children.push(x.into());
             }
-            NodeKind::AssignmentOperationKind(node) => match node {
-                AssignmentOperationKind::Assign {
-                    left,
-                    equals,
-                    right,
-                    ..
-                } => {
-                    let x = left.as_ref();
-                    children.push(x.into());
-                    let x = right.as_ref();
-                    children.push(x.into());
-                }
-                AssignmentOperationKind::Addition {
-                    left,
-                    plus_equals,
-                    right,
-                    ..
-                } => {
-                    let x = left.as_ref();
-                    children.push(x.into());
-                    let x = right.as_ref();
-                    children.push(x.into());
-                }
-                AssignmentOperationKind::Subtraction {
-                    left,
-                    minus_equals,
-                    right,
-                    ..
-                } => {
-                    let x = left.as_ref();
-                    children.push(x.into());
-                    let x = right.as_ref();
-                    children.push(x.into());
-                }
-                AssignmentOperationKind::Multiplication {
-                    left,
-                    asterisk_equals,
-                    right,
-                    ..
-                } => {
-                    let x = left.as_ref();
-                    children.push(x.into());
-                    let x = right.as_ref();
-                    children.push(x.into());
-                }
-                AssignmentOperationKind::Division {
-                    left,
-                    slash_equals,
-                    right,
-                    ..
-                } => {
-                    let x = left.as_ref();
-                    children.push(x.into());
-                    let x = right.as_ref();
-                    children.push(x.into());
-                }
-                AssignmentOperationKind::Modulo {
-                    left,
-                    percent_equals,
-                    right,
-                    ..
-                } => {
-                    let x = left.as_ref();
-                    children.push(x.into());
-                    let x = right.as_ref();
-                    children.push(x.into());
-                }
-                AssignmentOperationKind::Exponentiation {
-                    left,
-                    pow_equals,
-                    right,
-                    ..
-                } => {
-                    let x = left.as_ref();
-                    children.push(x.into());
-                    let x = right.as_ref();
-                    children.push(x.into());
-                }
-                AssignmentOperationKind::Concat {
-                    left,
-                    dot_equals,
-                    right,
-                    ..
-                } => {
-                    let x = left.as_ref();
-                    children.push(x.into());
-                    let x = right.as_ref();
-                    children.push(x.into());
-                }
-                AssignmentOperationKind::BitwiseAnd {
-                    left,
-                    ampersand_equals,
-                    right,
-                    ..
-                } => {
-                    let x = left.as_ref();
-                    children.push(x.into());
-                    let x = right.as_ref();
-                    children.push(x.into());
-                }
-                AssignmentOperationKind::BitwiseOr {
-                    left,
-                    pipe_equals,
-                    right,
-                    ..
-                } => {
-                    let x = left.as_ref();
-                    children.push(x.into());
-                    let x = right.as_ref();
-                    children.push(x.into());
-                }
-                AssignmentOperationKind::BitwiseXor {
-                    left,
-                    caret_equals,
-                    right,
-                    ..
-                } => {
-                    let x = left.as_ref();
-                    children.push(x.into());
-                    let x = right.as_ref();
-                    children.push(x.into());
-                }
-                AssignmentOperationKind::LeftShift {
-                    left,
-                    left_shift_equals,
-                    right,
-                    ..
-                } => {
-                    let x = left.as_ref();
-                    children.push(x.into());
-                    let x = right.as_ref();
-                    children.push(x.into());
-                }
-                AssignmentOperationKind::RightShift {
-                    left,
-                    right_shift_equals,
-                    right,
-                    ..
-                } => {
-                    let x = left.as_ref();
-                    children.push(x.into());
-                    let x = right.as_ref();
-                    children.push(x.into());
-                }
-                AssignmentOperationKind::Coalesce {
-                    left,
-                    coalesce_equals,
-                    right,
-                    ..
-                } => {
-                    let x = left.as_ref();
-                    children.push(x.into());
-                    let x = right.as_ref();
-                    children.push(x.into());
-                }
-            },
             NodeKind::BitwiseOperationExpression(node) => {
                 let x = &node.kind;
                 children.push(x.into());
@@ -12073,7 +11839,6 @@ impl<'a> Node<'a> {
             NodeKind::ArithmeticOperationExpression(node) => NonNull::from(node).cast(),
             NodeKind::ArithmeticOperationKind(node) => NonNull::from(node).cast(),
             NodeKind::AssignmentOperationExpression(node) => NonNull::from(node).cast(),
-            NodeKind::AssignmentOperationKind(node) => NonNull::from(node).cast(),
             NodeKind::BitwiseOperationExpression(node) => NonNull::from(node).cast(),
             NodeKind::BitwiseOperationKind(node) => NonNull::from(node).cast(),
             NodeKind::ComparisonOperationExpression(node) => NonNull::from(node).cast(),
@@ -13460,16 +13225,6 @@ impl<'a> From<&'a AssignmentOperationExpression> for Node<'a> {
         Node::new(
             node.id(),
             NodeKind::AssignmentOperationExpression(node),
-            node.span(),
-        )
-    }
-}
-
-impl<'a> From<&'a AssignmentOperationKind> for Node<'a> {
-    fn from(node: &'a AssignmentOperationKind) -> Self {
-        Node::new(
-            node.id(),
-            NodeKind::AssignmentOperationKind(node),
             node.span(),
         )
     }

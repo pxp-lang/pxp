@@ -20,16 +20,16 @@
         },
     },
     Statement {
-        id: 21,
+        id: 20,
         kind: Expression(
             ExpressionStatement {
-                id: 20,
+                id: 19,
                 span: Span {
                     start: 51,
                     end: 53,
                 },
                 expression: Expression {
-                    id: 19,
+                    id: 18,
                     kind: AssignmentOperation(
                         AssignmentOperationExpression {
                             id: 17,
@@ -37,64 +37,63 @@
                                 start: 46,
                                 end: 52,
                             },
-                            kind: Assign {
-                                id: 18,
-                                left: Expression {
-                                    id: 13,
-                                    kind: Variable(
-                                        SimpleVariable(
-                                            SimpleVariable {
-                                                id: 14,
-                                                symbol: "$a",
-                                                stripped: "a",
-                                                span: Span {
-                                                    start: 46,
-                                                    end: 48,
-                                                },
+                            left: Expression {
+                                id: 13,
+                                kind: Variable(
+                                    SimpleVariable(
+                                        SimpleVariable {
+                                            id: 14,
+                                            symbol: "$a",
+                                            stripped: "a",
+                                            span: Span {
+                                                start: 46,
+                                                end: 48,
                                             },
-                                        ),
+                                        },
                                     ),
-                                    span: Span {
-                                        start: 46,
-                                        end: 48,
-                                    },
-                                    comments: CommentGroup {
-                                        id: 0,
-                                        comments: [],
-                                    },
+                                ),
+                                span: Span {
+                                    start: 46,
+                                    end: 48,
                                 },
-                                equals: Span {
+                                comments: CommentGroup {
+                                    id: 0,
+                                    comments: [],
+                                },
+                            },
+                            kind: Assign(
+                                Span {
                                     start: 49,
                                     end: 50,
                                 },
-                                right: Expression {
-                                    id: 15,
-                                    kind: Literal(
-                                        Literal {
-                                            id: 16,
+                            ),
+                            right: Expression {
+                                id: 15,
+                                kind: Literal(
+                                    Literal {
+                                        id: 16,
+                                        span: Span {
+                                            start: 51,
+                                            end: 52,
+                                        },
+                                        kind: Integer,
+                                        token: OwnedToken {
+                                            kind: LiteralInteger,
                                             span: Span {
                                                 start: 51,
                                                 end: 52,
                                             },
-                                            kind: Integer,
-                                            token: OwnedToken {
-                                                kind: LiteralInteger,
-                                                span: Span {
-                                                    start: 51,
-                                                    end: 52,
-                                                },
-                                                symbol: "1",
-                                            },
+                                            symbol: "1",
                                         },
-                                    ),
-                                    span: Span {
-                                        start: 51,
-                                        end: 52,
                                     },
-                                    comments: CommentGroup {
-                                        id: 0,
-                                        comments: [],
-                                    },
+                                ),
+                                span: Span {
+                                    start: 51,
+                                    end: 52,
+                                },
+                                comments: CommentGroup {
+                                    id: 0,
+                                    comments: [],
                                 },
                             },
                         },

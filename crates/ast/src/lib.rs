@@ -276,55 +276,6 @@ impl Spanned for ArithmeticOperationKind {
     }
 }
 
-impl Spanned for AssignmentOperationKind {
-    fn span(&self) -> Span {
-        match self {
-            AssignmentOperationKind::Assign { left, right, .. } => {
-                Span::combine(left.span, right.span)
-            }
-            AssignmentOperationKind::Addition { left, right, .. } => {
-                Span::combine(left.span, right.span)
-            }
-            AssignmentOperationKind::Subtraction { left, right, .. } => {
-                Span::combine(left.span, right.span)
-            }
-            AssignmentOperationKind::Multiplication { left, right, .. } => {
-                Span::combine(left.span, right.span)
-            }
-            AssignmentOperationKind::Division { left, right, .. } => {
-                Span::combine(left.span, right.span)
-            }
-            AssignmentOperationKind::Modulo { left, right, .. } => {
-                Span::combine(left.span, right.span)
-            }
-            AssignmentOperationKind::Exponentiation { left, right, .. } => {
-                Span::combine(left.span, right.span)
-            }
-            AssignmentOperationKind::Concat { left, right, .. } => {
-                Span::combine(left.span, right.span)
-            }
-            AssignmentOperationKind::BitwiseAnd { left, right, .. } => {
-                Span::combine(left.span, right.span)
-            }
-            AssignmentOperationKind::BitwiseOr { left, right, .. } => {
-                Span::combine(left.span, right.span)
-            }
-            AssignmentOperationKind::BitwiseXor { left, right, .. } => {
-                Span::combine(left.span, right.span)
-            }
-            AssignmentOperationKind::LeftShift { left, right, .. } => {
-                Span::combine(left.span, right.span)
-            }
-            AssignmentOperationKind::RightShift { left, right, .. } => {
-                Span::combine(left.span, right.span)
-            }
-            AssignmentOperationKind::Coalesce { left, right, .. } => {
-                Span::combine(left.span, right.span)
-            }
-        }
-    }
-}
-
 impl Spanned for BitwiseOperationKind {
     fn span(&self) -> Span {
         match self {

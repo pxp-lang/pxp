@@ -771,9 +771,7 @@ pub trait VisitorMut {
         walk_assignment_operation_expression_mut(self, node);
     }
 
-    fn visit_assignment_operation_kind(&mut self, node: &mut AssignmentOperationKind) {
-        walk_assignment_operation_kind_mut(self, node);
-    }
+    fn visit_assignment_operation_kind(&mut self, node: &mut AssignmentOperationKind) {}
 
     fn visit_bitwise_operation_expression(&mut self, node: &mut BitwiseOperationExpression) {
         walk_bitwise_operation_expression_mut(self, node);

@@ -26,3 +26,20 @@ impl Spanned for Variable {
         }
     }
 }
+
+impl Variable {
+    pub fn to_simple(&self) -> &SimpleVariable {
+        match self {
+            Self::SimpleVariable(simple) => simple,
+            _ => unreachable!()
+        }
+    }
+
+    pub fn is_simple(&self) -> bool {
+        matches!(self, Self::SimpleVariable(_))
+    }
+
+    pub fn is_variable(&self) -> bool {
+        matches!(self, Self::VariableVariable(_) | Self::BracedVariableVariable(_))
+    }
+}

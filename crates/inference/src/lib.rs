@@ -66,6 +66,14 @@ mod tests {
         "#), Type::String);
     }
 
+    #[test]
+    fn it_infers_type_of_variable() {
+        assert_eq!(infer(r#"
+        $a = 42;
+        $a
+        "#), Type::Integer);
+    }
+
     /// Parse the given code, infer the types and return the type of the last expression in the code.
     fn infer(code: &str) -> Type<Name> {
         // Parse the code.

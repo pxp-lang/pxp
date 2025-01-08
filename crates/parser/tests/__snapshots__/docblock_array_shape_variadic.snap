@@ -20,16 +20,16 @@
         },
     },
     Statement {
-        id: 20,
+        id: 19,
         kind: Expression(
             ExpressionStatement {
-                id: 19,
+                id: 18,
                 span: Span {
                     start: 52,
                     end: 55,
                 },
                 expression: Expression {
-                    id: 18,
+                    id: 17,
                     kind: AssignmentOperation(
                         AssignmentOperationExpression {
                             id: 16,
@@ -37,67 +37,66 @@
                                 start: 43,
                                 end: 54,
                             },
-                            kind: Assign {
-                                id: 17,
-                                left: Expression {
-                                    id: 12,
-                                    kind: Variable(
-                                        SimpleVariable(
-                                            SimpleVariable {
-                                                id: 13,
-                                                symbol: "$items",
-                                                stripped: "items",
-                                                span: Span {
-                                                    start: 43,
-                                                    end: 49,
-                                                },
-                                            },
-                                        ),
-                                    ),
-                                    span: Span {
-                                        start: 43,
-                                        end: 49,
-                                    },
-                                    comments: CommentGroup {
-                                        id: 0,
-                                        comments: [],
-                                    },
-                                },
-                                equals: Span {
-                                    start: 50,
-                                    end: 51,
-                                },
-                                right: Expression {
-                                    id: 15,
-                                    kind: ShortArray(
-                                        ShortArrayExpression {
-                                            id: 14,
+                            left: Expression {
+                                id: 12,
+                                kind: Variable(
+                                    SimpleVariable(
+                                        SimpleVariable {
+                                            id: 13,
+                                            symbol: "$items",
+                                            stripped: "items",
                                             span: Span {
-                                                start: 52,
-                                                end: 54,
-                                            },
-                                            start: Span {
-                                                start: 52,
-                                                end: 53,
-                                            },
-                                            items: CommaSeparated {
-                                                inner: [],
-                                                commas: [],
-                                            },
-                                            end: Span {
-                                                start: 53,
-                                                end: 54,
+                                                start: 43,
+                                                end: 49,
                                             },
                                         },
                                     ),
-                                    span: Span {
-                                        start: 52,
-                                        end: 54,
+                                ),
+                                span: Span {
+                                    start: 43,
+                                    end: 49,
+                                },
+                                comments: CommentGroup {
+                                    id: 0,
+                                    comments: [],
+                                },
+                            },
+                            kind: Assign(
+                                Span {
+                                    start: 50,
+                                    end: 51,
+                                },
+                            ),
+                            right: Expression {
+                                id: 15,
+                                kind: ShortArray(
+                                    ShortArrayExpression {
+                                        id: 14,
+                                        span: Span {
+                                            start: 52,
+                                            end: 54,
+                                        },
+                                        start: Span {
+                                            start: 52,
+                                            end: 53,
+                                        },
+                                        items: CommaSeparated {
+                                            inner: [],
+                                            commas: [],
+                                        },
+                                        end: Span {
+                                            start: 53,
+                                            end: 54,
+                                        },
                                     },
-                                    comments: CommentGroup {
-                                        id: 0,
-                                        comments: [],
-                                    },
+                                ),
+                                span: Span {
+                                    start: 52,
+                                    end: 54,
+                                },
+                                comments: CommentGroup {
+                                    id: 0,
+                                    comments: [],
                                 },
                             },
                         },

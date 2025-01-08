@@ -20,16 +20,16 @@
         },
     },
     Statement {
-        id: 18,
+        id: 17,
         kind: Expression(
             ExpressionStatement {
-                id: 17,
+                id: 16,
                 span: Span {
                     start: 12,
                     end: 20,
                 },
                 expression: Expression {
-                    id: 16,
+                    id: 15,
                     kind: AssignmentOperation(
                         AssignmentOperationExpression {
                             id: 14,
@@ -37,115 +37,114 @@
                                 start: 7,
                                 end: 19,
                             },
-                            kind: Assign {
-                                id: 15,
-                                left: Expression {
-                                    id: 5,
-                                    kind: Variable(
-                                        SimpleVariable(
-                                            SimpleVariable {
-                                                id: 6,
-                                                symbol: "$a",
-                                                stripped: "a",
-                                                span: Span {
-                                                    start: 7,
-                                                    end: 9,
-                                                },
+                            left: Expression {
+                                id: 5,
+                                kind: Variable(
+                                    SimpleVariable(
+                                        SimpleVariable {
+                                            id: 6,
+                                            symbol: "$a",
+                                            stripped: "a",
+                                            span: Span {
+                                                start: 7,
+                                                end: 9,
                                             },
-                                        ),
+                                        },
                                     ),
-                                    span: Span {
-                                        start: 7,
-                                        end: 9,
-                                    },
-                                    comments: CommentGroup {
-                                        id: 0,
-                                        comments: [],
-                                    },
+                                ),
+                                span: Span {
+                                    start: 7,
+                                    end: 9,
                                 },
-                                equals: Span {
+                                comments: CommentGroup {
+                                    id: 0,
+                                    comments: [],
+                                },
+                            },
+                            kind: Assign(
+                                Span {
                                     start: 10,
                                     end: 11,
                                 },
-                                right: Expression {
-                                    id: 13,
-                                    kind: BitwiseOperation(
-                                        BitwiseOperationExpression {
-                                            id: 11,
-                                            span: Span {
-                                                start: 12,
-                                                end: 19,
-                                            },
-                                            kind: RightShift {
-                                                id: 12,
-                                                left: Expression {
-                                                    id: 7,
-                                                    kind: Variable(
-                                                        SimpleVariable(
-                                                            SimpleVariable {
-                                                                id: 8,
-                                                                symbol: "$b",
-                                                                stripped: "b",
-                                                                span: Span {
-                                                                    start: 12,
-                                                                    end: 14,
-                                                                },
+                            ),
+                            right: Expression {
+                                id: 13,
+                                kind: BitwiseOperation(
+                                    BitwiseOperationExpression {
+                                        id: 11,
+                                        span: Span {
+                                            start: 12,
+                                            end: 19,
+                                        },
+                                        kind: RightShift {
+                                            id: 12,
+                                            left: Expression {
+                                                id: 7,
+                                                kind: Variable(
+                                                    SimpleVariable(
+                                                        SimpleVariable {
+                                                            id: 8,
+                                                            symbol: "$b",
+                                                            stripped: "b",
+                                                            span: Span {
+                                                                start: 12,
+                                                                end: 14,
                                                             },
-                                                        ),
+                                                        },
                                                     ),
-                                                    span: Span {
-                                                        start: 12,
-                                                        end: 14,
-                                                    },
-                                                    comments: CommentGroup {
-                                                        id: 0,
-                                                        comments: [],
-                                                    },
+                                                ),
+                                                span: Span {
+                                                    start: 12,
+                                                    end: 14,
                                                 },
-                                                right_shift: Span {
-                                                    start: 15,
-                                                    end: 17,
+                                                comments: CommentGroup {
+                                                    id: 0,
+                                                    comments: [],
                                                 },
-                                                right: Expression {
-                                                    id: 9,
-                                                    kind: Literal(
-                                                        Literal {
-                                                            id: 10,
+                                            },
+                                            right_shift: Span {
+                                                start: 15,
+                                                end: 17,
+                                            },
+                                            right: Expression {
+                                                id: 9,
+                                                kind: Literal(
+                                                    Literal {
+                                                        id: 10,
+                                                        span: Span {
+                                                            start: 18,
+                                                            end: 19,
+                                                        },
+                                                        kind: Integer,
+                                                        token: OwnedToken {
+                                                            kind: LiteralInteger,
                                                             span: Span {
                                                                 start: 18,
                                                                 end: 19,
                                                             },
-                                                            kind: Integer,
-                                                            token: OwnedToken {
-                                                                kind: LiteralInteger,
-                                                                span: Span {
-                                                                    start: 18,
-                                                                    end: 19,
-                                                                },
-                                                                symbol: "1",
-                                                            },
+                                                            symbol: "1",
                                                         },
-                                                    ),
-                                                    span: Span {
-                                                        start: 18,
-                                                        end: 19,
                                                     },
-                                                    comments: CommentGroup {
-                                                        id: 0,
-                                                        comments: [],
-                                                    },
+                                                ),
+                                                span: Span {
+                                                    start: 18,
+                                                    end: 19,
+                                                },
+                                                comments: CommentGroup {
+                                                    id: 0,
+                                                    comments: [],
                                                 },
                                             },
                                         },
-                                    ),
-                                    span: Span {
-                                        start: 18,
-                                        end: 19,
                                     },
-                                    comments: CommentGroup {
-                                        id: 0,
-                                        comments: [],
-                                    },
+                                ),
+                                span: Span {
+                                    start: 18,
+                                    end: 19,
+                                },
+                                comments: CommentGroup {
+                                    id: 0,
+                                    comments: [],
                                 },
                             },
                         },

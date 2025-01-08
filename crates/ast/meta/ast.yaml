@@ -1515,69 +1515,30 @@ ArithmeticOperationKind:
     decrement: Span
 
 AssignmentOperationExpression:
-  children: [kind]
+  children: [left, right]
   span: Span
+  left: Box<Expression>
   kind: AssignmentOperationKind
+  right: Box<Expression>
 
 AssignmentOperationKind:
-  children: [self.left!, self.right!]
   as: Enum
-  Assign:
-    left: Box<Expression>
-    equals: Span
-    right: Box<Expression>
-  Addition:
-    left: Box<Expression>
-    plus_equals: Span
-    right: Box<Expression>
-  Subtraction:
-    left: Box<Expression>
-    minus_equals: Span
-    right: Box<Expression>
-  Multiplication:
-    left: Box<Expression>
-    asterisk_equals: Span
-    right: Box<Expression>
-  Division:
-    left: Box<Expression>
-    slash_equals: Span
-    right: Box<Expression>
-  Modulo:
-    left: Box<Expression>
-    percent_equals: Span
-    right: Box<Expression>
-  Exponentiation:
-    left: Box<Expression>
-    pow_equals: Span
-    right: Box<Expression>
-  Concat:
-    left: Box<Expression>
-    dot_equals: Span
-    right: Box<Expression>
-  BitwiseAnd:
-    left: Box<Expression>
-    ampersand_equals: Span
-    right: Box<Expression>
-  BitwiseOr:
-    left: Box<Expression>
-    pipe_equals: Span
-    right: Box<Expression>
-  BitwiseXor:
-    left: Box<Expression>
-    caret_equals: Span
-    right: Box<Expression>
-  LeftShift:
-    left: Box<Expression>
-    left_shift_equals: Span
-    right: Box<Expression>
-  RightShift:
-    left: Box<Expression>
-    right_shift_equals: Span
-    right: Box<Expression>
-  Coalesce:
-    left: Box<Expression>
-    coalesce_equals: Span
-    right: Box<Expression>
+  node: false
+  derive: Copy
+  Assign: Span
+  Addition: Span
+  Subtraction: Span
+  Multiplication: Span
+  Division: Span
+  Modulo: Span
+  Exponentiation: Span
+  Concat: Span
+  BitwiseAnd: Span
+  BitwiseOr: Span
+  BitwiseXor: Span
+  LeftShift: Span
+  RightShift: Span
+  Coalesce: Span
 
 BitwiseOperationExpression:
   children: [kind]

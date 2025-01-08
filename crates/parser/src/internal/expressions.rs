@@ -154,29 +154,26 @@ impl<'a> Parser<'a> {
 
                         let right = Box::new(self.for_precedence(rpred));
                         let right_span = right.span;
-                        let span = Span::combine(left.span, right_span);
+                        let expr_span = Span::combine(left.span, right_span);
                         let reference_span = Span::combine(op.span, right_span);
 
                         ExpressionKind::AssignmentOperation(Box::new(
                             AssignmentOperationExpression {
                                 id: self.id(),
-                                span,
-                                kind: AssignmentOperationKind::Assign {
-                                    id: self.id(),
-                                    left: Box::new(left),
-                                    equals: span,
-                                    right: Box::new(Expression::new(
-                                        self.id(),
-                                        ExpressionKind::Reference(Box::new(ReferenceExpression {
-                                            id: self.id(),
-                                            span: reference_span,
-                                            ampersand: op.span,
-                                            right,
-                                        })),
-                                        Span::new(start_span.start, right_span.end),
-                                        CommentGroup::default(),
-                                    )),
-                                },
+                                span: expr_span,
+                                left: Box::new(left),
+                                kind: AssignmentOperationKind::Assign(span),
+                                right: Box::new(Expression::new(
+                                    self.id(),
+                                    ExpressionKind::Reference(Box::new(ReferenceExpression {
+                                        id: self.id(),
+                                        span: reference_span,
+                                        ampersand: op.span,
+                                        right,
+                                    })),
+                                    Span::new(start_span.start, right_span.end),
+                                    CommentGroup::default(),
+                                )),
                             },
                         ))
                     }
@@ -368,168 +365,126 @@ impl<'a> Parser<'a> {
                                 AssignmentOperationExpression {
                                     id: self.id(),
                                     span,
-                                    kind: AssignmentOperationKind::Assign {
-                                        id: self.id(),
-                                        left,
-                                        equals: op_span,
-                                        right,
-                                    },
+                                    left,
+                                    kind: AssignmentOperationKind::Assign(op_span),
+                                    right,
                                 },
                             )),
                             TokenKind::PlusEquals => ExpressionKind::AssignmentOperation(Box::new(
                                 AssignmentOperationExpression {
                                     id: self.id(),
                                     span,
-                                    kind: AssignmentOperationKind::Addition {
-                                        id: self.id(),
-                                        left,
-                                        plus_equals: op_span,
-                                        right,
-                                    },
+                                    left,
+                                    kind: AssignmentOperationKind::Addition(op_span),
+                                    right,
                                 },
                             )),
                             TokenKind::MinusEquals => ExpressionKind::AssignmentOperation(
                                 Box::new(AssignmentOperationExpression {
                                     id: self.id(),
                                     span,
-                                    kind: AssignmentOperationKind::Subtraction {
-                                        id: self.id(),
-                                        left,
-                                        minus_equals: op_span,
-                                        right,
-                                    },
+                                    left,
+                                    kind: AssignmentOperationKind::Subtraction(op_span),
+                                    right,
                                 }),
                             ),
                             TokenKind::AsteriskEquals => ExpressionKind::AssignmentOperation(
                                 Box::new(AssignmentOperationExpression {
                                     id: self.id(),
                                     span,
-                                    kind: AssignmentOperationKind::Multiplication {
-                                        id: self.id(),
-                                        left,
-                                        asterisk_equals: op_span,
-                                        right,
-                                    },
+                                    left,
+                                    kind: AssignmentOperationKind::Multiplication(op_span),
+                                    right,
                                 }),
                             ),
                             TokenKind::SlashEquals => ExpressionKind::AssignmentOperation(
                                 Box::new(AssignmentOperationExpression {
                                     id: self.id(),
                                     span,
-                                    kind: AssignmentOperationKind::Division {
-                                        id: self.id(),
-                                        left,
-                                        slash_equals: op_span,
-                                        right,
-                                    },
+                                    left,
+                                    kind: AssignmentOperationKind::Division(op_span),
+                                    right,
                                 }),
                             ),
                             TokenKind::PercentEquals => ExpressionKind::AssignmentOperation(
                                 Box::new(AssignmentOperationExpression {
                                     id: self.id(),
                                     span,
-                                    kind: AssignmentOperationKind::Modulo {
-                                        id: self.id(),
-                                        left,
-                                        percent_equals: op_span,
-                                        right,
-                                    },
+                                    left,
+                                    kind: AssignmentOperationKind::Modulo(op_span),
+                                    right,
                                 }),
                             ),
                             TokenKind::PowEquals => ExpressionKind::AssignmentOperation(Box::new(
                                 AssignmentOperationExpression {
                                     id: self.id(),
                                     span,
-                                    kind: AssignmentOperationKind::Exponentiation {
-                                        id: self.id(),
-                                        left,
-                                        pow_equals: op_span,
-                                        right,
-                                    },
+                                    left,
+                                    kind: AssignmentOperationKind::Exponentiation(op_span),
+                                    right,
                                 },
                             )),
                             TokenKind::AmpersandEquals => ExpressionKind::AssignmentOperation(
                                 Box::new(AssignmentOperationExpression {
                                     id: self.id(),
                                     span,
-                                    kind: AssignmentOperationKind::BitwiseAnd {
-                                        id: self.id(),
-                                        left,
-                                        ampersand_equals: op_span,
-                                        right,
-                                    },
+                                    left,
+                                    kind: AssignmentOperationKind::BitwiseAnd(op_span),
+                                    right,
                                 }),
                             ),
                             TokenKind::PipeEquals => ExpressionKind::AssignmentOperation(Box::new(
                                 AssignmentOperationExpression {
                                     id: self.id(),
                                     span,
-                                    kind: AssignmentOperationKind::BitwiseOr {
-                                        id: self.id(),
-                                        left,
-                                        pipe_equals: op_span,
-                                        right,
-                                    },
+                                    left,
+                                    kind: AssignmentOperationKind::BitwiseOr(op_span),
+                                    right,
                                 },
                             )),
                             TokenKind::CaretEquals => ExpressionKind::AssignmentOperation(
                                 Box::new(AssignmentOperationExpression {
                                     id: self.id(),
                                     span,
-                                    kind: AssignmentOperationKind::BitwiseXor {
-                                        id: self.id(),
-                                        left,
-                                        caret_equals: op_span,
-                                        right,
-                                    },
+                                    left,
+                                    kind: AssignmentOperationKind::BitwiseXor(op_span),
+                                    right,
                                 }),
                             ),
                             TokenKind::LeftShiftEquals => ExpressionKind::AssignmentOperation(
                                 Box::new(AssignmentOperationExpression {
                                     id: self.id(),
                                     span,
-                                    kind: AssignmentOperationKind::LeftShift {
-                                        id: self.id(),
-                                        left,
-                                        left_shift_equals: op_span,
-                                        right,
-                                    },
+                                    left,
+                                    kind: AssignmentOperationKind::LeftShift(op_span),
+                                    right,
                                 }),
                             ),
                             TokenKind::RightShiftEquals => ExpressionKind::AssignmentOperation(
                                 Box::new(AssignmentOperationExpression {
                                     id: self.id(),
                                     span,
-                                    kind: AssignmentOperationKind::RightShift {
-                                        id: self.id(),
-                                        left,
-                                        right_shift_equals: op_span,
-                                        right,
-                                    },
+                                    left,
+                                    kind: AssignmentOperationKind::RightShift(op_span),
+                                    right,
                                 }),
                             ),
                             TokenKind::DoubleQuestionEquals => ExpressionKind::AssignmentOperation(
                                 Box::new(AssignmentOperationExpression {
                                     id: self.id(),
                                     span,
-                                    kind: AssignmentOperationKind::Coalesce {
-                                        id: self.id(),
-                                        left,
-                                        coalesce_equals: op_span,
-                                        right,
-                                    },
+                                    left,
+                                    kind: AssignmentOperationKind::Coalesce(op_span),
+                                    right,
                                 }),
                             ),
                             TokenKind::DotEquals => ExpressionKind::AssignmentOperation(Box::new(
                                 AssignmentOperationExpression {
                                     id: self.id(),
                                     span,
-                                    kind: AssignmentOperationKind::Concat {
-                                        id: self.id(),
-                                        left,
-                                        dot_equals: op_span,
-                                        right,
-                                    },
+                                    left,
+                                    kind: AssignmentOperationKind::Concat(op_span),
+                                    right,
                                 },
                             )),
                             TokenKind::Ampersand => ExpressionKind::BitwiseOperation(Box::new(
@@ -809,24 +764,13 @@ impl<'a> Parser<'a> {
     }
 
     fn should_shift_assignment_operands(&self, expr: &Expression) -> bool {
-        let is_assignment = matches!(expr.kind, ExpressionKind::AssignmentOperation(_));
-
-        if !is_assignment {
-            return false;
-        }
-
-        let kind = match &expr.kind {
-            ExpressionKind::AssignmentOperation(inner) => &inner.kind,
-            _ => unreachable!(),
-        };
-
-        matches!(
-            kind.left().kind,
-            ExpressionKind::ComparisonOperation(_)
+        match &expr.kind {
+            ExpressionKind::AssignmentOperation(inner) => matches!(&inner.left.kind, ExpressionKind::ComparisonOperation(_)
                 | ExpressionKind::BitwiseOperation(_)
                 | ExpressionKind::ArithmeticOperation(_)
-                | ExpressionKind::LogicalOperation(_)
-        )
+                | ExpressionKind::LogicalOperation(_)),
+            _ => false,
+        }
     }
 
     // This is a workaround for a problem somebody reported, but something that
@@ -857,8 +801,8 @@ impl<'a> Parser<'a> {
         }
 
         // At this point, we know that the left-hand side of the expression is an assignment.
-        let (id, kind) = match &expr.kind {
-            ExpressionKind::AssignmentOperation(inner) => (&inner.id, &inner.kind),
+        let (id, assignment_left, kind, assignment_right) = match &expr.kind {
+            ExpressionKind::AssignmentOperation(inner) => (&inner.id, inner.left.as_ref(), &inner.kind, inner.right.as_ref()),
             _ => unreachable!(),
         };
 
@@ -881,14 +825,6 @@ impl<'a> Parser<'a> {
         //         right: true
         //     }
         // }
-
-        // So we first need to get the left-hand side of the assignment.
-        // Which in the example above will be the ComparisonOperation.
-        let assignment_left = kind.left();
-
-        // We also need the right-hand side of the assignment since
-        // that will be our new right-hand side too.
-        let assignment_right = kind.right();
 
         // Then we need to get the right-hand side of the comparison, since
         // this is the real assignment target.
@@ -916,130 +852,9 @@ impl<'a> Parser<'a> {
             ExpressionKind::AssignmentOperation(Box::new(AssignmentOperationExpression {
                 id: *id,
                 span: Span::default(),
-                kind: match kind {
-                    AssignmentOperationKind::Assign { id, equals, .. } => {
-                        AssignmentOperationKind::Assign {
-                            id: *id,
-                            left: Box::new(real_assignment_target.cloned().unwrap()),
-                            equals: *equals,
-                            right: Box::new(assignment_right.clone()),
-                        }
-                    }
-                    AssignmentOperationKind::Addition {
-                        id, plus_equals, ..
-                    } => AssignmentOperationKind::Addition {
-                        id: *id,
-                        left: Box::new(real_assignment_target.cloned().unwrap()),
-                        plus_equals: *plus_equals,
-                        right: Box::new(assignment_right.clone()),
-                    },
-                    AssignmentOperationKind::Subtraction {
-                        id, minus_equals, ..
-                    } => AssignmentOperationKind::Subtraction {
-                        id: *id,
-                        left: Box::new(real_assignment_target.cloned().unwrap()),
-                        minus_equals: *minus_equals,
-                        right: Box::new(assignment_right.clone()),
-                    },
-                    AssignmentOperationKind::Multiplication {
-                        id,
-                        asterisk_equals,
-                        ..
-                    } => AssignmentOperationKind::Multiplication {
-                        id: *id,
-                        left: Box::new(real_assignment_target.cloned().unwrap()),
-                        asterisk_equals: *asterisk_equals,
-                        right: Box::new(assignment_right.clone()),
-                    },
-                    AssignmentOperationKind::Division {
-                        id, slash_equals, ..
-                    } => AssignmentOperationKind::Division {
-                        id: *id,
-                        left: Box::new(real_assignment_target.cloned().unwrap()),
-                        slash_equals: *slash_equals,
-                        right: Box::new(assignment_right.clone()),
-                    },
-                    AssignmentOperationKind::Modulo {
-                        id, percent_equals, ..
-                    } => AssignmentOperationKind::Modulo {
-                        id: *id,
-                        left: Box::new(real_assignment_target.cloned().unwrap()),
-                        percent_equals: *percent_equals,
-                        right: Box::new(assignment_right.clone()),
-                    },
-                    AssignmentOperationKind::Exponentiation { id, pow_equals, .. } => {
-                        AssignmentOperationKind::Exponentiation {
-                            id: *id,
-                            left: Box::new(real_assignment_target.cloned().unwrap()),
-                            pow_equals: *pow_equals,
-                            right: Box::new(assignment_right.clone()),
-                        }
-                    }
-                    AssignmentOperationKind::Concat { id, dot_equals, .. } => {
-                        AssignmentOperationKind::Concat {
-                            id: *id,
-                            left: Box::new(real_assignment_target.cloned().unwrap()),
-                            dot_equals: *dot_equals,
-                            right: Box::new(assignment_right.clone()),
-                        }
-                    }
-                    AssignmentOperationKind::BitwiseAnd {
-                        id,
-                        ampersand_equals,
-                        ..
-                    } => AssignmentOperationKind::BitwiseAnd {
-                        id: *id,
-                        left: Box::new(real_assignment_target.cloned().unwrap()),
-                        ampersand_equals: *ampersand_equals,
-                        right: Box::new(assignment_right.clone()),
-                    },
-                    AssignmentOperationKind::BitwiseOr {
-                        id, pipe_equals, ..
-                    } => AssignmentOperationKind::BitwiseOr {
-                        id: *id,
-                        left: Box::new(real_assignment_target.cloned().unwrap()),
-                        pipe_equals: *pipe_equals,
-                        right: Box::new(assignment_right.clone()),
-                    },
-                    AssignmentOperationKind::BitwiseXor {
-                        id, caret_equals, ..
-                    } => AssignmentOperationKind::BitwiseXor {
-                        id: *id,
-                        left: Box::new(real_assignment_target.cloned().unwrap()),
-                        caret_equals: *caret_equals,
-                        right: Box::new(assignment_right.clone()),
-                    },
-                    AssignmentOperationKind::LeftShift {
-                        id,
-                        left_shift_equals,
-                        ..
-                    } => AssignmentOperationKind::LeftShift {
-                        id: *id,
-                        left: Box::new(real_assignment_target.cloned().unwrap()),
-                        left_shift_equals: *left_shift_equals,
-                        right: Box::new(assignment_right.clone()),
-                    },
-                    AssignmentOperationKind::RightShift {
-                        id,
-                        right_shift_equals,
-                        ..
-                    } => AssignmentOperationKind::RightShift {
-                        id: *id,
-                        left: Box::new(real_assignment_target.cloned().unwrap()),
-                        right_shift_equals: *right_shift_equals,
-                        right: Box::new(assignment_right.clone()),
-                    },
-                    AssignmentOperationKind::Coalesce {
-                        id,
-                        coalesce_equals,
-                        ..
-                    } => AssignmentOperationKind::Coalesce {
-                        id: *id,
-                        left: Box::new(real_assignment_target.cloned().unwrap()),
-                        coalesce_equals: *coalesce_equals,
-                        right: Box::new(assignment_right.clone()),
-                    },
-                },
+                left: Box::new(real_assignment_target.cloned().unwrap()),
+                kind: *kind,
+                right: Box::new(assignment_right.clone()),
             })),
             Span::default(),
             CommentGroup::default(),
