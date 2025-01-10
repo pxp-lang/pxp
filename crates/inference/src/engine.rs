@@ -244,8 +244,13 @@ impl<'a> TypeMapGenerator<'a> {
             .iter()
             .map(|item| -> Type<ResolvedName> {
                 match item {
-                    ArrayItem::KeyValue(array_item_key_value) => self.map.resolve(array_item_key_value.key.id).clone(),
-                    ArrayItem::ReferencedKeyValue(array_item_referenced_key_value) => self.map.resolve(array_item_referenced_key_value.key.id).clone(),
+                    ArrayItem::KeyValue(array_item_key_value) => {
+                        self.map.resolve(array_item_key_value.key.id).clone()
+                    }
+                    ArrayItem::ReferencedKeyValue(array_item_referenced_key_value) => self
+                        .map
+                        .resolve(array_item_referenced_key_value.key.id)
+                        .clone(),
                     _ => Type::Integer,
                 }
             })
