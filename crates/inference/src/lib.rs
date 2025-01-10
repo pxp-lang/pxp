@@ -26,8 +26,14 @@ mod tests {
 
     #[test]
     fn it_infers_string_literals() {
-        assert_eq!(infer("'Hello, world!'"), Type::String);
-        assert_eq!(infer("\"Hello, world!\""), Type::String);
+        assert_eq!(
+            infer("'Hello, world!'"),
+            Type::LiteralString(b"Hello, world!".into())
+        );
+        assert_eq!(
+            infer("\"Hello, world!\""),
+            Type::LiteralString(b"Hello, world!".into())
+        );
     }
 
     #[test]
@@ -126,7 +132,13 @@ mod tests {
     fn it_infers_type_of_keyed_array() {
         assert_eq!(
             infer(r#"$a = ['a' => 1, 'b' => 2]"#),
-            Type::TypedArray(Box::new(Type::String), Box::new(Type::Integer),)
+            Type::TypedArray(
+                Box::new(Type::Union(vec![
+                    Type::LiteralString(b"a".into()),
+                    Type::LiteralString(b"b".into())
+                ])),
+                Box::new(Type::Integer)
+            )
         )
     }
 
@@ -134,7 +146,13 @@ mod tests {
     fn it_infers_type_of_mixed_keyed_array() {
         assert_eq!(
             infer(r#"$a = ['a' => 1, 2]"#),
-            Type::TypedArray(Box::new(Type::array_key_types()), Box::new(Type::Integer),),
+            Type::TypedArray(
+                Box::new(Type::Union(vec![
+                    Type::LiteralString(b"a".into()),
+                    Type::Integer
+                ])),
+                Box::new(Type::Integer)
+            ),
         )
     }
 
@@ -151,7 +169,24 @@ mod tests {
 
         match inferred {
             Type::Named(name) => assert_eq!(name.resolved, b"A"),
-            _ => panic!("Expected a named type."),
+            _ => panic!("Expected a named type 'A'."),
+        }
+    }
+
+    #[test]
+    fn it_infers_type_of_new_expression_on_class_string_literal() {
+        let inferred = infer(
+            r#"
+        class A {}
+        $a = 'A';
+        new $a()"#,
+        );
+
+        assert!(inferred.is_named());
+
+        match inferred {
+            Type::Named(name) => assert_eq!(name.resolved, b"A"),
+            _ => panic!("Expected a named type 'A'."),
         }
     }
 

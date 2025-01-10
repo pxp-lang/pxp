@@ -955,6 +955,12 @@ impl<'a> Parser<'a> {
                     b"non-empty-array" if parser.is_in_docblock() => Some(Type::NonEmptyArray),
                     b"non-empty-list" if parser.is_in_docblock() => Some(Type::NonEmptyList),
                     b"callable-string" if parser.is_in_docblock() => Some(Type::CallableString),
+                    b"literal-string" if parser.is_in_docblock() => Some(Type::LiteralString(
+                        parser
+                            .current_symbol()
+                            .strip_string_quotes()
+                            .to_bytestring(),
+                    )),
                     _ => {
                         let id = parser.id();
 

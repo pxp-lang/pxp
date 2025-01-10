@@ -1537,6 +1537,17 @@ impl<'a> Parser<'a> {
                             CommentGroup::default(),
                         )
                     }),
+                    TokenKind::Variable => {
+                        let variable = self.parse_simple_variable();
+                        let span = variable.span;
+
+                        Expression::new(
+                            self.id(),
+                            ExpressionKind::Variable(Box::new(Variable::SimpleVariable(variable))),
+                            span,
+                            CommentGroup::default(),
+                        )
+                    }
                     _ => self.clone_or_new_precedence(),
                 };
 

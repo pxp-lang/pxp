@@ -63,6 +63,16 @@ impl ByteStr {
         ByteStr::new(&self.0[start..])
     }
 
+    pub fn strip_string_quotes(&self) -> &ByteStr {
+        if self.0[0] == b'"' && self.0[self.0.len() - 1] == b'"' {
+            ByteStr::new(&self.0[1..self.0.len() - 1])
+        } else if self.0[0] == b'\'' && self.0[self.0.len() - 1] == b'\'' {
+            ByteStr::new(&self.0[1..self.0.len() - 1])
+        } else {
+            self
+        }
+    }
+
     pub fn coagulate(&self, others: &[&ByteStr], with: u8) -> ByteString {
         let mut bytes = self.0.to_vec();
 

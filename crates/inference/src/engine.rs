@@ -123,6 +123,10 @@ impl Scope {
 }
 
 impl<'a> TypeMapGenerator<'a> {
+    fn is_newable_string(&self, value: &ByteStr) -> bool {
+        self.index.get_class(value).is_some()
+    }
+
     fn is_callable_string(&self, name: &ByteStr) -> bool {
         let name: &ByteStr = name[1..name.len() - 1].into();
 
@@ -278,7 +282,13 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
             match node.kind {
                 LiteralKind::Integer => Type::Integer,
                 LiteralKind::Float => Type::Float,
-                LiteralKind::String => Type::String,
+                LiteralKind::String => Type::LiteralString(
+                    node.token
+                        .symbol
+                        .as_bytestr()
+                        .strip_string_quotes()
+                        .to_bytestring(),
+                ),
                 LiteralKind::Missing => Type::Missing,
             },
         )
@@ -349,7 +359,19 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
                     _ if name.is_resolved() => Type::Named(name.to_resolved().clone()),
                     _ => Type::Mixed,
                 },
-                _ => Type::Mixed,
+                _ => match self.map.resolve(node.target.id) {
+                    Type::LiteralString(value) if self.is_newable_string(value.as_ref()) => {
+                        Type::Named(ResolvedName {
+                            resolved: value.clone(),
+                            original: value.clone(),
+                        })
+                    }
+                    _ => {
+                        dbg!(self.map.resolve(node.target.id), &node.target);
+
+                        Type::Object
+                    }
+                },
             },
         );
     }

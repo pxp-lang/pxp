@@ -22,6 +22,7 @@ pub enum Type<N: Debug + Display> {
     NonNegativeInteger,
     ClassString,
     String,
+    LiteralString(ByteString),
     NumericString,
     NonEmptyString,
     Empty,
@@ -244,6 +245,7 @@ impl<N: Debug + Display> Type<N> {
 impl<N: Debug + Display> Display for Type<N> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
+            Type::LiteralString(_) => write!(f, "literal-string"),
             Type::CallableString => write!(f, "callable-string"),
             Type::NonEmptyList => write!(f, "non-empty-list"),
             Type::NonEmptyArray => write!(f, "non-empty-array"),
