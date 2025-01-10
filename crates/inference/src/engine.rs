@@ -239,19 +239,22 @@ impl<'a> TypeMapGenerator<'a> {
             );
         }
 
-        todo!();
-
         let key_types: Vec<Type<ResolvedName>> = node
             .items
             .iter()
-            .filter_map(|item| -> Option<Type<ResolvedName>> {
+            .map(|item| -> Type<ResolvedName> {
                 match item {
-                    ArrayItem::KeyValue(array_item_key_value) => todo!(),
-                    ArrayItem::ReferencedKeyValue(array_item_referenced_key_value) => todo!(),
-                    _ => None,
+                    ArrayItem::KeyValue(array_item_key_value) => self.map.resolve(array_item_key_value.key.id).clone(),
+                    ArrayItem::ReferencedKeyValue(array_item_referenced_key_value) => self.map.resolve(array_item_referenced_key_value.key.id).clone(),
+                    _ => Type::Integer,
                 }
             })
             .collect();
+
+        Type::TypedArray(
+            Box::new(self.simplify_union(key_types)),
+            Box::new(self.simplify_union(value_types)),
+        )
     }
 }
 

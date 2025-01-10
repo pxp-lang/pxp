@@ -123,6 +123,28 @@ mod tests {
     }
 
     #[test]
+    fn it_infers_type_of_keyed_array() {
+        assert_eq!(
+            infer(r#"$a = ['a' => 1, 'b' => 2]"#),
+            Type::TypedArray(
+                Box::new(Type::String),
+                Box::new(Type::Integer),
+            )
+        )
+    }
+
+    #[test]
+    fn it_infers_type_of_mixed_keyed_array() {
+        assert_eq!(
+            infer(r#"$a = ['a' => 1, 2]"#),
+            Type::TypedArray(
+                Box::new(Type::array_key_types()),
+                Box::new(Type::Integer),
+            ),
+        )
+    }
+
+    #[test]
     fn it_infers_type_of_new_expression() {
         let inferred = infer(
             r#"
