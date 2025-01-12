@@ -1,8 +1,8 @@
-use pxp_span::{Span, Spanned};
+use pxp_span::{IsSpanned, Span};
 
 use crate::{ExpressionKind, NamespaceStatement, StatementKind};
 
-impl Spanned for StatementKind {
+impl IsSpanned for StatementKind {
     fn span(&self) -> Span {
         match self {
             StatementKind::FullOpeningTag(node) => node.span(),
@@ -45,7 +45,7 @@ impl Spanned for StatementKind {
     }
 }
 
-impl Spanned for ExpressionKind {
+impl IsSpanned for ExpressionKind {
     fn span(&self) -> Span {
         match self {
             ExpressionKind::Missing(node) => node.span(),
@@ -118,7 +118,7 @@ impl Spanned for ExpressionKind {
     }
 }
 
-impl Spanned for NamespaceStatement {
+impl IsSpanned for NamespaceStatement {
     fn span(&self) -> Span {
         match self {
             NamespaceStatement::Unbraced(node) => node.span(),

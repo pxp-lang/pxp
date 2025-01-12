@@ -19,7 +19,7 @@ use pxp_index::Index;
 use pxp_inference::TypeEngine;
 use pxp_lexer::Lexer;
 use pxp_parser::{Parser, ParserDiagnostic};
-use pxp_span::Spanned;
+use pxp_span::IsSpanned;
 
 use crate::utils::find_php_files_in_cwd;
 use crate::{

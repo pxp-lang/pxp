@@ -1,5 +1,5 @@
 use pxp_bytestring::ByteString;
-use pxp_span::{Span, Spanned};
+use pxp_span::{IsSpanned, Span};
 
 use crate::{Identifier, NodeId, SimpleIdentifier};
 
@@ -34,7 +34,7 @@ impl Identifier {
     }
 }
 
-impl Spanned for Identifier {
+impl IsSpanned for Identifier {
     fn span(&self) -> Span {
         match self {
             Self::SimpleIdentifier(simple) => simple.span,

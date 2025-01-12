@@ -10,7 +10,7 @@
 
 use crate::{name::NameQualification, utils::CommaSeparated, HasId, Node};
 use pxp_bytestring::ByteString;
-use pxp_span::{Span, Spanned};
+use pxp_span::{IsSpanned, Span};
 use pxp_token::OwnedToken;
 use pxp_type::Type;
 use std::ptr::NonNull;
@@ -33,7 +33,7 @@ impl HasId for Statement {
     }
 }
 
-impl Spanned for Statement {
+impl IsSpanned for Statement {
     fn span(&self) -> Span {
         self.span
     }
@@ -136,7 +136,7 @@ impl HasId for Expression {
     }
 }
 
-impl Spanned for Expression {
+impl IsSpanned for Expression {
     fn span(&self) -> Span {
         self.span
     }
@@ -297,7 +297,7 @@ impl HasId for MissingExpression {
     }
 }
 
-impl Spanned for MissingExpression {
+impl IsSpanned for MissingExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -315,7 +315,7 @@ impl HasId for StaticExpression {
     }
 }
 
-impl Spanned for StaticExpression {
+impl IsSpanned for StaticExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -333,7 +333,7 @@ impl HasId for SelfExpression {
     }
 }
 
-impl Spanned for SelfExpression {
+impl IsSpanned for SelfExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -351,7 +351,7 @@ impl HasId for ParentExpression {
     }
 }
 
-impl Spanned for ParentExpression {
+impl IsSpanned for ParentExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -370,7 +370,7 @@ impl HasId for CommentStatement {
     }
 }
 
-impl Spanned for CommentStatement {
+impl IsSpanned for CommentStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -389,7 +389,7 @@ impl HasId for InlineHtmlStatement {
     }
 }
 
-impl Spanned for InlineHtmlStatement {
+impl IsSpanned for InlineHtmlStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -407,7 +407,7 @@ impl HasId for FullOpeningTagStatement {
     }
 }
 
-impl Spanned for FullOpeningTagStatement {
+impl IsSpanned for FullOpeningTagStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -425,7 +425,7 @@ impl HasId for ShortOpeningTagStatement {
     }
 }
 
-impl Spanned for ShortOpeningTagStatement {
+impl IsSpanned for ShortOpeningTagStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -443,7 +443,7 @@ impl HasId for EchoOpeningTagStatement {
     }
 }
 
-impl Spanned for EchoOpeningTagStatement {
+impl IsSpanned for EchoOpeningTagStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -461,7 +461,7 @@ impl HasId for ClosingTagStatement {
     }
 }
 
-impl Spanned for ClosingTagStatement {
+impl IsSpanned for ClosingTagStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -481,7 +481,7 @@ impl HasId for ExpressionStatement {
     }
 }
 
-impl Spanned for ExpressionStatement {
+impl IsSpanned for ExpressionStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -502,7 +502,7 @@ impl HasId for GlobalStatement {
     }
 }
 
-impl Spanned for GlobalStatement {
+impl IsSpanned for GlobalStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -523,7 +523,7 @@ impl HasId for BlockStatement {
     }
 }
 
-impl Spanned for BlockStatement {
+impl IsSpanned for BlockStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -540,7 +540,7 @@ pub enum CastKind {
     Unset(Span),
 }
 
-impl Spanned for CastKind {
+impl IsSpanned for CastKind {
     fn span(&self) -> Span {
         match self {
             CastKind::Int(span) => *span,
@@ -569,7 +569,7 @@ impl HasId for Case {
     }
 }
 
-impl Spanned for Case {
+impl IsSpanned for Case {
     fn span(&self) -> Span {
         self.span
     }
@@ -590,7 +590,7 @@ impl HasId for Use {
     }
 }
 
-impl Spanned for Use {
+impl IsSpanned for Use {
     fn span(&self) -> Span {
         self.span
     }
@@ -617,7 +617,7 @@ impl HasId for EvalExpression {
     }
 }
 
-impl Spanned for EvalExpression {
+impl IsSpanned for EvalExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -637,7 +637,7 @@ impl HasId for EmptyExpression {
     }
 }
 
-impl Spanned for EmptyExpression {
+impl IsSpanned for EmptyExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -657,7 +657,7 @@ impl HasId for DieExpression {
     }
 }
 
-impl Spanned for DieExpression {
+impl IsSpanned for DieExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -677,7 +677,7 @@ impl HasId for ExitExpression {
     }
 }
 
-impl Spanned for ExitExpression {
+impl IsSpanned for ExitExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -697,7 +697,7 @@ impl HasId for IssetExpression {
     }
 }
 
-impl Spanned for IssetExpression {
+impl IsSpanned for IssetExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -717,7 +717,7 @@ impl HasId for UnsetExpression {
     }
 }
 
-impl Spanned for UnsetExpression {
+impl IsSpanned for UnsetExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -738,7 +738,7 @@ impl HasId for PrintExpression {
     }
 }
 
-impl Spanned for PrintExpression {
+impl IsSpanned for PrintExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -759,7 +759,7 @@ impl HasId for ConcatExpression {
     }
 }
 
-impl Spanned for ConcatExpression {
+impl IsSpanned for ConcatExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -780,7 +780,7 @@ impl HasId for InstanceofExpression {
     }
 }
 
-impl Spanned for InstanceofExpression {
+impl IsSpanned for InstanceofExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -800,7 +800,7 @@ impl HasId for ReferenceExpression {
     }
 }
 
-impl Spanned for ReferenceExpression {
+impl IsSpanned for ReferenceExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -821,7 +821,7 @@ impl HasId for ParenthesizedExpression {
     }
 }
 
-impl Spanned for ParenthesizedExpression {
+impl IsSpanned for ParenthesizedExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -841,7 +841,7 @@ impl HasId for ErrorSuppressExpression {
     }
 }
 
-impl Spanned for ErrorSuppressExpression {
+impl IsSpanned for ErrorSuppressExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -861,7 +861,7 @@ impl HasId for IncludeExpression {
     }
 }
 
-impl Spanned for IncludeExpression {
+impl IsSpanned for IncludeExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -881,7 +881,7 @@ impl HasId for IncludeOnceExpression {
     }
 }
 
-impl Spanned for IncludeOnceExpression {
+impl IsSpanned for IncludeOnceExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -901,7 +901,7 @@ impl HasId for RequireExpression {
     }
 }
 
-impl Spanned for RequireExpression {
+impl IsSpanned for RequireExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -921,7 +921,7 @@ impl HasId for RequireOnceExpression {
     }
 }
 
-impl Spanned for RequireOnceExpression {
+impl IsSpanned for RequireOnceExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -941,7 +941,7 @@ impl HasId for FunctionCallExpression {
     }
 }
 
-impl Spanned for FunctionCallExpression {
+impl IsSpanned for FunctionCallExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -961,7 +961,7 @@ impl HasId for FunctionClosureCreationExpression {
     }
 }
 
-impl Spanned for FunctionClosureCreationExpression {
+impl IsSpanned for FunctionClosureCreationExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -983,7 +983,7 @@ impl HasId for MethodCallExpression {
     }
 }
 
-impl Spanned for MethodCallExpression {
+impl IsSpanned for MethodCallExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1005,7 +1005,7 @@ impl HasId for MethodClosureCreationExpression {
     }
 }
 
-impl Spanned for MethodClosureCreationExpression {
+impl IsSpanned for MethodClosureCreationExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1027,7 +1027,7 @@ impl HasId for NullsafeMethodCallExpression {
     }
 }
 
-impl Spanned for NullsafeMethodCallExpression {
+impl IsSpanned for NullsafeMethodCallExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1049,7 +1049,7 @@ impl HasId for StaticMethodCallExpression {
     }
 }
 
-impl Spanned for StaticMethodCallExpression {
+impl IsSpanned for StaticMethodCallExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1071,7 +1071,7 @@ impl HasId for StaticVariableMethodCallExpression {
     }
 }
 
-impl Spanned for StaticVariableMethodCallExpression {
+impl IsSpanned for StaticVariableMethodCallExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1093,7 +1093,7 @@ impl HasId for StaticMethodClosureCreationExpression {
     }
 }
 
-impl Spanned for StaticMethodClosureCreationExpression {
+impl IsSpanned for StaticMethodClosureCreationExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1115,7 +1115,7 @@ impl HasId for StaticVariableMethodClosureCreationExpression {
     }
 }
 
-impl Spanned for StaticVariableMethodClosureCreationExpression {
+impl IsSpanned for StaticVariableMethodClosureCreationExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1136,7 +1136,7 @@ impl HasId for PropertyFetchExpression {
     }
 }
 
-impl Spanned for PropertyFetchExpression {
+impl IsSpanned for PropertyFetchExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1157,7 +1157,7 @@ impl HasId for NullsafePropertyFetchExpression {
     }
 }
 
-impl Spanned for NullsafePropertyFetchExpression {
+impl IsSpanned for NullsafePropertyFetchExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1178,7 +1178,7 @@ impl HasId for StaticPropertyFetchExpression {
     }
 }
 
-impl Spanned for StaticPropertyFetchExpression {
+impl IsSpanned for StaticPropertyFetchExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1199,7 +1199,7 @@ impl HasId for ConstantFetchExpression {
     }
 }
 
-impl Spanned for ConstantFetchExpression {
+impl IsSpanned for ConstantFetchExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1219,7 +1219,7 @@ impl HasId for ArrayExpression {
     }
 }
 
-impl Spanned for ArrayExpression {
+impl IsSpanned for ArrayExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1238,7 +1238,7 @@ pub struct ArrayKindShort {
     pub right_bracket: Span,
 }
 
-impl Spanned for ArrayKindShort {
+impl IsSpanned for ArrayKindShort {
     fn span(&self) -> Span {
         self.span
     }
@@ -1252,7 +1252,7 @@ pub struct ArrayKindLong {
     pub right_parenthesis: Span,
 }
 
-impl Spanned for ArrayKindLong {
+impl IsSpanned for ArrayKindLong {
     fn span(&self) -> Span {
         self.span
     }
@@ -1274,7 +1274,7 @@ impl HasId for ListExpression {
     }
 }
 
-impl Spanned for ListExpression {
+impl IsSpanned for ListExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1295,7 +1295,7 @@ impl HasId for NewExpression {
     }
 }
 
-impl Spanned for NewExpression {
+impl IsSpanned for NewExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1314,7 +1314,7 @@ impl HasId for InterpolatedStringExpression {
     }
 }
 
-impl Spanned for InterpolatedStringExpression {
+impl IsSpanned for InterpolatedStringExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1334,7 +1334,7 @@ impl HasId for HeredocExpression {
     }
 }
 
-impl Spanned for HeredocExpression {
+impl IsSpanned for HeredocExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1354,7 +1354,7 @@ impl HasId for NowdocExpression {
     }
 }
 
-impl Spanned for NowdocExpression {
+impl IsSpanned for NowdocExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1373,7 +1373,7 @@ impl HasId for ShellExecExpression {
     }
 }
 
-impl Spanned for ShellExecExpression {
+impl IsSpanned for ShellExecExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1392,7 +1392,7 @@ impl HasId for BoolExpression {
     }
 }
 
-impl Spanned for BoolExpression {
+impl IsSpanned for BoolExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1414,7 +1414,7 @@ impl HasId for ArrayIndexExpression {
     }
 }
 
-impl Spanned for ArrayIndexExpression {
+impl IsSpanned for ArrayIndexExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1435,7 +1435,7 @@ impl HasId for ShortTernaryExpression {
     }
 }
 
-impl Spanned for ShortTernaryExpression {
+impl IsSpanned for ShortTernaryExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1458,7 +1458,7 @@ impl HasId for TernaryExpression {
     }
 }
 
-impl Spanned for TernaryExpression {
+impl IsSpanned for TernaryExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1479,7 +1479,7 @@ impl HasId for CoalesceExpression {
     }
 }
 
-impl Spanned for CoalesceExpression {
+impl IsSpanned for CoalesceExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1499,7 +1499,7 @@ impl HasId for CloneExpression {
     }
 }
 
-impl Spanned for CloneExpression {
+impl IsSpanned for CloneExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1525,7 +1525,7 @@ impl HasId for MatchExpression {
     }
 }
 
-impl Spanned for MatchExpression {
+impl IsSpanned for MatchExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1544,7 +1544,7 @@ impl HasId for ThrowExpression {
     }
 }
 
-impl Spanned for ThrowExpression {
+impl IsSpanned for ThrowExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1565,7 +1565,7 @@ impl HasId for YieldExpression {
     }
 }
 
-impl Spanned for YieldExpression {
+impl IsSpanned for YieldExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1586,7 +1586,7 @@ impl HasId for YieldFromExpression {
     }
 }
 
-impl Spanned for YieldFromExpression {
+impl IsSpanned for YieldFromExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1606,7 +1606,7 @@ impl HasId for CastExpression {
     }
 }
 
-impl Spanned for CastExpression {
+impl IsSpanned for CastExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1627,7 +1627,7 @@ impl HasId for DefaultMatchArm {
     }
 }
 
-impl Spanned for DefaultMatchArm {
+impl IsSpanned for DefaultMatchArm {
     fn span(&self) -> Span {
         self.span
     }
@@ -1648,7 +1648,7 @@ impl HasId for MatchArm {
     }
 }
 
-impl Spanned for MatchArm {
+impl IsSpanned for MatchArm {
     fn span(&self) -> Span {
         self.span
     }
@@ -1667,7 +1667,7 @@ impl HasId for MagicConstantExpression {
     }
 }
 
-impl Spanned for MagicConstantExpression {
+impl IsSpanned for MagicConstantExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -1714,7 +1714,7 @@ impl HasId for LiteralStringPart {
     }
 }
 
-impl Spanned for LiteralStringPart {
+impl IsSpanned for LiteralStringPart {
     fn span(&self) -> Span {
         self.span
     }
@@ -1733,7 +1733,7 @@ impl HasId for ExpressionStringPart {
     }
 }
 
-impl Spanned for ExpressionStringPart {
+impl IsSpanned for ExpressionStringPart {
     fn span(&self) -> Span {
         self.span
     }
@@ -1762,7 +1762,7 @@ impl HasId for ArrayItem {
     }
 }
 
-impl Spanned for ArrayItem {
+impl IsSpanned for ArrayItem {
     fn span(&self) -> Span {
         match self {
             ArrayItem::Skipped(span) => *span,
@@ -1784,7 +1784,7 @@ impl HasId for ArrayItemValue {
     }
 }
 
-impl Spanned for ArrayItemValue {
+impl IsSpanned for ArrayItemValue {
     fn span(&self) -> Span {
         self.span
     }
@@ -1804,7 +1804,7 @@ impl HasId for ArrayItemReferencedValue {
     }
 }
 
-impl Spanned for ArrayItemReferencedValue {
+impl IsSpanned for ArrayItemReferencedValue {
     fn span(&self) -> Span {
         self.span
     }
@@ -1824,7 +1824,7 @@ impl HasId for ArrayItemSpreadValue {
     }
 }
 
-impl Spanned for ArrayItemSpreadValue {
+impl IsSpanned for ArrayItemSpreadValue {
     fn span(&self) -> Span {
         self.span
     }
@@ -1845,7 +1845,7 @@ impl HasId for ArrayItemKeyValue {
     }
 }
 
-impl Spanned for ArrayItemKeyValue {
+impl IsSpanned for ArrayItemKeyValue {
     fn span(&self) -> Span {
         self.span
     }
@@ -1867,7 +1867,7 @@ impl HasId for ArrayItemReferencedKeyValue {
     }
 }
 
-impl Spanned for ArrayItemReferencedKeyValue {
+impl IsSpanned for ArrayItemReferencedKeyValue {
     fn span(&self) -> Span {
         self.span
     }
@@ -1890,7 +1890,7 @@ impl HasId for ListEntry {
     }
 }
 
-impl Spanned for ListEntry {
+impl IsSpanned for ListEntry {
     fn span(&self) -> Span {
         match self {
             ListEntry::Skipped(span) => *span,
@@ -1912,7 +1912,7 @@ impl HasId for ListEntryValue {
     }
 }
 
-impl Spanned for ListEntryValue {
+impl IsSpanned for ListEntryValue {
     fn span(&self) -> Span {
         self.span
     }
@@ -1933,7 +1933,7 @@ impl HasId for ListEntryKeyValue {
     }
 }
 
-impl Spanned for ListEntryKeyValue {
+impl IsSpanned for ListEntryKeyValue {
     fn span(&self) -> Span {
         self.span
     }
@@ -1954,7 +1954,7 @@ impl HasId for PositionalArgument {
     }
 }
 
-impl Spanned for PositionalArgument {
+impl IsSpanned for PositionalArgument {
     fn span(&self) -> Span {
         self.span
     }
@@ -1977,7 +1977,7 @@ impl HasId for NamedArgument {
     }
 }
 
-impl Spanned for NamedArgument {
+impl IsSpanned for NamedArgument {
     fn span(&self) -> Span {
         self.span
     }
@@ -2014,7 +2014,7 @@ impl HasId for ArgumentList {
     }
 }
 
-impl Spanned for ArgumentList {
+impl IsSpanned for ArgumentList {
     fn span(&self) -> Span {
         self.span
     }
@@ -2036,7 +2036,7 @@ impl HasId for SingleArgument {
     }
 }
 
-impl Spanned for SingleArgument {
+impl IsSpanned for SingleArgument {
     fn span(&self) -> Span {
         self.span
     }
@@ -2058,7 +2058,7 @@ impl HasId for ArgumentPlaceholder {
     }
 }
 
-impl Spanned for ArgumentPlaceholder {
+impl IsSpanned for ArgumentPlaceholder {
     fn span(&self) -> Span {
         self.span
     }
@@ -2078,7 +2078,7 @@ impl HasId for Attribute {
     }
 }
 
-impl Spanned for Attribute {
+impl IsSpanned for Attribute {
     fn span(&self) -> Span {
         self.span
     }
@@ -2097,7 +2097,7 @@ impl HasId for AttributeGroup {
     }
 }
 
-impl Spanned for AttributeGroup {
+impl IsSpanned for AttributeGroup {
     fn span(&self) -> Span {
         self.span
     }
@@ -2118,7 +2118,7 @@ impl HasId for ClassBody {
     }
 }
 
-impl Spanned for ClassBody {
+impl IsSpanned for ClassBody {
     fn span(&self) -> Span {
         self.span
     }
@@ -2143,7 +2143,7 @@ impl HasId for ClassStatement {
     }
 }
 
-impl Spanned for ClassStatement {
+impl IsSpanned for ClassStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -2164,7 +2164,7 @@ impl HasId for AnonymousClassBody {
     }
 }
 
-impl Spanned for AnonymousClassBody {
+impl IsSpanned for AnonymousClassBody {
     fn span(&self) -> Span {
         self.span
     }
@@ -2187,7 +2187,7 @@ impl HasId for AnonymousClassExpression {
     }
 }
 
-impl Spanned for AnonymousClassExpression {
+impl IsSpanned for AnonymousClassExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -2207,7 +2207,7 @@ impl HasId for ClassExtends {
     }
 }
 
-impl Spanned for ClassExtends {
+impl IsSpanned for ClassExtends {
     fn span(&self) -> Span {
         self.span
     }
@@ -2227,7 +2227,7 @@ impl HasId for ClassImplements {
     }
 }
 
-impl Spanned for ClassImplements {
+impl IsSpanned for ClassImplements {
     fn span(&self) -> Span {
         self.span
     }
@@ -2275,7 +2275,7 @@ impl HasId for Method {
     }
 }
 
-impl Spanned for Method {
+impl IsSpanned for Method {
     fn span(&self) -> Span {
         self.span
     }
@@ -2294,7 +2294,7 @@ impl HasId for MethodBody {
     }
 }
 
-impl Spanned for MethodBody {
+impl IsSpanned for MethodBody {
     fn span(&self) -> Span {
         self.span
     }
@@ -2329,7 +2329,7 @@ impl HasId for MissingMethodBody {
     }
 }
 
-impl Spanned for MissingMethodBody {
+impl IsSpanned for MissingMethodBody {
     fn span(&self) -> Span {
         self.span
     }
@@ -2348,7 +2348,7 @@ impl HasId for AbstractMethodBody {
     }
 }
 
-impl Spanned for AbstractMethodBody {
+impl IsSpanned for AbstractMethodBody {
     fn span(&self) -> Span {
         self.span
     }
@@ -2369,7 +2369,7 @@ impl HasId for ConcreteMethodBody {
     }
 }
 
-impl Spanned for ConcreteMethodBody {
+impl IsSpanned for ConcreteMethodBody {
     fn span(&self) -> Span {
         self.span
     }
@@ -2390,7 +2390,7 @@ impl HasId for MethodParameterList {
     }
 }
 
-impl Spanned for MethodParameterList {
+impl IsSpanned for MethodParameterList {
     fn span(&self) -> Span {
         self.span
     }
@@ -2415,7 +2415,7 @@ impl HasId for MethodParameter {
     }
 }
 
-impl Spanned for MethodParameter {
+impl IsSpanned for MethodParameter {
     fn span(&self) -> Span {
         self.span
     }
@@ -2433,7 +2433,7 @@ impl HasId for MissingClassishMember {
     }
 }
 
-impl Spanned for MissingClassishMember {
+impl IsSpanned for MissingClassishMember {
     fn span(&self) -> Span {
         self.span
     }
@@ -2454,7 +2454,7 @@ impl HasId for ConstantEntry {
     }
 }
 
-impl Spanned for ConstantEntry {
+impl IsSpanned for ConstantEntry {
     fn span(&self) -> Span {
         self.span
     }
@@ -2475,7 +2475,7 @@ impl HasId for ClassishConstantEntry {
     }
 }
 
-impl Spanned for ClassishConstantEntry {
+impl IsSpanned for ClassishConstantEntry {
     fn span(&self) -> Span {
         self.span
     }
@@ -2497,7 +2497,7 @@ impl HasId for ConstantStatement {
     }
 }
 
-impl Spanned for ConstantStatement {
+impl IsSpanned for ConstantStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -2522,7 +2522,7 @@ impl HasId for ClassishConstant {
     }
 }
 
-impl Spanned for ClassishConstant {
+impl IsSpanned for ClassishConstant {
     fn span(&self) -> Span {
         self.span
     }
@@ -2545,7 +2545,7 @@ impl HasId for IfStatement {
     }
 }
 
-impl Spanned for IfStatement {
+impl IsSpanned for IfStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -2581,7 +2581,7 @@ impl HasId for IfStatementBodyStatement {
     }
 }
 
-impl Spanned for IfStatementBodyStatement {
+impl IsSpanned for IfStatementBodyStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -2605,7 +2605,7 @@ impl HasId for IfStatementBodyBlock {
     }
 }
 
-impl Spanned for IfStatementBodyBlock {
+impl IsSpanned for IfStatementBodyBlock {
     fn span(&self) -> Span {
         self.span
     }
@@ -2628,7 +2628,7 @@ impl HasId for IfStatementElseIf {
     }
 }
 
-impl Spanned for IfStatementElseIf {
+impl IsSpanned for IfStatementElseIf {
     fn span(&self) -> Span {
         self.span
     }
@@ -2648,7 +2648,7 @@ impl HasId for IfStatementElse {
     }
 }
 
-impl Spanned for IfStatementElse {
+impl IsSpanned for IfStatementElse {
     fn span(&self) -> Span {
         self.span
     }
@@ -2672,7 +2672,7 @@ impl HasId for IfStatementElseIfBlock {
     }
 }
 
-impl Spanned for IfStatementElseIfBlock {
+impl IsSpanned for IfStatementElseIfBlock {
     fn span(&self) -> Span {
         self.span
     }
@@ -2693,7 +2693,7 @@ impl HasId for IfStatementElseBlock {
     }
 }
 
-impl Spanned for IfStatementElseBlock {
+impl IsSpanned for IfStatementElseBlock {
     fn span(&self) -> Span {
         self.span
     }
@@ -2712,7 +2712,7 @@ impl HasId for DataType {
     }
 }
 
-impl Spanned for DataType {
+impl IsSpanned for DataType {
     fn span(&self) -> Span {
         self.span
     }
@@ -2733,7 +2733,7 @@ impl HasId for DeclareEntry {
     }
 }
 
-impl Spanned for DeclareEntry {
+impl IsSpanned for DeclareEntry {
     fn span(&self) -> Span {
         self.span
     }
@@ -2754,7 +2754,7 @@ impl HasId for DeclareEntryGroup {
     }
 }
 
-impl Spanned for DeclareEntryGroup {
+impl IsSpanned for DeclareEntryGroup {
     fn span(&self) -> Span {
         self.span
     }
@@ -2792,7 +2792,7 @@ impl HasId for DeclareBodyNoop {
     }
 }
 
-impl Spanned for DeclareBodyNoop {
+impl IsSpanned for DeclareBodyNoop {
     fn span(&self) -> Span {
         self.span
     }
@@ -2813,7 +2813,7 @@ impl HasId for DeclareBodyBraced {
     }
 }
 
-impl Spanned for DeclareBodyBraced {
+impl IsSpanned for DeclareBodyBraced {
     fn span(&self) -> Span {
         self.span
     }
@@ -2833,7 +2833,7 @@ impl HasId for DeclareBodyExpression {
     }
 }
 
-impl Spanned for DeclareBodyExpression {
+impl IsSpanned for DeclareBodyExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -2855,7 +2855,7 @@ impl HasId for DeclareBodyBlock {
     }
 }
 
-impl Spanned for DeclareBodyBlock {
+impl IsSpanned for DeclareBodyBlock {
     fn span(&self) -> Span {
         self.span
     }
@@ -2876,7 +2876,7 @@ impl HasId for DeclareStatement {
     }
 }
 
-impl Spanned for DeclareStatement {
+impl IsSpanned for DeclareStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -2898,7 +2898,7 @@ impl HasId for UnitEnumCase {
     }
 }
 
-impl Spanned for UnitEnumCase {
+impl IsSpanned for UnitEnumCase {
     fn span(&self) -> Span {
         self.span
     }
@@ -2934,7 +2934,7 @@ impl HasId for UnitEnumBody {
     }
 }
 
-impl Spanned for UnitEnumBody {
+impl IsSpanned for UnitEnumBody {
     fn span(&self) -> Span {
         self.span
     }
@@ -2957,7 +2957,7 @@ impl HasId for UnitEnumStatement {
     }
 }
 
-impl Spanned for UnitEnumStatement {
+impl IsSpanned for UnitEnumStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -2981,7 +2981,7 @@ impl HasId for BackedEnumCase {
     }
 }
 
-impl Spanned for BackedEnumCase {
+impl IsSpanned for BackedEnumCase {
     fn span(&self) -> Span {
         self.span
     }
@@ -3017,7 +3017,7 @@ impl HasId for BackedEnumBody {
     }
 }
 
-impl Spanned for BackedEnumBody {
+impl IsSpanned for BackedEnumBody {
     fn span(&self) -> Span {
         self.span
     }
@@ -3042,7 +3042,7 @@ impl HasId for BackedEnumStatement {
     }
 }
 
-impl Spanned for BackedEnumStatement {
+impl IsSpanned for BackedEnumStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -3055,7 +3055,7 @@ pub enum BackedEnumType {
     Invalid,
 }
 
-impl Spanned for BackedEnumType {
+impl IsSpanned for BackedEnumType {
     fn span(&self) -> Span {
         match self {
             BackedEnumType::String(span) => *span,
@@ -3079,7 +3079,7 @@ impl HasId for ReturnType {
     }
 }
 
-impl Spanned for ReturnType {
+impl IsSpanned for ReturnType {
     fn span(&self) -> Span {
         self.span
     }
@@ -3104,7 +3104,7 @@ impl HasId for FunctionParameter {
     }
 }
 
-impl Spanned for FunctionParameter {
+impl IsSpanned for FunctionParameter {
     fn span(&self) -> Span {
         self.span
     }
@@ -3126,7 +3126,7 @@ impl HasId for FunctionParameterList {
     }
 }
 
-impl Spanned for FunctionParameterList {
+impl IsSpanned for FunctionParameterList {
     fn span(&self) -> Span {
         self.span
     }
@@ -3148,7 +3148,7 @@ impl HasId for FunctionBody {
     }
 }
 
-impl Spanned for FunctionBody {
+impl IsSpanned for FunctionBody {
     fn span(&self) -> Span {
         self.span
     }
@@ -3174,7 +3174,7 @@ impl HasId for FunctionStatement {
     }
 }
 
-impl Spanned for FunctionStatement {
+impl IsSpanned for FunctionStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -3195,7 +3195,7 @@ impl HasId for ClosureUseVariable {
     }
 }
 
-impl Spanned for ClosureUseVariable {
+impl IsSpanned for ClosureUseVariable {
     fn span(&self) -> Span {
         self.span
     }
@@ -3218,7 +3218,7 @@ impl HasId for ClosureUse {
     }
 }
 
-impl Spanned for ClosureUse {
+impl IsSpanned for ClosureUse {
     fn span(&self) -> Span {
         self.span
     }
@@ -3245,7 +3245,7 @@ impl HasId for ClosureExpression {
     }
 }
 
-impl Spanned for ClosureExpression {
+impl IsSpanned for ClosureExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -3272,7 +3272,7 @@ impl HasId for ArrowFunctionExpression {
     }
 }
 
-impl Spanned for ArrowFunctionExpression {
+impl IsSpanned for ArrowFunctionExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -3293,7 +3293,7 @@ impl HasId for LabelStatement {
     }
 }
 
-impl Spanned for LabelStatement {
+impl IsSpanned for LabelStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -3315,7 +3315,7 @@ impl HasId for GotoStatement {
     }
 }
 
-impl Spanned for GotoStatement {
+impl IsSpanned for GotoStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -3349,7 +3349,7 @@ impl HasId for SimpleIdentifier {
     }
 }
 
-impl Spanned for SimpleIdentifier {
+impl IsSpanned for SimpleIdentifier {
     fn span(&self) -> Span {
         self.span
     }
@@ -3368,7 +3368,7 @@ impl HasId for DynamicIdentifier {
     }
 }
 
-impl Spanned for DynamicIdentifier {
+impl IsSpanned for DynamicIdentifier {
     fn span(&self) -> Span {
         self.span
     }
@@ -3388,7 +3388,7 @@ impl HasId for InterfaceExtends {
     }
 }
 
-impl Spanned for InterfaceExtends {
+impl IsSpanned for InterfaceExtends {
     fn span(&self) -> Span {
         self.span
     }
@@ -3409,7 +3409,7 @@ impl HasId for InterfaceBody {
     }
 }
 
-impl Spanned for InterfaceBody {
+impl IsSpanned for InterfaceBody {
     fn span(&self) -> Span {
         self.span
     }
@@ -3432,7 +3432,7 @@ impl HasId for InterfaceStatement {
     }
 }
 
-impl Spanned for InterfaceStatement {
+impl IsSpanned for InterfaceStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -3452,7 +3452,7 @@ impl HasId for Literal {
     }
 }
 
-impl Spanned for Literal {
+impl IsSpanned for Literal {
     fn span(&self) -> Span {
         self.span
     }
@@ -3483,7 +3483,7 @@ impl HasId for ForeachStatement {
     }
 }
 
-impl Spanned for ForeachStatement {
+impl IsSpanned for ForeachStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -3520,7 +3520,7 @@ impl HasId for ForeachStatementIteratorValue {
     }
 }
 
-impl Spanned for ForeachStatementIteratorValue {
+impl IsSpanned for ForeachStatementIteratorValue {
     fn span(&self) -> Span {
         self.span
     }
@@ -3544,7 +3544,7 @@ impl HasId for ForeachStatementIteratorKeyAndValue {
     }
 }
 
-impl Spanned for ForeachStatementIteratorKeyAndValue {
+impl IsSpanned for ForeachStatementIteratorKeyAndValue {
     fn span(&self) -> Span {
         self.span
     }
@@ -3578,7 +3578,7 @@ impl HasId for ForeachStatementBodyStatement {
     }
 }
 
-impl Spanned for ForeachStatementBodyStatement {
+impl IsSpanned for ForeachStatementBodyStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -3600,7 +3600,7 @@ impl HasId for ForeachStatementBodyBlock {
     }
 }
 
-impl Spanned for ForeachStatementBodyBlock {
+impl IsSpanned for ForeachStatementBodyBlock {
     fn span(&self) -> Span {
         self.span
     }
@@ -3623,7 +3623,7 @@ impl HasId for ForStatement {
     }
 }
 
-impl Spanned for ForStatement {
+impl IsSpanned for ForStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -3646,7 +3646,7 @@ impl HasId for ForStatementIterator {
     }
 }
 
-impl Spanned for ForStatementIterator {
+impl IsSpanned for ForStatementIterator {
     fn span(&self) -> Span {
         self.span
     }
@@ -3680,7 +3680,7 @@ impl HasId for ForStatementBodyStatement {
     }
 }
 
-impl Spanned for ForStatementBodyStatement {
+impl IsSpanned for ForStatementBodyStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -3702,7 +3702,7 @@ impl HasId for ForStatementBodyBlock {
     }
 }
 
-impl Spanned for ForStatementBodyBlock {
+impl IsSpanned for ForStatementBodyBlock {
     fn span(&self) -> Span {
         self.span
     }
@@ -3727,7 +3727,7 @@ impl HasId for DoWhileStatement {
     }
 }
 
-impl Spanned for DoWhileStatement {
+impl IsSpanned for DoWhileStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -3750,7 +3750,7 @@ impl HasId for WhileStatement {
     }
 }
 
-impl Spanned for WhileStatement {
+impl IsSpanned for WhileStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -3784,7 +3784,7 @@ impl HasId for WhileStatementBodyStatement {
     }
 }
 
-impl Spanned for WhileStatementBodyStatement {
+impl IsSpanned for WhileStatementBodyStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -3806,7 +3806,7 @@ impl HasId for WhileStatementBodyBlock {
     }
 }
 
-impl Spanned for WhileStatementBodyBlock {
+impl IsSpanned for WhileStatementBodyBlock {
     fn span(&self) -> Span {
         self.span
     }
@@ -3854,7 +3854,7 @@ impl HasId for ParenthesizedLevel {
     }
 }
 
-impl Spanned for ParenthesizedLevel {
+impl IsSpanned for ParenthesizedLevel {
     fn span(&self) -> Span {
         self.span
     }
@@ -3875,7 +3875,7 @@ impl HasId for BreakStatement {
     }
 }
 
-impl Spanned for BreakStatement {
+impl IsSpanned for BreakStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -3896,7 +3896,7 @@ impl HasId for ContinueStatement {
     }
 }
 
-impl Spanned for ContinueStatement {
+impl IsSpanned for ContinueStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -3909,7 +3909,7 @@ pub enum VisibilityModifier {
     Private(Span),
 }
 
-impl Spanned for VisibilityModifier {
+impl IsSpanned for VisibilityModifier {
     fn span(&self) -> Span {
         match self {
             VisibilityModifier::Public(span) => *span,
@@ -3931,7 +3931,7 @@ pub enum PromotedPropertyModifier {
     Readonly(Span),
 }
 
-impl Spanned for PromotedPropertyModifier {
+impl IsSpanned for PromotedPropertyModifier {
     fn span(&self) -> Span {
         match self {
             PromotedPropertyModifier::Public(span) => *span,
@@ -3959,7 +3959,7 @@ impl HasId for PromotedPropertyModifierGroup {
     }
 }
 
-impl Spanned for PromotedPropertyModifierGroup {
+impl IsSpanned for PromotedPropertyModifierGroup {
     fn span(&self) -> Span {
         self.span
     }
@@ -3977,7 +3977,7 @@ pub enum PropertyModifier {
     Readonly(Span),
 }
 
-impl Spanned for PropertyModifier {
+impl IsSpanned for PropertyModifier {
     fn span(&self) -> Span {
         match self {
             PropertyModifier::Public(span) => *span,
@@ -4006,7 +4006,7 @@ impl HasId for PropertyModifierGroup {
     }
 }
 
-impl Spanned for PropertyModifierGroup {
+impl IsSpanned for PropertyModifierGroup {
     fn span(&self) -> Span {
         self.span
     }
@@ -4022,7 +4022,7 @@ pub enum MethodModifier {
     Final(Span),
 }
 
-impl Spanned for MethodModifier {
+impl IsSpanned for MethodModifier {
     fn span(&self) -> Span {
         match self {
             MethodModifier::Public(span) => *span,
@@ -4049,7 +4049,7 @@ impl HasId for MethodModifierGroup {
     }
 }
 
-impl Spanned for MethodModifierGroup {
+impl IsSpanned for MethodModifierGroup {
     fn span(&self) -> Span {
         self.span
     }
@@ -4062,7 +4062,7 @@ pub enum ClassModifier {
     Readonly(Span),
 }
 
-impl Spanned for ClassModifier {
+impl IsSpanned for ClassModifier {
     fn span(&self) -> Span {
         match self {
             ClassModifier::Abstract(span) => *span,
@@ -4086,7 +4086,7 @@ impl HasId for ClassModifierGroup {
     }
 }
 
-impl Spanned for ClassModifierGroup {
+impl IsSpanned for ClassModifierGroup {
     fn span(&self) -> Span {
         self.span
     }
@@ -4100,7 +4100,7 @@ pub enum ConstantModifier {
     Final(Span),
 }
 
-impl Spanned for ConstantModifier {
+impl IsSpanned for ConstantModifier {
     fn span(&self) -> Span {
         match self {
             ConstantModifier::Public(span) => *span,
@@ -4125,7 +4125,7 @@ impl HasId for ConstantModifierGroup {
     }
 }
 
-impl Spanned for ConstantModifierGroup {
+impl IsSpanned for ConstantModifierGroup {
     fn span(&self) -> Span {
         self.span
     }
@@ -4147,7 +4147,7 @@ impl HasId for UnbracedNamespace {
     }
 }
 
-impl Spanned for UnbracedNamespace {
+impl IsSpanned for UnbracedNamespace {
     fn span(&self) -> Span {
         self.span
     }
@@ -4168,7 +4168,7 @@ impl HasId for BracedNamespace {
     }
 }
 
-impl Spanned for BracedNamespace {
+impl IsSpanned for BracedNamespace {
     fn span(&self) -> Span {
         self.span
     }
@@ -4189,7 +4189,7 @@ impl HasId for BracedNamespaceBody {
     }
 }
 
-impl Spanned for BracedNamespaceBody {
+impl IsSpanned for BracedNamespaceBody {
     fn span(&self) -> Span {
         self.span
     }
@@ -4223,7 +4223,7 @@ impl HasId for ArithmeticOperationExpression {
     }
 }
 
-impl Spanned for ArithmeticOperationExpression {
+impl IsSpanned for ArithmeticOperationExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -4333,7 +4333,7 @@ impl HasId for AssignmentOperationExpression {
     }
 }
 
-impl Spanned for AssignmentOperationExpression {
+impl IsSpanned for AssignmentOperationExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -4357,7 +4357,7 @@ pub enum AssignmentOperationKind {
     Coalesce(Span),
 }
 
-impl Spanned for AssignmentOperationKind {
+impl IsSpanned for AssignmentOperationKind {
     fn span(&self) -> Span {
         match self {
             AssignmentOperationKind::Assign(span) => *span,
@@ -4392,7 +4392,7 @@ impl HasId for BitwiseOperationExpression {
     }
 }
 
-impl Spanned for BitwiseOperationExpression {
+impl IsSpanned for BitwiseOperationExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -4463,7 +4463,7 @@ impl HasId for ComparisonOperationExpression {
     }
 }
 
-impl Spanned for ComparisonOperationExpression {
+impl IsSpanned for ComparisonOperationExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -4563,7 +4563,7 @@ impl HasId for LogicalOperationExpression {
     }
 }
 
-impl Spanned for LogicalOperationExpression {
+impl IsSpanned for LogicalOperationExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -4634,7 +4634,7 @@ impl HasId for Name {
     }
 }
 
-impl Spanned for Name {
+impl IsSpanned for Name {
     fn span(&self) -> Span {
         self.span
     }
@@ -4705,7 +4705,7 @@ impl HasId for SimpleProperty {
     }
 }
 
-impl Spanned for SimpleProperty {
+impl IsSpanned for SimpleProperty {
     fn span(&self) -> Span {
         self.span
     }
@@ -4728,7 +4728,7 @@ impl HasId for HookedProperty {
     }
 }
 
-impl Spanned for HookedProperty {
+impl IsSpanned for HookedProperty {
     fn span(&self) -> Span {
         self.span
     }
@@ -4749,7 +4749,7 @@ impl HasId for PropertyHookList {
     }
 }
 
-impl Spanned for PropertyHookList {
+impl IsSpanned for PropertyHookList {
     fn span(&self) -> Span {
         self.span
     }
@@ -4770,7 +4770,7 @@ impl HasId for PropertyHook {
     }
 }
 
-impl Spanned for PropertyHook {
+impl IsSpanned for PropertyHook {
     fn span(&self) -> Span {
         self.span
     }
@@ -4793,7 +4793,7 @@ impl HasId for PropertyHookBody {
     }
 }
 
-impl Spanned for PropertyHookBody {
+impl IsSpanned for PropertyHookBody {
     fn span(&self) -> Span {
         match self {
             PropertyHookBody::Abstract(span) => *span,
@@ -4833,7 +4833,7 @@ impl HasId for ConcretePropertyHookBodyBlock {
     }
 }
 
-impl Spanned for ConcretePropertyHookBodyBlock {
+impl IsSpanned for ConcretePropertyHookBodyBlock {
     fn span(&self) -> Span {
         self.span
     }
@@ -4854,7 +4854,7 @@ impl HasId for ConcretePropertyHookBodyExpression {
     }
 }
 
-impl Spanned for ConcretePropertyHookBodyExpression {
+impl IsSpanned for ConcretePropertyHookBodyExpression {
     fn span(&self) -> Span {
         self.span
     }
@@ -4867,7 +4867,7 @@ pub enum PropertyHookKind {
     Invalid(Span),
 }
 
-impl Spanned for PropertyHookKind {
+impl IsSpanned for PropertyHookKind {
     fn span(&self) -> Span {
         match self {
             PropertyHookKind::Get(span) => *span,
@@ -4891,7 +4891,7 @@ impl HasId for PropertyEntry {
     }
 }
 
-impl Spanned for PropertyEntry {
+impl IsSpanned for PropertyEntry {
     fn span(&self) -> Span {
         self.span
     }
@@ -4925,7 +4925,7 @@ impl HasId for UninitializedPropertyEntry {
     }
 }
 
-impl Spanned for UninitializedPropertyEntry {
+impl IsSpanned for UninitializedPropertyEntry {
     fn span(&self) -> Span {
         self.span
     }
@@ -4946,7 +4946,7 @@ impl HasId for InitializedPropertyEntry {
     }
 }
 
-impl Spanned for InitializedPropertyEntry {
+impl IsSpanned for InitializedPropertyEntry {
     fn span(&self) -> Span {
         self.span
     }
@@ -4967,7 +4967,7 @@ impl HasId for TraitBody {
     }
 }
 
-impl Spanned for TraitBody {
+impl IsSpanned for TraitBody {
     fn span(&self) -> Span {
         self.span
     }
@@ -4989,7 +4989,7 @@ impl HasId for TraitStatement {
     }
 }
 
-impl Spanned for TraitStatement {
+impl IsSpanned for TraitStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -5010,7 +5010,7 @@ impl HasId for TraitUsage {
     }
 }
 
-impl Spanned for TraitUsage {
+impl IsSpanned for TraitUsage {
     fn span(&self) -> Span {
         self.span
     }
@@ -5029,7 +5029,7 @@ impl HasId for TraitUsageAdaptation {
     }
 }
 
-impl Spanned for TraitUsageAdaptation {
+impl IsSpanned for TraitUsageAdaptation {
     fn span(&self) -> Span {
         self.span
     }
@@ -5068,7 +5068,7 @@ impl HasId for TraitUsageAdaptationAlias {
     }
 }
 
-impl Spanned for TraitUsageAdaptationAlias {
+impl IsSpanned for TraitUsageAdaptationAlias {
     fn span(&self) -> Span {
         self.span
     }
@@ -5089,7 +5089,7 @@ impl HasId for TraitUsageAdaptationVisibility {
     }
 }
 
-impl Spanned for TraitUsageAdaptationVisibility {
+impl IsSpanned for TraitUsageAdaptationVisibility {
     fn span(&self) -> Span {
         self.span
     }
@@ -5110,7 +5110,7 @@ impl HasId for TraitUsageAdaptationPrecedence {
     }
 }
 
-impl Spanned for TraitUsageAdaptationPrecedence {
+impl IsSpanned for TraitUsageAdaptationPrecedence {
     fn span(&self) -> Span {
         self.span
     }
@@ -5129,7 +5129,7 @@ impl HasId for CatchType {
     }
 }
 
-impl Spanned for CatchType {
+impl IsSpanned for CatchType {
     fn span(&self) -> Span {
         self.span
     }
@@ -5163,7 +5163,7 @@ impl HasId for CatchTypeKindIdentifier {
     }
 }
 
-impl Spanned for CatchTypeKindIdentifier {
+impl IsSpanned for CatchTypeKindIdentifier {
     fn span(&self) -> Span {
         self.span
     }
@@ -5182,7 +5182,7 @@ impl HasId for CatchTypeKindUnion {
     }
 }
 
-impl Spanned for CatchTypeKindUnion {
+impl IsSpanned for CatchTypeKindUnion {
     fn span(&self) -> Span {
         self.span
     }
@@ -5205,7 +5205,7 @@ impl HasId for TryStatement {
     }
 }
 
-impl Spanned for TryStatement {
+impl IsSpanned for TryStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -5228,7 +5228,7 @@ impl HasId for CatchBlock {
     }
 }
 
-impl Spanned for CatchBlock {
+impl IsSpanned for CatchBlock {
     fn span(&self) -> Span {
         self.span
     }
@@ -5249,7 +5249,7 @@ impl HasId for FinallyBlock {
     }
 }
 
-impl Spanned for FinallyBlock {
+impl IsSpanned for FinallyBlock {
     fn span(&self) -> Span {
         self.span
     }
@@ -5286,7 +5286,7 @@ impl HasId for SimpleVariable {
     }
 }
 
-impl Spanned for SimpleVariable {
+impl IsSpanned for SimpleVariable {
     fn span(&self) -> Span {
         self.span
     }
@@ -5305,7 +5305,7 @@ impl HasId for VariableVariable {
     }
 }
 
-impl Spanned for VariableVariable {
+impl IsSpanned for VariableVariable {
     fn span(&self) -> Span {
         self.span
     }
@@ -5326,7 +5326,7 @@ impl HasId for BracedVariableVariable {
     }
 }
 
-impl Spanned for BracedVariableVariable {
+impl IsSpanned for BracedVariableVariable {
     fn span(&self) -> Span {
         self.span
     }
@@ -5339,7 +5339,7 @@ pub enum Ending {
     CloseTag(Span),
 }
 
-impl Spanned for Ending {
+impl IsSpanned for Ending {
     fn span(&self) -> Span {
         match self {
             Ending::Missing(span) => *span,
@@ -5364,7 +5364,7 @@ impl HasId for StaticStatement {
     }
 }
 
-impl Spanned for StaticStatement {
+impl IsSpanned for StaticStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -5387,7 +5387,7 @@ impl HasId for SwitchStatement {
     }
 }
 
-impl Spanned for SwitchStatement {
+impl IsSpanned for SwitchStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -5408,7 +5408,7 @@ impl HasId for EchoStatement {
     }
 }
 
-impl Spanned for EchoStatement {
+impl IsSpanned for EchoStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -5429,7 +5429,7 @@ impl HasId for ReturnStatement {
     }
 }
 
-impl Spanned for ReturnStatement {
+impl IsSpanned for ReturnStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -5449,7 +5449,7 @@ impl HasId for UseStatement {
     }
 }
 
-impl Spanned for UseStatement {
+impl IsSpanned for UseStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -5470,7 +5470,7 @@ impl HasId for GroupUseStatement {
     }
 }
 
-impl Spanned for GroupUseStatement {
+impl IsSpanned for GroupUseStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -5489,7 +5489,7 @@ impl HasId for HaltCompilerStatement {
     }
 }
 
-impl Spanned for HaltCompilerStatement {
+impl IsSpanned for HaltCompilerStatement {
     fn span(&self) -> Span {
         self.span
     }
@@ -5509,7 +5509,7 @@ impl HasId for StaticVar {
     }
 }
 
-impl Spanned for StaticVar {
+impl IsSpanned for StaticVar {
     fn span(&self) -> Span {
         self.span
     }
@@ -5528,7 +5528,7 @@ impl HasId for Comment {
     }
 }
 
-impl Spanned for Comment {
+impl IsSpanned for Comment {
     fn span(&self) -> Span {
         self.span
     }
@@ -5566,7 +5566,7 @@ impl HasId for SingleLineComment {
     }
 }
 
-impl Spanned for SingleLineComment {
+impl IsSpanned for SingleLineComment {
     fn span(&self) -> Span {
         self.span
     }
@@ -5585,7 +5585,7 @@ impl HasId for MultiLineComment {
     }
 }
 
-impl Spanned for MultiLineComment {
+impl IsSpanned for MultiLineComment {
     fn span(&self) -> Span {
         self.span
     }
@@ -5604,7 +5604,7 @@ impl HasId for HashMarkComment {
     }
 }
 
-impl Spanned for HashMarkComment {
+impl IsSpanned for HashMarkComment {
     fn span(&self) -> Span {
         self.span
     }
@@ -5623,7 +5623,7 @@ impl HasId for DocBlockComment {
     }
 }
 
-impl Spanned for DocBlockComment {
+impl IsSpanned for DocBlockComment {
     fn span(&self) -> Span {
         self.span
     }
@@ -5642,7 +5642,7 @@ impl HasId for DocBlock {
     }
 }
 
-impl Spanned for DocBlock {
+impl IsSpanned for DocBlock {
     fn span(&self) -> Span {
         self.span
     }
@@ -5676,7 +5676,7 @@ impl HasId for DocBlockTextNode {
     }
 }
 
-impl Spanned for DocBlockTextNode {
+impl IsSpanned for DocBlockTextNode {
     fn span(&self) -> Span {
         self.span
     }
@@ -5695,7 +5695,7 @@ impl HasId for DocBlockTagNode {
     }
 }
 
-impl Spanned for DocBlockTagNode {
+impl IsSpanned for DocBlockTagNode {
     fn span(&self) -> Span {
         self.span
     }
@@ -5754,7 +5754,7 @@ impl HasId for DocBlockParamClosureThisTag {
     }
 }
 
-impl Spanned for DocBlockParamClosureThisTag {
+impl IsSpanned for DocBlockParamClosureThisTag {
     fn span(&self) -> Span {
         self.span
     }
@@ -5778,7 +5778,7 @@ impl HasId for DocBlockParamTag {
     }
 }
 
-impl Spanned for DocBlockParamTag {
+impl IsSpanned for DocBlockParamTag {
     fn span(&self) -> Span {
         self.span
     }
@@ -5799,7 +5799,7 @@ impl HasId for DocBlockReturnTag {
     }
 }
 
-impl Spanned for DocBlockReturnTag {
+impl IsSpanned for DocBlockReturnTag {
     fn span(&self) -> Span {
         self.span
     }
@@ -5820,7 +5820,7 @@ impl HasId for DocBlockThrowsTag {
     }
 }
 
-impl Spanned for DocBlockThrowsTag {
+impl IsSpanned for DocBlockThrowsTag {
     fn span(&self) -> Span {
         self.span
     }
@@ -5842,7 +5842,7 @@ impl HasId for DocBlockVarTag {
     }
 }
 
-impl Spanned for DocBlockVarTag {
+impl IsSpanned for DocBlockVarTag {
     fn span(&self) -> Span {
         self.span
     }
@@ -5864,7 +5864,7 @@ impl HasId for DocBlockPropertyTag {
     }
 }
 
-impl Spanned for DocBlockPropertyTag {
+impl IsSpanned for DocBlockPropertyTag {
     fn span(&self) -> Span {
         self.span
     }
@@ -5889,7 +5889,7 @@ impl HasId for DocBlockMethodTag {
     }
 }
 
-impl Spanned for DocBlockMethodTag {
+impl IsSpanned for DocBlockMethodTag {
     fn span(&self) -> Span {
         self.span
     }
@@ -5912,7 +5912,7 @@ impl HasId for DocBlockTemplateTagValue {
     }
 }
 
-impl Spanned for DocBlockTemplateTagValue {
+impl IsSpanned for DocBlockTemplateTagValue {
     fn span(&self) -> Span {
         self.span
     }
@@ -5932,7 +5932,7 @@ impl HasId for DocBlockTemplateTag {
     }
 }
 
-impl Spanned for DocBlockTemplateTag {
+impl IsSpanned for DocBlockTemplateTag {
     fn span(&self) -> Span {
         self.span
     }
@@ -5953,7 +5953,7 @@ impl HasId for DocBlockExtendsTag {
     }
 }
 
-impl Spanned for DocBlockExtendsTag {
+impl IsSpanned for DocBlockExtendsTag {
     fn span(&self) -> Span {
         self.span
     }
@@ -5974,7 +5974,7 @@ impl HasId for DocBlockImplementsTag {
     }
 }
 
-impl Spanned for DocBlockImplementsTag {
+impl IsSpanned for DocBlockImplementsTag {
     fn span(&self) -> Span {
         self.span
     }
@@ -5995,7 +5995,7 @@ impl HasId for DocBlockUsesTag {
     }
 }
 
-impl Spanned for DocBlockUsesTag {
+impl IsSpanned for DocBlockUsesTag {
     fn span(&self) -> Span {
         self.span
     }
@@ -6015,7 +6015,7 @@ impl HasId for DocBlockDeprecatedTag {
     }
 }
 
-impl Spanned for DocBlockDeprecatedTag {
+impl IsSpanned for DocBlockDeprecatedTag {
     fn span(&self) -> Span {
         self.span
     }
@@ -6035,7 +6035,7 @@ impl HasId for DocBlockGenericTag {
     }
 }
 
-impl Spanned for DocBlockGenericTag {
+impl IsSpanned for DocBlockGenericTag {
     fn span(&self) -> Span {
         self.span
     }

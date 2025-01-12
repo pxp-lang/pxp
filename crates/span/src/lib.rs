@@ -70,7 +70,7 @@ impl Span {
 
 pub type ByteOffset = usize;
 
-pub trait Spanned {
+pub trait IsSpanned {
     fn span(&self) -> Span;
 
     fn start_line(&self, source: &[u8]) -> ByteOffset {
@@ -94,7 +94,7 @@ pub trait Spanned {
     }
 }
 
-impl<T: Spanned> Spanned for Vec<T> {
+impl<T: IsSpanned> IsSpanned for Vec<T> {
     fn span(&self) -> Span {
         if self.is_empty() {
             Span::default()
@@ -109,7 +109,7 @@ impl<T: Spanned> Spanned for Vec<T> {
     }
 }
 
-impl<T: Spanned> Spanned for Option<T> {
+impl<T: IsSpanned> IsSpanned for Option<T> {
     fn span(&self) -> Span {
         match self {
             Some(t) => t.span(),
@@ -118,25 +118,25 @@ impl<T: Spanned> Spanned for Option<T> {
     }
 }
 
-impl Spanned for Span {
+impl IsSpanned for Span {
     fn span(&self) -> Span {
         *self
     }
 }
 
-impl<T: Spanned> Spanned for Box<T> {
+impl<T: IsSpanned> IsSpanned for Box<T> {
     fn span(&self) -> Span {
         self.as_ref().span()
     }
 }
 
-impl<T: Spanned> Spanned for &T {
+impl<T: IsSpanned> IsSpanned for &T {
     fn span(&self) -> Span {
         (*self).span()
     }
 }
 
-impl<T: Spanned> Spanned for &mut T {
+impl<T: IsSpanned> IsSpanned for &mut T {
     fn span(&self) -> Span {
         (**self).span()
     }
@@ -204,7 +204,7 @@ impl<'a> View<'a> {
     }
 }
 
-impl<'a> Spanned for View<'a> {
+impl<'a> IsSpanned for View<'a> {
     fn span(&self) -> Span {
         self.to_span()
     }
@@ -261,7 +261,7 @@ mod tests {
         span: Span,
     }
 
-    impl Spanned for TestElement {
+    impl IsSpanned for TestElement {
         fn span(&self) -> Span {
             self.span
         }

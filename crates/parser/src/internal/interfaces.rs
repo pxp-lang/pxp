@@ -4,7 +4,7 @@ use pxp_ast::UseKind;
 use pxp_ast::*;
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
-use pxp_span::Spanned;
+use pxp_span::IsSpanned;
 use pxp_token::TokenKind;
 
 use super::diagnostics::ParserDiagnostic;

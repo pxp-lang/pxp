@@ -8,7 +8,7 @@ use pxp_ast::{ExpressionKind, NewExpression};
 
 use pxp_diagnostics::Severity;
 use pxp_span::Span;
-use pxp_span::Spanned;
+use pxp_span::IsSpanned;
 use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {

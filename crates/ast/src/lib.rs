@@ -13,7 +13,7 @@ pub mod visitor;
 pub use generated::*;
 pub use id::HasId;
 pub use node::Node;
-use pxp_span::{Span, Spanned};
+use pxp_span::{IsSpanned, Span};
 use pxp_token::{Token, TokenKind};
 pub use visibility::*;
 
@@ -112,7 +112,7 @@ impl<'a> Node<'a> {
     }
 }
 
-impl Spanned for Argument {
+impl IsSpanned for Argument {
     fn span(&self) -> Span {
         match self {
             Argument::Positional(arg) => arg.span(),
@@ -121,7 +121,7 @@ impl Spanned for Argument {
     }
 }
 
-impl Spanned for StringPart {
+impl IsSpanned for StringPart {
     fn span(&self) -> Span {
         match self {
             StringPart::Literal(LiteralStringPart { span, .. }) => *span,
@@ -130,7 +130,7 @@ impl Spanned for StringPart {
     }
 }
 
-impl Spanned for ClassishMember {
+impl IsSpanned for ClassishMember {
     fn span(&self) -> Span {
         match self {
             ClassishMember::Constant(inner) => inner.span(),
@@ -142,7 +142,7 @@ impl Spanned for ClassishMember {
     }
 }
 
-impl Spanned for IfStatementBody {
+impl IsSpanned for IfStatementBody {
     fn span(&self) -> Span {
         match self {
             IfStatementBody::Statement(IfStatementBodyStatement { span, .. }) => *span,
@@ -151,7 +151,7 @@ impl Spanned for IfStatementBody {
     }
 }
 
-impl Spanned for DeclareBody {
+impl IsSpanned for DeclareBody {
     fn span(&self) -> Span {
         match self {
             DeclareBody::Noop(DeclareBodyNoop { span, .. }) => *span,
@@ -162,7 +162,7 @@ impl Spanned for DeclareBody {
     }
 }
 
-impl Spanned for UnitEnumMember {
+impl IsSpanned for UnitEnumMember {
     fn span(&self) -> Span {
         match self {
             UnitEnumMember::Case(inner) => inner.span(),
@@ -171,7 +171,7 @@ impl Spanned for UnitEnumMember {
     }
 }
 
-impl Spanned for BackedEnumMember {
+impl IsSpanned for BackedEnumMember {
     fn span(&self) -> Span {
         match self {
             BackedEnumMember::Case(inner) => inner.span(),
@@ -180,7 +180,7 @@ impl Spanned for BackedEnumMember {
     }
 }
 
-impl Spanned for ForeachStatementIterator {
+impl IsSpanned for ForeachStatementIterator {
     fn span(&self) -> Span {
         match self {
             ForeachStatementIterator::Value(ForeachStatementIteratorValue { span, .. }) => *span,
@@ -192,7 +192,7 @@ impl Spanned for ForeachStatementIterator {
     }
 }
 
-impl Spanned for ForeachStatementBody {
+impl IsSpanned for ForeachStatementBody {
     fn span(&self) -> Span {
         match self {
             ForeachStatementBody::Statement(inner) => inner.span(),
@@ -201,7 +201,7 @@ impl Spanned for ForeachStatementBody {
     }
 }
 
-impl Spanned for ForStatementBody {
+impl IsSpanned for ForStatementBody {
     fn span(&self) -> Span {
         match self {
             ForStatementBody::Statement(inner) => inner.span(),
@@ -210,7 +210,7 @@ impl Spanned for ForStatementBody {
     }
 }
 
-impl Spanned for WhileStatementBody {
+impl IsSpanned for WhileStatementBody {
     fn span(&self) -> Span {
         match self {
             WhileStatementBody::Statement(inner) => inner.span(),
@@ -219,7 +219,7 @@ impl Spanned for WhileStatementBody {
     }
 }
 
-impl Spanned for Level {
+impl IsSpanned for Level {
     fn span(&self) -> Span {
         match self {
             Level::Literal(LiteralLevel { literal, .. }) => literal.span(),
@@ -228,13 +228,13 @@ impl Spanned for Level {
     }
 }
 
-impl Spanned for LiteralLevel {
+impl IsSpanned for LiteralLevel {
     fn span(&self) -> Span {
         self.literal.span()
     }
 }
 
-impl Spanned for ArithmeticOperationKind {
+impl IsSpanned for ArithmeticOperationKind {
     fn span(&self) -> Span {
         match self {
             ArithmeticOperationKind::Addition { left, right, .. } => {
@@ -277,7 +277,7 @@ impl Spanned for ArithmeticOperationKind {
     }
 }
 
-impl Spanned for BitwiseOperationKind {
+impl IsSpanned for BitwiseOperationKind {
     fn span(&self) -> Span {
         match self {
             BitwiseOperationKind::And { left, right, .. } => Span::combine(left.span, right.span),
@@ -294,7 +294,7 @@ impl Spanned for BitwiseOperationKind {
     }
 }
 
-impl Spanned for ComparisonOperationKind {
+impl IsSpanned for ComparisonOperationKind {
     fn span(&self) -> Span {
         match self {
             ComparisonOperationKind::Equal { left, right, .. } => {
@@ -331,7 +331,7 @@ impl Spanned for ComparisonOperationKind {
     }
 }
 
-impl Spanned for LogicalOperationKind {
+impl IsSpanned for LogicalOperationKind {
     fn span(&self) -> Span {
         match self {
             LogicalOperationKind::And { left, right, .. } => Span::combine(left.span, right.span),
@@ -350,7 +350,7 @@ impl Spanned for LogicalOperationKind {
     }
 }
 
-impl Spanned for PropertyEntryKind {
+impl IsSpanned for PropertyEntryKind {
     fn span(&self) -> Span {
         match self {
             PropertyEntryKind::Uninitialized(inner) => inner.span(),
@@ -359,7 +359,7 @@ impl Spanned for PropertyEntryKind {
     }
 }
 
-impl Spanned for TraitUsageAdaptationKind {
+impl IsSpanned for TraitUsageAdaptationKind {
     fn span(&self) -> Span {
         match self {
             TraitUsageAdaptationKind::Alias(inner) => inner.span(),
@@ -369,7 +369,7 @@ impl Spanned for TraitUsageAdaptationKind {
     }
 }
 
-impl Spanned for CatchTypeKind {
+impl IsSpanned for CatchTypeKind {
     fn span(&self) -> Span {
         match self {
             CatchTypeKind::Identifier(inner) => inner.span(),
@@ -378,7 +378,7 @@ impl Spanned for CatchTypeKind {
     }
 }
 
-impl Spanned for Property {
+impl IsSpanned for Property {
     fn span(&self) -> Span {
         match self {
             Property::Simple(inner) => inner.span(),
@@ -387,7 +387,7 @@ impl Spanned for Property {
     }
 }
 
-impl Spanned for ConcretePropertyHookBody {
+impl IsSpanned for ConcretePropertyHookBody {
     fn span(&self) -> Span {
         match self {
             ConcretePropertyHookBody::Block(inner) => inner.span(),
@@ -402,7 +402,7 @@ impl FunctionParameterList {
     }
 }
 
-impl Spanned for CommentKind {
+impl IsSpanned for CommentKind {
     fn span(&self) -> Span {
         match self {
             CommentKind::SingleLine(inner) => inner.span,
@@ -413,7 +413,7 @@ impl Spanned for CommentKind {
     }
 }
 
-impl Spanned for DocBlockNode {
+impl IsSpanned for DocBlockNode {
     fn span(&self) -> Span {
         match self {
             DocBlockNode::Text(inner) => inner.span,
@@ -422,7 +422,7 @@ impl Spanned for DocBlockNode {
     }
 }
 
-impl Spanned for DocBlockTag {
+impl IsSpanned for DocBlockTag {
     fn span(&self) -> Span {
         match self {
             DocBlockTag::ParamClosureThis(inner) => inner.span,
@@ -452,7 +452,7 @@ impl Method {
     }
 }
 
-impl Spanned for MethodBodyKind {
+impl IsSpanned for MethodBodyKind {
     fn span(&self) -> Span {
         match self {
             MethodBodyKind::Concrete(inner) => inner.span(),

@@ -15,7 +15,7 @@ $output = <<<'RUST'
 use crate::{HasId, utils::CommaSeparated, Node, name::NameQualification};
 use pxp_type::Type;
 use pxp_token::OwnedToken;
-use pxp_span::{Span, Spanned};
+use pxp_span::{Span, IsSpanned};
 use pxp_bytestring::ByteString;
 use std::ptr::NonNull;
 
@@ -167,7 +167,7 @@ foreach ($ast as $node => $structure) {
     }
 
     $output .= feature_flag($structure);
-    $output .= "impl Spanned for {$node} {\n";
+    $output .= "impl IsSpanned for {$node} {\n";
     $output .= "    fn span(&self) -> Span {\n";
     
     if (isset($structure['span'])) {

@@ -1,8 +1,8 @@
 use std::slice::Iter;
 use std::slice::IterMut;
 
+use pxp_span::IsSpanned;
 use pxp_span::Span;
-use pxp_span::Spanned;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 
@@ -29,7 +29,7 @@ impl<T> CommaSeparated<T> {
     }
 }
 
-impl<T: Spanned> Spanned for CommaSeparated<T> {
+impl<T: IsSpanned> IsSpanned for CommaSeparated<T> {
     fn span(&self) -> Span {
         self.inner.span()
     }

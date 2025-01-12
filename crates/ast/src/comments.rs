@@ -1,10 +1,10 @@
 use std::slice::Iter;
 
-use pxp_span::{Span, Spanned};
+use pxp_span::{IsSpanned, Span};
 
 use crate::{Comment, CommentGroup};
 
-impl Spanned for CommentGroup {
+impl IsSpanned for CommentGroup {
     fn span(&self) -> Span {
         self.comments.span()
     }

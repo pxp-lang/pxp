@@ -1,6 +1,6 @@
 use crate::{NodeId, SimpleVariable, Variable};
 use pxp_bytestring::ByteString;
-use pxp_span::{Span, Spanned};
+use pxp_span::{IsSpanned, Span};
 
 impl SimpleVariable {
     pub fn missing(id: NodeId, span: Span) -> Self {
@@ -17,7 +17,7 @@ impl SimpleVariable {
     }
 }
 
-impl Spanned for Variable {
+impl IsSpanned for Variable {
     fn span(&self) -> Span {
         match self {
             Self::SimpleVariable(simple) => simple.span,

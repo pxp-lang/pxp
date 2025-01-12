@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 use pxp_bytestring::{ByteStr, ByteString};
-use pxp_span::{Span, Spanned};
+use pxp_span::{Span, IsSpanned};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 
@@ -238,13 +238,13 @@ pub struct OwnedToken {
     pub symbol: ByteString,
 }
 
-impl Spanned for Token<'_> {
+impl IsSpanned for Token<'_> {
     fn span(&self) -> Span {
         self.span
     }
 }
 
-impl Spanned for OwnedToken {
+impl IsSpanned for OwnedToken {
     fn span(&self) -> Span {
         self.span
     }
