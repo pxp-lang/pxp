@@ -54,7 +54,7 @@ fn parse_file(path: &Path, dump: bool, print_diagnostics: bool) -> anyhow::Resul
         for diagnostic in &ast.diagnostics {
             println!(
                 "{} on line {}, column {}",
-                diagnostic.kind.message(),
+                diagnostic.kind.get_message(),
                 diagnostic.span.start_line(&contents),
                 diagnostic.span.start_column(&contents)
             );

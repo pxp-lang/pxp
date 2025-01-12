@@ -10,7 +10,7 @@ pub enum LexerDiagnostic {
 }
 
 impl DiagnosticKind for LexerDiagnostic {
-    fn code(&self) -> String {
+    fn get_code(&self) -> String {
         String::from(match self {
             Self::UnexpectedEndOfFile => "L001",
             Self::UnexpectedCharacter(_) => "L002",
@@ -20,7 +20,7 @@ impl DiagnosticKind for LexerDiagnostic {
         })
     }
 
-    fn identifier(&self) -> String {
+    fn get_identifier(&self) -> String {
         String::from(match self {
             Self::UnexpectedEndOfFile => "lexer.unexpected-end-of-file",
             Self::UnexpectedCharacter(_) => "lexer.unexpected-character",
@@ -30,7 +30,7 @@ impl DiagnosticKind for LexerDiagnostic {
         })
     }
 
-    fn message(&self) -> String {
+    fn get_message(&self) -> String {
         String::from(match self {
             Self::UnexpectedEndOfFile => "unexpected end of file",
             Self::UnexpectedCharacter(_) => "unexpected character",

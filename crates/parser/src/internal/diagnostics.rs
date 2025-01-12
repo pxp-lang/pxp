@@ -71,7 +71,7 @@ pub enum ParserDiagnostic {
 }
 
 impl DiagnosticKind for ParserDiagnostic {
-    fn code(&self) -> String {
+    fn get_code(&self) -> String {
         String::from(match self {
             ParserDiagnostic::UnexpectedToken { .. } => "P001",
             ParserDiagnostic::ExpectedToken { .. } => "P002",
@@ -125,7 +125,7 @@ impl DiagnosticKind for ParserDiagnostic {
         })
     }
 
-    fn identifier(&self) -> String {
+    fn get_identifier(&self) -> String {
         String::from(match self {
             ParserDiagnostic::UnexpectedToken { .. } => "parser.unexpected-token",
             ParserDiagnostic::ExpectedToken { .. } => "parser.expected-token",
@@ -227,7 +227,7 @@ impl DiagnosticKind for ParserDiagnostic {
         })
     }
 
-    fn message(&self) -> String {
+    fn get_message(&self) -> String {
         match self {
             ParserDiagnostic::InterfaceCannotUseTraits => {
                 "interfaces cannot use traits".to_string()
