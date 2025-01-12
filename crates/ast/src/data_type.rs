@@ -1,7 +1,7 @@
 use pxp_span::Span;
 use pxp_type::Type;
 
-use crate::{DataType, Name, NodeId, ResolvedName};
+use crate::{DataType, NodeId, ResolvedName};
 
 impl DataType {
     pub fn new(id: NodeId, kind: Type<ResolvedName>, span: Span) -> Self {

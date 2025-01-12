@@ -88,7 +88,13 @@ impl Reporter {
         }
     }
 
-    pub fn report(&mut self, file: usize, diagnostic: AnalyserDiagnostic, severity: Severity, span: Span) {
+    pub fn report(
+        &mut self,
+        file: usize,
+        diagnostic: AnalyserDiagnostic,
+        severity: Severity,
+        span: Span,
+    ) {
         let diagnostics = self.diagnostics.entry(file).or_default();
 
         diagnostics.push(Diagnostic::new(diagnostic, severity, span));

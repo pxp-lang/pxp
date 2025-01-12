@@ -1,13 +1,13 @@
-mod rule;
+mod ast;
 mod collection;
+mod context;
+mod reporter;
+mod rule;
 pub mod rules;
 mod runner;
-mod reporter;
-mod context;
-mod ast;
 
-pub use rule::Rule;
 pub use collection::RuleCollection;
-pub use runner::Runner;
-pub use reporter::{Reporter, AnalyserDiagnostic};
 pub use context::AnalyserContext;
+pub use reporter::{AnalyserDiagnostic, Reporter};
+pub use rule::Rule;
+pub use runner::Runner;

@@ -1,4 +1,7 @@
-use pxp_ast::{visitor::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch, Visitor}, Node, ReturnStatement, Statement};
+use pxp_ast::{
+    visitor::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch, Visitor},
+    Node, ReturnStatement, Statement,
+};
 
 pub(super) struct ReturnFinder<'a> {
     returns: Vec<&'a ReturnStatement>,

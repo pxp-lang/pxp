@@ -1,11 +1,11 @@
 use std::{collections::HashMap, path::Path};
 
 use clap::Parser as Args;
-use codespan_reporting::diagnostic::LabelStyle;
-use codespan_reporting::files::SimpleFiles;
 use codespan_reporting::diagnostic::Diagnostic as CodespanDiagnostic;
-use codespan_reporting::diagnostic::Severity as CodespanSeverity;
 use codespan_reporting::diagnostic::Label as CodespanLabel;
+use codespan_reporting::diagnostic::LabelStyle;
+use codespan_reporting::diagnostic::Severity as CodespanSeverity;
+use codespan_reporting::files::SimpleFiles;
 use codespan_reporting::term::termcolor::ColorChoice;
 use codespan_reporting::term::termcolor::StandardStream;
 use codespan_reporting::term::Config as CodespanConfig;
@@ -67,10 +67,13 @@ pub fn check(args: Check) -> anyhow::Result<()> {
 
     let files = find_php_files_in_list(&config.check.paths)?;
     let mut file_repository = SimpleFiles::new();
-    
+
     for file in files {
         let contents = std::fs::read(&file)?;
-        let file_id = file_repository.add(file.display().to_string(), String::from_utf8_lossy(&contents).to_string());
+        let file_id = file_repository.add(
+            file.display().to_string(),
+            String::from_utf8_lossy(&contents).to_string(),
+        );
         let result = Parser::parse(Lexer::new(&contents));
 
         if !result.diagnostics.is_empty() {
@@ -78,7 +81,11 @@ pub fn check(args: Check) -> anyhow::Result<()> {
 
             // If there are any errors, we don't want to run the analyser since the AST
             // is only partially complete and the results could be inaccurate.
-            if result.diagnostics.iter().any(|d| d.severity == Severity::Error) {
+            if result
+                .diagnostics
+                .iter()
+                .any(|d| d.severity == Severity::Error)
+            {
                 continue;
             }
         }
@@ -97,27 +104,39 @@ fn report(files: &SimpleFiles<String, String>, reporter: &Reporter) {
 
     for (file, diagnostics) in reporter.all() {
         for diagnostic in diagnostics {
-            let mut codespan_diagnostic = CodespanDiagnostic::<usize>::new(severity_to_codespan(diagnostic.severity))
-                .with_message(diagnostic.kind.get_message())
-                .with_code(diagnostic.kind.get_code())
-                .with_labels(labels_to_codespan(*file, &diagnostic.kind.get_labels()));
+            let mut codespan_diagnostic =
+                CodespanDiagnostic::<usize>::new(severity_to_codespan(diagnostic.severity))
+                    .with_message(diagnostic.kind.get_message())
+                    .with_code(diagnostic.kind.get_code())
+                    .with_labels(labels_to_codespan(*file, &diagnostic.kind.get_labels()));
 
             if let Some(help) = diagnostic.kind.get_help() {
-                codespan_diagnostic = codespan_diagnostic.with_notes(vec![
-                    help.to_string()
-                ]);
+                codespan_diagnostic = codespan_diagnostic.with_notes(vec![help.to_string()]);
             }
 
-            codespan_reporting::term::emit(&mut writer.lock(), &config, files, &codespan_diagnostic).unwrap();
+            codespan_reporting::term::emit(
+                &mut writer.lock(),
+                &config,
+                files,
+                &codespan_diagnostic,
+            )
+            .unwrap();
         }
     }
 }
 
 fn labels_to_codespan(file: usize, labels: &[DiagnosticLabel]) -> Vec<CodespanLabel<usize>> {
-    labels.iter().map(|label| {
-        CodespanLabel::new(label_style_to_codespan(label.style), file, label.span.to_range())
+    labels
+        .iter()
+        .map(|label| {
+            CodespanLabel::new(
+                label_style_to_codespan(label.style),
+                file,
+                label.span.to_range(),
+            )
             .with_message(label.message.clone())
-    }).collect()
+        })
+        .collect()
 }
 
 fn label_style_to_codespan(style: DiagnosticLabelStyle) -> LabelStyle {
@@ -138,7 +157,11 @@ fn severity_to_codespan(severity: Severity) -> CodespanSeverity {
     }
 }
 
-fn process_parser_diagnostics(file: usize, diagnostics: &[Diagnostic<ParserDiagnostic>], reporter: &mut Reporter) {
+fn process_parser_diagnostics(
+    file: usize,
+    diagnostics: &[Diagnostic<ParserDiagnostic>],
+    reporter: &mut Reporter,
+) {
     for diagnostic in diagnostics.iter() {
         reporter.report(
             file,

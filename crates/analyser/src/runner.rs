@@ -1,6 +1,9 @@
 use std::{path::Path, task::Context};
 
-use pxp_ast::{visitor::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch}, Node, Statement};
+use pxp_ast::{
+    visitor::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch},
+    Node, Statement,
+};
 use pxp_inference::TypeEngine;
 
 use crate::{AnalyserContext, Reporter, Rule, RuleCollection};

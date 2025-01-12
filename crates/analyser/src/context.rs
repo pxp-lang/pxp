@@ -14,7 +14,11 @@ pub struct AnalyserContext<'a> {
 
 impl<'a> AnalyserContext<'a> {
     pub fn new(reporter: &'a mut Reporter, types: TypeMap, file: usize) -> Self {
-        Self { reporter, types, file }
+        Self {
+            reporter,
+            types,
+            file,
+        }
     }
 
     pub fn report(&mut self, diagnostic: AnalyserDiagnostic, severity: Severity, span: Span) {

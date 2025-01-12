@@ -9,9 +9,7 @@ impl Rule for ReturnTypeRule {
         false
     }
 
-    fn run(&self, node: &Node, ancestors: &Ancestors, context: &mut crate::AnalyserContext) {
-        
-    }
+    fn run(&self, node: &Node, ancestors: &Ancestors, context: &mut crate::AnalyserContext) {}
 
     fn name(&self) -> &'static str {
         "functions/return_type"
