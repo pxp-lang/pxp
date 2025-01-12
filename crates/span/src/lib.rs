@@ -1,4 +1,4 @@
-use std::ops::Range;
+use std::{fmt::Debug, ops::Range};
 
 use serde::{Deserialize, Serialize};
 
@@ -69,6 +69,18 @@ impl Span {
 }
 
 pub type ByteOffset = usize;
+
+#[derive(Debug, PartialEq, Clone)]
+pub struct Spanned<T: Debug + Clone + PartialEq> {
+    pub span: Span,
+    pub value: T,
+}
+
+impl<T: Debug + Clone + PartialEq> IsSpanned for Spanned<T> {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
 
 pub trait IsSpanned {
     fn span(&self) -> Span;
