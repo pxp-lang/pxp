@@ -279,6 +279,26 @@ mod tests {
         assert_eq!(infer(r#"function foo(): int {} @foo()"#), Type::Integer);
     }
 
+    #[test]
+    fn it_infers_type_of_include_expression() {
+        assert_eq!(infer(r#"include 'file.php'"#), Type::Mixed);
+    }
+
+    #[test]
+    fn it_infers_type_of_include_once_expression() {
+        assert_eq!(infer(r#"include_once 'file.php'"#), Type::Mixed);
+    }
+
+    #[test]
+    fn it_infers_type_of_require_expression() {
+        assert_eq!(infer(r#"require 'file.php'"#), Type::Mixed);
+    }
+
+    #[test]
+    fn it_infers_type_of_require_once_expression() {
+        assert_eq!(infer(r#"require_once 'file.php'"#), Type::Mixed);
+    }
+
     /// Parse the given code, infer the types and return the type of the expression suffixed with a ^^ sequence.
     fn infer_at(code: &str) -> Type<ResolvedName> {
         let code = format!("<?php {};", code);

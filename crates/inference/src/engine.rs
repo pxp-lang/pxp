@@ -13,7 +13,7 @@ use pxp_index::{Index, ReflectionFunctionLike};
 use pxp_token::TokenKind;
 use pxp_type::{ConstExpr, Type};
 use visitor::{
-    walk_array_expression, walk_concat_expression, walk_die_expression, walk_empty_expression, walk_error_suppress_expression, walk_eval_expression, walk_exit_expression, walk_function_call_expression, walk_function_statement, walk_instanceof_expression, walk_isset_expression, walk_new_expression, walk_parenthesized_expression, walk_print_expression, walk_reference_expression, walk_unset_expression
+    walk_array_expression, walk_concat_expression, walk_die_expression, walk_empty_expression, walk_error_suppress_expression, walk_eval_expression, walk_exit_expression, walk_function_call_expression, walk_function_statement, walk_include_expression, walk_include_once_expression, walk_instanceof_expression, walk_isset_expression, walk_new_expression, walk_parenthesized_expression, walk_print_expression, walk_reference_expression, walk_require_expression, walk_require_once_expression, walk_unset_expression
 };
 
 use crate::TypeMap;
@@ -483,5 +483,29 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
         walk_error_suppress_expression(self, node);
 
         self.map.insert(node.id, self.map.resolve(node.expr.id).clone());
+    }
+
+    fn visit_include_expression(&mut self, node: &IncludeExpression) {
+        walk_include_expression(self, node);
+
+        self.map.insert(node.id, Type::Mixed);
+    }
+
+    fn visit_include_once_expression(&mut self, node: &IncludeOnceExpression) {
+        walk_include_once_expression(self, node);
+
+        self.map.insert(node.id, Type::Mixed);
+    }
+
+    fn visit_require_expression(&mut self, node: &RequireExpression) {
+        walk_require_expression(self, node);
+
+        self.map.insert(node.id, Type::Mixed);
+    }
+
+    fn visit_require_once_expression(&mut self, node: &RequireOnceExpression) {
+        walk_require_once_expression(self, node);
+
+        self.map.insert(node.id, Type::Mixed);
     }
 }
