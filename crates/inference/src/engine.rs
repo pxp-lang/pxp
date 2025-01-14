@@ -11,9 +11,9 @@ use pxp_ast::{
 use pxp_bytestring::{ByteStr, ByteString};
 use pxp_index::{Index, ReflectionFunctionLike};
 use pxp_token::TokenKind;
-use pxp_type::Type;
+use pxp_type::{ConstExpr, Type};
 use visitor::{
-    walk_array_expression, walk_function_call_expression, walk_function_statement, walk_new_expression
+    walk_array_expression, walk_die_expression, walk_empty_expression, walk_eval_expression, walk_exit_expression, walk_function_call_expression, walk_function_statement, walk_isset_expression, walk_new_expression, walk_print_expression, walk_unset_expression
 };
 
 use crate::TypeMap;
@@ -399,5 +399,55 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
 
             self.scopes.current_mut().set_variable(&parameter.name, r#type);
         }
+    }
+
+    fn visit_missing_expression(&mut self, node: &MissingExpression) {
+        self.map.insert(node.id, Type::Missing);
+    }
+
+    fn visit_eval_expression(&mut self, node: &EvalExpression) {
+        walk_eval_expression(self, node);
+
+        self.map.insert(node.id, Type::Mixed);
+    }
+
+    fn visit_empty_expression(&mut self, node: &EmptyExpression) {
+        walk_empty_expression(self, node);
+
+        // FIXME: We should be able to determine an exact true or false
+        // here depending on the type of the value passed through.
+        self.map.insert(node.id, Type::Boolean);
+    }
+
+    fn visit_die_expression(&mut self, node: &DieExpression) {
+        walk_die_expression(self, node);
+
+        self.map.insert(node.id, Type::Never);
+    }
+
+    fn visit_exit_expression(&mut self, node: &ExitExpression) {
+        walk_exit_expression(self, node);
+
+        self.map.insert(node.id, Type::Never);
+    }
+
+    fn visit_isset_expression(&mut self, node: &IssetExpression) {
+        walk_isset_expression(self, node);
+
+        // FIXME: We should be able to determine an exact true or false
+        // depending on the expressions passed through.
+        self.map.insert(node.id, Type::Boolean);
+    }
+
+    fn visit_unset_expression(&mut self, node: &UnsetExpression) {
+        walk_unset_expression(self, node);
+
+        self.map.insert(node.id, Type::Void);
+    }
+
+    fn visit_print_expression(&mut self, node: &PrintExpression) {
+        walk_print_expression(self, node);
+
+        self.map.insert(node.id, Type::ConstExpr(Box::new(ConstExpr::Integer(1.into()))));
     }
 }

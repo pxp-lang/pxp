@@ -11,7 +11,7 @@ mod tests {
     use pxp_lexer::Lexer;
     use pxp_node_finder::NodeFinder;
     use pxp_parser::Parser;
-    use pxp_type::Type;
+    use pxp_type::{ConstExpr, Type};
 
     use crate::TypeEngine;
 
@@ -217,6 +217,41 @@ mod tests {
             $b^^
         }
         "#), Type::TypedArray(Box::new(Type::Integer), Box::new(Type::String)));
+    }
+
+    #[test]
+    fn it_infers_type_of_eval_expression() {
+        assert_eq!(infer(r#"eval('42')"#), Type::Mixed);
+    }
+
+    #[test]
+    fn it_infers_type_of_empty_expression() {
+        assert_eq!(infer(r#"empty('')"#), Type::Boolean);
+    }
+
+    #[test]
+    fn it_infers_type_of_die_expression() {
+        assert_eq!(infer(r#"die('')"#), Type::Never);
+    }
+
+    #[test]
+    fn it_infers_type_of_exit_expression() {
+        assert_eq!(infer(r#"exit('')"#), Type::Never);
+    }
+
+    #[test]
+    fn it_infers_type_of_isset_expression() {
+        assert_eq!(infer(r#"isset('')"#), Type::Boolean);
+    }
+
+    #[test]
+    fn it_infers_type_of_unset_expression() {
+        assert_eq!(infer(r#"unset('')"#), Type::Void);
+    }
+
+    #[test]
+    fn it_infers_type_of_print_expression() {
+        assert_eq!(infer(r#"print('')"#), Type::ConstExpr(Box::new(ConstExpr::Integer(1.into()))));
     }
 
     /// Parse the given code, infer the types and return the type of the expression suffixed with a ^^ sequence.
