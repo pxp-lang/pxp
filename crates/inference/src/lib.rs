@@ -259,6 +259,26 @@ mod tests {
         assert_eq!(infer(r#"'a' . 'b'"#), Type::String);
     }
 
+    #[test]
+    fn it_infers_type_of_instanceof_expression() {
+        assert_eq!(infer(r#"$a instanceof A"#), Type::Boolean);
+    }
+
+    #[test]
+    fn it_infers_type_of_reference_expression() {
+        assert_eq!(infer(r#"$b = 1; $a = &$b"#), Type::Integer);
+    }
+
+    #[test]
+    fn it_infers_type_of_parenthesized_expression() {
+        assert_eq!(infer(r#"(42)"#), Type::Integer);
+    }
+
+    #[test]
+    fn it_infers_type_of_error_suppression_expression() {
+        assert_eq!(infer(r#"function foo(): int {} @foo()"#), Type::Integer);
+    }
+
     /// Parse the given code, infer the types and return the type of the expression suffixed with a ^^ sequence.
     fn infer_at(code: &str) -> Type<ResolvedName> {
         let code = format!("<?php {};", code);

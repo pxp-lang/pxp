@@ -13,7 +13,7 @@ use pxp_index::{Index, ReflectionFunctionLike};
 use pxp_token::TokenKind;
 use pxp_type::{ConstExpr, Type};
 use visitor::{
-    walk_array_expression, walk_concat_expression, walk_die_expression, walk_empty_expression, walk_eval_expression, walk_exit_expression, walk_function_call_expression, walk_function_statement, walk_isset_expression, walk_new_expression, walk_print_expression, walk_unset_expression
+    walk_array_expression, walk_concat_expression, walk_die_expression, walk_empty_expression, walk_error_suppress_expression, walk_eval_expression, walk_exit_expression, walk_function_call_expression, walk_function_statement, walk_instanceof_expression, walk_isset_expression, walk_new_expression, walk_parenthesized_expression, walk_print_expression, walk_reference_expression, walk_unset_expression
 };
 
 use crate::TypeMap;
@@ -457,5 +457,31 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
         // FIXME: We can be more precise here by checking the types on the
         // left and right-hand side of the expression, e.g. empty strings, etc.
         self.map.insert(node.id, Type::String);
+    }
+
+    fn visit_instanceof_expression(&mut self, node: &InstanceofExpression) {
+        walk_instanceof_expression(self, node);
+
+        // FIXME: Can we do some smart stuff here to determine the
+        // real true / false state based on the left-hand side?
+        self.map.insert(node.id, Type::Boolean);
+    }
+
+    fn visit_reference_expression(&mut self, node: &ReferenceExpression) {
+        walk_reference_expression(self, node);
+
+        self.map.insert(node.id, self.map.resolve(node.right.id).clone());
+    }
+
+    fn visit_parenthesized_expression(&mut self, node: &ParenthesizedExpression) {
+        walk_parenthesized_expression(self, node);
+
+        self.map.insert(node.id, self.map.resolve(node.expr.id).clone());
+    }
+
+    fn visit_error_suppress_expression(&mut self, node: &ErrorSuppressExpression) {
+        walk_error_suppress_expression(self, node);
+
+        self.map.insert(node.id, self.map.resolve(node.expr.id).clone());
     }
 }
