@@ -1,6 +1,6 @@
 use pxp_bytestring::ByteStr;
 
-use crate::Parameter;
+use crate::{location::{HasLocation, Location}, Parameter};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ReflectionParameter<'a, O: CanReflectParameters> {
@@ -27,6 +27,12 @@ impl<'a, O: CanReflectParameters> ReflectionParameter<'a, O> {
 
     pub fn is_variadic(&self) -> bool {
         todo!()
+    }
+}
+
+impl<'a, O: CanReflectParameters> HasLocation for ReflectionParameter<'a, O> {
+    fn location(&self) -> Location {
+        self.entity.location
     }
 }
 

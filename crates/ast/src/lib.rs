@@ -402,6 +402,12 @@ impl FunctionParameterList {
     }
 }
 
+impl FunctionParameter {
+    pub fn is_variadic(&self) -> bool {
+        self.ellipsis.is_some()
+    }
+}
+
 impl IsSpanned for CommentKind {
     fn span(&self) -> Span {
         match self {

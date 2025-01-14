@@ -10,6 +10,7 @@ use codespan_reporting::term::termcolor::ColorChoice;
 use codespan_reporting::term::termcolor::StandardStream;
 use codespan_reporting::term::Config as CodespanConfig;
 use colored::Colorize;
+use pxp_analyser::rules;
 use pxp_analyser::{AnalyserDiagnostic, Reporter, Runner};
 use pxp_diagnostics::DiagnosticKind;
 use pxp_diagnostics::DiagnosticLabel;
@@ -61,7 +62,8 @@ pub fn check(args: Check) -> anyhow::Result<()> {
 
     let type_engine = TypeEngine::new(&index);
     let mut reporter = Reporter::new();
-    let mut runner = Runner::new(&type_engine);
+    let mut runner = Runner::new(&type_engine, &index);
+    runner.add_rule(rules::functions::ReturnTypeRule);
 
     println!("Analysing codebase...");
 

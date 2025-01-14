@@ -16,4 +16,5 @@ pxp-type = { version = "0.1.0", path = "../type" }
 
 [dev-dependencies]
 pxp-lexer = { path = "../lexer" }
+pxp-node-finder = { path = "../node-finder" }
 pxp-parser = { path = "../parser" }

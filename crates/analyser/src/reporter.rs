@@ -28,23 +28,23 @@ impl AnalyserDiagnostic {
         }
     }
 
-    pub fn code(mut self, code: &str) -> Self {
-        self.code = code.to_string();
+    pub fn code(mut self, code: impl Into<String>) -> Self {
+        self.code = code.into();
         self
     }
 
-    pub fn identifier(mut self, identifier: &str) -> Self {
-        self.identifier = identifier.to_string();
+    pub fn identifier(mut self, identifier: impl Into<String>) -> Self {
+        self.identifier = identifier.into();
         self
     }
 
-    pub fn message(mut self, message: &str) -> Self {
-        self.message = message.to_string();
+    pub fn message(mut self, message: impl Into<String>) -> Self {
+        self.message = message.into();
         self
     }
 
-    pub fn help(mut self, help: &str) -> Self {
-        self.help = Some(help.to_string());
+    pub fn help(mut self, help: impl Into<String>) -> Self {
+        self.help = Some(help.into());
         self
     }
 

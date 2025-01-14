@@ -1,4 +1,4 @@
-use pxp_span::Span;
+use pxp_span::{IsSpanned, Span};
 
 use crate::{FileId, HasFileId};
 
@@ -14,8 +14,18 @@ impl Location {
     }
 }
 
+impl IsSpanned for Location {
+    fn span(&self) -> Span {
+        self.span
+    }
+}
+
 impl HasFileId for Location {
     fn file_id(&self) -> FileId {
         self.file
     }
+}
+
+pub trait HasLocation {
+    fn location(&self) -> Location;
 }

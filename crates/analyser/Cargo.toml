@@ -10,6 +10,7 @@ edition.workspace = true
 [dependencies]
 pxp-ast = { version = "0.1.0", path = "../ast" }
 pxp-diagnostics = { version = "0.1.0", path = "../diagnostics" }
+pxp-index = { version = "0.1.0", path = "../index" }
 pxp-inference = { version = "0.1.0", path = "../inference" }
 pxp-span = { version = "0.1.0", path = "../span" }
 pxp-type = { version = "0.1.0", path = "../type" }

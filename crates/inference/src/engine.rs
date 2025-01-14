@@ -12,9 +12,8 @@ use pxp_bytestring::{ByteStr, ByteString};
 use pxp_index::{Index, ReflectionFunctionLike};
 use pxp_token::TokenKind;
 use pxp_type::Type;
-use utils::CommaSeparated;
 use visitor::{
-    walk_array_expression, walk_array_item, walk_function_call_expression, walk_new_expression,
+    walk_array_expression, walk_function_call_expression, walk_function_statement, walk_new_expression
 };
 
 use crate::TypeMap;
@@ -105,8 +104,8 @@ impl Scope {
         }
     }
 
-    fn set_variable(&mut self, variable: &SimpleVariable, ty: &Type<ResolvedName>) {
-        self.variables.insert(variable.symbol.clone(), ty.clone());
+    fn set_variable(&mut self, variable: &SimpleVariable, ty: Type<ResolvedName>) {
+        self.variables.insert(variable.symbol.clone(), ty);
     }
 
     fn get_variable(&self, variable: &SimpleVariable) -> Option<Type<ResolvedName>> {
@@ -123,6 +122,10 @@ impl Scope {
 }
 
 impl<'a> TypeMapGenerator<'a> {
+    fn unwrap_data_type(&self, data_type: Option<&'a DataType>) -> Type<ResolvedName> {
+        data_type.map_or(Type::Mixed, |ty| ty.get_type().clone())
+    }
+
     fn is_newable_string(&self, value: &ByteStr) -> bool {
         self.index.get_class(value).is_some()
     }
@@ -342,7 +345,7 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
                 let variable = variable.to_simple();
                 let resolved = self.map.resolve(node.right.kind.id());
 
-                self.scopes.current_mut().set_variable(&variable, resolved);
+                self.scopes.current_mut().set_variable(&variable, resolved.clone());
                 self.map.insert(variable.id, resolved.clone());
             }
             _ => return,
@@ -366,11 +369,7 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
                             original: value.clone(),
                         })
                     }
-                    _ => {
-                        dbg!(self.map.resolve(node.target.id), &node.target);
-
-                        Type::Object
-                    }
+                    _ => Type::Object,
                 },
             },
         );
@@ -382,5 +381,23 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
         // We've walked the array expression, so we can now figure out a more specific type for
         // the array, rather than it just returning `Type::Array`.
         self.map.insert(node.id, self.determine_array_type(node));
+    }
+
+    fn visit_function_statement(&mut self, node: &FunctionStatement) {
+        self.scopes.start();
+        walk_function_statement(self, node);
+        self.scopes.end();
+    }
+    
+    fn visit_function_parameter_list(&mut self, node: &FunctionParameterList) {
+        for parameter in node.parameters.iter() {
+            let mut r#type = self.unwrap_data_type(parameter.data_type.as_ref());
+
+            if parameter.is_variadic() {
+                r#type = Type::TypedArray(Box::new(Type::Integer), Box::new(r#type));
+            }
+
+            self.scopes.current_mut().set_variable(&parameter.name, r#type);
+        }
     }
 }

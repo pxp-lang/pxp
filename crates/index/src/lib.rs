@@ -21,6 +21,7 @@ pub use reflection::{
     ReflectionClass, ReflectionFunction, ReflectionFunctionLike, ReflectionParameter,
     ReflectsParameters,
 };
+pub use location::{Location, HasLocation};
 
 #[derive(Debug, Clone)]
 pub struct Index {

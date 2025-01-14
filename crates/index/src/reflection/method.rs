@@ -2,7 +2,7 @@ use pxp_ast::{Name, ResolvedName};
 use pxp_bytestring::ByteStr;
 use pxp_type::Type;
 
-use crate::entities::MethodEntity;
+use crate::{entities::MethodEntity, location::{HasLocation, Location}};
 
 use super::{
     function::{IsFunctionLike, ReflectionFunctionLike},
@@ -14,6 +14,12 @@ use super::{
 pub struct ReflectionMethod<'a> {
     pub(crate) entity: &'a MethodEntity,
     pub(crate) owner: &'a ReflectionClass<'a>,
+}
+
+impl<'a> HasLocation for ReflectionMethod<'a> {
+    fn location(&self) -> Location {
+        self.entity.location
+    }
 }
 
 impl<'a> ReflectionMethod<'a> {

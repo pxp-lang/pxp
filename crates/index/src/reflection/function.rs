@@ -2,7 +2,7 @@ use pxp_ast::{Name, ResolvedName};
 use pxp_bytestring::ByteStr;
 use pxp_type::Type;
 
-use crate::FunctionEntity;
+use crate::{location::{HasLocation, Location}, FunctionEntity};
 
 use super::parameters::{CanReflectParameters, ReflectionParameter, ReflectsParameters};
 
@@ -26,6 +26,12 @@ impl<'a> ReflectionFunction<'a> {
 
     pub fn in_namespace(&self) -> bool {
         self.entity.name.resolved != self.entity.name.original
+    }
+}
+
+impl<'a> HasLocation for ReflectionFunction<'a> {
+    fn location(&self) -> Location {
+        self.entity.location
     }
 }
 

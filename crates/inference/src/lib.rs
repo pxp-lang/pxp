@@ -6,9 +6,10 @@ pub use map::TypeMap;
 
 #[cfg(test)]
 mod tests {
-    use pxp_ast::{HasId, Name, ResolvedName, Statement, StatementKind};
+    use pxp_ast::{HasId, ResolvedName, Statement, StatementKind};
     use pxp_index::{FileId, Index};
     use pxp_lexer::Lexer;
+    use pxp_node_finder::NodeFinder;
     use pxp_parser::Parser;
     use pxp_type::Type;
 
@@ -188,6 +189,54 @@ mod tests {
             Type::Named(name) => assert_eq!(name.resolved, b"A"),
             _ => panic!("Expected a named type 'A'."),
         }
+    }
+
+    #[test]
+    fn it_infers_types_of_function_parameters() {
+        assert_eq!(infer_at(r#"
+        function a(string $b) {
+            $b^^
+        }
+        "#), Type::String);
+    }
+
+    #[test]
+    fn outer_variables_are_not_accessible_inside_of_functions() {
+        assert_eq!(infer_at(r#"
+        $a = 42;
+        function a() {
+            $a^^
+        }
+        "#), Type::Mixed);
+    }
+
+    #[test]
+    fn it_infers_type_of_variadic_parameters() {
+        assert_eq!(infer_at(r#"
+        function a(string ...$b) {
+            $b^^
+        }
+        "#), Type::TypedArray(Box::new(Type::Integer), Box::new(Type::String)));
+    }
+
+    /// Parse the given code, infer the types and return the type of the expression suffixed with a ^^ sequence.
+    fn infer_at(code: &str) -> Type<ResolvedName> {
+        let code = format!("<?php {};", code);
+        let marker = code.find("^^").expect("Code does not contain a ^^ sequence.");
+        let code = code.replace("^^", "");
+        let result = Parser::parse(Lexer::new(code.as_bytes()));
+
+        let mut index = Index::new();
+        index.index(FileId::new(0), &result.ast);
+
+        let engine = TypeEngine::new(&index);
+        let map = engine.infer(&result.ast);
+
+        let Some((node, _)) = NodeFinder::find_at_byte_offset(&result.ast, marker) else {
+            panic!("Could not find a node at the given marker.");
+        };
+
+        map.resolve(node.id).clone()
     }
 
     /// Parse the given code, infer the types and return the type of the last expression in the code.

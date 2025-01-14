@@ -1,12 +1,18 @@
 use pxp_bytestring::ByteStr;
 
-use crate::entities::{ClassEntity, ClassEntityKind};
+use crate::{entities::{ClassEntity, ClassEntityKind}, location::{HasLocation, Location}};
 
 use super::ReflectionMethod;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ReflectionClass<'a> {
     entity: &'a ClassEntity,
+}
+
+impl<'a> HasLocation for ReflectionClass<'a> {
+    fn location(&self) -> Location {
+        self.entity.location
+    }
 }
 
 impl<'a> ReflectionClass<'a> {
