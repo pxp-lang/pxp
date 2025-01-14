@@ -254,6 +254,11 @@ mod tests {
         assert_eq!(infer(r#"print('')"#), Type::ConstExpr(Box::new(ConstExpr::Integer(1.into()))));
     }
 
+    #[test]
+    fn it_infers_type_of_concat_expression() {
+        assert_eq!(infer(r#"'a' . 'b'"#), Type::String);
+    }
+
     /// Parse the given code, infer the types and return the type of the expression suffixed with a ^^ sequence.
     fn infer_at(code: &str) -> Type<ResolvedName> {
         let code = format!("<?php {};", code);

@@ -13,7 +13,7 @@ use pxp_index::{Index, ReflectionFunctionLike};
 use pxp_token::TokenKind;
 use pxp_type::{ConstExpr, Type};
 use visitor::{
-    walk_array_expression, walk_die_expression, walk_empty_expression, walk_eval_expression, walk_exit_expression, walk_function_call_expression, walk_function_statement, walk_isset_expression, walk_new_expression, walk_print_expression, walk_unset_expression
+    walk_array_expression, walk_concat_expression, walk_die_expression, walk_empty_expression, walk_eval_expression, walk_exit_expression, walk_function_call_expression, walk_function_statement, walk_isset_expression, walk_new_expression, walk_print_expression, walk_unset_expression
 };
 
 use crate::TypeMap;
@@ -449,5 +449,13 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
         walk_print_expression(self, node);
 
         self.map.insert(node.id, Type::ConstExpr(Box::new(ConstExpr::Integer(1.into()))));
+    }
+
+    fn visit_concat_expression(&mut self, node: &ConcatExpression) {
+        walk_concat_expression(self, node);
+
+        // FIXME: We can be more precise here by checking the types on the
+        // left and right-hand side of the expression, e.g. empty strings, etc.
+        self.map.insert(node.id, Type::String);
     }
 }
