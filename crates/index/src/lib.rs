@@ -23,7 +23,7 @@ pub use reflection::{
     ReflectsParameters,
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Index {
     files: FileRegistry,
     pub(crate) entities: EntityRegistry,
@@ -31,10 +31,7 @@ pub struct Index {
 
 impl Index {
     pub fn new() -> Self {
-        Self {
-            files: FileRegistry::new(),
-            entities: EntityRegistry::new(),
-        }
+        Self::default()
     }
 
     pub fn index_file(&mut self, path: &Path) {

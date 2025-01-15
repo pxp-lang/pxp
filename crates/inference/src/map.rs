@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use pxp_ast::{NodeId, ResolvedName};
 use pxp_type::Type;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct TypeMap {
     map: HashMap<NodeId, Type<ResolvedName>>,
 }
@@ -14,9 +14,7 @@ pub struct TypeMap {
 /// then use it across multiple passes without needing to regenerate or recalculate types.
 impl TypeMap {
     pub fn new() -> Self {
-        Self {
-            map: HashMap::new(),
-        }
+        Self::default()
     }
 
     /// Insert a type for the given node.

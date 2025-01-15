@@ -62,7 +62,7 @@ impl<'a> ReflectionFunctionLike<'a> for ReflectionFunction<'a> {
     }
 }
 
-pub(crate) trait IsFunctionLike {}
+pub trait IsFunctionLike {}
 
 pub trait ReflectionFunctionLike<'a>: IsFunctionLike {
     fn get_return_type(&self) -> Option<&Type<ResolvedName>>;

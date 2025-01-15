@@ -22,22 +22,12 @@ impl HasFileId for FileId {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub(crate) struct FileRegistry {
     files: HashMap<PathBuf, FileId>,
 }
 
 impl FileRegistry {
-    pub fn new() -> Self {
-        Self {
-            files: HashMap::new(),
-        }
-    }
-
-    pub fn get(&self, path: &PathBuf) -> FileId {
-        *self.files.get(path).unwrap()
-    }
-
     pub fn get_file_path(&self, id: FileId) -> Option<&Path> {
         self.files
             .iter()

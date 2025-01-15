@@ -385,10 +385,10 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
 
                 self.scopes
                     .current_mut()
-                    .set_variable(&variable, resolved.clone());
+                    .set_variable(variable, resolved.clone());
                 self.map.insert(variable.id, resolved.clone());
             }
-            _ => return,
+            _ => (),
         }
     }
 

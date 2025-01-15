@@ -39,7 +39,7 @@ impl<'a, O: CanReflectParameters> HasLocation for ReflectionParameter<'a, O> {
     }
 }
 
-pub(crate) trait CanReflectParameters {}
+pub trait CanReflectParameters {}
 
 pub trait ReflectsParameters<'a, O: CanReflectParameters>: CanReflectParameters {
     fn get_parameters(&self) -> Vec<ReflectionParameter<'a, O>>;
