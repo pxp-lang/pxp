@@ -67,6 +67,7 @@ pub enum Type<N: Debug + Display> {
     This,
     Missing,
     ConstExpr(Box<ConstExpr<N>>),
+    Invalid,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -370,6 +371,7 @@ impl<N: Debug + Display> Display for Type<N> {
             }
             Type::Conditional { .. } => todo!(),
             Type::Missing => write!(f, "<missing>"),
+            Type::Invalid => write!(f, "<invalid>"),
         }
     }
 }

@@ -51,4 +51,10 @@ impl<'a> ReflectionClass<'a> {
             .map(|m| ReflectionMethod::new(m, self))
             .collect()
     }
+
+    pub fn get_method(&self, name: &ByteStr) -> Option<ReflectionMethod> {
+        self.get_methods()
+            .into_iter()
+            .find(|method| method.get_name() == name)
+    }
 }

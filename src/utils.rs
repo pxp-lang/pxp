@@ -33,7 +33,7 @@ impl ProgressBar {
 }
 
 pub(crate) fn find_php_files_in_cwd() -> anyhow::Result<Vec<PathBuf>> {
-    find_php_files_in(&std::env::current_dir()?)
+    find_php_files_in(&PathBuf::from("."))
 }
 
 pub(crate) fn find_php_files_in_list(paths: &[PathBuf]) -> anyhow::Result<Vec<PathBuf>> {
