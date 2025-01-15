@@ -1,6 +1,9 @@
 use pxp_bytestring::ByteStr;
 
-use crate::{location::{HasLocation, Location}, Parameter};
+use crate::{
+    location::{HasLocation, Location},
+    Parameter,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ReflectionParameter<'a, O: CanReflectParameters> {

@@ -17,11 +17,11 @@ use pxp_lexer::Lexer;
 use pxp_parser::Parser;
 
 pub use entities::{FunctionEntity, Parameter, Parameters};
+pub use location::{HasLocation, Location};
 pub use reflection::{
     ReflectionClass, ReflectionFunction, ReflectionFunctionLike, ReflectionParameter,
     ReflectsParameters,
 };
-pub use location::{Location, HasLocation};
 
 #[derive(Debug, Clone)]
 pub struct Index {

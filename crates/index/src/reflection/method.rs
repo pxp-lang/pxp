@@ -2,7 +2,10 @@ use pxp_ast::{Name, ResolvedName};
 use pxp_bytestring::ByteStr;
 use pxp_type::Type;
 
-use crate::{entities::MethodEntity, location::{HasLocation, Location}};
+use crate::{
+    entities::MethodEntity,
+    location::{HasLocation, Location},
+};
 
 use super::{
     function::{IsFunctionLike, ReflectionFunctionLike},

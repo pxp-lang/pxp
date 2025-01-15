@@ -1,8 +1,8 @@
 use crate::Parser;
 use pxp_ast::StatementKind;
 use pxp_ast::*;
-use pxp_span::Span;
 use pxp_span::IsSpanned;
+use pxp_span::Span;
 use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {

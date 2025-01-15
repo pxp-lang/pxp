@@ -1,7 +1,8 @@
 use std::{path::Path, task::Context};
 
 use pxp_ast::{
-    visitor::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch}, FunctionStatement, Node, Statement
+    visitor::{Ancestors, NodeVisitor, NodeVisitorEscapeHatch},
+    FunctionStatement, Node, Statement,
 };
 use pxp_index::Index;
 use pxp_inference::TypeEngine;
@@ -35,7 +36,7 @@ impl<'a> Runner<'a> {
 
     pub fn run(&self, file: usize, reporter: &mut Reporter, ast: &[Statement]) {
         let types = self.type_engine.infer(ast);
-        let mut context = AnalyserContext::new(reporter, types,  &self.index, file);
+        let mut context = AnalyserContext::new(reporter, types, &self.index, file);
         let mut visitor = AnalyserVisitor::new(self, &mut context);
 
         visitor.traverse(ast);
@@ -53,7 +54,12 @@ impl<'a> AnalyserVisitor<'a> {
     }
 
     fn enter_function(&mut self, node: &FunctionStatement) {
-        self.context.scope.function = Some(self.context.index.get_function(node.name.symbol().to_owned()).unwrap());
+        self.context.scope.function = Some(
+            self.context
+                .index
+                .get_function(node.name.symbol().to_owned())
+                .unwrap(),
+        );
     }
 
     fn leave_function(&mut self) {

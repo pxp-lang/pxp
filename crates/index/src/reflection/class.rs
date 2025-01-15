@@ -1,6 +1,9 @@
 use pxp_bytestring::ByteStr;
 
-use crate::{entities::{ClassEntity, ClassEntityKind}, location::{HasLocation, Location}};
+use crate::{
+    entities::{ClassEntity, ClassEntityKind},
+    location::{HasLocation, Location},
+};
 
 use super::ReflectionMethod;
 

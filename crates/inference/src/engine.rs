@@ -13,7 +13,14 @@ use pxp_index::{Index, ReflectionClass, ReflectionFunctionLike};
 use pxp_token::TokenKind;
 use pxp_type::{ConstExpr, Type};
 use visitor::{
-    walk_array_expression, walk_concat_expression, walk_die_expression, walk_empty_expression, walk_error_suppress_expression, walk_eval_expression, walk_exit_expression, walk_function_call_expression, walk_function_closure_creation_expression, walk_function_statement, walk_include_expression, walk_include_once_expression, walk_instanceof_expression, walk_isset_expression, walk_method_call_expression, walk_method_closure_creation_expression, walk_new_expression, walk_parenthesized_expression, walk_print_expression, walk_reference_expression, walk_require_expression, walk_require_once_expression, walk_unset_expression
+    walk_array_expression, walk_concat_expression, walk_die_expression, walk_empty_expression,
+    walk_error_suppress_expression, walk_eval_expression, walk_exit_expression,
+    walk_function_call_expression, walk_function_closure_creation_expression,
+    walk_function_statement, walk_include_expression, walk_include_once_expression,
+    walk_instanceof_expression, walk_isset_expression, walk_method_call_expression,
+    walk_method_closure_creation_expression, walk_new_expression, walk_parenthesized_expression,
+    walk_print_expression, walk_reference_expression, walk_require_expression,
+    walk_require_once_expression, walk_unset_expression,
 };
 
 use crate::TypeMap;
@@ -170,20 +177,27 @@ impl<'a> TypeMapGenerator<'a> {
 
     fn determine_class_from_type(&self, ty: &Type<ResolvedName>) -> Option<Vec<ReflectionClass>> {
         if !ty.is_object_like() {
-            return None
+            return None;
         }
 
         let mut classes = Vec::new();
 
         match ty {
-            Type::Named(ResolvedName { resolved, .. }) => match self.index.get_class(resolved.to_owned()) {
-                Some(class) => classes.push(class),
-                None => return None,
-            },
+            Type::Named(ResolvedName { resolved, .. }) => {
+                match self.index.get_class(resolved.to_owned()) {
+                    Some(class) => classes.push(class),
+                    None => return None,
+                }
+            }
             Type::Nullable(inner) => return self.determine_class_from_type(inner),
             Type::Union(inners) | Type::Intersection(inners) => {
-                classes.extend(inners.iter().filter_map(|inner| self.determine_class_from_type(inner)).flatten());
-            },
+                classes.extend(
+                    inners
+                        .iter()
+                        .filter_map(|inner| self.determine_class_from_type(inner))
+                        .flatten(),
+                );
+            }
             Type::SelfReference | Type::StaticReference | Type::ParentReference => todo!(),
             _ => unreachable!(),
         };
@@ -368,7 +382,9 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
                 let variable = variable.to_simple();
                 let resolved = self.map.resolve(node.right.kind.id());
 
-                self.scopes.current_mut().set_variable(&variable, resolved.clone());
+                self.scopes
+                    .current_mut()
+                    .set_variable(&variable, resolved.clone());
                 self.map.insert(variable.id, resolved.clone());
             }
             _ => return,
@@ -411,7 +427,7 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
         walk_function_statement(self, node);
         self.scopes.end();
     }
-    
+
     fn visit_function_parameter_list(&mut self, node: &FunctionParameterList) {
         for parameter in node.parameters.iter() {
             let mut r#type = self.unwrap_data_type(parameter.data_type.as_ref());
@@ -420,7 +436,9 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
                 r#type = Type::TypedArray(Box::new(Type::Integer), Box::new(r#type));
             }
 
-            self.scopes.current_mut().set_variable(&parameter.name, r#type);
+            self.scopes
+                .current_mut()
+                .set_variable(&parameter.name, r#type);
         }
     }
 
@@ -471,7 +489,10 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
     fn visit_print_expression(&mut self, node: &PrintExpression) {
         walk_print_expression(self, node);
 
-        self.map.insert(node.id, Type::ConstExpr(Box::new(ConstExpr::Integer(1.into()))));
+        self.map.insert(
+            node.id,
+            Type::ConstExpr(Box::new(ConstExpr::Integer(1.into()))),
+        );
     }
 
     fn visit_concat_expression(&mut self, node: &ConcatExpression) {
@@ -493,19 +514,22 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
     fn visit_reference_expression(&mut self, node: &ReferenceExpression) {
         walk_reference_expression(self, node);
 
-        self.map.insert(node.id, self.map.resolve(node.right.id).clone());
+        self.map
+            .insert(node.id, self.map.resolve(node.right.id).clone());
     }
 
     fn visit_parenthesized_expression(&mut self, node: &ParenthesizedExpression) {
         walk_parenthesized_expression(self, node);
 
-        self.map.insert(node.id, self.map.resolve(node.expr.id).clone());
+        self.map
+            .insert(node.id, self.map.resolve(node.expr.id).clone());
     }
 
     fn visit_error_suppress_expression(&mut self, node: &ErrorSuppressExpression) {
         walk_error_suppress_expression(self, node);
 
-        self.map.insert(node.id, self.map.resolve(node.expr.id).clone());
+        self.map
+            .insert(node.id, self.map.resolve(node.expr.id).clone());
     }
 
     fn visit_include_expression(&mut self, node: &IncludeExpression) {
@@ -533,35 +557,40 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
     }
 
     fn visit_function_closure_creation_expression(
-            &mut self,
-            node: &FunctionClosureCreationExpression,
-        ) {
+        &mut self,
+        node: &FunctionClosureCreationExpression,
+    ) {
         walk_function_closure_creation_expression(self, node);
 
         // FIXME: If the target is a function or if we can resolve the target to
         // something that resembles a callable, we can produce a better type here.
-        self.map.insert(node.id, Type::Named(ResolvedName {
-            resolved: ByteString::from("Closure"),
-            original: ByteString::from("Closure"),
-        }));
+        self.map.insert(
+            node.id,
+            Type::Named(ResolvedName {
+                resolved: ByteString::from("Closure"),
+                original: ByteString::from("Closure"),
+            }),
+        );
     }
 
     fn visit_method_call_expression(&mut self, node: &MethodCallExpression) {
         walk_method_call_expression(self, node);
-        
+
         let method_name = match &node.method.kind {
-            ExpressionKind::Identifier(identifier) if identifier.is_simple() => identifier.to_simple().symbol.as_bytestr(),
+            ExpressionKind::Identifier(identifier) if identifier.is_simple() => {
+                identifier.to_simple().symbol.as_bytestr()
+            }
             // FIXME: Can we support dynamic method names here if we know the value of the expression?
             _ => {
                 self.map.insert(node.id, Type::Mixed);
 
                 return;
-            },
+            }
         };
 
-        let target = self.map.resolve(node.target.id);    
+        let target = self.map.resolve(node.target.id);
 
-        if ! target.is_object_like() {
+        if !target.is_object_like() {
             self.map.insert(node.id, Type::Invalid);
 
             return;
@@ -580,7 +609,10 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
             return;
         };
 
-        let methods = classes.iter().filter_map(|class| class.get_method(method_name)).collect::<Vec<_>>();
+        let methods = classes
+            .iter()
+            .filter_map(|class| class.get_method(method_name))
+            .collect::<Vec<_>>();
 
         if methods.is_empty() {
             self.map.insert(node.id, Type::Mixed);
@@ -588,7 +620,12 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
             return;
         }
 
-        let return_type = self.simplify_union(methods.iter().filter_map(|method| method.get_return_type().cloned()).collect::<Vec<Type<ResolvedName>>>());
+        let return_type = self.simplify_union(
+            methods
+                .iter()
+                .filter_map(|method| method.get_return_type().cloned())
+                .collect::<Vec<Type<ResolvedName>>>(),
+        );
 
         self.map.insert(node.id, return_type);
     }
@@ -597,9 +634,12 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
         walk_method_closure_creation_expression(self, node);
 
         // FIXME: If we know what method is being called, we can determine a better type here.
-        self.map.insert(node.id, Type::Named(ResolvedName {
-            resolved: b"Closure".into(),
-            original: b"Closure".into(),
-        }));
+        self.map.insert(
+            node.id,
+            Type::Named(ResolvedName {
+                resolved: b"Closure".into(),
+                original: b"Closure".into(),
+            }),
+        );
     }
 }

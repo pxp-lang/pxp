@@ -4,8 +4,8 @@ use pxp_ast::StatementKind;
 use pxp_ast::TraitUsageAdaptation;
 use pxp_ast::*;
 use pxp_diagnostics::Severity;
-use pxp_span::Span;
 use pxp_span::IsSpanned;
+use pxp_span::Span;
 use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {

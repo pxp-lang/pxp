@@ -3,7 +3,7 @@ use crate::Parser;
 use pxp_ast::*;
 
 use pxp_diagnostics::Severity;
-use pxp_span::{Span, IsSpanned};
+use pxp_span::{IsSpanned, Span};
 use pxp_token::TokenKind;
 
 impl<'a> Parser<'a> {

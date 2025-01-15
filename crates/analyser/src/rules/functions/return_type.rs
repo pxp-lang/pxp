@@ -3,7 +3,10 @@ use pxp_diagnostics::{DiagnosticLabel, Severity};
 use pxp_index::{HasLocation, ReflectionFunctionLike};
 use pxp_span::IsSpanned;
 
-use crate::{rules::support::{ReturnTypeCheckResult, ReturnTypeChecker}, AnalyserContext, AnalyserDiagnostic, Rule};
+use crate::{
+    rules::support::{ReturnTypeCheckResult, ReturnTypeChecker},
+    AnalyserContext, AnalyserDiagnostic, Rule,
+};
 
 pub struct ReturnTypeRule;
 
@@ -14,11 +17,11 @@ impl Rule for ReturnTypeRule {
 
     fn run(&self, node: &Node, _: &Ancestors, context: &mut AnalyserContext) {
         let Some(function) = context.get_function() else {
-            return
+            return;
         };
 
         let Some(return_type) = function.get_return_type() else {
-            return
+            return;
         };
 
         let Some(node) = node.as_return_statement() else {

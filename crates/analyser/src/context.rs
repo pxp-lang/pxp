@@ -26,9 +26,7 @@ impl<'a, 'b> AnalyserContext<'a, 'b> {
             types,
             index,
             file,
-            scope: Scope {
-                function: None,
-            }
+            scope: Scope { function: None },
         }
     }
 

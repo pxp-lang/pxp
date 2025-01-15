@@ -193,30 +193,45 @@ mod tests {
 
     #[test]
     fn it_infers_types_of_function_parameters() {
-        assert_eq!(infer_at(r#"
+        assert_eq!(
+            infer_at(
+                r#"
         function a(string $b) {
             $b^^
         }
-        "#), Type::String);
+        "#
+            ),
+            Type::String
+        );
     }
 
     #[test]
     fn outer_variables_are_not_accessible_inside_of_functions() {
-        assert_eq!(infer_at(r#"
+        assert_eq!(
+            infer_at(
+                r#"
         $a = 42;
         function a() {
             $a^^
         }
-        "#), Type::Mixed);
+        "#
+            ),
+            Type::Mixed
+        );
     }
 
     #[test]
     fn it_infers_type_of_variadic_parameters() {
-        assert_eq!(infer_at(r#"
+        assert_eq!(
+            infer_at(
+                r#"
         function a(string ...$b) {
             $b^^
         }
-        "#), Type::TypedArray(Box::new(Type::Integer), Box::new(Type::String)));
+        "#
+            ),
+            Type::TypedArray(Box::new(Type::Integer), Box::new(Type::String))
+        );
     }
 
     #[test]
@@ -251,7 +266,10 @@ mod tests {
 
     #[test]
     fn it_infers_type_of_print_expression() {
-        assert_eq!(infer(r#"print('')"#), Type::ConstExpr(Box::new(ConstExpr::Integer(1.into()))));
+        assert_eq!(
+            infer(r#"print('')"#),
+            Type::ConstExpr(Box::new(ConstExpr::Integer(1.into())))
+        );
     }
 
     #[test]
@@ -301,41 +319,56 @@ mod tests {
 
     #[test]
     fn it_infers_type_of_function_closure_creation_expression() {
-        assert_eq!(infer(r#"foo(...)"#), Type::Named(ResolvedName {
-            resolved: b"Closure".into(),
-            original: b"Closure".into(),
-        }));
+        assert_eq!(
+            infer(r#"foo(...)"#),
+            Type::Named(ResolvedName {
+                resolved: b"Closure".into(),
+                original: b"Closure".into(),
+            })
+        );
     }
 
     #[test]
     fn it_infers_type_of_method_call() {
-        assert_eq!(infer(r#"
+        assert_eq!(
+            infer(
+                r#"
         class Foo {
             function bar(): int {}
         }
 
         (new Foo)->bar()
-        "#), Type::Integer);
+        "#
+            ),
+            Type::Integer
+        );
     }
 
     #[test]
     fn it_infers_type_of_method_closure_creation_expression() {
-        assert_eq!(infer(r#"
+        assert_eq!(
+            infer(
+                r#"
         class Foo {
             function bar(): int {}
         }
 
         (new Foo)->bar(...)
-        "#), Type::Named(ResolvedName {
-            resolved: b"Closure".into(),
-            original: b"Closure".into(),
-        }));
+        "#
+            ),
+            Type::Named(ResolvedName {
+                resolved: b"Closure".into(),
+                original: b"Closure".into(),
+            })
+        );
     }
 
     /// Parse the given code, infer the types and return the type of the expression suffixed with a ^^ sequence.
     fn infer_at(code: &str) -> Type<ResolvedName> {
         let code = format!("<?php {};", code);
-        let marker = code.find("^^").expect("Code does not contain a ^^ sequence.");
+        let marker = code
+            .find("^^")
+            .expect("Code does not contain a ^^ sequence.");
         let code = code.replace("^^", "");
         let result = Parser::parse(Lexer::new(code.as_bytes()));
 

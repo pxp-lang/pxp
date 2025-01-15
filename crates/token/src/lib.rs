@@ -1,7 +1,7 @@
 use std::fmt::Display;
 
 use pxp_bytestring::{ByteStr, ByteString};
-use pxp_span::{Span, IsSpanned};
+use pxp_span::{IsSpanned, Span};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 

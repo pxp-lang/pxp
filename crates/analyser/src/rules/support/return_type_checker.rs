@@ -23,7 +23,7 @@ impl ReturnTypeChecker {
             return ReturnTypeCheckResult::Never;
         }
 
-        if ! expected.is_void() && node.value.is_none() {
+        if !expected.is_void() && node.value.is_none() {
             return ReturnTypeCheckResult::Empty;
         }
 

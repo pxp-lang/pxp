@@ -5,7 +5,7 @@ use pxp_ast::{
     HaltCompilerStatement, InlineHtmlStatement, ReturnStatement, ShortOpeningTagStatement,
     Statement, StatementKind, StaticStatement, StaticVar, Variable,
 };
-use pxp_span::{Span, IsSpanned};
+use pxp_span::{IsSpanned, Span};
 use pxp_token::{OpenTagKind, TokenKind};
 
 use crate::Parser;
