@@ -29,7 +29,6 @@ codespan-reporting = "0.11.1"
 colored = "2.2.0"
 homedir = "0.3.4"
 indicatif = "0.17.9"
-pxp-analyser = { version = "0.1.0", path = "crates/analyser" }
 pxp-bytestring = { version = "0.1.0", path = "crates/bytestring" }
 pxp-diagnostics = { version = "0.1.0", path = "crates/diagnostics" }
 pxp-index = { version = "0.1.0", path = "crates/index" }

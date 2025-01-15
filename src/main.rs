@@ -4,7 +4,6 @@ use clap::{
 };
 
 mod cmd;
-mod config;
 mod utils;
 
 const STYLES: Styles = Styles::styled()
@@ -25,7 +24,6 @@ enum Command {
     #[clap(alias = "tokenize")]
     Tokenise(cmd::Tokenise),
     Parse(cmd::Parse),
-    Check(cmd::Check),
     Init(cmd::Init),
     Index(cmd::Index),
 }
@@ -36,7 +34,6 @@ fn main() -> anyhow::Result<()> {
     match parsed.cmd {
         Command::Tokenise(args) => cmd::tokenise(args),
         Command::Parse(args) => cmd::parse(args),
-        Command::Check(args) => cmd::check(args),
         Command::Init(args) => cmd::init(args),
         Command::Index(args) => cmd::index(args),
     }

@@ -32,24 +32,6 @@ impl ProgressBar {
     }
 }
 
-pub(crate) fn find_php_files_in_cwd() -> anyhow::Result<Vec<PathBuf>> {
-    find_php_files_in(&PathBuf::from("."))
-}
-
-pub(crate) fn find_php_files_in_list(paths: &[PathBuf]) -> anyhow::Result<Vec<PathBuf>> {
-    let mut files = vec![];
-
-    for path in paths {
-        if path.is_dir() {
-            files.append(&mut find_php_files_in(path)?);
-        } else {
-            files.push(path.clone());
-        }
-    }
-
-    Ok(files)
-}
-
 pub(crate) fn find_php_files_in(path: &Path) -> anyhow::Result<Vec<PathBuf>> {
     let mut files = vec![];
 
