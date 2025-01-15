@@ -62,7 +62,10 @@ impl<'a> ReflectionClass<'a> {
     }
 
     pub fn get_static_methods(&self) -> Vec<ReflectionMethod> {
-        self.get_methods().into_iter().filter(|method| method.is_static()).collect()
+        self.get_methods()
+            .into_iter()
+            .filter(|method| method.is_static())
+            .collect()
     }
 
     pub fn get_static_method(&self, name: &ByteStr) -> Option<ReflectionMethod> {
