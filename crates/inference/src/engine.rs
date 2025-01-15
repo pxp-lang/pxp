@@ -13,7 +13,7 @@ use pxp_index::{Index, ReflectionClass, ReflectionFunctionLike};
 use pxp_token::TokenKind;
 use pxp_type::{ConstExpr, Type};
 use visitor::{
-    walk_array_expression, walk_concat_expression, walk_die_expression, walk_empty_expression, walk_error_suppress_expression, walk_eval_expression, walk_exit_expression, walk_function_call_expression, walk_function_closure_creation_expression, walk_function_statement, walk_include_expression, walk_include_once_expression, walk_instanceof_expression, walk_isset_expression, walk_method_call_expression, walk_new_expression, walk_parenthesized_expression, walk_print_expression, walk_reference_expression, walk_require_expression, walk_require_once_expression, walk_unset_expression
+    walk_array_expression, walk_concat_expression, walk_die_expression, walk_empty_expression, walk_error_suppress_expression, walk_eval_expression, walk_exit_expression, walk_function_call_expression, walk_function_closure_creation_expression, walk_function_statement, walk_include_expression, walk_include_once_expression, walk_instanceof_expression, walk_isset_expression, walk_method_call_expression, walk_method_closure_creation_expression, walk_new_expression, walk_parenthesized_expression, walk_print_expression, walk_reference_expression, walk_require_expression, walk_require_once_expression, walk_unset_expression
 };
 
 use crate::TypeMap;
@@ -591,5 +591,15 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
         let return_type = self.simplify_union(methods.iter().filter_map(|method| method.get_return_type().cloned()).collect::<Vec<Type<ResolvedName>>>());
 
         self.map.insert(node.id, return_type);
+    }
+
+    fn visit_method_closure_creation_expression(&mut self, node: &MethodClosureCreationExpression) {
+        walk_method_closure_creation_expression(self, node);
+
+        // FIXME: If we know what method is being called, we can determine a better type here.
+        self.map.insert(node.id, Type::Named(ResolvedName {
+            resolved: b"Closure".into(),
+            original: b"Closure".into(),
+        }));
     }
 }

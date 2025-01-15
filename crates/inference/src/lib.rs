@@ -318,6 +318,20 @@ mod tests {
         "#), Type::Integer);
     }
 
+    #[test]
+    fn it_infers_type_of_method_closure_creation_expression() {
+        assert_eq!(infer(r#"
+        class Foo {
+            function bar(): int {}
+        }
+
+        (new Foo)->bar(...)
+        "#), Type::Named(ResolvedName {
+            resolved: b"Closure".into(),
+            original: b"Closure".into(),
+        }));
+    }
+
     /// Parse the given code, infer the types and return the type of the expression suffixed with a ^^ sequence.
     fn infer_at(code: &str) -> Type<ResolvedName> {
         let code = format!("<?php {};", code);
