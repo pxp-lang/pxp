@@ -13,7 +13,7 @@ use pxp_index::{Index, ReflectionClass, ReflectionFunctionLike};
 use pxp_token::TokenKind;
 use pxp_type::{ConstExpr, Type};
 use visitor::{
-    walk_array_expression, walk_concat_expression, walk_die_expression, walk_empty_expression, walk_error_suppress_expression, walk_eval_expression, walk_exit_expression, walk_function_call_expression, walk_function_closure_creation_expression, walk_function_statement, walk_include_expression, walk_include_once_expression, walk_instanceof_expression, walk_isset_expression, walk_method_call_expression, walk_method_closure_creation_expression, walk_new_expression, walk_nullsafe_method_call_expression, walk_parenthesized_expression, walk_print_expression, walk_reference_expression, walk_require_expression, walk_require_once_expression, walk_unset_expression
+    walk_array_expression, walk_concat_expression, walk_die_expression, walk_empty_expression, walk_error_suppress_expression, walk_eval_expression, walk_exit_expression, walk_function_call_expression, walk_function_closure_creation_expression, walk_function_statement, walk_include_expression, walk_include_once_expression, walk_instanceof_expression, walk_isset_expression, walk_method_call_expression, walk_method_closure_creation_expression, walk_new_expression, walk_nullsafe_method_call_expression, walk_parenthesized_expression, walk_print_expression, walk_reference_expression, walk_require_expression, walk_require_once_expression, walk_static_method_call_expression, walk_unset_expression
 };
 
 use crate::TypeMap;
@@ -696,6 +696,42 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
             return_type,
             Type::Null,
         ]);
+
+        self.map.insert(node.id, return_type);
+    }
+
+    fn visit_static_method_call_expression(&mut self, node: &StaticMethodCallExpression) {
+        walk_static_method_call_expression(self, node);
+
+        // FIXME: If we know that the target is a class-like thing, we can determine a better type here.
+        let target = match &node.target.kind {
+            ExpressionKind::Name(name) if name.is_resolved() => name.to_resolved().resolved.as_ref(),
+            _ => {
+                self.map.insert(node.id, Type::Mixed);
+
+                return;
+            }
+        };
+
+        let Identifier::SimpleIdentifier(SimpleIdentifier { symbol: method_name, .. }) = &node.method else {
+            self.map.insert(node.id, Type::Mixed);
+
+            return;
+        };
+
+        let Some(class) = self.index.get_class(target) else {
+            self.map.insert(node.id, Type::Invalid);
+
+            return;
+        };
+
+        let Some(method) = class.get_static_method(method_name.as_ref()) else {
+            self.map.insert(node.id, Type::Invalid);
+
+            return;
+        };
+
+        let return_type = method.get_return_type().cloned().unwrap_or_else(|| Type::Mixed);
 
         self.map.insert(node.id, return_type);
     }

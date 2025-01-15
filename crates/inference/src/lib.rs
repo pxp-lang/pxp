@@ -380,6 +380,17 @@ mod tests {
         );
     }
 
+    #[test]
+    fn it_infers_type_of_static_method_call_on_named_class() {
+        assert_eq!(infer(r#"
+        class Foo {
+            static function bar(): int {}
+        }
+
+        Foo::bar()
+        "#), Type::Integer);
+    }
+
     /// Parse the given code, infer the types and return the type of the expression suffixed with a ^^ sequence.
     fn infer_at(code: &str) -> Type<ResolvedName> {
         let code = format!("<?php {};", code);

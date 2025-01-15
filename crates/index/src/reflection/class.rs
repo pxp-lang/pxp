@@ -60,4 +60,14 @@ impl<'a> ReflectionClass<'a> {
             .into_iter()
             .find(|method| method.get_name() == name)
     }
+
+    pub fn get_static_methods(&self) -> Vec<ReflectionMethod> {
+        self.get_methods().into_iter().filter(|method| method.is_static()).collect()
+    }
+
+    pub fn get_static_method(&self, name: &ByteStr) -> Option<ReflectionMethod> {
+        self.get_static_methods()
+            .into_iter()
+            .find(|method| method.get_name() == name)
+    }
 }
