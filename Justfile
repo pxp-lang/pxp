@@ -6,7 +6,4 @@ ast:
     php ./meta/generate-visitor.php
     cargo fmt --package pxp-ast
 
-stubs:
-    php ./meta/generate-stubs.php
-
-meta: ast stubs
+meta: ast
