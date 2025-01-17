@@ -1,10 +1,12 @@
 test:
     cargo test --workspace --lib --bins --tests
 
-generate-ast:
+ast:
     php ./meta/generate-ast.php
     php ./meta/generate-visitor.php
     cargo fmt --package pxp-ast
 
-generate-stubs:
+stubs:
     php ./meta/generate-stubs.php
+
+meta: ast stubs
