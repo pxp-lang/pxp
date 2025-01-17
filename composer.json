@@ -1,0 +1,8 @@
+{
+    "require-dev": {
+        "nikic/php-parser": "^5.4",
+        "illuminate/support": "^11.38",
+        "symfony/yaml": "^7.2",
+        "symfony/var-dumper": "^7.2"
+    }
+}
