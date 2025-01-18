@@ -7,7 +7,7 @@ use crate::{
     FunctionEntity,
 };
 
-use super::parameters::{CanReflectParameters, ReflectionParameter, ReflectsParameters};
+use super::{parameters::{CanReflectParameters, ReflectionParameter, ReflectsParameters}, ReflectionType};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ReflectionFunction<'a> {
@@ -53,8 +53,8 @@ impl<'a> ReflectsParameters<'a, ReflectionFunction<'a>> for ReflectionFunction<'
 impl IsFunctionLike for ReflectionFunction<'_> {}
 
 impl<'a> ReflectionFunctionLike<'a> for ReflectionFunction<'a> {
-    fn get_return_type(&self) -> Option<&Type<ResolvedName>> {
-        self.entity.return_type.as_ref()
+    fn get_return_type(&self) -> Option<ReflectionType<'a>> {
+        self.entity.return_type.as_ref().map(|t| ReflectionType::new(t))
     }
 
     fn returns_reference(&self) -> bool {
@@ -65,7 +65,7 @@ impl<'a> ReflectionFunctionLike<'a> for ReflectionFunction<'a> {
 pub trait IsFunctionLike {}
 
 pub trait ReflectionFunctionLike<'a>: IsFunctionLike {
-    fn get_return_type(&self) -> Option<&Type<ResolvedName>>;
+    fn get_return_type(&self) -> Option<ReflectionType<'a>>;
 
     fn has_return_type(&self) -> bool {
         self.get_return_type().is_some()

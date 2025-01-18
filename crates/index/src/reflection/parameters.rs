@@ -5,6 +5,8 @@ use crate::{
     Parameter,
 };
 
+use super::ReflectionType;
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ReflectionParameter<'a, O: CanReflectParameters> {
     entity: &'a Parameter,
@@ -22,6 +24,10 @@ impl<'a, O: CanReflectParameters> ReflectionParameter<'a, O> {
 
     pub fn has_type(&self) -> bool {
         self.entity.r#type.is_some()
+    }
+
+    pub fn get_type(&self) -> Option<ReflectionType<'a>> {
+        self.entity.r#type.as_ref().map(|t| ReflectionType::new(t))
     }
 
     pub fn is_optional(&self) -> bool {

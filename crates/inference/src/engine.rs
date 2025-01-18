@@ -220,6 +220,8 @@ impl<'a> TypeMapGenerator<'a> {
         match self.index.get_function(name) {
             Some(function) => function
                 .get_return_type()
+                .as_ref()
+                .map(|t| t.to_type())
                 .unwrap_or_else(|| &Type::Mixed)
                 .clone(),
             None => Type::Mixed,
@@ -232,6 +234,8 @@ impl<'a> TypeMapGenerator<'a> {
             {
                 Some(function) => function
                     .get_return_type()
+                    .as_ref()
+                    .map(|t| t.to_type())
                     .unwrap_or_else(|| &Type::Mixed)
                     .clone(),
                 None => Type::Mixed,
@@ -624,7 +628,7 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
         let return_type = self.simplify_union(
             methods
                 .iter()
-                .filter_map(|method| method.get_return_type().cloned())
+                .filter_map(|method| method.get_return_type().as_ref().map(|t| t.to_type().clone()))
                 .collect::<Vec<Type<ResolvedName>>>(),
         );
 
@@ -694,7 +698,7 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
         let return_type = self.simplify_union(
             methods
                 .iter()
-                .filter_map(|method| method.get_return_type().cloned())
+                .filter_map(|method| method.get_return_type().as_ref().map(|t| t.to_type().clone()))
                 .collect::<Vec<Type<ResolvedName>>>(),
         );
 
@@ -744,7 +748,8 @@ impl<'a> Visitor for TypeMapGenerator<'a> {
 
         let return_type = method
             .get_return_type()
-            .cloned()
+            .as_ref()
+            .map(|t| t.to_type().clone())
             .unwrap_or_else(|| Type::Mixed);
 
         self.map.insert(node.id, return_type);

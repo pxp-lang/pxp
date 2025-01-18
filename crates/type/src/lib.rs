@@ -213,6 +213,14 @@ impl<N: Debug + Display> Type<N> {
         matches!(self, Type::Nullable(_))
     }
 
+    pub fn allows_null(&self) -> bool {
+        match self {
+            Type::Nullable(_) | Type::Null => true,
+            Type::Union(types) | Type::Intersection(types) => types.iter().any(|t| t.allows_null()),
+            _ => false,
+        }
+    }
+
     pub fn includes_callable(&self) -> bool {
         match &self {
             Self::Callable => true,

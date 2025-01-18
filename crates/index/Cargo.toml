@@ -14,3 +14,6 @@ pxp-lexer = { version = "0.1.0", path = "../lexer" }
 pxp-parser = { version = "0.1.0", path = "../parser" }
 pxp-span = { version = "0.1.0", path = "../span" }
 pxp-type = { version = "0.1.0", path = "../type" }
+
+[dev-dependencies]
+discoverer = "0.2.0"

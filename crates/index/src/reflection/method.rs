@@ -10,7 +10,7 @@ use crate::{
 use super::{
     function::{IsFunctionLike, ReflectionFunctionLike},
     parameters::{CanReflectParameters, ReflectsParameters},
-    ReflectionClass, ReflectionParameter,
+    ReflectionClass, ReflectionParameter, ReflectionType,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -78,8 +78,8 @@ impl<'a> ReflectsParameters<'a, ReflectionMethod<'a>> for ReflectionMethod<'a> {
 impl IsFunctionLike for ReflectionMethod<'_> {}
 
 impl<'a> ReflectionFunctionLike<'a> for ReflectionMethod<'a> {
-    fn get_return_type(&self) -> Option<&Type<ResolvedName>> {
-        self.entity.return_type.as_ref()
+    fn get_return_type(&self) -> Option<ReflectionType<'a>> {
+        self.entity.return_type.as_ref().map(|t| ReflectionType::new(t))
     }
 
     fn returns_reference(&self) -> bool {

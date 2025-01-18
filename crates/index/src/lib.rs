@@ -20,7 +20,7 @@ pub use entities::{FunctionEntity, Parameter, Parameters};
 pub use location::{HasLocation, Location};
 pub use reflection::{
     ReflectionClass, ReflectionFunction, ReflectionFunctionLike, ReflectionParameter,
-    ReflectsParameters,
+    ReflectsParameters, ReflectionType,
 };
 
 #[derive(Debug, Clone, Default)]
